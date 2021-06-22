@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["src/*"]
+    },
+    "types": [
+      "./node_modules/@waves/waveskeeper-types"
+    ]
+  }
+}
