@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
-const CHAIN_ID = 1
+const CHAIN_ID = 0
 
 export class WavesKeeperConnector extends AbstractConnector {
   private account: string | null = null
@@ -15,7 +15,7 @@ export class WavesKeeperConnector extends AbstractConnector {
 
   async activate() {
     if (!window.WavesKeeper) {
-      throw new Error('')
+      throw new Error("WavesKeeper hasn't installed")
     }
 
     if (window.WavesKeeper?.on) {

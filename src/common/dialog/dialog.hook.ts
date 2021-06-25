@@ -17,10 +17,13 @@ export const useDialog = <T extends React.ElementType>(
   type Result = T extends React.ElementType<infer Y> ? Arg<Y> : never
 
   const handleOpen = useCallback(
-    (props?: Props): Promise<Result> =>
-      new Promise((resolve, reject) =>
+    (props?: Props): Promise<Result> => {
+      const promise = new Promise<Result>((resolve, reject) =>
         onOpen(createElement(Dialog, props), resolve, reject)
-      ),
+      )
+
+      return promise
+    },
     [Dialog, onOpen]
   )
 

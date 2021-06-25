@@ -3,7 +3,9 @@ export const paths = {
 
   protocols: {
     list: '/protocols',
-    detail: (id = ':protocolId') => `/protocols/${id}`
+    detail: (id = ':protocolId') => `/protocols/${id}`,
+    create: '/protocols/create',
+    update: (id = ':protocolId') => `/protocols/update/${id}`
   },
 
   staking: {

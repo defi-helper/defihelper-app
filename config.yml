@@ -1,0 +1,24 @@
+overwrite: true
+schema: "http://0.0.0.0/api"
+documents: [
+  './src/**/**/*.graphql.ts',
+]
+config:
+  scalars:
+    AddressType: string
+    DateTimeType: string
+generates:
+  src/graphql/_generated-fragment-types.ts:
+    plugins:
+      - add:
+          content: '/* eslint-disable */'
+      - fragment-matcher
+  src/graphql/_generated-types.ts:
+    plugins:
+      - add:
+          content: '/* eslint-disable */'
+      - typescript
+      - typescript-operations
+hooks:
+  afterAllFileWrite:
+    - prettier --write

@@ -49,22 +49,7 @@ export const DialogProvider: React.FC = (props) => {
     >
       <Portal>
         {dialogNode && React.isValidElement(dialogNode) && (
-          <div
-            style={{
-              position: 'fixed',
-              width: '100%',
-              height: '100%',
-              top: 0,
-              left: 0,
-              zIndex: 100,
-              background: 'rgba(0, 0, 0, 0.3)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-            onClick={handleClose}
-          >
+          <div onClick={handleClose}>
             {cloneElement(dialogNode, {
               ...dialogNode.props,
               onCancel: handleClose,
