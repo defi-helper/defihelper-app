@@ -1,14 +1,30 @@
-import { createDomain, sample } from 'effector-logger'
+import { createDomain, guard } from 'effector-logger'
 import { createGate } from 'effector-react'
+import { config } from '~/config'
 
-import { ProtocolListQuery } from '~/graphql/_generated-types'
+import { ProtocolListQuery, BlockchainEnum } from '~/graphql/_generated-types'
+import {
+  $wallet,
+  activateWalletFx,
+  updateWalletFx
+} from '~/wallets/networks/network.model'
 import { protocolsApi } from '../common'
 
 export const protocolListDomain = createDomain('protocolList')
 
 export const fetchProtocolListFx = protocolListDomain.createEffect({
   name: 'fetchProtocolList',
-  handler: async () => protocolsApi.protocolsList({})
+  handler: async (params: { chainId?: number }) =>
+    protocolsApi.protocolsList({
+      protocolFilter: {
+        blockchain: {
+          protocol: config.CHAIN_ETHEREUM_IDS.includes(Number(params.chainId))
+            ? BlockchainEnum.Ethereum
+            : BlockchainEnum.Waves,
+          network: params.chainId ? String(params.chainId) : undefined
+        }
+      }
+    })
 })
 
 export const $protocolList = protocolListDomain
@@ -27,7 +43,9 @@ export const $protocolList = protocolListDomain
 
 export const Gate = createGate()
 
-sample({
-  clock: Gate.open,
+guard({
+  source: $wallet,
+  clock: [Gate.open, activateWalletFx.doneData, updateWalletFx.doneData],
+  filter: ({ chainId }) => Boolean(chainId),
   target: fetchProtocolListFx
 })

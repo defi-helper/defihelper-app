@@ -1,6 +1,6 @@
 export const config = {
   IS_DEV: process.env.NODE_ENV === 'development',
-  CHAIN_ETHEREUM_IDS: [1, 3, 4, 5, 42, 999],
+  CHAIN_ETHEREUM_IDS: [1, 3, 4, 5, 42, 999] as number[],
   CHAIN_BINANCE_IDS: [56, 97],
   CHAIN_WAVES_ID: 0,
   PORTIS_ID: process.env.REACT_APP_PORTIS_ID,
