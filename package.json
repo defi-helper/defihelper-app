@@ -4,9 +4,20 @@
   "private": true,
   "dependencies": {
     "@binance-chain/bsc-connector": "^1.0.0",
+    "@casl/ability": "^5.3.1",
+    "@casl/react": "^2.3.0",
     "@craco/craco": "^6.1.2",
+    "@ethersproject/bytes": "^5.3.0",
+    "@ethersproject/keccak256": "^5.3.0",
+    "@graphql-codegen/add": "^2.0.2",
+    "@graphql-codegen/cli": "1.21.3",
+    "@graphql-codegen/fragment-matcher": "2.0.1",
+    "@graphql-codegen/introspection": "1.18.1",
+    "@graphql-codegen/typescript": "1.21.1",
+    "@graphql-codegen/typescript-operations": "1.17.15",
     "@material-ui/core": "^4.11.4",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "*",
     "@testing-library/jest-dom": "^5.13.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
@@ -20,6 +31,8 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/smoothscroll-polyfill": "^0.3.1",
     "@typescript-eslint/parser": "^4.6.1",
+    "@urql/core": "^2.1.4",
+    "@waves.exchange/provider-web": "^1.0.2",
     "@waves/signer": "^1.0.2",
     "@waves/waveskeeper-types": "^0.0.6",
     "@web3-react/abstract-connector": "^6.0.7",
@@ -36,8 +49,10 @@
     "bn.js": "^5.2.0",
     "body-scroll-lock": "^3.1.5",
     "clsx": "^1.1.1",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.10.5",
     "effector": "^21.8.11",
+    "effector-logger": "^0.10.0",
     "effector-react": "^21.3.2",
     "eslint-config-airbnb-typescript": "^12.0.0",
     "eslint-config-prettier": "^6.13.0",
@@ -46,6 +61,7 @@
     "eslint-plugin-react": "^7.21.4",
     "ethers": "^5.3.1",
     "fast-equals": "^2.0.3",
+    "fast-memoize": "^2.5.2",
     "graphql": "^15.5.1",
     "nanoid": "^3.1.23",
     "normalize.css": "^8.0.1",
@@ -57,7 +73,6 @@
     "react-scripts": "4.0.3",
     "smoothscroll-polyfill": "^0.4.4",
     "typescript": "^4.3.2",
-    "urql": "^2.0.3",
     "web-vitals": "^0.2.4",
     "workbox-background-sync": "^5.1.4",
     "workbox-broadcast-update": "^5.1.4",
@@ -74,9 +89,10 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "cross-env CI='' cross-env GENERATE_SOURCEMAP=false craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "codegen": "graphql-codegen --config config.yml"
   },
   "eslintConfig": {
     "extends": [
@@ -97,7 +113,6 @@
     ]
   },
   "devDependencies": {
-    "effector-logger": "^0.10.0",
     "husky": "^6.0.0",
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.1"

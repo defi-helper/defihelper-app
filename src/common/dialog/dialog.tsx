@@ -17,7 +17,7 @@ export const Dialog: React.FC<DialogProps> = (props) => {
   ) => event.stopPropagation()
 
   return (
-    <DialogWrapper onClose={onClose} open>
+    <DialogWrapper onClose={onClose} open onClick={handleOnClickContent}>
       {props.children}
     </DialogWrapper>
   )

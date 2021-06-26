@@ -26,6 +26,9 @@ import { paths } from '~/paths'
 import { useQueryParams } from '~/common/hooks'
 import { useDialog } from '~/common/dialog'
 import { WalletList } from '~/wallets/wallet-list'
+import { cutAccount } from '~/common/cut-account'
+import { WalletDetail } from '~/wallets/wallet-detail'
+import { useNetworkProvider } from '~/wallets/networks'
 
 export type MainLayoutProps = unknown
 
@@ -65,6 +68,10 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 const NETWORKS = [
+  {
+    title: 'All',
+    query: ''
+  },
   {
     title: 'Ethereum',
     query: 'eth'
@@ -110,6 +117,8 @@ const MENU = [
 ]
 
 export const MainLayout: React.FC<MainLayoutProps> = (props) => {
+  const { account } = useNetworkProvider()
+
   const classes = useStyles()
 
   const [anchorEl, setAnchorEl] = useState<
@@ -125,7 +134,7 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
   const handleChangeNetwork = (search: string) => {
     history.push({
       pathname: paths.protocols.list,
-      search: `network=${search}`
+      search: search ? `network=${search}` : undefined
     })
   }
 
@@ -144,9 +153,18 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
     [queryParams]
   )
 
-  const [openWalletList] = useDialog(WalletList)
+  const [openWalletList, closeWalletList] = useDialog(WalletList)
+  const [openChangeWallet] = useDialog(WalletDetail)
 
-  const handleOpenWalletList = () => openWalletList().catch(console.warn)
+  const handleOpenWalletList = () =>
+    openWalletList({ onClick: closeWalletList }).catch((error: Error) =>
+      console.error(error.message)
+    )
+
+  const handleChangeWallet = () =>
+    openChangeWallet({ onChange: handleOpenWalletList }).catch((error: Error) =>
+      console.error(error.message)
+    )
 
   return (
     <div className={classes.root}>
@@ -163,16 +181,22 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
             DefiHelper.io
           </Typography>
           <div className={classes.actions}>
-            <Button color="inherit" onClick={handleOpenWalletList}>
-              Connect wallet
-            </Button>
+            {account ? (
+              <Button color="inherit" onClick={handleChangeWallet}>
+                {cutAccount(account)}
+              </Button>
+            ) : (
+              <Button color="inherit" onClick={handleOpenWalletList}>
+                Connect wallet
+              </Button>
+            )}
             <Button
               aria-controls="simple-menu"
               aria-haspopup="true"
               onClick={handleClick}
               color="inherit"
             >
-              {currentNetwork ?? 'Current network'}
+              {currentNetwork ?? 'All'}
             </Button>
           </div>
           <Menu
@@ -180,12 +204,12 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            {NETWORKS.map((network) => (
+            {NETWORKS.map((networkItem) => (
               <MenuItem
-                onClick={() => handleChangeNetwork(network.query)}
-                key={network.title}
+                onClick={() => handleChangeNetwork(networkItem.query)}
+                key={networkItem.title}
               >
-                {network.title}
+                {networkItem.title}
               </MenuItem>
             ))}
           </Menu>
@@ -201,15 +225,6 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
         <Toolbar />
         <div className={classes.drawerContainer}>
           <List>
-            <ListItem
-              button
-              onClick={() => handleChangeLocation(paths.protocols.list)}
-            >
-              <ListItemIcon>
-                <LanguageIcon />
-              </ListItemIcon>
-              <ListItemText primary="All protocols" />
-            </ListItem>
             <ListItem>
               <ListItemIcon>
                 <LanguageIcon />
