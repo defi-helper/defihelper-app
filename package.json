@@ -95,6 +95,7 @@
     "start": "craco start",
     "build": "cross-env CI='' cross-env GENERATE_SOURCEMAP=false craco build",
     "test": "craco test",
+    "watch": "node ./watch.js",
     "eject": "react-scripts eject",
     "codegen": "graphql-codegen --config config.yml"
   },
