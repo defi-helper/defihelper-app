@@ -50,7 +50,7 @@ export const signMessageFx = createEffect({
 
     const signer = network.networkProvider?.getSigner()
 
-    if (sidUtils.getSid()) return
+    if (sidUtils.get()) return
 
     const signature = await signer?.signMessage(MESSAGE)
 
@@ -65,7 +65,7 @@ export const signMessageFx = createEffect({
 
     if (!data) return
 
-    sidUtils.setSid(data.sid)
+    sidUtils.set(data.sid)
 
     return data.user
   }

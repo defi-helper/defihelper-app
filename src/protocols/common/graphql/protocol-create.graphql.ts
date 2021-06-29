@@ -3,12 +3,7 @@ import { gql } from '@urql/core'
 import { PROTOCOL_FRAGMENT } from './protocol.fragment.graphql'
 
 export const PROTOCOL_CREATE = gql`
-  mutation ProtocolCreate(
-    $input: ProtocolCreateInputType!
-    $contractFilter: ContractListFilterInputType
-    $contractSort: [ContractListSortInputType!]
-    $contractPagination: ContractListPaginationInputType
-  ) {
+  mutation ProtocolCreate($input: ProtocolCreateInputType!) {
     protocolCreate(input: $input) {
       ...protocolFragment
     }

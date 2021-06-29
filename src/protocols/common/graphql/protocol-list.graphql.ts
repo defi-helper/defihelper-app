@@ -7,9 +7,6 @@ export const PROTOCOLS = gql`
     $protocolFilter: ProtocolListFilterInputType
     $protocolSort: [ProtocolListSortInputType!]
     $protocolPagination: ProtocolListPaginationInputType
-    $contractFilter: ContractListFilterInputType
-    $contractSort: [ContractListSortInputType!]
-    $contractPagination: ContractListPaginationInputType
   ) {
     protocols(
       filter: $protocolFilter

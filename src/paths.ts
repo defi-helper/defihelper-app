@@ -9,7 +9,9 @@ export const paths = {
   },
 
   staking: {
-    list: '/staking',
-    detail: (id = ':stakingId') => `/staking/${id}`
+    create: (protocolId = ':protocolId') =>
+      `/protocols/${protocolId}/staking/create`,
+    update: (protocolId = ':protocolId', stakingId = ':stakingId') =>
+      `/protocols/${protocolId}/staking/${stakingId}`
   }
 }

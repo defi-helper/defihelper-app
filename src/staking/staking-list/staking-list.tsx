@@ -1,9 +1,14 @@
 import { makeStyles, Paper } from '@material-ui/core'
+import { useGate, useStore } from 'effector-react'
+import Button from '@material-ui/core/Button'
 import { Link as ReactRouterLink } from 'react-router-dom'
+import { useMemo } from 'react'
 
-import { Icon } from '~/common/icon/icon'
+import { Can, useAbility } from '~/users'
+import * as model from './staking-list.model'
 import { paths } from '~/paths'
-import { getStakingList } from '../common'
+import { useDialog } from '~/common/dialog'
+import { ConfirmDialog } from '~/common/confirm-dialog'
 
 export type StakingListProps = {
   protocolId: string
@@ -14,10 +19,6 @@ const useStyles = makeStyles(() => ({
     padding: 0,
     margin: 0,
     listStyle: 'none'
-  },
-
-  link: {
-    textDecoration: 'none'
   },
 
   card: {
@@ -51,35 +52,91 @@ const useStyles = makeStyles(() => ({
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const classes = useStyles()
 
-  const stakingList = getStakingList(props.protocolId)
+  const ability = useAbility()
+
+  const stakingList = useStore(model.$stakingList)
+  const loading = useStore(model.fetchStakingListFx.pending)
+
+  const [openConfirmDialog] = useDialog(ConfirmDialog)
+
+  useGate(model.Gate, props.protocolId)
+
+  const staking = useMemo(
+    () => stakingList.filter((stakingItem) => ability.can('read', stakingItem)),
+    [stakingList, ability]
+  )
+
+  const handleOpenConfirmDialog = async (id: string) => {
+    try {
+      await openConfirmDialog()
+
+      await model.deleteStakingFx(id)
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
 
   return (
-    <ul className={classes.root}>
-      {stakingList.map((stakingListItem) => (
-        <li key={stakingListItem.id}>
-          <ReactRouterLink
-            to={paths.staking.detail(stakingListItem.id)}
-            className={classes.link}
-          >
-            <Paper className={classes.card}>
-              <div className={`${classes.icons} ${classes.mr}`}>
-                {stakingListItem.coins.map((coin) => (
-                  <Icon key={coin} icon={coin} />
-                ))}
-              </div>
-              <div>
-                <div>{stakingListItem.title}</div>
-                <div>{stakingListItem.type}</div>
-              </div>
-              <div className={`${classes.tvl} ${classes.mr}`}>
-                {stakingListItem.tvl}
-              </div>
-              <div className={classes.mr}>{stakingListItem.apy}</div>
-              <div className={classes.mr}>{stakingListItem.balance}</div>
-            </Paper>
-          </ReactRouterLink>
-        </li>
-      ))}
-    </ul>
+    <div>
+      <Can I="create" a="Contract">
+        <Button
+          variant="contained"
+          color="primary"
+          component={ReactRouterLink}
+          to={paths.staking.create(props.protocolId)}
+        >
+          New contract
+        </Button>
+      </Can>
+      <ul className={classes.root}>
+        {loading && <Paper>Loading...</Paper>}
+        {!loading && !staking.length && <Paper>no contracts found</Paper>}
+        {!loading &&
+          staking.map((stakingListItem) => (
+            <li key={stakingListItem.id}>
+              <Paper className={classes.card}>
+                <div className={`${classes.icons} ${classes.mr}`}>
+                  {stakingListItem.adapter}
+                </div>
+                <div>
+                  <div>{stakingListItem.name}</div>
+                  <div>{stakingListItem.blockchain}</div>
+                </div>
+                <div className={`${classes.tvl} ${classes.mr}`}>
+                  {stakingListItem.network}
+                </div>
+                <div className={classes.mr}>{stakingListItem.address}</div>
+                <div className={classes.mr}>{stakingListItem.description}</div>
+                <div className={classes.mr}>{stakingListItem.link}</div>
+                <div className={classes.mr}>
+                  {String(stakingListItem.hidden)}
+                </div>
+                <div className={classes.mr}>{stakingListItem.createdAt}</div>
+              </Paper>
+              <Can I="update" a="Contract">
+                <Button
+                  variant="contained"
+                  component={ReactRouterLink}
+                  to={paths.staking.update(
+                    props.protocolId,
+                    stakingListItem.id
+                  )}
+                >
+                  Edit
+                </Button>
+              </Can>
+              <Can I="delete" a="Contract">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => handleOpenConfirmDialog(stakingListItem.id)}
+                >
+                  Delete
+                </Button>
+              </Can>
+            </li>
+          ))}
+      </ul>
+    </div>
   )
 }

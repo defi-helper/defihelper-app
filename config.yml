@@ -7,6 +7,8 @@ config:
   scalars:
     AddressType: string
     DateTimeType: string
+    MetricColumnType: string
+    UuidType: string
 generates:
   src/graphql/_generated-fragment-types.ts:
     plugins:

@@ -61,7 +61,7 @@ export const ProtocolDetail: React.VFC<ProtocolDetailProps> = () => {
           </Typography>
         </div>
       )}
-      <Typography gutterBottom>Staking pools</Typography>
+      <Typography gutterBottom>Staking contracts</Typography>
       <StakingList protocolId={params.protocolId} />
     </MainLayout>
   )

@@ -11,6 +11,7 @@ type FormValues = {
   icon?: string
   link?: string
   hidden?: boolean
+  adapter: string
 }
 
 export type ProtocolFormProps = {
@@ -31,9 +32,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
-  const { register, handleSubmit, setValue, reset } = useForm<FormValues>({
-    defaultValues: props.defaultValues ? props.defaultValues : undefined
-  })
+  const { register, handleSubmit, setValue, reset } = useForm<FormValues>()
 
   const classes = useStyles()
 
@@ -70,6 +69,12 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
       />
       <TextField
         type="text"
+        label="Adapter"
+        inputProps={register('adapter')}
+        disabled={props.loading}
+      />
+      <TextField
+        type="text"
         label="Link"
         inputProps={register('link')}
         disabled={props.loading}
@@ -78,6 +83,7 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
         Hidden
         <Checkbox
           inputRef={hidden.ref}
+          defaultChecked={props.defaultValues?.hidden}
           onChange={(_, checked) => setValue('hidden', checked)}
           disabled={props.loading}
         />

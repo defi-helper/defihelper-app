@@ -1,8 +1,7 @@
-import { createDomain, guard } from 'effector-logger'
+import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
-import { config } from '~/config'
 
-import { ProtocolListQuery, BlockchainEnum } from '~/graphql/_generated-types'
+import { ProtocolsQuery } from '~/graphql/_generated-types'
 import {
   $wallet,
   activateWalletFx,
@@ -14,21 +13,26 @@ export const protocolListDomain = createDomain('protocolList')
 
 export const fetchProtocolListFx = protocolListDomain.createEffect({
   name: 'fetchProtocolList',
-  handler: async (params: { chainId?: number }) =>
-    protocolsApi.protocolsList({
-      protocolFilter: {
-        blockchain: {
-          protocol: config.CHAIN_ETHEREUM_IDS.includes(Number(params.chainId))
-            ? BlockchainEnum.Ethereum
-            : BlockchainEnum.Waves,
-          network: params.chainId ? String(params.chainId) : undefined
-        }
-      }
-    })
+  handler: async () => protocolsApi.protocolList({})
+})
+
+const ERROR = 'Not deleted'
+
+export const deleteProtocolFx = protocolListDomain.createEffect({
+  name: 'deleteProtocol',
+  handler: async (id: string) => {
+    const isDeleted = await protocolsApi.protocolDelete(id)
+
+    if (isDeleted) {
+      return id
+    }
+
+    throw new Error(ERROR)
+  }
 })
 
 export const $protocolList = protocolListDomain
-  .createStore<ProtocolListQuery>(
+  .createStore<ProtocolsQuery['protocols']>(
     {
       list: [],
       pagination: {
@@ -40,12 +44,21 @@ export const $protocolList = protocolListDomain
     }
   )
   .on(fetchProtocolListFx.doneData, (_, payload) => payload)
+  .on(deleteProtocolFx.doneData, (state, payload) => {
+    const list = state.list?.filter(({ id }) => id !== payload)
 
-export const Gate = createGate()
+    return {
+      ...state,
+      list
+    }
+  })
 
-guard({
+export const Gate = createGate({
+  domain: protocolListDomain
+})
+
+sample({
   source: $wallet,
   clock: [Gate.open, activateWalletFx.doneData, updateWalletFx.doneData],
-  filter: ({ chainId }) => Boolean(chainId),
   target: fetchProtocolListFx
 })
