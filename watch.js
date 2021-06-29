@@ -9,12 +9,17 @@ const paths = require('react-scripts/config/paths')
 const webpack = require('webpack')
 const path = require('path')
 const config = require('react-scripts/config/webpack.config.js')('development')
+const configProd = require('react-scripts/config/webpack.config.js')(
+  'production'
+)
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 config.resolve.alias = {
   ...config.resolve.alias,
   '~': path.resolve(__dirname, './src')
 }
+
+config.output.path = configProd.output.path
 
 config.entry = Array.isArray(config.entry)
   ? config.entry.filter((fileName) => !fileName.match(/webpackHotDevClient/))
