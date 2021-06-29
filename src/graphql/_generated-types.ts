@@ -16,8 +16,10 @@ export type Scalars = {
   Float: number
   /** Date and time */
   DateTimeType: string
+  /** Metric column */
+  MetricColumnType: string
   /** Identificator */
-  UuidType: any
+  UuidType: string
 }
 
 export type AuthEthereumInputType = {
@@ -56,6 +58,8 @@ export type ContractCreateInputType = {
   network: Scalars['String']
   /** Address */
   address: Scalars['String']
+  /** Adapter name */
+  adapter: Scalars['String']
   /** Name */
   name: Scalars['String']
   /** Description */
@@ -98,10 +102,37 @@ export type ContractListType = {
   pagination: Pagination
 }
 
+export type ContractMetricChartFilterInputType = {
+  /** Created at equals or greater */
+  dateAfter?: Maybe<Scalars['DateTimeType']>
+  /** Created at less */
+  dateBefore?: Maybe<Scalars['DateTimeType']>
+}
+
+export type ContractMetricChartPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type ContractMetricChartSortInputType = {
+  column: ContractMetricChartSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum ContractMetricChartSortInputTypeColumnEnum {
+  Date = 'date',
+  Value = 'value'
+}
+
 export type ContractType = {
   __typename?: 'ContractType'
   /** Identificator */
   id: Scalars['UuidType']
+  protocolId: Scalars['UuidType']
+  /** Adapter name */
+  adapter: Scalars['String']
   /** Blockchain type */
   blockchain: BlockchainEnum
   /** Blockchain network id */
@@ -116,8 +147,17 @@ export type ContractType = {
   link?: Maybe<Scalars['String']>
   /** Is hidden */
   hidden: Scalars['Boolean']
+  metricChart: Array<MetricChartType>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
+}
+
+export type ContractTypeMetricChartArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<ContractMetricChartFilterInputType>
+  sort?: Maybe<Array<ContractMetricChartSortInputType>>
+  pagination?: Maybe<ContractMetricChartPaginationInputType>
 }
 
 export type ContractUpdateInputType = {
@@ -127,6 +167,8 @@ export type ContractUpdateInputType = {
   network?: Maybe<Scalars['String']>
   /** Address */
   address?: Maybe<Scalars['String']>
+  /** Adapter name */
+  adapter?: Maybe<Scalars['String']>
   /** Name */
   name?: Maybe<Scalars['String']>
   /** Description */
@@ -135,6 +177,23 @@ export type ContractUpdateInputType = {
   link?: Maybe<Scalars['String']>
   /** Is hidden */
   hidden?: Maybe<Scalars['Boolean']>
+}
+
+export type MetricChartType = {
+  __typename?: 'MetricChartType'
+  date: Scalars['DateTimeType']
+  min: Scalars['String']
+  max: Scalars['String']
+  avg: Scalars['String']
+  sum: Scalars['String']
+  count: Scalars['String']
+}
+
+export enum MetricGroupEnum {
+  Hour = 'hour',
+  Day = 'day',
+  Week = 'week',
+  Year = 'year'
 }
 
 export type Mutation = {
@@ -146,6 +205,13 @@ export type Mutation = {
   contractCreate: ContractType
   contractUpdate: ContractType
   contractDelete: Scalars['Boolean']
+  contractWalletLink: Scalars['Boolean']
+  contractWalletUnlink: Scalars['Boolean']
+  proposalCreate: ProposalType
+  proposalUpdate: ProposalType
+  proposalDelete: Scalars['Boolean']
+  vote: VoteType
+  unvote: Scalars['Boolean']
 }
 
 export type MutationAuthEthArgs = {
@@ -179,13 +245,131 @@ export type MutationContractDeleteArgs = {
   id: Scalars['UuidType']
 }
 
+export type MutationContractWalletLinkArgs = {
+  contract: Scalars['UuidType']
+  wallet: Scalars['UuidType']
+}
+
+export type MutationContractWalletUnlinkArgs = {
+  contract: Scalars['UuidType']
+  wallet: Scalars['UuidType']
+}
+
+export type MutationProposalCreateArgs = {
+  input: ProposalCreateInputType
+}
+
+export type MutationProposalUpdateArgs = {
+  id: Scalars['UuidType']
+  input: ProposalUpdateInputType
+}
+
+export type MutationProposalDeleteArgs = {
+  id: Scalars['UuidType']
+}
+
+export type MutationVoteArgs = {
+  proposal: Scalars['UuidType']
+}
+
+export type MutationUnvoteArgs = {
+  proposal: Scalars['UuidType']
+}
+
 export type Pagination = {
   __typename?: 'Pagination'
   /** Count of list elements */
   count: Scalars['Int']
 }
 
+export type ProposalCreateInputType = {
+  /** Title */
+  title: Scalars['String']
+  /** Description */
+  description: Scalars['String']
+}
+
+export type ProposalFilterInputType = {
+  id: Scalars['String']
+}
+
+export type ProposalListFilterInputType = {
+  author?: Maybe<Scalars['UuidType']>
+  status?: Maybe<ProposalStatusEnum>
+  search?: Maybe<Scalars['String']>
+}
+
+export type ProposalListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type ProposalListQuery = {
+  __typename?: 'ProposalListQuery'
+  /** Elements */
+  list?: Maybe<Array<ProposalType>>
+  pagination: Pagination
+}
+
+export type ProposalListSortInputType = {
+  column: ProposalListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum ProposalListSortInputTypeColumnEnum {
+  Id = 'id',
+  Title = 'title',
+  CreatedAt = 'createdAt'
+}
+
+export enum ProposalStatusEnum {
+  /** Proposal is open for vote */
+  Open = 'open',
+  /** Proposal is executed */
+  Executed = 'executed',
+  /** Proposal is defeated */
+  Defeated = 'defeated'
+}
+
+export type ProposalType = {
+  __typename?: 'ProposalType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Title */
+  title: Scalars['String']
+  /** Description */
+  description: Scalars['String']
+  /** Current status */
+  status: ProposalStatusEnum
+  /** Author */
+  author?: Maybe<UserType>
+  votes: VoteListType
+  /** Date of updated */
+  updatedAt: Scalars['DateTimeType']
+  /** Date of created */
+  createdAt: Scalars['DateTimeType']
+}
+
+export type ProposalTypeVotesArgs = {
+  filter?: Maybe<VoteListFilterInputType>
+  sort?: Maybe<Array<VoteListSortInputType>>
+  pagination?: Maybe<VoteListPaginationInputType>
+}
+
+export type ProposalUpdateInputType = {
+  /** Title */
+  title?: Maybe<Scalars['String']>
+  /** Description */
+  description?: Maybe<Scalars['String']>
+  /** Current status */
+  status?: Maybe<ProposalStatusEnum>
+}
+
 export type ProtocolCreateInputType = {
+  /** Adapter name */
+  adapter: Scalars['String']
   /** Name */
   name: Scalars['String']
   /** Description */
@@ -234,6 +418,31 @@ export enum ProtocolListSortInputTypeColumnEnum {
   CreatedAt = 'createdAt'
 }
 
+export type ProtocolMetricChartFilterInputType = {
+  blockchain?: Maybe<BlockchainFilterInputType>
+  /** Created at equals or greater */
+  dateAfter?: Maybe<Scalars['DateTimeType']>
+  /** Created at less */
+  dateBefore?: Maybe<Scalars['DateTimeType']>
+}
+
+export type ProtocolMetricChartPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type ProtocolMetricChartSortInputType = {
+  column: ProtocolMetricChartSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum ProtocolMetricChartSortInputTypeColumnEnum {
+  Date = 'date',
+  Value = 'value'
+}
+
 export type ProtocolType = {
   __typename?: 'ProtocolType'
   /** Identificator */
@@ -251,6 +460,7 @@ export type ProtocolType = {
   /** Is hidden */
   hidden: Scalars['Boolean']
   contracts: ContractListType
+  metricChart: Array<MetricChartType>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -261,7 +471,17 @@ export type ProtocolTypeContractsArgs = {
   pagination?: Maybe<ContractListPaginationInputType>
 }
 
+export type ProtocolTypeMetricChartArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<ProtocolMetricChartFilterInputType>
+  sort?: Maybe<Array<ProtocolMetricChartSortInputType>>
+  pagination?: Maybe<ProtocolMetricChartPaginationInputType>
+}
+
 export type ProtocolUpdateInputType = {
+  /** Adapter name */
+  adapter?: Maybe<Scalars['String']>
   /** Name */
   name?: Maybe<Scalars['String']>
   /** Description */
@@ -280,6 +500,8 @@ export type Query = {
   me?: Maybe<UserType>
   protocol?: Maybe<ProtocolType>
   protocols: ProtocolListQuery
+  proposal?: Maybe<ProposalType>
+  proposals: ProposalListQuery
 }
 
 export type QueryProtocolArgs = {
@@ -292,11 +514,50 @@ export type QueryProtocolsArgs = {
   pagination?: Maybe<ProtocolListPaginationInputType>
 }
 
+export type QueryProposalArgs = {
+  filter: ProposalFilterInputType
+}
+
+export type QueryProposalsArgs = {
+  filter?: Maybe<ProposalListFilterInputType>
+  sort?: Maybe<Array<ProposalListSortInputType>>
+  pagination?: Maybe<ProposalListPaginationInputType>
+}
+
 export enum SortOrderEnum {
   /** Ascending */
   Asc = 'asc',
   /** Descending */
   Desc = 'desc'
+}
+
+export type UserMetricChartFilterInputType = {
+  /** Target contracts */
+  contract?: Maybe<Array<Scalars['UuidType']>>
+  /** Target wallets */
+  wallet?: Maybe<Array<Scalars['UuidType']>>
+  blockchain?: Maybe<BlockchainFilterInputType>
+  /** Created at equals or greater */
+  dateAfter?: Maybe<Scalars['DateTimeType']>
+  /** Created at less */
+  dateBefore?: Maybe<Scalars['DateTimeType']>
+}
+
+export type UserMetricChartPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserMetricChartSortInputType = {
+  column: UserMetricChartSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserMetricChartSortInputTypeColumnEnum {
+  Date = 'date',
+  Value = 'value'
 }
 
 export enum UserRoleEnum {
@@ -313,6 +574,7 @@ export type UserType = {
   /** Access role */
   role: UserRoleEnum
   wallets: WalletListType
+  metricChart: Array<MetricChartType>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -321,6 +583,86 @@ export type UserTypeWalletsArgs = {
   filter?: Maybe<WalletListFilterInputType>
   sort?: Maybe<Array<WalletListSortInputType>>
   pagination?: Maybe<WalletListPaginationInputType>
+}
+
+export type UserTypeMetricChartArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<UserMetricChartFilterInputType>
+  sort?: Maybe<Array<UserMetricChartSortInputType>>
+  pagination?: Maybe<UserMetricChartPaginationInputType>
+}
+
+export type VoteListFilterInputType = {
+  user?: Maybe<Scalars['UuidType']>
+}
+
+export type VoteListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type VoteListSortInputType = {
+  column: VoteListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum VoteListSortInputTypeColumnEnum {
+  Id = 'id',
+  CreatedAt = 'createdAt'
+}
+
+export type VoteListType = {
+  __typename?: 'VoteListType'
+  /** Elements */
+  list?: Maybe<Array<VoteType>>
+  pagination: Pagination
+}
+
+export type VoteType = {
+  __typename?: 'VoteType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Voting user */
+  user: UserType
+  /** Date of updated */
+  updatedAt: Scalars['DateTimeType']
+  /** Date of created */
+  createdAt: Scalars['DateTimeType']
+}
+
+export type WalletContractListFilterInputType = {
+  blockchain?: Maybe<BlockchainFilterInputType>
+  hidden?: Maybe<Scalars['Boolean']>
+  search?: Maybe<Scalars['String']>
+}
+
+export type WalletContractListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type WalletContractListSortInputType = {
+  column: WalletContractListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum WalletContractListSortInputTypeColumnEnum {
+  Id = 'id',
+  Name = 'name',
+  Address = 'address',
+  CreatedAt = 'createdAt'
+}
+
+export type WalletContractListType = {
+  __typename?: 'WalletContractListType'
+  /** Elements */
+  list?: Maybe<Array<ContractType>>
+  pagination: Pagination
 }
 
 export type WalletListFilterInputType = {
@@ -354,6 +696,32 @@ export type WalletListType = {
   pagination: Pagination
 }
 
+export type WalletMetricChartFilterInputType = {
+  /** Target contracts */
+  contract?: Maybe<Array<Scalars['UuidType']>>
+  /** Created at equals or greater */
+  dateAfter?: Maybe<Scalars['DateTimeType']>
+  /** Created at less */
+  dateBefore?: Maybe<Scalars['DateTimeType']>
+}
+
+export type WalletMetricChartPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type WalletMetricChartSortInputType = {
+  column: WalletMetricChartSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum WalletMetricChartSortInputTypeColumnEnum {
+  Date = 'date',
+  Value = 'value'
+}
+
 export type WalletType = {
   __typename?: 'WalletType'
   /** Identificator */
@@ -366,45 +734,45 @@ export type WalletType = {
   address: Scalars['String']
   /** Public key */
   publicKey: Scalars['String']
+  contracts: WalletContractListType
+  metricChart: Array<MetricChartType>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
 
-export type ProtocolContractFragmentFragment = {
-  __typename?: 'ContractType'
-} & Pick<
-  ContractType,
-  | 'id'
-  | 'blockchain'
-  | 'network'
-  | 'address'
-  | 'name'
-  | 'description'
-  | 'link'
-  | 'hidden'
-  | 'createdAt'
->
+export type WalletTypeContractsArgs = {
+  filter?: Maybe<WalletContractListFilterInputType>
+  sort?: Maybe<Array<WalletContractListSortInputType>>
+  pagination?: Maybe<WalletContractListPaginationInputType>
+}
+
+export type WalletTypeMetricChartArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<WalletMetricChartFilterInputType>
+  sort?: Maybe<Array<WalletMetricChartSortInputType>>
+  pagination?: Maybe<WalletMetricChartPaginationInputType>
+}
 
 export type ProtocolCreateMutationVariables = Exact<{
   input: ProtocolCreateInputType
-  contractFilter?: Maybe<ContractListFilterInputType>
-  contractSort?: Maybe<
-    Array<ContractListSortInputType> | ContractListSortInputType
-  >
-  contractPagination?: Maybe<ContractListPaginationInputType>
 }>
 
 export type ProtocolCreateMutation = { __typename?: 'Mutation' } & {
   protocolCreate: { __typename?: 'ProtocolType' } & ProtocolFragmentFragment
 }
 
+export type ProtocolDeleteMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type ProtocolDeleteMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'protocolDelete'
+>
+
 export type ProtocolQueryVariables = Exact<{
   filter: ProtocolFilterInputType
-  contractFilter?: Maybe<ContractListFilterInputType>
-  contractSort?: Maybe<
-    Array<ContractListSortInputType> | ContractListSortInputType
-  >
-  contractPagination?: Maybe<ContractListPaginationInputType>
 }>
 
 export type ProtocolQuery = { __typename?: 'Query' } & {
@@ -417,11 +785,6 @@ export type ProtocolsQueryVariables = Exact<{
     Array<ProtocolListSortInputType> | ProtocolListSortInputType
   >
   protocolPagination?: Maybe<ProtocolListPaginationInputType>
-  contractFilter?: Maybe<ContractListFilterInputType>
-  contractSort?: Maybe<
-    Array<ContractListSortInputType> | ContractListSortInputType
-  >
-  contractPagination?: Maybe<ContractListPaginationInputType>
 }>
 
 export type ProtocolsQuery = { __typename?: 'Query' } & {
@@ -433,14 +796,13 @@ export type ProtocolsQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type ProtocolMetricChartFragment = {
+  __typename?: 'MetricChartType'
+} & Pick<MetricChartType, 'date' | 'min' | 'max' | 'avg' | 'sum' | 'count'>
+
 export type ProtocolUpdateMutationVariables = Exact<{
   id: Scalars['UuidType']
   input: ProtocolUpdateInputType
-  contractFilter?: Maybe<ContractListFilterInputType>
-  contractSort?: Maybe<
-    Array<ContractListSortInputType> | ContractListSortInputType
-  >
-  contractPagination?: Maybe<ContractListPaginationInputType>
 }>
 
 export type ProtocolUpdateMutation = { __typename?: 'Mutation' } & {
@@ -457,16 +819,79 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'link'
   | 'hidden'
   | 'createdAt'
-> & {
-    contracts: { __typename?: 'ContractListType' } & {
-      list?: Maybe<
-        Array<
-          { __typename?: 'ContractType' } & ProtocolContractFragmentFragment
+>
+
+export type StakingContractCreateMutationVariables = Exact<{
+  protocol: Scalars['UuidType']
+  input: ContractCreateInputType
+}>
+
+export type StakingContractCreateMutation = { __typename?: 'Mutation' } & {
+  contractCreate: {
+    __typename?: 'ContractType'
+  } & StakingContractFragmentFragment
+}
+
+export type StakingContractDeleteMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type StakingContractDeleteMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'contractDelete'
+>
+
+export type StakingContractListQueryVariables = Exact<{
+  filter: ProtocolFilterInputType
+  contractFilter?: Maybe<ContractListFilterInputType>
+  contractSort?: Maybe<
+    Array<ContractListSortInputType> | ContractListSortInputType
+  >
+  contractPagination?: Maybe<ContractListPaginationInputType>
+}>
+
+export type StakingContractListQuery = { __typename?: 'Query' } & {
+  protocol?: Maybe<
+    { __typename?: 'ProtocolType' } & {
+      contracts: { __typename?: 'ContractListType' } & {
+        list?: Maybe<
+          Array<
+            { __typename?: 'ContractType' } & StakingContractFragmentFragment
+          >
         >
-      >
-      pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+        pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+      }
     }
-  }
+  >
+}
+
+export type StakingContractUpdateMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: ContractUpdateInputType
+}>
+
+export type StakingContractUpdateMutation = { __typename?: 'Mutation' } & {
+  contractUpdate: {
+    __typename?: 'ContractType'
+  } & StakingContractFragmentFragment
+}
+
+export type StakingContractFragmentFragment = {
+  __typename?: 'ContractType'
+} & Pick<
+  ContractType,
+  | 'id'
+  | 'blockchain'
+  | 'network'
+  | 'address'
+  | 'name'
+  | 'description'
+  | 'link'
+  | 'hidden'
+  | 'createdAt'
+  | 'adapter'
+  | 'protocolId'
+>
 
 export type MeQueryVariables = Exact<{
   filter?: Maybe<WalletListFilterInputType>

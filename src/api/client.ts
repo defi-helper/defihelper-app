@@ -16,7 +16,7 @@ export const getAPIClient = memoize(() => {
   return createClient({
     url,
     fetchOptions: () => {
-      const sid = sidUtils.getSid()
+      const sid = sidUtils.get()
 
       return sid
         ? {

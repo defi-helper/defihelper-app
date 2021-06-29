@@ -22,7 +22,9 @@ export const $protocol = protocolDetailDomain
   })
   .on(fetchProtocolFx.doneData, (_, payload) => payload)
 
-export const Gate = createGate<{ protocolId: string }>()
+export const Gate = createGate<{ protocolId: string }>({
+  domain: protocolDetailDomain
+})
 
 sample({
   clock: Gate.open,

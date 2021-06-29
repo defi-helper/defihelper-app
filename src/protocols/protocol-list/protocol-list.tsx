@@ -2,10 +2,13 @@ import { makeStyles, Paper } from '@material-ui/core'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useGate, useStore } from 'effector-react'
 import Button from '@material-ui/core/Button'
+import { useMemo } from 'react'
 
 import { MainLayout } from '~/layouts'
 import { paths } from '~/paths'
-import { Can } from '~/users'
+import { Can, useAbility } from '~/users'
+import { useDialog } from '~/common/dialog'
+import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as model from './protocol-list.model'
 
 export type ProtocolListProps = unknown
@@ -48,10 +51,32 @@ const useStyles = makeStyles(() => ({
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const classes = useStyles()
 
+  const ability = useAbility()
+
+  const [openConfirm] = useDialog(ConfirmDialog)
+
   const loading = useStore(model.fetchProtocolListFx.pending)
   const protocolList = useStore(model.$protocolList)
 
+  const deleteLoading = useStore(model.deleteProtocolFx.pending)
+
   useGate(model.Gate)
+
+  const handleOpenConfirm = async (id: string) => {
+    try {
+      await openConfirm()
+
+      await model.deleteProtocolFx(id)
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
+
+  const protocols = useMemo(
+    () =>
+      protocolList.list?.filter((protocol) => ability.can('read', protocol)),
+    [protocolList, ability]
+  )
 
   return (
     <MainLayout>
@@ -71,14 +96,14 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
             <Paper className={classes.card}>loading...</Paper>
           </li>
         )}
-        {!loading && !protocolList.list?.length && (
+        {!loading && !protocols?.length && (
           <li>
-            <Paper className={classes.card}>protocols is empty</Paper>
+            <Paper className={classes.card}>no protocols found</Paper>
           </li>
         )}
         {!loading &&
-          Boolean(protocolList.list?.length) &&
-          protocolList.list?.map((protocol) => (
+          protocols &&
+          protocols.map((protocol) => (
             <li key={protocol.id} className={classes.item}>
               <ReactRouterLink
                 to={paths.protocols.detail(protocol.id)}
@@ -91,15 +116,26 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
                   </div>
                 </Paper>
               </ReactRouterLink>
-              <Can I="update" an="Protocol">
+              <Can I="update" a="Protocol">
                 <Button
                   variant="contained"
                   color="primary"
                   component={ReactRouterLink}
                   to={paths.protocols.update(protocol.id)}
                   className={classes.edit}
+                  disabled={deleteLoading}
                 >
                   Edit
+                </Button>
+              </Can>
+              <Can I="delete" a="Protocol">
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  disabled={deleteLoading}
+                  onClick={() => handleOpenConfirm(protocol.id)}
+                >
+                  Delete
                 </Button>
               </Can>
             </li>

@@ -2,6 +2,8 @@ import { getAPIClient } from '~/api'
 import {
   ProtocolCreateMutation,
   ProtocolCreateMutationVariables,
+  ProtocolDeleteMutation,
+  ProtocolDeleteMutationVariables,
   ProtocolQuery,
   ProtocolQueryVariables,
   ProtocolsQuery,
@@ -9,11 +11,16 @@ import {
   ProtocolUpdateMutation,
   ProtocolUpdateMutationVariables
 } from '~/graphql/_generated-types'
-import { PROTOCOLS, PROTOCOL_CREATE, PROTOCOL_DETAIL } from './graphql'
+import {
+  PROTOCOLS,
+  PROTOCOL_CREATE,
+  PROTOCOL_DELETE,
+  PROTOCOL_DETAIL
+} from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 
 export const protocolsApi = {
-  protocolsList: (variables: ProtocolsQueryVariables) =>
+  protocolList: (variables: ProtocolsQueryVariables) =>
     getAPIClient()
       .query<ProtocolsQuery, ProtocolsQueryVariables>(PROTOCOLS, variables)
       .toPromise()
@@ -25,7 +32,7 @@ export const protocolsApi = {
       .toPromise()
       .then(({ data }) => data?.protocol),
 
-  protocolsCreate: (variables: ProtocolCreateMutationVariables) =>
+  protocolCreate: (variables: ProtocolCreateMutationVariables) =>
     getAPIClient()
       .mutation<ProtocolCreateMutation, ProtocolCreateMutationVariables>(
         PROTOCOL_CREATE,
@@ -34,12 +41,21 @@ export const protocolsApi = {
       .toPromise()
       .then(({ data }) => data?.protocolCreate),
 
-  protocolsUpdate: (variables: ProtocolUpdateMutationVariables) =>
+  protocolUpdate: (variables: ProtocolUpdateMutationVariables) =>
     getAPIClient()
       .mutation<ProtocolUpdateMutation, ProtocolUpdateMutationVariables>(
         PROTOCOL_UPDATE,
         variables
       )
       .toPromise()
-      .then(({ data }) => data?.protocolUpdate)
+      .then(({ data }) => data?.protocolUpdate),
+
+  protocolDelete: (id: string) =>
+    getAPIClient()
+      .mutation<ProtocolDeleteMutation, ProtocolDeleteMutationVariables>(
+        PROTOCOL_DELETE,
+        { id }
+      )
+      .toPromise()
+      .then(({ data }) => data?.protocolDelete)
 }

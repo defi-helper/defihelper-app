@@ -1,7 +1,7 @@
 import { gql } from '@urql/core'
 
-export const PROTOCOL_CONTRACT_FRAGMENT = gql`
-  fragment protocolContractFragment on ContractType {
+export const STAKING_CONTRACT_FRAGMENT = gql`
+  fragment stakingContractFragment on ContractType {
     id
     blockchain
     network
@@ -11,5 +11,7 @@ export const PROTOCOL_CONTRACT_FRAGMENT = gql`
     link
     hidden
     createdAt
+    adapter
+    protocolId
   }
 `
