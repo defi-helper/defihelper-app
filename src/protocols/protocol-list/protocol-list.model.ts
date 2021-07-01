@@ -1,12 +1,8 @@
 import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
-import { ProtocolsQuery } from '~/graphql/_generated-types'
-import {
-  $wallet,
-  activateWalletFx,
-  updateWalletFx
-} from '~/wallets/networks/network.model'
+import { ProtocolFragmentFragment } from '~/graphql/_generated-types'
+import { networkModel } from '~/wallets/networks'
 import { protocolsApi } from '../common'
 
 export const protocolListDomain = createDomain('protocolList')
@@ -32,33 +28,24 @@ export const deleteProtocolFx = protocolListDomain.createEffect({
 })
 
 export const $protocolList = protocolListDomain
-  .createStore<ProtocolsQuery['protocols']>(
-    {
-      list: [],
-      pagination: {
-        count: 0
-      }
-    },
-    {
-      name: 'protocols'
-    }
-  )
-  .on(fetchProtocolListFx.doneData, (_, payload) => payload)
-  .on(deleteProtocolFx.doneData, (state, payload) => {
-    const list = state.list?.filter(({ id }) => id !== payload)
-
-    return {
-      ...state,
-      list
-    }
+  .createStore<ProtocolFragmentFragment[]>([], {
+    name: 'protocols'
   })
+  .on(fetchProtocolListFx.doneData, (_, payload) => payload)
+  .on(deleteProtocolFx.doneData, (state, payload) =>
+    state.filter(({ id }) => id !== payload)
+  )
 
 export const Gate = createGate({
   domain: protocolListDomain
 })
 
 sample({
-  source: $wallet,
-  clock: [Gate.open, activateWalletFx.doneData, updateWalletFx.doneData],
+  source: networkModel.$wallet,
+  clock: [
+    Gate.open,
+    networkModel.activateWalletFx.doneData,
+    networkModel.updateWalletFx.doneData
+  ],
   target: fetchProtocolListFx
 })

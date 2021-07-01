@@ -56,8 +56,16 @@ export const ProtocolDetail: React.VFC<ProtocolDetailProps> = () => {
           </div>
           <Typography gutterBottom>{protocol.description}</Typography>
           <Typography gutterBottom component="div">
-            <div>Adapter: {protocol.adapter}</div>
-            <div>Icon: {protocol.icon}</div>
+            {protocol.icon && (
+              <div>
+                <img
+                  src={protocol.icon}
+                  alt={protocol.name}
+                  width="30"
+                  height="30"
+                />
+              </div>
+            )}
           </Typography>
         </div>
       )}

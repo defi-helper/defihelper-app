@@ -1,7 +1,7 @@
 import { createClient } from '@urql/core'
 import memoize from 'fast-memoize'
-import { sidUtils } from '~/common/sid-utils'
 
+import { sidUtils } from '~/users/common/sid-utils'
 import { config } from '~/config'
 
 const ERROR_MESSAGE = 'API_URL is required'

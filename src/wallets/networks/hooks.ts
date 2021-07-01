@@ -93,7 +93,7 @@ export const useNetwork = () => {
     const handleDeactivate = () => {
       if (!wallet.connector) return
 
-      diactivateWalletFx(wallet.connector).then(() => $wallet.reset())
+      diactivateWalletFx(wallet.connector)
     }
 
     const handleError = (error: Error) => {

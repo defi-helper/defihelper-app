@@ -2,7 +2,7 @@ import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
 import { MeQuery } from '~/graphql/_generated-types'
-import { signMessageFx } from '~/wallets/networks'
+import { networkModel } from '~/wallets/networks'
 import { userApi } from './common'
 
 export const userDomain = createDomain('user')
@@ -17,7 +17,7 @@ export const $user = userDomain
     name: 'store'
   })
   .on(fetchUserFx.doneData, (_, payload) => payload)
-  .on(signMessageFx.doneData, (_, payload) => payload)
+  .on(networkModel.signMessageFx.doneData, (_, payload) => payload)
 
 export const Gate = createGate()
 

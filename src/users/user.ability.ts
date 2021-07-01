@@ -11,6 +11,8 @@ export type Actions = 'create' | 'read' | 'update' | 'delete'
 export type Subjects =
   | ProtocolFragmentFragment
   | StakingContractFragmentFragment
+  | 'AllNetworks'
+  | 'Networks'
   | 'Protocol'
   | 'Contract'
   | 'all'
@@ -22,9 +24,9 @@ export const defineRulesFor = (role?: string) => {
   const { can, rules } = new AbilityBuilder(AppAbility)
 
   if (role === 'admin') {
-    can(['create', 'delete', 'read', 'update'], 'all')
+    can(['create', 'delete', 'read', 'update'], ['all', 'AllNetworks'])
   } else {
-    can(['read'], ['Contract', 'Protocol'], {
+    can(['read'], ['Contract', 'Protocol', 'Networks'], {
       hidden: false
     })
   }
