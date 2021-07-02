@@ -24,7 +24,7 @@ export const protocolsApi = {
     getAPIClient()
       .query<ProtocolsQuery, ProtocolsQueryVariables>(PROTOCOLS, variables)
       .toPromise()
-      .then(({ data }) => data?.protocols),
+      .then(({ data }) => data?.protocols.list ?? []),
 
   protocolDetail: (variables: ProtocolQueryVariables) =>
     getAPIClient()

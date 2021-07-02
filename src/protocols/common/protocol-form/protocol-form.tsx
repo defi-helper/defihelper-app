@@ -4,6 +4,9 @@ import TextField from '@material-ui/core/TextField'
 import Checkbox from '@material-ui/core/Checkbox'
 import Button from '@material-ui/core/Button'
 import { FormLabel, makeStyles } from '@material-ui/core'
+import { yupResolver } from '@hookform/resolvers/yup'
+
+import { protocolFormSchema } from './protocol-form.validation'
 
 type FormValues = {
   name: string
@@ -32,7 +35,10 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
-  const { register, handleSubmit, setValue, reset } = useForm<FormValues>()
+  const { register, handleSubmit, setValue, reset, formState } =
+    useForm<FormValues>({
+      resolver: yupResolver(protocolFormSchema)
+    })
 
   const classes = useStyles()
 
@@ -54,30 +60,40 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
         label="Name"
         inputProps={register('name')}
         disabled={props.loading}
+        error={Boolean(formState.errors.name)}
+        helperText={formState.errors.name?.message}
       />
       <TextField
         type="text"
         label="Description"
         inputProps={register('description')}
         disabled={props.loading}
+        error={Boolean(formState.errors.description)}
+        helperText={formState.errors.description?.message}
       />
       <TextField
         type="text"
         label="Icon"
         inputProps={register('icon')}
         disabled={props.loading}
+        error={Boolean(formState.errors.icon)}
+        helperText={formState.errors.icon?.message}
       />
       <TextField
         type="text"
         label="Adapter"
         inputProps={register('adapter')}
         disabled={props.loading}
+        error={Boolean(formState.errors.adapter)}
+        helperText={formState.errors.adapter?.message}
       />
       <TextField
         type="text"
         label="Link"
         inputProps={register('link')}
         disabled={props.loading}
+        error={Boolean(formState.errors.link)}
+        helperText={formState.errors.link?.message}
       />
       <FormLabel>
         Hidden

@@ -73,14 +73,13 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   }
 
   const protocols = useMemo(
-    () =>
-      protocolList.list?.filter((protocol) => ability.can('read', protocol)),
+    () => protocolList.filter((protocol) => ability.can('read', protocol)),
     [protocolList, ability]
   )
 
   return (
     <MainLayout>
-      <Can I="create" an="Protocol">
+      <Can I="create" a="Protocol">
         <Button
           component={ReactRouterLink}
           variant="contained"
@@ -110,6 +109,15 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
                 className={classes.link}
               >
                 <Paper className={classes.card}>
+                  {protocol.icon && (
+                    <img
+                      src={protocol.icon}
+                      alt={protocol.name}
+                      width="30"
+                      height="30"
+                      className={classes.mr}
+                    />
+                  )}
                   <div className={classes.mr}>{protocol.name}</div>
                   <div className={`${classes.mr} ${classes.tokens}`}>
                     {protocol.createdAt}

@@ -20,15 +20,16 @@ import { Link, useHistory } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 
 import { paths } from '~/paths'
-import { useQueryParams } from '~/common/hooks'
+import { useAbility } from '~/users'
 import { useDialog } from '~/common/dialog'
 import { WalletList } from '~/wallets/wallet-list'
 import { cutAccount } from '~/common/cut-account'
 import { WalletDetail } from '~/wallets/wallet-detail'
-import { useNetworkProvider } from '~/wallets/networks'
+import { networkModel } from '~/wallets/networks'
+import { config } from '~/config'
 
 export type MainLayoutProps = unknown
 
@@ -70,19 +71,23 @@ const useStyles = makeStyles((theme) => ({
 const NETWORKS = [
   {
     title: 'All',
-    query: ''
+    chainIds: [] as number[],
+    type: 'AllNetworks' as const
   },
   {
     title: 'Ethereum',
-    query: 'eth'
+    chainIds: config.CHAIN_ETHEREUM_IDS,
+    type: 'Networks' as const
   },
   {
     title: 'Binance Smart Chain',
-    query: 'bsc'
+    chainIds: config.CHAIN_BINANCE_IDS,
+    type: 'Networks' as const
   },
   {
     title: 'Waves',
-    query: 'waves'
+    chainIds: [config.CHAIN_WAVES_ID],
+    type: 'Networks' as const
   }
 ]
 
@@ -117,7 +122,9 @@ const MENU = [
 ]
 
 export const MainLayout: React.FC<MainLayoutProps> = (props) => {
-  const { account } = useNetworkProvider()
+  const { account, chainId = 1 } = networkModel.useNetworkProvider()
+
+  const ability = useAbility()
 
   const classes = useStyles()
 
@@ -131,27 +138,12 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
     setAnchorEl(null)
   }
 
-  const handleChangeNetwork = (search: string) => {
-    history.push({
-      pathname: paths.protocols.list,
-      search: search ? `network=${search}` : undefined
-    })
-  }
-
   const handleChangeLocation = (path: string) =>
     history.push(path.toLowerCase())
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget)
   }
-
-  const queryParams = useQueryParams()
-
-  const currentNetwork = useMemo(
-    () =>
-      NETWORKS.find(({ query }) => query === queryParams.get('network'))?.title,
-    [queryParams]
-  )
 
   const [openWalletList, closeWalletList] = useDialog(WalletList)
   const [openChangeWallet] = useDialog(WalletDetail)
@@ -165,6 +157,10 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
     openChangeWallet({ onChange: handleOpenWalletList }).catch((error: Error) =>
       console.error(error.message)
     )
+
+  const currentNetwork = NETWORKS.find(({ chainIds }) =>
+    chainIds.includes(chainId)
+  )
 
   return (
     <div className={classes.root}>
@@ -196,7 +192,7 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
               onClick={handleClick}
               color="inherit"
             >
-              {currentNetwork ?? 'All'}
+              {currentNetwork?.title}
             </Button>
           </div>
           <Menu
@@ -204,13 +200,10 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            {NETWORKS.map((networkItem) => (
-              <MenuItem
-                onClick={() => handleChangeNetwork(networkItem.query)}
-                key={networkItem.title}
-              >
-                {networkItem.title}
-              </MenuItem>
+            {NETWORKS.filter((networkItem) =>
+              ability.can('read', networkItem.type)
+            ).map((networkItem) => (
+              <MenuItem key={networkItem.title}>{networkItem.title}</MenuItem>
             ))}
           </Menu>
         </Toolbar>

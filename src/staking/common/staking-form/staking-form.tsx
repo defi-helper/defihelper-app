@@ -5,8 +5,10 @@ import { FormLabel, makeStyles } from '@material-ui/core'
 import { useForm } from 'react-hook-form'
 import MenuItem from '@material-ui/core/MenuItem'
 import { useEffect } from 'react'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import { BlockchainEnum } from '~/graphql/_generated-types'
+import { stakingFormSchema } from './staking-form.validation'
 
 type FormValues = {
   blockchain: BlockchainEnum
@@ -39,7 +41,10 @@ const useStyles = makeStyles((theme) => ({
 export const StakingForm: React.FC<StakingFormProps> = (props) => {
   const classes = useStyles()
 
-  const { register, setValue, handleSubmit, reset } = useForm<FormValues>()
+  const { register, setValue, handleSubmit, reset, formState } =
+    useForm<FormValues>({
+      resolver: yupResolver(stakingFormSchema)
+    })
 
   const hidden = register('hidden')
 
@@ -64,6 +69,8 @@ export const StakingForm: React.FC<StakingFormProps> = (props) => {
         defaultValue={props.defaultValues?.name}
         {...register('name')}
         disabled={props.loading}
+        error={Boolean(formState.errors.name)}
+        helperText={formState.errors.name?.message}
       />
       <TextField
         type="text"
@@ -71,6 +78,8 @@ export const StakingForm: React.FC<StakingFormProps> = (props) => {
         defaultValue={props.defaultValues?.description}
         {...register('description')}
         disabled={props.loading}
+        error={Boolean(formState.errors.description)}
+        helperText={formState.errors.description?.message}
       />
       <TextField
         type="text"
@@ -78,6 +87,8 @@ export const StakingForm: React.FC<StakingFormProps> = (props) => {
         defaultValue={props.defaultValues?.adapter}
         {...register('adapter')}
         disabled={props.loading}
+        error={Boolean(formState.errors.adapter)}
+        helperText={formState.errors.adapter?.message}
       />
       <TextField
         type="text"
@@ -85,6 +96,8 @@ export const StakingForm: React.FC<StakingFormProps> = (props) => {
         defaultValue={props.defaultValues?.address}
         {...register('address')}
         disabled={props.loading}
+        error={Boolean(formState.errors.address)}
+        helperText={formState.errors.address?.message}
       />
       <TextField
         type="text"
@@ -92,6 +105,8 @@ export const StakingForm: React.FC<StakingFormProps> = (props) => {
         defaultValue={props.defaultValues?.network}
         {...register('network')}
         disabled={props.loading}
+        error={Boolean(formState.errors.network)}
+        helperText={formState.errors.network?.message}
       />
       <TextField
         type="text"
@@ -103,6 +118,8 @@ export const StakingForm: React.FC<StakingFormProps> = (props) => {
         disabled={props.loading}
         inputRef={blockChain.ref}
         {...blockChain}
+        error={Boolean(formState.errors.blockchain)}
+        helperText={formState.errors.blockchain?.message}
       >
         {Object.entries(BlockchainEnum).map(([label, value]) => (
           <MenuItem key={label} value={value}>
@@ -116,6 +133,8 @@ export const StakingForm: React.FC<StakingFormProps> = (props) => {
         defaultValue={props.defaultValues?.link}
         {...register('link')}
         disabled={props.loading}
+        error={Boolean(formState.errors.link)}
+        helperText={formState.errors.link?.message}
       />
       <FormLabel>
         Hidden
