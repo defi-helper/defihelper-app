@@ -56,7 +56,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const [openConfirm] = useDialog(ConfirmDialog)
 
   const loading = useStore(model.fetchProtocolListFx.pending)
-  const protocolList = useStore(model.$protocols)
+  const protocolList = useStore(model.$protocolList)
 
   useGate(model.Gate)
 
@@ -64,7 +64,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     try {
       await openConfirm()
 
-      model.deleteProtocol(id)
+      await model.deleteProtocolFx(id)
     } catch (error) {
       console.error(error.message)
     }
@@ -129,7 +129,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
                   component={ReactRouterLink}
                   to={paths.protocols.update(protocol.id)}
                   className={classes.edit}
-                  disabled={protocol.deleteInProcess}
+                  disabled={protocol.deleting}
                 >
                   Edit
                 </Button>
@@ -138,7 +138,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
                 <Button
                   variant="contained"
                   color="secondary"
-                  disabled={protocol.deleteInProcess}
+                  disabled={protocol.deleting}
                   onClick={() => handleOpenConfirm(protocol.id)}
                 >
                   Delete

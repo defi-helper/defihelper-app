@@ -1,4 +1,4 @@
-import { combine, createDomain, sample } from 'effector-logger'
+import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
 import { ProtocolFragmentFragment } from '~/graphql/_generated-types'
@@ -14,7 +14,7 @@ export const fetchProtocolListFx = protocolListDomain.createEffect({
 
 const ERROR = 'Not deleted'
 
-const deleteProtocolFx = protocolListDomain.createEffect({
+export const deleteProtocolFx = protocolListDomain.createEffect({
   name: 'deleteProtocol',
   handler: async (id: string) => {
     const isDeleted = await protocolsApi.protocolDelete(id)
@@ -27,42 +27,21 @@ const deleteProtocolFx = protocolListDomain.createEffect({
   }
 })
 
-export const deleteProtocol =
-  protocolListDomain.createEvent<string>('deleteProtocol')
-
-const $protocolDeleteInProcessIds = protocolListDomain
-  .createStore<Record<string, boolean>>(
-    {},
-    {
-      name: '$protocolDeleteInProcessIds'
-    }
-  )
-  .on(deleteProtocol, (state, payload) => ({ ...state, [payload]: true }))
-
-sample({
-  clock: deleteProtocol,
-  target: deleteProtocolFx
-})
-
-const $protocolList = protocolListDomain
-  .createStore<ProtocolFragmentFragment[]>([], {
+export const $protocolList = protocolListDomain
+  .createStore<(ProtocolFragmentFragment & { deleting: boolean })[]>([], {
     name: 'protocols'
   })
-  .on(fetchProtocolListFx.doneData, (_, payload) => payload)
-  .on(deleteProtocolFx.doneData, (state, payload) =>
+  .on(fetchProtocolListFx.doneData, (_, payload) =>
+    payload.map((protocol) => ({ ...protocol, deleting: false }))
+  )
+  .on(deleteProtocolFx, (state, payload) =>
+    state.map((protocol) =>
+      protocol.id === payload ? { ...protocol, deleting: true } : protocol
+    )
+  )
+  .on(deleteProtocolFx.done, (state, { params: payload }) =>
     state.filter(({ id }) => id !== payload)
   )
-
-export const $protocols = combine(
-  $protocolList,
-  $protocolDeleteInProcessIds,
-  (protocolList, protocolDeleteInProcessIds) => {
-    return protocolList.map((protocol) => ({
-      ...protocol,
-      deleteInProcess: Boolean(protocolDeleteInProcessIds[protocol.id])
-    }))
-  }
-)
 
 export const Gate = createGate({
   domain: protocolListDomain
