@@ -6,7 +6,7 @@ import {
   Redirect
 } from 'react-router-dom'
 
-// import { PrivateRoute } from './private-route'
+import { PrivateRoute } from './private-route'
 import { CanRoute } from './can-route'
 import { paths } from '~/paths'
 import { history } from '~/common/history'
@@ -16,6 +16,7 @@ import { ProtocolCreate } from '~/protocols/protocol-create'
 import { ProtocolUpdate } from '~/protocols/protocol-update'
 import { StakingCreate } from '~/staking/staking-create'
 import { StakingUpdate } from '~/staking/staking-update'
+import { Dashboard } from '../dashboard'
 
 export type RouterProps = unknown
 
@@ -58,6 +59,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.protocols.list}>
           <ProtocolList />
         </Route>
+        <PrivateRoute path={paths.dashboard}>
+          <Dashboard />
+        </PrivateRoute>
       </Switch>
     </BrowserRouter>
   )

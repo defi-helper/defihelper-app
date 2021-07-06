@@ -13,5 +13,7 @@ export const paths = {
       `/protocols/${protocolId}/staking/create` as const,
     update: (protocolId = ':protocolId', stakingId = ':stakingId') =>
       `/protocols/${protocolId}/staking/${stakingId}` as const
-  }
+  },
+
+  dashboard: '/dashboard'
 } as const

@@ -7,6 +7,7 @@ import { useGate, useStore } from 'effector-react'
 
 import { MainLayout } from '~/layouts'
 import { StakingList } from '~/staking/staking-list'
+import { Chart } from '~/common/chart'
 import * as model from './protocol-detail.model'
 
 export type ProtocolDetailProps = unknown
@@ -69,6 +70,14 @@ export const ProtocolDetail: React.VFC<ProtocolDetailProps> = () => {
           </Typography>
         </div>
       )}
+      <Chart
+        dataFields={{
+          valueY: 'sum',
+          dateX: 'date'
+        }}
+        data={protocol?.metricChart}
+        tooltipText="{sum}"
+      />
       <Typography gutterBottom>Staking contracts</Typography>
       <StakingList protocolId={params.protocolId} />
     </MainLayout>
