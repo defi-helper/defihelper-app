@@ -19,12 +19,13 @@ type FormValues = {
   description?: string | null
   link?: string | null
   hidden?: boolean | null
+  layout: string
 }
 
 export type StakingFormProps = {
   loading: boolean
   onSubmit: (formValues: FormValues) => void
-  defaultValues?: FormValues
+  defaultValues?: Omit<FormValues, 'layout'> & { layout?: string }
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -38,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export const StakingForm: React.FC<StakingFormProps> = (props) => {
+export const StakingForm: React.VFC<StakingFormProps> = (props) => {
   const classes = useStyles()
 
   const { register, setValue, handleSubmit, reset, formState } =
@@ -135,6 +136,15 @@ export const StakingForm: React.FC<StakingFormProps> = (props) => {
         disabled={props.loading}
         error={Boolean(formState.errors.link)}
         helperText={formState.errors.link?.message}
+      />
+      <TextField
+        type="text"
+        label="Layout"
+        defaultValue={props.defaultValues?.layout}
+        {...register('layout')}
+        disabled={props.loading}
+        error={Boolean(formState.errors.layout)}
+        helperText={formState.errors.layout?.message}
       />
       <FormLabel>
         Hidden

@@ -23,4 +23,5 @@ interface Window {
   }
   dataLayer?: string[]
   ym?: (id: number, type: string, event: string) => void
+  axios: unknown
 }

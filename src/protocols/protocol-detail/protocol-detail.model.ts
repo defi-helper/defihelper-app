@@ -1,8 +1,8 @@
 import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
-import { ProtocolQuery } from '~/graphql/_generated-types'
-import { protocolsApi } from '../common'
+import { MetricGroupEnum, ProtocolQuery } from '~/graphql/_generated-types'
+import { protocolsApi } from '~/protocols/common'
 
 export const protocolDetailDomain = createDomain('protocolList')
 
@@ -12,7 +12,9 @@ export const fetchProtocolFx = protocolDetailDomain.createEffect({
     protocolsApi.protocolDetail({
       filter: {
         id: params.protocolId
-      }
+      },
+      metric: 'tvl',
+      metricGroup: MetricGroupEnum.Day
     })
 })
 

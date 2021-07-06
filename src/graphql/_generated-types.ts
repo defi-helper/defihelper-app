@@ -60,6 +60,10 @@ export type ContractCreateInputType = {
   address: Scalars['String']
   /** Adapter name */
   adapter: Scalars['String']
+  /** Contract deployment block number */
+  deployBlockNumber?: Maybe<Scalars['String']>
+  /** Layout name */
+  layout: Scalars['String']
   /** Name */
   name: Scalars['String']
   /** Description */
@@ -133,12 +137,16 @@ export type ContractType = {
   protocolId: Scalars['UuidType']
   /** Adapter name */
   adapter: Scalars['String']
+  /** Layout name */
+  layout: Scalars['String']
   /** Blockchain type */
   blockchain: BlockchainEnum
   /** Blockchain network id */
   network: Scalars['String']
   /** Address */
   address: Scalars['String']
+  /** Contract deployment block number */
+  deployBlockNumber?: Maybe<Scalars['String']>
   /** Name */
   name: Scalars['String']
   /** Description */
@@ -167,8 +175,12 @@ export type ContractUpdateInputType = {
   network?: Maybe<Scalars['String']>
   /** Address */
   address?: Maybe<Scalars['String']>
+  /** Contract deployment block number */
+  deployBlockNumber?: Maybe<Scalars['String']>
   /** Adapter name */
   adapter?: Maybe<Scalars['String']>
+  /** Layout name */
+  layout?: Maybe<Scalars['String']>
   /** Name */
   name?: Maybe<Scalars['String']>
   /** Description */
@@ -531,6 +543,84 @@ export enum SortOrderEnum {
   Desc = 'desc'
 }
 
+export type UserBlockchainType = {
+  __typename?: 'UserBlockchainType'
+  name: Scalars['String']
+  /** Blockchain type */
+  blockchain: BlockchainEnum
+  /** Blockchain network id */
+  network: Scalars['String']
+  wallets: UserBlockchainWalletListType
+  tokenMetricChart: Array<MetricChartType>
+}
+
+export type UserBlockchainTypeWalletsArgs = {
+  filter?: Maybe<UserBlockchainWalletListFilterInputType>
+  sort?: Maybe<Array<UserBlockchainWalletListSortInputType>>
+  pagination?: Maybe<UserBlockchainWalletListPaginationInputType>
+}
+
+export type UserBlockchainTypeTokenMetricChartArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<UserBlockchainWalletTokenMetricChartFilterInputType>
+  sort?: Maybe<Array<UserBlockchainWalletTokenMetricChartSortInputType>>
+  pagination?: Maybe<UserBlockchainWalletTokenMetricChartPaginationInputType>
+}
+
+export type UserBlockchainWalletListFilterInputType = {
+  search?: Maybe<Scalars['String']>
+}
+
+export type UserBlockchainWalletListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserBlockchainWalletListSortInputType = {
+  column: UserBlockchainWalletListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserBlockchainWalletListSortInputTypeColumnEnum {
+  Id = 'id',
+  Address = 'address',
+  CreatedAt = 'createdAt'
+}
+
+export type UserBlockchainWalletListType = {
+  __typename?: 'UserBlockchainWalletListType'
+  /** Elements */
+  list?: Maybe<Array<WalletType>>
+  pagination: Pagination
+}
+
+export type UserBlockchainWalletTokenMetricChartFilterInputType = {
+  /** Created at equals or greater */
+  dateAfter?: Maybe<Scalars['DateTimeType']>
+  /** Created at less */
+  dateBefore?: Maybe<Scalars['DateTimeType']>
+}
+
+export type UserBlockchainWalletTokenMetricChartPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserBlockchainWalletTokenMetricChartSortInputType = {
+  column: UserBlockchainWalletTokenMetricChartSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserBlockchainWalletTokenMetricChartSortInputTypeColumnEnum {
+  Date = 'date',
+  Value = 'value'
+}
+
 export type UserMetricChartFilterInputType = {
   /** Target contracts */
   contract?: Maybe<Array<Scalars['UuidType']>>
@@ -560,11 +650,50 @@ export enum UserMetricChartSortInputTypeColumnEnum {
   Value = 'value'
 }
 
+export type UserMetricsTokenAliasFilterInputType = {
+  id?: Maybe<Array<Scalars['UuidType']>>
+  /** Is stable token */
+  stable?: Maybe<Scalars['Boolean']>
+}
+
 export enum UserRoleEnum {
   /** User */
   User = 'user',
   /** Administrator */
   Admin = 'admin'
+}
+
+export type UserTokenMetricChartFilterInputType = {
+  /** Target token alias */
+  tokenAlias?: Maybe<UserMetricsTokenAliasFilterInputType>
+  /** Target token address */
+  tokenAddress?: Maybe<Array<Scalars['String']>>
+  /** Target contracts */
+  contract?: Maybe<Array<Scalars['UuidType']>>
+  blockchain?: Maybe<BlockchainFilterInputType>
+  /** Target wallets */
+  wallet?: Maybe<Array<Scalars['UuidType']>>
+  /** Created at equals or greater */
+  dateAfter?: Maybe<Scalars['DateTimeType']>
+  /** Created at less */
+  dateBefore?: Maybe<Scalars['DateTimeType']>
+}
+
+export type UserTokenMetricChartPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserTokenMetricChartSortInputType = {
+  column: UserTokenMetricChartSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserTokenMetricChartSortInputTypeColumnEnum {
+  Date = 'date',
+  Value = 'value'
 }
 
 export type UserType = {
@@ -574,7 +703,9 @@ export type UserType = {
   /** Access role */
   role: UserRoleEnum
   wallets: WalletListType
+  blockchains: Array<UserBlockchainType>
   metricChart: Array<MetricChartType>
+  tokenMetricChart: Array<MetricChartType>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -591,6 +722,14 @@ export type UserTypeMetricChartArgs = {
   filter?: Maybe<UserMetricChartFilterInputType>
   sort?: Maybe<Array<UserMetricChartSortInputType>>
   pagination?: Maybe<UserMetricChartPaginationInputType>
+}
+
+export type UserTypeTokenMetricChartArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<UserTokenMetricChartFilterInputType>
+  sort?: Maybe<Array<UserTokenMetricChartSortInputType>>
+  pagination?: Maybe<UserTokenMetricChartPaginationInputType>
 }
 
 export type VoteListFilterInputType = {
@@ -666,8 +805,7 @@ export type WalletContractListType = {
 }
 
 export type WalletListFilterInputType = {
-  blockchain?: Maybe<BlockchainEnum>
-  network?: Maybe<Scalars['String']>
+  blockchain?: Maybe<BlockchainFilterInputType>
   search?: Maybe<Scalars['String']>
 }
 
@@ -722,6 +860,36 @@ export enum WalletMetricChartSortInputTypeColumnEnum {
   Value = 'value'
 }
 
+export type WalletTokenMetricChartFilterInputType = {
+  /** Target token alias */
+  tokenAlias?: Maybe<UserMetricsTokenAliasFilterInputType>
+  /** Target token address */
+  tokenAddress?: Maybe<Array<Scalars['String']>>
+  /** Target contracts */
+  contract?: Maybe<Array<Scalars['UuidType']>>
+  /** Created at equals or greater */
+  dateAfter?: Maybe<Scalars['DateTimeType']>
+  /** Created at less */
+  dateBefore?: Maybe<Scalars['DateTimeType']>
+}
+
+export type WalletTokenMetricChartPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type WalletTokenMetricChartSortInputType = {
+  column: WalletTokenMetricChartSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum WalletTokenMetricChartSortInputTypeColumnEnum {
+  Date = 'date',
+  Value = 'value'
+}
+
 export type WalletType = {
   __typename?: 'WalletType'
   /** Identificator */
@@ -736,6 +904,7 @@ export type WalletType = {
   publicKey: Scalars['String']
   contracts: WalletContractListType
   metricChart: Array<MetricChartType>
+  tokenMetricChart: Array<MetricChartType>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -752,6 +921,88 @@ export type WalletTypeMetricChartArgs = {
   filter?: Maybe<WalletMetricChartFilterInputType>
   sort?: Maybe<Array<WalletMetricChartSortInputType>>
   pagination?: Maybe<WalletMetricChartPaginationInputType>
+}
+
+export type WalletTypeTokenMetricChartArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<WalletTokenMetricChartFilterInputType>
+  sort?: Maybe<Array<WalletTokenMetricChartSortInputType>>
+  pagination?: Maybe<WalletTokenMetricChartPaginationInputType>
+}
+
+export type BlockChainsQueryVariables = Exact<{
+  blockchainMetric: Scalars['MetricColumnType']
+  blockchainGroup: MetricGroupEnum
+  blockchainPagination?: Maybe<UserBlockchainWalletTokenMetricChartPaginationInputType>
+  blockchainSort?: Maybe<
+    | Array<UserBlockchainWalletTokenMetricChartSortInputType>
+    | UserBlockchainWalletTokenMetricChartSortInputType
+  >
+  blockchainWalletMetric: Scalars['MetricColumnType']
+  blockchainWalletGroup: MetricGroupEnum
+  blockchainWalletSort?: Maybe<
+    | Array<WalletTokenMetricChartSortInputType>
+    | WalletTokenMetricChartSortInputType
+  >
+  blockchainWalletPagination?: Maybe<WalletTokenMetricChartPaginationInputType>
+}>
+
+export type BlockChainsQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      blockchains: Array<
+        { __typename?: 'UserBlockchainType' } & Pick<
+          UserBlockchainType,
+          'name' | 'blockchain' | 'network'
+        > & {
+            tokenMetricChart: Array<
+              { __typename?: 'MetricChartType' } & Pick<
+                MetricChartType,
+                'date' | 'sum'
+              >
+            >
+            wallets: { __typename?: 'UserBlockchainWalletListType' } & {
+              list?: Maybe<
+                Array<
+                  { __typename?: 'WalletType' } & {
+                    tokenMetricChart: Array<
+                      { __typename?: 'MetricChartType' } & Pick<
+                        MetricChartType,
+                        'date' | 'sum'
+                      >
+                    >
+                  }
+                >
+              >
+            }
+          }
+      >
+    }
+  >
+}
+
+export type TokenMetricChartQueryVariables = Exact<{
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<UserTokenMetricChartFilterInputType>
+  pagination?: Maybe<UserTokenMetricChartPaginationInputType>
+  sort?: Maybe<
+    Array<UserTokenMetricChartSortInputType> | UserTokenMetricChartSortInputType
+  >
+}>
+
+export type TokenMetricChartQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      tokenMetricChart: Array<
+        { __typename?: 'MetricChartType' } & Pick<
+          MetricChartType,
+          'sum' | 'date'
+        >
+      >
+    }
+  >
 }
 
 export type ProtocolCreateMutationVariables = Exact<{
@@ -773,10 +1024,23 @@ export type ProtocolDeleteMutation = { __typename?: 'Mutation' } & Pick<
 
 export type ProtocolQueryVariables = Exact<{
   filter: ProtocolFilterInputType
+  metric: Scalars['MetricColumnType']
+  metricGroup: MetricGroupEnum
+  metricFilter?: Maybe<ProtocolMetricChartFilterInputType>
+  metricSort?: Maybe<
+    Array<ProtocolMetricChartSortInputType> | ProtocolMetricChartSortInputType
+  >
+  metricPagination?: Maybe<ProtocolMetricChartPaginationInputType>
 }>
 
 export type ProtocolQuery = { __typename?: 'Query' } & {
-  protocol?: Maybe<{ __typename?: 'ProtocolType' } & ProtocolFragmentFragment>
+  protocol?: Maybe<
+    { __typename?: 'ProtocolType' } & {
+      metricChart: Array<
+        { __typename?: 'MetricChartType' } & ProtocolMetricChartFragment
+      >
+    } & ProtocolFragmentFragment
+  >
 }
 
 export type ProtocolsQueryVariables = Exact<{

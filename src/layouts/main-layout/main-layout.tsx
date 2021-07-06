@@ -108,16 +108,19 @@ const PROTOCOLS = [
 
 const MENU = [
   {
-    title: 'Overview',
-    icon: DashboardIcon
+    title: 'Dashboard',
+    icon: DashboardIcon,
+    to: paths.dashboard
   },
   {
     title: 'Favorites',
-    icon: BookmarkIcon
+    icon: BookmarkIcon,
+    to: paths.main
   },
   {
     title: 'Settings',
-    icon: SettingsIcon
+    icon: SettingsIcon,
+    to: paths.main
   }
 ]
 
@@ -248,7 +251,7 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
               <ListItem
                 button
                 key={menuItem.title}
-                onClick={() => handleChangeLocation(menuItem.title)}
+                onClick={() => handleChangeLocation(menuItem.to)}
               >
                 <ListItemIcon>
                   <menuItem.icon />

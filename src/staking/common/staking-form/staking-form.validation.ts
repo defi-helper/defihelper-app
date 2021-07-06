@@ -25,5 +25,6 @@ export const stakingFormSchema = yup.object().shape({
   name: yup.string().required('Required'),
   description: yup.string().optional(),
   link: yup.string().url('Must be url').optional(),
-  hidden: yup.bool().optional()
+  hidden: yup.bool().optional(),
+  layout: yup.string().optional()
 })
