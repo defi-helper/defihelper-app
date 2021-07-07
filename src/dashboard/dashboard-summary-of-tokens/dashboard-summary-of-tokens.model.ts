@@ -2,13 +2,13 @@ import { combine, createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
 import {
-  MetricChartType,
   MetricGroupEnum,
   SortOrderEnum,
   TokenMetricChartQueryVariables,
   UserTokenMetricChartSortInputTypeColumnEnum
 } from '~/graphql/_generated-types'
 import { dashboardApi } from '~/dashboard/common'
+import { Unwrap } from '~/common/types'
 
 const domain = createDomain('dashboardSummaryOfTokens')
 
@@ -58,14 +58,18 @@ export const fetchSummaryOfTokensForLastHourForYesterdayFx =
     summaryOfTokensForLastHourForYesterdayVariables
   )
 
+type SummaryOfTokens = Unwrap<
+  ReturnType<typeof dashboardApi.getTokenMetricChart>
+>
+
 const $summaryOfTokensForLastHour = domain
-  .createStore<Array<Pick<MetricChartType, 'sum' | 'date'>>>([], {
+  .createStore<SummaryOfTokens>([], {
     name: 'summaryOfTokensForLastHour'
   })
   .on(fetchSummaryOfTokensForLastHourFx.doneData, (_, payload) => payload)
 
 const $summaryOfTokensForLastHourForYesterday = domain
-  .createStore<Array<Pick<MetricChartType, 'sum' | 'date'>>>([], {
+  .createStore<SummaryOfTokens>([], {
     name: 'summaryOfTokensForLastHourForYesterday'
   })
   .on(

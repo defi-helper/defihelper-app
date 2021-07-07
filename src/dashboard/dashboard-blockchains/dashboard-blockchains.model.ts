@@ -1,6 +1,7 @@
 import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
+import { Unwrap } from '~/common/types'
 import { dashboardApi } from '~/dashboard/common'
 import {
   MetricGroupEnum,
@@ -28,13 +29,13 @@ const fetchBlockchainsDataFx = domain.createEffect({
 
     return dashboardApi.getBlockchains({
       blockchainMetric: 'usd',
-      blockchainGroup: MetricGroupEnum.Day,
+      blockchainGroup: MetricGroupEnum.Hour,
       blockchainPagination: pagination,
       blockchainSort: {
         ...sort,
         column: UserBlockchainWalletTokenMetricChartSortInputTypeColumnEnum.Date
       },
-      blockchainWalletGroup: MetricGroupEnum.Day,
+      blockchainWalletGroup: MetricGroupEnum.Hour,
       blockchainWalletMetric: 'usd',
       blockchainWalletPagination: pagination,
       blockchainWalletSort: {
@@ -45,12 +46,8 @@ const fetchBlockchainsDataFx = domain.createEffect({
   }
 })
 
-type ExtractTypeFromPromise<T> = T extends Promise<infer Y> ? Y : never
-
 export const $blockchains = domain
-  .createStore<
-    ExtractTypeFromPromise<ReturnType<typeof dashboardApi.getBlockchains>>
-  >([], {
+  .createStore<Unwrap<ReturnType<typeof dashboardApi.getBlockchains>>>([], {
     name: '$dashboardChartOfAllTokens'
   })
   .on(fetchBlockchainsDataFx.doneData, (_, payload) => payload)

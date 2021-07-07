@@ -27,6 +27,10 @@ export const BLOCKCHAINS = gql`
         }
         wallets {
           list {
+            id
+            network
+            blockchain
+            address
             tokenMetricChart(
               metric: $blockchainWalletMetric
               group: $blockchainWalletGroup

@@ -64,7 +64,7 @@ export const Chart: React.VFC<ChartProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.data, id])
 
-  return (
+  return props.data?.length ? (
     <div
       id={id}
       style={{
@@ -73,5 +73,7 @@ export const Chart: React.VFC<ChartProps> = (props) => {
         margin: '50px 0'
       }}
     />
+  ) : (
+    <div>no data</div>
   )
 }
