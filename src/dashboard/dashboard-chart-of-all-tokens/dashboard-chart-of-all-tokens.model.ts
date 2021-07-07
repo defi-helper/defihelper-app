@@ -1,9 +1,9 @@
 import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
+import { Unwrap } from '~/common/types'
 import { dashboardApi } from '~/dashboard/common'
 import {
-  MetricChartType,
   MetricGroupEnum,
   SortOrderEnum,
   UserTokenMetricChartSortInputTypeColumnEnum
@@ -46,8 +46,10 @@ const fetchChartDataFx = domain.createEffect({
   }
 })
 
+type ChartMetric = Unwrap<ReturnType<typeof dashboardApi.getTokenMetricChart>>
+
 export const $dashboardChartOfAllTokens = domain
-  .createStore<Record<string, Array<Pick<MetricChartType, 'sum' | 'date'>>>>(
+  .createStore<Record<string, ChartMetric>>(
     {},
     {
       name: '$dashboardChartOfAllTokens'

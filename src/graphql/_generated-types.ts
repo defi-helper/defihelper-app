@@ -965,14 +965,17 @@ export type BlockChainsQuery = { __typename?: 'Query' } & {
             wallets: { __typename?: 'UserBlockchainWalletListType' } & {
               list?: Maybe<
                 Array<
-                  { __typename?: 'WalletType' } & {
-                    tokenMetricChart: Array<
-                      { __typename?: 'MetricChartType' } & Pick<
-                        MetricChartType,
-                        'date' | 'sum'
+                  { __typename?: 'WalletType' } & Pick<
+                    WalletType,
+                    'id' | 'network' | 'blockchain' | 'address'
+                  > & {
+                      tokenMetricChart: Array<
+                        { __typename?: 'MetricChartType' } & Pick<
+                          MetricChartType,
+                          'date' | 'sum'
+                        >
                       >
-                    >
-                  }
+                    }
                 >
               >
             }
