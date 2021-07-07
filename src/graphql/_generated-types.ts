@@ -1025,7 +1025,7 @@ export type ProtocolDeleteMutation = { __typename?: 'Mutation' } & Pick<
   'protocolDelete'
 >
 
-export type ProtocolQueryVariables = Exact<{
+export type ProtocolMetricQueryVariables = Exact<{
   filter: ProtocolFilterInputType
   metric: Scalars['MetricColumnType']
   metricGroup: MetricGroupEnum
@@ -1036,14 +1036,22 @@ export type ProtocolQueryVariables = Exact<{
   metricPagination?: Maybe<ProtocolMetricChartPaginationInputType>
 }>
 
-export type ProtocolQuery = { __typename?: 'Query' } & {
+export type ProtocolMetricQuery = { __typename?: 'Query' } & {
   protocol?: Maybe<
     { __typename?: 'ProtocolType' } & {
       metricChart: Array<
         { __typename?: 'MetricChartType' } & ProtocolMetricChartFragment
       >
-    } & ProtocolFragmentFragment
+    }
   >
+}
+
+export type ProtocolQueryVariables = Exact<{
+  filter: ProtocolFilterInputType
+}>
+
+export type ProtocolQuery = { __typename?: 'Query' } & {
+  protocol?: Maybe<{ __typename?: 'ProtocolType' } & ProtocolFragmentFragment>
 }
 
 export type ProtocolsQueryVariables = Exact<{

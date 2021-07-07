@@ -9,13 +9,16 @@ import {
   ProtocolsQuery,
   ProtocolsQueryVariables,
   ProtocolUpdateMutation,
-  ProtocolUpdateMutationVariables
+  ProtocolUpdateMutationVariables,
+  ProtocolMetricQuery,
+  ProtocolMetricQueryVariables
 } from '~/graphql/_generated-types'
 import {
   PROTOCOLS,
   PROTOCOL_CREATE,
   PROTOCOL_DELETE,
-  PROTOCOL_DETAIL
+  PROTOCOL_DETAIL,
+  PROTOCOL_DETAIL_METRIC
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 
@@ -31,6 +34,15 @@ export const protocolsApi = {
       .query<ProtocolQuery, ProtocolQueryVariables>(PROTOCOL_DETAIL, variables)
       .toPromise()
       .then(({ data }) => data?.protocol),
+
+  protocolDetailMetric: (variables: ProtocolMetricQueryVariables) =>
+    getAPIClient()
+      .query<ProtocolMetricQuery, ProtocolMetricQueryVariables>(
+        PROTOCOL_DETAIL_METRIC,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.protocol?.metricChart ?? []),
 
   protocolCreate: (variables: ProtocolCreateMutationVariables) =>
     getAPIClient()
