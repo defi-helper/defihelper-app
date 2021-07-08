@@ -1,6 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { ConnectorUpdate } from '@web3-react/types'
-import { createDomain, guard } from 'effector-logger'
+import { createDomain, guard, sample } from 'effector-logger'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 
@@ -40,28 +40,35 @@ export const updateWalletFx = networkDomain.createEffect({
   }
 })
 
-export const diactivateWalletFx = networkDomain.createEffect(
-  async (connector: AbstractConnector) => {
-    connector.deactivate()
-  }
-)
-
 export type WalletStore = ConnectorUpdate<number> & {
   connector?: AbstractConnector
 }
 
-const initalData = {
-  chainId: undefined,
-  account: null,
-  provider: undefined,
-  connector: undefined
-}
+export const diactivateWalletFx = networkDomain.createEffect({
+  name: 'diactivateWalletFx',
+  handler: async () => {
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    const { connector } = getNetwork()
+
+    connector?.deactivate()
+  }
+})
 
 export const $wallet = networkDomain
-  .createStore<WalletStore>(initalData, { name: 'wallet' })
+  .createStore<WalletStore>(
+    {
+      chainId: undefined,
+      account: null,
+      provider: undefined,
+      connector: undefined
+    },
+    {
+      name: '$wallet'
+    }
+  )
   .on(activateWalletFx.doneData, (_, payload) => payload)
   .on(updateWalletFx.doneData, (_, payload) => payload)
-  .on(diactivateWalletFx.doneData, () => ({ ...initalData }))
+  .reset(diactivateWalletFx.done)
 
 export const getNetwork = () => {
   const wallet = $wallet.getState()
@@ -96,11 +103,11 @@ export const signMessageFx = networkDomain.createEffect({
 
     const signer = network.networkProvider?.getSigner()
 
-    if (sidUtils.get()) return
+    if (sidUtils.get() || !signer || !network.account) return
 
-    const signature = await signer?.signMessage(MESSAGE)
+    const signature = await signer.signMessage(MESSAGE)
 
-    if (!signature || !network.account) return
+    if (!signature) return
 
     const data = await walletApi.authEth({
       network: String(network.chainId),
@@ -117,7 +124,11 @@ export const signMessageFx = networkDomain.createEffect({
   }
 })
 
-signMessageFx.failData.watch((error) => notifications.error(error.message))
+sample({
+  clock: signMessageFx.failData,
+  fn: ({ message }) => message,
+  target: [notifications.error, diactivateWalletFx]
+})
 
 guard({
   clock: $wallet,

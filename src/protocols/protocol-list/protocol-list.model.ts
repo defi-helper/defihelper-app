@@ -1,15 +1,32 @@
-import { createDomain, sample } from 'effector-logger'
+import { createDomain } from 'effector-logger'
 import { createGate } from 'effector-react'
 
-import { ProtocolFragmentFragment } from '~/graphql/_generated-types'
-import { networkModel } from '~/wallets/networks'
+import {
+  BlockchainEnum,
+  ProtocolFragmentFragment
+} from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 
 const protocolListDomain = createDomain('protocolList')
 
 export const fetchProtocolListFx = protocolListDomain.createEffect({
   name: 'fetchProtocolList',
-  handler: () => protocolsApi.protocolList({})
+  handler: (params?: {
+    blockchain: BlockchainEnum
+    network?: string | number
+  }) =>
+    protocolsApi.protocolList({
+      ...(params?.blockchain
+        ? {
+            protocolFilter: {
+              blockchain: {
+                protocol: params.blockchain,
+                network: params.network ? String(params.network) : undefined
+              }
+            }
+          }
+        : {})
+    })
 })
 
 const ERROR = 'Not deleted'
@@ -45,14 +62,4 @@ export const $protocolList = protocolListDomain
 
 export const Gate = createGate({
   domain: protocolListDomain
-})
-
-sample({
-  source: networkModel.$wallet,
-  clock: [
-    Gate.open,
-    networkModel.activateWalletFx.doneData,
-    networkModel.updateWalletFx.doneData
-  ],
-  target: fetchProtocolListFx
 })

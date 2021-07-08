@@ -5,6 +5,7 @@ import LaunchIcon from '@material-ui/icons/Launch'
 import { makeStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button'
 import { useGate, useStore } from 'effector-react'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import { MainLayout } from '~/layouts'
 import { StakingList } from '~/staking/staking-list'
@@ -29,6 +30,24 @@ const useStyles = makeStyles(() => ({
 
   icon: {
     verticalAlign: 'middle'
+  },
+
+  actions: {
+    display: 'flex',
+    gap: 8
+  },
+
+  wrapper: {
+    position: 'relative',
+    display: 'inline-flex'
+  },
+
+  buttonProgress: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12
   }
 }))
 
@@ -96,17 +115,21 @@ export const ProtocolDetail: React.VFC<ProtocolDetailProps> = () => {
         data={metric[currentGroup]?.data}
         tooltipText="{sum}"
       />
-      <div>
+      <div className={classes.actions}>
         {Object.values(metric).map((metricItem) => (
-          <Button
-            key={metricItem.value}
-            disabled={metricItem.loading || currentGroup === metricItem.value}
-            color="primary"
-            variant="outlined"
-            onClick={() => handleLoadChart(metricItem.value)}
-          >
-            {metricItem.loading ? 'loading...' : metricItem.value}
-          </Button>
+          <div key={metricItem.value} className={classes.wrapper}>
+            <Button
+              disabled={metricItem.loading || currentGroup === metricItem.value}
+              color="primary"
+              variant="outlined"
+              onClick={() => handleLoadChart(metricItem.value)}
+            >
+              {metricItem.value}
+            </Button>
+            {metricItem.loading && (
+              <CircularProgress size={24} className={classes.buttonProgress} />
+            )}
+          </div>
         ))}
       </div>
       <Typography gutterBottom>Staking contracts</Typography>
