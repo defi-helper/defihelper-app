@@ -11,8 +11,6 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Container from '@material-ui/core/Container'
 import Box from '@material-ui/core/Box'
-import LanguageIcon from '@material-ui/icons/Language'
-import PowerIcon from '@material-ui/icons/Power'
 import DashboardIcon from '@material-ui/icons/Dashboard'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
@@ -30,6 +28,9 @@ import { networkModel } from '~/wallets/networks'
 import { protocolListModel } from '~/protocols/protocol-list'
 import { config } from '~/config'
 import { BlockchainEnum } from '~/graphql/_generated-types'
+import { ProtocolConnectedList } from '~/protocols/protocol-connected-list'
+import { setupBinance } from '~/common/setup-network'
+import { ChangeNetworkDialog } from '~/common/change-network-dialog/change-network-dialog'
 
 export type MainLayoutProps = unknown
 
@@ -56,9 +57,6 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3)
   },
-  nested: {
-    paddingLeft: theme.spacing(4)
-  },
   logo: {
     color: 'inherit',
     textDecoration: 'none'
@@ -72,6 +70,7 @@ const NETWORKS = [
   {
     title: 'All',
     chainIds: [] as number[],
+    onClick: '',
     type: 'AllNetworks' as const
   },
   {
@@ -79,6 +78,7 @@ const NETWORKS = [
     chainIds: config.CHAIN_ETHEREUM_IDS,
     blockchain: BlockchainEnum.Ethereum,
     network: config.CHAIN_ETHEREUM_IDS[0],
+    onClick: 'openChangeNetwork' as const,
     type: 'Networks' as const
   },
   {
@@ -86,29 +86,20 @@ const NETWORKS = [
     chainIds: config.CHAIN_BINANCE_IDS,
     blockchain: BlockchainEnum.Ethereum,
     network: config.CHAIN_BINANCE_IDS[0],
+    onClick: 'setupBinance' as const,
     type: 'Networks' as const
   },
   {
     title: 'Waves',
     blockchain: BlockchainEnum.Waves,
+    onClick: 'loginWaves' as const,
     type: 'Networks' as const
   }
 ]
 
-const PROTOCOLS = [
-  {
-    id: '1',
-    title: '1inch'
-  },
-  {
-    id: '2',
-    title: 'Aave'
-  },
-  {
-    id: '3',
-    title: 'Alchemix'
-  }
-]
+const noop = () => {
+  return new Promise((r) => r(undefined))
+}
 
 export const MainLayout: React.FC<MainLayoutProps> = (props) => {
   const { account } = networkModel.useNetworkProvider()
@@ -140,6 +131,8 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
   const [openWalletList, closeWalletList] = useDialog(WalletList)
   const [openChangeWallet] = useDialog(WalletDetail)
 
+  const [openChangeNetwork] = useDialog(ChangeNetworkDialog)
+
   const handleOpenWalletList = () =>
     openWalletList({ onClick: closeWalletList }).catch((error: Error) =>
       console.error(error.message)
@@ -149,6 +142,12 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
     openChangeWallet({ onChange: handleOpenWalletList }).catch((error: Error) =>
       console.error(error.message)
     )
+
+  const handlers: Record<string, () => Promise<unknown>> = {
+    openChangeNetwork,
+    setupBinance,
+    loginWaves: noop
+  }
 
   useEffect(() => {
     protocolListModel.fetchProtocolListFx(
@@ -207,7 +206,17 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
               <MenuItem
                 key={networkItem.title}
                 button
-                onClick={() => setCurrentNetwork(networkItem)}
+                onClick={() => {
+                  const changeNetwork = handlers[networkItem.onClick]
+
+                  if (changeNetwork) {
+                    changeNetwork()
+                      .then(() => setCurrentNetwork(networkItem))
+                      .catch(console.error)
+                  } else {
+                    setCurrentNetwork(networkItem)
+                  }
+                }}
               >
                 {networkItem.title}
               </MenuItem>
@@ -224,24 +233,7 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
-          <List>
-            <ListItem>
-              <ListItemIcon>
-                <LanguageIcon />
-              </ListItemIcon>
-              <ListItemText primary="Connected protocols" />
-            </ListItem>
-            <List>
-              {PROTOCOLS.map((network) => (
-                <ListItem button key={network.title} className={classes.nested}>
-                  <ListItemIcon>
-                    <PowerIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={network.title} />
-                </ListItem>
-              ))}
-            </List>
-          </List>
+          <ProtocolConnectedList />
           <Can I="read" a="Dashboard">
             <Divider />
             <List>

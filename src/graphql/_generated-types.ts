@@ -420,6 +420,8 @@ export type ProtocolFilterInputType = {
 
 export type ProtocolListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
+  /** Target user ID */
+  linked?: Maybe<Scalars['UuidType']>
   hidden?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
