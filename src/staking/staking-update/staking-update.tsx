@@ -13,7 +13,7 @@ export const StakingUpdate: React.VFC<unknown> = () => {
   }>()
 
   const staking = useStoreMap({
-    store: stakingListModel.$stakingList,
+    store: stakingListModel.$contracts,
     keys: [params.stakingId],
     fn: (contracts, [stakingId]) =>
       contracts.find(({ id }) => id === stakingId) ?? null

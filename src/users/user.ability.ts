@@ -11,6 +11,7 @@ export type Actions = 'create' | 'read' | 'update' | 'delete'
 export type Subjects =
   | ProtocolFragmentFragment
   | StakingContractFragmentFragment
+  | 'Dashboard'
   | 'AllNetworks'
   | 'Networks'
   | 'Protocol'
@@ -25,6 +26,10 @@ export const defineRulesFor = (role?: string) => {
 
   if (role === 'admin') {
     can(['create', 'delete', 'read', 'update'], ['all', 'AllNetworks'])
+  } else if (role === 'user') {
+    can(['read'], ['Contract', 'Protocol', 'Networks', 'Dashboard'], {
+      hidden: false
+    })
   } else {
     can(['read'], ['Contract', 'Protocol', 'Networks'], {
       hidden: false

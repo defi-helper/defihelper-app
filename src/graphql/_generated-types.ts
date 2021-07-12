@@ -191,6 +191,11 @@ export type ContractUpdateInputType = {
   hidden?: Maybe<Scalars['Boolean']>
 }
 
+export enum LocaleEnum {
+  EnUs = 'enUS',
+  RuRu = 'ruRU'
+}
+
 export type MetricChartType = {
   __typename?: 'MetricChartType'
   date: Scalars['DateTimeType']
@@ -224,6 +229,9 @@ export type Mutation = {
   proposalDelete: Scalars['Boolean']
   vote: VoteType
   unvote: Scalars['Boolean']
+  userContactCreate: UserContactType
+  userContactEmailConfirm: UserContactType
+  userContactDelete: Scalars['Boolean']
 }
 
 export type MutationAuthEthArgs = {
@@ -286,6 +294,18 @@ export type MutationVoteArgs = {
 
 export type MutationUnvoteArgs = {
   proposal: Scalars['UuidType']
+}
+
+export type MutationUserContactCreateArgs = {
+  input: UserContactCreateInputType
+}
+
+export type MutationUserContactEmailConfirmArgs = {
+  input: UserContactConfirmEmailInputType
+}
+
+export type MutationUserContactDeleteArgs = {
+  id: Scalars['UuidType']
 }
 
 export type Pagination = {
@@ -400,6 +420,8 @@ export type ProtocolFilterInputType = {
 
 export type ProtocolListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
+  /** Target user ID */
+  linked?: Maybe<Scalars['UuidType']>
   hidden?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
@@ -514,6 +536,8 @@ export type Query = {
   protocols: ProtocolListQuery
   proposal?: Maybe<ProposalType>
   proposals: ProposalListQuery
+  userContact?: Maybe<UserContactType>
+  userContacts: UserContactListQuery
 }
 
 export type QueryProtocolArgs = {
@@ -534,6 +558,16 @@ export type QueryProposalsArgs = {
   filter?: Maybe<ProposalListFilterInputType>
   sort?: Maybe<Array<ProposalListSortInputType>>
   pagination?: Maybe<ProposalListPaginationInputType>
+}
+
+export type QueryUserContactArgs = {
+  filter: UserContactFilterInputType
+}
+
+export type QueryUserContactsArgs = {
+  filter?: Maybe<UserContactListQueryFilterInputType>
+  sort?: Maybe<Array<UserContactListSortInputType>>
+  pagination?: Maybe<UserContactListPaginationInputType>
 }
 
 export enum SortOrderEnum {
@@ -621,6 +655,91 @@ export enum UserBlockchainWalletTokenMetricChartSortInputTypeColumnEnum {
   Value = 'value'
 }
 
+export enum UserContactBrokerEnum {
+  /** Email */
+  Email = 'email',
+  /** Telegram */
+  Telegram = 'telegram'
+}
+
+export type UserContactConfirmEmailInputType = {
+  /** address */
+  address: Scalars['String']
+  /** code */
+  confirmationCode: Scalars['String']
+}
+
+export type UserContactCreateInputType = {
+  /** Type */
+  type: UserContactBrokerEnum
+  /** Address */
+  address: Scalars['String']
+}
+
+export type UserContactFilterInputType = {
+  id: Scalars['String']
+}
+
+export type UserContactListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserContactListQuery = {
+  __typename?: 'UserContactListQuery'
+  /** Elements */
+  list?: Maybe<Array<UserContactType>>
+  pagination: Pagination
+}
+
+export type UserContactListQueryFilterInputType = {
+  /** User ID */
+  user?: Maybe<Scalars['UuidType']>
+  /** Type */
+  type?: Maybe<UserContactBrokerEnum>
+  /** Status */
+  status?: Maybe<UserContactStatusEnum>
+}
+
+export type UserContactListSortInputType = {
+  column: UserContactListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserContactListSortInputTypeColumnEnum {
+  Id = 'id',
+  CreatedAt = 'createdAt'
+}
+
+export enum UserContactStatusEnum {
+  /** Has been activated */
+  Active = 'active',
+  /** Has not been activated yet */
+  Inactive = 'inactive'
+}
+
+export type UserContactType = {
+  __typename?: 'UserContactType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** User */
+  user: UserType
+  /** Type of the contact */
+  type: UserContactBrokerEnum
+  /** Address */
+  address: Scalars['String']
+  /** Status */
+  status: UserContactStatusEnum
+  /** Confirmation Code */
+  confirmationCode: Scalars['String']
+  /** Date of crate */
+  createdAt: Scalars['DateTimeType']
+  /** Date of activated */
+  activatedAt?: Maybe<Scalars['DateTimeType']>
+}
+
 export type UserMetricChartFilterInputType = {
   /** Target contracts */
   contract?: Maybe<Array<Scalars['UuidType']>>
@@ -702,6 +821,8 @@ export type UserType = {
   id: Scalars['UuidType']
   /** Access role */
   role: UserRoleEnum
+  /** Current user locale */
+  locale: LocaleEnum
   wallets: WalletListType
   blockchains: Array<UserBlockchainType>
   metricChart: Array<MetricChartType>
@@ -774,6 +895,7 @@ export type VoteType = {
 
 export type WalletContractListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
+  protocol?: Maybe<Array<Scalars['UuidType']>>
   hidden?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
@@ -1096,6 +1218,45 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'createdAt'
 >
 
+export type StakingConnectWalletMutationVariables = Exact<{
+  contract: Scalars['UuidType']
+  wallet: Scalars['UuidType']
+}>
+
+export type StakingConnectWalletMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'contractWalletLink'
+>
+
+export type StakingConnectedContractsQueryVariables = Exact<{
+  filter?: Maybe<WalletContractListFilterInputType>
+}>
+
+export type StakingConnectedContractsQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      wallets: { __typename?: 'WalletListType' } & {
+        list?: Maybe<
+          Array<
+            { __typename?: 'WalletType' } & {
+              contracts: { __typename?: 'WalletContractListType' } & {
+                list?: Maybe<
+                  Array<
+                    { __typename?: 'ContractType' } & Pick<
+                      ContractType,
+                      'id' | 'address'
+                    >
+                  >
+                >
+              }
+            }
+          >
+        >
+      }
+    }
+  >
+}
+
 export type StakingContractCreateMutationVariables = Exact<{
   protocol: Scalars['UuidType']
   input: ContractCreateInputType
@@ -1167,6 +1328,15 @@ export type StakingContractFragmentFragment = {
   | 'adapter'
   | 'protocolId'
 >
+
+export type StakingDisconnectWalletMutationVariables = Exact<{
+  contract: Scalars['UuidType']
+  wallet: Scalars['UuidType']
+}>
+
+export type StakingDisconnectWalletMutation = {
+  __typename?: 'Mutation'
+} & Pick<Mutation, 'contractWalletUnlink'>
 
 export type MeQueryVariables = Exact<{
   filter?: Maybe<WalletListFilterInputType>

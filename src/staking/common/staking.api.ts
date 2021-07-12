@@ -7,14 +7,23 @@ import {
   StakingContractListQuery,
   StakingContractListQueryVariables,
   StakingContractUpdateMutationVariables,
-  StakingContractUpdateMutation
+  StakingContractUpdateMutation,
+  StakingConnectWalletMutation,
+  StakingConnectWalletMutationVariables,
+  StakingDisconnectWalletMutation,
+  StakingDisconnectWalletMutationVariables,
+  StakingConnectedContractsQuery,
+  StakingConnectedContractsQueryVariables
 } from '~/graphql/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
   STAKING_CONTRACT_DELETE,
   STAKING_CONTRACT_CREATE,
-  STAKING_CONTRACT_UPDATE
+  STAKING_CONTRACT_UPDATE,
+  STAKING_CONNECT_WALLET,
+  STAKING_DISCONNECT_WALLET
 } from './graphql'
+import { STAKING_CONNECTED_CONTRACTS } from './graphql/staking-connected-contracts.graphql'
 
 export const stakingApi = {
   contractList: (variables: StakingContractListQueryVariables) =>
@@ -51,5 +60,38 @@ export const stakingApi = {
         StakingContractUpdateMutationVariables
       >(STAKING_CONTRACT_UPDATE, variables)
       .toPromise()
-      .then(({ data }) => data?.contractUpdate.protocolId)
+      .then(({ data }) => data?.contractUpdate.protocolId),
+
+  connectWallet: (variables: StakingConnectWalletMutationVariables) =>
+    getAPIClient()
+      .mutation<
+        StakingConnectWalletMutation,
+        StakingConnectWalletMutationVariables
+      >(STAKING_CONNECT_WALLET, variables)
+      .toPromise()
+      .then(({ data }) => data?.contractWalletLink),
+
+  disconnectWallet: (variables: StakingDisconnectWalletMutationVariables) =>
+    getAPIClient()
+      .mutation<
+        StakingDisconnectWalletMutation,
+        StakingDisconnectWalletMutationVariables
+      >(STAKING_DISCONNECT_WALLET, variables)
+      .toPromise()
+      .then(({ data }) => data?.contractWalletUnlink),
+
+  connectedContracts: (protocolId: string) =>
+    getAPIClient()
+      .query<
+        StakingConnectedContractsQuery,
+        StakingConnectedContractsQueryVariables
+      >(STAKING_CONNECTED_CONTRACTS, {
+        filter: {
+          protocol: [protocolId]
+        }
+      })
+      .toPromise()
+      .then(({ data }) =>
+        data?.me?.wallets.list?.flatMap(({ contracts }) => contracts.list)
+      )
 }

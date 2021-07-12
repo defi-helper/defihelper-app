@@ -1,6 +1,7 @@
 import { makeStyles, Paper } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
 import Button from '@material-ui/core/Button'
+import Link from '@material-ui/core/Link'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useMemo } from 'react'
 
@@ -9,6 +10,8 @@ import * as model from './staking-list.model'
 import { paths } from '~/paths'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
+import { dateUtils } from '~/common/date-utils'
+import { cutAccount } from '~/common/cut-account'
 
 export type StakingListProps = {
   protocolId: string
@@ -54,7 +57,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
   const ability = useAbility()
 
-  const stakingList = useStore(model.$stakingList)
+  const stakingList = useStore(model.$contracts)
   const loading = useStore(model.fetchStakingListFx.pending)
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
@@ -94,24 +97,51 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         {!loading &&
           staking.map((stakingListItem) => (
             <li key={stakingListItem.id}>
+              {stakingListItem.wallet?.id && !stakingListItem.connected && (
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() =>
+                    stakingListItem.wallet
+                      ? model.connectWalletFx({
+                          wallet: stakingListItem.wallet?.id,
+                          contract: stakingListItem.id
+                        })
+                      : undefined
+                  }
+                >
+                  Connect
+                </Button>
+              )}
               <Paper className={classes.card}>
                 <div className={`${classes.icons} ${classes.mr}`}>
-                  {stakingListItem.adapter}
+                  {stakingListItem.name}
                 </div>
-                <div>
-                  <div>{stakingListItem.name}</div>
-                  <div>{stakingListItem.blockchain}</div>
-                </div>
+                <div>{stakingListItem.blockchain}</div>
                 <div className={`${classes.tvl} ${classes.mr}`}>
                   {stakingListItem.network}
                 </div>
-                <div className={classes.mr}>{stakingListItem.address}</div>
-                <div className={classes.mr}>{stakingListItem.description}</div>
-                <div className={classes.mr}>{stakingListItem.link}</div>
+                <Link
+                  className={classes.mr}
+                  href={`${cutAccount.explorers[stakingListItem.network]}/${
+                    stakingListItem.address
+                  }`}
+                  target="_blank"
+                >
+                  {cutAccount(stakingListItem.address)}
+                </Link>
+                {stakingListItem.link && (
+                  <Link
+                    className={classes.mr}
+                    href={stakingListItem.link}
+                    target="_blank"
+                  >
+                    More info
+                  </Link>
+                )}
                 <div className={classes.mr}>
-                  {String(stakingListItem.hidden)}
+                  {dateUtils.format(stakingListItem.createdAt)}
                 </div>
-                <div className={classes.mr}>{stakingListItem.createdAt}</div>
               </Paper>
               <Can I="update" a="Contract">
                 <Button

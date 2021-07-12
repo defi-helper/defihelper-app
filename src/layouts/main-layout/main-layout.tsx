@@ -11,25 +11,26 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Container from '@material-ui/core/Container'
 import Box from '@material-ui/core/Box'
-import LanguageIcon from '@material-ui/icons/Language'
-import PowerIcon from '@material-ui/icons/Power'
 import DashboardIcon from '@material-ui/icons/Dashboard'
-import BookmarkIcon from '@material-ui/icons/Bookmark'
-import SettingsIcon from '@material-ui/icons/Settings'
-import { Link, useHistory } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { paths } from '~/paths'
-import { useAbility } from '~/users'
+import { Can, useAbility } from '~/users'
 import { useDialog } from '~/common/dialog'
 import { WalletList } from '~/wallets/wallet-list'
 import { cutAccount } from '~/common/cut-account'
 import { WalletDetail } from '~/wallets/wallet-detail'
 import { networkModel } from '~/wallets/networks'
+import { protocolListModel } from '~/protocols/protocol-list'
 import { config } from '~/config'
+import { BlockchainEnum } from '~/graphql/_generated-types'
+import { ProtocolConnectedList } from '~/protocols/protocol-connected-list'
+import { setupBinance } from '~/common/setup-network'
+import { ChangeNetworkDialog } from '~/common/change-network-dialog/change-network-dialog'
 
 export type MainLayoutProps = unknown
 
@@ -56,9 +57,6 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3)
   },
-  nested: {
-    paddingLeft: theme.spacing(4)
-  },
   logo: {
     color: 'inherit',
     textDecoration: 'none'
@@ -72,60 +70,41 @@ const NETWORKS = [
   {
     title: 'All',
     chainIds: [] as number[],
+    onClick: '',
     type: 'AllNetworks' as const
   },
   {
     title: 'Ethereum',
     chainIds: config.CHAIN_ETHEREUM_IDS,
+    blockchain: BlockchainEnum.Ethereum,
+    network: config.CHAIN_ETHEREUM_IDS[0],
+    onClick: 'openChangeNetwork' as const,
     type: 'Networks' as const
   },
   {
     title: 'Binance Smart Chain',
     chainIds: config.CHAIN_BINANCE_IDS,
+    blockchain: BlockchainEnum.Ethereum,
+    network: config.CHAIN_BINANCE_IDS[0],
+    onClick: 'setupBinance' as const,
     type: 'Networks' as const
   },
   {
     title: 'Waves',
-    chainIds: [config.CHAIN_WAVES_ID],
+    blockchain: BlockchainEnum.Waves,
+    onClick: 'loginWaves' as const,
     type: 'Networks' as const
   }
 ]
 
-const PROTOCOLS = [
-  {
-    id: '1',
-    title: '1inch'
-  },
-  {
-    id: '2',
-    title: 'Aave'
-  },
-  {
-    id: '3',
-    title: 'Alchemix'
-  }
-]
-
-const MENU = [
-  {
-    title: 'Dashboard',
-    icon: DashboardIcon,
-    to: paths.dashboard
-  },
-  {
-    title: 'Favorites',
-    icon: BookmarkIcon,
-    to: paths.main
-  },
-  {
-    title: 'Settings',
-    icon: SettingsIcon,
-    to: paths.main
-  }
-]
+const noop = () => {
+  return new Promise((r) => r(undefined))
+}
 
 export const MainLayout: React.FC<MainLayoutProps> = (props) => {
-  const { account, chainId = 1 } = networkModel.useNetworkProvider()
+  const { account } = networkModel.useNetworkProvider()
+
+  const [currentNetwork, setCurrentNetwork] = useState(NETWORKS[1])
 
   const ability = useAbility()
 
@@ -136,6 +115,7 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
   >(null)
 
   const history = useHistory()
+  const location = useLocation()
 
   const handleClose = () => {
     setAnchorEl(null)
@@ -151,6 +131,8 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
   const [openWalletList, closeWalletList] = useDialog(WalletList)
   const [openChangeWallet] = useDialog(WalletDetail)
 
+  const [openChangeNetwork] = useDialog(ChangeNetworkDialog)
+
   const handleOpenWalletList = () =>
     openWalletList({ onClick: closeWalletList }).catch((error: Error) =>
       console.error(error.message)
@@ -161,9 +143,22 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
       console.error(error.message)
     )
 
-  const currentNetwork = NETWORKS.find(({ chainIds }) =>
-    chainIds.includes(chainId)
-  )
+  const handlers: Record<string, () => Promise<unknown>> = {
+    openChangeNetwork,
+    setupBinance,
+    loginWaves: noop
+  }
+
+  useEffect(() => {
+    protocolListModel.fetchProtocolListFx(
+      currentNetwork.blockchain
+        ? {
+            blockchain: currentNetwork.blockchain,
+            network: currentNetwork.network
+          }
+        : undefined
+    )
+  }, [currentNetwork])
 
   return (
     <div className={classes.root}>
@@ -189,14 +184,16 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
                 Connect wallet
               </Button>
             )}
-            <Button
-              aria-controls="simple-menu"
-              aria-haspopup="true"
-              onClick={handleClick}
-              color="inherit"
-            >
-              {currentNetwork?.title}
-            </Button>
+            {location.pathname === paths.protocols.list && (
+              <Button
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+                color="inherit"
+              >
+                {currentNetwork.title}
+              </Button>
+            )}
           </div>
           <Menu
             anchorEl={anchorEl}
@@ -206,7 +203,23 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
             {NETWORKS.filter((networkItem) =>
               ability.can('read', networkItem.type)
             ).map((networkItem) => (
-              <MenuItem key={networkItem.title}>{networkItem.title}</MenuItem>
+              <MenuItem
+                key={networkItem.title}
+                button
+                onClick={() => {
+                  const changeNetwork = handlers[networkItem.onClick]
+
+                  if (changeNetwork) {
+                    changeNetwork()
+                      .then(() => setCurrentNetwork(networkItem))
+                      .catch(console.error)
+                  } else {
+                    setCurrentNetwork(networkItem)
+                  }
+                }}
+              >
+                {networkItem.title}
+              </MenuItem>
             ))}
           </Menu>
         </Toolbar>
@@ -220,46 +233,21 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
       >
         <Toolbar />
         <div className={classes.drawerContainer}>
-          <List>
-            <ListItem>
-              <ListItemIcon>
-                <LanguageIcon />
-              </ListItemIcon>
-              <ListItemText primary="Connected protocols" />
-            </ListItem>
+          <ProtocolConnectedList />
+          <Can I="read" a="Dashboard">
+            <Divider />
             <List>
-              {PROTOCOLS.map((network) => (
-                <ListItem
-                  button
-                  key={network.title}
-                  className={classes.nested}
-                  onClick={() =>
-                    handleChangeLocation(paths.protocols.detail(network.id))
-                  }
-                >
-                  <ListItemIcon>
-                    <PowerIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={network.title} />
-                </ListItem>
-              ))}
-            </List>
-          </List>
-          <Divider />
-          <List>
-            {MENU.map((menuItem) => (
               <ListItem
                 button
-                key={menuItem.title}
-                onClick={() => handleChangeLocation(menuItem.to)}
+                onClick={() => handleChangeLocation(paths.dashboard)}
               >
                 <ListItemIcon>
-                  <menuItem.icon />
+                  <DashboardIcon />
                 </ListItemIcon>
-                <ListItemText primary={menuItem.title} />
+                <ListItemText primary="Dashboard" />
               </ListItem>
-            ))}
-          </List>
+            </List>
+          </Can>
         </div>
       </Drawer>
       <main className={classes.content}>

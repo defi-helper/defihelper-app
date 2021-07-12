@@ -90,12 +90,6 @@ export const useNetwork = () => {
       updateWalletFx({ connector: wallet.connector, update })
     }
 
-    const handleDeactivate = () => {
-      if (!wallet.connector) return
-
-      diactivateWalletFx(wallet.connector)
-    }
-
     const handleError = (error: Error) => {
       console.error(error.message)
     }
@@ -104,7 +98,7 @@ export const useNetwork = () => {
       wallet.connector
         .on(ConnectorEvent.Update, handleUpdate)
         .on(ConnectorEvent.Error, handleError)
-        .on(ConnectorEvent.Deactivate, handleDeactivate)
+        .on(ConnectorEvent.Deactivate, diactivateWalletFx)
     }
 
     return () => {
@@ -112,7 +106,7 @@ export const useNetwork = () => {
         wallet.connector
           .off(ConnectorEvent.Update, handleUpdate)
           .off(ConnectorEvent.Error, handleError)
-          .off(ConnectorEvent.Deactivate, handleDeactivate)
+          .off(ConnectorEvent.Deactivate, diactivateWalletFx)
       }
     }
   }, [wallet.connector])
