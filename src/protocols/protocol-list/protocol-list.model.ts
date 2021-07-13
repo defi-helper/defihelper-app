@@ -45,11 +45,17 @@ export const deleteProtocolFx = protocolListDomain.createEffect({
 })
 
 export const $protocolList = protocolListDomain
-  .createStore<(ProtocolFragmentFragment & { deleting: boolean })[]>([], {
+  .createStore<
+    (ProtocolFragmentFragment & { deleting: boolean; type: 'Protocol' })[]
+  >([], {
     name: 'protocols'
   })
   .on(fetchProtocolListFx.doneData, (_, payload) =>
-    payload.map((protocol) => ({ ...protocol, deleting: false }))
+    payload.map((protocol) => ({
+      ...protocol,
+      deleting: false,
+      type: 'Protocol'
+    }))
   )
   .on(deleteProtocolFx, (state, payload) =>
     state.map((protocol) =>

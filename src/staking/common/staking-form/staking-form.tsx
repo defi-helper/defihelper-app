@@ -79,6 +79,7 @@ export const StakingForm: React.VFC<StakingFormProps> = (props) => {
         defaultValue={props.defaultValues?.description}
         {...register('description')}
         disabled={props.loading}
+        multiline
         error={Boolean(formState.errors.description)}
         helperText={formState.errors.description?.message}
       />

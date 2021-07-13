@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import TextField from '@material-ui/core/TextField'
 import Checkbox from '@material-ui/core/Checkbox'
@@ -68,6 +68,7 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
         label="Description"
         inputProps={register('description')}
         disabled={props.loading}
+        multiline
         error={Boolean(formState.errors.description)}
         helperText={formState.errors.description?.message}
       />
