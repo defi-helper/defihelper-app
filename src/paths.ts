@@ -15,5 +15,12 @@ export const paths = {
       `/protocols/${protocolId}/staking/${stakingId}` as const
   },
 
-  dashboard: '/dashboard'
+  dashboard: '/dashboard',
+
+  proposals: {
+    list: '/proposals',
+    detail: (id = ':proposalId') => `/proposals/${id}` as const,
+    create: '/proposals/create',
+    update: (id = ':proposalId') => `/proposals/update/${id}` as const
+  }
 } as const

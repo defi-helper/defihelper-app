@@ -17,6 +17,7 @@ import Button from '@material-ui/core/Button'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import React, { useEffect, useState } from 'react'
+import ThumbsUpDownIcon from '@material-ui/icons/ThumbsUpDown'
 
 import { paths } from '~/paths'
 import { Can, useAbility } from '~/users'
@@ -100,6 +101,13 @@ const NETWORKS = [
 const noop = () => {
   return new Promise((r) => r(undefined))
 }
+
+const MENU = [
+  {
+    title: 'Proposals',
+    path: paths.proposals.list
+  }
+]
 
 export const MainLayout: React.FC<MainLayoutProps> = (props) => {
   const { account } = networkModel.useNetworkProvider()
@@ -248,6 +256,21 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
               </ListItem>
             </List>
           </Can>
+          <List>
+            {MENU.map((menuItem) => (
+              <ListItem
+                button
+                key={menuItem.title}
+                component={Link}
+                to={paths.proposals.list}
+              >
+                <ListItemIcon>
+                  <ThumbsUpDownIcon />
+                </ListItemIcon>
+                <ListItemText primary={menuItem.title} />
+              </ListItem>
+            ))}
+          </List>
         </div>
       </Drawer>
       <main className={classes.content}>

@@ -2,21 +2,17 @@ import { AbilityBuilder, Ability, AbilityClass } from '@casl/ability'
 import { createContext } from 'react'
 import { createContextualCan, useAbility as useCaslAbility } from '@casl/react'
 
-import {
-  ProtocolFragmentFragment,
-  StakingContractFragmentFragment
-} from '~/graphql/_generated-types'
-
-export type Actions = 'create' | 'read' | 'update' | 'delete'
-export type Subjects =
-  | ProtocolFragmentFragment
-  | StakingContractFragmentFragment
+type Entities =
   | 'Dashboard'
   | 'AllNetworks'
   | 'Networks'
   | 'Protocol'
   | 'Contract'
   | 'all'
+  | 'Proposal'
+
+export type Actions = 'create' | 'read' | 'update' | 'delete'
+export type Subjects = Entities | { type: Entities }
 
 export type AppAbilityType = Ability<[Actions, Subjects]>
 export const AppAbility = Ability as AbilityClass<AppAbilityType>
@@ -27,11 +23,15 @@ export const defineRulesFor = (role?: string) => {
   if (role === 'admin') {
     can(['create', 'delete', 'read', 'update'], ['all', 'AllNetworks'])
   } else if (role === 'user') {
-    can(['read'], ['Contract', 'Protocol', 'Networks', 'Dashboard'], {
-      hidden: false
-    })
+    can(
+      ['read'],
+      ['Contract', 'Protocol', 'Networks', 'Dashboard', 'Proposal'],
+      {
+        hidden: false
+      }
+    )
   } else {
-    can(['read'], ['Contract', 'Protocol', 'Networks'], {
+    can(['read'], ['Contract', 'Protocol', 'Networks', 'Proposal'], {
       hidden: false
     })
   }
@@ -41,13 +41,7 @@ export const defineRulesFor = (role?: string) => {
 
 export const buildAbilityFor = (role?: string): AppAbilityType => {
   return new AppAbility(defineRulesFor(role), {
-    detectSubjectType: (object) => {
-      if ('network' in object) return 'Contract'
-
-      if ('hidden' in object) return 'Protocol'
-
-      return 'all'
-    }
+    detectSubjectType: (object) => object.type
   })
 }
 

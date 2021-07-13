@@ -62,10 +62,12 @@ export const fetchConnectedContractsFx = stakingListDomain.createEffect({
 })
 
 const $contractList = stakingListDomain
-  .createStore<StakingContractFragmentFragment[]>([], {
+  .createStore<(StakingContractFragmentFragment & { type: 'Contract' })[]>([], {
     name: '$contractList'
   })
-  .on(fetchStakingListFx.doneData, (_, payload) => payload)
+  .on(fetchStakingListFx.doneData, (_, payload) =>
+    payload.map((contract) => ({ ...contract, type: 'Contract' }))
+  )
   .on(deleteStakingFx.doneData, (state, payload) => {
     return state.filter(({ id }) => id !== payload)
   })

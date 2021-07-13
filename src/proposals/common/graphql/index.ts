@@ -1,0 +1,7 @@
+export * from './proposal-list.graphql'
+export * from './proposal-create.graphql'
+export * from './proposal-delete.graphql'
+export * from './proposal-update.graphql'
+export * from './proposal-detail.graphql'
+export * from './proposal-vote.graphql'
+export * from './proposal-unvote.graphql'
