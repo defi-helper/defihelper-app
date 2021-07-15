@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button'
 import { useStore } from 'effector-react'
 
 import { Dialog } from '~/common/dialog'
-import { $wallet } from '~/wallets/networks/network.model'
+import { networkModel } from '~/wallets/wallet-networks'
 import { cutAccount } from '~/common/cut-account'
 
 export type WalletDetailProps = {
@@ -11,7 +11,7 @@ export type WalletDetailProps = {
 }
 
 export const WalletDetail: React.VFC<WalletDetailProps> = (props) => {
-  const wallet = useStore($wallet)
+  const wallet = useStore(networkModel.$wallet)
 
   return (
     <Dialog>

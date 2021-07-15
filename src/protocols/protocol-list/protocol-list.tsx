@@ -1,6 +1,6 @@
 import { makeStyles, Paper } from '@material-ui/core'
 import { Link as ReactRouterLink } from 'react-router-dom'
-import { useGate, useStore } from 'effector-react'
+import { useStore, useGate } from 'effector-react'
 import Button from '@material-ui/core/Button'
 import { useMemo } from 'react'
 
@@ -58,8 +58,6 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const loading = useStore(model.fetchProtocolListFx.pending)
   const protocolList = useStore(model.$protocolList)
 
-  useGate(model.Gate)
-
   const handleOpenConfirm = async (id: string) => {
     try {
       await openConfirm()
@@ -74,6 +72,8 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     () => protocolList.filter((protocol) => ability.can('read', protocol)),
     [protocolList, ability]
   )
+
+  useGate(model.ProtocolListGate)
 
   return (
     <MainLayout>

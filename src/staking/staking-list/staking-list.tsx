@@ -3,7 +3,8 @@ import { useGate, useStore } from 'effector-react'
 import Button from '@material-ui/core/Button'
 import Link from '@material-ui/core/Link'
 import { Link as ReactRouterLink } from 'react-router-dom'
-import { useMemo } from 'react'
+import React, { useMemo } from 'react'
+import isEmpty from 'lodash.isempty'
 
 import { Can, useAbility } from '~/users'
 import * as model from './staking-list.model'
@@ -12,9 +13,12 @@ import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { dateUtils } from '~/common/date-utils'
 import { cutAccount } from '~/common/cut-account'
+import { buildExplorerUrl } from '~/common/build-explorer-url'
+import { StakingAdapterForm } from '~/staking/common'
 
 export type StakingListProps = {
   protocolId: string
+  protocolAdapter?: string
 }
 
 const useStyles = makeStyles(() => ({
@@ -52,6 +56,10 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
+const FORM_LAYOUTS: Record<string, React.ElementType> = {
+  staking: StakingAdapterForm
+}
+
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const classes = useStyles()
 
@@ -62,14 +70,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
-  useGate(model.Gate, props.protocolId)
+  useGate(model.StakingListGate, props)
 
-  const staking = useMemo(
-    () => stakingList.filter((stakingItem) => ability.can('read', stakingItem)),
-    [stakingList, ability]
-  )
-
-  const handleOpenConfirmDialog = async (id: string) => {
+  const handleOpenConfirmDialog = (id: string) => async () => {
     try {
       await openConfirmDialog()
 
@@ -78,6 +81,21 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       console.error(error.message)
     }
   }
+
+  const handleConnect =
+    (connectParams: { walletId?: string; contractId?: string }) => () => {
+      if (!connectParams.walletId || !connectParams.contractId) return
+
+      model.connectWalletFx({
+        wallet: connectParams.walletId,
+        contract: connectParams.contractId
+      })
+    }
+
+  const staking = useMemo(
+    () => stakingList.filter((stakingItem) => ability.can('read', stakingItem)),
+    [stakingList, ability]
+  )
 
   return (
     <div>
@@ -101,14 +119,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                 <Button
                   color="primary"
                   variant="contained"
-                  onClick={() =>
-                    stakingListItem.wallet
-                      ? model.connectWalletFx({
-                          wallet: stakingListItem.wallet?.id,
-                          contract: stakingListItem.id
-                        })
-                      : undefined
-                  }
+                  onClick={handleConnect({
+                    walletId: stakingListItem.wallet?.id,
+                    contractId: stakingListItem.id
+                  })}
                 >
                   Connect
                 </Button>
@@ -118,14 +132,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   {stakingListItem.name}
                 </div>
                 <div>{stakingListItem.blockchain}</div>
-                <div className={`${classes.tvl} ${classes.mr}`}>
-                  {stakingListItem.network}
-                </div>
                 <Link
-                  className={classes.mr}
-                  href={`${cutAccount.explorers[stakingListItem.network]}/${
-                    stakingListItem.address
-                  }`}
+                  className={`${classes.tvl} ${classes.mr}`}
+                  href={buildExplorerUrl({
+                    network: stakingListItem.network,
+                    address: stakingListItem.address
+                  })}
                   target="_blank"
                 >
                   {cutAccount(stakingListItem.address)}
@@ -159,11 +171,17 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                 <Button
                   variant="contained"
                   color="secondary"
-                  onClick={() => handleOpenConfirmDialog(stakingListItem.id)}
+                  onClick={handleOpenConfirmDialog(stakingListItem.id)}
                 >
                   Delete
                 </Button>
               </Can>
+              {FORM_LAYOUTS[stakingListItem.layout] &&
+                !isEmpty(stakingListItem.formAdapter) &&
+                React.createElement(
+                  FORM_LAYOUTS[stakingListItem.layout],
+                  stakingListItem.formAdapter
+                )}
             </li>
           ))}
       </ul>

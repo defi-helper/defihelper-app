@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom'
 import { useGate, useStoreMap } from 'effector-react'
 
 import { MainLayout } from '~/layouts'
-import { StakingForm } from '~/staking/common'
+import { StakingContractForm, FormValues } from '~/staking/common'
 import * as model from './staking-update.model'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
 
@@ -19,7 +19,7 @@ export const StakingUpdate: React.VFC<unknown> = () => {
       contracts.find(({ id }) => id === stakingId) ?? null
   })
 
-  useGate(stakingListModel.Gate, params.protocolId)
+  useGate(stakingListModel.StakingListGate, params)
 
   const defaultValues = staking
     ? {
@@ -30,18 +30,21 @@ export const StakingUpdate: React.VFC<unknown> = () => {
         description: staking.description,
         link: staking.link,
         hidden: staking.hidden,
-        adapter: staking.adapter
+        adapter: staking.adapter,
+        layout: staking.layout
       }
     : undefined
 
+  const handleUpdate = (formValues: FormValues) => {
+    model.stakingUpdateFx({ id: params.stakingId, input: formValues })
+  }
+
   return (
     <MainLayout>
-      <StakingForm
+      <StakingContractForm
         loading={false}
         defaultValues={defaultValues}
-        onSubmit={(formValues) =>
-          model.stakingUpdateFx({ id: params.stakingId, input: formValues })
-        }
+        onSubmit={handleUpdate}
       />
     </MainLayout>
   )

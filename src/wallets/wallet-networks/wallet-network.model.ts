@@ -4,8 +4,12 @@ import { createDomain, guard, sample } from 'effector-logger'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 
-import { augmentConnectorUpdate, walletApi } from '~/wallets/common'
-import { createEthereumProvider } from './ethereum'
+import {
+  augmentConnectorUpdate,
+  walletApi,
+  createEthereumProvider,
+  connectors
+} from '~/wallets/common'
 import { notifications } from '~/notifications'
 import { sidUtils } from '~/users/common/sid-utils'
 import { config } from '~/config'
@@ -57,10 +61,10 @@ export const diactivateWalletFx = networkDomain.createEffect({
 export const $wallet = networkDomain
   .createStore<WalletStore>(
     {
-      chainId: undefined,
+      chainId: config.CHAIN_ETHEREUM_IDS[0],
       account: null,
-      provider: undefined,
-      connector: undefined
+      provider: window.ethereum,
+      connector: connectors.injected
     },
     {
       name: '$wallet'

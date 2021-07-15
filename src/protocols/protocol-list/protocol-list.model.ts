@@ -1,4 +1,4 @@
-import { createDomain } from 'effector-logger'
+import { createDomain, guard, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
 import {
@@ -6,6 +6,8 @@ import {
   ProtocolFragmentFragment
 } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
+import { userModel } from '~/users'
+import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 
 const protocolListDomain = createDomain('protocolList')
 
@@ -66,6 +68,20 @@ export const $protocolList = protocolListDomain
     state.filter(({ id }) => id !== payload)
   )
 
-export const Gate = createGate({
+export const ProtocolListGate = createGate({
   domain: protocolListDomain
+})
+
+const Open = guard({
+  source: userModel.$user,
+  clock: ProtocolListGate.open,
+  filter: (user) => !user
+})
+
+sample({
+  source: walletNetworkSwitcherModel.$currentNetwork,
+  clock: [walletNetworkSwitcherModel.activateNetwork, Open],
+  fn: ({ network, blockchain }) => ({ network, blockchain }),
+  target: fetchProtocolListFx,
+  greedy: true
 })

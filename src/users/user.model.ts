@@ -2,7 +2,7 @@ import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
 import { MeQuery } from '~/graphql/_generated-types'
-import { networkModel } from '~/wallets/networks'
+import { networkModel } from '~/wallets/wallet-networks'
 import { sidUtils, userApi } from './common'
 
 export const userDomain = createDomain('user')

@@ -1,13 +1,14 @@
 import { Link, Paper, Typography } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
 import { useParams } from 'react-router-dom'
-import { cutAccount } from '~/common/cut-account'
 
+import { cutAccount } from '~/common/cut-account'
 import { MarkdownRender } from '~/common/markdown-render'
 import { MainLayout } from '~/layouts'
 import { userModel } from '~/users'
 import { ProposalVote } from '~/proposals/common'
 import * as model from './proposal-detail.model'
+import { buildExplorerUrl } from '~/common/build-explorer-url'
 
 export type ProposalDetailProps = unknown
 
@@ -17,14 +18,22 @@ export const ProposalDetail: React.VFC<ProposalDetailProps> = () => {
   useGate(model.Gate, params.proposalId)
 
   const proposal = useStore(model.$proposalDetail)
-
   const loading = useStore(model.fetchProposalFx.pending)
-
   const user = useStore(userModel.$user)
 
   const voted = proposal?.votes.list?.some(
     (votes) => votes.user.id === user?.id
   )
+
+  const handleVote = (proposalId: string) => () => {
+    model.voteProposalFx(proposalId)
+  }
+  const handleUnvote = (proposalId: string) => () => {
+    model.unvoteProposalFx({
+      proposalId,
+      userId: user?.id
+    })
+  }
 
   return (
     <MainLayout>
@@ -32,13 +41,8 @@ export const ProposalDetail: React.VFC<ProposalDetailProps> = () => {
         {!loading && proposal && (
           <div>
             <ProposalVote
-              onUnvote={() =>
-                model.unvoteProposalFx({
-                  proposalId: proposal.id,
-                  userId: user?.id
-                })
-              }
-              onVote={() => model.voteProposalFx(proposal.id)}
+              onUnvote={handleUnvote(proposal.id)}
+              onVote={handleVote(proposal.id)}
               voted={voted}
             >
               {proposal?.votes.list?.length}
@@ -59,7 +63,7 @@ export const ProposalDetail: React.VFC<ProposalDetailProps> = () => {
                   {vote.user.wallets.list?.map(({ address, network }) => (
                     <Link
                       key={address}
-                      href={`${cutAccount.explorers[network]}/${address}`}
+                      href={buildExplorerUrl({ network, address })}
                       target="_blank"
                     >
                       {cutAccount(address)}

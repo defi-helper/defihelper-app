@@ -8,9 +8,9 @@ import { useEffect } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 import { BlockchainEnum } from '~/graphql/_generated-types'
-import { stakingFormSchema } from './staking-form.validation'
+import { stakingContractFormSchema } from './staking-contract-form.validation'
 
-type FormValues = {
+export type FormValues = {
   blockchain: BlockchainEnum
   network: string
   address: string
@@ -22,7 +22,7 @@ type FormValues = {
   layout: string
 }
 
-export type StakingFormProps = {
+export type StakingContractFormProps = {
   loading: boolean
   onSubmit: (formValues: FormValues) => void
   defaultValues?: Omit<FormValues, 'layout'> & { layout?: string }
@@ -39,12 +39,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-export const StakingForm: React.VFC<StakingFormProps> = (props) => {
+export const StakingContractForm: React.VFC<StakingContractFormProps> = (
+  props
+) => {
   const classes = useStyles()
 
   const { register, setValue, handleSubmit, reset, formState } =
     useForm<FormValues>({
-      resolver: yupResolver(stakingFormSchema)
+      resolver: yupResolver(stakingContractFormSchema)
     })
 
   const hidden = register('hidden')

@@ -81,23 +81,25 @@ export const $metric = protocolDetailDomain
     }
   }))
 
-export const protocolDetailGate = createGate<{ protocolId: string }>({
+export const ProtocolDetailGate = createGate<{ protocolId: string }>({
+  name: 'ProtocolDetailGate',
   domain: protocolDetailDomain
 })
 
-export const protocolMetricGate = createGate<{
+export const ProtocolMetricGate = createGate<{
   protocolId: string
   group: MetricGroupEnum
 }>({
+  name: 'ProtocolMetricGate',
   domain: protocolDetailDomain
 })
 
 sample({
-  clock: protocolDetailGate.open,
+  clock: ProtocolDetailGate.open,
   target: fetchProtocolFx
 })
 
 sample({
-  clock: protocolMetricGate.open,
+  clock: ProtocolMetricGate.open,
   target: fetchMetricFx
 })
