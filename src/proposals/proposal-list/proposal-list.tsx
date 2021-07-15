@@ -44,6 +44,20 @@ export const ProposalList: React.VFC<ProposalListProps> = () => {
 
   const classes = useStyles()
 
+  const handleVote = (proposalId: string) => () => {
+    model.voteProposalFx(proposalId)
+  }
+  const handleUnvote = (proposalId: string) => () => {
+    model.unvoteProposalFx({
+      proposalId,
+      userId: user?.id
+    })
+  }
+
+  const handleDelete = (proposalId: string) => () => {
+    model.deleteProposalFx(proposalId)
+  }
+
   return (
     <MainLayout>
       <Can I="create" a="Proposal">
@@ -67,13 +81,8 @@ export const ProposalList: React.VFC<ProposalListProps> = () => {
             return (
               <li key={proposal.id} className={classes.proposal}>
                 <ProposalVote
-                  onUnvote={() =>
-                    model.unvoteProposalFx({
-                      proposalId: proposal.id,
-                      userId: user?.id
-                    })
-                  }
-                  onVote={() => model.voteProposalFx(proposal.id)}
+                  onUnvote={handleUnvote(proposal.id)}
+                  onVote={handleVote(proposal.id)}
                   voted={voted}
                 >
                   {proposal.votes.list?.length}
@@ -102,7 +111,7 @@ export const ProposalList: React.VFC<ProposalListProps> = () => {
                     variant="contained"
                     color="secondary"
                     disabled={proposal.deleting}
-                    onClick={() => model.deleteProposalFx(proposal.id)}
+                    onClick={handleDelete(proposal.id)}
                   >
                     Delete
                   </Button>

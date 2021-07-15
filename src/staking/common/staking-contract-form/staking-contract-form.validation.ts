@@ -4,7 +4,7 @@ import { isEthAddress } from '~/common/is-eth-address'
 import { isWavesAddress } from '~/common/is-waves-address'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 
-export const stakingFormSchema = yup.object().shape({
+export const stakingContractFormSchema = yup.object().shape({
   blockchain: yup
     .string()
     .oneOf([BlockchainEnum.Ethereum, BlockchainEnum.Waves])

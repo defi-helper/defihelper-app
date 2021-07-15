@@ -10,6 +10,8 @@ import { ReactComponent as TrustIcon } from '~/assets/icons/wallets/trustwallet.
 import { ReactComponent as TrezorIcon } from '~/assets/icons/wallets/trezor-wallet.svg'
 import { ReactComponent as BinanceIcon } from '~/assets/icons/wallets/binance-wallet.svg'
 import * as connectors from './connectors'
+import { config } from '~/config'
+import { BlockchainEnum } from '~/graphql/_generated-types'
 
 enum ConnectorNames {
   MetaMask = 'MetaMask',
@@ -64,3 +66,42 @@ export const connectorsByName: Record<
     logo: PortisIcon
   }
 }
+
+export type Network = {
+  title: string
+  chainIds?: number[]
+  blockchain?: BlockchainEnum
+  network?: number
+  onClick?: 'openChangeNetwork' | 'setupBinance' | 'loginWaves'
+  type: 'Networks' | 'AllNetworks'
+}
+
+export const NETWORKS: Network[] = [
+  {
+    title: 'All',
+    chainIds: [] as number[],
+    type: 'AllNetworks' as const
+  },
+  {
+    title: 'Ethereum',
+    chainIds: config.CHAIN_ETHEREUM_IDS,
+    blockchain: BlockchainEnum.Ethereum,
+    network: config.CHAIN_ETHEREUM_IDS[0],
+    onClick: 'openChangeNetwork' as const,
+    type: 'Networks' as const
+  },
+  {
+    title: 'Binance Smart Chain',
+    chainIds: config.CHAIN_BINANCE_IDS,
+    blockchain: BlockchainEnum.Ethereum,
+    network: config.CHAIN_BINANCE_IDS[0],
+    onClick: 'setupBinance' as const,
+    type: 'Networks' as const
+  },
+  {
+    title: 'Waves',
+    blockchain: BlockchainEnum.Waves,
+    onClick: 'loginWaves' as const,
+    type: 'Networks' as const
+  }
+]

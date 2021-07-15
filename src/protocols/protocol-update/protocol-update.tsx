@@ -12,7 +12,7 @@ export type ProtocolUpdateProps = unknown
 export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
   const params = useParams<{ protocolId: string }>()
 
-  useGate(detailModel.protocolDetailGate, params)
+  useGate(detailModel.ProtocolDetailGate, params)
 
   const protocol = useStore(detailModel.$protocol)
   const loading = useStore(detailModel.fetchProtocolFx.pending)

@@ -1429,6 +1429,7 @@ export type StakingContractFragmentFragment = {
   | 'createdAt'
   | 'adapter'
   | 'protocolId'
+  | 'layout'
 >
 
 export type StakingDisconnectWalletMutationVariables = Exact<{

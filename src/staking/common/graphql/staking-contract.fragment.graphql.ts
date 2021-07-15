@@ -13,5 +13,6 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
     createdAt
     adapter
     protocolId
+    layout
   }
 `

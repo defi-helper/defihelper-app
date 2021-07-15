@@ -9,7 +9,7 @@ import {
   activateWalletFx,
   diactivateWalletFx,
   updateWalletFx
-} from './network.model'
+} from './wallet-network.model'
 
 export const useEagerConnect = () => {
   const wallet = useStore($wallet)
