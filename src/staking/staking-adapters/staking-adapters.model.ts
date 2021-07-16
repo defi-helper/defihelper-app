@@ -81,9 +81,12 @@ const $adapters = stakingAdaptersDomain
 
 const fetchStakingListDone = sample({
   clock: stakingListModel.fetchStakingListFx.done,
-  fn: ({ params, result }) => ({
-    protocolAdapter: params.protocolAdapter,
-    contracts: result.map(({ address, adapter }) => ({ address, adapter }))
+  fn: ({ result }) => ({
+    protocolAdapter: result.adapter,
+    contracts: result.contracts.map(({ address, adapter }) => ({
+      address,
+      adapter
+    }))
   }),
   greedy: true
 })

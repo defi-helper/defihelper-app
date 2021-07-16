@@ -36,7 +36,10 @@ export const stakingApi = {
         variables
       )
       .toPromise()
-      .then(({ data }) => data?.protocol?.contracts.list ?? []),
+      .then(({ data }) => ({
+        adapter: data?.protocol?.adapter,
+        contracts: data?.protocol?.contracts.list ?? []
+      })),
 
   contractDelete: (id: string) =>
     getAPIClient()

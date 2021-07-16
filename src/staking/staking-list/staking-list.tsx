@@ -17,7 +17,6 @@ import { StakingAdapters } from '~/staking/staking-adapters'
 
 export type StakingListProps = {
   protocolId: string
-  protocolAdapter?: string
 }
 
 const useStyles = makeStyles(() => ({

@@ -14,7 +14,6 @@ export const stakingListDomain = createDomain('stakingList')
 
 type GateState = {
   protocolId: string
-  protocolAdapter?: string
   blockchain?: BlockchainEnum
   network?: number
 }
@@ -100,7 +99,7 @@ const $contractList = stakingListDomain
     name: '$contractList'
   })
   .on(fetchStakingListFx.doneData, (_, payload) =>
-    payload.map((contract) => ({ ...contract, type: 'Contract' }))
+    payload.contracts.map((contract) => ({ ...contract, type: 'Contract' }))
   )
   .on(deleteStakingFx.doneData, (state, payload) => {
     return state.filter(({ id }) => id !== payload)
@@ -161,15 +160,9 @@ export const StakingListGate = createGate<GateState>({
   domain: stakingListDomain
 })
 
-const Open = guard({
-  source: userModel.$user,
-  clock: StakingListGate.open,
-  filter: (user) => !user
-})
-
 const fetchStakingList = sample({
   source: walletNetworkSwitcherModel.$currentNetwork,
-  clock: [walletNetworkSwitcherModel.activateNetwork, Open],
+  clock: [walletNetworkSwitcherModel.activateNetwork, StakingListGate.open],
   fn: (source) => ({ ...source, ...StakingListGate.state.getState() }),
   greedy: true
 })
@@ -177,5 +170,6 @@ const fetchStakingList = sample({
 guard({
   clock: fetchStakingList,
   filter: ({ protocolId }) => Boolean(protocolId),
-  target: [fetchStakingListFx, fetchConnectedContractsFx]
+  target: [fetchStakingListFx, fetchConnectedContractsFx],
+  greedy: true
 })
