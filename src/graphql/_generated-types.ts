@@ -1638,16 +1638,16 @@ export type StakingContractListQueryVariables = Exact<{
 
 export type StakingContractListQuery = { __typename?: 'Query' } & {
   protocol?: Maybe<
-    { __typename?: 'ProtocolType' } & {
-      contracts: { __typename?: 'ContractListType' } & {
-        list?: Maybe<
-          Array<
-            { __typename?: 'ContractType' } & StakingContractFragmentFragment
+    { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'adapter'> & {
+        contracts: { __typename?: 'ContractListType' } & {
+          list?: Maybe<
+            Array<
+              { __typename?: 'ContractType' } & StakingContractFragmentFragment
+            >
           >
-        >
-        pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+        }
       }
-    }
   >
 }
 

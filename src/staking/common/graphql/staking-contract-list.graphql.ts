@@ -10,6 +10,7 @@ export const STAKING_CONTRACT_LIST = gql`
     $contractPagination: ContractListPaginationInputType
   ) {
     protocol(filter: $filter) {
+      adapter
       contracts(
         filter: $contractFilter
         sort: $contractSort

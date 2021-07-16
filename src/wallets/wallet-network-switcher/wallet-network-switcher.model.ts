@@ -1,11 +1,15 @@
 import { createDomain, guard } from 'effector-logger'
+import { debounce } from 'patronum/debounce'
 
 import { NETWORKS, Network } from '~/wallets/common'
 import { networkModel } from '~/wallets/wallet-networks'
 
 const domain = createDomain('walletNetworkSwitcher')
 
-export const activateNetwork = domain.createEvent<Network>('activateNetwork')
+export const activateNetwork = debounce({
+  source: domain.createEvent<Network>('activateNetwork'),
+  timeout: 300
+})
 
 export const activateNetworkFx = domain.createEffect({
   name: 'activateNetworkFx',
