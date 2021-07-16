@@ -57,7 +57,6 @@ export const ProtocolDetail: React.VFC<ProtocolDetailProps> = () => {
   const [currentGroup, setCurrentGroup] = useState(MetricGroupEnum.Day)
 
   useGate(model.ProtocolDetailGate, params)
-  useGate(model.ProtocolMetricGate, { ...params, group: currentGroup })
 
   const protocol = useStore(model.$protocol)
   const loading = useStore(model.fetchProtocolFx.pending)

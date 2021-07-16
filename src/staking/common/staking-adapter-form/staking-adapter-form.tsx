@@ -1,15 +1,25 @@
-import { Button, TextField, makeStyles, Typography } from '@material-ui/core'
-import { useState } from 'react'
+import { Button, makeStyles, Typography } from '@material-ui/core'
+import React, { useEffect, useState } from 'react'
 
-import { AdapterActions, Adapter, AdapterWallet } from '~/common/load-adapter'
+import { Adapter, AdapterWallet } from '~/common/load-adapter'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { NumericalInput } from '~/common/numerical-input'
 
 export type StakingAdapterFormProps = {
-  actions: AdapterActions | null
   metrics: Adapter['metrics']
   reward: Adapter['reward']
   staking: Adapter['staking']
   wallet: AdapterWallet | null
+  disabled?: boolean
+  onClaim: (amount: string) => void
+  onStake: (amount: string) => void
+  onUnStake: (amount: string) => void
+  onExit: (amount: string) => void
+  claim?: boolean
+  exit?: boolean
+  stake?: boolean
+  unstake?: boolean
+  tokens?: Record<string, string>
 }
 
 const useStyles = makeStyles(() => ({
@@ -24,64 +34,52 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-const createStakingAction =
-  (
-    actions?: AdapterActions | null,
-    action?: keyof AdapterActions,
-    decimals?: number
-  ) =>
-  (amount: string) =>
-  async () => {
-    if (!actions || !action || !decimals) return
-
-    try {
-      const sendAmount = bignumberUtils.toSend(amount, decimals)
-
-      const can = await actions[action].can(sendAmount)
-
-      if (!can || can instanceof Error) return
-
-      await actions[action].send(sendAmount)
-    } catch (error) {
-      console.error(error.message)
-    }
-  }
-
 export const StakingAdapterForm: React.VFC<Partial<StakingAdapterFormProps>> = (
   props
 ) => {
   const classes = useStyles()
 
   const [amount, setAmount] = useState('')
+  const [error, setError] = useState('')
 
-  const handleClaim = createStakingAction(
-    props.actions,
-    'claim',
-    props.staking?.decimals
-  )
-  const handleStake = createStakingAction(
-    props.actions,
-    'stake',
-    props.staking?.decimals
-  )
-  const handleUnStake = createStakingAction(
-    props.actions,
-    'unstake',
-    props.staking?.decimals
-  )
-  const handleExit = createStakingAction(
-    props.actions,
-    'exit',
-    props.staking?.decimals
-  )
+  const handleClaim = () => props.onClaim?.(amount)
+  const handleStake = () => props.onStake?.(amount)
+  const handleUnStake = () => props.onUnStake?.(amount)
+  const handleExit = () => props.onExit?.(amount)
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    setAmount(event.target.value)
+  }
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+  }
+
+  useEffect(() => {
+    if (!amount) {
+      setError('Required')
+    } else {
+      setError('')
+    }
+  }, [amount])
 
   return (
-    <form noValidate autoComplete="off" className={classes.root}>
-      <TextField
+    <form
+      noValidate
+      autoComplete="off"
+      className={classes.root}
+      onSubmit={handleSubmit}
+    >
+      <NumericalInput
         className={classes.input}
         label="Amount"
         value={amount}
-        onChange={(event) => setAmount(event.target.value)}
+        onChange={handleChange}
+        helperText={error}
+        error={Boolean(error)}
+        disabled={props.disabled}
       />
       <Typography>
         APY: {bignumberUtils.format(props.metrics?.aprYear)} %
@@ -94,36 +92,41 @@ export const StakingAdapterForm: React.VFC<Partial<StakingAdapterFormProps>> = (
           {Object.entries(props.wallet.earned).map(
             ([address, { balance, usd }]) => (
               <span key={address}>
-                Balance: {bignumberUtils.format(balance)}
-                <br /> Balance: ${bignumberUtils.format(usd)}
+                Balance: {bignumberUtils.format(balance)}{' '}
+                {props.tokens?.[address]} ($
+                {bignumberUtils.format(usd)})
               </span>
             )
           )}
         </Typography>
       )}
       <Typography>
-        Earned: {bignumberUtils.format(props.wallet?.metrics.earned)}
+        Earned: {bignumberUtils.format(props.wallet?.metrics.earned)}{' '}
+        {Object.keys(props.wallet?.earned ?? {}).map(
+          (address) => props.tokens?.[address]
+        )}{' '}
+        ($
+        {bignumberUtils.format(props.wallet?.metrics.earnedUSD)})
       </Typography>
       <Typography>
-        Earned: ${bignumberUtils.format(props.wallet?.metrics.earnedUSD)}
+        Staked: {bignumberUtils.format(props.wallet?.metrics.staking)}{' '}
+        {Object.keys(props.wallet?.staked ?? {}).map(
+          (address) => props.tokens?.[address]
+        )}{' '}
+        ($
+        {bignumberUtils.format(props.wallet?.metrics.stakingUSD)})
       </Typography>
-      <Typography>
-        Staked: {bignumberUtils.format(props.wallet?.metrics.staking)}
-      </Typography>
-      <Typography>
-        Staked: ${bignumberUtils.format(props.wallet?.metrics.stakingUSD)}
-      </Typography>
-      <Button type="button" onClick={handleClaim(amount)}>
-        Claim
+      <Button type="submit" onClick={handleStake} disabled={props.disabled}>
+        {props.stake ? 'loading...' : 'Stake'}
       </Button>
-      <Button type="button" onClick={handleStake(amount)}>
-        Stake
+      <Button type="submit" onClick={handleUnStake} disabled={props.disabled}>
+        {props.unstake ? 'loading...' : 'Unstake'}
       </Button>
-      <Button type="button" onClick={handleUnStake(amount)}>
-        Unstake
+      <Button onClick={handleClaim} disabled={props.disabled}>
+        {props.claim ? 'loading...' : 'Claim'}
       </Button>
-      <Button type="button" onClick={handleExit(amount)}>
-        Exit
+      <Button onClick={handleExit} disabled={props.disabled}>
+        {props.exit ? 'loading...' : 'Exit'}
       </Button>
     </form>
   )

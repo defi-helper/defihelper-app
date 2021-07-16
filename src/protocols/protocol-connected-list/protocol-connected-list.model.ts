@@ -9,7 +9,7 @@ const protocoConnectedlListDomain = createDomain('protocoConnectedlList')
 
 export const fetchProtocolConnectedListFx =
   protocoConnectedlListDomain.createEffect({
-    name: 'fetchProtocolList',
+    name: 'fetchProtocolConnectedListFx',
     handler: (userId: string) =>
       protocolsApi.protocolList({
         protocolFilter: {
@@ -20,7 +20,7 @@ export const fetchProtocolConnectedListFx =
 
 export const $protocolList = protocoConnectedlListDomain
   .createStore<ProtocolFragmentFragment[]>([], {
-    name: 'protocols'
+    name: '$protocolList'
   })
   .on(fetchProtocolConnectedListFx.doneData, (_, payload) => payload)
   .on(deleteProtocolFx.done, (state, { params: payload }) =>

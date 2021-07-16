@@ -232,6 +232,8 @@ export type Mutation = {
   userContactCreate: UserContactType
   userContactEmailConfirm: UserContactType
   userContactDelete: Scalars['Boolean']
+  userEventSubscriptionCreate: UserEventSubscriptionType
+  userEventSubscriptionDelete: UserEventSubscriptionType
 }
 
 export type MutationAuthEthArgs = {
@@ -306,6 +308,14 @@ export type MutationUserContactEmailConfirmArgs = {
 
 export type MutationUserContactDeleteArgs = {
   id: Scalars['UuidType']
+}
+
+export type MutationUserEventSubscriptionCreateArgs = {
+  input: UserEventSubscriptionCreateInputType
+}
+
+export type MutationUserEventSubscriptionDeleteArgs = {
+  input: UserEventSubscriptionDeleteInputType
 }
 
 export type Pagination = {
@@ -538,6 +548,11 @@ export type Query = {
   proposals: ProposalListQuery
   userContact?: Maybe<UserContactType>
   userContacts: UserContactListQuery
+  userEventSubscription?: Maybe<UserEventSubscriptionType>
+  userEventSubscriptions: UserEventSubscriptionListQuery
+  tokens: TokenListQuery
+  tokenAlias?: Maybe<TokenAlias>
+  tokensAlias: TokenAliasListQuery
 }
 
 export type QueryProtocolArgs = {
@@ -570,11 +585,178 @@ export type QueryUserContactsArgs = {
   pagination?: Maybe<UserContactListPaginationInputType>
 }
 
+export type QueryUserEventSubscriptionArgs = {
+  filter: UserEventSubscriptionInputType
+}
+
+export type QueryUserEventSubscriptionsArgs = {
+  filter?: Maybe<UserEventSubscriptionListQueryFilterInputType>
+  sort?: Maybe<Array<UserEventSubscriptionListSortInputType>>
+  pagination?: Maybe<UserEventSubscriptionListPaginationInputType>
+}
+
+export type QueryTokensArgs = {
+  filter?: Maybe<TokenListQueryFilterInputType>
+  sort?: Maybe<Array<TokenListQuerySortInputType>>
+  pagination?: Maybe<TokenListQueryPaginationInputType>
+}
+
+export type QueryTokenAliasArgs = {
+  filter: TokenAliasFilterInputType
+}
+
+export type QueryTokensAliasArgs = {
+  filter?: Maybe<TokenAliasListFilterInputType>
+  sort?: Maybe<Array<TokenAliasListSortInputType>>
+  pagination?: Maybe<TokenAliasListPaginationInputType>
+}
+
 export enum SortOrderEnum {
   /** Ascending */
   Asc = 'asc',
   /** Descending */
   Desc = 'desc'
+}
+
+export type TokenAlias = {
+  __typename?: 'TokenAlias'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Name */
+  name: Scalars['String']
+  /** Symbol */
+  symbol: Scalars['String']
+  /** Is stable price */
+  stable: Scalars['Boolean']
+  tokens: TokenListType
+}
+
+export type TokenAliasTokensArgs = {
+  filter?: Maybe<TokenListFilterInputType>
+  sort?: Maybe<Array<TokenListSortInputType>>
+  pagination?: Maybe<TokenListPaginationInputType>
+}
+
+export type TokenAliasFilterInputType = {
+  id: Scalars['String']
+}
+
+export type TokenAliasListFilterInputType = {
+  blockchain?: Maybe<BlockchainFilterInputType>
+  stable?: Maybe<Scalars['Boolean']>
+  symbol?: Maybe<Scalars['String']>
+  search?: Maybe<Scalars['String']>
+}
+
+export type TokenAliasListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type TokenAliasListQuery = {
+  __typename?: 'TokenAliasListQuery'
+  /** Elements */
+  list?: Maybe<Array<TokenAlias>>
+  pagination: Pagination
+}
+
+export type TokenAliasListSortInputType = {
+  column: TokenAliasListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum TokenAliasListSortInputTypeColumnEnum {
+  Id = 'id',
+  Name = 'name',
+  Symbol = 'symbol',
+  CreatedAt = 'createdAt'
+}
+
+export type TokenListFilterInputType = {
+  blockchain?: Maybe<BlockchainFilterInputType>
+  address?: Maybe<Array<Scalars['String']>>
+  search?: Maybe<Scalars['String']>
+}
+
+export type TokenListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type TokenListQuery = {
+  __typename?: 'TokenListQuery'
+  /** Elements */
+  list?: Maybe<Array<TokenType>>
+  pagination: Pagination
+}
+
+export type TokenListQueryFilterInputType = {
+  blockchain?: Maybe<BlockchainFilterInputType>
+  address?: Maybe<Array<Scalars['String']>>
+  search?: Maybe<Scalars['String']>
+}
+
+export type TokenListQueryPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type TokenListQuerySortInputType = {
+  column: TokenListQuerySortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum TokenListQuerySortInputTypeColumnEnum {
+  Id = 'id',
+  Name = 'name',
+  Symbol = 'symbol',
+  CreatedAt = 'createdAt'
+}
+
+export type TokenListSortInputType = {
+  column: TokenListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum TokenListSortInputTypeColumnEnum {
+  Id = 'id',
+  Name = 'name',
+  Symbol = 'symbol',
+  Address = 'address',
+  CreatedAt = 'createdAt'
+}
+
+export type TokenListType = {
+  __typename?: 'TokenListType'
+  /** Elements */
+  list?: Maybe<Array<TokenType>>
+  pagination: Pagination
+}
+
+export type TokenType = {
+  __typename?: 'TokenType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Token alias id */
+  alias: Scalars['String']
+  /** Blockchain type */
+  blockchain: BlockchainEnum
+  /** Blockchain network id */
+  network: Scalars['String']
+  /** Address */
+  address: Scalars['String']
+  /** Name */
+  name: Scalars['String']
+  /** Symbol */
+  symbol: Scalars['String']
+  /** Decimals */
+  decimals: Scalars['Int']
 }
 
 export type UserBlockchainType = {
@@ -734,10 +916,76 @@ export type UserContactType = {
   status: UserContactStatusEnum
   /** Confirmation Code */
   confirmationCode: Scalars['String']
-  /** Date of crate */
+  /** Date of create */
   createdAt: Scalars['DateTimeType']
   /** Date of activated */
   activatedAt?: Maybe<Scalars['DateTimeType']>
+}
+
+export type UserEventSubscriptionCreateInputType = {
+  /** Usr contact id */
+  contact: Scalars['String']
+  /** Contract id */
+  contract: Scalars['String']
+  /** Even name */
+  event: Scalars['String']
+}
+
+export type UserEventSubscriptionDeleteInputType = {
+  id: Scalars['UuidType']
+}
+
+export type UserEventSubscriptionInputType = {
+  id: Scalars['UuidType']
+}
+
+export type UserEventSubscriptionListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserEventSubscriptionListQuery = {
+  __typename?: 'UserEventSubscriptionListQuery'
+  /** Elements */
+  list?: Maybe<Array<UserEventSubscriptionType>>
+  pagination: Pagination
+}
+
+export type UserEventSubscriptionListQueryFilterInputType = {
+  /** User ID */
+  user?: Maybe<Scalars['UuidType']>
+  /** Contract Id */
+  contract?: Maybe<Scalars['UuidType']>
+  /** Event */
+  event?: Maybe<Scalars['String']>
+  /** User contact type */
+  contactType?: Maybe<UserContactBrokerEnum>
+}
+
+export type UserEventSubscriptionListSortInputType = {
+  column: UserEventSubscriptionListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserEventSubscriptionListSortInputTypeColumnEnum {
+  Id = 'id',
+  CreatedAt = 'createdAt'
+}
+
+export type UserEventSubscriptionType = {
+  __typename?: 'UserEventSubscriptionType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Contact */
+  contact: UserContactType
+  /** Contact */
+  contract: Scalars['String']
+  /** Event */
+  event: Scalars['String']
+  /** Date of create */
+  createdAt: Scalars['DateTimeType']
 }
 
 export type UserMetricChartFilterInputType = {
@@ -1440,6 +1688,30 @@ export type StakingDisconnectWalletMutationVariables = Exact<{
 export type StakingDisconnectWalletMutation = {
   __typename?: 'Mutation'
 } & Pick<Mutation, 'contractWalletUnlink'>
+
+export type StakingTokensQueryVariables = Exact<{
+  filter?: Maybe<TokenListQueryFilterInputType>
+}>
+
+export type StakingTokensQuery = { __typename?: 'Query' } & {
+  tokens: { __typename?: 'TokenListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'TokenType' } & Pick<
+          TokenType,
+          | 'id'
+          | 'alias'
+          | 'blockchain'
+          | 'network'
+          | 'address'
+          | 'name'
+          | 'symbol'
+          | 'decimals'
+        >
+      >
+    >
+  }
+}
 
 export type MeQueryVariables = Exact<{
   filter?: Maybe<WalletListFilterInputType>
