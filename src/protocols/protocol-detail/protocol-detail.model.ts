@@ -1,14 +1,14 @@
 import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
-import { Unwrap } from '~/common/types'
 
+import { Unwrap } from '~/common/types'
 import { MetricGroupEnum, ProtocolQuery } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 
 export const protocolDetailDomain = createDomain('protocolList')
 
 export const fetchProtocolFx = protocolDetailDomain.createEffect({
-  name: 'fetchProtocolList',
+  name: 'fetchProtocolFx',
   handler: async (params: { protocolId: string }) =>
     protocolsApi.protocolDetail({
       filter: {
@@ -96,10 +96,12 @@ export const ProtocolMetricGate = createGate<{
 
 sample({
   clock: ProtocolDetailGate.open,
-  target: fetchProtocolFx
+  target: fetchProtocolFx,
+  greedy: true
 })
 
 sample({
   clock: ProtocolMetricGate.open,
-  target: fetchMetricFx
+  target: fetchMetricFx,
+  greedy: true
 })

@@ -11,7 +11,7 @@ import {
   connectors
 } from '~/wallets/common'
 import { notifications } from '~/notifications'
-import { sidUtils } from '~/users/common/sid-utils'
+import { sidUtils } from '~/users/common'
 import { config } from '~/config'
 
 const networks = new Map<number | undefined, typeof createEthereumProvider>()
@@ -131,7 +131,8 @@ export const signMessageFx = networkDomain.createEffect({
 sample({
   clock: signMessageFx.failData,
   fn: ({ message }) => message,
-  target: [notifications.error, diactivateWalletFx]
+  target: [notifications.error, diactivateWalletFx],
+  greedy: true
 })
 
 guard({

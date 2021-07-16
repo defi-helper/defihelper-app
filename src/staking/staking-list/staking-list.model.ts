@@ -1,13 +1,6 @@
 import { combine, createDomain, guard, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
-import { config } from '~/config'
-import {
-  loadAdapter,
-  AdapterActions,
-  Adapter,
-  AdapterWallet
-} from '~/common/load-adapter'
 import {
   BlockchainEnum,
   StakingContractFragmentFragment
@@ -134,78 +127,6 @@ const $connectedContracts = stakingListDomain
     [params.contract]: true
   }))
 
-type FetchContract = {
-  params: GateState
-  result: Contract[]
-}
-
-const buildAdaptersUrl = (protocolAdapter?: string) => {
-  if (!protocolAdapter) throw new Error('protocolAdapter is required')
-
-  return `${config.ADAPTERS_HOST}adapters/${protocolAdapter}.js`
-}
-
-export const fetchContractAdaptersFx = stakingListDomain.createEffect({
-  name: 'fetchContractAdaptersFx',
-  handler: (done: { params: GateState; result: Contract[] }) => {
-    const network = networkModel.getNetwork()
-
-    return Promise.all(
-      done.result.map(async (contract) => {
-        const adapterContract = await loadAdapter(
-          buildAdaptersUrl(done.params.protocolAdapter),
-          contract.adapter
-        )
-
-        const adapter = await adapterContract(
-          network.networkProvider,
-          contract.address,
-          {
-            blockNumber: 'latest',
-            signer: network.networkProvider?.getSigner()
-          }
-        )
-
-        const wallet = network.account
-          ? await adapter.wallet(network.account)
-          : null
-
-        const actions = network.account
-          ? await adapter.actions(network.account)
-          : null
-
-        return {
-          contractAddress: contract.address,
-          wallet,
-          metrics: adapter.metrics,
-          staking: adapter.staking,
-          reward: adapter.reward,
-          actions
-        }
-      })
-    )
-  }
-})
-
-type StakingAdapter = {
-  wallet: null | AdapterWallet
-  actions: null | AdapterActions
-  contractAddress: string
-  metrics: Adapter['metrics']
-  staking: Adapter['staking']
-  reward: Adapter['reward']
-}
-
-export const $adapters = stakingListDomain
-  .createStore<Record<string, StakingAdapter>>({}, { name: '$adapters' })
-  .on(fetchContractAdaptersFx.doneData, (_, payload) =>
-    payload.reduce<Record<string, StakingAdapter>>((acc, adapter) => {
-      acc[adapter.contractAddress] = adapter
-
-      return acc
-    }, {})
-  )
-
 const $wallets = userModel.$user.map(
   (user) =>
     user?.wallets.list?.reduce<
@@ -226,13 +147,11 @@ export const $contracts = combine(
   $connectedContracts,
   $wallets,
   networkModel.$wallet,
-  $adapters,
-  (contractList, connectedContracts, wallets, wallet, adapters) => {
+  (contractList, connectedContracts, wallets, wallet) => {
     return contractList.map((contract) => ({
       ...contract,
       connected: Boolean(connectedContracts[contract.id]),
-      wallet: wallet.account ? wallets[wallet.account] : null,
-      formAdapter: adapters[contract.address]
+      wallet: wallet.account ? wallets[wallet.account] : null
     }))
   }
 )
@@ -259,19 +178,4 @@ guard({
   clock: fetchStakingList,
   filter: ({ protocolId }) => Boolean(protocolId),
   target: [fetchStakingListFx, fetchConnectedContractsFx]
-})
-
-const fetchStakingListDone = guard({
-  clock: fetchStakingListFx.done,
-  filter: (done): done is FetchContract =>
-    Boolean(done.params && done.result) && Boolean(done.params.protocolAdapter),
-  greedy: true
-})
-
-sample({
-  source: networkModel.$wallet,
-  clock: fetchStakingListDone,
-  fn: (source, clock) => ({ ...clock, provider: source.provider }),
-  target: fetchContractAdaptersFx,
-  greedy: true
 })

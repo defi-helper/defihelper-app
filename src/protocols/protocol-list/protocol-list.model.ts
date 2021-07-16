@@ -12,7 +12,7 @@ import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 const protocolListDomain = createDomain('protocolList')
 
 export const fetchProtocolListFx = protocolListDomain.createEffect({
-  name: 'fetchProtocolList',
+  name: 'fetchProtocolListFx',
   handler: (params?: {
     blockchain: BlockchainEnum
     network?: string | number
@@ -50,7 +50,7 @@ export const $protocolList = protocolListDomain
   .createStore<
     (ProtocolFragmentFragment & { deleting: boolean; type: 'Protocol' })[]
   >([], {
-    name: 'protocols'
+    name: '$protocolList'
   })
   .on(fetchProtocolListFx.doneData, (_, payload) =>
     payload.map((protocol) => ({
@@ -75,7 +75,8 @@ export const ProtocolListGate = createGate({
 const Open = guard({
   source: userModel.$user,
   clock: ProtocolListGate.open,
-  filter: (user) => !user
+  filter: (user) => !user,
+  greedy: true
 })
 
 sample({

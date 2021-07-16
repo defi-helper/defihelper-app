@@ -29,11 +29,13 @@ export const $currentNetwork = domain
 guard({
   clock: networkModel.activateWalletFx.doneData.map(({ chainId }) => chainId),
   filter: (chainId): chainId is number => Boolean(chainId),
-  target: activateNetworkFx
+  target: activateNetworkFx,
+  greedy: true
 })
 
 guard({
   clock: networkModel.updateWalletFx.doneData.map(({ chainId }) => chainId),
   filter: (chainId): chainId is number => Boolean(chainId),
-  target: activateNetworkFx
+  target: activateNetworkFx,
+  greedy: true
 })

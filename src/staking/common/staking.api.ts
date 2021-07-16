@@ -13,7 +13,9 @@ import {
   StakingDisconnectWalletMutation,
   StakingDisconnectWalletMutationVariables,
   StakingConnectedContractsQuery,
-  StakingConnectedContractsQueryVariables
+  StakingConnectedContractsQueryVariables,
+  StakingTokensQuery,
+  StakingTokensQueryVariables
 } from '~/graphql/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -21,7 +23,8 @@ import {
   STAKING_CONTRACT_CREATE,
   STAKING_CONTRACT_UPDATE,
   STAKING_CONNECT_WALLET,
-  STAKING_DISCONNECT_WALLET
+  STAKING_DISCONNECT_WALLET,
+  STAKING_TOKENS
 } from './graphql'
 import { STAKING_CONNECTED_CONTRACTS } from './graphql/staking-connected-contracts.graphql'
 
@@ -93,5 +96,14 @@ export const stakingApi = {
       .toPromise()
       .then(({ data }) =>
         data?.me?.wallets.list?.flatMap(({ contracts }) => contracts.list)
+      ),
+
+  tokens: (variables: StakingTokensQueryVariables) =>
+    getAPIClient()
+      .query<StakingTokensQuery, StakingTokensQueryVariables>(
+        STAKING_TOKENS,
+        variables
       )
+      .toPromise()
+      .then(({ data }) => data?.tokens.list ?? [])
 }

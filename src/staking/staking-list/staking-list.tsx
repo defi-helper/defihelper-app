@@ -4,7 +4,6 @@ import Button from '@material-ui/core/Button'
 import Link from '@material-ui/core/Link'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import React, { useMemo } from 'react'
-import isEmpty from 'lodash.isempty'
 
 import { Can, useAbility } from '~/users'
 import * as model from './staking-list.model'
@@ -14,7 +13,7 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import { dateUtils } from '~/common/date-utils'
 import { cutAccount } from '~/common/cut-account'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
-import { StakingAdapterForm } from '~/staking/common'
+import { StakingAdapters } from '~/staking/staking-adapters'
 
 export type StakingListProps = {
   protocolId: string
@@ -55,10 +54,6 @@ const useStyles = makeStyles(() => ({
     marginRight: 10
   }
 }))
-
-const FORM_LAYOUTS: Record<string, React.ElementType> = {
-  staking: StakingAdapterForm
-}
 
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const classes = useStyles()
@@ -176,12 +171,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   Delete
                 </Button>
               </Can>
-              {FORM_LAYOUTS[stakingListItem.layout] &&
-                !isEmpty(stakingListItem.formAdapter) &&
-                React.createElement(
-                  FORM_LAYOUTS[stakingListItem.layout],
-                  stakingListItem.formAdapter
-                )}
+              <StakingAdapters
+                contractAddress={stakingListItem.address}
+                contractLayout={stakingListItem.layout}
+              />
             </li>
           ))}
       </ul>
