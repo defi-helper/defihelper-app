@@ -170,6 +170,13 @@ const fetchStakingList = sample({
 guard({
   clock: fetchStakingList,
   filter: ({ protocolId }) => Boolean(protocolId),
-  target: [fetchStakingListFx, fetchConnectedContractsFx],
+  target: [fetchStakingListFx],
+  greedy: true
+})
+
+sample({
+  clock: fetchStakingListFx.done,
+  fn: ({ params }) => params,
+  target: fetchConnectedContractsFx,
   greedy: true
 })
