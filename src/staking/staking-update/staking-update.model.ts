@@ -2,7 +2,7 @@ import { createDomain } from 'effector-logger'
 import { history } from '~/common/history'
 
 import { StakingContractUpdateMutationVariables } from '~/graphql/_generated-types'
-import { notifications } from '~/notifications'
+import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
 import { stakingApi } from '~/staking/common'
 
@@ -14,8 +14,8 @@ export const stakingUpdateFx = stakingUpdate.createEffect({
     stakingApi.contractUpdate(input)
 })
 
-stakingUpdateFx.failData.watch((error) => notifications.error(error.message))
-
 stakingUpdateFx.doneData.watch((payload) => {
   history.push(paths.protocols.detail(payload))
 })
+
+toastsService.forwardErrors(stakingUpdateFx.failData)

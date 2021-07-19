@@ -5,9 +5,9 @@ import Alert from '@material-ui/lab/Alert'
 import { makeStyles, Theme } from '@material-ui/core/styles'
 
 import { Portal } from '~/common/portal'
-import { $notifications, removeNotification } from './notifications.model'
+import * as model from './toast.model'
 
-export type NotificationsProviderProps = {
+export type ToastProviderProps = {
   maxItems?: number
 }
 
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
 
-  notification: {
+  toast: {
     position: 'static',
     left: 'auto',
     transform: 'none',
@@ -33,53 +33,51 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }))
 
-export const NotificationsProvider: React.FC<NotificationsProviderProps> = (
-  props
-) => {
-  const notifications = useStore($notifications)
+export const ToastProvider: React.FC<ToastProviderProps> = (props) => {
+  const toasts = useStore(model.$toasts)
 
   const classes = useStyles()
 
   const handleClose = (key: string) => () => {
-    removeNotification(key)
+    model.removeToast(key)
   }
 
   useEffect(() => {
-    if (props.maxItems && notifications.length > props.maxItems) {
-      removeNotification(notifications[0].key)
+    if (props.maxItems && toasts.length > props.maxItems) {
+      const [toast] = toasts
+
+      model.removeToast(toast.key)
     }
-  }, [notifications, props.maxItems])
+  }, [toasts, props.maxItems])
 
   return (
     <>
       <Portal>
         <div className={classes.root}>
-          {notifications.map((notification) => {
-            const isDefault = notification.variant === 'default'
+          {toasts.map((toast) => {
+            const isDefault = toast.variant === 'default'
 
             return (
               <Snackbar
                 open
                 autoHideDuration={DURATION}
-                key={notification.key}
-                message={isDefault ? notification.message : undefined}
-                className={classes.notification}
+                key={toast.key}
+                message={isDefault ? toast.message : undefined}
+                className={classes.toast}
                 ClickAwayListenerProps={{ onClickAway: () => {} }}
-                onClick={handleClose(notification.key)}
-                onClose={handleClose(notification.key)}
+                onClick={handleClose(toast.key)}
+                onClose={handleClose(toast.key)}
               >
                 {!isDefault ? (
                   <Alert
-                    onClose={handleClose(notification.key)}
+                    onClose={handleClose(toast.key)}
                     variant="filled"
                     severity={
-                      notification.variant === 'default'
-                        ? undefined
-                        : notification.variant
+                      toast.variant === 'default' ? undefined : toast.variant
                     }
                     elevation={6}
                   >
-                    {notification.message}
+                    {toast.message}
                   </Alert>
                 ) : undefined}
               </Snackbar>

@@ -1,4 +1,4 @@
-import { guard, sample, createDomain, combine, forward } from 'effector-logger'
+import { guard, sample, createDomain, combine } from 'effector-logger'
 import omit from 'lodash.omit'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -9,7 +9,7 @@ import {
   AdapterWallet
 } from '~/common/load-adapter'
 import { BlockchainEnum } from '~/graphql/_generated-types'
-import { notificationsApi } from '~/notifications/notifications.model'
+import { toastsService } from '~/toasts'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
 import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
@@ -266,10 +266,7 @@ sample({
   greedy: true
 })
 
-forward({
-  from: [
-    contractActionFx.failData.map((error) => error.message),
-    fetchContractAdaptersFx.failData.map((error) => error.message)
-  ],
-  to: notificationsApi.error
-})
+toastsService.forwardErrors(
+  contractActionFx.failData,
+  fetchContractAdaptersFx.failData
+)
