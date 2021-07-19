@@ -25,6 +25,11 @@ export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
       (EventTarget & HTMLButtonElement) | null
     >(null)
 
+    const handleClose = () => setAnchorEl(null)
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) =>
+      setAnchorEl(event.currentTarget)
+
     const [openChangeNetwork] = useDialog(ChangeNetworkDialog)
 
     const handlers: Record<string, () => Promise<unknown>> = {
@@ -39,18 +44,18 @@ export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
       if (!changeNetwork) {
         model.activateNetwork(networkItem)
 
+        handleClose()
+
         return
       }
 
       changeNetwork()
-        .then(() => model.activateNetwork(networkItem))
+        .then(() => {
+          model.activateNetwork(networkItem)
+          handleClose()
+        })
         .catch((error) => console.error(error.message))
     }
-
-    const handleClose = () => setAnchorEl(null)
-
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) =>
-      setAnchorEl(event.currentTarget)
 
     return (
       <>
