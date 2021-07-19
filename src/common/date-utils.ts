@@ -10,5 +10,9 @@ export const dateUtils = {
   ) => dayjs(date).format(format),
 
   fromNow: (date?: string | number | Date | dayjs.Dayjs) =>
-    dayjs(date).fromNow()
+    dayjs(date).fromNow(),
+
+  after180Days: () => dayjs().subtract(180, 'days').toISOString(),
+
+  now: () => dayjs().toISOString()
 }

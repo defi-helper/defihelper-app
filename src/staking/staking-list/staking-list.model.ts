@@ -131,7 +131,7 @@ const $wallets = userModel.$user.map(
     user?.wallets.list?.reduce<
       Record<string, { id: string; blockchain: string; network: string }>
     >((acc, { address, id, blockchain, network }) => {
-      acc[address] = {
+      acc[address.toLowerCase()] = {
         id,
         blockchain,
         network
@@ -150,7 +150,7 @@ export const $contracts = combine(
     return contractList.map((contract) => ({
       ...contract,
       connected: Boolean(connectedContracts[contract.id]),
-      wallet: wallet.account ? wallets[wallet.account] : null
+      wallet: wallet.account ? wallets[wallet.account.toLowerCase()] : null
     }))
   }
 )

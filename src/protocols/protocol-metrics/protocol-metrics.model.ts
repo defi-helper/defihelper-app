@@ -1,4 +1,5 @@
 import { createDomain } from 'effector-logger'
+import { dateUtils } from '~/common/date-utils'
 
 import { Unwrap } from '~/common/types'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
@@ -15,6 +16,8 @@ type State = Record<
 
 const protocolMetricsDomain = createDomain('protocolMetricsDomain')
 
+const DAYS_LIMIT = 180
+
 export const fetchMetricFx = protocolMetricsDomain.createEffect({
   name: 'fetchMetricFx',
   handler: async (params: { protocolId: string; group: MetricGroupEnum }) => {
@@ -23,7 +26,14 @@ export const fetchMetricFx = protocolMetricsDomain.createEffect({
         id: params.protocolId
       },
       metric: 'tvl',
-      metricGroup: params.group
+      metricGroup: params.group,
+      metricFilter: {
+        dateBefore: dateUtils.now(),
+        dateAfter: dateUtils.after180Days()
+      },
+      metricPagination: {
+        limit: DAYS_LIMIT
+      }
     })
 
     return {
