@@ -124,9 +124,9 @@
   "lint-staged": {
     "src/*.{ts,tsx,js}": [
       "prettier --write",
-      "eslint src/**/*.{ts,tsx,js}",
-      "git add"
-    ]
+      "eslint src/**/*.{ts,tsx,js}"
+    ],
+    "*.{js,css,md}": "prettier --write"
   },
   "eslintConfig": {
     "extends": [
