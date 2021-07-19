@@ -2,7 +2,7 @@ export const config = {
   IS_DEV: process.env.NODE_ENV === 'development',
   CHAIN_ETHEREUM_IDS: [1, 3, 4, 5, 42, 999] as number[],
   CHAIN_BINANCE_IDS: [56, 97] as number[],
-  CHAIN_WAVES_ID: 0,
+  CHAIN_WAVES_ID: ['waves'] as string[],
   PORTIS_ID: process.env.REACT_APP_PORTIS_ID,
   FORTMATIC_KEY: process.env.REACT_APP_FORTMATIC_KEY,
   ETH_URL: '',

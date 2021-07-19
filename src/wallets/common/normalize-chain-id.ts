@@ -1,4 +1,4 @@
-export function normalizeChainId(chainId: string | number): number {
+export function normalizeChainId(chainId: string | number) {
   let normalizedChainId = chainId
 
   if (typeof chainId === 'string') {

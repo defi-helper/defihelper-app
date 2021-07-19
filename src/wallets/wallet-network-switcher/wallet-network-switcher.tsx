@@ -8,15 +8,11 @@ import { useDialog } from '~/common/dialog'
 import { ChangeNetworkDialog } from '~/common/change-network-dialog'
 import { setupBinance } from '~/common/setup-network'
 import { useAbility } from '~/users'
-import { Network, NETWORKS } from '~/wallets/common'
+import { Network, NETWORKS, connectors } from '~/wallets/common'
 import * as model from './wallet-network-switcher.model'
 
 export type WalletNetworkSwitcherProps = {
   className?: string
-}
-
-const noop = () => {
-  return new Promise((r) => r(undefined))
 }
 
 export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
@@ -34,28 +30,27 @@ export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
     const handlers: Record<string, () => Promise<unknown>> = {
       openChangeNetwork,
       setupBinance,
-      loginWaves: noop
+      loginWaves: connectors.wavesKepper.activate
     }
 
     const handleChangeNetwork = (networkItem: Network) => () => {
-      if (!networkItem.onClick) return
+      const changeNetwork = handlers[networkItem.onClick ?? '']
 
-      const changeNetwork = handlers[networkItem.onClick]
+      if (!changeNetwork) {
+        model.activateNetwork(networkItem)
 
-      if (changeNetwork) {
-        changeNetwork()
-          .then(() => model.activateNetwork(networkItem))
-          .catch(console.error)
+        return
       }
+
+      changeNetwork()
+        .then(() => model.activateNetwork(networkItem))
+        .catch((error) => console.error(error.message))
     }
 
-    const handleClose = () => {
-      setAnchorEl(null)
-    }
+    const handleClose = () => setAnchorEl(null)
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) =>
       setAnchorEl(event.currentTarget)
-    }
 
     return (
       <>

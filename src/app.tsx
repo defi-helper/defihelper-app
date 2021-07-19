@@ -1,11 +1,11 @@
-import { useNetwork } from './wallets/wallet-networks'
+import { useEthereumNetwork } from './wallets/wallet-networks'
 import { Router } from './router'
 import { DialogProvider } from './common/dialog'
 import { ToastProvider } from './toasts'
 import { UserProvider } from './users'
 
 export const App: React.VFC = () => {
-  useNetwork()
+  useEthereumNetwork()
 
   return (
     <DialogProvider>

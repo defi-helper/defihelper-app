@@ -8,6 +8,7 @@ import { BscConnector } from '@binance-chain/bsc-connector'
 
 import { config } from '~/config'
 import { WalletLinkConnector } from './wallet-link'
+import { WavesKeeperConnector } from './waves-keeper-connector'
 
 export const injected = new InjectedConnector({
   supportedChainIds: [...config.CHAIN_ETHEREUM_IDS, ...config.CHAIN_BINANCE_IDS]
@@ -53,4 +54,8 @@ export const portis = new PortisConnector({
 
 export const binance = new BscConnector({
   supportedChainIds: [...config.CHAIN_ETHEREUM_IDS, ...config.CHAIN_BINANCE_IDS]
+})
+
+export const wavesKepper = new WavesKeeperConnector({
+  data: 'Auth on site'
 })

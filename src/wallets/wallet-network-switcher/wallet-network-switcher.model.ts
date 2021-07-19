@@ -13,9 +13,9 @@ export const activateNetwork = debounce({
 
 export const activateNetworkFx = domain.createEffect({
   name: 'activateNetworkFx',
-  handler: (chainId: number) => {
+  handler: (chainId: number | string) => {
     const nextNetwork = NETWORKS.find((network) =>
-      network.chainIds?.includes(chainId)
+      network.chainIds.includes(chainId)
     )
 
     if (!nextNetwork) return
@@ -32,14 +32,14 @@ export const $currentNetwork = domain
 
 guard({
   clock: networkModel.activateWalletFx.doneData.map(({ chainId }) => chainId),
-  filter: (chainId): chainId is number => Boolean(chainId),
+  filter: (chainId): chainId is number | string => Boolean(chainId),
   target: activateNetworkFx,
   greedy: true
 })
 
 guard({
   clock: networkModel.updateWalletFx.doneData.map(({ chainId }) => chainId),
-  filter: (chainId): chainId is number => Boolean(chainId),
+  filter: (chainId): chainId is number | string => Boolean(chainId),
   target: activateNetworkFx,
   greedy: true
 })

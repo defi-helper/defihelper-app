@@ -9,6 +9,7 @@ import { ReactComponent as PortisIcon } from '~/assets/icons/wallets/portis-wall
 import { ReactComponent as TrustIcon } from '~/assets/icons/wallets/trustwallet.svg'
 import { ReactComponent as TrezorIcon } from '~/assets/icons/wallets/trezor-wallet.svg'
 import { ReactComponent as BinanceIcon } from '~/assets/icons/wallets/binance-wallet.svg'
+import { ReactComponent as WavesKeeperIcon } from '~/assets/icons/wallets/waves-keeper-wallet.svg'
 import * as connectors from './connectors'
 import { config } from '~/config'
 import { BlockchainEnum } from '~/graphql/_generated-types'
@@ -22,7 +23,8 @@ enum ConnectorNames {
   Fortmatic = 'Fortmatic',
   Portis = 'Portis',
   Trezor = 'Trezor',
-  Binance = 'Binance'
+  Binance = 'Binance',
+  WavesKeeper = 'WavesKeeper'
 }
 
 export const connectorsByName: Record<
@@ -64,12 +66,16 @@ export const connectorsByName: Record<
   [ConnectorNames.Portis]: {
     connector: connectors.portis,
     logo: PortisIcon
+  },
+  [ConnectorNames.WavesKeeper]: {
+    connector: connectors.wavesKepper,
+    logo: WavesKeeperIcon
   }
 }
 
 export type Network = {
   title: string
-  chainIds?: number[]
+  chainIds: Array<string | number>
   blockchain?: BlockchainEnum
   network?: number
   onClick?: 'openChangeNetwork' | 'setupBinance' | 'loginWaves'
@@ -101,6 +107,7 @@ export const NETWORKS: Network[] = [
   {
     title: 'Waves',
     blockchain: BlockchainEnum.Waves,
+    chainIds: config.CHAIN_WAVES_ID,
     onClick: 'loginWaves' as const,
     type: 'Networks' as const
   }

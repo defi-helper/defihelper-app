@@ -5,6 +5,7 @@ type EthereumEventMap = {
   chainChanged: string | number
   accountsChanged: string[]
   networkChanged: string | number
+  close: number
 }
 
 interface Window {
@@ -13,11 +14,11 @@ interface Window {
     isTrust?: true
     on?: <K extends keyof EthereumEventMap>(
       type: K,
-      listener: (ev: EthereumEventMap[K]) => void
+      listener: (ev: EthereumEventMap[K], options?: unknown) => void
     ) => void
     removeListener?: <K extends keyof EthereumEventMap>(
       type: K,
-      listener: (ev: EthereumEventMap[K]) => void
+      listener: (ev: EthereumEventMap[K], options?: unknown) => void
     ) => void
     request?: (arg: Record<string, unknown>) => Promise<void>
   }

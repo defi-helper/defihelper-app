@@ -77,7 +77,7 @@ export const useInactiveListener = (suppress = false) => {
   }, [wallet, suppress])
 }
 
-export const useNetwork = () => {
+export const useEthereumNetwork = () => {
   const wallet = useStore($wallet)
 
   const triedEager = useEagerConnect()
@@ -94,11 +94,15 @@ export const useNetwork = () => {
       console.error(error.message)
     }
 
+    const handleDeactivate = () => {
+      diactivateWalletFx(wallet.connector)
+    }
+
     if (wallet.connector) {
       wallet.connector
         .on(ConnectorEvent.Update, handleUpdate)
         .on(ConnectorEvent.Error, handleError)
-        .on(ConnectorEvent.Deactivate, diactivateWalletFx)
+        .on(ConnectorEvent.Deactivate, handleDeactivate)
     }
 
     return () => {
@@ -106,7 +110,7 @@ export const useNetwork = () => {
         wallet.connector
           .off(ConnectorEvent.Update, handleUpdate)
           .off(ConnectorEvent.Error, handleError)
-          .off(ConnectorEvent.Deactivate, diactivateWalletFx)
+          .off(ConnectorEvent.Deactivate, handleDeactivate)
       }
     }
   }, [wallet.connector])
