@@ -10,7 +10,7 @@ import {
   createEthereumProvider,
   connectors
 } from '~/wallets/common'
-import { notifications } from '~/notifications'
+import { toastsService } from '~/toasts'
 import { sidUtils } from '~/users/common'
 import { config } from '~/config'
 
@@ -130,8 +130,7 @@ export const signMessageFx = networkDomain.createEffect({
 
 sample({
   clock: signMessageFx.failData,
-  fn: ({ message }) => message,
-  target: [notifications.error, diactivateWalletFx],
+  target: diactivateWalletFx,
   greedy: true
 })
 
@@ -141,3 +140,9 @@ guard({
   filter: ({ account }) => Boolean(account),
   greedy: true
 })
+
+toastsService.forwardErrors(
+  signMessageFx.failData,
+  diactivateWalletFx.failData,
+  updateWalletFx.failData
+)

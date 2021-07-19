@@ -2,7 +2,7 @@ import { createDomain } from 'effector-logger'
 import { history } from '~/common/history'
 
 import { ProtocolUpdateMutationVariables } from '~/graphql/_generated-types'
-import { notifications } from '~/notifications'
+import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
 import { protocolsApi } from '../common/protocol.api'
 
@@ -14,10 +14,10 @@ export const protocolUpdateFx = protocolUpdate.createEffect({
     protocolsApi.protocolUpdate(variables)
 })
 
-protocolUpdateFx.failData.watch((error) => notifications.error(error.message))
-
 protocolUpdateFx.doneData.watch((payload) => {
   if (!payload?.id) return
 
   history.push(paths.protocols.detail(payload.id))
 })
+
+toastsService.forwardErrors(protocolUpdateFx.failData)

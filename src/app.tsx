@@ -1,7 +1,7 @@
 import { useNetwork } from './wallets/wallet-networks'
 import { Router } from './router'
 import { DialogProvider } from './common/dialog'
-import { NotificationsProvider } from './notifications'
+import { ToastProvider } from './toasts'
 import { UserProvider } from './users'
 
 export const App: React.VFC = () => {
@@ -9,11 +9,11 @@ export const App: React.VFC = () => {
 
   return (
     <DialogProvider>
-      <NotificationsProvider maxItems={6}>
+      <ToastProvider maxItems={6}>
         <UserProvider>
           <Router />
         </UserProvider>
-      </NotificationsProvider>
+      </ToastProvider>
     </DialogProvider>
   )
 }
