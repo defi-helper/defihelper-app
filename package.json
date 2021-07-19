@@ -118,7 +118,15 @@
     "test": "craco test",
     "watch": "node ./watch.js",
     "eject": "react-scripts eject",
-    "codegen": "graphql-codegen --config config.yml"
+    "codegen": "graphql-codegen --config config.yml",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "src/*.{ts,tsx,js}": [
+      "prettier --write",
+      "eslint src/**/*.{ts,tsx,js}",
+      "git add"
+    ]
   },
   "eslintConfig": {
     "extends": [
