@@ -162,7 +162,7 @@ export const StakingListGate = createGate<GateState>({
 
 const fetchStakingList = sample({
   source: walletNetworkSwitcherModel.$currentNetwork,
-  clock: [walletNetworkSwitcherModel.activateNetwork, StakingListGate.open],
+  clock: [walletNetworkSwitcherModel.$currentNetwork, StakingListGate.open],
   fn: (source) => ({ ...source, ...StakingListGate.state.getState() }),
   greedy: true
 })
@@ -170,7 +170,7 @@ const fetchStakingList = sample({
 guard({
   clock: fetchStakingList,
   filter: ({ protocolId }) => Boolean(protocolId),
-  target: [fetchStakingListFx],
+  target: fetchStakingListFx,
   greedy: true
 })
 
