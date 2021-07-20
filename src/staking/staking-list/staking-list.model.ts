@@ -131,7 +131,7 @@ const $wallets = userModel.$user.map(
     user?.wallets.list?.reduce<
       Record<string, { id: string; blockchain: string; network: string }>
     >((acc, { address, id, blockchain, network }) => {
-      acc[address] = {
+      acc[address.toLowerCase()] = {
         id,
         blockchain,
         network
@@ -150,7 +150,7 @@ export const $contracts = combine(
     return contractList.map((contract) => ({
       ...contract,
       connected: Boolean(connectedContracts[contract.id]),
-      wallet: wallet.account ? wallets[wallet.account] : null
+      wallet: wallet.account ? wallets[wallet.account.toLowerCase()] : null
     }))
   }
 )
@@ -162,7 +162,7 @@ export const StakingListGate = createGate<GateState>({
 
 const fetchStakingList = sample({
   source: walletNetworkSwitcherModel.$currentNetwork,
-  clock: [walletNetworkSwitcherModel.activateNetwork, StakingListGate.open],
+  clock: [walletNetworkSwitcherModel.$currentNetwork, StakingListGate.open],
   fn: (source) => ({ ...source, ...StakingListGate.state.getState() }),
   greedy: true
 })
@@ -170,6 +170,13 @@ const fetchStakingList = sample({
 guard({
   clock: fetchStakingList,
   filter: ({ protocolId }) => Boolean(protocolId),
-  target: [fetchStakingListFx, fetchConnectedContractsFx],
+  target: fetchStakingListFx,
+  greedy: true
+})
+
+sample({
+  clock: fetchStakingListFx.done,
+  fn: ({ params }) => params,
+  target: fetchConnectedContractsFx,
   greedy: true
 })

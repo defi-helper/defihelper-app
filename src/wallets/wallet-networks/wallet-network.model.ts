@@ -70,8 +70,12 @@ export const $wallet = networkDomain
       name: '$wallet'
     }
   )
-  .on(activateWalletFx.doneData, (_, payload) => payload)
-  .on(updateWalletFx.doneData, (_, payload) => payload)
+  .on(activateWalletFx.doneData, (state, payload) => {
+    return state.chainId === payload.chainId ? undefined : payload
+  })
+  .on(updateWalletFx.doneData, (state, payload) => {
+    return state.chainId === payload.chainId ? undefined : payload
+  })
   .reset(diactivateWalletFx.done)
 
 export const getNetwork = () => {

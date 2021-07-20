@@ -1,5 +1,6 @@
 import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
+import { dateUtils } from '~/common/date-utils'
 
 import { Unwrap } from '~/common/types'
 import { dashboardApi } from '~/dashboard/common'
@@ -16,6 +17,8 @@ type FetchChartParams = {
   id: string
 }
 
+const DAYS_LIMIT = 180
+
 const fetchChartDataFx = domain.createEffect({
   name: 'fetchChartDataFx',
   handler: async (params: FetchChartParams) => {
@@ -27,10 +30,15 @@ const fetchChartDataFx = domain.createEffect({
             filter: {
               tokenAlias: {
                 stable: params.stable
-              }
+              },
+              dateBefore: dateUtils.now(),
+              dateAfter: dateUtils.after180Days()
             }
           }
         : {}),
+      pagination: {
+        limit: DAYS_LIMIT
+      },
       sort: [
         {
           column: UserTokenMetricChartSortInputTypeColumnEnum.Date,
