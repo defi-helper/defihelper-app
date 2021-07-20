@@ -1,4 +1,4 @@
-import { createDomain, guard } from 'effector-logger'
+import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
 import {
@@ -71,15 +71,10 @@ export const ProtocolListGate = createGate({
   domain: protocolListDomain
 })
 
-guard({
-  source: [
-    walletNetworkSwitcherModel.$currentNetwork.map(
-      ({ network, blockchain }) => ({ network, blockchain })
-    ),
-    ProtocolListGate.status
-  ],
-  clock: walletNetworkSwitcherModel.$currentNetwork,
-  filter: ([, status]) => status,
+sample({
+  source: [walletNetworkSwitcherModel.$currentNetwork, ProtocolListGate.status],
+  clock: [walletNetworkSwitcherModel.$currentNetwork, ProtocolListGate.open],
+  fn: ([{ network, blockchain }]) => ({ network, blockchain }),
   target: fetchProtocolListFx,
   greedy: true
 })
