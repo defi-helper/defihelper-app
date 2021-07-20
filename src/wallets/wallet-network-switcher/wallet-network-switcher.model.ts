@@ -1,15 +1,11 @@
 import { createDomain, guard } from 'effector-logger'
-import { throttle } from 'patronum/throttle'
 
 import { NETWORKS, Network } from '~/wallets/common'
 import { networkModel } from '~/wallets/wallet-networks'
 
 const domain = createDomain('walletNetworkSwitcher')
 
-export const activateNetwork = throttle({
-  source: domain.createEvent<Network>('activateNetwork'),
-  timeout: 1000
-})
+export const activateNetwork = domain.createEvent<Network>('activateNetwork')
 
 export const activateNetworkFx = domain.createEffect({
   name: 'activateNetworkFx',
