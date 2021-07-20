@@ -120,3 +120,5 @@ declare module 'remarkable-react' {
 
   export default RemarkableReactRenderer
 }
+
+declare module 'cachios'

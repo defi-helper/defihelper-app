@@ -1,10 +1,10 @@
 import ReactDOM from 'react-dom'
 import 'normalize.css'
-import axios from 'axios'
+import cachios from 'cachios'
 
 import './index.css'
 import { App } from './app'
 
-window.axios = axios
+window.axios = cachios
 
 ReactDOM.render(<App />, document.getElementById('root'))
