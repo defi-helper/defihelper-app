@@ -1,14 +1,14 @@
 import { createDomain, guard } from 'effector-logger'
-import { debounce } from 'patronum/debounce'
+import { throttle } from 'patronum/throttle'
 
 import { NETWORKS, Network } from '~/wallets/common'
 import { networkModel } from '~/wallets/wallet-networks'
 
 const domain = createDomain('walletNetworkSwitcher')
 
-export const activateNetwork = debounce({
+export const activateNetwork = throttle({
   source: domain.createEvent<Network>('activateNetwork'),
-  timeout: 300
+  timeout: 1000
 })
 
 export const activateNetworkFx = domain.createEffect({
@@ -28,7 +28,9 @@ export const $currentNetwork = domain
   .createStore(NETWORKS[1], {
     name: '$currentNetwork'
   })
-  .on(activateNetwork, (_, payload) => payload)
+  .on(activateNetwork, (state, payload) => {
+    return state.title === payload.title ? undefined : payload
+  })
 
 guard({
   clock: networkModel.activateWalletFx.doneData.map(({ chainId }) => chainId),
