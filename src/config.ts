@@ -11,6 +11,5 @@ export const config = {
   TREZOR_EMAIL: process.env.REACT_APP_TREZOR_EMAIL ?? '',
   WAVES_NODE_URL: process.env.REACT_APP_WAVES_NODE_URL ?? '',
   API_URL: process.env.REACT_APP_API_URL,
-  SID_LIFE_TIME: Number(process.env.REACT_APP_SID_LIFE_TIME ?? 10),
   ADAPTERS_HOST: process.env.REACT_APP_ADAPTERS_HOST
 } as const
