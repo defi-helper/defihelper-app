@@ -3,6 +3,7 @@ import { ConnectorUpdate } from '@web3-react/types'
 import { createDomain, guard, sample } from 'effector-logger'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
+import { shallowEqual } from 'fast-equals'
 
 import {
   augmentConnectorUpdate,
@@ -71,10 +72,10 @@ export const $wallet = networkDomain
     }
   )
   .on(activateWalletFx.doneData, (state, payload) => {
-    return state.chainId === payload.chainId ? undefined : payload
+    return shallowEqual(state, payload) ? undefined : payload
   })
   .on(updateWalletFx.doneData, (state, payload) => {
-    return state.chainId === payload.chainId ? undefined : payload
+    return shallowEqual(state, payload) ? undefined : payload
   })
   .reset(diactivateWalletFx.done)
 
