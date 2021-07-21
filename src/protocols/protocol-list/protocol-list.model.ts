@@ -72,9 +72,9 @@ export const ProtocolListGate = createGate({
 })
 
 sample({
-  source: [walletNetworkSwitcherModel.$currentNetwork, ProtocolListGate.status],
+  source: walletNetworkSwitcherModel.$currentNetwork,
   clock: [walletNetworkSwitcherModel.$currentNetwork, ProtocolListGate.open],
-  fn: ([{ network, blockchain }]) => ({ network, blockchain }),
+  fn: ({ network, blockchain }) => ({ network, blockchain }),
   target: fetchProtocolListFx,
   greedy: true
 })

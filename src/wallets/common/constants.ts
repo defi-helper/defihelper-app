@@ -81,7 +81,6 @@ export const connectorsByName: Record<
 
 export type Network = {
   title: string
-  chainIds: Array<string | number>
   blockchain?: BlockchainEnum
   network?: number
   onClick?: 'activateEthereum' | 'activateBinance' | 'activateWaves'
@@ -91,12 +90,10 @@ export type Network = {
 export const NETWORKS: Network[] = [
   {
     title: 'All',
-    chainIds: [] as number[],
     type: 'AllNetworks' as const
   },
   {
     title: 'Ethereum',
-    chainIds: config.CHAIN_ETHEREUM_IDS,
     blockchain: BlockchainEnum.Ethereum,
     network: config.CHAIN_ETHEREUM_IDS[0],
     onClick: 'activateEthereum' as const,
@@ -104,7 +101,6 @@ export const NETWORKS: Network[] = [
   },
   {
     title: 'Binance Smart Chain',
-    chainIds: config.CHAIN_BINANCE_IDS,
     blockchain: BlockchainEnum.Ethereum,
     network: config.CHAIN_BINANCE_IDS[0],
     onClick: 'activateBinance' as const,
@@ -113,7 +109,6 @@ export const NETWORKS: Network[] = [
   {
     title: 'Waves',
     blockchain: BlockchainEnum.Waves,
-    chainIds: config.CHAIN_WAVES_ID,
     onClick: 'activateWaves' as const,
     type: 'Networks' as const
   }

@@ -1,5 +1,6 @@
 import { createDomain, guard, sample } from 'effector-logger'
 import type { AbstractConnector } from '@web3-react/abstract-connector'
+import { shallowEqual } from 'fast-equals'
 
 import { isWavesAddress } from '~/common/is-waves-address'
 import { NETWORKS, Network, connectors } from '~/wallets/common'
@@ -12,9 +13,7 @@ export const activateNetwork = domain.createEvent<Network>('activateNetwork')
 export const activateNetworkFx = domain.createEffect({
   name: 'activateNetworkFx',
   handler: (chainId: number | string) => {
-    const nextNetwork = NETWORKS.find((network) =>
-      network.chainIds.includes(chainId)
-    )
+    const nextNetwork = NETWORKS.find(({ network }) => network === chainId)
 
     if (!nextNetwork) return
 
@@ -27,7 +26,7 @@ export const $currentNetwork = domain
     name: '$currentNetwork'
   })
   .on(activateNetwork, (state, payload) => {
-    return state.title === payload.title ? undefined : payload
+    return shallowEqual(state, payload) ? undefined : payload
   })
 
 guard({
