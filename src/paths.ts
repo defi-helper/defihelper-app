@@ -22,5 +22,11 @@ export const paths = {
     detail: (id = ':proposalId') => `/proposals/${id}` as const,
     create: '/proposals/create',
     update: (id = ':proposalId') => `/proposals/update/${id}` as const
+  },
+
+  contacts: {
+    list: '/contacts',
+    confirmEmail: (code = ':confirmationCode') =>
+      `/confirmEmail/${code}` as const
   }
 } as const

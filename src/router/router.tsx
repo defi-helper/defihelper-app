@@ -21,6 +21,8 @@ import { ProposalList } from '~/proposals/proposal-list'
 import { ProposalDetail } from '~/proposals/proposal-detail'
 import { ProposalCreate } from '~/proposals/proposal-create'
 import { ProposalUpdate } from '~/proposals/proposal-update'
+import { UserContactList } from '~/user-contacts'
+import { UserContactConfirmEmail } from '~/user-contacts/user-contact-confirm-email'
 
 export type RouterProps = unknown
 
@@ -85,6 +87,12 @@ export const Router: React.VFC<RouterProps> = () => {
         </Route>
         <Route path={paths.proposals.list}>
           <ProposalList />
+        </Route>
+        <Route path={paths.contacts.list}>
+          <UserContactList />
+        </Route>
+        <Route path={paths.contacts.confirmEmail()}>
+          <UserContactConfirmEmail />
         </Route>
       </Switch>
     </BrowserRouter>

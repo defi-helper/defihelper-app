@@ -230,7 +230,7 @@ export type Mutation = {
   vote: VoteType
   unvote: Scalars['Boolean']
   userContactCreate: UserContactType
-  userContactEmailConfirm: UserContactType
+  userContactEmailConfirm: Scalars['Boolean']
   userContactDelete: Scalars['Boolean']
   userEventSubscriptionCreate: UserEventSubscriptionType
   userEventSubscriptionDelete: UserEventSubscriptionType
@@ -845,15 +845,13 @@ export enum UserContactBrokerEnum {
 }
 
 export type UserContactConfirmEmailInputType = {
-  /** address */
-  address: Scalars['String']
   /** code */
   confirmationCode: Scalars['String']
 }
 
 export type UserContactCreateInputType = {
   /** Type */
-  type: UserContactBrokerEnum
+  broker: UserContactBrokerEnum
   /** Address */
   address: Scalars['String']
 }
@@ -880,7 +878,7 @@ export type UserContactListQueryFilterInputType = {
   /** User ID */
   user?: Maybe<Scalars['UuidType']>
   /** Type */
-  type?: Maybe<UserContactBrokerEnum>
+  broker?: Maybe<UserContactBrokerEnum>
   /** Status */
   status?: Maybe<UserContactStatusEnum>
 }
@@ -909,7 +907,7 @@ export type UserContactType = {
   /** User */
   user: UserType
   /** Type of the contact */
-  type: UserContactBrokerEnum
+  broker: UserContactBrokerEnum
   /** Address */
   address: Scalars['String']
   /** Status */
@@ -1712,6 +1710,63 @@ export type StakingTokensQuery = { __typename?: 'Query' } & {
     >
   }
 }
+
+export type UserContactEmailConfirmMutationVariables = Exact<{
+  input: UserContactConfirmEmailInputType
+}>
+
+export type UserContactEmailConfirmMutation = {
+  __typename?: 'Mutation'
+} & Pick<Mutation, 'userContactEmailConfirm'>
+
+export type UserContactCreateMutationVariables = Exact<{
+  input: UserContactCreateInputType
+}>
+
+export type UserContactCreateMutation = { __typename?: 'Mutation' } & {
+  userContactCreate: {
+    __typename?: 'UserContactType'
+  } & UserContactFragmentFragment
+}
+
+export type UserContactDeleteMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type UserContactDeleteMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'userContactDelete'
+>
+
+export type UserContactsQueryVariables = Exact<{
+  userContactFilter?: Maybe<UserContactListQueryFilterInputType>
+  userContactSort?: Maybe<
+    Array<UserContactListSortInputType> | UserContactListSortInputType
+  >
+  userContactPagination?: Maybe<UserContactListPaginationInputType>
+}>
+
+export type UserContactsQuery = { __typename?: 'Query' } & {
+  userContacts: { __typename?: 'UserContactListQuery' } & {
+    list?: Maybe<
+      Array<{ __typename?: 'UserContactType' } & UserContactFragmentFragment>
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type UserContactFragmentFragment = {
+  __typename?: 'UserContactType'
+} & Pick<
+  UserContactType,
+  | 'id'
+  | 'broker'
+  | 'address'
+  | 'status'
+  | 'confirmationCode'
+  | 'createdAt'
+  | 'activatedAt'
+>
 
 export type MeQueryVariables = Exact<{
   filter?: Maybe<WalletListFilterInputType>

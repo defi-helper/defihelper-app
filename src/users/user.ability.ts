@@ -10,6 +10,7 @@ type Entities =
   | 'Contract'
   | 'all'
   | 'Proposal'
+  | 'UserContact'
 
 export type Actions = 'create' | 'read' | 'update' | 'delete'
 export type Subjects = Entities | { type: Entities }
@@ -25,15 +26,26 @@ export const defineRulesFor = (role?: string) => {
   } else if (role === 'user') {
     can(
       ['read'],
-      ['Contract', 'Protocol', 'Networks', 'Dashboard', 'Proposal'],
+      [
+        'Contract',
+        'Protocol',
+        'Networks',
+        'Dashboard',
+        'Proposal',
+        'UserContact'
+      ],
       {
         hidden: false
       }
     )
   } else {
-    can(['read'], ['Contract', 'Protocol', 'Networks', 'Proposal'], {
-      hidden: false
-    })
+    can(
+      ['read'],
+      ['Contract', 'Protocol', 'Networks', 'Proposal', 'UserContact'],
+      {
+        hidden: false
+      }
+    )
   }
 
   return rules
