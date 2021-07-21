@@ -6,7 +6,7 @@ import { normalizeChainId } from './normalize-chain-id'
 export async function augmentConnectorUpdate(
   connector: AbstractConnector,
   update: ConnectorUpdate
-): Promise<ConnectorUpdate<number> & { connector: AbstractConnector }> {
+) {
   const provider =
     update.provider === undefined
       ? await connector.getProvider()
@@ -30,7 +30,7 @@ export async function augmentConnectorUpdate(
   return {
     connector,
     provider,
-    chainId: normalizedChainId,
+    chainId: chainId !== 'waves' ? normalizedChainId : chainId,
     account
   }
 }

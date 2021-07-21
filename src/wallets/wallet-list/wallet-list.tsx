@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
@@ -24,9 +24,13 @@ const useStyles = makeStyles({
 export const WalletList: React.VFC<WalletListProps> = (props) => {
   const classes = useStyles()
 
-  const handleActivate = (connector: AbstractConnector) => {
-    networkModel.activateWalletFx({ connector }).then(props.onClick)
+  const handleActivate = (connector: AbstractConnector) => () => {
+    networkModel.activateWalletFx({ connector })
   }
+
+  useEffect(() => {
+    networkModel.activateWalletFx.done.watch(props.onClick)
+  }, [props.onClick])
 
   return (
     <Dialog>
@@ -35,7 +39,7 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
           <ListItem
             button
             key={walletName}
-            onClick={() => handleActivate(wallet.connector)}
+            onClick={handleActivate(wallet.connector)}
           >
             <ListItemIcon>
               <wallet.logo className={classes.icon} />

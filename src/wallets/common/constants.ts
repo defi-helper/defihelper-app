@@ -9,6 +9,8 @@ import { ReactComponent as PortisIcon } from '~/assets/icons/wallets/portis-wall
 import { ReactComponent as TrustIcon } from '~/assets/icons/wallets/trustwallet.svg'
 import { ReactComponent as TrezorIcon } from '~/assets/icons/wallets/trezor-wallet.svg'
 import { ReactComponent as BinanceIcon } from '~/assets/icons/wallets/binance-wallet.svg'
+import { ReactComponent as WavesKeeperIcon } from '~/assets/icons/wallets/waves-keeper-wallet.svg'
+import { ReactComponent as WavesExchangeIcon } from '~/assets/icons/wallets/waves-exchange-wallet.svg'
 import * as connectors from './connectors'
 import { config } from '~/config'
 import { BlockchainEnum } from '~/graphql/_generated-types'
@@ -22,7 +24,9 @@ enum ConnectorNames {
   Fortmatic = 'Fortmatic',
   Portis = 'Portis',
   Trezor = 'Trezor',
-  Binance = 'Binance'
+  Binance = 'Binance',
+  WavesKeeper = 'WavesKeeper',
+  WavesExchange = 'WavesExchange'
 }
 
 export const connectorsByName: Record<
@@ -64,44 +68,48 @@ export const connectorsByName: Record<
   [ConnectorNames.Portis]: {
     connector: connectors.portis,
     logo: PortisIcon
+  },
+  [ConnectorNames.WavesKeeper]: {
+    connector: connectors.wavesKepper,
+    logo: WavesKeeperIcon
+  },
+  [ConnectorNames.WavesExchange]: {
+    connector: connectors.wavesExchange,
+    logo: WavesExchangeIcon
   }
 }
 
 export type Network = {
   title: string
-  chainIds?: number[]
   blockchain?: BlockchainEnum
   network?: number
-  onClick?: 'openChangeNetwork' | 'setupBinance' | 'loginWaves'
+  onClick?: 'activateEthereum' | 'activateBinance' | 'activateWaves'
   type: 'Networks' | 'AllNetworks'
 }
 
 export const NETWORKS: Network[] = [
   {
     title: 'All',
-    chainIds: [] as number[],
     type: 'AllNetworks' as const
   },
   {
     title: 'Ethereum',
-    chainIds: config.CHAIN_ETHEREUM_IDS,
     blockchain: BlockchainEnum.Ethereum,
     network: config.CHAIN_ETHEREUM_IDS[0],
-    onClick: 'openChangeNetwork' as const,
+    onClick: 'activateEthereum' as const,
     type: 'Networks' as const
   },
   {
     title: 'Binance Smart Chain',
-    chainIds: config.CHAIN_BINANCE_IDS,
     blockchain: BlockchainEnum.Ethereum,
     network: config.CHAIN_BINANCE_IDS[0],
-    onClick: 'setupBinance' as const,
+    onClick: 'activateBinance' as const,
     type: 'Networks' as const
   },
   {
     title: 'Waves',
     blockchain: BlockchainEnum.Waves,
-    onClick: 'loginWaves' as const,
+    onClick: 'activateWaves' as const,
     type: 'Networks' as const
   }
 ]

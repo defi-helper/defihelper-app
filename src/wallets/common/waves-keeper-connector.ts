@@ -1,16 +1,26 @@
 /* eslint-disable class-methods-use-this */
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
-const CHAIN_ID = 0
+const CHAIN_ID = 'waves'
+
+const ERROR_MESSAGE = 'Account is null'
+
+type Options = {
+  authData: WavesKeeper.IAuthData
+}
 
 export class WavesKeeperConnector extends AbstractConnector {
   private account: string | null = null
 
-  constructor() {
+  private authData: WavesKeeper.IAuthData
+
+  constructor(options: Options) {
     super()
 
     this.activate = this.activate.bind(this)
     this.getAccount = this.getAccount.bind(this)
+
+    this.authData = options.authData
   }
 
   async activate() {
@@ -27,13 +37,8 @@ export class WavesKeeperConnector extends AbstractConnector {
     }
 
     if (!this.account) {
-      throw new Error('Account is null')
-    }
+      const state = await window.WavesKeeper.auth(this.authData)
 
-    const authData = {
-      data: 'Auth on site'
-    }
-    return window.WavesKeeper.auth(authData).then((state) => {
       this.account = state.address
 
       return {
@@ -41,23 +46,31 @@ export class WavesKeeperConnector extends AbstractConnector {
         chainId: CHAIN_ID,
         account: this.account
       }
-    })
+    }
+
+    return {
+      provider: window.WavesKeeper,
+      chainId: CHAIN_ID,
+      account: this.account
+    }
   }
 
-  public deactivate() {}
+  public deactivate() {
+    return undefined
+  }
 
   public async getAccount() {
-    return window.WavesKeeper.publicState().then((state) => {
-      const account = state.account?.address
+    const state = await window.WavesKeeper.publicState()
 
-      if (account !== undefined) {
-        this.account = account
+    const account = state.account?.address
 
-        return account
-      }
+    if (account !== undefined) {
+      this.account = account
 
-      return Promise.reject(new Error('Account is null'))
-    })
+      return account
+    }
+
+    return Promise.reject(new Error(ERROR_MESSAGE))
   }
 
   public async getChainId() {

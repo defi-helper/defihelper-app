@@ -15,7 +15,10 @@ import { toastsService } from '~/toasts'
 import { sidUtils } from '~/users/common'
 import { config } from '~/config'
 
-const networks = new Map<number | undefined, typeof createEthereumProvider>()
+const networks = new Map<
+  number | undefined | string,
+  typeof createEthereumProvider
+>()
 
 ;[...config.CHAIN_BINANCE_IDS, ...config.CHAIN_ETHEREUM_IDS].forEach((num) =>
   networks.set(num, createEthereumProvider)
@@ -27,7 +30,7 @@ export const activateWalletFx = networkDomain.createEffect({
   name: 'activateWallet',
   handler: async (params: {
     connector: AbstractConnector
-    update?: ConnectorUpdate<number>
+    update?: ConnectorUpdate<number | string>
   }) => {
     const updateData = await params.connector.activate()
 
@@ -39,22 +42,19 @@ export const updateWalletFx = networkDomain.createEffect({
   name: 'updateWallet',
   handler: async (params: {
     connector: AbstractConnector
-    update: ConnectorUpdate<number>
+    update: ConnectorUpdate<number | string>
   }) => {
     return augmentConnectorUpdate(params.connector, params.update)
   }
 })
 
-export type WalletStore = ConnectorUpdate<number> & {
+export type WalletStore = ConnectorUpdate<number | string> & {
   connector?: AbstractConnector
 }
 
 export const diactivateWalletFx = networkDomain.createEffect({
   name: 'diactivateWalletFx',
-  handler: async () => {
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    const { connector } = getNetwork()
-
+  handler: async (connector?: AbstractConnector) => {
     connector?.deactivate()
   }
 })
@@ -134,6 +134,7 @@ export const signMessageFx = networkDomain.createEffect({
 })
 
 sample({
+  source: $wallet.map(({ connector }) => connector),
   clock: signMessageFx.failData,
   target: diactivateWalletFx,
   greedy: true
@@ -149,5 +150,6 @@ guard({
 toastsService.forwardErrors(
   signMessageFx.failData,
   diactivateWalletFx.failData,
-  updateWalletFx.failData
+  updateWalletFx.failData,
+  activateWalletFx.failData
 )
