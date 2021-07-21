@@ -5,18 +5,22 @@ const CHAIN_ID = 'waves'
 
 const ERROR_MESSAGE = 'Account is null'
 
+type Options = {
+  authData: WavesKeeper.IAuthData
+}
+
 export class WavesKeeperConnector extends AbstractConnector {
   private account: string | null = null
 
   private authData: WavesKeeper.IAuthData
 
-  constructor(authData: WavesKeeper.IAuthData) {
+  constructor(options: Options) {
     super()
 
     this.activate = this.activate.bind(this)
     this.getAccount = this.getAccount.bind(this)
 
-    this.authData = authData
+    this.authData = options.authData
   }
 
   async activate() {
@@ -51,7 +55,9 @@ export class WavesKeeperConnector extends AbstractConnector {
     }
   }
 
-  public deactivate() {}
+  public deactivate() {
+    return undefined
+  }
 
   public async getAccount() {
     const state = await window.WavesKeeper.publicState()

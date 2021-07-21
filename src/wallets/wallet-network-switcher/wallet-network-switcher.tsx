@@ -6,9 +6,8 @@ import { useStore } from 'effector-react'
 
 import { useDialog } from '~/common/dialog'
 import { ChangeNetworkDialog } from '~/common/change-network-dialog'
-import { setupBinance } from '~/common/setup-network'
 import { useAbility } from '~/users'
-import { Network, NETWORKS, connectors } from '~/wallets/common'
+import { Network, NETWORKS, setupBinance } from '~/wallets/common'
 import * as model from './wallet-network-switcher.model'
 
 export type WalletNetworkSwitcherProps = {
@@ -33,27 +32,18 @@ export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
     const [openChangeNetwork] = useDialog(ChangeNetworkDialog)
 
     const handlers: Record<string, () => Promise<unknown>> = {
-      openChangeNetwork,
-      setupBinance,
-      loginWaves: connectors.wavesKepper.activate
+      activateEthereum: async () => model.activateEthereum(openChangeNetwork),
+      activateBinance: async () => model.activateEthereum(setupBinance),
+      activateWaves: async () => model.activateWaves()
     }
 
     const handleChangeNetwork = (networkItem: Network) => () => {
       const changeNetwork = handlers[networkItem.onClick ?? '']
 
-      if (!changeNetwork) {
-        model.activateNetwork(networkItem)
-
-        handleClose()
-
-        return
-      }
+      if (!changeNetwork) return
 
       changeNetwork()
-        .then(() => {
-          model.activateNetwork(networkItem)
-          handleClose()
-        })
+        .then(handleClose)
         .catch((error) => console.error(error.message))
     }
 

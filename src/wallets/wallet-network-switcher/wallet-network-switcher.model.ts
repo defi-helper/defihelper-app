@@ -1,6 +1,8 @@
-import { createDomain, guard } from 'effector-logger'
+import { createDomain, guard, sample } from 'effector-logger'
+import type { AbstractConnector } from '@web3-react/abstract-connector'
 
-import { NETWORKS, Network } from '~/wallets/common'
+import { isWavesAddress } from '~/common/is-waves-address'
+import { NETWORKS, Network, connectors } from '~/wallets/common'
 import { networkModel } from '~/wallets/wallet-networks'
 
 const domain = createDomain('walletNetworkSwitcher')
@@ -40,4 +42,50 @@ guard({
   filter: (chainId): chainId is number | string => Boolean(chainId),
   target: activateNetworkFx,
   greedy: true
+})
+
+const activateEthereumFx = domain.createEffect({
+  name: 'activateEthereumFx',
+  handler: async (params: {
+    account: null | string
+    connector: AbstractConnector
+    fn: () => Promise<unknown>
+  }) => {
+    if (!params.account || (params.account && isWavesAddress(params.account))) {
+      return networkModel.activateWalletFx({ connector: params.connector })
+    }
+
+    await params.fn()
+
+    return networkModel.activateWalletFx({ connector: params.connector })
+  }
+})
+
+const activateWavesFx = domain.createEffect({
+  name: 'activateWavesFx',
+  handler: (connector: AbstractConnector) =>
+    networkModel.activateWalletFx({ connector })
+})
+
+export const activateWaves = domain.createEvent('activateWaves')
+
+export const activateEthereum =
+  domain.createEvent<() => Promise<unknown>>('activateEthereum')
+
+sample({
+  source: networkModel.$wallet,
+  clock: activateWaves,
+  fn: () => connectors.wavesKepper,
+  target: activateWavesFx
+})
+
+sample({
+  source: networkModel.$wallet,
+  clock: activateEthereum,
+  fn: ({ account = null }, clock) => ({
+    account,
+    connector: connectors.injected,
+    fn: clock
+  }),
+  target: activateEthereumFx
 })
