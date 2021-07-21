@@ -47,8 +47,8 @@ export const DialogProvider: React.FC = (props) => {
         closeOnOverlay: setCloseOnOverlayClick
       }}
     >
-      <Portal>
-        {dialogNode && React.isValidElement(dialogNode) && (
+      {dialogNode && React.isValidElement(dialogNode) && (
+        <Portal>
           <div onClick={handleClose}>
             {cloneElement(dialogNode, {
               ...dialogNode.props,
@@ -56,8 +56,8 @@ export const DialogProvider: React.FC = (props) => {
               onConfirm: handleOnConfirm
             })}
           </div>
-        )}
-      </Portal>
+        </Portal>
+      )}
       {props.children}
     </DialogContext.Provider>
   )
