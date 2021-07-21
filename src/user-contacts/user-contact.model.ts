@@ -9,6 +9,7 @@ import {
 } from '~/graphql/_generated-types'
 
 const userContactListDomain = createDomain('userContactList')
+const emailConfirmationDomain = createDomain('emailConfirmation')
 
 export const fetchUserContactListFx = userContactListDomain.createEffect({
   name: 'fetchUserContactListFx',
@@ -25,13 +26,6 @@ export const createUserContactFx = userContactListDomain.createEffect({
     }
 
     throw new Error('Not created')
-  }
-})
-
-export const confirmEmailFx = userContactListDomain.createEffect({
-  name: 'confirmEmailFx',
-  handler: async (input: UserContactEmailConfirmMutationVariables['input']) => {
-    return !!(await userContactApi.userContactConfirmEmail({ input }))
   }
 })
 
@@ -61,8 +55,8 @@ export const $userContactList = userContactListDomain
     }))
   )
   .on(createUserContactFx.doneData, (state, payload) => {
-    if (state.find((c) => c.id === payload.id)) {
-      return state
+    if (state.some((c) => c.id === payload.id)) {
+      return
     }
 
     return [
@@ -89,9 +83,39 @@ export const UserContactListGate = createGate({
 })
 
 sample({
-  source: [UserContactListGate.status],
   clock: [UserContactListGate.open],
-  fn: () => {},
   target: fetchUserContactListFx,
   greedy: true
 })
+
+export const confirmEmailFx = emailConfirmationDomain.createEffect({
+  name: 'confirmEmailFx',
+  handler: async (input: UserContactEmailConfirmMutationVariables['input']) => {
+    return !!(await userContactApi.userContactConfirmEmail({ input }))
+  }
+})
+
+export const $confirmEmail = emailConfirmationDomain
+  .createStore<{ code: string; status: boolean | undefined }[]>([], {
+    name: '$confirmEmail'
+  })
+  .on(confirmEmailFx, (state, payload) => {
+    if (
+      state.some(
+        (confirmation) => confirmation.code === payload.confirmationCode
+      )
+    ) {
+      return
+    }
+
+    return [...state, { code: payload.confirmationCode, status: undefined }]
+  })
+  .on(confirmEmailFx.done, (state, payload) => {
+    const confirmation = state.find(
+      (c) => c.code === payload.params.confirmationCode
+    )
+    if (confirmation) {
+      confirmation.status = payload.result
+    }
+    return [...state]
+  })

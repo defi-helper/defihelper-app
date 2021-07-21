@@ -4,9 +4,10 @@ import { useStore } from 'effector-react'
 import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied'
 import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon'
 import { useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MainLayout } from '~/layouts'
 import * as model from './user-contact.model'
+import { $confirmEmail } from './user-contact.model'
 
 export type ContactListProps = unknown
 
@@ -51,20 +52,20 @@ const useStyles = makeStyles(() => ({
 export const UserContactConfirmEmail: React.VFC<ContactListProps> = () => {
   const classes = useStyles()
 
-  const [confirmEmail, setConfirmEmail] = useState<
-    { status: boolean | undefined } | undefined
-  >()
-
   const params = useParams<{ confirmationCode: string }>()
 
-  if (confirmEmail === undefined) {
-    setConfirmEmail({ status: undefined })
-    model
-      .confirmEmailFx({
+  const confirmsEmail = useStore(model.$confirmEmail)
+  const confirmEmail = confirmsEmail.find(
+    (c) => c.code === params.confirmationCode
+  )
+
+  useEffect(() => {
+    if (confirmEmail === undefined) {
+      model.confirmEmailFx({
         confirmationCode: params.confirmationCode
       })
-      .then((res) => setConfirmEmail({ status: res }))
-  }
+    }
+  }, [confirmEmail, params])
 
   const loading = useStore(model.confirmEmailFx.pending)
 
