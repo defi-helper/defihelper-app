@@ -15,6 +15,8 @@ import DashboardIcon from '@material-ui/icons/Dashboard'
 import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
 import ThumbsUpDownIcon from '@material-ui/icons/ThumbsUpDown'
+import ContactsIcon from '@material-ui/icons/Contacts'
+import NotificationsIcon from '@material-ui/icons/Notifications'
 import ListIcon from '@material-ui/icons/List'
 
 import { paths } from '~/paths'
@@ -71,6 +73,11 @@ const MENU = [
     title: 'Proposals',
     path: paths.proposals.list,
     icon: ThumbsUpDownIcon
+  },
+  {
+    title: 'Contacts',
+    path: paths.contacts.list,
+    icon: ContactsIcon
   }
 ]
 
