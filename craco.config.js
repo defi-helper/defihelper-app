@@ -5,10 +5,38 @@ const path = require('path')
 const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = {
+  babel: {
+    plugins: [
+      [
+        'effector/babel-plugin',
+        {
+          storeCreators: ['createStore'],
+          eventCreators: ['createEvent'],
+          effectCreators: ['createEffect'],
+          domainCreators: ['createDomain'],
+          restoreCreators: ['restore'],
+          combineCreators: ['combine'],
+          sampleCreators: ['sample'],
+          forwardCreators: ['forward'],
+          guardCreators: ['guard'],
+          attachCreators: [],
+          splitCreators: [],
+          apiCreators: ['createApi'],
+          mergeCreators: ['merge'],
+          domainMethods: {
+            store: ['store', 'createStore'],
+            event: ['event', 'createEvent'],
+            effect: ['effect', 'createEffect'],
+            domain: ['domain', 'createDomain'],
+          },
+        },
+      ],
+    ],
+  },
   webpack: {
     alias: {
       '~': path.resolve(__dirname, './src'),
-      ...(isProd ? { 'effector-logger': 'effector' } : {})
-    }
-  }
+      ...(isProd ? { 'effector-logger': 'effector' } : {}),
+    },
+  },
 }
