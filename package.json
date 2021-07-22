@@ -121,7 +121,8 @@
     "watch": "node ./watch.js",
     "eject": "react-scripts eject",
     "codegen": "graphql-codegen --config config.yml",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "eslint --fix --ext .ts,.tsx ./src"
   },
   "lint-staged": {
     "src/*.{ts,tsx,js}": [

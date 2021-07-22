@@ -29,4 +29,8 @@ export const paths = {
     confirmEmail: (code = ':confirmationCode') =>
       `/confirmEmail/${code}` as const,
   },
+
+  userEventSubscriptions: {
+    list: '/userEventSubscriptions',
+  },
 } as const

@@ -23,6 +23,7 @@ import { ProposalCreate } from '~/proposals/proposal-create'
 import { ProposalUpdate } from '~/proposals/proposal-update'
 import { UserContactList } from '~/user-contacts'
 import { UserContactConfirmEmail } from '~/user-contacts/user-contact-confirm-email'
+import { UserEventSubscriptionList } from '~/user-event-subscriptions'
 
 export type RouterProps = unknown
 
@@ -93,6 +94,9 @@ export const Router: React.VFC<RouterProps> = () => {
         </Route>
         <Route path={paths.contacts.confirmEmail()}>
           <UserContactConfirmEmail />
+        </Route>
+        <Route path={paths.userEventSubscriptions.list}>
+          <UserEventSubscriptionList />
         </Route>
       </Switch>
     </BrowserRouter>

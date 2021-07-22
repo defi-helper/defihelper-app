@@ -12,6 +12,7 @@ import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 import { createPagination, PaginationState } from '~/common/create-pagination'
 
 export const stakingListDomain = createDomain('stakingList')
+export const contractsEventListDomain = createDomain('contractsEventList')
 
 type GateState = {
   protocolId: string
@@ -207,3 +208,47 @@ sample({
   fn: (clock) => clock.pagination,
   target: StakingListPagination.totalElements,
 })
+
+export const fetchContractEventsFx = contractsEventListDomain.createEffect({
+  name: 'fetchContractEventsFx',
+  handler: async (input: { protocolId: string; contractId: string }) => {
+    return stakingApi.contractsEventsList({
+      filter: {
+        id: input.protocolId,
+      },
+      contractFilter: {
+        id: input.contractId,
+      },
+    })
+  },
+})
+
+interface ContractEvent {
+  protocolId: string
+  contractId: string
+  events: string[]
+}
+
+export const $contractsEventsList = contractsEventListDomain
+  .createStore<Record<string, ContractEvent>>(
+    {},
+    {
+      name: '$contractsEventsList',
+    }
+  )
+  .on(fetchContractEventsFx.done, (state, payload) => {
+    const events = (payload.result || []).reduce((res, c) => {
+      res[c.id] = res[c.id] || {
+        protocolId: c.protocolId,
+        contractId: c.id,
+        events: [],
+      }
+
+      res[c.id].events.push(...c.events)
+      return res
+    }, {} as Record<string, ContractEvent>)
+    return {
+      ...state,
+      ...events,
+    }
+  })
