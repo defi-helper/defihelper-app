@@ -13,7 +13,7 @@ import {
   ProposalVoteMutation,
   ProposalVoteMutationVariables,
   ProposalUnvoteMutation,
-  ProposalUnvoteMutationVariables
+  ProposalUnvoteMutationVariables,
 } from '~/graphql/_generated-types'
 import {
   PROPOSAL_CREATE,
@@ -22,7 +22,7 @@ import {
   PROPOSAL_LIST,
   PROPOSAL_UNVOTE,
   PROPOSAL_UPDATE,
-  PROPOSAL_VOTE
+  PROPOSAL_VOTE,
 } from './graphql'
 
 export const proposalApi = {
@@ -30,7 +30,10 @@ export const proposalApi = {
     getAPIClient()
       .query<ProposalsQuery, ProposalsQueryVariables>(PROPOSAL_LIST, variables)
       .toPromise()
-      .then(({ data }) => data?.proposals.list ?? []),
+      .then(({ data }) => ({
+        list: data?.proposals.list ?? [],
+        pagination: data?.proposals.pagination.count ?? 0,
+      })),
 
   proposalDetail: (variables: ProposalQueryVariables) =>
     getAPIClient()
@@ -61,7 +64,7 @@ export const proposalApi = {
       .mutation<ProposalDeleteMutation, ProposalDeleteMutationVariables>(
         PROPOSAL_DELETE,
         {
-          id: proposalId
+          id: proposalId,
         }
       )
       .toPromise()
@@ -83,5 +86,5 @@ export const proposalApi = {
         { proposal: proposalId }
       )
       .toPromise()
-      .then(({ data }) => data?.unvote)
+      .then(({ data }) => data?.unvote),
 }

@@ -11,7 +11,7 @@ const stakingCreate = createDomain('stakingCreate')
 export const stakingCreateFx = stakingCreate.createEffect({
   name: 'stakingCreateFx',
   handler: (input: StakingContractCreateMutationVariables) =>
-    stakingApi.contractCreate(input)
+    stakingApi.contractCreate(input),
 })
 
 stakingCreateFx.doneData.watch((payload) => {

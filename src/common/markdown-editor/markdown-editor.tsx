@@ -27,9 +27,9 @@ const useStyles = makeStyles(() => ({
     '& .ProseMirror': {
       outline: 'none',
       height: '100%',
-      padding: 1
-    }
-  }
+      padding: 1,
+    },
+  },
 }))
 
 export const MarkdownEditor: React.FC<MarkdownEditorProps> = (props) => {
@@ -39,7 +39,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = (props) => {
     extensions: [Document, Paragraph, Text, Link, Bold, Italic],
     content: md.render(props.value),
     onUpdate: (editorProps) =>
-      props.onChange(turndownService.turndown(editorProps.editor.getHTML()))
+      props.onChange(turndownService.turndown(editorProps.editor.getHTML())),
   })
 
   const setLink = () => {

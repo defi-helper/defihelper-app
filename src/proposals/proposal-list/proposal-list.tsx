@@ -15,11 +15,11 @@ const useStyles = makeStyles(() => ({
   list: {
     listStyleType: 'none',
     padding: 0,
-    margin: 0
+    margin: 0,
   },
 
   proposal: {
-    display: 'flex'
+    display: 'flex',
   },
 
   link: {
@@ -28,9 +28,9 @@ const useStyles = makeStyles(() => ({
     flexGrow: 1,
 
     '& > *': {
-      height: '100%'
-    }
-  }
+      height: '100%',
+    },
+  },
 }))
 
 export const ProposalList: React.VFC<ProposalListProps> = () => {
@@ -40,7 +40,7 @@ export const ProposalList: React.VFC<ProposalListProps> = () => {
 
   const user = useStore(userModel.$user)
 
-  useGate(model.Gate)
+  useGate(model.ProposalListGate)
 
   const classes = useStyles()
 
@@ -50,7 +50,7 @@ export const ProposalList: React.VFC<ProposalListProps> = () => {
   const handleUnvote = (proposalId: string) => () => {
     model.unvoteProposalFx({
       proposalId,
-      userId: user?.id
+      userId: user?.id,
     })
   }
 
@@ -122,6 +122,7 @@ export const ProposalList: React.VFC<ProposalListProps> = () => {
         </ul>
       )}
       {!loading && !proposals.length && <Paper>empty</Paper>}
+      <model.ProposalListPagination />
     </MainLayout>
   )
 }

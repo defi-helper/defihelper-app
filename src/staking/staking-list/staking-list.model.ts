@@ -3,12 +3,13 @@ import { createGate } from 'effector-react'
 
 import {
   BlockchainEnum,
-  StakingContractFragmentFragment
+  StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { userModel } from '~/users'
 import { networkModel } from '~/wallets/wallet-networks'
 import { stakingApi } from '~/staking/common'
 import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
+import { createPagination, PaginationState } from '~/common/create-pagination'
 
 export const stakingListDomain = createDomain('stakingList')
 
@@ -20,22 +21,26 @@ type GateState = {
 
 export const fetchStakingListFx = stakingListDomain.createEffect({
   name: 'fetchStakingList',
-  handler: (params: GateState) =>
+  handler: (params: GateState & PaginationState) =>
     stakingApi.contractList({
       filter: {
-        id: params.protocolId
+        id: params.protocolId,
       },
       ...(params.blockchain
         ? {
             contractFilter: {
               blockchain: {
                 protocol: params.blockchain,
-                ...(params.network ? { network: String(params.network) } : {})
-              }
-            }
+                ...(params.network ? { network: String(params.network) } : {}),
+              },
+            },
           }
-        : {})
-    })
+        : {}),
+      contractPagination: {
+        offset: params?.offset,
+        limit: params?.limit,
+      },
+    }),
 })
 
 const NOT_DELETED = 'Not deleted'
@@ -50,7 +55,7 @@ export const deleteStakingFx = stakingListDomain.createEffect({
     }
 
     throw new Error(NOT_DELETED)
-  }
+  },
 })
 
 const NOT_CONNECTED = 'Not connected'
@@ -68,7 +73,7 @@ export const connectWalletFx = stakingListDomain.createEffect({
     if (isConnected) return
 
     throw new Error(NOT_CONNECTED)
-  }
+  },
 })
 
 const NOT_DISCONNECTED = 'Not disconnected'
@@ -81,13 +86,13 @@ export const disconnectWalletFx = stakingListDomain.createEffect({
     if (isDisconnected) return
 
     throw new Error(NOT_DISCONNECTED)
-  }
+  },
 })
 
 export const fetchConnectedContractsFx = stakingListDomain.createEffect({
   name: 'fetchConnectedContractsFx',
   handler: (params: GateState) =>
-    stakingApi.connectedContracts(params.protocolId)
+    stakingApi.connectedContracts(params.protocolId),
 })
 
 type Contract = StakingContractFragmentFragment & {
@@ -96,7 +101,7 @@ type Contract = StakingContractFragmentFragment & {
 
 const $contractList = stakingListDomain
   .createStore<Contract[]>([], {
-    name: '$contractList'
+    name: '$contractList',
   })
   .on(fetchStakingListFx.doneData, (_, payload) =>
     payload.contracts.map((contract) => ({ ...contract, type: 'Contract' }))
@@ -109,7 +114,7 @@ const $connectedContracts = stakingListDomain
   .createStore<Record<string, boolean>>(
     {},
     {
-      name: '$connectedContracts'
+      name: '$connectedContracts',
     }
   )
   .on(fetchConnectedContractsFx.doneData, (_, payload) => {
@@ -123,7 +128,7 @@ const $connectedContracts = stakingListDomain
   })
   .on(connectWalletFx.done, (state, { params }) => ({
     ...state,
-    [params.contract]: true
+    [params.contract]: true,
   }))
 
 const $wallets = userModel.$user.map(
@@ -134,7 +139,7 @@ const $wallets = userModel.$user.map(
       acc[address.toLowerCase()] = {
         id,
         blockchain,
-        network
+        network,
       }
 
       return acc
@@ -150,33 +155,55 @@ export const $contracts = combine(
     return contractList.map((contract) => ({
       ...contract,
       connected: Boolean(connectedContracts[contract.id]),
-      wallet: wallet.account ? wallets[wallet.account.toLowerCase()] : null
+      wallet: wallet.account ? wallets[wallet.account.toLowerCase()] : null,
     }))
   }
 )
 
 export const StakingListGate = createGate<GateState>({
   name: 'StakingListGate',
-  domain: stakingListDomain
+  domain: stakingListDomain,
+})
+
+export const StakingListPagination = createPagination({
+  domain: stakingListDomain,
+  limit: 10,
 })
 
 const fetchStakingList = sample({
-  source: walletNetworkSwitcherModel.$currentNetwork,
-  clock: [walletNetworkSwitcherModel.$currentNetwork, StakingListGate.open],
-  fn: (source) => ({ ...source, ...StakingListGate.state.getState() }),
-  greedy: true
+  source: [
+    walletNetworkSwitcherModel.$currentNetwork,
+    StakingListPagination.state,
+  ],
+  clock: [
+    walletNetworkSwitcherModel.$currentNetwork,
+    StakingListGate.open,
+    StakingListPagination.pageChanged,
+  ],
+  fn: ([currentNetwork, pagination]) => ({
+    ...currentNetwork,
+    ...pagination,
+    ...StakingListGate.state.getState(),
+  }),
+  greedy: true,
 })
 
 guard({
   clock: fetchStakingList,
   filter: ({ protocolId }) => Boolean(protocolId),
   target: fetchStakingListFx,
-  greedy: true
+  greedy: true,
 })
 
 sample({
   clock: fetchStakingListFx.done,
   fn: ({ params }) => params,
   target: fetchConnectedContractsFx,
-  greedy: true
+  greedy: true,
+})
+
+sample({
+  clock: fetchStakingListFx.doneData,
+  fn: (clock) => clock.pagination,
+  target: StakingListPagination.totalElements,
 })

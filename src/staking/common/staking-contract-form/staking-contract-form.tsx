@@ -34,9 +34,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
 
     '& > *': {
-      margin: theme.spacing(2)
-    }
-  }
+      margin: theme.spacing(2),
+    },
+  },
 }))
 
 export const StakingContractForm: React.VFC<StakingContractFormProps> = (
@@ -46,7 +46,7 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
 
   const { register, setValue, handleSubmit, reset, formState } =
     useForm<FormValues>({
-      resolver: yupResolver(stakingContractFormSchema)
+      resolver: yupResolver(stakingContractFormSchema),
     })
 
   const hidden = register('hidden')

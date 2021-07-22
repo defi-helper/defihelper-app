@@ -43,7 +43,7 @@ export type AuthType = {
 
 export enum BlockchainEnum {
   Ethereum = 'ethereum',
-  Waves = 'waves'
+  Waves = 'waves',
 }
 
 export type BlockchainFilterInputType = {
@@ -96,7 +96,7 @@ export enum ContractListSortInputTypeColumnEnum {
   Id = 'id',
   Name = 'name',
   Address = 'address',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export type ContractListType = {
@@ -127,7 +127,7 @@ export type ContractMetricChartSortInputType = {
 
 export enum ContractMetricChartSortInputTypeColumnEnum {
   Date = 'date',
-  Value = 'value'
+  Value = 'value',
 }
 
 export type ContractType = {
@@ -193,7 +193,7 @@ export type ContractUpdateInputType = {
 
 export enum LocaleEnum {
   EnUs = 'enUS',
-  RuRu = 'ruRU'
+  RuRu = 'ruRU',
 }
 
 export type MetricChartType = {
@@ -210,7 +210,7 @@ export enum MetricGroupEnum {
   Hour = 'hour',
   Day = 'day',
   Week = 'week',
-  Year = 'year'
+  Year = 'year',
 }
 
 export type Mutation = {
@@ -363,7 +363,7 @@ export type ProposalListSortInputType = {
 export enum ProposalListSortInputTypeColumnEnum {
   Id = 'id',
   Title = 'title',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export enum ProposalStatusEnum {
@@ -372,7 +372,7 @@ export enum ProposalStatusEnum {
   /** Proposal is executed */
   Executed = 'executed',
   /** Proposal is defeated */
-  Defeated = 'defeated'
+  Defeated = 'defeated',
 }
 
 export type ProposalType = {
@@ -459,7 +459,7 @@ export enum ProtocolListSortInputTypeColumnEnum {
   Id = 'id',
   Name = 'name',
   Address = 'address',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export type ProtocolMetricChartFilterInputType = {
@@ -484,7 +484,7 @@ export type ProtocolMetricChartSortInputType = {
 
 export enum ProtocolMetricChartSortInputTypeColumnEnum {
   Date = 'date',
-  Value = 'value'
+  Value = 'value',
 }
 
 export type ProtocolType = {
@@ -615,7 +615,7 @@ export enum SortOrderEnum {
   /** Ascending */
   Asc = 'asc',
   /** Descending */
-  Desc = 'desc'
+  Desc = 'desc',
 }
 
 export type TokenAlias = {
@@ -671,7 +671,7 @@ export enum TokenAliasListSortInputTypeColumnEnum {
   Id = 'id',
   Name = 'name',
   Symbol = 'symbol',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export type TokenListFilterInputType = {
@@ -716,7 +716,7 @@ export enum TokenListQuerySortInputTypeColumnEnum {
   Id = 'id',
   Name = 'name',
   Symbol = 'symbol',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export type TokenListSortInputType = {
@@ -729,7 +729,7 @@ export enum TokenListSortInputTypeColumnEnum {
   Name = 'name',
   Symbol = 'symbol',
   Address = 'address',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export type TokenListType = {
@@ -803,7 +803,7 @@ export type UserBlockchainWalletListSortInputType = {
 export enum UserBlockchainWalletListSortInputTypeColumnEnum {
   Id = 'id',
   Address = 'address',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export type UserBlockchainWalletListType = {
@@ -834,14 +834,14 @@ export type UserBlockchainWalletTokenMetricChartSortInputType = {
 
 export enum UserBlockchainWalletTokenMetricChartSortInputTypeColumnEnum {
   Date = 'date',
-  Value = 'value'
+  Value = 'value',
 }
 
 export enum UserContactBrokerEnum {
   /** Email */
   Email = 'email',
   /** Telegram */
-  Telegram = 'telegram'
+  Telegram = 'telegram',
 }
 
 export type UserContactConfirmEmailInputType = {
@@ -890,14 +890,14 @@ export type UserContactListSortInputType = {
 
 export enum UserContactListSortInputTypeColumnEnum {
   Id = 'id',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export enum UserContactStatusEnum {
   /** Has been activated */
   Active = 'active',
   /** Has not been activated yet */
-  Inactive = 'inactive'
+  Inactive = 'inactive',
 }
 
 export type UserContactType = {
@@ -969,7 +969,7 @@ export type UserEventSubscriptionListSortInputType = {
 
 export enum UserEventSubscriptionListSortInputTypeColumnEnum {
   Id = 'id',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export type UserEventSubscriptionType = {
@@ -1012,7 +1012,7 @@ export type UserMetricChartSortInputType = {
 
 export enum UserMetricChartSortInputTypeColumnEnum {
   Date = 'date',
-  Value = 'value'
+  Value = 'value',
 }
 
 export type UserMetricsTokenAliasFilterInputType = {
@@ -1025,7 +1025,7 @@ export enum UserRoleEnum {
   /** User */
   User = 'user',
   /** Administrator */
-  Admin = 'admin'
+  Admin = 'admin',
 }
 
 export type UserTokenMetricChartFilterInputType = {
@@ -1058,7 +1058,7 @@ export type UserTokenMetricChartSortInputType = {
 
 export enum UserTokenMetricChartSortInputTypeColumnEnum {
   Date = 'date',
-  Value = 'value'
+  Value = 'value',
 }
 
 export type UserType = {
@@ -1117,7 +1117,7 @@ export type VoteListSortInputType = {
 
 export enum VoteListSortInputTypeColumnEnum {
   Id = 'id',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export type VoteListType = {
@@ -1162,7 +1162,7 @@ export enum WalletContractListSortInputTypeColumnEnum {
   Id = 'id',
   Name = 'name',
   Address = 'address',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export type WalletContractListType = {
@@ -1192,7 +1192,7 @@ export type WalletListSortInputType = {
 export enum WalletListSortInputTypeColumnEnum {
   Id = 'id',
   Address = 'address',
-  CreatedAt = 'createdAt'
+  CreatedAt = 'createdAt',
 }
 
 export type WalletListType = {
@@ -1225,7 +1225,7 @@ export type WalletMetricChartSortInputType = {
 
 export enum WalletMetricChartSortInputTypeColumnEnum {
   Date = 'date',
-  Value = 'value'
+  Value = 'value',
 }
 
 export type WalletTokenMetricChartFilterInputType = {
@@ -1255,7 +1255,7 @@ export type WalletTokenMetricChartSortInputType = {
 
 export enum WalletTokenMetricChartSortInputTypeColumnEnum {
   Date = 'date',
-  Value = 'value'
+  Value = 'value',
 }
 
 export type WalletType = {
@@ -1412,6 +1412,7 @@ export type ProposalsQuery = { __typename?: 'Query' } & {
     list?: Maybe<
       Array<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
     >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
 }
 

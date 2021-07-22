@@ -7,7 +7,7 @@ import {
   MetricGroupEnum,
   SortOrderEnum,
   UserBlockchainWalletTokenMetricChartSortInputTypeColumnEnum,
-  WalletTokenMetricChartSortInputTypeColumnEnum
+  WalletTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
 
 const domain = createDomain('blockchains')
@@ -21,10 +21,10 @@ const fetchBlockchainsDataFx = domain.createEffect({
   name: 'fetchBlockchainsDataFx',
   handler: async () => {
     const pagination = {
-      limit: 1
+      limit: 1,
     }
     const sort = {
-      order: SortOrderEnum.Desc
+      order: SortOrderEnum.Desc,
     }
 
     return dashboardApi.getBlockchains({
@@ -33,31 +33,32 @@ const fetchBlockchainsDataFx = domain.createEffect({
       blockchainPagination: pagination,
       blockchainSort: {
         ...sort,
-        column: UserBlockchainWalletTokenMetricChartSortInputTypeColumnEnum.Date
+        column:
+          UserBlockchainWalletTokenMetricChartSortInputTypeColumnEnum.Date,
       },
       blockchainWalletGroup: MetricGroupEnum.Hour,
       blockchainWalletMetric: 'usd',
       blockchainWalletPagination: pagination,
       blockchainWalletSort: {
         ...sort,
-        column: WalletTokenMetricChartSortInputTypeColumnEnum.Date
-      }
+        column: WalletTokenMetricChartSortInputTypeColumnEnum.Date,
+      },
     })
-  }
+  },
 })
 
 export const $blockchains = domain
   .createStore<Unwrap<ReturnType<typeof dashboardApi.getBlockchains>>>([], {
-    name: '$dashboardChartOfAllTokens'
+    name: '$dashboardChartOfAllTokens',
   })
   .on(fetchBlockchainsDataFx.doneData, (_, payload) => payload)
 
 export const blockchainsGate = createGate<FetchChartParams>({
   name: 'blockchainsGate',
-  domain
+  domain,
 })
 
 sample({
   clock: blockchainsGate.open,
-  target: fetchBlockchainsDataFx
+  target: fetchBlockchainsDataFx,
 })

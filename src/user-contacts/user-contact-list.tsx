@@ -4,7 +4,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   makeStyles,
-  Paper
+  Paper,
 } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
 import Button from '@material-ui/core/Button'
@@ -16,7 +16,7 @@ import * as model from './user-contact.model'
 import { UserContactAdd } from '~/user-contacts/user-contact-add'
 import {
   UserContactBrokerEnum,
-  UserContactStatusEnum
+  UserContactStatusEnum,
 } from '~/graphql/_generated-types'
 import { config } from '~/config'
 
@@ -26,38 +26,38 @@ const useStyles = makeStyles(() => ({
   root: {
     padding: 0,
     margin: 0,
-    listStyle: 'none'
+    listStyle: 'none',
   },
 
   link: {
     textDecoration: 'none',
-    width: '100%'
+    width: '100%',
   },
 
   item: {
     display: 'flex',
     marginBottom: 5,
-    width: '100%'
+    width: '100%',
   },
 
   telegramConfirm: {
-    margin: '10px 15px'
+    margin: '10px 15px',
   },
 
   card: {
     padding: '10px 15px',
     margin: '10px 15px',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   tokens: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
   },
 
   mr: {
-    marginRight: 20
-  }
+    marginRight: 20,
+  },
 }))
 
 export const UserContactList: React.VFC<ContactListProps> = () => {

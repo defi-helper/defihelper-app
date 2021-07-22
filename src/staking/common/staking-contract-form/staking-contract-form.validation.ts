@@ -14,11 +14,13 @@ export const stakingContractFormSchema = yup.object().shape({
     .string()
     .when('blockchain', {
       is: BlockchainEnum.Ethereum,
-      then: yup.string().matches(isEthAddress.regex, 'Must be ethereum address')
+      then: yup
+        .string()
+        .matches(isEthAddress.regex, 'Must be ethereum address'),
     })
     .when('blockchain', {
       is: BlockchainEnum.Waves,
-      then: yup.string().matches(isWavesAddress.regex, 'Must be waves address')
+      then: yup.string().matches(isWavesAddress.regex, 'Must be waves address'),
     })
     .required('Required'),
   adapter: yup.string().required('Required'),
@@ -26,5 +28,5 @@ export const stakingContractFormSchema = yup.object().shape({
   description: yup.string().optional(),
   link: yup.string().url('Must be url').optional(),
   hidden: yup.bool().optional(),
-  layout: yup.string().optional()
+  layout: yup.string().optional(),
 })

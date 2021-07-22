@@ -12,8 +12,8 @@ export const protocolCreateFx = protocolCreate.createEffect({
   name: 'protocolCreateFx',
   handler: (input: ProtocolCreateMutationVariables['input']) =>
     protocolsApi.protocolCreate({
-      input
-    })
+      input,
+    }),
 })
 
 protocolCreateFx.doneData.watch((payload) => {

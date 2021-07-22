@@ -11,24 +11,24 @@ export const fetchProtocolFx = protocolDetailDomain.createEffect({
   handler: async (params: { protocolId: string }) =>
     protocolsApi.protocolDetail({
       filter: {
-        id: params.protocolId
-      }
-    })
+        id: params.protocolId,
+      },
+    }),
 })
 
 export const $protocol = protocolDetailDomain
   .createStore<ProtocolQuery['protocol'] | null>(null, {
-    name: 'protocol'
+    name: 'protocol',
   })
   .on(fetchProtocolFx.doneData, (_, payload) => payload)
 
 export const ProtocolDetailGate = createGate<{ protocolId: string }>({
   name: 'ProtocolDetailGate',
-  domain: protocolDetailDomain
+  domain: protocolDetailDomain,
 })
 
 sample({
   clock: ProtocolDetailGate.open,
   target: fetchProtocolFx,
-  greedy: true
+  greedy: true,
 })

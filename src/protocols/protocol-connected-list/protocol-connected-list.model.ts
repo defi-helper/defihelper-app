@@ -13,27 +13,27 @@ export const fetchProtocolConnectedListFx =
     handler: (userId: string) =>
       protocolsApi.protocolList({
         protocolFilter: {
-          linked: userId
-        }
-      })
+          linked: userId,
+        },
+      }),
   })
 
 export const $protocolList = protocoConnectedlListDomain
   .createStore<ProtocolFragmentFragment[]>([], {
-    name: '$protocolList'
+    name: '$protocolList',
   })
-  .on(fetchProtocolConnectedListFx.doneData, (_, payload) => payload)
+  .on(fetchProtocolConnectedListFx.doneData, (_, payload) => payload.list)
   .on(deleteProtocolFx.done, (state, { params: payload }) =>
     state.filter(({ id }) => id !== payload)
   )
 
 const fetchUser = sample({
   clock: userModel.fetchUserFx.doneData,
-  fn: (user) => user?.id
+  fn: (user) => user?.id,
 })
 
 guard({
   clock: fetchUser,
   filter: (userId): userId is string => Boolean(userId),
-  target: fetchProtocolConnectedListFx
+  target: fetchProtocolConnectedListFx,
 })

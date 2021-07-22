@@ -14,7 +14,7 @@ export const StakingCreate: React.VFC<StakingCreateProps> = () => {
   const handleCreate = (formValues: FormValues) => {
     model.stakingCreateFx({
       protocol: params.protocolId,
-      input: formValues
+      input: formValues,
     })
   }
 

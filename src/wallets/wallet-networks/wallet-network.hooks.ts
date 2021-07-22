@@ -8,7 +8,7 @@ import {
   $wallet,
   activateWalletFx,
   diactivateWalletFx,
-  updateWalletFx
+  updateWalletFx,
 } from './wallet-network.model'
 
 export const useEagerConnect = () => {

@@ -44,14 +44,14 @@ export class WavesKeeperConnector extends AbstractConnector {
       return {
         provider: window.WavesKeeper,
         chainId: CHAIN_ID,
-        account: this.account
+        account: this.account,
       }
     }
 
     return {
       provider: window.WavesKeeper,
       chainId: CHAIN_ID,
-      account: this.account
+      account: this.account,
     }
   }
 

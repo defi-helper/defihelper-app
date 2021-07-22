@@ -11,7 +11,7 @@ export type StakingAdaptersProps = {
 }
 
 const FORM_LAYOUTS: Record<string, React.ElementType | undefined> = {
-  staking: StakingAdapterForm
+  staking: StakingAdapterForm,
 }
 
 const createAdapterAction =
@@ -26,7 +26,7 @@ const createAdapterAction =
       amount,
       contractAddress,
       actions: adapter?.actions ?? undefined,
-      decimals: adapter?.staking.decimals
+      decimals: adapter?.staking.decimals,
     })
   }
 
@@ -79,7 +79,7 @@ export const StakingAdapters: React.FC<StakingAdaptersProps> = (props) => {
           onStake: handleStake,
           onUnStake: handleUnStake,
           onExit: handleExit,
-          tokens
+          tokens,
         })}
     </div>
   )

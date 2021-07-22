@@ -6,7 +6,7 @@ import {
   loadAdapter,
   AdapterActions,
   Adapter,
-  AdapterWallet
+  AdapterWallet,
 } from '~/common/load-adapter'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 import { toastsService } from '~/toasts'
@@ -50,7 +50,7 @@ export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect({
           contract.address,
           {
             blockNumber: 'latest',
-            signer: network.networkProvider?.getSigner()
+            signer: network.networkProvider?.getSigner(),
           }
         )
 
@@ -68,11 +68,11 @@ export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect({
           metrics: adapter.metrics,
           staking: adapter.staking,
           reward: adapter.reward,
-          actions
+          actions,
         }
       })
     )
-  }
+  },
 })
 
 const $adapters = stakingAdaptersDomain
@@ -85,21 +85,21 @@ const fetchStakingListDone = sample({
     protocolAdapter: result.adapter,
     contracts: result.contracts.map(({ address, adapter }) => ({
       address,
-      adapter
-    }))
+      adapter,
+    })),
   }),
-  greedy: true
+  greedy: true,
 })
 
 sample({
   source: networkModel.$wallet,
   clock: guard({
     clock: fetchStakingListDone,
-    filter: (params): params is Params => Boolean(params.protocolAdapter)
+    filter: (params): params is Params => Boolean(params.protocolAdapter),
   }),
   fn: (source, clock) => ({ ...clock, provider: source.provider }),
   target: fetchContractAdaptersFx,
-  greedy: true
+  greedy: true,
 })
 
 export const $contracts = combine($adapters, (adapters) => {
@@ -139,7 +139,7 @@ const contractActionFx = stakingAdaptersDomain.createEffect({
     }
 
     await contractAction.actions[contractAction.action].send(sendAmount)
-  }
+  },
 })
 
 export const contractAction =
@@ -167,7 +167,7 @@ guard({
         contractActionPayload.contractAddress
     )
   },
-  target: contractActionFx
+  target: contractActionFx,
 })
 
 export const $actions = stakingAdaptersDomain
@@ -182,7 +182,7 @@ export const $actions = stakingAdaptersDomain
   >(
     {},
     {
-      name: '$actions'
+      name: '$actions',
     }
   )
   .on(contractActionFx, (state, payload) => {
@@ -191,7 +191,7 @@ export const $actions = stakingAdaptersDomain
     newState[payload.contractAddress] = {
       ...newState[payload.contractAddress],
       disabled: true,
-      [payload.action]: true
+      [payload.action]: true,
     }
 
     return newState
@@ -202,7 +202,7 @@ export const $actions = stakingAdaptersDomain
     newState[params.contractAddress] = {
       ...newState[params.contractAddress],
       disabled: false,
-      [params.action]: false
+      [params.action]: false,
     }
 
     return newState
@@ -224,14 +224,14 @@ const fetchTokensFx = stakingAdaptersDomain.createEffect({
           ? {
               blockchain: {
                 protocol: params.blockchain,
-                ...(params.network ? { network: String(params.network) } : {})
-              }
+                ...(params.network ? { network: String(params.network) } : {}),
+              },
             }
           : {}),
-        address: params.addresses
-      }
+        address: params.addresses,
+      },
     })
-  }
+  },
 })
 
 export const $tokens = stakingAdaptersDomain
@@ -259,11 +259,11 @@ sample({
         )
 
         return acc
-      }, [])
-    ]
+      }, []),
+    ],
   }),
   target: fetchTokensFx,
-  greedy: true
+  greedy: true,
 })
 
 toastsService.forwardErrors(

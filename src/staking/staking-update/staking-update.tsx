@@ -16,7 +16,7 @@ export const StakingUpdate: React.VFC<unknown> = () => {
     store: stakingListModel.$contracts,
     keys: [params.stakingId],
     fn: (contracts, [stakingId]) =>
-      contracts.find(({ id }) => id === stakingId) ?? null
+      contracts.find(({ id }) => id === stakingId) ?? null,
   })
 
   useGate(stakingListModel.StakingListGate, params)
@@ -31,7 +31,7 @@ export const StakingUpdate: React.VFC<unknown> = () => {
         link: staking.link,
         hidden: staking.hidden,
         adapter: staking.adapter,
-        layout: staking.layout
+        layout: staking.layout,
       }
     : undefined
 

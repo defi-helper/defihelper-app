@@ -7,5 +7,5 @@ export const userApi = {
     getAPIClient()
       .query<MeQuery, MeQueryVariables>(ME, {})
       .toPromise()
-      .then(({ data }) => data?.me)
+      .then(({ data }) => data?.me),
 }

@@ -17,8 +17,8 @@ export type WalletListProps = {
 const useStyles = makeStyles({
   icon: {
     width: 40,
-    height: 40
-  }
+    height: 40,
+  },
 })
 
 export const WalletList: React.VFC<WalletListProps> = (props) => {

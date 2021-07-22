@@ -1,5 +1,5 @@
 module.exports = {
-  trailingComma: 'none',
+  trailingComma: 'es5',
   tabWidth: 2,
   semi: false,
   singleQuote: true,
@@ -7,5 +7,7 @@ module.exports = {
   useTabs: false,
   bracketSpacing: true,
   arrowParens: 'always',
-  endOfLine: 'lf'
+  endOfLine: 'lf',
+  parser: 'typescript',
+  filepath: 'src/**/*{.ts,.tsx,.js,.jsx}',
 }

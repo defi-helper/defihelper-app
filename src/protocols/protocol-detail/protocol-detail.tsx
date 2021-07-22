@@ -18,18 +18,18 @@ const useStyles = makeStyles(() => ({
   root: {
     padding: 0,
     margin: 0,
-    listStyle: 'none'
+    listStyle: 'none',
   },
 
   header: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   icon: {
-    verticalAlign: 'middle'
-  }
+    verticalAlign: 'middle',
+  },
 }))
 
 const Protocol: React.VFC<ProtocolDetailProps> = (props) => {

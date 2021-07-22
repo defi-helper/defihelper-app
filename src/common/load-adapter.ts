@@ -3,7 +3,7 @@
 const ERROR = 'AdapterFn not loaded'
 
 const moduleExports = {
-  exports: new Error(ERROR)
+  exports: new Error(ERROR),
 }
 
 type Action = {

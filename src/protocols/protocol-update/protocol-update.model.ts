@@ -11,7 +11,7 @@ const protocolUpdate = createDomain('protocolUpdate')
 export const protocolUpdateFx = protocolUpdate.createEffect({
   name: 'protocolUpdateFx',
   handler: (variables: ProtocolUpdateMutationVariables) =>
-    protocolsApi.protocolUpdate(variables)
+    protocolsApi.protocolUpdate(variables),
 })
 
 protocolUpdateFx.doneData.watch((payload) => {

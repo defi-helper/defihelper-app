@@ -26,12 +26,12 @@ const useStyles = makeStyles(() => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    padding: '20px 0'
+    padding: '20px 0',
   },
 
   input: {
-    marginBottom: 20
-  }
+    marginBottom: 20,
+  },
 }))
 
 export const StakingAdapterForm: React.VFC<Partial<StakingAdapterFormProps>> = (

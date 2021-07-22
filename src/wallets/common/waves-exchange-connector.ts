@@ -55,7 +55,7 @@ export class WavesExchangeConnector extends AbstractConnector {
       return {
         provider: waves,
         chainId: CHAIN_ID,
-        account: this.account
+        account: this.account,
       }
     } catch (e) {
       throw new Error(e)

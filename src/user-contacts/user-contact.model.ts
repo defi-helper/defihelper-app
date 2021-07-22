@@ -5,7 +5,7 @@ import { userContactApi } from '~/user-contacts/common'
 import {
   UserContactCreateMutationVariables,
   UserContactEmailConfirmMutationVariables,
-  UserContactFragmentFragment
+  UserContactFragmentFragment,
 } from '~/graphql/_generated-types'
 
 const userContactListDomain = createDomain('userContactList')
@@ -13,7 +13,7 @@ const emailConfirmationDomain = createDomain('emailConfirmation')
 
 export const fetchUserContactListFx = userContactListDomain.createEffect({
   name: 'fetchUserContactListFx',
-  handler: () => userContactApi.userContactList({})
+  handler: () => userContactApi.userContactList({}),
 })
 
 export const createUserContactFx = userContactListDomain.createEffect({
@@ -26,14 +26,14 @@ export const createUserContactFx = userContactListDomain.createEffect({
     }
 
     throw new Error('Not created')
-  }
+  },
 })
 
 export const deleteUserContactFx = userContactListDomain.createEffect({
   name: 'deleteUserContactFx',
   handler: async (id: string) => {
     const isDeleted = await userContactApi.userContactDelete({
-      id
+      id,
     })
 
     if (isDeleted) {
@@ -41,17 +41,17 @@ export const deleteUserContactFx = userContactListDomain.createEffect({
     }
 
     throw new Error('Not deleted')
-  }
+  },
 })
 
 export const $userContactList = userContactListDomain
   .createStore<(UserContactFragmentFragment & { deleting: boolean })[]>([], {
-    name: '$userContactList'
+    name: '$userContactList',
   })
   .on(fetchUserContactListFx.doneData, (_, payload) =>
     payload.map((contact) => ({
       ...contact,
-      deleting: false
+      deleting: false,
     }))
   )
   .on(createUserContactFx.doneData, (state, payload) => {
@@ -63,8 +63,8 @@ export const $userContactList = userContactListDomain
       ...state,
       {
         ...payload,
-        deleting: false
-      }
+        deleting: false,
+      },
     ]
   })
   .on(deleteUserContactFx, (state, payload) =>
@@ -79,25 +79,25 @@ export const $userContactList = userContactListDomain
   )
 
 export const UserContactListGate = createGate({
-  domain: userContactListDomain
+  domain: userContactListDomain,
 })
 
 sample({
   clock: [UserContactListGate.open],
   target: fetchUserContactListFx,
-  greedy: true
+  greedy: true,
 })
 
 export const confirmEmailFx = emailConfirmationDomain.createEffect({
   name: 'confirmEmailFx',
   handler: async (input: UserContactEmailConfirmMutationVariables['input']) => {
     return !!(await userContactApi.userContactConfirmEmail({ input }))
-  }
+  },
 })
 
 export const $confirmEmail = emailConfirmationDomain
   .createStore<{ code: string; status: boolean | undefined }[]>([], {
-    name: '$confirmEmail'
+    name: '$confirmEmail',
   })
   .on(confirmEmailFx, (state, payload) => {
     if (

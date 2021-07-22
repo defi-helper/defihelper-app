@@ -23,35 +23,35 @@ const useStyles = makeStyles(() => ({
   root: {
     padding: 0,
     margin: 0,
-    listStyle: 'none'
+    listStyle: 'none',
   },
 
   card: {
     padding: '10px 15px',
     marginBottom: 5,
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   icons: {
     display: 'flex',
 
     '& > *:first-child': {
-      marginRight: -3
+      marginRight: -3,
     },
 
     '& > *:last-child': {
-      marginLeft: -3
-    }
+      marginLeft: -3,
+    },
   },
 
   tvl: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
   },
 
   mr: {
-    marginRight: 10
-  }
+    marginRight: 10,
+  },
 }))
 
 export const StakingList: React.VFC<StakingListProps> = (props) => {
@@ -82,7 +82,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
       model.connectWalletFx({
         wallet: connectParams.walletId,
-        contract: connectParams.contractId
+        contract: connectParams.contractId,
       })
     }
 
@@ -115,7 +115,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   variant="contained"
                   onClick={handleConnect({
                     walletId: stakingListItem.wallet?.id,
-                    contractId: stakingListItem.id
+                    contractId: stakingListItem.id,
                   })}
                 >
                   Connect
@@ -130,7 +130,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   className={`${classes.tvl} ${classes.mr}`}
                   href={buildExplorerUrl({
                     network: stakingListItem.network,
-                    address: stakingListItem.address
+                    address: stakingListItem.address,
                   })}
                   target="_blank"
                 >
@@ -177,6 +177,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             </li>
           ))}
       </ul>
+      <model.StakingListPagination />
     </div>
   )
 }

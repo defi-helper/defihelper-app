@@ -13,7 +13,7 @@ export async function augmentConnectorUpdate(
       : update.provider
   const [chainId, account] = (await Promise.all([
     update.chainId === undefined ? connector.getChainId() : update.chainId,
-    update.account === undefined ? connector.getAccount() : update.account
+    update.account === undefined ? connector.getAccount() : update.account,
   ])) as [
     Required<ConnectorUpdate>['chainId'],
     Required<ConnectorUpdate>['account']
@@ -31,6 +31,6 @@ export async function augmentConnectorUpdate(
     connector,
     provider,
     chainId: chainId !== 'waves' ? normalizedChainId : chainId,
-    account
+    account,
   }
 }

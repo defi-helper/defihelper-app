@@ -6,5 +6,5 @@ export const protocolFormSchema = yup.object().shape({
   hidden: yup.bool().optional(),
   icon: yup.string().url('Must be url').optional(),
   link: yup.string().url('Must be url').optional(),
-  description: yup.string().optional()
+  description: yup.string().optional(),
 })

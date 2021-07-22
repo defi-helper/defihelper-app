@@ -16,7 +16,6 @@ import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
 import ThumbsUpDownIcon from '@material-ui/icons/ThumbsUpDown'
 import ContactsIcon from '@material-ui/icons/Contacts'
-import NotificationsIcon from '@material-ui/icons/Notifications'
 import ListIcon from '@material-ui/icons/List'
 
 import { paths } from '~/paths'
@@ -27,7 +26,7 @@ import { cutAccount } from '~/common/cut-account'
 import { WalletDetail } from '~/wallets/wallet-detail'
 import { networkModel } from '~/wallets/wallet-networks'
 import { ProtocolConnectedList } from '~/protocols/protocol-connected-list'
-import { WalletNetworkSwitcher } from '~/wallets/wallet-network-switcher/wallet-network-switcher'
+import { WalletNetworkSwitcher } from '~/wallets/wallet-network-switcher'
 
 export type MainLayoutProps = unknown
 
@@ -35,50 +34,50 @@ const drawerWidth = 340
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex'
+    display: 'flex',
   },
   appBar: {
-    zIndex: theme.zIndex.drawer + 1
+    zIndex: theme.zIndex.drawer + 1,
   },
   drawer: {
     width: drawerWidth,
-    flexShrink: 0
+    flexShrink: 0,
   },
   drawerPaper: {
-    width: drawerWidth
+    width: drawerWidth,
   },
   drawerContainer: {
-    overflow: 'auto'
+    overflow: 'auto',
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3)
+    padding: theme.spacing(3),
   },
   logo: {
     color: 'inherit',
-    textDecoration: 'none'
+    textDecoration: 'none',
   },
   actions: {
-    marginLeft: 'auto'
-  }
+    marginLeft: 'auto',
+  },
 }))
 
 const MENU = [
   {
     title: 'Protocols',
     path: paths.protocols.list,
-    icon: ListIcon
+    icon: ListIcon,
   },
   {
     title: 'Proposals',
     path: paths.proposals.list,
-    icon: ThumbsUpDownIcon
+    icon: ThumbsUpDownIcon,
   },
   {
     title: 'Contacts',
     path: paths.contacts.list,
-    icon: ContactsIcon
-  }
+    icon: ContactsIcon,
+  },
 ]
 
 export const MainLayout: React.FC<MainLayoutProps> = (props) => {
@@ -105,7 +104,7 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
     )
 
   const match = useRouteMatch({
-    path: [paths.protocols.list, paths.protocols.detail()]
+    path: [paths.protocols.list, paths.protocols.detail()],
   })
 
   return (
@@ -140,7 +139,7 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
         className={classes.drawer}
         variant="permanent"
         classes={{
-          paper: classes.drawerPaper
+          paper: classes.drawerPaper,
         }}
       >
         <Toolbar />

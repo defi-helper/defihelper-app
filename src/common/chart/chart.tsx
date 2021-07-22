@@ -1,7 +1,7 @@
 import {
   create,
   Scrollbar,
-  useTheme as amchartsUseTheme
+  useTheme as amchartsUseTheme,
 } from '@amcharts/amcharts4/core'
 import {
   DateAxis,
@@ -9,7 +9,7 @@ import {
   LineSeries,
   ValueAxis,
   XYChart,
-  XYCursor
+  XYCursor,
 } from '@amcharts/amcharts4/charts'
 import { useEffect, useRef } from 'react'
 import am4themes_animated from '@amcharts/amcharts4/themes/animated'
@@ -29,14 +29,14 @@ const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
     height: '300px',
-    margin: '50px 0'
+    margin: '50px 0',
   },
 
   flex: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 }))
 
 export const Chart: React.VFC<ChartProps> = (props) => {

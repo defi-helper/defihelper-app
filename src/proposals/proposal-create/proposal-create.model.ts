@@ -11,19 +11,19 @@ const proposalCreateDomain = createDomain('proposalCreate')
 export const createProposalFx = proposalCreateDomain.createEffect({
   name: 'createProposalFx',
   handler: (input: ProposalCreateInputType) =>
-    proposalApi.proposalCreate({ input })
+    proposalApi.proposalCreate({ input }),
 })
 
 const redirectFx = proposalCreateDomain.createEffect({
   name: 'redirectFx',
   handler: (proposalId: string) =>
-    history.push(paths.proposals.detail(proposalId))
+    history.push(paths.proposals.detail(proposalId)),
 })
 
 guard({
   clock: createProposalFx.doneData,
   filter: (proposalId?: string): proposalId is string => Boolean(proposalId),
-  target: redirectFx
+  target: redirectFx,
 })
 
 export const createProposal = proposalCreateDomain.createEvent<
@@ -33,5 +33,5 @@ export const createProposal = proposalCreateDomain.createEvent<
 sample({
   clock: createProposal,
   fn: (input) => omit(input, 'status'),
-  target: createProposalFx
+  target: createProposalFx,
 })

@@ -11,14 +11,14 @@ import {
   ProtocolUpdateMutation,
   ProtocolUpdateMutationVariables,
   ProtocolMetricQuery,
-  ProtocolMetricQueryVariables
+  ProtocolMetricQueryVariables,
 } from '~/graphql/_generated-types'
 import {
   PROTOCOLS,
   PROTOCOL_CREATE,
   PROTOCOL_DELETE,
   PROTOCOL_DETAIL,
-  PROTOCOL_DETAIL_METRIC
+  PROTOCOL_DETAIL_METRIC,
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 
@@ -27,7 +27,10 @@ export const protocolsApi = {
     getAPIClient()
       .query<ProtocolsQuery, ProtocolsQueryVariables>(PROTOCOLS, variables)
       .toPromise()
-      .then(({ data }) => data?.protocols.list ?? []),
+      .then(({ data }) => ({
+        list: data?.protocols.list ?? [],
+        count: data?.protocols.pagination.count ?? 0,
+      })),
 
   protocolDetail: (variables: ProtocolQueryVariables) =>
     getAPIClient()
@@ -69,5 +72,5 @@ export const protocolsApi = {
         { id }
       )
       .toPromise()
-      .then(({ data }) => data?.protocolDelete)
+      .then(({ data }) => data?.protocolDelete),
 }

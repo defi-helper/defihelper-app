@@ -12,12 +12,12 @@ import * as model from './protocol-metrics.model'
 const useStyles = makeStyles(() => ({
   actions: {
     display: 'flex',
-    gap: 8
+    gap: 8,
   },
 
   wrapper: {
     position: 'relative',
-    display: 'inline-flex'
+    display: 'inline-flex',
   },
 
   buttonProgress: {
@@ -25,8 +25,8 @@ const useStyles = makeStyles(() => ({
     top: '50%',
     left: '50%',
     marginTop: -12,
-    marginLeft: -12
-  }
+    marginLeft: -12,
+  },
 }))
 
 export const ProtocolMetrics: React.FC<unknown> = () => {
@@ -45,7 +45,7 @@ export const ProtocolMetrics: React.FC<unknown> = () => {
   useEffect(() => {
     model.fetchMetricFx({
       protocolId: params.protocolId,
-      group: currentGroup
+      group: currentGroup,
     })
   }, [currentGroup, params.protocolId])
 
@@ -54,7 +54,7 @@ export const ProtocolMetrics: React.FC<unknown> = () => {
       <Chart
         dataFields={{
           valueY: 'sum',
-          dateX: 'date'
+          dateX: 'date',
         }}
         data={metric[currentGroup]?.data}
         tooltipText="{sum}"

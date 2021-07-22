@@ -12,6 +12,9 @@ export const PROPOSAL_LIST = gql`
       list {
         ...proposalFragment
       }
+      pagination {
+        count
+      }
     }
   }
   ${PROPOSAL_FRAGMENT}

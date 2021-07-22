@@ -5,5 +5,5 @@ export const sidUtils = {
 
   get: () => localStorage.getItem(KEY),
 
-  remove: () => localStorage.removeItem(KEY)
+  remove: () => localStorage.removeItem(KEY),
 }

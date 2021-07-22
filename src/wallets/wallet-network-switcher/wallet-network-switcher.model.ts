@@ -18,29 +18,29 @@ export const activateNetworkFx = domain.createEffect({
     if (!nextNetwork) return
 
     activateNetwork(nextNetwork)
-  }
+  },
 })
 
 export const $currentNetwork = domain
   .createStore(NETWORKS[1], {
-    name: '$currentNetwork'
+    name: '$currentNetwork',
   })
-  .on(activateNetwork, (state, payload) => {
-    return shallowEqual(state, payload) ? undefined : payload
-  })
+  .on(activateNetwork, (state, payload) =>
+    shallowEqual(state, payload) ? undefined : payload
+  )
 
 guard({
   clock: networkModel.activateWalletFx.doneData.map(({ chainId }) => chainId),
   filter: (chainId): chainId is number | string => Boolean(chainId),
   target: activateNetworkFx,
-  greedy: true
+  greedy: true,
 })
 
 guard({
   clock: networkModel.updateWalletFx.doneData.map(({ chainId }) => chainId),
   filter: (chainId): chainId is number | string => Boolean(chainId),
   target: activateNetworkFx,
-  greedy: true
+  greedy: true,
 })
 
 const activateEthereumFx = domain.createEffect({
@@ -57,13 +57,13 @@ const activateEthereumFx = domain.createEffect({
     await params.fn()
 
     return networkModel.activateWalletFx({ connector: params.connector })
-  }
+  },
 })
 
 const activateWavesFx = domain.createEffect({
   name: 'activateWavesFx',
   handler: (connector: AbstractConnector) =>
-    networkModel.activateWalletFx({ connector })
+    networkModel.activateWalletFx({ connector }),
 })
 
 export const activateWaves = domain.createEvent('activateWaves')
@@ -75,7 +75,7 @@ sample({
   source: networkModel.$wallet,
   clock: activateWaves,
   fn: () => connectors.wavesKepper,
-  target: activateWavesFx
+  target: activateWavesFx,
 })
 
 sample({
@@ -84,7 +84,7 @@ sample({
   fn: ({ account = null }, clock) => ({
     account,
     connector: connectors.injected,
-    fn: clock
+    fn: clock,
   }),
-  target: activateEthereumFx
+  target: activateEthereumFx,
 })

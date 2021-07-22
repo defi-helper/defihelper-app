@@ -14,5 +14,5 @@ export const dateUtils = {
 
   after180Days: () => dayjs().subtract(180, 'days').toISOString(),
 
-  now: () => dayjs().toISOString()
+  now: () => dayjs().toISOString(),
 }

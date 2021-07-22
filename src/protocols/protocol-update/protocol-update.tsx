@@ -24,7 +24,7 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
       hidden: protocol?.hidden ?? undefined,
       icon: protocol?.icon ?? undefined,
       link: protocol?.link ?? undefined,
-      adapter: protocol?.adapter ?? ''
+      adapter: protocol?.adapter ?? '',
     }),
     [protocol]
   )

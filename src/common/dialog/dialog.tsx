@@ -21,15 +21,15 @@ const useStyle = makeStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 2000
+    zIndex: 2000,
   },
 
   content: {
     background: '#fff',
     maxHeight: '100vh',
     overflowY: 'auto',
-    overflowX: 'hidden'
-  }
+    overflowX: 'hidden',
+  },
 })
 
 export const Dialog: React.FC<DialogProps> = (props) => {
