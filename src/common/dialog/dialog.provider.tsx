@@ -44,7 +44,7 @@ export const DialogProvider: React.FC = (props) => {
       value={{
         onClose: handleClose,
         onOpen: handleOpen,
-        closeOnOverlay: setCloseOnOverlayClick
+        closeOnOverlay: setCloseOnOverlayClick,
       }}
     >
       {dialogNode && React.isValidElement(dialogNode) && (
@@ -53,7 +53,7 @@ export const DialogProvider: React.FC = (props) => {
             {cloneElement(dialogNode, {
               ...dialogNode.props,
               onCancel: handleClose,
-              onConfirm: handleOnConfirm
+              onConfirm: handleOnConfirm,
             })}
           </div>
         </Portal>

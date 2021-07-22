@@ -25,7 +25,7 @@ const request = async (params: Params) => {
   try {
     await provider.request?.({
       method: 'wallet_addEthereumChain',
-      params: [params]
+      params: [params],
     })
   } catch (error) {
     console.error(error.message)
@@ -42,14 +42,14 @@ export const setupBinance = async () => {
     nativeCurrency: {
       name: 'BNB',
       symbol: 'bnb',
-      decimals: 18
+      decimals: 18,
     },
     rpcUrls: [
       'https://bsc-dataseed.binance.org/',
       'https://bsc-dataseed1.defibit.io/',
-      'https://bsc-dataseed1.ninicoin.io/'
+      'https://bsc-dataseed1.ninicoin.io/',
     ],
-    blockExplorerUrls: ['https://bscscan.com/']
+    blockExplorerUrls: ['https://bscscan.com/'],
   }
 
   return request(params)

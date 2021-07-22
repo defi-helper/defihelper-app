@@ -11,7 +11,7 @@ const stakingUpdate = createDomain('stakingUpdate')
 export const stakingUpdateFx = stakingUpdate.createEffect({
   name: 'stakingUpdateFx',
   handler: (input: StakingContractUpdateMutationVariables) =>
-    stakingApi.contractUpdate(input)
+    stakingApi.contractUpdate(input),
 })
 
 stakingUpdateFx.doneData.watch((payload) => {

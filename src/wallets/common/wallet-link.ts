@@ -30,7 +30,7 @@ export class WalletLinkConnector extends AbstractConnector {
     url,
     appName,
     appLogoUrl,
-    darkMode
+    darkMode,
   }: WalletLinkConnectorArguments) {
     super({ supportedChainIds: [CHAIN_ID] })
 
@@ -49,7 +49,7 @@ export class WalletLinkConnector extends AbstractConnector {
       this.walletLink = new WalletLink({
         appName: this.appName,
         darkMode: this.darkMode,
-        ...(this.appLogoUrl ? { appLogoUrl: this.appLogoUrl } : {})
+        ...(this.appLogoUrl ? { appLogoUrl: this.appLogoUrl } : {}),
       })
       const provider = this.walletLink.makeWeb3Provider(this.url, CHAIN_ID)
 

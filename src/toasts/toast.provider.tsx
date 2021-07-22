@@ -21,16 +21,16 @@ const useStyles = makeStyles((theme: Theme) => ({
     zIndex: 10000,
 
     '& > * + *': {
-      marginTop: theme.spacing(2)
-    }
+      marginTop: theme.spacing(2),
+    },
   },
 
   toast: {
     position: 'static',
     left: 'auto',
     transform: 'none',
-    justifyContent: 'flex-end'
-  }
+    justifyContent: 'flex-end',
+  },
 }))
 
 export const ToastProvider: React.FC<ToastProviderProps> = (props) => {

@@ -16,12 +16,12 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
 
   voted: {
-    color: theme.palette.warning.light
-  }
+    color: theme.palette.warning.light,
+  },
 }))
 
 export const ProposalVote: React.FC<ProposalVoteProps> = (props) => {

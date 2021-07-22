@@ -12,5 +12,5 @@ export const bignumberUtils = {
       .toString(10),
 
   format: (amount?: string | number | null) =>
-    new BigNumber(amount || 0).toFormat(2)
+    new BigNumber(amount || 0).toFormat(2),
 }

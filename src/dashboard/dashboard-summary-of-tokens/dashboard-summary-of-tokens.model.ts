@@ -5,7 +5,7 @@ import {
   MetricGroupEnum,
   SortOrderEnum,
   TokenMetricChartQueryVariables,
-  UserTokenMetricChartSortInputTypeColumnEnum
+  UserTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
 import { dashboardApi } from '~/dashboard/common'
 import { Unwrap } from '~/common/types'
@@ -15,16 +15,16 @@ const domain = createDomain('dashboardSummaryOfTokens')
 const summaryOfTokensForLastHourVariables = {
   group: MetricGroupEnum.Hour,
   pagination: {
-    limit: 1
-  }
+    limit: 1,
+  },
 }
 
 const summaryOfTokensForLastHourForYesterdayVariables = {
   group: MetricGroupEnum.Day,
   pagination: {
     limit: 2,
-    offset: 1
-  }
+    offset: 1,
+  },
 }
 
 const createGetTokenMetricEffect = (
@@ -40,10 +40,10 @@ const createGetTokenMetricEffect = (
         sort: [
           {
             column: UserTokenMetricChartSortInputTypeColumnEnum.Date,
-            order: SortOrderEnum.Desc
-          }
-        ]
-      })
+            order: SortOrderEnum.Desc,
+          },
+        ],
+      }),
   })
 }
 
@@ -64,13 +64,13 @@ type SummaryOfTokens = Unwrap<
 
 const $summaryOfTokensForLastHour = domain
   .createStore<SummaryOfTokens>([], {
-    name: 'summaryOfTokensForLastHour'
+    name: 'summaryOfTokensForLastHour',
   })
   .on(fetchSummaryOfTokensForLastHourFx.doneData, (_, payload) => payload)
 
 const $summaryOfTokensForLastHourForYesterday = domain
   .createStore<SummaryOfTokens>([], {
-    name: 'summaryOfTokensForLastHourForYesterday'
+    name: 'summaryOfTokensForLastHourForYesterday',
   })
   .on(
     fetchSummaryOfTokensForLastHourForYesterdayFx.doneData,
@@ -79,7 +79,7 @@ const $summaryOfTokensForLastHourForYesterday = domain
 
 export const dashboardSummaryOfTokensGate = createGate({
   name: 'dashboardSummaryOfTokensGate',
-  domain
+  domain,
 })
 
 export const $dashboardSummaryOfTokens = combine(
@@ -104,7 +104,7 @@ export const $dashboardSummaryOfTokens = combine(
       summaryOfTokensForLastHour: sumOfTokensForLastHour,
       summaryOfTokensForLastHourForYesterday: sumOfTokensForLastHourYesterday,
       summaryDiffOfYesterday,
-      summaryDiffOfYesterdayPercent: summaryDiffOfYesterday * 100
+      summaryDiffOfYesterdayPercent: summaryDiffOfYesterday * 100,
     }
   }
 )
@@ -113,6 +113,6 @@ sample({
   clock: dashboardSummaryOfTokensGate.open,
   target: [
     fetchSummaryOfTokensForLastHourFx,
-    fetchSummaryOfTokensForLastHourForYesterdayFx
-  ]
+    fetchSummaryOfTokensForLastHourForYesterdayFx,
+  ],
 })

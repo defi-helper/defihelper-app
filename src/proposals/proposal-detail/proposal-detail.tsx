@@ -31,7 +31,7 @@ export const ProposalDetail: React.VFC<ProposalDetailProps> = () => {
   const handleUnvote = (proposalId: string) => () => {
     model.unvoteProposalFx({
       proposalId,
-      userId: user?.id
+      userId: user?.id,
     })
   }
 

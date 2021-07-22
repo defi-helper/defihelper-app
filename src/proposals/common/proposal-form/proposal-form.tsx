@@ -9,7 +9,7 @@ import { ProposalStatusEnum } from '~/graphql/_generated-types'
 
 const MarkdownEditor = lazy(() =>
   import('~/common/markdown-editor').then((c) => ({
-    default: c.MarkdownEditor
+    default: c.MarkdownEditor,
   }))
 )
 
@@ -31,9 +31,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
 
     '& > *': {
-      margin: theme.spacing(2)
-    }
-  }
+      margin: theme.spacing(2),
+    },
+  },
 }))
 
 export const ProposalForm: React.FC<ProposalFormProps> = (props) => {

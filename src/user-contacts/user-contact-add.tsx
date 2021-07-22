@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
@@ -7,18 +6,18 @@ import {
   InputLabel,
   makeStyles,
   MenuItem,
-  Select
+  Select,
 } from '@material-ui/core'
 import { yupResolver } from '@hookform/resolvers/yup'
-
 import * as yup from 'yup'
 import { useStore } from 'effector-react'
+
 import { UserContactBrokerEnum } from '~/graphql/_generated-types'
 import * as model from '~/user-contacts/user-contact.model'
 
 export const userContactFormSchema = yup.object().shape({
   broker: yup.string().required('Required'),
-  address: yup.string().required('Required')
+  address: yup.string().required('Required'),
 })
 
 type FormValues = {
@@ -29,21 +28,21 @@ type FormValues = {
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > *': {
-      margin: theme.spacing(2)
-    }
+      margin: theme.spacing(2),
+    },
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120
+    minWidth: 120,
   },
   selectEmpty: {
-    marginTop: theme.spacing(2)
-  }
+    marginTop: theme.spacing(2),
+  },
 }))
 
 export const UserContactAdd: React.VFC = () => {
   const { register, handleSubmit, formState } = useForm<FormValues>({
-    resolver: yupResolver(userContactFormSchema)
+    resolver: yupResolver(userContactFormSchema),
   })
 
   const loading = useStore(model.createUserContactFx.pending)

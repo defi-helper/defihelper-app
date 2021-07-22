@@ -9,7 +9,7 @@ import {
   augmentConnectorUpdate,
   walletApi,
   createEthereumProvider,
-  connectors
+  connectors,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { sidUtils } from '~/users/common'
@@ -35,7 +35,7 @@ export const activateWalletFx = networkDomain.createEffect({
     const updateData = await params.connector.activate()
 
     return augmentConnectorUpdate(params.connector, params.update ?? updateData)
-  }
+  },
 })
 
 export const updateWalletFx = networkDomain.createEffect({
@@ -45,7 +45,7 @@ export const updateWalletFx = networkDomain.createEffect({
     update: ConnectorUpdate<number | string>
   }) => {
     return augmentConnectorUpdate(params.connector, params.update)
-  }
+  },
 })
 
 export type WalletStore = ConnectorUpdate<number | string> & {
@@ -56,7 +56,7 @@ export const diactivateWalletFx = networkDomain.createEffect({
   name: 'diactivateWalletFx',
   handler: async (connector?: AbstractConnector) => {
     connector?.deactivate()
-  }
+  },
 })
 
 export const $wallet = networkDomain
@@ -65,10 +65,10 @@ export const $wallet = networkDomain
       chainId: config.CHAIN_ETHEREUM_IDS[0],
       account: null,
       provider: window.ethereum,
-      connector: connectors.injected
+      connector: connectors.injected,
     },
     {
-      name: '$wallet'
+      name: '$wallet',
     }
   )
   .on(activateWalletFx.doneData, (state, payload) => {
@@ -86,7 +86,7 @@ export const getNetwork = () => {
 
   return {
     ...wallet,
-    networkProvider: createProvider?.(wallet.provider)
+    networkProvider: createProvider?.(wallet.provider),
   }
 }
 
@@ -98,7 +98,7 @@ export const useNetworkProvider = () => {
 
     return {
       ...wallet,
-      networkProvider: createProvider?.(wallet.provider)
+      networkProvider: createProvider?.(wallet.provider),
     }
   }, [wallet])
 }
@@ -122,7 +122,7 @@ export const signMessageFx = networkDomain.createEffect({
       network: String(network.chainId),
       signature,
       message: MESSAGE,
-      address: network.account
+      address: network.account,
     })
 
     if (!data) return
@@ -130,21 +130,21 @@ export const signMessageFx = networkDomain.createEffect({
     sidUtils.set(data.sid)
 
     return data.user
-  }
+  },
 })
 
 sample({
   source: $wallet.map(({ connector }) => connector),
   clock: signMessageFx.failData,
   target: diactivateWalletFx,
-  greedy: true
+  greedy: true,
 })
 
 guard({
   clock: $wallet,
   target: signMessageFx,
   filter: ({ account }) => Boolean(account),
-  greedy: true
+  greedy: true,
 })
 
 toastsService.forwardErrors(

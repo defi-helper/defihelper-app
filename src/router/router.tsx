@@ -3,7 +3,7 @@ import {
   Route,
   Router as BrowserRouter,
   Switch,
-  Redirect
+  Redirect,
 } from 'react-router-dom'
 
 import { PrivateRoute } from './private-route'

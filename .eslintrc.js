@@ -7,26 +7,33 @@ module.exports = {
     'prettier',
     'prettier/react',
     'prettier/@typescript-eslint',
-    'plugin:prettier/recommended'
+    'plugin:prettier/recommended',
   ],
-  plugins: ['react', '@typescript-eslint', 'prettier', 'react-hooks', 'jest'],
+  plugins: [
+    'react',
+    '@typescript-eslint',
+    'prettier',
+    'react-hooks',
+    'jest',
+    'simple-import-sort',
+  ],
   env: {
     browser: true,
     es6: true,
-    jest: true
+    jest: true,
   },
   globals: {
-    ethereum: 'readonly'
+    ethereum: 'readonly',
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
-      jsx: true
+      jsx: true,
     },
     ecmaVersion: 2020,
     sourceType: 'module',
     project: ['./tsconfig.json'],
-    createDefaultProgram: true
+    createDefaultProgram: true,
   },
   rules: {
     'react/destructuring-assignment': 0,
@@ -34,8 +41,10 @@ module.exports = {
     'prettier/prettier': [
       'error',
       {
-        endOfLine: 'auto'
-      }
+        endOfLine: 'auto',
+        trailingComma: 'es5',
+        jsxSingleQuote: false,
+      },
     ],
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/no-loop-func': 'off',
@@ -49,7 +58,7 @@ module.exports = {
       process.env.NODE_ENV === 'production' ? 'error' : 'warn',
     'no-console': [
       process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-      { allow: ['warn', 'error'] }
+      { allow: ['warn', 'error'] },
     ],
     'react/prop-types': 0,
     'import/prefer-default-export': 'off',
@@ -59,6 +68,18 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 0,
     'react/state-in-constructor': ['error', 'never'],
     'react/react-in-jsx-scope': 0,
-    'import/extensions': 0
-  }
+    'import/extensions': 0,
+    'no-unused-vars': 'error',
+    trailingComma: 'off',
+    'comma-dangle': [
+      'error',
+      {
+        arrays: 'always-multiline',
+        objects: 'always-multiline',
+        imports: 'always-multiline',
+        exports: 'always-multiline',
+        functions: 'only-multiline',
+      },
+    ],
+  },
 }

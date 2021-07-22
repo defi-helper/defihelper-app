@@ -1,6 +1,7 @@
 import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
+import { createPagination, PaginationState } from '~/common/create-pagination'
 import { ProposalFragmentFragment } from '~/graphql/_generated-types'
 import { proposalApi } from '~/proposals/common'
 
@@ -8,7 +9,10 @@ const proposalListDomain = createDomain('proposalList')
 
 export const fetchProposalListFx = proposalListDomain.createEffect({
   name: 'fetchProposalListFx',
-  handler: () => proposalApi.proposalList()
+  handler: (pagination: PaginationState) =>
+    proposalApi.proposalList({
+      pagination,
+    }),
 })
 
 const ERROR = 'Not deleted'
@@ -23,7 +27,7 @@ export const deleteProposalFx = proposalListDomain.createEffect({
     }
 
     throw new Error(ERROR)
-  }
+  },
 })
 
 const ERROR_MESSAGE = "can't vote"
@@ -37,9 +41,9 @@ export const voteProposalFx = proposalListDomain.createEffect({
 
     return {
       proposalId,
-      data
+      data,
     }
-  }
+  },
 })
 
 export const unvoteProposalFx = proposalListDomain.createEffect({
@@ -50,15 +54,15 @@ export const unvoteProposalFx = proposalListDomain.createEffect({
     if (!data) {
       throw new Error(ERROR_MESSAGE)
     }
-  }
+  },
 })
 
 export const $proposalList = proposalListDomain
   .createStore<(ProposalFragmentFragment & { deleting: boolean })[]>([], {
-    name: '$proposalList'
+    name: '$proposalList',
   })
   .on(fetchProposalListFx.doneData, (_, payload) =>
-    payload.map((proposal) => ({ ...proposal, deleting: false }))
+    payload.list.map((proposal) => ({ ...proposal, deleting: false }))
   )
   .on(deleteProposalFx, (state, payload) =>
     state.map((protocol) =>
@@ -74,8 +78,8 @@ export const $proposalList = proposalListDomain
         ? {
             ...proposal,
             votes: {
-              list: [...(proposal.votes.list ?? []), payload.data]
-            }
+              list: [...(proposal.votes.list ?? []), payload.data],
+            },
           }
         : proposal
     )
@@ -88,18 +92,30 @@ export const $proposalList = proposalListDomain
             votes: {
               list: proposal.votes.list?.filter(
                 (vote) => vote.user.id !== params.userId
-              )
-            }
+              ),
+            },
           }
         : proposal
     )
   )
 
-export const Gate = createGate({
-  domain: proposalListDomain
+export const ProposalListGate = createGate({
+  domain: proposalListDomain,
+})
+
+export const ProposalListPagination = createPagination({
+  domain: proposalListDomain,
+  limit: 10,
 })
 
 sample({
-  clock: Gate.open,
-  target: fetchProposalListFx
+  source: ProposalListPagination.state,
+  clock: [ProposalListGate.open, ProposalListPagination.pageChanged],
+  target: fetchProposalListFx,
+})
+
+sample({
+  source: fetchProposalListFx.doneData,
+  fn: (source) => source.pagination,
+  target: ProposalListPagination.totalElements,
 })

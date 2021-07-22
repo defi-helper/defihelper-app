@@ -1,9 +1,10 @@
 import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
+import { createPagination } from '~/common/create-pagination'
 import {
   BlockchainEnum,
-  ProtocolFragmentFragment
+  ProtocolFragmentFragment,
 } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
@@ -15,6 +16,8 @@ export const fetchProtocolListFx = protocolListDomain.createEffect({
   handler: (params?: {
     blockchain: BlockchainEnum
     network?: string | number
+    offset: number
+    limit: number
   }) =>
     protocolsApi.protocolList({
       ...(params?.blockchain
@@ -22,12 +25,16 @@ export const fetchProtocolListFx = protocolListDomain.createEffect({
             protocolFilter: {
               blockchain: {
                 protocol: params.blockchain,
-                network: params.network ? String(params.network) : undefined
-              }
-            }
+                network: params.network ? String(params.network) : undefined,
+              },
+            },
           }
-        : {})
-    })
+        : {}),
+      protocolPagination: {
+        offset: params?.offset,
+        limit: params?.limit,
+      },
+    }),
 })
 
 const ERROR = 'Not deleted'
@@ -42,20 +49,20 @@ export const deleteProtocolFx = protocolListDomain.createEffect({
     }
 
     throw new Error(ERROR)
-  }
+  },
 })
 
 export const $protocolList = protocolListDomain
   .createStore<
     (ProtocolFragmentFragment & { deleting: boolean; type: 'Protocol' })[]
   >([], {
-    name: '$protocolList'
+    name: '$protocolList',
   })
   .on(fetchProtocolListFx.doneData, (_, payload) =>
-    payload.map((protocol) => ({
+    payload.list.map((protocol) => ({
       ...protocol,
       deleting: false,
-      type: 'Protocol'
+      type: 'Protocol',
     }))
   )
   .on(deleteProtocolFx, (state, payload) =>
@@ -67,14 +74,38 @@ export const $protocolList = protocolListDomain
     state.filter(({ id }) => id !== payload)
   )
 
+export const ProtocolListPagination = createPagination({
+  domain: protocolListDomain,
+  limit: 10,
+})
+
 export const ProtocolListGate = createGate({
-  domain: protocolListDomain
+  domain: protocolListDomain,
+  name: 'ProtocolListGate',
 })
 
 sample({
-  source: walletNetworkSwitcherModel.$currentNetwork,
-  clock: [walletNetworkSwitcherModel.$currentNetwork, ProtocolListGate.open],
-  fn: ({ network, blockchain }) => ({ network, blockchain }),
+  source: [
+    walletNetworkSwitcherModel.$currentNetwork,
+    ProtocolListPagination.state,
+  ],
+  clock: [
+    walletNetworkSwitcherModel.$currentNetwork,
+    ProtocolListGate.open,
+    ProtocolListPagination.pageChanged,
+  ],
+  fn: ([{ network, blockchain }, { offset, limit }]) => ({
+    network,
+    blockchain,
+    offset,
+    limit,
+  }),
   target: fetchProtocolListFx,
-  greedy: true
+  greedy: true,
+})
+
+sample({
+  clock: fetchProtocolListFx.doneData,
+  fn: (clock) => clock.count,
+  target: ProtocolListPagination.totalElements,
 })

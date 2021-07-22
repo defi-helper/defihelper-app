@@ -15,7 +15,7 @@ import {
   StakingConnectedContractsQuery,
   StakingConnectedContractsQueryVariables,
   StakingTokensQuery,
-  StakingTokensQueryVariables
+  StakingTokensQueryVariables,
 } from '~/graphql/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -24,7 +24,7 @@ import {
   STAKING_CONTRACT_UPDATE,
   STAKING_CONNECT_WALLET,
   STAKING_DISCONNECT_WALLET,
-  STAKING_TOKENS
+  STAKING_TOKENS,
 } from './graphql'
 import { STAKING_CONNECTED_CONTRACTS } from './graphql/staking-connected-contracts.graphql'
 
@@ -38,7 +38,8 @@ export const stakingApi = {
       .toPromise()
       .then(({ data }) => ({
         adapter: data?.protocol?.adapter,
-        contracts: data?.protocol?.contracts.list ?? []
+        contracts: data?.protocol?.contracts.list ?? [],
+        pagination: data?.protocol?.contracts.pagination.count ?? 0,
       })),
 
   contractDelete: (id: string) =>
@@ -93,8 +94,8 @@ export const stakingApi = {
         StakingConnectedContractsQueryVariables
       >(STAKING_CONNECTED_CONTRACTS, {
         filter: {
-          protocol: [protocolId]
-        }
+          protocol: [protocolId],
+        },
       })
       .toPromise()
       .then(({ data }) =>
@@ -108,5 +109,5 @@ export const stakingApi = {
         variables
       )
       .toPromise()
-      .then(({ data }) => data?.tokens.list ?? [])
+      .then(({ data }) => data?.tokens.list ?? []),
 }

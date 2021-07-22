@@ -21,10 +21,10 @@ export const getAPIClient = memoize(() => {
       return sid
         ? {
             headers: {
-              Auth: sid
-            }
+              Auth: sid,
+            },
           }
         : {}
-    }
+    },
   })
 })

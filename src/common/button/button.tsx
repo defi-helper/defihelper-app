@@ -14,7 +14,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       ...restOfProps,
       ...as.props,
       ref,
-      className: clsx(className, as.props.className)
+      className: clsx(className, as.props.className),
     })
   }
 )

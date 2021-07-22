@@ -13,8 +13,8 @@ export type ProtocolConnectedListProps = unknown
 
 const useStyles = makeStyles((theme) => ({
   nested: {
-    paddingLeft: theme.spacing(4)
-  }
+    paddingLeft: theme.spacing(4),
+  },
 }))
 
 export const ProtocolConnectedList: React.VFC<ProtocolConnectedListProps> =

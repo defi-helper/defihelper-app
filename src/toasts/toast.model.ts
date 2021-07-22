@@ -3,7 +3,7 @@ import {
   createApi,
   createEvent,
   forward,
-  Event
+  Event,
 } from 'effector-logger'
 import { nanoid } from 'nanoid'
 
@@ -21,7 +21,7 @@ type Toast = {
 } & Options
 
 export const $toasts = createStore<Toast[]>([], {
-  name: '$toasts'
+  name: '$toasts',
 })
 
 const createToast =
@@ -29,14 +29,14 @@ const createToast =
     const defaultOptions = (message: string) => ({
       message,
       variant,
-      key: nanoid()
+      key: nanoid(),
     })
 
     return [
       ...state,
       typeof notification === 'string'
         ? defaultOptions(notification)
-        : { ...notification, ...defaultOptions(notification.message) }
+        : { ...notification, ...defaultOptions(notification.message) },
     ]
   }
 
@@ -45,7 +45,7 @@ const toastsApi = createApi($toasts, {
   info: createToast('info'),
   success: createToast('success'),
   warning: createToast('warning'),
-  error: createToast('error')
+  error: createToast('error'),
 })
 
 export const removeToast = createEvent<string>('remove')
@@ -57,11 +57,11 @@ $toasts.on(removeToast, (state, key: string) =>
 const forwardErrors = (...events: Event<Error>[]) => {
   forward({
     from: events.map((effect) => effect.map((error) => error.message)),
-    to: toastsApi.error
+    to: toastsApi.error,
   })
 }
 
 export const toastsService = {
   ...toastsApi,
-  forwardErrors
+  forwardErrors,
 }

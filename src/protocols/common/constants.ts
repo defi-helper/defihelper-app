@@ -5,10 +5,10 @@ export const PROTOCOLS = [
     title: '1inch',
     description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis blanditiis doloremque asperiores facere voluptas nemo iste adipisci architecto? Fuga ipsum cum velit esse? Id harum obcaecati necessitatibus amet sint inventore!`,
     reward: {
-      tokens: ['1INCH']
+      tokens: ['1INCH'],
     },
     network: 'eth',
-    link: 'https://1inch.exchange/#/dao/farming'
+    link: 'https://1inch.exchange/#/dao/farming',
   },
   {
     id: '2',
@@ -16,10 +16,10 @@ export const PROTOCOLS = [
     title: 'Aave',
     description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis blanditiis doloremque asperiores facere voluptas nemo iste adipisci architecto? Fuga ipsum cum velit esse? Id harum obcaecati necessitatibus amet sint inventore!`,
     reward: {
-      tokens: ['stkAAVE']
+      tokens: ['stkAAVE'],
     },
     network: 'eth',
-    link: 'https://aave.com'
+    link: 'https://aave.com',
   },
   {
     id: '3',
@@ -27,10 +27,10 @@ export const PROTOCOLS = [
     title: 'Alchemix',
     description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis blanditiis doloremque asperiores facere voluptas nemo iste adipisci architecto? Fuga ipsum cum velit esse? Id harum obcaecati necessitatibus amet sint inventore!`,
     reward: {
-      tokens: ['ALCX']
+      tokens: ['ALCX'],
     },
     network: 'eth',
-    link: 'https://app.alchemix.fi/farms'
+    link: 'https://app.alchemix.fi/farms',
   },
   {
     id: '4',
@@ -38,10 +38,10 @@ export const PROTOCOLS = [
     title: 'Basis',
     description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis blanditiis doloremque asperiores facere voluptas nemo iste adipisci architecto? Fuga ipsum cum velit esse? Id harum obcaecati necessitatibus amet sint inventore!`,
     reward: {
-      tokens: ['BAS', 'BAC']
+      tokens: ['BAS', 'BAC'],
     },
     network: 'eth',
-    link: 'https://basis.cash'
+    link: 'https://basis.cash',
   },
   {
     id: '5',
@@ -49,10 +49,10 @@ export const PROTOCOLS = [
     title: 'Basket DAO',
     description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis blanditiis doloremque asperiores facere voluptas nemo iste adipisci architecto? Fuga ipsum cum velit esse? Id harum obcaecati necessitatibus amet sint inventore!`,
     reward: {
-      tokens: ['BASK']
+      tokens: ['BASK'],
     },
     network: 'waves',
-    link: 'https://basketdao.org'
+    link: 'https://basketdao.org',
   },
   {
     id: '6',
@@ -60,10 +60,10 @@ export const PROTOCOLS = [
     title: 'Benchmark',
     description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis blanditiis doloremque asperiores facere voluptas nemo iste adipisci architecto? Fuga ipsum cum velit esse? Id harum obcaecati necessitatibus amet sint inventore!`,
     reward: {
-      tokens: ['MARK']
+      tokens: ['MARK'],
     },
     network: 'waves',
-    link: 'https://launchpad.benchmarkprotocol.finance/pools'
+    link: 'https://launchpad.benchmarkprotocol.finance/pools',
   },
   {
     id: '7',
@@ -71,10 +71,10 @@ export const PROTOCOLS = [
     title: 'Big Data Protocol',
     description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis blanditiis doloremque asperiores facere voluptas nemo iste adipisci architecto? Fuga ipsum cum velit esse? Id harum obcaecati necessitatibus amet sint inventore!`,
     reward: {
-      tokens: ['BDP', 'bALPHA']
+      tokens: ['BDP', 'bALPHA'],
     },
     network: 'bsc',
-    link: 'https://www.bigdataprotocol.com/datavault'
+    link: 'https://www.bigdataprotocol.com/datavault',
   },
   {
     id: '8',
@@ -82,10 +82,10 @@ export const PROTOCOLS = [
     title: 'Cover Protocol',
     description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis blanditiis doloremque asperiores facere voluptas nemo iste adipisci architecto? Fuga ipsum cum velit esse? Id harum obcaecati necessitatibus amet sint inventore!`,
     reward: {
-      tokens: ['Various']
+      tokens: ['Various'],
     },
     network: 'bsc',
-    link: 'https://app.coverprotocol.com'
+    link: 'https://app.coverprotocol.com',
   },
   {
     id: '9',
@@ -93,11 +93,11 @@ export const PROTOCOLS = [
     title: 'Cryptex',
     description: `Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quis blanditiis doloremque asperiores facere voluptas nemo iste adipisci architecto? Fuga ipsum cum velit esse? Id harum obcaecati necessitatibus amet sint inventore!`,
     reward: {
-      tokens: ['CTX']
+      tokens: ['CTX'],
     },
     network: 'bsc',
-    link: 'https://app.cryptex.finance'
-  }
+    link: 'https://app.cryptex.finance',
+  },
 ]
 
 export const PROTOCOLS_MAP = PROTOCOLS.reduce<
@@ -111,5 +111,5 @@ export const PROTOCOLS_MAP = PROTOCOLS.reduce<
 export const NETWORKS: Record<string, string> = {
   bsc: 'BSC',
   waves: 'Waves',
-  eth: 'Ethereum'
+  eth: 'Ethereum',
 }

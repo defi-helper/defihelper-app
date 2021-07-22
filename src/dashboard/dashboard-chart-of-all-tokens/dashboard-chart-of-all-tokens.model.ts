@@ -7,7 +7,7 @@ import { dashboardApi } from '~/dashboard/common'
 import {
   MetricGroupEnum,
   SortOrderEnum,
-  UserTokenMetricChartSortInputTypeColumnEnum
+  UserTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
 
 const domain = createDomain('dashboardChartOfAllTokens')
@@ -29,29 +29,29 @@ const fetchChartDataFx = domain.createEffect({
         ? {
             filter: {
               tokenAlias: {
-                stable: params.stable
+                stable: params.stable,
               },
               dateBefore: dateUtils.now(),
-              dateAfter: dateUtils.after180Days()
-            }
+              dateAfter: dateUtils.after180Days(),
+            },
           }
         : {}),
       pagination: {
-        limit: DAYS_LIMIT
+        limit: DAYS_LIMIT,
       },
       sort: [
         {
           column: UserTokenMetricChartSortInputTypeColumnEnum.Date,
-          order: SortOrderEnum.Desc
-        }
-      ]
+          order: SortOrderEnum.Desc,
+        },
+      ],
     })
 
     return {
       id: params.id,
-      data
+      data,
     }
-  }
+  },
 })
 
 type ChartMetric = Unwrap<ReturnType<typeof dashboardApi.getTokenMetricChart>>
@@ -60,20 +60,20 @@ export const $dashboardChartOfAllTokens = domain
   .createStore<Record<string, ChartMetric>>(
     {},
     {
-      name: '$dashboardChartOfAllTokens'
+      name: '$dashboardChartOfAllTokens',
     }
   )
   .on(fetchChartDataFx.doneData, (state, payload) => ({
     ...state,
-    [payload.id]: payload.data
+    [payload.id]: payload.data,
   }))
 
 export const dashboardChartOfAllTokensGate = createGate<FetchChartParams>({
   name: 'dashboardChartOfAllTokensGate',
-  domain
+  domain,
 })
 
 sample({
   clock: dashboardChartOfAllTokensGate.open,
-  target: fetchChartDataFx
+  target: fetchChartDataFx,
 })

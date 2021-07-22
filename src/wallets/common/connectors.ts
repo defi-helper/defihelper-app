@@ -12,13 +12,16 @@ import { WavesKeeperConnector } from './waves-keeper-connector'
 import { WavesExchangeConnector } from './waves-exchange-connector'
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [...config.CHAIN_ETHEREUM_IDS, ...config.CHAIN_BINANCE_IDS]
+  supportedChainIds: [
+    ...config.CHAIN_ETHEREUM_IDS,
+    ...config.CHAIN_BINANCE_IDS,
+  ],
 })
 
 export const ledger = new LedgerConnector({
   chainId: config.CHAIN_ETHEREUM_IDS[0],
   url: config.ETH_URL,
-  pollingInterval: config.POLLING_INTERVAL
+  pollingInterval: config.POLLING_INTERVAL,
 })
 
 export const trezor = new TrezorConnector({
@@ -26,41 +29,44 @@ export const trezor = new TrezorConnector({
   url: config.ETH_URL,
   pollingInterval: config.POLLING_INTERVAL,
   manifestEmail: config.TREZOR_EMAIL,
-  manifestAppUrl: config.TREZOR_URL
+  manifestAppUrl: config.TREZOR_URL,
 })
 
 export const walletlink = new WalletLinkConnector({
   url: config.ETH_URL,
-  appName: 'Bondappetit'
+  appName: 'Bondappetit',
 })
 
 export const walletconnect = new WalletConnectConnector({
   rpc: {
-    1: config.ETH_URL
+    1: config.ETH_URL,
   },
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true,
-  pollingInterval: config.POLLING_INTERVAL
+  pollingInterval: config.POLLING_INTERVAL,
 })
 
 export const fortmatic = new FortmaticConnector({
   apiKey: config.FORTMATIC_KEY ?? '',
-  chainId: config.CHAIN_ETHEREUM_IDS[0]
+  chainId: config.CHAIN_ETHEREUM_IDS[0],
 })
 
 export const portis = new PortisConnector({
   dAppId: config.PORTIS_ID ?? '',
-  networks: [config.CHAIN_ETHEREUM_IDS[0]]
+  networks: [config.CHAIN_ETHEREUM_IDS[0]],
 })
 
 export const binance = new BscConnector({
-  supportedChainIds: [...config.CHAIN_ETHEREUM_IDS, ...config.CHAIN_BINANCE_IDS]
+  supportedChainIds: [
+    ...config.CHAIN_ETHEREUM_IDS,
+    ...config.CHAIN_BINANCE_IDS,
+  ],
 })
 
 export const wavesKepper = new WavesKeeperConnector({
   authData: {
-    data: 'Auth on site'
-  }
+    data: 'Auth on site',
+  },
 })
 
 export const wavesExchange = new WavesExchangeConnector()

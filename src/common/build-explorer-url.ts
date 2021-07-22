@@ -1,7 +1,7 @@
 const explorers: Record<string | number, string> = {
   1: 'https://etherscan.io/address',
   56: 'https://bscscan.com/address',
-  waves: 'https://wavesexplorer.com/address'
+  waves: 'https://wavesexplorer.com/address',
 }
 
 type Options = {

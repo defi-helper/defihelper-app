@@ -23,24 +23,24 @@ export const fetchMetricFx = protocolMetricsDomain.createEffect({
   handler: async (params: { protocolId: string; group: MetricGroupEnum }) => {
     const data = await protocolsApi.protocolDetailMetric({
       filter: {
-        id: params.protocolId
+        id: params.protocolId,
       },
       metric: 'tvl',
       metricGroup: params.group,
       metricFilter: {
         dateBefore: dateUtils.now(),
-        dateAfter: dateUtils.after180Days()
+        dateAfter: dateUtils.after180Days(),
       },
       metricPagination: {
-        limit: DAYS_LIMIT
-      }
+        limit: DAYS_LIMIT,
+      },
     })
 
     return {
       group: params.group,
-      data
+      data,
     }
-  }
+  },
 })
 
 const initialState = Object.values(MetricGroupEnum).reduce<State>(
@@ -48,7 +48,7 @@ const initialState = Object.values(MetricGroupEnum).reduce<State>(
     acc[metricGroup] = {
       data: [],
       value: metricGroup,
-      loading: false
+      loading: false,
     }
 
     return acc
@@ -62,14 +62,14 @@ export const $metric = protocolMetricsDomain
     ...state,
     [payload.group]: {
       ...state[payload.group],
-      loading: true
-    }
+      loading: true,
+    },
   }))
   .on(fetchMetricFx.doneData, (state, payload) => ({
     ...state,
     [payload.group]: {
       ...state[payload.group],
       data: payload.data,
-      loading: false
-    }
+      loading: false,
+    },
   }))

@@ -24,7 +24,7 @@ export const ProposalUpdate: React.VFC<ProposalUpdateProps> = () => {
         ? {
             title: proposal?.title,
             description: proposal?.description,
-            status: proposal?.status
+            status: proposal?.status,
           }
         : undefined,
     [proposal]

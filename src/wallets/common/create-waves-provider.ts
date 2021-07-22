@@ -6,7 +6,7 @@ export const createWavesProvider = (
 ) => {
   const signer = new Signer({
     // Specify URL of the node on Testnet
-    NODE_URL: walletProvider as string
+    NODE_URL: walletProvider as string,
   })
   signer.setProvider(
     new ProviderWeb(

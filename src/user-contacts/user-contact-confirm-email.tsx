@@ -1,13 +1,12 @@
 import { makeStyles, Paper } from '@material-ui/core'
 import { useStore } from 'effector-react'
-
 import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied'
 import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon'
 import { useParams } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
+
 import { MainLayout } from '~/layouts'
 import * as model from './user-contact.model'
-import { $confirmEmail } from './user-contact.model'
 
 export type ContactListProps = unknown
 
@@ -15,38 +14,38 @@ const useStyles = makeStyles(() => ({
   root: {
     padding: 0,
     margin: 0,
-    listStyle: 'none'
+    listStyle: 'none',
   },
 
   link: {
     textDecoration: 'none',
-    width: '100%'
+    width: '100%',
   },
 
   item: {
     display: 'flex',
     marginBottom: 5,
-    width: '100%'
+    width: '100%',
   },
 
   telegramConfirm: {
-    margin: '10px 15px'
+    margin: '10px 15px',
   },
 
   card: {
     padding: '10px 15px',
     margin: '10px 15px',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   tokens: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
   },
 
   mr: {
-    marginRight: 20
-  }
+    marginRight: 20,
+  },
 }))
 
 export const UserContactConfirmEmail: React.VFC<ContactListProps> = () => {
@@ -62,7 +61,7 @@ export const UserContactConfirmEmail: React.VFC<ContactListProps> = () => {
   useEffect(() => {
     if (confirmEmail === undefined) {
       model.confirmEmailFx({
-        confirmationCode: params.confirmationCode
+        confirmationCode: params.confirmationCode,
       })
     }
   }, [confirmEmail, params])

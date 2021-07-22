@@ -21,7 +21,7 @@ const ICONS = {
   USDT: UsdtIcon,
   USDC: USDCicon,
   USDN: USDNIcon,
-  PAX: PAXIcon
+  PAX: PAXIcon,
 } as const
 
 export type IconProps = React.SVGProps<SVGSVGElement> & {

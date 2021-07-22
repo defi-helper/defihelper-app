@@ -12,5 +12,5 @@ export const config = {
   WAVES_NODE_URL: process.env.REACT_APP_WAVES_NODE_URL ?? '',
   API_URL: process.env.REACT_APP_API_URL,
   ADAPTERS_HOST: process.env.REACT_APP_ADAPTERS_HOST,
-  TELEGRAM_BOT_USERNAME: process.env.TELEGRAM_BOT_USERNAME
+  TELEGRAM_BOT_USERNAME: process.env.TELEGRAM_BOT_USERNAME,
 } as const

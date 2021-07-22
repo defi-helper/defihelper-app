@@ -21,7 +21,7 @@ export const WalletDetail: React.VFC<WalletDetailProps> = (props) => {
         <Link
           href={buildExplorerUrl({
             address: wallet.account,
-            network: wallet.chainId
+            network: wallet.chainId,
           })}
           target="_blank"
         >

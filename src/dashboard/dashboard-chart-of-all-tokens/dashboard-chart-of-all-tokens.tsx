@@ -18,7 +18,7 @@ export const DashboardChartOfAllTokens: React.VFC<DashboardChartOfAllTokensProps
       <Chart
         dataFields={{
           valueY: 'sum',
-          dateX: 'date'
+          dateX: 'date',
         }}
         id={props.id}
         data={dashboardChartOfAllTokens[props.id]}

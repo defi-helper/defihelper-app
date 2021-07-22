@@ -11,9 +11,9 @@ export const fetchProposalFx = proposalDetailDomain.createEffect({
   handler: (proposalId: string) =>
     proposalApi.proposalDetail({
       filter: {
-        id: proposalId
-      }
-    })
+        id: proposalId,
+      },
+    }),
 })
 
 const ERROR_MESSAGE = "can't vote"
@@ -27,9 +27,9 @@ export const voteProposalFx = proposalDetailDomain.createEffect({
 
     return {
       proposalId,
-      data
+      data,
     }
-  }
+  },
 })
 
 export const unvoteProposalFx = proposalDetailDomain.createEffect({
@@ -40,12 +40,12 @@ export const unvoteProposalFx = proposalDetailDomain.createEffect({
     if (!data) {
       throw new Error(ERROR_MESSAGE)
     }
-  }
+  },
 })
 
 export const $proposalDetail = proposalDetailDomain
   .createStore<Unwrap<ReturnType<typeof proposalApi.proposalDetail>>>(null, {
-    name: '$proposalDetail'
+    name: '$proposalDetail',
   })
   .on(fetchProposalFx.doneData, (_, payload) => payload)
   .on(voteProposalFx.doneData, (state, payload) =>
@@ -53,8 +53,8 @@ export const $proposalDetail = proposalDetailDomain
       ? {
           ...state,
           votes: {
-            list: [...(state.votes.list ?? []), payload.data]
-          }
+            list: [...(state.votes.list ?? []), payload.data],
+          },
         }
       : state
   )
@@ -65,17 +65,17 @@ export const $proposalDetail = proposalDetailDomain
           votes: {
             list: state.votes.list?.filter(
               (vote) => vote.user.id !== params.userId
-            )
-          }
+            ),
+          },
         }
       : state
   )
 
 export const Gate = createGate<string>({
-  domain: proposalDetailDomain
+  domain: proposalDetailDomain,
 })
 
 sample({
   clock: Gate.open,
-  target: fetchProposalFx
+  target: fetchProposalFx,
 })

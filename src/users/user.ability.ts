@@ -32,10 +32,10 @@ export const defineRulesFor = (role?: string) => {
         'Networks',
         'Dashboard',
         'Proposal',
-        'UserContact'
+        'UserContact',
       ],
       {
-        hidden: false
+        hidden: false,
       }
     )
   } else {
@@ -43,7 +43,7 @@ export const defineRulesFor = (role?: string) => {
       ['read'],
       ['Contract', 'Protocol', 'Networks', 'Proposal', 'UserContact'],
       {
-        hidden: false
+        hidden: false,
       }
     )
   }
@@ -53,7 +53,7 @@ export const defineRulesFor = (role?: string) => {
 
 export const buildAbilityFor = (role?: string): AppAbilityType => {
   return new AppAbility(defineRulesFor(role), {
-    detectSubjectType: (object) => object.type
+    detectSubjectType: (object) => object.type,
   })
 }
 

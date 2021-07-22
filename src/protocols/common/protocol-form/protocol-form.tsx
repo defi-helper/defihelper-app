@@ -29,15 +29,15 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
 
     '& > *': {
-      margin: theme.spacing(2)
-    }
-  }
+      margin: theme.spacing(2),
+    },
+  },
 }))
 
 export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
   const { register, handleSubmit, setValue, reset, formState } =
     useForm<FormValues>({
-      resolver: yupResolver(protocolFormSchema)
+      resolver: yupResolver(protocolFormSchema),
     })
 
   const classes = useStyles()

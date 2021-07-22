@@ -3,7 +3,7 @@ import {
   BlockChainsQuery,
   BlockChainsQueryVariables,
   TokenMetricChartQuery,
-  TokenMetricChartQueryVariables
+  TokenMetricChartQueryVariables,
 } from '~/graphql/_generated-types'
 import { BLOCKCHAINS } from './graphql'
 import { TOKEN_METRIC_CHART } from './graphql/token-metrick-chart.graphql'
@@ -25,5 +25,5 @@ export const dashboardApi = {
         variables
       )
       .toPromise()
-      .then(({ data }) => data?.me?.blockchains ?? [])
+      .then(({ data }) => data?.me?.blockchains ?? []),
 }

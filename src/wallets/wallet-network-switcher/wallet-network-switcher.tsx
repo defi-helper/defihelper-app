@@ -34,7 +34,7 @@ export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
     const handlers: Record<string, () => Promise<unknown>> = {
       activateEthereum: async () => model.activateEthereum(openChangeNetwork),
       activateBinance: async () => model.activateEthereum(setupBinance),
-      activateWaves: async () => model.activateWaves()
+      activateWaves: async () => model.activateWaves(),
     }
 
     const handleChangeNetwork = (networkItem: Network) => () => {

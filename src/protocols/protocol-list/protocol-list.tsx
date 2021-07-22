@@ -17,18 +17,18 @@ const useStyles = makeStyles(() => ({
   root: {
     padding: 0,
     margin: 0,
-    listStyle: 'none'
+    listStyle: 'none',
   },
 
   link: {
     textDecoration: 'none',
-    width: '100%'
+    width: '100%',
   },
 
   item: {
     display: 'flex',
     marginBottom: 5,
-    width: '100%'
+    width: '100%',
   },
 
   edit: {},
@@ -36,16 +36,16 @@ const useStyles = makeStyles(() => ({
   card: {
     padding: '10px 15px',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   tokens: {
-    marginLeft: 'auto'
+    marginLeft: 'auto',
   },
 
   mr: {
-    marginRight: 20
-  }
+    marginRight: 20,
+  },
 }))
 
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
@@ -147,6 +147,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
             </li>
           ))}
       </ul>
+      <model.ProtocolListPagination />
     </MainLayout>
   )
 }
