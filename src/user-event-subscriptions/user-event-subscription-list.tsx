@@ -93,12 +93,10 @@ export const UserEventSubscriptionList: React.VFC<ContactListProps> = () => {
           subscriptionList.map((contact) => (
             <ListItem button>
               <ListItemText
-                primary={contact.event}
-                secondary={`${contact.contract.name} in ${
-                  contact.contract.blockchain
-                }${
+                primary={`${contact.event} in ${contact.contract.name}`}
+                secondary={`on ${contact.contract.blockchain}${
                   contact.contract.network
-                    ? `(in network ${contact.contract.network})`
+                    ? `(network ${contact.contract.network})`
                     : ''
                 }`}
               />

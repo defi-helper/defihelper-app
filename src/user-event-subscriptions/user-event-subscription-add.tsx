@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
 import Button from '@material-ui/core/Button'
 import {
   FormControl,
@@ -8,7 +7,6 @@ import {
   MenuItem,
   Select,
 } from '@material-ui/core'
-import { yupResolver } from '@hookform/resolvers/yup'
 
 import * as yup from 'yup'
 import { useGate, useStore } from 'effector-react'
@@ -27,12 +25,6 @@ export const userEventSubscriptionFormSchema = yup.object().shape({
   event: yup.string().required('Required'),
 })
 
-type FormValues = {
-  contact: string
-  contract: string
-  event: string
-}
-
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > *': {
@@ -49,39 +41,39 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const UserEventSubscriptionAdd: React.VFC = () => {
-  const { register, handleSubmit, formState } = useForm<FormValues>({
-    resolver: yupResolver(userEventSubscriptionFormSchema),
-  })
-
   const loading = useStore(model.createUserEventSubscriptionFx.pending)
 
+  const [selectedContact, setSelectedContact] = useState('')
   const [selectedProtocol, setSelectedProtocol] = useState('')
   const [selectedBlockchain, setSelectedBlockchain] = useState<
     BlockchainEnum | undefined
   >()
   const [selectedNetwork, setSelectedNetwork] = useState('')
   const [selectedContract, setSelectedContract] = useState('')
+  const [selectedEvent, setSelectedEvent] = useState('')
+
+  const handleSelectContact = (
+    event: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    setSelectedContact(event.target.value as string)
+  }
 
   const handleSelectProtocol = (
     event: React.ChangeEvent<{ value: unknown }>
   ) => {
     setSelectedProtocol(event.target.value as string)
-    setSelectedBlockchain(undefined)
-    setSelectedNetwork('')
   }
 
   const handleSelectBlockchain = (
     event: React.ChangeEvent<{ value: unknown }>
   ) => {
     setSelectedBlockchain(event.target.value as BlockchainEnum)
-    setSelectedNetwork('')
   }
 
   const handleSelectNetwork = (
     event: React.ChangeEvent<{ value: unknown }>
   ) => {
     setSelectedNetwork(event.target.value as string)
-    setSelectedContract('')
   }
 
   const handleSelectContract = (
@@ -90,10 +82,32 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
     setSelectedContract(event.target.value as string)
   }
 
+  const handleSelectEvent = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSelectedEvent(event.target.value as string)
+  }
+
   const contacts = useStore(contactModel.$userContactList)
   const protocols = useStore(protocolsModel.$protocolList)
   const contracts = useStore(stackingModel.$contracts)
   const contractsEvents = useStore(stackingModel.$contractsEventsList)
+
+  useEffect(() => {
+    if (selectedProtocol) {
+      setSelectedBlockchain(undefined)
+    }
+  }, [selectedProtocol])
+
+  useEffect(() => {
+    if (selectedBlockchain) {
+      setSelectedNetwork('')
+    }
+  }, [selectedBlockchain])
+
+  useEffect(() => {
+    if (selectedNetwork) {
+      setSelectedContract('')
+    }
+  }, [selectedNetwork])
 
   useEffect(() => {
     if (selectedProtocol && selectedBlockchain) {
@@ -116,25 +130,17 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
 
   const availableNetworks = useMemo(() => {
     return Object.keys(
-      contracts.reduce((obj, contract) => {
+      contracts.reduce<Record<string, boolean>>((obj, contract) => {
         return {
           ...obj,
           [contract.network]: true,
         }
-      }, {} as Record<string, boolean>)
+      }, {})
     )
   }, [contracts])
 
   const selectedContractEvents = useMemo(() => {
-    if (!selectedContract) {
-      return []
-    }
-    const events = contractsEvents[selectedContract]
-    if (!events) {
-      return []
-    }
-
-    return events.events
+    return (selectedContract && contractsEvents[selectedContract]?.events) || []
   }, [contractsEvents, selectedContract])
 
   const classes = useStyles()
@@ -142,10 +148,18 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
   useGate(contactModel.UserContactListGate)
   useGate(protocolsModel.ProtocolListGate)
 
+  const handleSubmit = () => {
+    model.createUserEventSubscriptionFx({
+      contact: selectedContact,
+      contract: selectedContract,
+      event: selectedEvent,
+    })
+  }
+
   return (
     <form
       className={classes.root}
-      onSubmit={handleSubmit(model.createUserEventSubscriptionFx)}
+      onSubmit={handleSubmit}
       noValidate
       autoComplete="off"
     >
@@ -154,9 +168,9 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
         <Select
           type="text"
           label="Type"
-          inputProps={register('contact')}
           disabled={loading}
-          error={Boolean(formState.errors.contact)}
+          value={selectedContact}
+          onChange={handleSelectContact}
         >
           {contacts
             .filter((c) => c.status === UserContactStatusEnum.Active)
@@ -215,9 +229,7 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
           type="text"
           label="Contract"
           value={selectedContract}
-          inputProps={register('contract')}
           disabled={loading || !selectedNetwork}
-          error={Boolean(formState.errors.contract)}
           onChange={handleSelectContract}
         >
           {contracts
@@ -232,9 +244,9 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
         <Select
           type="text"
           label="Event"
-          inputProps={register('event')}
           disabled={loading || !selectedContract}
-          error={Boolean(formState.errors.event)}
+          value={selectedEvent}
+          onChange={handleSelectEvent}
         >
           {selectedContractEvents.map((event) => (
             <MenuItem value={event}>{event}</MenuItem>
