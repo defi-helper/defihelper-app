@@ -96,7 +96,7 @@ export const UserContactList: React.VFC<ContactListProps> = () => {
         {!loading &&
           contactList &&
           contactList.map((contact) => (
-            <ListItem button>
+            <ListItem button key={contact.id}>
               <ListItemText
                 primary={contact.address}
                 secondary={contact.broker}

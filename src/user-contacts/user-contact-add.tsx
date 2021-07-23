@@ -67,7 +67,9 @@ export const UserContactAdd: React.VFC = () => {
           defaultValue="email"
         >
           {Object.entries(UserContactBrokerEnum).map(([k, v]) => (
-            <MenuItem value={v}>{k}</MenuItem>
+            <MenuItem value={v} key={v}>
+              {k}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
