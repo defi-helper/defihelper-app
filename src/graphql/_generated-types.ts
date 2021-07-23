@@ -75,6 +75,7 @@ export type ContractCreateInputType = {
 }
 
 export type ContractListFilterInputType = {
+  id?: Maybe<Scalars['UuidType']>
   blockchain?: Maybe<BlockchainFilterInputType>
   hidden?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
@@ -156,6 +157,7 @@ export type ContractType = {
   /** Is hidden */
   hidden: Scalars['Boolean']
   metricChart: Array<MetricChartType>
+  events: Array<Scalars['String']>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -233,7 +235,7 @@ export type Mutation = {
   userContactEmailConfirm: Scalars['Boolean']
   userContactDelete: Scalars['Boolean']
   userEventSubscriptionCreate: UserEventSubscriptionType
-  userEventSubscriptionDelete: UserEventSubscriptionType
+  userEventSubscriptionDelete: Scalars['Boolean']
 }
 
 export type MutationAuthEthArgs = {
@@ -315,7 +317,7 @@ export type MutationUserEventSubscriptionCreateArgs = {
 }
 
 export type MutationUserEventSubscriptionDeleteArgs = {
-  input: UserEventSubscriptionDeleteInputType
+  id: Scalars['UuidType']
 }
 
 export type Pagination = {
@@ -921,16 +923,12 @@ export type UserContactType = {
 }
 
 export type UserEventSubscriptionCreateInputType = {
-  /** Usr contact id */
+  /** User contact id */
   contact: Scalars['String']
   /** Contract id */
   contract: Scalars['String']
-  /** Even name */
+  /** Event name */
   event: Scalars['String']
-}
-
-export type UserEventSubscriptionDeleteInputType = {
-  id: Scalars['UuidType']
 }
 
 export type UserEventSubscriptionInputType = {
@@ -978,8 +976,8 @@ export type UserEventSubscriptionType = {
   id: Scalars['UuidType']
   /** Contact */
   contact: UserContactType
-  /** Contact */
-  contract: Scalars['String']
+  /** Contract */
+  contract: ContractType
   /** Event */
   event: Scalars['String']
   /** Date of create */
@@ -1626,6 +1624,32 @@ export type StakingContractDeleteMutation = { __typename?: 'Mutation' } & Pick<
   'contractDelete'
 >
 
+export type StakingContractEventsQueryVariables = Exact<{
+  filter: ProtocolFilterInputType
+  contractFilter?: Maybe<ContractListFilterInputType>
+  contractSort?: Maybe<
+    Array<ContractListSortInputType> | ContractListSortInputType
+  >
+  contractPagination?: Maybe<ContractListPaginationInputType>
+}>
+
+export type StakingContractEventsQuery = { __typename?: 'Query' } & {
+  protocol?: Maybe<
+    { __typename?: 'ProtocolType' } & {
+      contracts: { __typename?: 'ContractListType' } & {
+        list?: Maybe<
+          Array<
+            { __typename?: 'ContractType' } & Pick<
+              ContractType,
+              'id' | 'protocolId' | 'events'
+            >
+          >
+        >
+      }
+    }
+  >
+}
+
 export type StakingContractListQueryVariables = Exact<{
   filter: ProtocolFilterInputType
   contractFilter?: Maybe<ContractListFilterInputType>
@@ -1768,6 +1792,61 @@ export type UserContactFragmentFragment = {
   | 'createdAt'
   | 'activatedAt'
 >
+
+export type UserEventSubscriptionCreateMutationVariables = Exact<{
+  input: UserEventSubscriptionCreateInputType
+}>
+
+export type UserEventSubscriptionCreateMutation = {
+  __typename?: 'Mutation'
+} & {
+  userEventSubscriptionCreate: {
+    __typename?: 'UserEventSubscriptionType'
+  } & UserEventSubscriptionFragmentFragment
+}
+
+export type UserEventSubscriptionDeleteMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type UserEventSubscriptionDeleteMutation = {
+  __typename?: 'Mutation'
+} & Pick<Mutation, 'userEventSubscriptionDelete'>
+
+export type UserEventSubscriptionFragmentFragment = {
+  __typename?: 'UserEventSubscriptionType'
+} & Pick<UserEventSubscriptionType, 'id' | 'event'> & {
+    contact: { __typename?: 'UserContactType' } & Pick<
+      UserContactType,
+      'address' | 'broker'
+    >
+    contract: { __typename?: 'ContractType' } & Pick<
+      ContractType,
+      'id' | 'name' | 'blockchain' | 'network'
+    >
+  }
+
+export type UserEventSubscriptionsQueryVariables = Exact<{
+  userEventSubscriptionFilter?: Maybe<UserEventSubscriptionListQueryFilterInputType>
+  userEventSubscriptionSort?: Maybe<
+    | Array<UserEventSubscriptionListSortInputType>
+    | UserEventSubscriptionListSortInputType
+  >
+  userEventSubscriptionPagination?: Maybe<UserEventSubscriptionListPaginationInputType>
+}>
+
+export type UserEventSubscriptionsQuery = { __typename?: 'Query' } & {
+  userEventSubscriptions: { __typename?: 'UserEventSubscriptionListQuery' } & {
+    list?: Maybe<
+      Array<
+        {
+          __typename?: 'UserEventSubscriptionType'
+        } & UserEventSubscriptionFragmentFragment
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
 
 export type MeQueryVariables = Exact<{
   filter?: Maybe<WalletListFilterInputType>
