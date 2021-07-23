@@ -22,7 +22,7 @@ module.exports = {
           attachCreators: [],
           splitCreators: [],
           apiCreators: ['createApi'],
-          mergeCreators: ['merge'],
+          mergeCreators: [],
           domainMethods: {
             store: ['store', 'createStore'],
             event: ['event', 'createEvent'],
