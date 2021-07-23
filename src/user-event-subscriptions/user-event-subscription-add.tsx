@@ -8,7 +8,6 @@ import {
   Select,
 } from '@material-ui/core'
 
-import * as yup from 'yup'
 import { useGate, useStore } from 'effector-react'
 import * as model from '~/user-event-subscriptions/user-event-subscription.model'
 import * as contactModel from '~/user-contacts/user-contact.model'
@@ -18,12 +17,6 @@ import {
   BlockchainEnum,
   UserContactStatusEnum,
 } from '~/graphql/_generated-types'
-
-export const userEventSubscriptionFormSchema = yup.object().shape({
-  contact: yup.string().required('Required'),
-  contract: yup.string().required('Required'),
-  event: yup.string().required('Required'),
-})
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -175,7 +168,7 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
           {contacts
             .filter((c) => c.status === UserContactStatusEnum.Active)
             .map((c) => (
-              <MenuItem value={c.id}>
+              <MenuItem value={c.id} key={c.id}>
                 {c.address} ({c.broker})
               </MenuItem>
             ))}
@@ -191,7 +184,9 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
           onChange={handleSelectProtocol}
         >
           {protocols.map((p) => (
-            <MenuItem value={p.id}>{p.name}</MenuItem>
+            <MenuItem value={p.id} key={p.id}>
+              {p.name}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
@@ -205,7 +200,9 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
           onChange={handleSelectBlockchain}
         >
           {Object.entries(BlockchainEnum).map(([k, v]) => (
-            <MenuItem value={v}>{k}</MenuItem>
+            <MenuItem value={v} key={v}>
+              {k}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
@@ -219,7 +216,9 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
           onChange={handleSelectNetwork}
         >
           {availableNetworks.map((network) => (
-            <MenuItem value={network}>{network}</MenuItem>
+            <MenuItem value={network} key={network}>
+              {network}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>
@@ -235,7 +234,9 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
           {contracts
             .filter((contract) => contract.network === selectedNetwork)
             .map((contract) => (
-              <MenuItem value={contract.id}>{contract.name}</MenuItem>
+              <MenuItem value={contract.id} key={contract.id}>
+                {contract.name}
+              </MenuItem>
             ))}
         </Select>
       </FormControl>
@@ -249,7 +250,9 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
           onChange={handleSelectEvent}
         >
           {selectedContractEvents.map((event) => (
-            <MenuItem value={event}>{event}</MenuItem>
+            <MenuItem value={event} key={event}>
+              {event}
+            </MenuItem>
           ))}
         </Select>
       </FormControl>

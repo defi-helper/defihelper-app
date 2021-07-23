@@ -91,7 +91,7 @@ export const UserEventSubscriptionList: React.VFC<ContactListProps> = () => {
         {!loading &&
           subscriptionList &&
           subscriptionList.map((contact) => (
-            <ListItem button>
+            <ListItem button key={contact.id}>
               <ListItemText
                 primary={`${contact.event} in ${contact.contract.name}`}
                 secondary={`on ${contact.contract.blockchain}${
