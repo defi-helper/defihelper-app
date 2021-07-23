@@ -110,7 +110,7 @@ export const ProposalListPagination = createPagination({
 
 sample({
   source: ProposalListPagination.state,
-  clock: [ProposalListGate.open, ProposalListPagination.pageChanged],
+  clock: [ProposalListGate.open, ProposalListPagination.updates],
   target: fetchProposalListFx,
 })
 

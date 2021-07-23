@@ -90,9 +90,9 @@ sample({
     ProtocolListPagination.state,
   ],
   clock: [
-    walletNetworkSwitcherModel.$currentNetwork,
+    walletNetworkSwitcherModel.$currentNetwork.updates,
     ProtocolListGate.open,
-    ProtocolListPagination.pageChanged,
+    ProtocolListPagination.updates,
   ],
   fn: ([{ network, blockchain }, { offset, limit }]) => ({
     network,
@@ -101,7 +101,6 @@ sample({
     limit,
   }),
   target: fetchProtocolListFx,
-  greedy: true,
 })
 
 sample({
