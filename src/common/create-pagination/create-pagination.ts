@@ -29,7 +29,6 @@ export const createPagination = (options: Options) => {
   const changeOffset = options.domain.createEvent<number>('changeOffset')
   const totalPages = options.domain.createEvent<number>('totalPages')
   const totalElements = options.domain.createEvent<number>('totalElements')
-  const pageChanged = options.domain.createEvent<number>('pageChanged')
 
   sample({
     source: $limit,
@@ -48,8 +47,6 @@ export const createPagination = (options: Options) => {
     target: totalPages,
   })
 
-  $offset.watch(pageChanged)
-
   const Component = () =>
     createElement(Pagination, {
       $pages,
@@ -61,7 +58,7 @@ export const createPagination = (options: Options) => {
     offset,
   }))
   Component.totalElements = totalElements
-  Component.pageChanged = pageChanged
+  Component.updates = Component.state.updates
 
   return Component
 }

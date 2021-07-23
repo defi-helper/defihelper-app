@@ -1,5 +1,6 @@
 import { guard, sample, createDomain, combine } from 'effector-logger'
 import omit from 'lodash.omit'
+import { debounce } from 'patronum/debounce'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import {
@@ -98,7 +99,7 @@ sample({
     filter: (params): params is Params => Boolean(params.protocolAdapter),
   }),
   fn: (source, clock) => ({ ...clock, provider: source.provider }),
-  target: fetchContractAdaptersFx,
+  target: debounce({ source: fetchContractAdaptersFx, timeout: 300 }),
   greedy: true,
 })
 

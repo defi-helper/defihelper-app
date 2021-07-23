@@ -176,16 +176,15 @@ const fetchStakingList = sample({
     StakingListPagination.state,
   ],
   clock: [
-    walletNetworkSwitcherModel.$currentNetwork,
+    walletNetworkSwitcherModel.$currentNetwork.updates,
     StakingListGate.open,
-    StakingListPagination.pageChanged,
+    StakingListPagination.updates,
   ],
   fn: ([currentNetwork, pagination]) => ({
     ...currentNetwork,
     ...pagination,
     ...StakingListGate.state.getState(),
   }),
-  greedy: true,
 })
 
 guard({

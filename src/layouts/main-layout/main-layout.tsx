@@ -12,7 +12,7 @@ import ListItemText from '@material-ui/core/ListItemText'
 import Container from '@material-ui/core/Container'
 import Box from '@material-ui/core/Box'
 import DashboardIcon from '@material-ui/icons/Dashboard'
-import { Link, useHistory, useRouteMatch } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
 import ThumbsUpDownIcon from '@material-ui/icons/ThumbsUpDown'
 import ContactsIcon from '@material-ui/icons/Contacts'
@@ -103,10 +103,6 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
       console.error(error.message)
     )
 
-  const match = useRouteMatch({
-    path: [paths.protocols.list, paths.protocols.detail()],
-  })
-
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -131,7 +127,7 @@ export const MainLayout: React.FC<MainLayoutProps> = (props) => {
                 Connect wallet
               </Button>
             )}
-            {match && <WalletNetworkSwitcher />}
+            <WalletNetworkSwitcher />
           </div>
         </Toolbar>
       </AppBar>
