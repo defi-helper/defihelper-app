@@ -1,4 +1,3 @@
-import { useForm } from 'react-hook-form'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import {
@@ -8,22 +7,11 @@ import {
   MenuItem,
   Select,
 } from '@material-ui/core'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
 import { useStore } from 'effector-react'
 
+import { useEffect, useState } from 'react'
 import { UserContactBrokerEnum } from '~/graphql/_generated-types'
 import * as model from '~/user-contacts/user-contact.model'
-
-export const userContactFormSchema = yup.object().shape({
-  broker: yup.string().required('Required'),
-  address: yup.string().required('Required'),
-})
-
-type FormValues = {
-  broker: UserContactBrokerEnum
-  address: string
-}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,9 +29,35 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export const UserContactAdd: React.VFC = () => {
-  const { register, handleSubmit, formState } = useForm<FormValues>({
-    resolver: yupResolver(userContactFormSchema),
-  })
+  const [selectedBroker, setSelectedBroker] = useState(
+    UserContactBrokerEnum.Email
+  )
+
+  const [selectedAddress, setSelectedAddress] = useState('')
+
+  const handleSelectBroker = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSelectedBroker(event.target.value as UserContactBrokerEnum)
+  }
+
+  const handleSelectAddress = (
+    event: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    setSelectedAddress(event.target.value as string)
+  }
+
+  useEffect(() => {
+    if (selectedBroker) {
+      setSelectedAddress('')
+    }
+  }, [selectedBroker])
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+    model.createUserContactFx({
+      broker: selectedBroker,
+      address: selectedAddress || '',
+    })
+  }
 
   const loading = useStore(model.createUserContactFx.pending)
 
@@ -52,7 +66,7 @@ export const UserContactAdd: React.VFC = () => {
   return (
     <form
       className={classes.root}
-      onSubmit={handleSubmit(model.createUserContactFx)}
+      onSubmit={handleSubmit}
       noValidate
       autoComplete="off"
     >
@@ -61,10 +75,10 @@ export const UserContactAdd: React.VFC = () => {
         <Select
           type="text"
           label="Type"
-          inputProps={register('broker')}
+          value={selectedBroker}
           disabled={loading}
-          error={Boolean(formState.errors.broker)}
-          defaultValue="email"
+          defaultValue={UserContactBrokerEnum.Email}
+          onChange={handleSelectBroker}
         >
           {Object.entries(UserContactBrokerEnum).map(([k, v]) => (
             <MenuItem value={v} key={v}>
@@ -73,16 +87,18 @@ export const UserContactAdd: React.VFC = () => {
           ))}
         </Select>
       </FormControl>
-      <FormControl className={classes.formControl}>
-        <TextField
-          type="text"
-          label="Address"
-          inputProps={register('address')}
-          disabled={loading}
-          error={Boolean(formState.errors.address)}
-          helperText={formState.errors.address?.message}
-        />
-      </FormControl>
+      {selectedBroker !== UserContactBrokerEnum.Telegram && (
+        <FormControl className={classes.formControl}>
+          <TextField
+            type="text"
+            label="Address"
+            value={selectedAddress}
+            disabled={loading}
+            defaultValue=""
+            onChange={handleSelectAddress}
+          />
+        </FormControl>
+      )}
       <Button
         variant="contained"
         color="primary"
