@@ -141,7 +141,8 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
   useGate(contactModel.UserContactListGate)
   useGate(protocolsModel.ProtocolListGate)
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
     model.createUserEventSubscriptionFx({
       contact: selectedContact,
       contract: selectedContract,
