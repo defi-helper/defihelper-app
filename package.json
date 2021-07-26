@@ -117,6 +117,7 @@
   "scripts": {
     "start": "craco start",
     "build": "npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
+    "build-dev": "npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
     "test": "craco test",
     "watch": "node ./watch.js",
     "eject": "react-scripts eject",
