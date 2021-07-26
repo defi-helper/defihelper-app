@@ -14,7 +14,6 @@ jobs:
         with:
           node-version: 16
       - run: npm ci
-      - run: npm run typechain
       - if: github.event.release.prerelease == true
         run: npm run build-dev
         env:
