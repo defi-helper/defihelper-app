@@ -5,7 +5,7 @@ on:
     types: [created]
 
 jobs:
-  build-and-test:
+  build:
     runs-on: self-hosted
 
     steps:
@@ -47,7 +47,7 @@ jobs:
             build
 
   publish:
-    needs: build-and-test
+    needs: build
     runs-on: self-hosted
 
     steps:
