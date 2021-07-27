@@ -17,27 +17,27 @@ jobs:
       - if: github.event.release.prerelease == true
         run: npm run build-dev
         env:
-          REACT_APP_PORTIS_ID:
-          REACT_APP_API_URL: https://backend.defi-helper.com/api
-          REACT_APP_SENTRY:
-          REACT_APP_TREZOR_URL:
-          REACT_APP_TREZOR_EMAIL:
-          REACT_APP_FORTMATIC_KEY:
+          REACT_APP_API_URL: https://backend-dev.defihelper.io/api
           REACT_APP_WAVES_NODE_URL: https://nodes.wavesnodes.com
           REACT_APP_SID_LIFE_TIME: 31536000
-          REACT_APP_ADAPTERS_HOST: https://backend.defi-helper.com/adapters
+          REACT_APP_ADAPTERS_HOST: https://backend-dev.defihelper.io/adapters
+          REACT_APP_PORTIS_ID: ${{secrets.REACT_APP_PORTIS_ID}}
+          REACT_APP_FORTMATIC_KEY: ${{secrets.REACT_APP_FORTMATIC_KEY_TEST}}
+          REACT_APP_SENTRY: ${{secrets.REACT_APP_SENTRY}}
+          REACT_APP_TREZOR_URL: ${{secrets.REACT_APP_TREZOR_URL}}
+          REACT_APP_TREZOR_EMAIL: ${{secrets.REACT_APP_TREZOR_EMAIL}}
       - if: github.event.release.prerelease == false
         run: npm run build
         env:
-          REACT_APP_PORTIS_ID:
           REACT_APP_API_URL: https://backend.defihelper.io/api
-          REACT_APP_SENTRY:
-          REACT_APP_TREZOR_URL:
-          REACT_APP_TREZOR_EMAIL:
-          REACT_APP_FORTMATIC_KEY:
           REACT_APP_WAVES_NODE_URL: https://nodes.wavesnodes.com
           REACT_APP_SID_LIFE_TIME: 31536000
           REACT_APP_ADAPTERS_HOST: https://backend.defihelper.io/adapters
+          REACT_APP_PORTIS_ID: ${{secrets.REACT_APP_PORTIS_ID}}
+          REACT_APP_FORTMATIC_KEY: ${{secrets.REACT_APP_FORTMATIC_KEY_TEST}}
+          REACT_APP_SENTRY: ${{secrets.REACT_APP_SENTRY}}
+          REACT_APP_TREZOR_URL: ${{secrets.REACT_APP_TREZOR_URL}}
+          REACT_APP_TREZOR_EMAIL: ${{secrets.REACT_APP_TREZOR_EMAIL}}
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
         with:
