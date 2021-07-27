@@ -18,9 +18,9 @@ jobs:
         run: npm run build-dev
         env:
           REACT_APP_API_URL: https://backend-dev.defihelper.io/api
-          REACT_APP_WAVES_NODE_URL: https://nodes.wavesnodes.com
-          REACT_APP_SID_LIFE_TIME: 31536000
+          REACT_APP_WAVES_NODE_URL: https://nodes-testnet.wavesnodes.com
           REACT_APP_ADAPTERS_HOST: https://backend-dev.defihelper.io/adapters
+          REACT_APP_SID_LIFE_TIME: ${{secrets.REACT_APP_SID_LIFE_TIME}}
           REACT_APP_PORTIS_ID: ${{secrets.REACT_APP_PORTIS_ID}}
           REACT_APP_FORTMATIC_KEY: ${{secrets.REACT_APP_FORTMATIC_KEY_TEST}}
           REACT_APP_SENTRY: ${{secrets.REACT_APP_SENTRY}}
@@ -31,8 +31,8 @@ jobs:
         env:
           REACT_APP_API_URL: https://backend.defihelper.io/api
           REACT_APP_WAVES_NODE_URL: https://nodes.wavesnodes.com
-          REACT_APP_SID_LIFE_TIME: 31536000
           REACT_APP_ADAPTERS_HOST: https://backend.defihelper.io/adapters
+          REACT_APP_SID_LIFE_TIME: ${{secrets.REACT_APP_SID_LIFE_TIME}}
           REACT_APP_PORTIS_ID: ${{secrets.REACT_APP_PORTIS_ID}}
           REACT_APP_FORTMATIC_KEY: ${{secrets.REACT_APP_FORTMATIC_KEY_TEST}}
           REACT_APP_SENTRY: ${{secrets.REACT_APP_SENTRY}}
