@@ -50,6 +50,10 @@
     "@typescript-eslint/parser": "^4.6.1",
     "@urql/core": "^2.1.4",
     "@urql/exchange-auth": "^0.1.3",
+    "@vanilla-extract/babel-plugin": "^1.0.1",
+    "@vanilla-extract/css": "^1.1.2",
+    "@vanilla-extract/dynamic": "^1.0.0",
+    "@vanilla-extract/webpack-plugin": "^1.0.3",
     "@waves.exchange/provider-web": "^1.0.2",
     "@waves/signer": "^1.0.2",
     "@waves/waveskeeper-types": "^0.0.6",
@@ -90,12 +94,15 @@
     "nanoid": "^3.1.23",
     "normalize.css": "^8.0.1",
     "patronum": "^1.1.0",
+    "polished": "^4.1.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-helmet-async": "^1.0.9",
     "react-hook-form": "^7.8.3",
+    "react-jazzicon": "^0.1.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-use": "^17.2.4",
     "remarkable": "^2.0.1",
     "remarkable-react": "^1.4.3",
     "smoothscroll-polyfill": "^0.4.4",
@@ -132,7 +139,7 @@
       "prettier --write",
       "eslint src/**/*.{ts,tsx,js}"
     ],
-    "*.{js,css,md}": "prettier --write"
+    "*.{js,md}": "prettier --write"
   },
   "eslintConfig": {
     "extends": [

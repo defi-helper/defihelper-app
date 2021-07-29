@@ -122,3 +122,20 @@ declare module 'remarkable-react' {
 }
 
 declare module 'cachios'
+
+declare module 'react-jazzicon' {
+  import * as React from 'react'
+
+  type Props = {
+    diameter?: number
+    paperStyles?: React.CSSProperties
+    seed?: number
+    svgStyles?: React.CSSProperties
+  }
+
+  const Jazzicon: React.FunctionComponent<Props>
+
+  export function jsNumberForAddress(address: string): number
+
+  export default Jazzicon
+}
