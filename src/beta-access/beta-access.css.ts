@@ -85,3 +85,12 @@ export const cardSubtitle = style({
     },
   },
 })
+
+export const connected = style({
+  background: theme.color.background,
+  color: theme.palette.green1,
+  padding: '8px 16px',
+  display: 'inline-flex',
+  borderRadius: 8,
+  marginRight: 8,
+})

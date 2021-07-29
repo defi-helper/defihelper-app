@@ -2,15 +2,34 @@ import clsx from 'clsx'
 import React from 'react'
 
 import { Button } from '~/common/button'
+import { useDialog } from '~/common/dialog'
 import { Grid } from '~/common/grid'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { AppLayout } from '~/layouts'
+import { WalletDetail } from '~/wallets/wallet-detail'
+import { WalletList } from '~/wallets/wallet-list'
+import { networkModel } from '~/wallets/wallet-networks'
 import * as styles from './beta-access.css'
 
 export type BetaAccessProps = unknown
 
 export const BetaAccess: React.VFC<BetaAccessProps> = () => {
+  const { account = null } = networkModel.useNetworkProvider()
+
+  const [openWalletList, closeWalletList] = useDialog(WalletList)
+  const [openChangeWallet] = useDialog(WalletDetail)
+
+  const handleOpenWalletList = () =>
+    openWalletList({ onClick: closeWalletList }).catch((error: Error) =>
+      console.error(error.message)
+    )
+
+  const handleChangeWallet = () =>
+    openChangeWallet({ onChange: handleOpenWalletList }).catch((error: Error) =>
+      console.error(error.message)
+    )
+
   return (
     <AppLayout>
       <Grid.Container variant="md" className={styles.root}>
@@ -44,7 +63,25 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                 Connect your wallet to start using your portfolio instantly
                 after launch
               </Typography>
-              <Button variant="outlined">Connect wallet</Button>
+              {account && (
+                <Typography
+                  variant="body2"
+                  transform="uppercase"
+                  family="mono"
+                  className={styles.connected}
+                >
+                  Connected
+                </Typography>
+              )}
+              {!account ? (
+                <Button variant="outlined" onClick={handleOpenWalletList}>
+                  Connect wallet
+                </Button>
+              ) : (
+                <Button variant="outlined" onClick={handleChangeWallet}>
+                  Change
+                </Button>
+              )}
             </Paper>
           </div>
           <div className={styles.col}>

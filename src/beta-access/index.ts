@@ -1,1 +1,1 @@
-export { BetaAccess as default } from './beta-access'
+export * from './beta-access'

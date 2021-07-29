@@ -41,3 +41,12 @@ export const padding = style({
 export const actions = style({
   marginLeft: 'auto',
 })
+
+export const wallet = style({
+  borderRadius: 8,
+  padding: '8px 12px 8px 16px',
+})
+
+export const account = style({
+  marginRight: 8,
+})

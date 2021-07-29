@@ -6,7 +6,7 @@ export const root = style({
   borderRadius: 8,
   textTransform: 'uppercase',
   fontFamily: theme.fonts.mono,
-  padding: '8px 16px',
+  padding: '7px 15px',
 })
 
 export const colors = styleVariants({

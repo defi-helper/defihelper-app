@@ -50,6 +50,8 @@ export const ToastProvider: React.FC<ToastProviderProps> = (props) => {
     }
   }, [toasts, props.maxItems])
 
+  if (!toasts.length) return <>{props.children}</>
+
   return (
     <>
       <Portal>
