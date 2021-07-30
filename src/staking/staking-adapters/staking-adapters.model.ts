@@ -92,6 +92,16 @@ const fetchStakingListDone = sample({
   greedy: true,
 })
 
+const fetchContractAdapters = stakingAdaptersDomain.createEvent<Params>(
+  'fetchContractAdapters'
+)
+
+debounce({
+  source: fetchContractAdapters,
+  target: fetchContractAdaptersFx,
+  timeout: 300,
+})
+
 sample({
   source: networkModel.$wallet,
   clock: guard({
@@ -99,7 +109,7 @@ sample({
     filter: (params): params is Params => Boolean(params.protocolAdapter),
   }),
   fn: (source, clock) => ({ ...clock, provider: source.provider }),
-  target: debounce({ source: fetchContractAdaptersFx, timeout: 300 }),
+  target: fetchContractAdapters,
   greedy: true,
 })
 

@@ -35,4 +35,6 @@ export const paths = {
   },
 
   betaAccess: '/beta-access',
+
+  billing: '/billing',
 } as const
