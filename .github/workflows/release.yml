@@ -26,6 +26,7 @@ jobs:
           REACT_APP_SENTRY: ${{secrets.REACT_APP_SENTRY}}
           REACT_APP_TREZOR_URL: ${{secrets.REACT_APP_TREZOR_URL}}
           REACT_APP_TREZOR_EMAIL: ${{secrets.REACT_APP_TREZOR_EMAIL}}
+          REACT_APP_BETA: false
       - if: github.event.release.prerelease == false
         run: npm run build
         env:
@@ -38,6 +39,7 @@ jobs:
           REACT_APP_SENTRY: ${{secrets.REACT_APP_SENTRY}}
           REACT_APP_TREZOR_URL: ${{secrets.REACT_APP_TREZOR_URL}}
           REACT_APP_TREZOR_EMAIL: ${{secrets.REACT_APP_TREZOR_EMAIL}}
+          REACT_APP_BETA: true
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
         with:
