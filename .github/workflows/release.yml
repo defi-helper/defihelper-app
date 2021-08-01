@@ -68,7 +68,7 @@ jobs:
       - name: Publish dev
         if: github.event.release.prerelease == true
         run: |
-          mkdir -pv $GITHUB_WORKSPACE
+          mkdir -pv ~/$GITHUB_REPOSITORY-dev
           cp -rf $GITHUB_WORKSPACE ~/$GITHUB_REPOSITORY-dev.new
           mv ~/$GITHUB_REPOSITORY-dev ~/$GITHUB_REPOSITORY-dev.old
           mv ~/$GITHUB_REPOSITORY-dev.new ~/$GITHUB_REPOSITORY-dev
@@ -77,7 +77,7 @@ jobs:
       - name: Publish stable
         if: github.event.release.prerelease == false
         run: |
-          mkdir -pv $GITHUB_WORKSPACE
+          mkdir -pv ~/$GITHUB_REPOSITORY
           cp -rf $GITHUB_WORKSPACE ~/$GITHUB_REPOSITORY.new
           mv ~/$GITHUB_REPOSITORY ~/$GITHUB_REPOSITORY.old
           mv ~/$GITHUB_REPOSITORY.new ~/$GITHUB_REPOSITORY
