@@ -100,6 +100,13 @@ export const NETWORKS: Network[] = [
     type: 'Networks' as const,
   },
   {
+    title: 'Ropsten',
+    blockchain: BlockchainEnum.Ethereum,
+    network: config.CHAIN_ETHEREUM_IDS[1],
+    onClick: 'activateEthereum' as const,
+    type: 'Networks' as const,
+  },
+  {
     title: 'Binance Smart Chain',
     blockchain: BlockchainEnum.Ethereum,
     network: config.CHAIN_BINANCE_IDS[0],

@@ -16,7 +16,13 @@ export type ButtonBaseProps = React.ComponentProps<'button'> & {
 
 export const ButtonBase = React.forwardRef<HTMLButtonElement, ButtonBaseProps>(
   function ButtonBase(props, ref) {
-    const { as = 'button', className, children, ...restOfProps } = props
+    const {
+      as = 'button',
+      type = 'button',
+      className,
+      children,
+      ...restOfProps
+    } = props
 
     const Component = as
 
@@ -25,7 +31,7 @@ export const ButtonBase = React.forwardRef<HTMLButtonElement, ButtonBaseProps>(
     })
 
     return (
-      <Component ref={ref} className={classNames} {...restOfProps}>
+      <Component ref={ref} className={classNames} {...restOfProps} type={type}>
         {children}
       </Component>
     )

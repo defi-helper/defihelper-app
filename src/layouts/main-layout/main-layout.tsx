@@ -17,6 +17,7 @@ import Button from '@material-ui/core/Button'
 import ThumbsUpDownIcon from '@material-ui/icons/ThumbsUpDown'
 import ContactsIcon from '@material-ui/icons/Contacts'
 import NotificationsIcon from '@material-ui/icons/Notifications'
+import ReceiptIcon from '@material-ui/icons/Receipt'
 import ListIcon from '@material-ui/icons/List'
 
 import { paths } from '~/paths'
@@ -83,6 +84,11 @@ const MENU = [
     title: 'Event Subscriptions',
     path: paths.userEventSubscriptions.list,
     icon: NotificationsIcon,
+  },
+  {
+    title: 'Billing',
+    path: paths.billing,
+    icon: ReceiptIcon,
   },
 ]
 

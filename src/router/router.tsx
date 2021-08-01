@@ -26,6 +26,7 @@ import { UserContactConfirmEmail } from '~/user-contacts/user-contact-confirm-em
 import { UserEventSubscriptionList } from '~/user-event-subscriptions'
 import { BetaAccess } from '~/beta-access'
 import { config } from '~/config'
+import { Billing } from '~/billing'
 
 export type RouterProps = unknown
 
@@ -107,6 +108,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.betaAccess}>
           <BetaAccess />
         </Route>
+        <PrivateRoute path={paths.billing}>
+          <Billing />
+        </PrivateRoute>
       </Switch>
     </BrowserRouter>
   )
