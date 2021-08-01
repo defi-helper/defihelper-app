@@ -18,6 +18,14 @@ jobs:
         run: npm run build-dev
       - if: github.event.release.prerelease == true
         run: npm run build
+      - if: github.event.release.prerelease == true
+        shell: bash
+        run: |
+          echo "REACT_APP_SID_LIFE_TIME: ${{secrets.REACT_APP_SID_LIFE_TIME}}" >> .env
+          echo "REACT_APP_ADAPTERS_HOST: https://backend-dev.defihelper.io/adapters" >> .env
+      - if: github.event.release.prerelease == true
+        shell: bash
+        run: cat .env
       - if: github.event.release.prerelease == false
         run: npm run build
         env:
