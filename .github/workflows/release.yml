@@ -13,32 +13,34 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 16
-      - run: npm ci
-      - if: github.event.release.prerelease == true
-        run: npm run build-dev
-      - if: github.event.release.prerelease == true
-        run: npm run build
-      - if: github.event.release.prerelease == true
-        shell: bash
+      - name: Install dependencies
+        run: npm ci
+      - name: Create .env secrets
         run: |
           echo "REACT_APP_SID_LIFE_TIME: ${{secrets.REACT_APP_SID_LIFE_TIME}}" >> .env
+          echo "REACT_APP_PORTIS_ID: ${{secrets.REACT_APP_PORTIS_ID}}" >> .env
+          echo "REACT_APP_FORTMATIC_KEY: ${{secrets.REACT_APP_FORTMATIC_KEY_TEST}}" >> .env
+          echo "REACT_APP_SENTRY: ${{secrets.REACT_APP_SENTRY}}" >> .env
+          echo "REACT_APP_TREZOR_URL: ${{secrets.REACT_APP_TREZOR_URL}}" >> .env
+          echo "REACT_APP_TREZOR_EMAIL: ${{secrets.REACT_APP_TREZOR_EMAIL}}" >> .env
+      - name: Add development .env params
+        if: github.event.release.prerelease == true
+        run: |
+          echo "REACT_APP_API_URL: https://backend-dev.defihelper.io/api" >> .env
+          echo "REACT_APP_WAVES_NODE_URL: https://nodes-testnet.wavesnodes.com" >> .env
           echo "REACT_APP_ADAPTERS_HOST: https://backend-dev.defihelper.io/adapters" >> .env
+          echo "REACT_APP_BETA: true" >> .env
+      - name: Add production .env params
+        if: github.event.release.prerelease == false
+        run: |
+          echo "REACT_APP_API_URL: https://backend.defihelper.io/api" >> .env
+          echo "REACT_APP_WAVES_NODE_URL: https://nodes.wavesnodes.com" >> .env
+          echo "REACT_APP_ADAPTERS_HOST: https://backend.defihelper.io/adapters" >> .env
+          echo "REACT_APP_BETA: true" >> .env
       - if: github.event.release.prerelease == true
-        shell: bash
-        run: cat .env
+        run: npm run build-dev
       - if: github.event.release.prerelease == false
         run: npm run build
-        env:
-          REACT_APP_API_URL: https://backend.defihelper.io/api
-          REACT_APP_WAVES_NODE_URL: https://nodes.wavesnodes.com
-          REACT_APP_ADAPTERS_HOST: https://backend.defihelper.io/adapters
-          REACT_APP_SID_LIFE_TIME: ${{secrets.REACT_APP_SID_LIFE_TIME}}
-          REACT_APP_PORTIS_ID: ${{secrets.REACT_APP_PORTIS_ID}}
-          REACT_APP_FORTMATIC_KEY: ${{secrets.REACT_APP_FORTMATIC_KEY_TEST}}
-          REACT_APP_SENTRY: ${{secrets.REACT_APP_SENTRY}}
-          REACT_APP_TREZOR_URL: ${{secrets.REACT_APP_TREZOR_URL}}
-          REACT_APP_TREZOR_EMAIL: ${{secrets.REACT_APP_TREZOR_EMAIL}}
-          REACT_APP_BETA: true
       - name: Archive artifacts
         uses: actions/upload-artifact@v2
         with:
