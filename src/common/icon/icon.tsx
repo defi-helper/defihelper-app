@@ -8,6 +8,7 @@ import { ReactComponent as EthIcon } from '~/assets/icons/coins/eth.svg'
 import { ReactComponent as USDNIcon } from '~/assets/icons/coins/usdn.svg'
 import { ReactComponent as BNBIcon } from '~/assets/icons/coins/bnb.svg'
 import { ReactComponent as PAXIcon } from '~/assets/icons/coins/pax.svg'
+import { ReactComponent as SelectArrowIcon } from '~/assets/icons/select-arrow.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -22,6 +23,7 @@ const ICONS = {
   USDC: USDCicon,
   USDN: USDNIcon,
   PAX: PAXIcon,
+  SelectArrow: SelectArrowIcon,
 } as const
 
 export type IconProps = React.SVGProps<SVGSVGElement> & {

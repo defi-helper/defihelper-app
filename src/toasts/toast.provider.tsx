@@ -52,7 +52,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = (props) => {
 
   return (
     <>
-      {toasts.length && (
+      {Boolean(toasts.length) && (
         <Portal>
           <div className={classes.root}>
             {toasts.map((toast) => {

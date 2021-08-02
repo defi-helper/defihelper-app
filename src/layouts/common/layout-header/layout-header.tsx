@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link as ReactRouterLink } from 'react-router-dom'
 import clsx from 'clsx'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 
@@ -13,6 +12,7 @@ import { ButtonBase } from '~/common/button-base'
 import { Paper } from '~/common/paper'
 import { cutAccount } from '~/common/cut-account'
 import { Typography } from '~/common/typography'
+import { config } from '~/config'
 import * as styles from './layout-header.css'
 
 export type LayoutHeaderProps = {
@@ -26,7 +26,7 @@ export const LayoutHeader: React.VFC<LayoutHeaderProps> = (props) => {
     <header className={styles.root}>
       <Grid.Container>
         <Grid.Row items="center">
-          <Link as={ReactRouterLink} to={paths.main} className={styles.padding}>
+          <Link href={config.MAIN_URL || paths.main} className={styles.padding}>
             <Logo className={styles.logo} />
             <LogoMini className={styles.logoMini} />
           </Link>

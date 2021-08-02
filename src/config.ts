@@ -14,4 +14,5 @@ export const config = {
   ADAPTERS_HOST: process.env.REACT_APP_ADAPTERS_HOST,
   TELEGRAM_BOT_USERNAME: process.env.REACT_APP_TELEGRAM_BOT_USERNAME,
   BETA: process.env.REACT_APP_BETA === 'true',
+  MAIN_URL: process.env.REACT_APP_MAIN_URL,
 } as const

@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import React from 'react'
+import { useGate, useStore } from 'effector-react'
 
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
@@ -7,10 +7,12 @@ import { Grid } from '~/common/grid'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { AppLayout } from '~/layouts'
+import { contactListModel } from '~/user-contacts'
 import { WalletDetail } from '~/wallets/wallet-detail'
 import { WalletList } from '~/wallets/wallet-list'
 import { networkModel } from '~/wallets/wallet-networks'
 import * as styles from './beta-access.css'
+import * as model from './beta-access.model'
 
 export type BetaAccessProps = unknown
 
@@ -29,6 +31,10 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
     openChangeWallet({ onChange: handleOpenWalletList }).catch((error: Error) =>
       console.error(error.message)
     )
+
+  const contactList = useStore(contactListModel.$userContactList)
+
+  useGate(contactListModel.UserContactListGate)
 
   return (
     <AppLayout>
@@ -101,7 +107,13 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                 Subscribe for telegram bot to be notified when your portfolio
                 ready to use
               </Typography>
-              <Button variant="outlined">Open Telegram</Button>
+              <Button
+                variant="outlined"
+                disabled={Boolean(contactList.length) || !account}
+                onClick={() => model.openTelegram()}
+              >
+                Open Telegram
+              </Button>
             </Paper>
           </div>
         </Grid.Row>
