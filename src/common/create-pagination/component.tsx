@@ -14,6 +14,8 @@ export const Pagination: React.VFC<PaginationProps> = (props) => {
     props.changePage(page - 1)
   }
 
+  if (!pages || pages <= 1) return <></>
+
   return (
     <MaterialPagination
       count={pages ?? undefined}
