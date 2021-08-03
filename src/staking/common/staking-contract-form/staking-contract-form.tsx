@@ -26,6 +26,7 @@ export type StakingContractFormProps = {
   loading: boolean
   onSubmit: (formValues: FormValues) => void
   defaultValues?: Omit<FormValues, 'layout'> & { layout?: string }
+  adapterKeys?: string[]
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -50,8 +51,9 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
     })
 
   const hidden = register('hidden')
-
   const blockChain = register('blockchain')
+  const layout = register('layout')
+  const adapter = register('adapter')
 
   useEffect(() => {
     if (!props.defaultValues) return
@@ -89,11 +91,19 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
         type="text"
         label="Adapter"
         defaultValue={props.defaultValues?.adapter}
-        {...register('adapter')}
+        inputRef={adapter.ref}
+        {...adapter}
         disabled={props.loading}
         error={Boolean(formState.errors.adapter)}
         helperText={formState.errors.adapter?.message}
-      />
+        select
+      >
+        {props.adapterKeys?.map((key) => (
+          <MenuItem key={key} value={key}>
+            {key}
+          </MenuItem>
+        ))}
+      </TextField>
       <TextField
         type="text"
         label="Address"
@@ -144,11 +154,15 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
         type="text"
         label="Layout"
         defaultValue={props.defaultValues?.layout}
-        {...register('layout')}
+        inputRef={layout.ref}
+        {...layout}
         disabled={props.loading}
         error={Boolean(formState.errors.layout)}
         helperText={formState.errors.layout?.message}
-      />
+        select
+      >
+        <MenuItem value="staking">staking</MenuItem>
+      </TextField>
       <FormLabel>
         Hidden
         <Checkbox

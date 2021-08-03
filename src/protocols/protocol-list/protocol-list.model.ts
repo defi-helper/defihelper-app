@@ -25,7 +25,10 @@ export const fetchProtocolListFx = protocolListDomain.createEffect({
             protocolFilter: {
               blockchain: {
                 protocol: params.blockchain,
-                network: params.network ? String(params.network) : undefined,
+                network:
+                  params.network !== 'waves'
+                    ? String(params.network)
+                    : undefined,
               },
             },
           }

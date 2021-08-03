@@ -8,6 +8,7 @@ const explorers: Record<string | number, string> = {
   56: 'https://bscscan.com/address',
   97: 'https://testnet.bscscan.com/address',
   waves: 'https://wavesexplorer.com/address',
+  main: 'https://wavesexplorer.com/address',
 }
 
 type Options = {
