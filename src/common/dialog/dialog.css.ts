@@ -11,11 +11,12 @@ export const root = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  zIndex: 2000,
+  zIndex: 1000,
 })
 
 export const content = style({
   background: theme.color.background,
+  color: theme.color.textColor,
   maxHeight: '100vh',
   overflowY: 'auto',
   overflowX: 'hidden',

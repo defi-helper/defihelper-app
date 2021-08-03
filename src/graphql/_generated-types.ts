@@ -1817,6 +1817,18 @@ export type BillingQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type AddWalletMutationVariables = Exact<{
+  input: AddWalletInputType
+}>
+
+export type AddWalletMutation = { __typename?: 'Mutation' } & {
+  addWallet?: Maybe<
+    { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
+        user: { __typename?: 'UserType' } & Pick<UserType, 'id'>
+      }
+  >
+}
+
 export type BlockChainsQueryVariables = Exact<{
   blockchainMetric: Scalars['MetricColumnType']
   blockchainGroup: MetricGroupEnum

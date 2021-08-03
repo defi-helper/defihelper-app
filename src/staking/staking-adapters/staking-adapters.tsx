@@ -1,5 +1,5 @@
 import React from 'react'
-import { useStore } from 'effector-react'
+import { useGate, useStore } from 'effector-react'
 
 import { StakingAdapterForm } from '~/staking/common'
 import * as model from './staking-adapters.model'
@@ -7,6 +7,8 @@ import * as model from './staking-adapters.model'
 export type StakingAdaptersProps = {
   className?: string
   contractAddress: string
+  contractAdapter: string
+  protocolAdapter: string
   contractLayout: string
 }
 
@@ -56,10 +58,16 @@ export const StakingAdapters: React.FC<StakingAdaptersProps> = (props) => {
   const handleExit = createAdapterAction(props.contractAddress, adapter, 'exit')
 
   const actions = useStore(model.$actions)
-
   const action = actions[props.contractAddress]
 
   const tokens = useStore(model.$tokens)
+
+  useGate(model.StakingAdaptersGate, {
+    protocolAdapter: props.protocolAdapter,
+    contracts: [
+      { address: props.contractAddress, adapter: props.contractAdapter },
+    ],
+  })
 
   return (
     <div>

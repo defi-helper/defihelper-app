@@ -70,7 +70,7 @@ export type AdapterFn = (
 
 export const loadAdapter = (
   url: string,
-  adapter: string
+  adapter?: string
 ): Promise<AdapterFn> => {
   return new Promise((resolve, reject) => {
     // @ts-ignore
@@ -81,6 +81,12 @@ export const loadAdapter = (
     script.src = url
 
     const handler = () => {
+      if (!adapter && !(window.module.exports instanceof Error)) {
+        return resolve(window.module.exports)
+      }
+
+      if (!adapter) return reject(moduleExports.exports)
+
       const currentAdapter = window.module.exports[adapter]
 
       if (!currentAdapter) reject(moduleExports.exports)
@@ -96,6 +102,8 @@ export const loadAdapter = (
     }
 
     script.addEventListener('load', handler)
+
+    script.addEventListener('error', handler)
 
     document.body.appendChild(script)
   })

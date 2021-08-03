@@ -1,6 +1,6 @@
 import { createDomain } from 'effector-logger'
-import { history } from '~/common/history'
 
+import { history } from '~/common/history'
 import { StakingContractUpdateMutationVariables } from '~/graphql/_generated-types'
 import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
@@ -15,6 +15,8 @@ export const stakingUpdateFx = stakingUpdate.createEffect({
 })
 
 stakingUpdateFx.doneData.watch((payload) => {
+  if (!payload) return
+
   history.push(paths.protocols.detail(payload))
 })
 
