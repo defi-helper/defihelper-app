@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 
+import { Link } from '~/common/link'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { Grid } from '~/common/grid'
@@ -13,6 +14,7 @@ import { WalletList } from '~/wallets/wallet-list'
 import { networkModel } from '~/wallets/wallet-networks'
 import * as styles from './beta-access.css'
 import * as model from './beta-access.model'
+import { config } from '~/config'
 
 export type BetaAccessProps = unknown
 
@@ -109,8 +111,17 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
               </Typography>
               <Button
                 variant="outlined"
-                disabled={Boolean(contactList.length) || !account}
-                onClick={() => model.openTelegram()}
+                disabled={!account}
+                onClick={
+                  !contactList.length ? () => model.openTelegram() : undefined
+                }
+                as={contactList.length ? Link : undefined}
+                target={contactList.length ? '_blank' : undefined}
+                href={
+                  contactList.length
+                    ? `https://t.me/${config.TELEGRAM_BOT_USERNAME}`
+                    : undefined
+                }
               >
                 Open Telegram
               </Button>
