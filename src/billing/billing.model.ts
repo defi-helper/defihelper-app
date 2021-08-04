@@ -1,15 +1,13 @@
-import { createDomain, Effect, forward } from 'effector-logger'
+import { createDomain, Effect, guard } from 'effector-logger'
 import { nanoid } from 'nanoid'
 import contracts from '@defihelper/networks/contracts.json'
 import Balance from '@defihelper/networks/abi/Balance.json'
-import { ethers } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import { createGate } from 'effector-react'
 
 import { networkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { toastsService } from '~/toasts'
-import { BillingBalanceType } from '~/graphql/_generated-types'
-import { billingApi } from './common'
 
 type ChainIdEnum = keyof typeof contracts
 
@@ -18,7 +16,7 @@ const isChainId = (chainId: unknown): chainId is ChainIdEnum =>
 
 export const billingDomain = createDomain('billingDomain')
 
-const createBalance = <T extends string>(amount: string, fnName: T) => {
+const createContract = () => {
   const { chainId, networkProvider, account } = networkModel.getNetwork()
 
   const chainIdString = String(chainId)
@@ -39,18 +37,9 @@ const createBalance = <T extends string>(amount: string, fnName: T) => {
     networkProvider.getSigner()
   )
 
-  const method = balanceContract[fnName]
-
-  if (!method) {
-    throw new Error('something went wrong')
-  }
-  const amountNormalized = bignumberUtils.toSend(amount, 18)
-
   return {
-    amountNormalized,
     networkProvider,
     account,
-    [fnName]: method,
     balanceContract,
   }
 }
@@ -58,8 +47,9 @@ const createBalance = <T extends string>(amount: string, fnName: T) => {
 export const depositFx = billingDomain.createEffect({
   name: 'depositFx',
   handler: async (amount: string) => {
-    const { networkProvider, amountNormalized, account, deposit } =
-      createBalance(amount, 'deposit')
+    const { networkProvider, account, balanceContract } = createContract()
+
+    const amountNormalized = bignumberUtils.toSend(amount, 18)
 
     const balance = await networkProvider.getBalance(account)
 
@@ -67,7 +57,11 @@ export const depositFx = billingDomain.createEffect({
       throw new Error('not enough money')
     }
 
-    await deposit(account, { value: amountNormalized })
+    const transactionReceipt = await balanceContract.deposit(account, {
+      value: amountNormalized,
+    })
+
+    await transactionReceipt.wait()
   },
 })
 
@@ -79,8 +73,9 @@ export const $deposit = createKeyStore('$deposit', depositFx)
 export const refundFx = billingDomain.createEffect({
   name: 'refundFx',
   handler: async (amount: string) => {
-    const { amountNormalized, account, refund, balanceContract } =
-      createBalance(amount, 'refund')
+    const { account, balanceContract } = createContract()
+
+    const amountNormalized = bignumberUtils.toSend(amount, 18)
 
     const balance = await balanceContract.netBalanceOf(account)
 
@@ -88,7 +83,9 @@ export const refundFx = billingDomain.createEffect({
       throw new Error('not enough money')
     }
 
-    await refund(amountNormalized)
+    const transactionReceipt = await balanceContract.refund(amountNormalized)
+
+    await transactionReceipt.wait()
   },
 })
 
@@ -98,11 +95,15 @@ toastsService.forwardErrors(refundFx.failData, depositFx.failData)
 
 const fetchBalanceFx = billingDomain.createEffect({
   name: 'fetchBalanceFx',
-  handler: () => billingApi.balance(),
+  handler: () => {
+    const { balanceContract, account } = createContract()
+
+    return balanceContract.netBalanceOf(account) as Promise<BigNumber>
+  },
 })
 
 export const $billingBalance = billingDomain
-  .createStore<BillingBalanceType | null>(null, {
+  .createStore<BigNumber | null>(null, {
     name: '$billingBalance',
   })
   .on(fetchBalanceFx.doneData, (_, payload) => payload)
@@ -112,7 +113,16 @@ export const BillingGate = createGate({
   name: 'BillingGate',
 })
 
-forward({
-  from: BillingGate.open,
-  to: fetchBalanceFx,
+guard({
+  source: networkModel.$wallet,
+  clock: [BillingGate.open, networkModel.$wallet],
+  filter: ({ account, chainId }) => Boolean(account && chainId),
+  target: fetchBalanceFx,
+})
+
+guard({
+  source: networkModel.$wallet,
+  clock: [refundFx.done, depositFx.done],
+  filter: ({ account, chainId }) => Boolean(account && chainId),
+  target: fetchBalanceFx,
 })

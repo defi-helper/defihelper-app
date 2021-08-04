@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { useGate, useStore } from 'effector-react'
 import { Effect } from 'effector'
 
+import { bignumberUtils } from '~/common/bignumber-utils'
 import { MainLayout } from '~/layouts'
 import { BillingForm } from './common'
 import * as model from './billing.model'
@@ -32,7 +33,6 @@ export const Billing: React.VFC<BillingProps> = () => {
   const depositKey = useStore(model.$deposit)
 
   const handleDeposit = createHandler(model.depositFx)
-
   const handleRefund = createHandler(model.refundFx)
 
   const balance = useStore(model.$billingBalance)
@@ -42,18 +42,22 @@ export const Billing: React.VFC<BillingProps> = () => {
   return (
     <MainLayout>
       <Typography variant="h3">Deposit</Typography>
+      <Typography>
+        net balance:{' '}
+        {bignumberUtils.format(
+          bignumberUtils.fromCall(balance?.toString() ?? 0, 18)
+        )}
+      </Typography>
       <BillingForm
         className={classes.form}
         loading={depositStatus}
         onSubmit={handleDeposit}
-        balance={balance?.netBalance}
         key={depositKey}
       />
       <Typography variant="h3">Refund</Typography>
       <BillingForm
         loading={refundStatus}
         onSubmit={handleRefund}
-        balance={balance?.netBalance}
         key={refundKey}
       />
     </MainLayout>
