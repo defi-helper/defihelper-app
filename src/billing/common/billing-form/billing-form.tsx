@@ -1,10 +1,9 @@
-import { Button, Typography } from '@material-ui/core'
+import { Button } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import clsx from 'clsx'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { NumericalInput } from '~/common/numerical-input'
 import { billingFormSchema } from './billing-form.validation'
 
@@ -44,9 +43,6 @@ export const BillingForm: React.VFC<BillingFormProps> = (props) => {
       className={clsx(classes.root, props.className)}
       onSubmit={handleSubmit((formValues) => props.onSubmit(formValues.amount))}
     >
-      <Typography>
-        Net balance: {bignumberUtils.format(props.balance)}
-      </Typography>
       <NumericalInput
         label="Amount"
         {...register('amount')}
