@@ -43,12 +43,10 @@ export class WavesExchangeConnector extends AbstractConnector {
 
     try {
       if (!this.account) {
-        const userData = await waves.login()
+        const { address } = await waves.login()
 
-        this.account = userData.address
+        this.account = address
       }
-      // eslint-disable-next-line no-unused-vars
-      const data = await waves.currentProvider?.signMessage('hello!')
 
       if (!this.provider) {
         this.provider = waves

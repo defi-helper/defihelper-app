@@ -1,7 +1,7 @@
 import { useStore } from 'effector-react'
 
 import { Dialog } from '~/common/dialog'
-import { networkModel } from '~/wallets/wallet-networks'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { cutAccount } from '~/common/cut-account'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Link } from '~/common/link'
@@ -13,7 +13,7 @@ export type WalletDetailProps = {
 }
 
 export const WalletDetail: React.VFC<WalletDetailProps> = (props) => {
-  const wallet = useStore(networkModel.$wallet)
+  const wallet = useStore(walletNetworkModel.$wallet)
 
   return (
     <Dialog>

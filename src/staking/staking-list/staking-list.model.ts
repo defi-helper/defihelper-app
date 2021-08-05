@@ -6,7 +6,7 @@ import {
   StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { userModel } from '~/users'
-import { networkModel } from '~/wallets/wallet-networks'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { stakingApi } from '~/staking/common'
 import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 import { createPagination, PaginationState } from '~/common/create-pagination'
@@ -169,7 +169,7 @@ export const $contracts = combine(
   $contractList,
   $connectedContracts,
   $wallets,
-  networkModel.$wallet,
+  walletNetworkModel.$wallet,
   (contractList, connectedContracts, wallets, wallet) => {
     return contractList.map((contract) => ({
       ...contract,

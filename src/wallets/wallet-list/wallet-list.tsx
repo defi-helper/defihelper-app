@@ -7,7 +7,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { Dialog } from '~/common/dialog'
 import { connectorsByName } from '~/wallets/common'
-import { networkModel } from '~/wallets/wallet-networks'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as styles from './wallet-list.css'
 
 export type WalletListProps = {
@@ -16,11 +16,11 @@ export type WalletListProps = {
 
 export const WalletList: React.VFC<WalletListProps> = (props) => {
   const handleActivate = (connector: AbstractConnector) => () => {
-    networkModel.activateWalletFx({ connector })
+    walletNetworkModel.activateWalletFx({ connector })
   }
 
   useEffect(() => {
-    networkModel.activateWalletFx.done.watch(props.onClick)
+    walletNetworkModel.activateWalletFx.done.watch(props.onClick)
   }, [props.onClick])
 
   return (

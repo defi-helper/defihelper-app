@@ -11,7 +11,7 @@ import { AppLayout } from '~/layouts'
 import { contactListModel } from '~/user-contacts'
 import { WalletDetail } from '~/wallets/wallet-detail'
 import { WalletList } from '~/wallets/wallet-list'
-import { networkModel } from '~/wallets/wallet-networks'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as styles from './beta-access.css'
 import * as model from './beta-access.model'
 import { config } from '~/config'
@@ -19,7 +19,7 @@ import { config } from '~/config'
 export type BetaAccessProps = unknown
 
 export const BetaAccess: React.VFC<BetaAccessProps> = () => {
-  const { account = null } = networkModel.useNetworkProvider()
+  const { account = null } = walletNetworkModel.useWalletNetwork()
 
   const [openWalletList, closeWalletList] = useDialog(WalletList)
   const [openChangeWallet] = useDialog(WalletDetail)

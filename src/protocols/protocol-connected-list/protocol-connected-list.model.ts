@@ -18,9 +18,9 @@ export const fetchProtocolConnectedListFx =
       }),
   })
 
-export const $protocolList = protocoConnectedlListDomain
+export const $protocolConnectedList = protocoConnectedlListDomain
   .createStore<ProtocolFragmentFragment[]>([], {
-    name: '$protocolList',
+    name: '$protocolConnectedList',
   })
   .on(fetchProtocolConnectedListFx.doneData, (_, payload) => payload.list)
   .on(deleteProtocolFx.done, (state, { params: payload }) =>

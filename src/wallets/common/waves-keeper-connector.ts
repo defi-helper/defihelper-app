@@ -43,12 +43,6 @@ export class WavesKeeperConnector extends AbstractConnector {
 
       this.account = state.address
 
-      // eslint-disable-next-line no-unused-vars
-      const resp = await window.WavesKeeper.signCustomData({
-        version: 2,
-        data: [{ type: 'string', key: 'name', value: 'hello' }],
-      })
-
       return {
         provider: window.WavesKeeper,
         chainId: CHAIN_ID,

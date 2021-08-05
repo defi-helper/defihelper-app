@@ -1,2 +1,2 @@
 export * from './wallet-network.hooks'
-export * as networkModel from './wallet-network.model'
+export * as walletNetworkModel from './wallet-network.model'
