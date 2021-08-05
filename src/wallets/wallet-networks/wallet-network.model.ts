@@ -1,6 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { ConnectorUpdate } from '@web3-react/types'
-import { createDomain, guard, sample } from 'effector-logger'
+import { createDomain, guard, sample, split } from 'effector-logger'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { shallowEqual } from 'fast-equals'
@@ -10,16 +10,27 @@ import {
   walletApi,
   createEthereumProvider,
   connectors,
+  signMessageWaves,
+  signMessageEthereum,
+  SIGN_MESSAGE,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { sidUtils } from '~/users/common'
 import { config } from '~/config'
+import { UserType } from '~/graphql/_generated-types'
 
 const networks = new Map<
   number | undefined | string,
   typeof createEthereumProvider
 >()
 
+type AuthData = {
+  sid: string
+  user: Omit<
+    UserType,
+    'billing' | 'locale' | 'blockchains' | 'metricChart' | 'tokenMetricChart'
+  >
+}
 ;[...config.CHAIN_BINANCE_IDS, ...config.CHAIN_ETHEREUM_IDS].forEach((num) =>
   networks.set(num, createEthereumProvider)
 )
@@ -64,7 +75,7 @@ export const $wallet = networkDomain
     {
       chainId: config.CHAIN_ETHEREUM_IDS[0],
       account: null,
-      provider: window.ethereum,
+      provider: null,
       connector: connectors.injected,
     },
     {
@@ -90,52 +101,74 @@ export const getNetwork = () => {
   }
 }
 
-export const useNetworkProvider = () => {
+export const useWalletNetwork = () => {
   const wallet = useStore($wallet)
 
-  return useMemo(() => {
-    const createProvider = networks.get(wallet.chainId)
-
-    return {
-      ...wallet,
-      networkProvider: createProvider?.(wallet.provider),
-    }
-  }, [wallet])
+  return useMemo(() => wallet, [wallet])
 }
 
-const MESSAGE = 'hello!'
+export const signMessageWavesFx = networkDomain.createEffect({
+  name: 'signMessageWavesFx',
+  handler: async (params: { provider: unknown; account: string }) => {
+    const signedMessageData = await signMessageWaves(
+      params.provider,
+      params.account,
+      SIGN_MESSAGE
+    )
 
-export const signMessageFx = networkDomain.createEffect({
-  name: 'signMessage',
-  handler: async () => {
-    const network = getNetwork()
+    return walletApi.authWaves(signedMessageData)
+  },
+})
 
-    const signer = network.networkProvider?.getSigner()
+export const signMessageEthereumFx = networkDomain.createEffect({
+  name: 'signMessageEthereumFx',
+  handler: async (params: {
+    chainId: string | number
+    account: string
+    provider: unknown
+  }) => {
+    const signedMessageData = await signMessageEthereum(
+      createEthereumProvider(params.provider),
+      params.account,
+      SIGN_MESSAGE
+    )
 
-    if (sidUtils.get() || !signer || !network.account) return
-
-    const signature = await signer.signMessage(MESSAGE)
-
-    if (!signature) return
-
-    const data = await walletApi.authEth({
-      network: String(network.chainId),
-      signature,
-      message: MESSAGE,
-      address: network.account,
+    return walletApi.authEth({
+      network: String(params.chainId),
+      ...signedMessageData,
     })
+  },
+})
 
-    if (!data) return
-
+export const saveUserFx = networkDomain.createEffect({
+  name: 'saveUserFx',
+  handler: async (data: AuthData) => {
     sidUtils.set(data.sid)
 
     return data.user
   },
 })
 
+guard({
+  clock: signMessageEthereumFx.doneData,
+  filter: (clock): clock is AuthData => Boolean(clock),
+  target: saveUserFx,
+})
+
+guard({
+  clock: signMessageWavesFx.doneData,
+  filter: (clock): clock is AuthData => Boolean(clock),
+  target: saveUserFx,
+})
+
+export const signMessageFx = networkDomain.createEffect({
+  name: 'signMessageFx',
+  handler: getNetwork,
+})
+
 sample({
   source: $wallet.map(({ connector }) => connector),
-  clock: signMessageFx.failData,
+  clock: [signMessageEthereumFx.fail, signMessageWavesFx.fail],
   target: diactivateWalletFx,
   greedy: true,
 })
@@ -143,11 +176,26 @@ sample({
 guard({
   clock: $wallet,
   target: signMessageFx,
-  filter: ({ account }) => Boolean(account),
+  filter: ({ account }) => Boolean(account) && !sidUtils.get(),
   greedy: true,
 })
 
+split({
+  source: signMessageFx.doneData,
+  match: {
+    waves: ({ chainId, provider }) => chainId === 'waves' && Boolean(provider),
+    ethereum: ({ chainId, provider }) =>
+      typeof chainId === 'number' && Boolean(provider),
+  },
+  cases: {
+    waves: signMessageWavesFx,
+    ethereum: signMessageEthereumFx,
+  },
+})
+
 toastsService.forwardErrors(
+  signMessageEthereumFx.failData,
+  signMessageWavesFx.failData,
   signMessageFx.failData,
   diactivateWalletFx.failData,
   updateWalletFx.failData,

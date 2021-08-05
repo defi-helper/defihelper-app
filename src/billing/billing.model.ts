@@ -5,9 +5,10 @@ import Balance from '@defihelper/networks/abi/Balance.json'
 import { BigNumber, ethers } from 'ethers'
 import { createGate } from 'effector-react'
 
-import { networkModel } from '~/wallets/wallet-networks'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { toastsService } from '~/toasts'
+import { paths } from '~/paths'
 
 type ChainIdEnum = keyof typeof contracts
 
@@ -17,7 +18,7 @@ const isChainId = (chainId: unknown): chainId is ChainIdEnum =>
 export const billingDomain = createDomain('billingDomain')
 
 const createContract = () => {
-  const { chainId, networkProvider, account } = networkModel.getNetwork()
+  const { chainId, networkProvider, account } = walletNetworkModel.getNetwork()
 
   const chainIdString = String(chainId)
 
@@ -108,20 +109,22 @@ export const $billingBalance = billingDomain
   })
   .on(fetchBalanceFx.doneData, (_, payload) => payload)
 
-export const BillingGate = createGate({
+export const BillingGate = createGate<string>({
   domain: billingDomain,
   name: 'BillingGate',
 })
 
 guard({
-  source: networkModel.$wallet,
-  clock: [BillingGate.open, networkModel.$wallet],
-  filter: ({ account, chainId }) => Boolean(account && chainId),
+  source: walletNetworkModel.$wallet,
+  clock: [BillingGate.open, walletNetworkModel.$wallet.updates],
+  filter: ({ account, chainId }) =>
+    Boolean(account && chainId) &&
+    paths.billing === BillingGate.state.getState(),
   target: fetchBalanceFx,
 })
 
 guard({
-  source: networkModel.$wallet,
+  source: walletNetworkModel.$wallet,
   clock: [refundFx.done, depositFx.done],
   filter: ({ account, chainId }) => Boolean(account && chainId),
   target: fetchBalanceFx,

@@ -43,9 +43,9 @@ export class WavesExchangeConnector extends AbstractConnector {
 
     try {
       if (!this.account) {
-        const userData = await waves.login()
+        const { address } = await waves.login()
 
-        this.account = userData.address
+        this.account = address
       }
 
       if (!this.provider) {

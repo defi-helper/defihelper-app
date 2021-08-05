@@ -21,7 +21,7 @@ export const ProtocolConnectedList: React.VFC<ProtocolConnectedListProps> =
   () => {
     const classes = useStyles()
 
-    const protocols = useStore(model.$protocolList)
+    const protocols = useStore(model.$protocolConnectedList)
 
     return protocols.length ? (
       <List>

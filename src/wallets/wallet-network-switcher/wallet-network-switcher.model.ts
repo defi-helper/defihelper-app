@@ -4,7 +4,7 @@ import { shallowEqual } from 'fast-equals'
 
 import { isWavesAddress } from '~/common/is-waves-address'
 import { NETWORKS, Network, connectors } from '~/wallets/common'
-import { networkModel } from '~/wallets/wallet-networks'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 const domain = createDomain('walletNetworkSwitcher')
 
@@ -30,14 +30,18 @@ export const $currentNetwork = domain
   )
 
 guard({
-  clock: networkModel.activateWalletFx.doneData.map(({ chainId }) => chainId),
+  clock: walletNetworkModel.activateWalletFx.doneData.map(
+    ({ chainId }) => chainId
+  ),
   filter: (chainId): chainId is number | string => Boolean(chainId),
   target: activateNetworkFx,
   greedy: true,
 })
 
 guard({
-  clock: networkModel.updateWalletFx.doneData.map(({ chainId }) => chainId),
+  clock: walletNetworkModel.updateWalletFx.doneData.map(
+    ({ chainId }) => chainId
+  ),
   filter: (chainId): chainId is number | string => Boolean(chainId),
   target: activateNetworkFx,
   greedy: true,
@@ -51,19 +55,21 @@ const activateEthereumFx = domain.createEffect({
     fn: () => Promise<unknown>
   }) => {
     if (!params.account || (params.account && isWavesAddress(params.account))) {
-      return networkModel.activateWalletFx({ connector: params.connector })
+      return walletNetworkModel.activateWalletFx({
+        connector: params.connector,
+      })
     }
 
     await params.fn()
 
-    return networkModel.activateWalletFx({ connector: params.connector })
+    return walletNetworkModel.activateWalletFx({ connector: params.connector })
   },
 })
 
 const activateWavesFx = domain.createEffect({
   name: 'activateWavesFx',
   handler: (connector: AbstractConnector) =>
-    networkModel.activateWalletFx({ connector }),
+    walletNetworkModel.activateWalletFx({ connector }),
 })
 
 export const activateWaves = domain.createEvent('activateWaves')
@@ -72,14 +78,14 @@ export const activateEthereum =
   domain.createEvent<() => Promise<unknown>>('activateEthereum')
 
 sample({
-  source: networkModel.$wallet,
+  source: walletNetworkModel.$wallet,
   clock: activateWaves,
   fn: () => connectors.wavesKepper,
   target: activateWavesFx,
 })
 
 sample({
-  source: networkModel.$wallet,
+  source: walletNetworkModel.$wallet,
   clock: activateEthereum,
   fn: ({ account = null }, clock) => ({
     account,

@@ -26,7 +26,7 @@ import { useDialog } from '~/common/dialog'
 import { WalletList } from '~/wallets/wallet-list'
 import { cutAccount } from '~/common/cut-account'
 import { WalletDetail } from '~/wallets/wallet-detail'
-import { networkModel } from '~/wallets/wallet-networks'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { ProtocolConnectedList } from '~/protocols/protocol-connected-list'
 import { WalletNetworkSwitcher } from '~/wallets/wallet-network-switcher'
 
@@ -93,7 +93,7 @@ const MENU = [
 ]
 
 export const MainLayout: React.FC<MainLayoutProps> = (props) => {
-  const { account } = networkModel.useNetworkProvider()
+  const { account } = walletNetworkModel.useWalletNetwork()
 
   const classes = useStyles()
 

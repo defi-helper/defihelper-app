@@ -7,12 +7,14 @@ const ERROR_MESSAGE = 'Account is null'
 
 type Options = {
   authData: WavesKeeper.IAuthData
+  nodeUrl?: string
+  signerUrl?: string
 }
 
 export class WavesKeeperConnector extends AbstractConnector {
   private account: string | null = null
 
-  private authData: WavesKeeper.IAuthData
+  private options: Options
 
   constructor(options: Options) {
     super()
@@ -20,7 +22,7 @@ export class WavesKeeperConnector extends AbstractConnector {
     this.activate = this.activate.bind(this)
     this.getAccount = this.getAccount.bind(this)
 
-    this.authData = options.authData
+    this.options = options
   }
 
   async activate() {
@@ -37,7 +39,7 @@ export class WavesKeeperConnector extends AbstractConnector {
     }
 
     if (!this.account) {
-      const state = await window.WavesKeeper.auth(this.authData)
+      const state = await window.WavesKeeper.auth(this.options.authData)
 
       this.account = state.address
 

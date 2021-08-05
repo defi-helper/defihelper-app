@@ -2422,30 +2422,44 @@ export type AuthEthMutationVariables = Exact<{
 export type AuthEthMutation = { __typename?: 'Mutation' } & {
   authEth?: Maybe<
     { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
-        user: { __typename?: 'UserType' } & Pick<
-          UserType,
-          'id' | 'role' | 'createdAt'
-        > & {
-            wallets: { __typename?: 'WalletListType' } & {
-              list?: Maybe<
-                Array<
-                  { __typename?: 'WalletType' } & Pick<
-                    WalletType,
-                    | 'id'
-                    | 'blockchain'
-                    | 'network'
-                    | 'address'
-                    | 'publicKey'
-                    | 'createdAt'
-                  >
-                >
-              >
-              pagination: { __typename?: 'Pagination' } & Pick<
-                Pagination,
-                'count'
-              >
-            }
-          }
+        user: { __typename?: 'UserType' } & UserFragmentFragment
       }
   >
 }
+
+export type AuthWavesMutationVariables = Exact<{
+  input: AuthWavesInputType
+  filter?: Maybe<WalletListFilterInputType>
+  sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
+  pagination?: Maybe<WalletListPaginationInputType>
+}>
+
+export type AuthWavesMutation = { __typename?: 'Mutation' } & {
+  authWaves?: Maybe<
+    { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
+        user: { __typename?: 'UserType' } & UserFragmentFragment
+      }
+  >
+}
+
+export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
+  UserType,
+  'id' | 'role' | 'createdAt'
+> & {
+    wallets: { __typename?: 'WalletListType' } & {
+      list?: Maybe<
+        Array<
+          { __typename?: 'WalletType' } & Pick<
+            WalletType,
+            | 'id'
+            | 'blockchain'
+            | 'network'
+            | 'address'
+            | 'publicKey'
+            | 'createdAt'
+          >
+        >
+      >
+      pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+    }
+  }

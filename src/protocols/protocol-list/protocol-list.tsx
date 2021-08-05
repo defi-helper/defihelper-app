@@ -1,5 +1,5 @@
 import { makeStyles, Paper } from '@material-ui/core'
-import { Link as ReactRouterLink } from 'react-router-dom'
+import { Link as ReactRouterLink, useLocation } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
 import Button from '@material-ui/core/Button'
 import { useMemo } from 'react'
@@ -51,6 +51,8 @@ const useStyles = makeStyles(() => ({
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const classes = useStyles()
 
+  const location = useLocation()
+
   const ability = useAbility()
 
   const [openConfirm] = useDialog(ConfirmDialog)
@@ -73,7 +75,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     [protocolList, ability]
   )
 
-  useGate(model.ProtocolListGate)
+  useGate(model.ProtocolListGate, location.pathname)
 
   return (
     <MainLayout>

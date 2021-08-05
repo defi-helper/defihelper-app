@@ -2,8 +2,10 @@ import { getAPIClient } from '~/api'
 import {
   AuthEthMutation,
   AuthEthMutationVariables,
+  AuthWavesMutation,
+  AuthWavesMutationVariables,
 } from '~/graphql/_generated-types'
-import { AUTH_ETH } from './graphql'
+import { AUTH_ETH, AUTH_WAVES } from './graphql'
 
 export const walletApi = {
   authEth: (input: AuthEthMutationVariables['input']) =>
@@ -13,4 +15,12 @@ export const walletApi = {
       })
       .toPromise()
       .then(({ data }) => data?.authEth),
+
+  authWaves: (input: AuthWavesMutationVariables['input']) =>
+    getAPIClient()
+      .mutation<AuthWavesMutation, AuthWavesMutationVariables>(AUTH_WAVES, {
+        input,
+      })
+      .toPromise()
+      .then(({ data }) => data?.authWaves),
 }

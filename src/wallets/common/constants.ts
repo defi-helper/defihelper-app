@@ -121,3 +121,5 @@ export const NETWORKS: Network[] = [
     type: 'Networks' as const,
   },
 ]
+
+export const SIGN_MESSAGE = 'hello!'

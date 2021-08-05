@@ -13,7 +13,7 @@ import { BlockchainEnum } from '~/graphql/_generated-types'
 import { toastsService } from '~/toasts'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
-import { networkModel } from '~/wallets/wallet-networks'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type StakingAdapter = {
   wallet: null | AdapterWallet
@@ -36,7 +36,7 @@ type Params = { protocolAdapter: string; contracts: Contract[] }
 export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect({
   name: 'fetchContractAdaptersFx',
   handler: (params: Params) => {
-    const network = networkModel.getNetwork()
+    const network = walletNetworkModel.getNetwork()
 
     return Promise.all(
       params.contracts.map(async (contract) => {
@@ -85,7 +85,7 @@ export const StakingAdaptersGate = createGate<Params>({
 })
 
 sample({
-  source: networkModel.$wallet,
+  source: walletNetworkModel.$wallet,
   clock: StakingAdaptersGate.open,
   fn: (source, clock) => ({ ...clock, provider: source.provider }),
   target: fetchContractAdaptersFx,
