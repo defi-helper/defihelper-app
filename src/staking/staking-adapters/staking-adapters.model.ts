@@ -1,6 +1,6 @@
 import { guard, sample, createDomain, combine } from 'effector-logger'
 import omit from 'lodash.omit'
-import { debounce } from 'patronum/debounce'
+import { createGate } from 'effector-react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import {
@@ -12,7 +12,6 @@ import {
 import { BlockchainEnum } from '~/graphql/_generated-types'
 import { toastsService } from '~/toasts'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
-import * as stakingListModel from '~/staking/staking-list/staking-list.model'
 import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 import { networkModel } from '~/wallets/wallet-networks'
 
@@ -27,7 +26,7 @@ export type StakingAdapter = {
 
 const stakingAdaptersDomain = createDomain('stakingAdaptersDomain')
 
-type Contract = {
+export type Contract = {
   address: string
   adapter: string
 }
@@ -80,26 +79,16 @@ const $adapters = stakingAdaptersDomain
   .createStore<StakingAdapter[]>([], { name: '$adapters' })
   .on(fetchContractAdaptersFx.doneData, (_, payload) => payload)
 
-const fetchStakingListDone = sample({
-  clock: stakingListModel.fetchStakingListFx.done,
-  fn: ({ result }) => ({
-    protocolAdapter: result.adapter,
-    contracts: result.contracts.map(({ address, adapter }) => ({
-      address,
-      adapter,
-    })),
-  }),
-  greedy: true,
+export const StakingAdaptersGate = createGate<Params>({
+  domain: stakingAdaptersDomain,
+  name: 'StakingAdaptersGate',
 })
 
 sample({
   source: networkModel.$wallet,
-  clock: guard({
-    clock: fetchStakingListDone,
-    filter: (params): params is Params => Boolean(params.protocolAdapter),
-  }),
+  clock: StakingAdaptersGate.open,
   fn: (source, clock) => ({ ...clock, provider: source.provider }),
-  target: debounce({ source: fetchContractAdaptersFx, timeout: 300 }),
+  target: fetchContractAdaptersFx,
   greedy: true,
 })
 
@@ -216,7 +205,7 @@ const fetchTokensFx = stakingAdaptersDomain.createEffect({
   name: 'fetchTokensFx',
   handler: (params: {
     blockchain?: BlockchainEnum
-    network?: number
+    network?: number | string
     addresses: string[]
   }) => {
     return stakingApi.tokens({

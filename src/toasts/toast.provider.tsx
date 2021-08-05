@@ -52,39 +52,41 @@ export const ToastProvider: React.FC<ToastProviderProps> = (props) => {
 
   return (
     <>
-      <Portal>
-        <div className={classes.root}>
-          {toasts.map((toast) => {
-            const isDefault = toast.variant === 'default'
+      {Boolean(toasts.length) && (
+        <Portal>
+          <div className={classes.root}>
+            {toasts.map((toast) => {
+              const isDefault = toast.variant === 'default'
 
-            return (
-              <Snackbar
-                open
-                autoHideDuration={DURATION}
-                key={toast.key}
-                message={isDefault ? toast.message : undefined}
-                className={classes.toast}
-                ClickAwayListenerProps={{ onClickAway: () => {} }}
-                onClick={handleClose(toast.key)}
-                onClose={handleClose(toast.key)}
-              >
-                {!isDefault ? (
-                  <Alert
-                    onClose={handleClose(toast.key)}
-                    variant="filled"
-                    severity={
-                      toast.variant === 'default' ? undefined : toast.variant
-                    }
-                    elevation={6}
-                  >
-                    {toast.message}
-                  </Alert>
-                ) : undefined}
-              </Snackbar>
-            )
-          })}
-        </div>
-      </Portal>
+              return (
+                <Snackbar
+                  open
+                  autoHideDuration={DURATION}
+                  key={toast.key}
+                  message={isDefault ? toast.message : undefined}
+                  className={classes.toast}
+                  ClickAwayListenerProps={{ onClickAway: () => {} }}
+                  onClick={handleClose(toast.key)}
+                  onClose={handleClose(toast.key)}
+                >
+                  {!isDefault ? (
+                    <Alert
+                      onClose={handleClose(toast.key)}
+                      variant="filled"
+                      severity={
+                        toast.variant === 'default' ? undefined : toast.variant
+                      }
+                      elevation={6}
+                    >
+                      {toast.message}
+                    </Alert>
+                  ) : undefined}
+                </Snackbar>
+              )
+            })}
+          </div>
+        </Portal>
+      )}
       {props.children}
     </>
   )

@@ -1,20 +1,42 @@
-import { cloneElement, forwardRef } from 'react'
 import clsx from 'clsx'
+import { forwardRef } from 'react'
 
-export type ButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
-  as?: React.ReactElement
+import { ButtonBase, ButtonBaseProps } from '../button-base'
+import * as styles from './button.css'
+
+export type ButtonProps = Omit<ButtonBaseProps, 'size'> & {
+  variant?: 'contained' | 'outlined'
+  color?: 'primary' | 'secondary' | 'pink'
+  loading?: boolean
+  size?: 'small' | 'medium' | 'large'
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button(props, ref) {
-    // eslint-disable-next-line jsx-a11y/control-has-associated-label
-    const { as = <button type="button" />, className, ...restOfProps } = props
+  function Button(
+    {
+      className,
+      children,
+      loading,
+      variant = 'contained',
+      color = 'primary',
+      size = 'large',
+      ...props
+    },
+    ref
+  ) {
+    const classNames = clsx(
+      styles.root,
+      className,
+      styles.varinats[variant],
+      styles.colors[color],
+      styles.sizes[size]
+    )
 
-    return cloneElement(as, {
-      ...restOfProps,
-      ...as.props,
-      ref,
-      className: clsx(className, as.props.className),
-    })
+    return (
+      <ButtonBase className={classNames} ref={ref} {...props}>
+        {loading && 'loading...'}
+        {!loading && children}
+      </ButtonBase>
+    )
   }
 )

@@ -17,7 +17,7 @@ export const contractsEventListDomain = createDomain('contractsEventList')
 type GateState = {
   protocolId: string
   blockchain?: BlockchainEnum
-  network?: number
+  network?: number | string
 }
 
 export const fetchStakingListFx = stakingListDomain.createEffect({
@@ -32,7 +32,9 @@ export const fetchStakingListFx = stakingListDomain.createEffect({
             contractFilter: {
               blockchain: {
                 protocol: params.blockchain,
-                ...(params.network ? { network: String(params.network) } : {}),
+                ...(params.network !== 'waves'
+                  ? { network: String(params.network) }
+                  : {}),
               },
             },
           }
@@ -111,6 +113,22 @@ const $contractList = stakingListDomain
     return state.filter(({ id }) => id !== payload)
   })
 
+export const openContract =
+  stakingListDomain.createEvent<string>('openContract')
+
+export const $openedContract = stakingListDomain
+  .createStore<string | null>(null, {
+    name: '$openedContract',
+  })
+  .on(openContract, (_, payload) => payload)
+  .on(walletNetworkSwitcherModel.activateNetwork, () => null)
+
+export const $protocolAdapter = stakingListDomain
+  .createStore<string | null>(null, {
+    name: '$protocolAdapter',
+  })
+  .on(fetchStakingListFx.doneData, (_, { adapter }) => adapter)
+
 const $connectedContracts = stakingListDomain
   .createStore<Record<string, boolean>>(
     {},
@@ -172,17 +190,13 @@ export const StakingListPagination = createPagination({
 })
 
 const fetchStakingList = sample({
-  source: [
-    walletNetworkSwitcherModel.$currentNetwork,
-    StakingListPagination.state,
-  ],
+  source: StakingListPagination.state,
   clock: [
     walletNetworkSwitcherModel.$currentNetwork.updates,
     StakingListGate.open,
     StakingListPagination.updates,
   ],
-  fn: ([currentNetwork, pagination]) => ({
-    ...currentNetwork,
+  fn: (pagination) => ({
     ...pagination,
     ...StakingListGate.state.getState(),
   }),
@@ -196,7 +210,8 @@ guard({
 })
 
 sample({
-  clock: fetchStakingListFx.done,
+  source: fetchStakingListFx.done,
+  clock: [fetchStakingListFx.done, walletNetworkSwitcherModel.$currentNetwork],
   fn: ({ params }) => params,
   target: fetchConnectedContractsFx,
   greedy: true,

@@ -1,6 +1,6 @@
 import { createDomain } from 'effector-logger'
-import { history } from '~/common/history'
 
+import { history } from '~/common/history'
 import { ProtocolUpdateMutationVariables } from '~/graphql/_generated-types'
 import { toastsService } from '~/toasts'
 import { paths } from '~/paths'

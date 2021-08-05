@@ -22,6 +22,15 @@ export type Scalars = {
   UuidType: string
 }
 
+export type AddWalletInputType = {
+  /** Blockchain */
+  blockchain: BlockchainEnum
+  /** Blockchain network id */
+  network: Scalars['String']
+  /** Wallet address */
+  address: Scalars['String']
+}
+
 export type AuthEthereumInputType = {
   /** Blockchain network id */
   network: Scalars['String']
@@ -39,6 +48,87 @@ export type AuthType = {
   user: UserType
   /** Session ID */
   sid: Scalars['String']
+}
+
+export type AuthWavesInputType = {
+  /** Blockchain network id */
+  network: Scalars['String']
+  /** Wallet public key */
+  publicKey: Scalars['String']
+  /** Wallet address */
+  address: Scalars['String']
+  /** Message */
+  message: Scalars['String']
+  /** Signed message */
+  signature: Scalars['String']
+}
+
+export type BillingBalanceType = {
+  __typename?: 'BillingBalanceType'
+  balance: Scalars['Float']
+  claim: Scalars['Float']
+  netBalance: Scalars['Float']
+}
+
+export enum BillingBillStatusEnum {
+  /** Bill awaiting confirmation */
+  Pending = 'pending',
+  /** Bill accepted */
+  Accepted = 'accepted',
+  /** Bill rejected */
+  Rejected = 'rejected',
+}
+
+export type BillingBillType = {
+  __typename?: 'BillingBillType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Blockchain type */
+  blockchain: BlockchainEnum
+  /** Blockchain network id */
+  network: Scalars['String']
+  /** Account */
+  account: Scalars['String']
+  /** Claimant */
+  claimant: Scalars['String']
+  /** Declarate gas fee */
+  claimGasFee: Scalars['Float']
+  /** Declarate protocol fee */
+  claimProtocolFee: Scalars['Float']
+  /** Confirmed gas fee */
+  gasFee?: Maybe<Scalars['Float']>
+  /** Confirmed protocol fee */
+  protocolFee?: Maybe<Scalars['Float']>
+  /** Balance of claim after make the bill */
+  claim: Scalars['Float']
+  /** Current status */
+  status: BillingBillStatusEnum
+  /** Transaction id */
+  tx: Scalars['String']
+  /** Date of created */
+  createdAt: Scalars['DateTimeType']
+  /** Date of last updated */
+  updatedAt: Scalars['DateTimeType']
+}
+
+export type BillingTransferType = {
+  __typename?: 'BillingTransferType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Blockchain type */
+  blockchain: BlockchainEnum
+  /** Blockchain network id */
+  network: Scalars['String']
+  /** Account */
+  account: Scalars['String']
+  /** Transfer amount (must be negative) */
+  amount: Scalars['Float']
+  /** Transaction id */
+  tx: Scalars['String']
+  /** Bill */
+  bill?: Maybe<BillingBillType>
+  /** Date of created */
+  createdAt: Scalars['DateTimeType']
 }
 
 export enum BlockchainEnum {
@@ -218,6 +308,8 @@ export enum MetricGroupEnum {
 export type Mutation = {
   __typename?: 'Mutation'
   authEth?: Maybe<AuthType>
+  authWaves?: Maybe<AuthType>
+  addWallet?: Maybe<AuthType>
   protocolCreate: ProtocolType
   protocolUpdate: ProtocolType
   protocolDelete: Scalars['Boolean']
@@ -236,10 +328,21 @@ export type Mutation = {
   userContactDelete: Scalars['Boolean']
   userEventSubscriptionCreate: UserEventSubscriptionType
   userEventSubscriptionDelete: Scalars['Boolean']
+  productCreate: StoreProductType
+  productUpdate: StoreProductType
+  productDelete: Scalars['Boolean']
 }
 
 export type MutationAuthEthArgs = {
   input: AuthEthereumInputType
+}
+
+export type MutationAuthWavesArgs = {
+  input: AuthWavesInputType
+}
+
+export type MutationAddWalletArgs = {
+  input: AddWalletInputType
 }
 
 export type MutationProtocolCreateArgs = {
@@ -317,6 +420,19 @@ export type MutationUserEventSubscriptionCreateArgs = {
 }
 
 export type MutationUserEventSubscriptionDeleteArgs = {
+  id: Scalars['UuidType']
+}
+
+export type MutationProductCreateArgs = {
+  input: StoreProductCreateInputType
+}
+
+export type MutationProductUpdateArgs = {
+  id: Scalars['UuidType']
+  input: StoreProductUpdateInputType
+}
+
+export type MutationProductDeleteArgs = {
   id: Scalars['UuidType']
 }
 
@@ -555,6 +671,7 @@ export type Query = {
   tokens: TokenListQuery
   tokenAlias?: Maybe<TokenAlias>
   tokensAlias: TokenAliasListQuery
+  products: StoreProductListQuery
 }
 
 export type QueryProtocolArgs = {
@@ -613,11 +730,157 @@ export type QueryTokensAliasArgs = {
   pagination?: Maybe<TokenAliasListPaginationInputType>
 }
 
+export type QueryProductsArgs = {
+  filter?: Maybe<StoreProductListQueryFilterInputType>
+  sort?: Maybe<Array<StoreProductListQuerySortInputType>>
+  pagination?: Maybe<StoreProductListQueryPaginationInputType>
+}
+
 export enum SortOrderEnum {
   /** Ascending */
   Asc = 'asc',
   /** Descending */
   Desc = 'desc',
+}
+
+export enum StoreProductCodeEnum {
+  /** Notification */
+  Notification = 'notification',
+}
+
+export type StoreProductCreateInputType = {
+  /** Number of blockchain */
+  number: Scalars['Int']
+  /** System code */
+  code: StoreProductCodeEnum
+  /** Name */
+  name: Scalars['String']
+  /** Description */
+  description: Scalars['String']
+  /** Price in USD */
+  priceUSD: Scalars['Float']
+  /** Amount of product */
+  amount: Scalars['Int']
+}
+
+export type StoreProductListQuery = {
+  __typename?: 'StoreProductListQuery'
+  /** Elements */
+  list?: Maybe<Array<StoreProductType>>
+  pagination: Pagination
+}
+
+export type StoreProductListQueryFilterInputType = {
+  code?: Maybe<Array<StoreProductCodeEnum>>
+  search?: Maybe<Scalars['String']>
+}
+
+export type StoreProductListQueryPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type StoreProductListQuerySortInputType = {
+  column: StoreProductListQuerySortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum StoreProductListQuerySortInputTypeColumnEnum {
+  Id = 'id',
+  Name = 'name',
+  CreatedAt = 'createdAt',
+}
+
+export type StoreProductType = {
+  __typename?: 'StoreProductType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Number of blockchain */
+  number: Scalars['Int']
+  /** System code */
+  code: StoreProductCodeEnum
+  /** Name */
+  name: Scalars['String']
+  /** Description */
+  description: Scalars['String']
+  /** Price in USD */
+  priceUSD: Scalars['Float']
+  /** Amount product */
+  amount: Scalars['Int']
+  purchases: StorePurchaseListType
+  /** Date of updated */
+  updatedAt: Scalars['DateTimeType']
+  /** Date of created */
+  createdAt: Scalars['DateTimeType']
+}
+
+export type StoreProductTypePurchasesArgs = {
+  filter?: Maybe<StorePurchaseListFilterInputType>
+  sort?: Maybe<Array<StorePurchaseListSortInputType>>
+  pagination?: Maybe<StorePurchaseListPaginationInputType>
+}
+
+export type StoreProductUpdateInputType = {
+  /** Number of blockchain */
+  number: Scalars['Int']
+  /** System code */
+  code: StoreProductCodeEnum
+  /** Name */
+  name: Scalars['String']
+  /** Description */
+  description: Scalars['String']
+  /** Price in USD */
+  priceUSD: Scalars['Float']
+  /** Amount of product */
+  amount: Scalars['Int']
+}
+
+export type StorePurchaseListFilterInputType = {
+  user?: Maybe<Scalars['UuidType']>
+}
+
+export type StorePurchaseListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type StorePurchaseListSortInputType = {
+  column: StorePurchaseListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum StorePurchaseListSortInputTypeColumnEnum {
+  Id = 'id',
+  CreatedAt = 'createdAt',
+}
+
+export type StorePurchaseListType = {
+  __typename?: 'StorePurchaseListType'
+  /** Elements */
+  list?: Maybe<Array<StorePurchaseType>>
+  pagination: Pagination
+}
+
+export type StorePurchaseType = {
+  __typename?: 'StorePurchaseType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Blockchain type */
+  blockchain: BlockchainEnum
+  /** Blockchain network id */
+  network: Scalars['String']
+  /** Account */
+  account: Scalars['String']
+  /** Amount product */
+  amount: Scalars['Int']
+  /** Transaction id */
+  tx: Scalars['String']
+  /** Date of created */
+  createdAt: Scalars['DateTimeType']
 }
 
 export type TokenAlias = {
@@ -759,6 +1022,86 @@ export type TokenType = {
   symbol: Scalars['String']
   /** Decimals */
   decimals: Scalars['Int']
+}
+
+export type UserBillingBillListFilterInputType = {
+  blockchain?: Maybe<BlockchainFilterInputType>
+  status?: Maybe<BillingBillStatusEnum>
+}
+
+export type UserBillingBillListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserBillingBillListSortInputType = {
+  column: UserBillingBillListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserBillingBillListSortInputTypeColumnEnum {
+  Id = 'id',
+  UpdatedAt = 'updatedAt',
+  CreatedAt = 'createdAt',
+}
+
+export type UserBillingBillListType = {
+  __typename?: 'UserBillingBillListType'
+  /** Elements */
+  list?: Maybe<Array<BillingBillType>>
+  pagination: Pagination
+}
+
+export type UserBillingTransferListFilterInputType = {
+  blockchain?: Maybe<BlockchainFilterInputType>
+  deposit?: Maybe<Scalars['Boolean']>
+  claim?: Maybe<Scalars['Boolean']>
+}
+
+export type UserBillingTransferListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserBillingTransferListSortInputType = {
+  column: UserBillingTransferListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserBillingTransferListSortInputTypeColumnEnum {
+  Id = 'id',
+  Amount = 'amount',
+  CreatedAt = 'createdAt',
+}
+
+export type UserBillingTransferListType = {
+  __typename?: 'UserBillingTransferListType'
+  /** Elements */
+  list?: Maybe<Array<BillingTransferType>>
+  pagination: Pagination
+}
+
+export type UserBillingType = {
+  __typename?: 'UserBillingType'
+  transfers: UserBillingTransferListType
+  bills: UserBillingBillListType
+  balance: BillingBalanceType
+}
+
+export type UserBillingTypeTransfersArgs = {
+  filter?: Maybe<UserBillingTransferListFilterInputType>
+  sort?: Maybe<Array<UserBillingTransferListSortInputType>>
+  pagination?: Maybe<UserBillingTransferListPaginationInputType>
+}
+
+export type UserBillingTypeBillsArgs = {
+  filter?: Maybe<UserBillingBillListFilterInputType>
+  sort?: Maybe<Array<UserBillingBillListSortInputType>>
+  pagination?: Maybe<UserBillingBillListPaginationInputType>
 }
 
 export type UserBlockchainType = {
@@ -1026,6 +1369,87 @@ export enum UserRoleEnum {
   Admin = 'admin',
 }
 
+export type UserStoreBalanceType = {
+  __typename?: 'UserStoreBalanceType'
+  /** Available nofications count */
+  notifications: Scalars['Int']
+}
+
+export type UserStoreProductListFilterInputType = {
+  code?: Maybe<Array<StoreProductCodeEnum>>
+}
+
+export type UserStoreProductListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserStoreProductListSortInputType = {
+  column: UserStoreProductListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserStoreProductListSortInputTypeColumnEnum {
+  Id = 'id',
+  CreatedAt = 'createdAt',
+}
+
+export type UserStoreProductListType = {
+  __typename?: 'UserStoreProductListType'
+  /** Elements */
+  list?: Maybe<Array<StoreProductType>>
+  pagination: Pagination
+}
+
+export type UserStorePurchaseListFilterInputType = {
+  product?: Maybe<Array<Scalars['UuidType']>>
+}
+
+export type UserStorePurchaseListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserStorePurchaseListSortInputType = {
+  column: UserStorePurchaseListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserStorePurchaseListSortInputTypeColumnEnum {
+  Id = 'id',
+  CreatedAt = 'createdAt',
+}
+
+export type UserStorePurchaseListType = {
+  __typename?: 'UserStorePurchaseListType'
+  /** Elements */
+  list?: Maybe<Array<StorePurchaseType>>
+  pagination: Pagination
+}
+
+export type UserStoreType = {
+  __typename?: 'UserStoreType'
+  purchases: UserStorePurchaseListType
+  products: UserStoreProductListType
+  balance: UserStoreBalanceType
+}
+
+export type UserStoreTypePurchasesArgs = {
+  filter?: Maybe<UserStorePurchaseListFilterInputType>
+  sort?: Maybe<Array<UserStorePurchaseListSortInputType>>
+  pagination?: Maybe<UserStorePurchaseListPaginationInputType>
+}
+
+export type UserStoreTypeProductsArgs = {
+  filter?: Maybe<UserStoreProductListFilterInputType>
+  sort?: Maybe<Array<UserStoreProductListSortInputType>>
+  pagination?: Maybe<UserStoreProductListPaginationInputType>
+}
+
 export type UserTokenMetricChartFilterInputType = {
   /** Target token alias */
   tokenAlias?: Maybe<UserMetricsTokenAliasFilterInputType>
@@ -1071,6 +1495,8 @@ export type UserType = {
   blockchains: Array<UserBlockchainType>
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
+  billing: UserBillingType
+  store: UserStoreType
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -1135,6 +1561,84 @@ export type VoteType = {
   updatedAt: Scalars['DateTimeType']
   /** Date of created */
   createdAt: Scalars['DateTimeType']
+}
+
+export type WalletBillingBillListFilterInputType = {
+  status?: Maybe<BillingBillStatusEnum>
+}
+
+export type WalletBillingBillListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type WalletBillingBillListSortInputType = {
+  column: WalletBillingBillListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum WalletBillingBillListSortInputTypeColumnEnum {
+  Id = 'id',
+  UpdatedAt = 'updatedAt',
+  CreatedAt = 'createdAt',
+}
+
+export type WalletBillingBillListType = {
+  __typename?: 'WalletBillingBillListType'
+  /** Elements */
+  list?: Maybe<Array<BillingBillType>>
+  pagination: Pagination
+}
+
+export type WalletBillingTransferListFilterInputType = {
+  deposit?: Maybe<Scalars['Boolean']>
+  claim?: Maybe<Scalars['Boolean']>
+}
+
+export type WalletBillingTransferListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type WalletBillingTransferListSortInputType = {
+  column: WalletBillingTransferListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum WalletBillingTransferListSortInputTypeColumnEnum {
+  Id = 'id',
+  Amount = 'amount',
+  CreatedAt = 'createdAt',
+}
+
+export type WalletBillingTransferListType = {
+  __typename?: 'WalletBillingTransferListType'
+  /** Elements */
+  list?: Maybe<Array<BillingTransferType>>
+  pagination: Pagination
+}
+
+export type WalletBillingType = {
+  __typename?: 'WalletBillingType'
+  transfers: WalletBillingTransferListType
+  bills: WalletBillingBillListType
+  balance: BillingBalanceType
+}
+
+export type WalletBillingTypeTransfersArgs = {
+  filter?: Maybe<WalletBillingTransferListFilterInputType>
+  sort?: Maybe<Array<WalletBillingTransferListSortInputType>>
+  pagination?: Maybe<WalletBillingTransferListPaginationInputType>
+}
+
+export type WalletBillingTypeBillsArgs = {
+  filter?: Maybe<WalletBillingBillListFilterInputType>
+  sort?: Maybe<Array<WalletBillingBillListSortInputType>>
+  pagination?: Maybe<WalletBillingBillListPaginationInputType>
 }
 
 export type WalletContractListFilterInputType = {
@@ -1271,6 +1775,7 @@ export type WalletType = {
   contracts: WalletContractListType
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
+  billing: WalletBillingType
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -1295,6 +1800,33 @@ export type WalletTypeTokenMetricChartArgs = {
   filter?: Maybe<WalletTokenMetricChartFilterInputType>
   sort?: Maybe<Array<WalletTokenMetricChartSortInputType>>
   pagination?: Maybe<WalletTokenMetricChartPaginationInputType>
+}
+
+export type BillingQueryVariables = Exact<{ [key: string]: never }>
+
+export type BillingQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      billing: { __typename?: 'UserBillingType' } & {
+        balance: { __typename?: 'BillingBalanceType' } & Pick<
+          BillingBalanceType,
+          'balance' | 'claim' | 'netBalance'
+        >
+      }
+    }
+  >
+}
+
+export type AddWalletMutationVariables = Exact<{
+  input: AddWalletInputType
+}>
+
+export type AddWalletMutation = { __typename?: 'Mutation' } & {
+  addWallet?: Maybe<
+    { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
+        user: { __typename?: 'UserType' } & Pick<UserType, 'id'>
+      }
+  >
 }
 
 export type BlockChainsQueryVariables = Exact<{

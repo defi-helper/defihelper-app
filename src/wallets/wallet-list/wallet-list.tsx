@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
@@ -9,21 +8,13 @@ import { AbstractConnector } from '@web3-react/abstract-connector'
 import { Dialog } from '~/common/dialog'
 import { connectorsByName } from '~/wallets/common'
 import { networkModel } from '~/wallets/wallet-networks'
+import * as styles from './wallet-list.css'
 
 export type WalletListProps = {
   onClick: () => void
 }
 
-const useStyles = makeStyles({
-  icon: {
-    width: 40,
-    height: 40,
-  },
-})
-
 export const WalletList: React.VFC<WalletListProps> = (props) => {
-  const classes = useStyles()
-
   const handleActivate = (connector: AbstractConnector) => () => {
     networkModel.activateWalletFx({ connector })
   }
@@ -42,7 +33,7 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
             onClick={handleActivate(wallet.connector)}
           >
             <ListItemIcon>
-              <wallet.logo className={classes.icon} />
+              <wallet.logo className={styles.icon} />
             </ListItemIcon>
             <ListItemText primary={walletName} />
           </ListItem>

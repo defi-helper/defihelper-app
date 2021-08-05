@@ -1,16 +1,19 @@
 import { useParams } from 'react-router-dom'
-import { useGate, useStoreMap } from 'effector-react'
+import { useGate, useStore, useStoreMap } from 'effector-react'
 
 import { MainLayout } from '~/layouts'
 import { StakingContractForm, FormValues } from '~/staking/common'
 import * as model from './staking-update.model'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
+import { useQueryParams } from '~/common/hooks'
+import { stakingCreateModel } from '../staking-create'
 
 export const StakingUpdate: React.VFC<unknown> = () => {
   const params = useParams<{
     protocolId: string
     stakingId: string
   }>()
+  const queryParams = useQueryParams()
 
   const staking = useStoreMap({
     store: stakingListModel.$contracts,
@@ -19,7 +22,15 @@ export const StakingUpdate: React.VFC<unknown> = () => {
       contracts.find(({ id }) => id === stakingId) ?? null,
   })
 
+  const loading = useStore(model.stakingUpdateFx.pending)
+
+  const adapterKeys = useStore(stakingCreateModel.$adapterKeys)
+
   useGate(stakingListModel.StakingListGate, params)
+  useGate(
+    stakingCreateModel.StakingCreateGate,
+    queryParams.get('protocol-adapter')
+  )
 
   const defaultValues = staking
     ? {
@@ -42,8 +53,9 @@ export const StakingUpdate: React.VFC<unknown> = () => {
   return (
     <MainLayout>
       <StakingContractForm
-        loading={false}
+        loading={loading}
         defaultValues={defaultValues}
+        adapterKeys={adapterKeys}
         onSubmit={handleUpdate}
       />
     </MainLayout>

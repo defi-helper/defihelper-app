@@ -33,4 +33,8 @@ export const paths = {
   userEventSubscriptions: {
     list: '/user-event-subscriptions',
   },
+
+  betaAccess: '/beta-access',
+
+  billing: '/billing',
 } as const
