@@ -12,6 +12,7 @@ import {
   connectors,
   signMessageWaves,
   signMessageEthereum,
+  SIGN_MESSAGE,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { sidUtils } from '~/users/common'
@@ -106,15 +107,13 @@ export const useWalletNetwork = () => {
   return useMemo(() => wallet, [wallet])
 }
 
-const MESSAGE = 'hello!'
-
 export const signMessageWavesFx = networkDomain.createEffect({
   name: 'signMessageWavesFx',
   handler: async (params: { provider: unknown; account: string }) => {
     const signedMessageData = await signMessageWaves(
       params.provider,
       params.account,
-      MESSAGE
+      SIGN_MESSAGE
     )
 
     return walletApi.authWaves(signedMessageData)
@@ -131,7 +130,7 @@ export const signMessageEthereumFx = networkDomain.createEffect({
     const signedMessageData = await signMessageEthereum(
       createEthereumProvider(params.provider),
       params.account,
-      MESSAGE
+      SIGN_MESSAGE
     )
 
     return walletApi.authEth({
