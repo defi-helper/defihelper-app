@@ -22,7 +22,13 @@ import { UserType } from '~/graphql/_generated-types'
 const networks = new Map<
   number | undefined | string,
   typeof createEthereumProvider
->()
+>(
+  [
+    ...config.CHAIN_BINANCE_IDS,
+    ...config.CHAIN_ETHEREUM_IDS,
+    ...config.CHAIN_POLYGON_IDS,
+  ].map((num) => [num, createEthereumProvider])
+)
 
 type AuthData = {
   sid: string
@@ -31,9 +37,6 @@ type AuthData = {
     'billing' | 'locale' | 'blockchains' | 'metricChart' | 'tokenMetricChart'
   >
 }
-;[...config.CHAIN_BINANCE_IDS, ...config.CHAIN_ETHEREUM_IDS].forEach((num) =>
-  networks.set(num, createEthereumProvider)
-)
 
 export const networkDomain = createDomain('network')
 

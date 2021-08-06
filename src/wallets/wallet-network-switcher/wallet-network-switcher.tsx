@@ -7,7 +7,7 @@ import { useStore } from 'effector-react'
 import { useDialog } from '~/common/dialog'
 import { ChangeNetworkDialog } from '~/common/change-network-dialog'
 import { useAbility } from '~/users'
-import { Network, NETWORKS, setupBinance } from '~/wallets/common'
+import { Network, NETWORKS, setupBinance, setupPolygon } from '~/wallets/common'
 import * as model from './wallet-network-switcher.model'
 
 export type WalletNetworkSwitcherProps = {
@@ -34,6 +34,7 @@ export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
     const handlers: Record<string, () => Promise<unknown>> = {
       activateEthereum: async () => model.activateEthereum(openChangeNetwork),
       activateBinance: async () => model.activateEthereum(setupBinance),
+      activatePolygon: async () => model.activateEthereum(setupPolygon),
       activateWaves: async () => model.activateWaves(),
     }
 

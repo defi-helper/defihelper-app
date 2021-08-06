@@ -32,7 +32,7 @@ export const fetchStakingListFx = stakingListDomain.createEffect({
             contractFilter: {
               blockchain: {
                 protocol: params.blockchain,
-                ...(params.network !== 'waves'
+                ...(params.network && params.network !== 'waves'
                   ? { network: String(params.network) }
                   : {}),
               },

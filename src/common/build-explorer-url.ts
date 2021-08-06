@@ -7,6 +7,7 @@ const explorers: Record<string | number, string> = {
   5: 'https://goerli.etherscan.io/address',
   56: 'https://bscscan.com/address',
   97: 'https://testnet.bscscan.com/address',
+  137: 'https://polygonscan.com/address',
   waves: 'https://wavesexplorer.com/address',
   main: 'https://wavesexplorer.com/address',
 }

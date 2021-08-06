@@ -83,7 +83,11 @@ export type Network = {
   title: string
   blockchain?: BlockchainEnum
   network?: number | string
-  onClick?: 'activateEthereum' | 'activateBinance' | 'activateWaves'
+  onClick?:
+    | 'activateEthereum'
+    | 'activateBinance'
+    | 'activatePolygon'
+    | 'activateWaves'
   type: 'Networks' | 'AllNetworks'
 }
 
@@ -111,6 +115,13 @@ export const NETWORKS: Network[] = [
     blockchain: BlockchainEnum.Ethereum,
     network: config.CHAIN_BINANCE_IDS[0],
     onClick: 'activateBinance' as const,
+    type: 'Networks' as const,
+  },
+  {
+    title: 'Polygon',
+    blockchain: BlockchainEnum.Ethereum,
+    network: config.CHAIN_POLYGON_IDS[0],
+    onClick: 'activatePolygon' as const,
     type: 'Networks' as const,
   },
   {
