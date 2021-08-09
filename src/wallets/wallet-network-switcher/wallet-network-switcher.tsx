@@ -40,7 +40,7 @@ export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
     const handleChangeNetwork = (networkItem: Network) => () => {
       const changeNetwork = handlers[networkItem.onClick ?? '']
 
-      if (!changeNetwork) return
+      if (!changeNetwork) return model.activateNetwork(networkItem)
 
       changeNetwork()
         .then(handleClose)

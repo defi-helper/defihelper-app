@@ -1,5 +1,5 @@
 overwrite: true
-schema: "https://backend.defihelper.io/api"
+schema: "http://localhost:2000/api"
 documents: [
   './src/**/**/*.graphql.ts',
 ]
