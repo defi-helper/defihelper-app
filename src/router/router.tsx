@@ -24,8 +24,6 @@ import { ProposalUpdate } from '~/proposals/proposal-update'
 import { UserContactList } from '~/user-contacts'
 import { UserContactConfirmEmail } from '~/user-contacts/user-contact-confirm-email'
 import { UserEventSubscriptionList } from '~/user-event-subscriptions'
-import { BetaAccess } from '~/beta-access'
-import { config } from '~/config'
 import { Billing } from '~/billing'
 
 export type RouterProps = unknown
@@ -34,11 +32,7 @@ export const Router: React.VFC<RouterProps> = () => {
   return (
     <BrowserRouter history={history}>
       <Switch>
-        <Redirect
-          from={paths.main}
-          to={config.BETA ? paths.betaAccess : paths.protocols.list}
-          exact
-        />
+        <Redirect from={paths.main} to={paths.protocols.list} exact />
         <CanRoute
           action="create"
           subject="Protocol"
@@ -104,9 +98,6 @@ export const Router: React.VFC<RouterProps> = () => {
         </Route>
         <Route path={paths.userEventSubscriptions.list}>
           <UserEventSubscriptionList />
-        </Route>
-        <Route path={paths.betaAccess}>
-          <BetaAccess />
         </Route>
         <PrivateRoute path={paths.billing}>
           <Billing />
