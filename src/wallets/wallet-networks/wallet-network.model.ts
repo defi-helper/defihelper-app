@@ -116,7 +116,13 @@ export const signMessageWavesFx = networkDomain.createEffect({
       SIGN_MESSAGE
     )
 
-    return walletApi.authWaves(signedMessageData)
+    const data = await walletApi.authWaves(signedMessageData)
+
+    if (!data) {
+      throw new Error('user is null')
+    }
+
+    return data
   },
 })
 
@@ -133,10 +139,16 @@ export const signMessageEthereumFx = networkDomain.createEffect({
       SIGN_MESSAGE
     )
 
-    return walletApi.authEth({
+    const data = await walletApi.authEth({
       network: String(params.chainId),
       ...signedMessageData,
     })
+
+    if (!data) {
+      throw new Error('user is null')
+    }
+
+    return data
   },
 })
 

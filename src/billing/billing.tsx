@@ -7,6 +7,8 @@ import { useLocation } from 'react-router-dom'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { MainLayout } from '~/layouts'
 import { BillingForm } from './common'
+import { BillingHistory } from './billing-history'
+import { BillingBills } from './billing-bills'
 import * as model from './billing.model'
 
 export type BillingProps = {
@@ -63,6 +65,8 @@ export const Billing: React.VFC<BillingProps> = () => {
         onSubmit={handleRefund}
         key={refundKey}
       />
+      <BillingHistory />
+      <BillingBills />
     </MainLayout>
   )
 }

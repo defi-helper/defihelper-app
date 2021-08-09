@@ -1802,6 +1802,47 @@ export type WalletTypeTokenMetricChartArgs = {
   pagination?: Maybe<WalletTokenMetricChartPaginationInputType>
 }
 
+export type BillingBillsQueryVariables = Exact<{
+  filter?: Maybe<UserBillingBillListFilterInputType>
+  sort?: Maybe<
+    Array<UserBillingBillListSortInputType> | UserBillingBillListSortInputType
+  >
+  pagination?: Maybe<UserBillingBillListPaginationInputType>
+}>
+
+export type BillingBillsQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      billing: { __typename?: 'UserBillingType' } & {
+        bills: { __typename?: 'UserBillingBillListType' } & {
+          list?: Maybe<
+            Array<
+              { __typename?: 'BillingBillType' } & Pick<
+                BillingBillType,
+                | 'id'
+                | 'blockchain'
+                | 'network'
+                | 'account'
+                | 'claimant'
+                | 'claimGasFee'
+                | 'claimProtocolFee'
+                | 'gasFee'
+                | 'protocolFee'
+                | 'claim'
+                | 'status'
+                | 'tx'
+                | 'createdAt'
+                | 'updatedAt'
+              >
+            >
+          >
+          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+        }
+      }
+    }
+  >
+}
+
 export type BillingQueryVariables = Exact<{ [key: string]: never }>
 
 export type BillingQuery = { __typename?: 'Query' } & {
@@ -1812,6 +1853,61 @@ export type BillingQuery = { __typename?: 'Query' } & {
           BillingBalanceType,
           'balance' | 'claim' | 'netBalance'
         >
+      }
+    }
+  >
+}
+
+export type BillingHistoryQueryVariables = Exact<{
+  filter?: Maybe<UserBillingTransferListFilterInputType>
+  sort?: Maybe<
+    | Array<UserBillingTransferListSortInputType>
+    | UserBillingTransferListSortInputType
+  >
+  pagination?: Maybe<UserBillingTransferListPaginationInputType>
+}>
+
+export type BillingHistoryQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      billing: { __typename?: 'UserBillingType' } & {
+        transfers: { __typename?: 'UserBillingTransferListType' } & {
+          list?: Maybe<
+            Array<
+              { __typename?: 'BillingTransferType' } & Pick<
+                BillingTransferType,
+                | 'id'
+                | 'blockchain'
+                | 'network'
+                | 'account'
+                | 'amount'
+                | 'tx'
+                | 'createdAt'
+              > & {
+                  bill?: Maybe<
+                    { __typename?: 'BillingBillType' } & Pick<
+                      BillingBillType,
+                      | 'id'
+                      | 'blockchain'
+                      | 'network'
+                      | 'account'
+                      | 'claimant'
+                      | 'claimGasFee'
+                      | 'claimProtocolFee'
+                      | 'gasFee'
+                      | 'protocolFee'
+                      | 'claim'
+                      | 'status'
+                      | 'tx'
+                      | 'createdAt'
+                      | 'updatedAt'
+                    >
+                  >
+                }
+            >
+          >
+          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+        }
       }
     }
   >
