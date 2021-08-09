@@ -19,10 +19,13 @@ export const $user = userDomain
   .on(fetchUserFx.doneData, (_, payload) => payload)
   .on(walletNetworkModel.saveUserFx.doneData, (_, payload) => payload)
 
-export const Gate = createGate()
+export const UserGate = createGate({
+  name: 'UserGate',
+  domain: userDomain,
+})
 
 sample({
-  clock: Gate.open,
+  clock: UserGate.open,
   target: fetchUserFx,
 })
 

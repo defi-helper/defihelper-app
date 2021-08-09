@@ -13,6 +13,6 @@ export const config = {
   API_URL: process.env.REACT_APP_API_URL,
   ADAPTERS_HOST: process.env.REACT_APP_ADAPTERS_HOST,
   TELEGRAM_BOT_USERNAME: process.env.REACT_APP_TELEGRAM_BOT_USERNAME,
-  BETA: process.env.REACT_APP_BETA === 'true',
+  BETA: true || process.env.REACT_APP_BETA === 'true',
   MAIN_URL: process.env.REACT_APP_MAIN_URL,
 } as const

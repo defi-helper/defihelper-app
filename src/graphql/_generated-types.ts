@@ -1363,6 +1363,8 @@ export type UserMetricsTokenAliasFilterInputType = {
 }
 
 export enum UserRoleEnum {
+  /** Candidate */
+  Candidate = 'candidate',
   /** User */
   User = 'user',
   /** Administrator */
