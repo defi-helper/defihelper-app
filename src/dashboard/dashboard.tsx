@@ -1,7 +1,7 @@
-import Typography from '@material-ui/core/Typography'
 import { Button } from '@material-ui/core'
 
 import { AppLayout } from '~/layouts'
+import { Typography } from '~/common/typography'
 import { DashboardSummaryOfTokens } from '~/dashboard/dashboard-summary-of-tokens'
 import { DashboardChartOfAllTokens } from '~/dashboard/dashboard-chart-of-all-tokens'
 import { DashboardBlockchains } from '~/dashboard/dashboard-blockchains'

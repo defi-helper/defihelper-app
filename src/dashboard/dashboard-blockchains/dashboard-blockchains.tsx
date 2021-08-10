@@ -1,9 +1,9 @@
 import { useGate, useStore } from 'effector-react'
-import { Typography } from '@material-ui/core'
 import Accordion from '@material-ui/core/Accordion'
 import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
 
+import { Typography } from '~/common/typography'
 import { cutAccount } from '~/common/cut-account'
 import * as model from './dashboard-blockchains.model'
 

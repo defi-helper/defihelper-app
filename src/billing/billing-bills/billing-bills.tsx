@@ -1,6 +1,7 @@
-import { Paper, Typography, Link, makeStyles } from '@material-ui/core'
+import { Paper, Link, makeStyles } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
 
+import { Typography } from '~/common/typography'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { cutAccount } from '~/common/cut-account'
