@@ -1,10 +1,11 @@
-import { Link, Paper, Typography } from '@material-ui/core'
+import { Link, Paper } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
 import { useParams } from 'react-router-dom'
 
+import { AppLayout } from '~/layouts'
+import { Typography } from '~/common/typography'
 import { cutAccount } from '~/common/cut-account'
 import { MarkdownRender } from '~/common/markdown-render'
-import { AppLayout } from '~/layouts'
 import { userModel } from '~/users'
 import { ProposalVote } from '~/proposals/common'
 import * as model from './proposal-detail.model'

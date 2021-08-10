@@ -1,5 +1,4 @@
-import Typography from '@material-ui/core/Typography'
-
+import { Typography } from '~/common/typography'
 import { Dialog } from '~/common/dialog'
 
 export type ChangeNetworkDialogProps = {
