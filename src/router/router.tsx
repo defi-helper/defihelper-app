@@ -25,6 +25,7 @@ import { UserContactList } from '~/user-contacts'
 import { UserContactConfirmEmail } from '~/user-contacts/user-contact-confirm-email'
 import { UserEventSubscriptionList } from '~/user-event-subscriptions'
 import { Billing } from '~/billing'
+import { NotFound } from '~/not-found'
 
 export type RouterProps = unknown
 
@@ -102,6 +103,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.billing}>
           <Billing />
         </PrivateRoute>
+        <Route>
+          <NotFound />
+        </Route>
       </Switch>
     </BrowserRouter>
   )
