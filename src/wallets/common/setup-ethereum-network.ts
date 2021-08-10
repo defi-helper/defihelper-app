@@ -54,3 +54,24 @@ export const setupBinance = async () => {
 
   return request(params)
 }
+
+export const setupPolygon = async () => {
+  const [chainId] = config.CHAIN_POLYGON_IDS
+
+  const params = {
+    chainId: `0x${chainId.toString(16)}`,
+    chainName: 'Polygon Mainnet',
+    nativeCurrency: {
+      name: 'MATIC',
+      symbol: 'MATIC',
+      decimals: 18,
+    },
+    rpcUrls: [
+      'https://rpc-mainnet.maticvigil.com/',
+      'https://rpc-mainnet.maticvigil.com/',
+    ],
+    blockExplorerUrls: ['https://polygonscan.com/'],
+  }
+
+  return request(params)
+}
