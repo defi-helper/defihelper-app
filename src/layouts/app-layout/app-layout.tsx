@@ -1,13 +1,52 @@
 import React from 'react'
 
 import { useDialog } from '~/common/dialog'
+import { paths } from '~/paths'
 import { WalletDetail } from '~/wallets/wallet-detail'
 import { WalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { LayoutHeader, LayoutContainer } from '../common'
+import { LayoutSidebar, LayoutContainer } from '../common'
 import * as styles from './app-layout.css'
 
 export type AppLayoutProps = unknown
+
+const MENU = [
+  {
+    title: 'Portfolio',
+    path: paths.dashboard,
+    icon: 'home' as const,
+  },
+  {
+    title: 'Protocols',
+    path: paths.protocols.list,
+    icon: 'home' as const,
+  },
+  {
+    title: 'Proposals',
+    path: paths.proposals.list,
+    icon: 'home' as const,
+  },
+  {
+    title: 'Notifications',
+    path: paths.userEventSubscriptions.list,
+    icon: 'home' as const,
+  },
+  {
+    title: 'Governance',
+    path: '/governance',
+    icon: 'home' as const,
+  },
+  {
+    title: 'Billing',
+    path: paths.billing,
+    icon: 'home' as const,
+  },
+  {
+    title: 'Contacts',
+    path: paths.contacts.list,
+    icon: 'home' as const,
+  },
+]
 
 export const AppLayout: React.FC<AppLayoutProps> = (props) => {
   const { account = null } = walletNetworkModel.useWalletNetwork()
@@ -27,10 +66,11 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
 
   return (
     <div className={styles.root}>
-      <LayoutHeader
+      <LayoutSidebar
         account={account}
         onConnect={handleOpenWalletList}
         onChangeWallet={handleChangeWallet}
+        menu={MENU}
       />
       <LayoutContainer>{props.children}</LayoutContainer>
     </div>

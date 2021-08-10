@@ -9,7 +9,7 @@ import {
 import { useGate, useStore } from 'effector-react'
 import Button from '@material-ui/core/Button'
 
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as model from './user-event-subscription.model'
@@ -76,7 +76,7 @@ export const UserEventSubscriptionList: React.VFC<ContactListProps> = () => {
   useGate(model.UserEventSubscriptionListGate)
 
   return (
-    <MainLayout>
+    <AppLayout>
       <Paper className={classes.card}>
         <UserEventSubscriptionAdd />
       </Paper>
@@ -113,6 +113,6 @@ export const UserEventSubscriptionList: React.VFC<ContactListProps> = () => {
             </ListItem>
           ))}
       </List>
-    </MainLayout>
+    </AppLayout>
   )
 }

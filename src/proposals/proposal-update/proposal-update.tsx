@@ -2,7 +2,7 @@ import { useGate, useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { ProposalForm } from '~/proposals/common'
 import { proposalDetailModel } from '~/proposals/proposal-detail'
 import * as model from './proposal-update.model'
@@ -31,7 +31,7 @@ export const ProposalUpdate: React.VFC<ProposalUpdateProps> = () => {
   )
 
   return (
-    <MainLayout>
+    <AppLayout>
       {proposalLoading ? (
         'loading...'
       ) : (
@@ -43,6 +43,6 @@ export const ProposalUpdate: React.VFC<ProposalUpdateProps> = () => {
           }
         />
       )}
-    </MainLayout>
+    </AppLayout>
   )
 }

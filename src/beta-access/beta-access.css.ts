@@ -18,24 +18,16 @@ export const title = style({
   '@media': {
     [theme.mediaQueries.lg()]: {
       marginBottom: 8,
-      textAlign: 'center',
     },
   },
 })
 
 export const grey = style({
-  color: theme.palette.grey1,
+  opacity: 0.64,
 })
 
 export const subtitle = style({
   margin: '0 auto 40px auto',
-
-  '@media': {
-    [theme.mediaQueries.lg()]: {
-      textAlign: 'center',
-      maxWidth: 640,
-    },
-  },
 })
 
 export const col = style({
@@ -87,8 +79,8 @@ export const cardSubtitle = style({
 })
 
 export const connected = style({
-  background: theme.color.background,
-  color: theme.palette.green1,
+  background: theme.colors.background,
+  color: theme.colors.common.green1,
   padding: '8px 16px',
   display: 'inline-flex',
   borderRadius: 8,

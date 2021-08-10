@@ -9,6 +9,6 @@ globalStyle('*,*:before,*:after', {
 globalStyle('body', {
   fontFamily: theme.fonts.square,
   fontSize: '100%',
-  background: theme.color.background,
-  color: theme.color.textColor,
+  background: theme.colors.background,
+  color: theme.colors.textColor,
 })

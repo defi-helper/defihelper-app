@@ -7,6 +7,11 @@ export const container = style({
   padding: '0 16px',
 })
 
+export const noGutter = style({
+  padding: 0,
+  margin: 0,
+})
+
 export const variants = styleVariants({
   lg: {
     '@media': {

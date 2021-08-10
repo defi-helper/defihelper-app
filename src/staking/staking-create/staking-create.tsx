@@ -2,7 +2,7 @@ import { useGate, useStore } from 'effector-react'
 import { useParams } from 'react-router-dom'
 
 import { useQueryParams } from '~/common/hooks'
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { FormValues, StakingContractForm } from '~/staking/common'
 import * as model from './staking-create.model'
 
@@ -28,12 +28,12 @@ export const StakingCreate: React.VFC<StakingCreateProps> = () => {
   useGate(model.StakingCreateGate, queryParams.get('protocol-adapter'))
 
   return (
-    <MainLayout>
+    <AppLayout>
       <StakingContractForm
         loading={loading}
         onSubmit={handleCreate}
         adapterKeys={adapterKeys}
       />
-    </MainLayout>
+    </AppLayout>
   )
 }

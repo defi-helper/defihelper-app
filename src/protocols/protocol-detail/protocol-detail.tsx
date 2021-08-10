@@ -5,7 +5,7 @@ import LaunchIcon from '@material-ui/icons/Launch'
 import { makeStyles } from '@material-ui/core/styles'
 import { useGate, useStore } from 'effector-react'
 
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { StakingList } from '~/staking/staking-list'
 import * as model from './protocol-detail.model'
 import { ProtocolMetrics } from '~/protocols/protocol-metrics'
@@ -78,11 +78,11 @@ export const ProtocolDetail: React.FC = () => {
   const params = useParams<{ protocolId: string }>()
 
   return (
-    <MainLayout>
+    <AppLayout>
       <Protocol protocolId={params.protocolId} />
       <ProtocolMetrics />
       <Typography gutterBottom>Staking contracts</Typography>
       <StakingList protocolId={params.protocolId} />
-    </MainLayout>
+    </AppLayout>
   )
 }

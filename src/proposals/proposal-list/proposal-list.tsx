@@ -2,7 +2,7 @@ import { Button, Paper, makeStyles } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
 import { Link } from 'react-router-dom'
 
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { paths } from '~/paths'
 import { Can, userModel } from '~/users'
 import { dateUtils } from '~/common/date-utils'
@@ -59,7 +59,7 @@ export const ProposalList: React.VFC<ProposalListProps> = () => {
   }
 
   return (
-    <MainLayout>
+    <AppLayout>
       <Can I="create" a="Proposal">
         <Button
           component={Link}
@@ -123,6 +123,6 @@ export const ProposalList: React.VFC<ProposalListProps> = () => {
       )}
       {!loading && !proposals.length && <Paper>empty</Paper>}
       <model.ProposalListPagination />
-    </MainLayout>
+    </AppLayout>
   )
 }

@@ -13,20 +13,26 @@ import { ThemeContext, themeContext } from './theme.context'
 
 const THEME_KEY = 'dfh:theme'
 
-export const ThemeProvider: React.FC = React.memo((props) => {
+const isThemeModes = (themeMode: string): themeMode is ThemeModes => {
+  return ['light', 'dark'].includes(themeMode)
+}
+
+export const ThemeProvider: React.FC = (props) => {
   const isLight = useMedia('(prefers-color-scheme: light)')
   const [themeMode, setThemeMode] = useState<ThemeModes>(
     isLight ? 'light' : 'dark'
   )
-  const [persistedThemeMode, persistThemeMode] =
+  const [persistedThemeMode, persistThemeMode, remove] =
     useLocalStorage<ThemeModes>(THEME_KEY)
 
-  const handlePersistTheme = useCallback(() => {
-    const light =
-      persistedThemeMode === 'light' || (!persistedThemeMode && isLight)
+  const handlePersistTheme = useCallback(
+    (theme: string) => {
+      if (!isThemeModes(theme)) return
 
-    persistThemeMode(light ? 'dark' : 'light')
-  }, [persistThemeMode, isLight, persistedThemeMode])
+      persistThemeMode(theme)
+    },
+    [persistThemeMode]
+  )
 
   useEffect(() => {
     if (isLight) {
@@ -39,8 +45,8 @@ export const ThemeProvider: React.FC = React.memo((props) => {
   const currentThemeMode = persistedThemeMode ?? themeMode
 
   const themeValue = useMemo(
-    (): ThemeContext => [handlePersistTheme, currentThemeMode],
-    [handlePersistTheme, currentThemeMode]
+    (): ThemeContext => [persistedThemeMode, handlePersistTheme, remove],
+    [handlePersistTheme, persistedThemeMode, remove]
   )
 
   useLayoutEffect(() => {
@@ -56,4 +62,4 @@ export const ThemeProvider: React.FC = React.memo((props) => {
       {props.children}
     </themeContext.Provider>
   )
-})
+}

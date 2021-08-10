@@ -10,6 +10,8 @@ export const DialogContext = createContext<{
   closeOnOverlay: (value: boolean) => void
 } | null>(null)
 
+DialogContext.displayName = 'DialogContext'
+
 const ERROR_MESSAGE = 'DialogContext is null'
 
 export const useDialogContext = () => {

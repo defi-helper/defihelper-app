@@ -5,7 +5,7 @@ import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon'
 import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import * as model from './user-contact.model'
 
 export type ContactListProps = unknown
@@ -69,7 +69,7 @@ export const UserContactConfirmEmail: React.VFC<ContactListProps> = () => {
   const loading = useStore(model.confirmEmailFx.pending)
 
   return (
-    <MainLayout>
+    <AppLayout>
       {loading && <Paper className={classes.card}>Confirming email...</Paper>}
       {!loading && confirmEmail && confirmEmail.status === true && (
         <Paper className={classes.card}>
@@ -81,6 +81,6 @@ export const UserContactConfirmEmail: React.VFC<ContactListProps> = () => {
           Email has not been confirmed <SentimentVeryDissatisfiedIcon />
         </Paper>
       )}
-    </MainLayout>
+    </AppLayout>
   )
 }

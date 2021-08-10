@@ -5,7 +5,7 @@ import { Effect } from 'effector'
 import { useLocation } from 'react-router-dom'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { BillingForm } from './common'
 import { BillingHistory } from './billing-history'
 import { BillingBills } from './billing-bills'
@@ -45,7 +45,7 @@ export const Billing: React.VFC<BillingProps> = () => {
   useGate(model.BillingGate, location.pathname)
 
   return (
-    <MainLayout>
+    <AppLayout>
       <Typography variant="h3">Deposit</Typography>
       <Typography>
         net balance:{' '}
@@ -67,6 +67,6 @@ export const Billing: React.VFC<BillingProps> = () => {
       />
       <BillingHistory />
       <BillingBills />
-    </MainLayout>
+    </AppLayout>
   )
 }

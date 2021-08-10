@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom'
 import { useGate, useStore, useStoreMap } from 'effector-react'
 
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { StakingContractForm, FormValues } from '~/staking/common'
 import * as model from './staking-update.model'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
@@ -51,13 +51,13 @@ export const StakingUpdate: React.VFC<unknown> = () => {
   }
 
   return (
-    <MainLayout>
+    <AppLayout>
       <StakingContractForm
         loading={loading}
         defaultValues={defaultValues}
         adapterKeys={adapterKeys}
         onSubmit={handleUpdate}
       />
-    </MainLayout>
+    </AppLayout>
   )
 }

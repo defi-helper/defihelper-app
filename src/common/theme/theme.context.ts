@@ -2,7 +2,11 @@ import { createContext, useContext } from 'react'
 
 import { ThemeModes } from './theme.css'
 
-export type ThemeContext = [() => void, ThemeModes]
+export type ThemeContext = [
+  ThemeModes | undefined,
+  (value: string) => void,
+  () => void
+]
 
 export const themeContext = createContext<ThemeContext | null>(null)
 

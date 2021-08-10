@@ -1,7 +1,7 @@
 import Typography from '@material-ui/core/Typography'
 import { Button } from '@material-ui/core'
 
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { DashboardSummaryOfTokens } from '~/dashboard/dashboard-summary-of-tokens'
 import { DashboardChartOfAllTokens } from '~/dashboard/dashboard-chart-of-all-tokens'
 import { DashboardBlockchains } from '~/dashboard/dashboard-blockchains'
@@ -26,7 +26,7 @@ export const Dashboard: React.VFC<DashboardProps> = () => {
   }
 
   return (
-    <MainLayout>
+    <AppLayout>
       <DashboardSummaryOfTokens />
       <Typography>all tokens</Typography>
       <DashboardChartOfAllTokens id="all_tokens" />
@@ -38,6 +38,6 @@ export const Dashboard: React.VFC<DashboardProps> = () => {
       <Can I="create" a="Wallet">
         <Button onClick={handleOpenAddWalletDialog}>add wallet</Button>
       </Can>
-    </MainLayout>
+    </AppLayout>
   )
 }

@@ -2,7 +2,7 @@ import { useGate, useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { ProtocolForm } from '~/protocols/common'
 import { detailModel } from '~/protocols/protocol-detail'
 import * as model from './protocol-update.model'
@@ -32,7 +32,7 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
   const formLoading = useStore(model.protocolUpdateFx.pending)
 
   return (
-    <MainLayout>
+    <AppLayout>
       {!loading && (
         <ProtocolForm
           onSubmit={(formValues) =>
@@ -42,6 +42,6 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
           defaultValues={defaultValues}
         />
       )}
-    </MainLayout>
+    </AppLayout>
   )
 }
