@@ -1,5 +1,6 @@
 import { useStore } from 'effector-react'
-import { MainLayout } from '~/layouts'
+
+import { AppLayout } from '~/layouts'
 import { ProposalForm } from '~/proposals/common'
 import * as model from './proposal-create.model'
 
@@ -9,8 +10,8 @@ export const ProposalCreate: React.VFC<ProposalCreateProps> = () => {
   const loading = useStore(model.createProposalFx.pending)
 
   return (
-    <MainLayout>
+    <AppLayout>
       <ProposalForm loading={loading} onSubmit={model.createProposal} />
-    </MainLayout>
+    </AppLayout>
   )
 }

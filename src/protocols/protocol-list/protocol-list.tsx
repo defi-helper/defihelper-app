@@ -1,56 +1,22 @@
-import { makeStyles, Paper } from '@material-ui/core'
 import { Link as ReactRouterLink, useLocation } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
-import Button from '@material-ui/core/Button'
 import { useMemo } from 'react'
 
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
+import { Button } from '~/common/button'
+import { Paper } from '~/common/paper'
 import { paths } from '~/paths'
 import { Can, useAbility } from '~/users'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
+import * as styles from './protocol-list.css'
 import * as model from './protocol-list.model'
+import { Typography } from '~/common/typography'
+import { Icon } from '~/common/icon'
 
 export type ProtocolListProps = unknown
 
-const useStyles = makeStyles(() => ({
-  root: {
-    padding: 0,
-    margin: 0,
-    listStyle: 'none',
-  },
-
-  link: {
-    textDecoration: 'none',
-    width: '100%',
-  },
-
-  item: {
-    display: 'flex',
-    marginBottom: 5,
-    width: '100%',
-  },
-
-  edit: {},
-
-  card: {
-    padding: '10px 15px',
-    display: 'flex',
-    alignItems: 'center',
-  },
-
-  tokens: {
-    marginLeft: 'auto',
-  },
-
-  mr: {
-    marginRight: 20,
-  },
-}))
-
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
-  const classes = useStyles()
-
   const location = useLocation()
 
   const ability = useAbility()
@@ -78,78 +44,84 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   useGate(model.ProtocolListGate, location.pathname)
 
   return (
-    <MainLayout>
-      <Can I="create" a="Protocol">
-        <Button
-          component={ReactRouterLink}
-          variant="contained"
-          color="primary"
-          to={paths.protocols.create}
-        >
-          New protocol
-        </Button>
-      </Can>
-      <ul className={classes.root}>
-        {loading && (
-          <li>
-            <Paper className={classes.card}>loading...</Paper>
-          </li>
-        )}
-        {!loading && !protocols?.length && (
-          <li>
-            <Paper className={classes.card}>no protocols found</Paper>
-          </li>
-        )}
-        {!loading &&
-          protocols &&
-          protocols.map((protocol) => (
-            <li key={protocol.id} className={classes.item}>
-              <ReactRouterLink
-                to={paths.protocols.detail(protocol.id)}
-                className={classes.link}
-              >
-                <Paper className={classes.card}>
-                  {protocol.icon && (
-                    <img
-                      src={protocol.icon}
-                      alt={protocol.name}
-                      width="30"
-                      height="30"
-                      className={classes.mr}
-                    />
-                  )}
-                  <div className={classes.mr}>{protocol.name}</div>
-                  <div className={`${classes.mr} ${classes.tokens}`}>
-                    {protocol.createdAt}
-                  </div>
-                </Paper>
-              </ReactRouterLink>
-              <Can I="update" a="Protocol">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={ReactRouterLink}
-                  to={paths.protocols.update(protocol.id)}
-                  className={classes.edit}
-                  disabled={protocol.deleting}
-                >
-                  Edit
-                </Button>
-              </Can>
-              <Can I="delete" a="Protocol">
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  disabled={protocol.deleting}
-                  onClick={() => handleOpenConfirm(protocol.id)}
-                >
-                  Delete
-                </Button>
-              </Can>
+    <AppLayout>
+      <div className={styles.root}>
+        <div className={styles.header}>
+          <Typography variant="h4" family="square">
+            Protocols
+          </Typography>
+          <Can I="create" a="Protocol">
+            <Button
+              as={ReactRouterLink}
+              variant="contained"
+              color="blue"
+              to={paths.protocols.create}
+            >
+              <Icon icon="plus" height="24" width="24" />
+            </Button>
+          </Can>
+        </div>
+        <ul className={styles.protocols}>
+          {loading && (
+            <li>
+              <Paper className={styles.card}>loading...</Paper>
             </li>
-          ))}
-      </ul>
-      <model.ProtocolListPagination />
-    </MainLayout>
+          )}
+          {!loading && !protocols?.length && (
+            <li>
+              <Paper className={styles.card}>no protocols found</Paper>
+            </li>
+          )}
+          {!loading &&
+            protocols &&
+            protocols.map((protocol) => (
+              <li key={protocol.id} className={styles.item}>
+                <ReactRouterLink
+                  to={paths.protocols.detail(protocol.id)}
+                  className={styles.link}
+                >
+                  <Paper className={styles.card}>
+                    {protocol.icon && (
+                      <img
+                        src={protocol.icon}
+                        alt={protocol.name}
+                        width="30"
+                        height="30"
+                        className={styles.mr}
+                      />
+                    )}
+                    <div className={styles.mr}>{protocol.name}</div>
+                    <div className={`${styles.mr} ${styles.tokens}`}>
+                      {protocol.createdAt}
+                    </div>
+                  </Paper>
+                </ReactRouterLink>
+                <Can I="update" a="Protocol">
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    as={ReactRouterLink}
+                    to={paths.protocols.update(protocol.id)}
+                    disabled={protocol.deleting}
+                  >
+                    Edit
+                  </Button>
+                </Can>
+                <Can I="delete" a="Protocol">
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    disabled={protocol.deleting}
+                    onClick={() => handleOpenConfirm(protocol.id)}
+                  >
+                    Delete
+                  </Button>
+                </Can>
+              </li>
+            ))}
+        </ul>
+        <model.ProtocolListPagination />
+      </div>
+    </AppLayout>
   )
 }

@@ -11,21 +11,27 @@ export const root = style({
 
 export const colors = styleVariants({
   primary: {
-    background: theme.color.primary,
-    border: `1px solid ${theme.color.primary}`,
-    color: theme.palette.black1,
+    background: theme.colors.primary,
+    border: `1px solid ${theme.colors.primary}`,
+    color: theme.colors.common.black1,
   },
 
   secondary: {
-    background: theme.color.secondary,
-    color: theme.palette.black1,
-    border: `1px solid ${theme.color.secondary}`,
+    background: theme.colors.secondary,
+    color: theme.colors.common.black1,
+    border: `1px solid ${theme.colors.secondary}`,
   },
 
-  pink: {
-    background: theme.palette.pink,
-    color: theme.palette.black1,
-    border: `1px solid ${theme.palette.pink}`,
+  green: {
+    background: theme.colors.common.green1,
+    color: theme.colors.common.black1,
+    border: `1px solid ${theme.colors.common.green1}`,
+  },
+
+  blue: {
+    background: theme.colors.common.blue,
+    color: theme.colors.common.white,
+    border: `1px solid ${theme.colors.common.blue}`,
   },
 })
 
@@ -37,12 +43,16 @@ export const varinats = styleVariants({
 
     selectors: {
       [`&.${colors.primary}`]: {
-        color: theme.color.textColor,
+        color: theme.colors.textColor,
       },
 
       [`&.${colors.secondary}`]: {
-        color: theme.color.secondary,
+        color: theme.colors.secondary,
       },
+
+      [`&.${colors.green}`]: {},
+
+      [`&.${colors.blue}`]: {},
     },
   },
 })

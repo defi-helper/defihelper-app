@@ -7,10 +7,11 @@ export type GridContainerProps = {
   className?: string
   as?: React.ElementType
   variant?: 'md' | 'lg' | 'fluid'
+  noGutter?: boolean
 }
 
 export const GridContainer: React.FC<GridContainerProps> = (props) => {
-  const { as = 'div', variant = 'lg' } = props
+  const { as = 'div', variant = 'lg', noGutter = false } = props
 
   const Component = as
 
@@ -19,7 +20,8 @@ export const GridContainer: React.FC<GridContainerProps> = (props) => {
       className={clsx(
         styles.container,
         styles.variants[variant],
-        props.className
+        props.className,
+        noGutter && styles.noGutter
       )}
     >
       {props.children}

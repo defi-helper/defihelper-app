@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import { cutAccount } from '~/common/cut-account'
 import { MarkdownRender } from '~/common/markdown-render'
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { userModel } from '~/users'
 import { ProposalVote } from '~/proposals/common'
 import * as model from './proposal-detail.model'
@@ -36,7 +36,7 @@ export const ProposalDetail: React.VFC<ProposalDetailProps> = () => {
   }
 
   return (
-    <MainLayout>
+    <AppLayout>
       <Paper>
         {!loading && proposal && (
           <div>
@@ -78,6 +78,6 @@ export const ProposalDetail: React.VFC<ProposalDetailProps> = () => {
           )}
         </Paper>
       )}
-    </MainLayout>
+    </AppLayout>
   )
 }

@@ -4,5 +4,5 @@ import { theme } from '~/common/theme'
 export const icon = style({
   width: 40,
   height: 40,
-  color: theme.color.textColor,
+  color: theme.colors.textColor,
 })

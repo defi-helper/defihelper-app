@@ -3,7 +3,7 @@ import { theme } from '../theme'
 
 export const root = style({
   borderRadius: 16,
-  backgroundColor: theme.color.paper,
+  backgroundColor: theme.colors.paper,
 
   '@media': {
     [theme.mediaQueries.lg()]: {

@@ -7,7 +7,7 @@ export const root = style({
   left: 0,
   minHeight: '100%',
   width: '100%',
-  background: theme.palette.black5,
+  background: theme.colors.common.black5,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -15,8 +15,8 @@ export const root = style({
 })
 
 export const content = style({
-  background: theme.color.background,
-  color: theme.color.textColor,
+  background: theme.colors.background,
+  color: theme.colors.textColor,
   maxHeight: '100vh',
   overflowY: 'auto',
   overflowX: 'hidden',

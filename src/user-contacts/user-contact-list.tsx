@@ -9,7 +9,7 @@ import {
 import { useGate, useStore } from 'effector-react'
 import Button from '@material-ui/core/Button'
 
-import { MainLayout } from '~/layouts'
+import { AppLayout } from '~/layouts'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as model from './user-contact.model'
@@ -81,7 +81,7 @@ export const UserContactList: React.VFC<ContactListProps> = () => {
   useGate(model.UserContactListGate)
 
   return (
-    <MainLayout>
+    <AppLayout>
       <Paper className={classes.card}>
         <UserContactAdd />
       </Paper>
@@ -128,6 +128,6 @@ export const UserContactList: React.VFC<ContactListProps> = () => {
             </ListItem>
           ))}
       </List>
-    </MainLayout>
+    </AppLayout>
   )
 }

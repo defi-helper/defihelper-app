@@ -5,7 +5,7 @@ import { theme } from '~/common/theme'
 export const root = style({
   display: 'flex',
   flexDirection: 'column',
-  background: theme.palette.white,
+  background: theme.colors.common.white,
 })
 
 export const input = style({
@@ -13,5 +13,5 @@ export const input = style({
 })
 
 export const label = style({
-  color: theme.palette.black1,
+  color: theme.colors.common.black1,
 })

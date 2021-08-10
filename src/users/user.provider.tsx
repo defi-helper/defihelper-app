@@ -24,8 +24,9 @@ export const UserProvider: React.FC<UserProviderProps> = (props) => {
         config.BETA &&
         (user?.role === UserRoleEnum.Candidate || !user) && <BetaAccess />}
       {!loading &&
-        (user?.role === UserRoleEnum.User ||
-          user?.role === UserRoleEnum.Admin) &&
+        ((user?.role &&
+          [UserRoleEnum.User, UserRoleEnum.Admin].includes(user.role)) ||
+          !config.BETA) &&
         props.children}
     </AbilityContext.Provider>
   )
