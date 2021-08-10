@@ -10,7 +10,7 @@ import {
 import { ADD_WALLET, BLOCKCHAINS } from './graphql'
 import { TOKEN_METRIC_CHART } from './graphql/token-metrick-chart.graphql'
 
-export const dashboardApi = {
+export const portfolioApi = {
   getTokenMetricChart: (variables: TokenMetricChartQueryVariables) =>
     getAPIClient()
       .query<TokenMetricChartQuery, TokenMetricChartQueryVariables>(

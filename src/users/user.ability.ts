@@ -3,7 +3,7 @@ import { createContext } from 'react'
 import { createContextualCan, useAbility as useCaslAbility } from '@casl/react'
 
 type Entities =
-  | 'Dashboard'
+  | 'Portfolio'
   | 'AllNetworks'
   | 'Networks'
   | 'Protocol'
@@ -31,7 +31,7 @@ export const defineRulesFor = (role?: string) => {
         'Contract',
         'Protocol',
         'Networks',
-        'Dashboard',
+        'Portfolio',
         'Proposal',
         'UserContact',
       ],

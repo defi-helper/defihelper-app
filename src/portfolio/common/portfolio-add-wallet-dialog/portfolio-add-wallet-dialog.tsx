@@ -4,13 +4,13 @@ import { useForm } from 'react-hook-form'
 
 import { Dialog } from '~/common/dialog'
 import { AddWalletInputType, BlockchainEnum } from '~/graphql/_generated-types'
-import * as styles from './dashboard-add-wallet-dialog.css'
+import * as styles from './portfolio-add-wallet-dialog.css'
 
-export type DashboardAddWalletDialogProps = {
+export type PortfolioAddWalletDialogProps = {
   onConfirm: (formValues: AddWalletInputType) => void
 }
 
-export const DashboardAddWalletDialog: React.VFC<DashboardAddWalletDialogProps> =
+export const PortfolioAddWalletDialog: React.VFC<PortfolioAddWalletDialogProps> =
   (props) => {
     const { register, formState, handleSubmit } = useForm<AddWalletInputType>()
 

@@ -5,14 +5,14 @@ import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
 
 import { cutAccount } from '~/common/cut-account'
-import * as model from './dashboard-blockchains.model'
+import * as model from './portfolio-blockchains.model'
 
-export type DashboardBlockchainsProps = unknown
+export type PortfolioBlockchainsProps = unknown
 
-export const DashboardBlockchains: React.FC<DashboardBlockchainsProps> = () => {
+export const PortfolioBlockchains: React.FC<PortfolioBlockchainsProps> = () => {
   const blockchains = useStore(model.$blockchains)
 
-  useGate(model.blockchainsGate)
+  useGate(model.BlockchainsGate)
 
   return (
     <Accordion>

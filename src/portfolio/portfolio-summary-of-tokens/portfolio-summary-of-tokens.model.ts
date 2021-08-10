@@ -7,10 +7,10 @@ import {
   TokenMetricChartQueryVariables,
   UserTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
-import { dashboardApi } from '~/dashboard/common'
+import { portfolioApi } from '~/portfolio/common'
 import { Unwrap } from '~/common/types'
 
-const domain = createDomain('dashboardSummaryOfTokens')
+const domain = createDomain('portfolioSummaryOfTokens')
 
 const summaryOfTokensForLastHourVariables = {
   group: MetricGroupEnum.Hour,
@@ -34,7 +34,7 @@ const createGetTokenMetricEffect = (
   return domain.createEffect({
     name,
     handler: async () =>
-      dashboardApi.getTokenMetricChart({
+      portfolioApi.getTokenMetricChart({
         metric: 'usd',
         ...variables,
         sort: [
@@ -59,7 +59,7 @@ export const fetchSummaryOfTokensForLastHourForYesterdayFx =
   )
 
 type SummaryOfTokens = Unwrap<
-  ReturnType<typeof dashboardApi.getTokenMetricChart>
+  ReturnType<typeof portfolioApi.getTokenMetricChart>
 >
 
 const $summaryOfTokensForLastHour = domain
@@ -77,12 +77,12 @@ const $summaryOfTokensForLastHourForYesterday = domain
     (_, payload) => payload
   )
 
-export const dashboardSummaryOfTokensGate = createGate({
-  name: 'dashboardSummaryOfTokensGate',
+export const PortfolioSummaryOfTokensGate = createGate({
+  name: 'PortfolioSummaryOfTokensGate',
   domain,
 })
 
-export const $dashboardSummaryOfTokens = combine(
+export const $portfolioSummaryOfTokens = combine(
   $summaryOfTokensForLastHour,
   $summaryOfTokensForLastHourForYesterday,
   (summaryOfTokensForLastHour, summaryOfTokensForLastHourForYesterday) => {
@@ -110,7 +110,7 @@ export const $dashboardSummaryOfTokens = combine(
 )
 
 sample({
-  clock: dashboardSummaryOfTokensGate.open,
+  clock: PortfolioSummaryOfTokensGate.open,
   target: [
     fetchSummaryOfTokensForLastHourFx,
     fetchSummaryOfTokensForLastHourForYesterdayFx,

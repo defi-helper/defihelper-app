@@ -2,7 +2,7 @@ import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
 import { Unwrap } from '~/common/types'
-import { dashboardApi } from '~/dashboard/common'
+import { portfolioApi } from '~/portfolio/common'
 import {
   MetricGroupEnum,
   SortOrderEnum,
@@ -10,7 +10,7 @@ import {
   WalletTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
 
-const domain = createDomain('blockchains')
+const domain = createDomain('portfolioBlockchains')
 
 type FetchChartParams = {
   stable?: boolean
@@ -27,7 +27,7 @@ const fetchBlockchainsDataFx = domain.createEffect({
       order: SortOrderEnum.Desc,
     }
 
-    return dashboardApi.getBlockchains({
+    return portfolioApi.getBlockchains({
       blockchainMetric: 'usd',
       blockchainGroup: MetricGroupEnum.Hour,
       blockchainPagination: pagination,
@@ -48,17 +48,17 @@ const fetchBlockchainsDataFx = domain.createEffect({
 })
 
 export const $blockchains = domain
-  .createStore<Unwrap<ReturnType<typeof dashboardApi.getBlockchains>>>([], {
-    name: '$dashboardChartOfAllTokens',
+  .createStore<Unwrap<ReturnType<typeof portfolioApi.getBlockchains>>>([], {
+    name: '$portfolioChartOfAllTokens',
   })
   .on(fetchBlockchainsDataFx.doneData, (_, payload) => payload)
 
-export const blockchainsGate = createGate<FetchChartParams>({
-  name: 'blockchainsGate',
+export const BlockchainsGate = createGate<FetchChartParams>({
+  name: 'BlockchainsGate',
   domain,
 })
 
 sample({
-  clock: blockchainsGate.open,
+  clock: BlockchainsGate.open,
   target: fetchBlockchainsDataFx,
 })

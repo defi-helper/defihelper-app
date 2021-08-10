@@ -1,15 +1,15 @@
 import { Typography } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
 
-import * as model from './dashboard-summary-of-tokens.model'
+import * as model from './portfolio-summary-of-tokens.model'
 
-export type DashboardSummaryOfTokensProps = unknown
+export type PortfolioSummaryOfTokensProps = unknown
 
-export const DashboardSummaryOfTokens: React.VFC<DashboardSummaryOfTokensProps> =
+export const PortfolioSummaryOfTokens: React.VFC<PortfolioSummaryOfTokensProps> =
   () => {
-    const dashboard = useStore(model.$dashboardSummaryOfTokens)
+    const portfolio = useStore(model.$portfolioSummaryOfTokens)
 
-    useGate(model.dashboardSummaryOfTokensGate)
+    useGate(model.PortfolioSummaryOfTokensGate)
 
     const fetchSummaryOfTokensForLastHourFxLoading = useStore(
       model.fetchSummaryOfTokensForLastHourFx.pending
@@ -24,11 +24,11 @@ export const DashboardSummaryOfTokens: React.VFC<DashboardSummaryOfTokensProps> 
           Summary of all tokens for last hour(usd):{' '}
           {fetchSummaryOfTokensForLastHourFxLoading
             ? 'loading...'
-            : dashboard.summaryOfTokensForLastHour.toLocaleString('en-EU')}{' '}
+            : portfolio.summaryOfTokensForLastHour.toLocaleString('en-EU')}{' '}
           (
           {fetchSummaryOfTokensForLastHourFxYesterdayLoading
             ? 'loading...'
-            : dashboard.summaryDiffOfYesterdayPercent}
+            : portfolio.summaryDiffOfYesterdayPercent}
           %)
         </Typography>
       </div>

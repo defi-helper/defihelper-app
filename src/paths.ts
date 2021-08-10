@@ -15,7 +15,7 @@ export const paths = {
       `/protocols/${protocolId}/staking/${stakingId}` as const,
   },
 
-  dashboard: '/dashboard',
+  portfolio: '/portfolio',
 
   proposals: {
     list: '/proposals',

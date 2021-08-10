@@ -1,16 +1,16 @@
 import { createDomain, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
-import { dateUtils } from '~/common/date-utils'
 
+import { dateUtils } from '~/common/date-utils'
 import { Unwrap } from '~/common/types'
-import { dashboardApi } from '~/dashboard/common'
+import { portfolioApi } from '~/portfolio/common'
 import {
   MetricGroupEnum,
   SortOrderEnum,
   UserTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
 
-const domain = createDomain('dashboardChartOfAllTokens')
+const domain = createDomain('portfolioChartOfAllTokens')
 
 type FetchChartParams = {
   stable?: boolean
@@ -22,7 +22,7 @@ const DAYS_LIMIT = 180
 const fetchChartDataFx = domain.createEffect({
   name: 'fetchChartDataFx',
   handler: async (params: FetchChartParams) => {
-    const data = await dashboardApi.getTokenMetricChart({
+    const data = await portfolioApi.getTokenMetricChart({
       metric: 'usd',
       group: MetricGroupEnum.Day,
       ...(typeof params.stable === 'boolean'
@@ -54,13 +54,13 @@ const fetchChartDataFx = domain.createEffect({
   },
 })
 
-type ChartMetric = Unwrap<ReturnType<typeof dashboardApi.getTokenMetricChart>>
+type ChartMetric = Unwrap<ReturnType<typeof portfolioApi.getTokenMetricChart>>
 
-export const $dashboardChartOfAllTokens = domain
+export const $portfolioChartOfAllTokens = domain
   .createStore<Record<string, ChartMetric>>(
     {},
     {
-      name: '$dashboardChartOfAllTokens',
+      name: '$portfolioChartOfAllTokens',
     }
   )
   .on(fetchChartDataFx.doneData, (state, payload) => ({
@@ -68,12 +68,12 @@ export const $dashboardChartOfAllTokens = domain
     [payload.id]: payload.data,
   }))
 
-export const dashboardChartOfAllTokensGate = createGate<FetchChartParams>({
-  name: 'dashboardChartOfAllTokensGate',
+export const PortfolioChartOfAllTokensGate = createGate<FetchChartParams>({
+  name: 'PortfolioChartOfAllTokensGate',
   domain,
 })
 
 sample({
-  clock: dashboardChartOfAllTokensGate.open,
+  clock: PortfolioChartOfAllTokensGate.open,
   target: fetchChartDataFx,
 })

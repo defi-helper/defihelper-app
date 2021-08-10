@@ -16,7 +16,7 @@ import { ProtocolCreate } from '~/protocols/protocol-create'
 import { ProtocolUpdate } from '~/protocols/protocol-update'
 import { StakingCreate } from '~/staking/staking-create'
 import { StakingUpdate } from '~/staking/staking-update'
-import { Dashboard } from '../dashboard'
+import { Portfolio } from '~/portfolio'
 import { ProposalList } from '~/proposals/proposal-list'
 import { ProposalDetail } from '~/proposals/proposal-detail'
 import { ProposalCreate } from '~/proposals/proposal-create'
@@ -68,8 +68,8 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.protocols.list}>
           <ProtocolList />
         </Route>
-        <PrivateRoute path={paths.dashboard}>
-          <Dashboard />
+        <PrivateRoute path={paths.portfolio}>
+          <Portfolio />
         </PrivateRoute>
         <CanRoute
           path={paths.proposals.create}
