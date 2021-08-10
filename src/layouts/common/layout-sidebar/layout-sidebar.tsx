@@ -32,7 +32,7 @@ export type LayoutHeaderProps = {
   menu: MenuItem[]
 }
 
-export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
+export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
   const [opened, setOpen] = useState(false)
 
   const [hided, setHide] = useLocalStorage('dfh:sidebar', false)
@@ -97,6 +97,7 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
             </Button>
           )}
         </div>
+        <div className={styles.actions}>{props.children}</div>
         <ul className={styles.menu}>
           {props.menu.map((menuItem) => (
             <li key={menuItem.title}>

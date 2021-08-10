@@ -4,6 +4,7 @@ import { useDialog } from '~/common/dialog'
 import { paths } from '~/paths'
 import { WalletDetail } from '~/wallets/wallet-detail'
 import { WalletList } from '~/wallets/wallet-list'
+import { WalletNetworkSwitcher } from '~/wallets/wallet-network-switcher'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { LayoutSidebar, LayoutContainer } from '../common'
 import * as styles from './app-layout.css'
@@ -71,7 +72,9 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
         onConnect={handleOpenWalletList}
         onChangeWallet={handleChangeWallet}
         menu={MENU}
-      />
+      >
+        <WalletNetworkSwitcher />
+      </LayoutSidebar>
       <LayoutContainer>{props.children}</LayoutContainer>
     </div>
   )
