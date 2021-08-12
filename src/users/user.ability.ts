@@ -12,6 +12,7 @@ type Entities =
   | 'Proposal'
   | 'UserContact'
   | 'Wallet'
+  | 'Governance'
 
 export type Actions = 'create' | 'read' | 'update' | 'delete'
 export type Subjects = Entities | { type: Entities }

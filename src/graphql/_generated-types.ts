@@ -283,6 +283,121 @@ export type ContractUpdateInputType = {
   hidden?: Maybe<Scalars['Boolean']>
 }
 
+export type GovProposalFilterInputType = {
+  network: Scalars['String']
+  contract: Scalars['String']
+  proposalId: Scalars['Int']
+  cache: Scalars['Boolean']
+}
+
+export type GovProposalListFilterInputType = {
+  network: Scalars['String']
+  contract: Scalars['String']
+  cache: Scalars['Boolean']
+}
+
+export type GovProposalListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type GovProposalListQuery = {
+  __typename?: 'GovProposalListQuery'
+  /** Elements */
+  list?: Maybe<Array<GovProposalType>>
+  pagination: Pagination
+}
+
+export type GovProposalListSortInputType = {
+  column: GovProposalListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum GovProposalListSortInputTypeColumnEnum {
+  Id = 'id',
+}
+
+export enum GovProposalStateEnum {
+  Pending = 'pending',
+  Active = 'active',
+  Canceled = 'canceled',
+  Defeated = 'defeated',
+  Succeeded = 'succeeded',
+  Queued = 'queued',
+  Expired = 'expired',
+  Executed = 'executed',
+}
+
+export type GovProposalType = {
+  __typename?: 'GovProposalType'
+  /** Identificator */
+  id: Scalars['Int']
+  /** Proposer */
+  proposer: Scalars['String']
+  /** The timesamp that the protposal will be available for execution, set once the vote succeeds */
+  eta: Scalars['Int']
+  /** Target addresses for calls */
+  targets: Array<Scalars['String']>
+  /** List of values to be passed to the calls */
+  values: Array<Scalars['String']>
+  /** List of function signatures to be calls */
+  signatures: Array<Scalars['String']>
+  /** List of calldata to be passed to each call */
+  calldatas: Array<Array<Scalars['String']>>
+  /** Start block of vote */
+  startBlock: Scalars['Int']
+  /** End block of vote */
+  endBlock: Scalars['Int']
+  /** For votes */
+  forVotes: Scalars['String']
+  /** Against votes */
+  againstVotes: Scalars['String']
+  /** Abstain votes */
+  abstainVotes: Scalars['String']
+  /** Is canceled */
+  canceled: Scalars['Boolean']
+  /** Is executed */
+  executed: Scalars['Boolean']
+  /** Current state */
+  state: GovProposalStateEnum
+  /** Description */
+  description: Scalars['String']
+}
+
+export type GovReceiptFilterInputType = {
+  network: Scalars['Int']
+  contract: Scalars['String']
+  proposalId: Scalars['Int']
+  wallet: Scalars['String']
+  cache: Scalars['Boolean']
+}
+
+export enum GovReceiptSupportEnum {
+  Against = 'against',
+  For = 'for',
+  Abstain = 'Abstain',
+}
+
+export type GovReceiptType = {
+  __typename?: 'GovReceiptType'
+  /** Whether or not a vote has been cast */
+  hasVoted: Scalars['Boolean']
+  /** Whether or not the voter supports the proposal or abstains */
+  support: GovReceiptSupportEnum
+  /** The number of votes the voter had, which were cast */
+  votes: Scalars['String']
+  /** The reason given for the vote by the voter */
+  reason: Scalars['String']
+}
+
+export type GovVotesFilterInputType = {
+  network: Scalars['Int']
+  contract: Scalars['String']
+  wallet: Scalars['String']
+}
+
 export enum LocaleEnum {
   EnUs = 'enUS',
   RuRu = 'ruRU',
@@ -672,6 +787,10 @@ export type Query = {
   tokenAlias?: Maybe<TokenAlias>
   tokensAlias: TokenAliasListQuery
   products: StoreProductListQuery
+  govProposal?: Maybe<GovProposalType>
+  govProposals: GovProposalListQuery
+  govReceipt?: Maybe<GovReceiptType>
+  govVotes: Scalars['String']
 }
 
 export type QueryProtocolArgs = {
@@ -734,6 +853,24 @@ export type QueryProductsArgs = {
   filter?: Maybe<StoreProductListQueryFilterInputType>
   sort?: Maybe<Array<StoreProductListQuerySortInputType>>
   pagination?: Maybe<StoreProductListQueryPaginationInputType>
+}
+
+export type QueryGovProposalArgs = {
+  filter: GovProposalFilterInputType
+}
+
+export type QueryGovProposalsArgs = {
+  filter: GovProposalListFilterInputType
+  sort?: Maybe<Array<GovProposalListSortInputType>>
+  pagination?: Maybe<GovProposalListPaginationInputType>
+}
+
+export type QueryGovReceiptArgs = {
+  filter: GovReceiptFilterInputType
+}
+
+export type QueryGovVotesArgs = {
+  filter: GovVotesFilterInputType
 }
 
 export enum SortOrderEnum {
@@ -1913,6 +2050,57 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
       }
     }
   >
+}
+
+export type GovernanceProposalFragmentFragment = {
+  __typename?: 'GovProposalType'
+} & Pick<
+  GovProposalType,
+  | 'id'
+  | 'proposer'
+  | 'eta'
+  | 'targets'
+  | 'values'
+  | 'signatures'
+  | 'calldatas'
+  | 'startBlock'
+  | 'endBlock'
+  | 'forVotes'
+  | 'againstVotes'
+  | 'abstainVotes'
+  | 'canceled'
+  | 'executed'
+  | 'state'
+  | 'description'
+>
+
+export type GovernanceProposalQueryVariables = Exact<{
+  filter: GovProposalFilterInputType
+}>
+
+export type GovernanceProposalQuery = { __typename?: 'Query' } & {
+  govProposal?: Maybe<
+    { __typename?: 'GovProposalType' } & GovernanceProposalFragmentFragment
+  >
+}
+
+export type GovernanceProposalsQueryVariables = Exact<{
+  filter: GovProposalListFilterInputType
+  sort?: Maybe<
+    Array<GovProposalListSortInputType> | GovProposalListSortInputType
+  >
+  pagination?: Maybe<GovProposalListPaginationInputType>
+}>
+
+export type GovernanceProposalsQuery = { __typename?: 'Query' } & {
+  govProposals: { __typename?: 'GovProposalListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'GovProposalType' } & GovernanceProposalFragmentFragment
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
 }
 
 export type AddWalletMutationVariables = Exact<{

@@ -19,7 +19,6 @@ export const $billingHistory = restore(
 
 export const BillingHistoryPagination = createPagination({
   domain: billingHistoryDomain,
-  limit: 10,
 })
 
 export const BillingHistoryGate = createGate({

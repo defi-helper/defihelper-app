@@ -35,4 +35,11 @@ export const paths = {
   },
 
   billing: '/billing',
+
+  governance: {
+    list: '/governance',
+    detail: (governanceId = ':governanceId') =>
+      `/governance/${governanceId}` as const,
+    create: '/governance/create',
+  },
 } as const

@@ -18,4 +18,8 @@ export const palette = {
   grey2: rgba('#fff', 0.4),
   grey3: rgba('#fff', 0.24),
   grey4: '#e8edef',
+  red: '#de4909',
+  yellow: '#fbff43',
+  beige: '#e7d7be',
+  purple: '#ff35eb',
 } as const

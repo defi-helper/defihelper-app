@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Route,
   Router as BrowserRouter,
@@ -26,6 +25,11 @@ import { UserContactConfirmEmail } from '~/user-contacts/user-contact-confirm-em
 import { UserEventSubscriptionList } from '~/user-event-subscriptions'
 import { Billing } from '~/billing'
 import { NotFound } from '~/not-found'
+import {
+  GovernanceCreate,
+  GovernanceDetail,
+  GovernanceList,
+} from '~/governance'
 
 export type RouterProps = unknown
 
@@ -103,6 +107,19 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.billing}>
           <Billing />
         </PrivateRoute>
+        <CanRoute
+          path={paths.governance.create}
+          action="create"
+          subject="Governance"
+        >
+          <GovernanceCreate />
+        </CanRoute>
+        <Route path={paths.governance.detail()}>
+          <GovernanceDetail />
+        </Route>
+        <Route path={paths.governance.list}>
+          <GovernanceList />
+        </Route>
         <Route>
           <NotFound />
         </Route>

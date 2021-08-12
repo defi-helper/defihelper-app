@@ -1,4 +1,4 @@
-import { createElement, useCallback, useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 
 import { useDialogContext } from './dialog.context'
 
@@ -19,7 +19,7 @@ export const useDialog = <T extends React.ElementType>(
   const handleOpen = useCallback(
     (props?: Props): Promise<Result> => {
       const promise = new Promise<Result>((resolve, reject) =>
-        onOpen(createElement(Dialog, props), resolve, reject)
+        onOpen({ Dialog, props }, resolve, reject)
       )
 
       return promise

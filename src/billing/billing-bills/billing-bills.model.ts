@@ -19,7 +19,6 @@ export const $billingBills = restore(
 
 export const BillingBillsPagination = createPagination({
   domain: billingBillsDomain,
-  limit: 10,
 })
 
 export const BillingBillsGate = createGate({

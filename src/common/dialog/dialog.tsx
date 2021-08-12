@@ -3,7 +3,7 @@
 
 import { useState } from 'react'
 
-import { useBodyScrollLock } from '../hooks'
+import { useBodyScrollLock } from '~/common/hooks'
 import * as styles from './dialog.css'
 import { useDialogContext } from './dialog.context'
 
@@ -14,7 +14,6 @@ export type DialogProps = {
 export const Dialog: React.FC<DialogProps> = (props) => {
   const { onClose } = useDialogContext()
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleOnClickContent = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => event.stopPropagation()
@@ -22,7 +21,6 @@ export const Dialog: React.FC<DialogProps> = (props) => {
   const [contentElement, setContentElement] = useState<HTMLDivElement | null>(
     null
   )
-
   useBodyScrollLock(contentElement)
 
   return (

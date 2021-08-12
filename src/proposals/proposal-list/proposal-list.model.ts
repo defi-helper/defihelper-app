@@ -105,7 +105,6 @@ export const ProposalListGate = createGate({
 
 export const ProposalListPagination = createPagination({
   domain: proposalListDomain,
-  limit: 10,
 })
 
 sample({
