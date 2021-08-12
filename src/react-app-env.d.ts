@@ -28,6 +28,7 @@ interface Window {
   ethers: unknown
   bignumber: unknown
   dayjs: unknown
+  ethersMulticall: unknown
 }
 
 declare module 'remarkable-react' {
