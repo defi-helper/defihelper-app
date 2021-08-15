@@ -65,6 +65,14 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
     reset(props.defaultValues)
   }, [props.defaultValues, reset])
 
+  useEffect(() => {
+    if (!subscribeToEventsFromList) {
+      setValue('eventsToSubscribe', undefined)
+    } else {
+      setValue('eventsToSubscribe', [])
+    }
+  }, [subscribeToEventsFromList, setValue])
+
   return (
     <form
       noValidate
@@ -124,11 +132,6 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
           defaultChecked={props.defaultValues?.hidden ?? undefined}
           onChange={(_, checked) => {
             setSubscribeToEventsFromList(checked)
-            if (!checked) {
-              setValue('eventsToSubscribe', undefined)
-            } else {
-              setValue('eventsToSubscribe', [])
-            }
           }}
           disabled={props.loading}
         />
