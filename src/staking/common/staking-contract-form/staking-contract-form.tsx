@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button'
 import { FormLabel, makeStyles } from '@material-ui/core'
 import { useForm } from 'react-hook-form'
 import MenuItem from '@material-ui/core/MenuItem'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 import { BlockchainEnum } from '~/graphql/_generated-types'
@@ -20,6 +20,7 @@ export type FormValues = {
   link?: string | null
   hidden?: boolean | null
   layout: string
+  eventsToSubscribe?: string[]
 }
 
 export type StakingContractFormProps = {
@@ -54,6 +55,9 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
   const blockChain = register('blockchain')
   const layout = register('layout')
   const adapter = register('adapter')
+
+  const [subscribeToEventsFromList, setSubscribeToEventsFromList] =
+    useState(false)
 
   useEffect(() => {
     if (!props.defaultValues) return
@@ -113,6 +117,40 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
         error={Boolean(formState.errors.address)}
         helperText={formState.errors.address?.message}
       />
+      <FormLabel>
+        Subscribe on events from list
+        <Checkbox
+          value={subscribeToEventsFromList}
+          defaultChecked={props.defaultValues?.hidden ?? undefined}
+          onChange={(_, checked) => {
+            setSubscribeToEventsFromList(checked)
+            if (!checked) {
+              setValue('eventsToSubscribe', undefined)
+            } else {
+              setValue('eventsToSubscribe', [])
+            }
+          }}
+          disabled={props.loading}
+        />
+      </FormLabel>
+      {subscribeToEventsFromList ? (
+        <TextField
+          type="text"
+          label="Events to subscribe"
+          onChange={(changeEvent) =>
+            setValue(
+              'eventsToSubscribe',
+              changeEvent.target.value
+                ? changeEvent.target.value
+                    .split(',')
+                    .map((event) => event.trim())
+                : []
+            )
+          }
+          disabled={props.loading}
+          error={Boolean(formState.errors.eventsToSubscribe)}
+        />
+      ) : null}
       <TextField
         type="text"
         label="Network"
