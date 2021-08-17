@@ -112,6 +112,7 @@ export const GovernanceActionsParams: React.FC<GovernanceActionsParamsProps> = (
                   <Input
                     {...field}
                     label={`${name}(${input.type})`}
+                    disabled={formState.isSubmitting}
                     value={field.value || input.value}
                   />
                 )}
@@ -134,7 +135,11 @@ export const GovernanceActionsParams: React.FC<GovernanceActionsParamsProps> = (
             </div>
           )
         })}
-        <Button type="submit" className={styles.button}>
+        <Button
+          type="submit"
+          disabled={formState.isSubmitting}
+          className={styles.button}
+        >
           Submit
         </Button>
       </form>
