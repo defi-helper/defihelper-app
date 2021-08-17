@@ -10,11 +10,13 @@ export type PaginationState = {
 
 type Options = {
   domain: Domain
-  limit: number
+  limit?: number
 }
 
+const DEFAULT_LIMIT = 10
+
 export const createPagination = (options: Options) => {
-  const $limit = options.domain.createStore(options.limit, {
+  const $limit = options.domain.createStore(options.limit ?? DEFAULT_LIMIT, {
     name: '$limit',
   })
   const $offset = options.domain.createStore(0, {

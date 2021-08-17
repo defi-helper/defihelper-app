@@ -1,8 +1,10 @@
 import { createContext, useContext } from 'react'
 
+export type Node = { Dialog: React.ElementType; props: unknown }
+
 export const DialogContext = createContext<{
   onOpen: <T = unknown, Y = unknown>(
-    node: React.ReactNode,
+    node: Node,
     resolve: (value: T) => void,
     reject: (value: Y) => void
   ) => void

@@ -14,7 +14,7 @@ export type AppLayoutProps = unknown
 const MENU = [
   {
     title: 'Portfolio',
-    path: paths.dashboard,
+    path: paths.portfolio,
     icon: 'home' as const,
   },
   {

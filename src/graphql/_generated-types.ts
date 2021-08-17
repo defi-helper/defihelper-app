@@ -2054,6 +2054,79 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type GovernanceProposalFragmentFragment = {
+  __typename?: 'GovProposalType'
+} & Pick<
+  GovProposalType,
+  | 'id'
+  | 'proposer'
+  | 'eta'
+  | 'targets'
+  | 'values'
+  | 'signatures'
+  | 'calldatas'
+  | 'startBlock'
+  | 'endBlock'
+  | 'forVotes'
+  | 'againstVotes'
+  | 'abstainVotes'
+  | 'canceled'
+  | 'executed'
+  | 'state'
+  | 'description'
+>
+
+export type GovernanceProposalQueryVariables = Exact<{
+  filter: GovProposalFilterInputType
+}>
+
+export type GovernanceProposalQuery = { __typename?: 'Query' } & {
+  govProposal?: Maybe<
+    { __typename?: 'GovProposalType' } & GovernanceProposalFragmentFragment
+  >
+}
+
+export type GovernanceProposalsQueryVariables = Exact<{
+  filter: GovProposalListFilterInputType
+  sort?: Maybe<
+    Array<GovProposalListSortInputType> | GovProposalListSortInputType
+  >
+  pagination?: Maybe<GovProposalListPaginationInputType>
+}>
+
+export type GovernanceProposalsQuery = { __typename?: 'Query' } & {
+  govProposals: { __typename?: 'GovProposalListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'GovProposalType' } & GovernanceProposalFragmentFragment
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type GovernanceReceiptQueryVariables = Exact<{
+  filter: GovReceiptFilterInputType
+}>
+
+export type GovernanceReceiptQuery = { __typename?: 'Query' } & {
+  govReceipt?: Maybe<
+    { __typename?: 'GovReceiptType' } & Pick<
+      GovReceiptType,
+      'hasVoted' | 'support' | 'votes' | 'reason'
+    >
+  >
+}
+
+export type GovernanceVotesQueryVariables = Exact<{
+  filter: GovVotesFilterInputType
+}>
+
+export type GovernanceVotesQuery = { __typename?: 'Query' } & Pick<
+  Query,
+  'govVotes'
+>
+
 export type AddWalletMutationVariables = Exact<{
   input: AddWalletInputType
 }>

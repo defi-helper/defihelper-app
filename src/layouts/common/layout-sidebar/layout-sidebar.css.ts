@@ -75,7 +75,7 @@ export const menu = style({
 
 export const link = style({
   display: 'inline-flex',
-  color: theme.colors.textColor,
+  color: theme.colors.textColorPrimary,
   textDecoration: 'none',
   padding: '10px 14px',
   width: '100%',

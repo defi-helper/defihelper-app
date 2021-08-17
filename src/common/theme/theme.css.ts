@@ -8,7 +8,8 @@ type Theme = {
   colors: {
     common: typeof palette
     background: string
-    textColor: string
+    textColorPrimary: string
+    textColorSecondary: string
     attention: string
     primary: string
     secondary: string
@@ -26,7 +27,8 @@ export const themeContract = createThemeContract<Theme>({
   colors: {
     common: palette,
     background: '',
-    textColor: '',
+    textColorPrimary: '',
+    textColorSecondary: '',
     attention: '',
     primary: '',
     secondary: '',
@@ -45,9 +47,10 @@ const dark: Theme = {
   colors: {
     common: palette,
     background: palette.black4,
-    textColor: palette.white,
-    attention: palette.white,
-    primary: palette.white,
+    textColorPrimary: palette.white1,
+    textColorSecondary: palette.black1,
+    attention: palette.white1,
+    primary: palette.white1,
     secondary: palette.green1,
     paper: palette.black2,
     separator: palette.black2,
@@ -62,9 +65,10 @@ const dark: Theme = {
 const light: Theme = {
   colors: {
     common: palette,
-    background: palette.white,
-    textColor: palette.black1,
-    attention: palette.white,
+    background: palette.white1,
+    textColorPrimary: palette.black1,
+    textColorSecondary: palette.white1,
+    attention: palette.white1,
     primary: palette.black1,
     secondary: palette.green1,
     paper: palette.grey4,

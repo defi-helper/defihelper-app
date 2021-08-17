@@ -15,7 +15,7 @@ export const paths = {
       `/protocols/${protocolId}/staking/${stakingId}` as const,
   },
 
-  dashboard: '/dashboard',
+  portfolio: '/portfolio',
 
   proposals: {
     list: '/proposals',
@@ -35,4 +35,11 @@ export const paths = {
   },
 
   billing: '/billing',
+
+  governance: {
+    list: '/governance',
+    detail: (governanceId = ':governanceId') =>
+      `/governance/${governanceId}` as const,
+    create: '/governance/create',
+  },
 } as const

@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Route,
   Router as BrowserRouter,
@@ -16,7 +15,7 @@ import { ProtocolCreate } from '~/protocols/protocol-create'
 import { ProtocolUpdate } from '~/protocols/protocol-update'
 import { StakingCreate } from '~/staking/staking-create'
 import { StakingUpdate } from '~/staking/staking-update'
-import { Dashboard } from '../dashboard'
+import { Portfolio } from '~/portfolio'
 import { ProposalList } from '~/proposals/proposal-list'
 import { ProposalDetail } from '~/proposals/proposal-detail'
 import { ProposalCreate } from '~/proposals/proposal-create'
@@ -26,6 +25,11 @@ import { UserContactConfirmEmail } from '~/user-contacts/user-contact-confirm-em
 import { UserEventSubscriptionList } from '~/user-event-subscriptions'
 import { Billing } from '~/billing'
 import { NotFound } from '~/not-found'
+import {
+  GovernanceCreate,
+  GovernanceDetail,
+  GovernanceList,
+} from '~/governance'
 
 export type RouterProps = unknown
 
@@ -68,8 +72,8 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.protocols.list}>
           <ProtocolList />
         </Route>
-        <PrivateRoute path={paths.dashboard}>
-          <Dashboard />
+        <PrivateRoute path={paths.portfolio}>
+          <Portfolio />
         </PrivateRoute>
         <CanRoute
           path={paths.proposals.create}
@@ -103,6 +107,15 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.billing}>
           <Billing />
         </PrivateRoute>
+        <Route path={paths.governance.create}>
+          <GovernanceCreate />
+        </Route>
+        <Route path={paths.governance.detail()}>
+          <GovernanceDetail />
+        </Route>
+        <Route path={paths.governance.list}>
+          <GovernanceList />
+        </Route>
         <Route>
           <NotFound />
         </Route>

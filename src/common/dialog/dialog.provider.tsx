@@ -1,26 +1,19 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { cloneElement, useCallback, useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 
-import { Portal } from '../portal'
+import { Portal } from '~/common/portal'
 import { UserRejectionError } from './dialog.error'
-import { DialogContext } from './dialog.context'
+import { DialogContext, Node } from './dialog.context'
 
 type Fn = (value: unknown) => void
 
 export const DialogProvider: React.FC = (props) => {
-  const [dialogNode, setDialogNode] = useState<React.ReactNode | null>(null)
+  const [dialogNode, setDialogNode] = useState<Node | null>(null)
   const [closeOnOverlayClick, setCloseOnOverlayClick] = useState(true)
 
   const resolveRef = useRef<Fn | null>(null)
   const rejectRef = useRef<Fn | null>(null)
-
-  const handleOpen = useCallback((node: React.ReactNode, resolve, reject) => {
-    setDialogNode(node)
-
-    resolveRef.current = resolve
-    rejectRef.current = reject
-  }, [])
 
   const handleClose = useCallback(() => {
     if (!closeOnOverlayClick || !rejectRef.current) return
@@ -39,6 +32,13 @@ export const DialogProvider: React.FC = (props) => {
     [closeOnOverlayClick]
   )
 
+  const handleOpen = useCallback((node: Node, resolve, reject) => {
+    setDialogNode(node)
+
+    resolveRef.current = resolve
+    rejectRef.current = reject
+  }, [])
+
   return (
     <DialogContext.Provider
       value={{
@@ -47,14 +47,14 @@ export const DialogProvider: React.FC = (props) => {
         closeOnOverlay: setCloseOnOverlayClick,
       }}
     >
-      {dialogNode && React.isValidElement(dialogNode) && (
+      {dialogNode && (
         <Portal>
           <div onClick={handleClose}>
-            {cloneElement(dialogNode, {
-              ...dialogNode.props,
-              onCancel: handleClose,
-              onConfirm: handleOnConfirm,
-            })}
+            <dialogNode.Dialog
+              {...dialogNode.props}
+              onCancel={handleClose}
+              onConfirm={handleOnConfirm}
+            />
           </div>
         </Portal>
       )}

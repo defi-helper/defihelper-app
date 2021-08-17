@@ -16,7 +16,7 @@ export const root = style({
 
 export const content = style({
   background: theme.colors.background,
-  color: theme.colors.textColor,
+  color: theme.colors.textColorPrimary,
   maxHeight: '100vh',
   overflowY: 'auto',
   overflowX: 'hidden',

@@ -1,6 +1,6 @@
 import { styleVariants, style } from '@vanilla-extract/css'
 
-import { theme } from '../theme'
+import { theme } from '~/common/theme'
 
 export const root = style({
   borderRadius: 8,
@@ -13,7 +13,7 @@ export const colors = styleVariants({
   primary: {
     background: theme.colors.primary,
     border: `1px solid ${theme.colors.primary}`,
-    color: theme.colors.common.black1,
+    color: theme.colors.textColorSecondary,
   },
 
   secondary: {
@@ -30,7 +30,7 @@ export const colors = styleVariants({
 
   blue: {
     background: theme.colors.common.blue,
-    color: theme.colors.common.white,
+    color: theme.colors.common.white1,
     border: `1px solid ${theme.colors.common.blue}`,
   },
 })
@@ -43,7 +43,7 @@ export const varinats = styleVariants({
 
     selectors: {
       [`&.${colors.primary}`]: {
-        color: theme.colors.textColor,
+        color: theme.colors.textColorPrimary,
       },
 
       [`&.${colors.secondary}`]: {

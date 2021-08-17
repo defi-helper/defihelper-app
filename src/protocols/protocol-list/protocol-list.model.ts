@@ -80,7 +80,6 @@ export const $protocolList = protocolListDomain
 
 export const ProtocolListPagination = createPagination({
   domain: protocolListDomain,
-  limit: 10,
 })
 
 export const ProtocolListGate = createGate<string>({

@@ -32,7 +32,7 @@ export const variants = styleVariants({
   fluid: {
     '@media': {
       [theme.mediaQueries.lg()]: {
-        width: 'auto' as string,
+        width: '100%' as string,
       },
     },
   },
