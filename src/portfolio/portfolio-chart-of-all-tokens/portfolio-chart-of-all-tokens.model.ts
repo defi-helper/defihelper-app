@@ -1,8 +1,7 @@
-import { createDomain, sample } from 'effector-logger'
+import { createDomain, restore, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
 import { dateUtils } from '~/common/date-utils'
-import { Unwrap } from '~/common/types'
 import { portfolioApi } from '~/portfolio/common'
 import {
   MetricGroupEnum,
@@ -12,63 +11,63 @@ import {
 
 const domain = createDomain('portfolioChartOfAllTokens')
 
-type FetchChartParams = {
-  stable?: boolean
-  id: string
-}
-
 const DAYS_LIMIT = 180
+
+const defaultVariables = {
+  metric: 'usd',
+  group: MetricGroupEnum.Day,
+  pagination: {
+    limit: DAYS_LIMIT,
+  },
+  sort: [
+    {
+      column: UserTokenMetricChartSortInputTypeColumnEnum.Date,
+      order: SortOrderEnum.Desc,
+    },
+  ],
+}
 
 const fetchChartDataFx = domain.createEffect({
   name: 'fetchChartDataFx',
-  handler: async (params: FetchChartParams) => {
-    const data = await portfolioApi.getTokenMetricChart({
-      metric: 'usd',
-      group: MetricGroupEnum.Day,
-      ...(typeof params.stable === 'boolean'
-        ? {
-            filter: {
-              tokenAlias: {
-                stable: params.stable,
+  handler: async (params: string[]) => {
+    const result = params.map(async (param) => {
+      const data = await portfolioApi.getTokenMetricChart({
+        ...defaultVariables,
+        ...(param === 'stable' || param === 'shit'
+          ? {
+              filter: {
+                tokenAlias: {
+                  stable: param === 'stable',
+                },
+                dateBefore: dateUtils.now(),
+                dateAfter: dateUtils.after180Days(),
               },
-              dateBefore: dateUtils.now(),
-              dateAfter: dateUtils.after180Days(),
-            },
-          }
-        : {}),
-      pagination: {
-        limit: DAYS_LIMIT,
-      },
-      sort: [
-        {
-          column: UserTokenMetricChartSortInputTypeColumnEnum.Date,
-          order: SortOrderEnum.Desc,
-        },
-      ],
+            }
+          : {}),
+      })
+
+      return { name: param, data }
     })
 
-    return {
-      id: params.id,
-      data,
-    }
+    const sortedData = (await Promise.all(result)).sort(
+      (a, b) => a.data.length - b.data.length
+    )
+
+    const lastItem = sortedData[sortedData.length - 1]
+    const secondItem = sortedData[sortedData.length - 2]
+    const firstItem = sortedData[0]
+
+    return lastItem.data.map((dataItem, index) => ({
+      [lastItem.name]: dataItem,
+      [firstItem.name]: firstItem.data[index] ?? { sum: '0', data: '0' },
+      [secondItem.name]: secondItem.data[index] ?? { sum: '0', data: '0' },
+    }))
   },
 })
 
-type ChartMetric = Unwrap<ReturnType<typeof portfolioApi.getTokenMetricChart>>
+export const $portfolioChartOfAllTokens = restore(fetchChartDataFx.doneData, [])
 
-export const $portfolioChartOfAllTokens = domain
-  .createStore<Record<string, ChartMetric>>(
-    {},
-    {
-      name: '$portfolioChartOfAllTokens',
-    }
-  )
-  .on(fetchChartDataFx.doneData, (state, payload) => ({
-    ...state,
-    [payload.id]: payload.data,
-  }))
-
-export const PortfolioChartOfAllTokensGate = createGate<FetchChartParams>({
+export const PortfolioChartOfAllTokensGate = createGate<string[]>({
   name: 'PortfolioChartOfAllTokensGate',
   domain,
 })

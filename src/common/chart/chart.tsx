@@ -50,15 +50,12 @@ export const Chart: React.VFC<ChartProps> = (props) => {
     if (!props.data?.length) return
 
     chartRef.current = create(id, XYChart)
-
-    chartRef.current.data = props.data
-
     const dateAxis = chartRef.current.xAxes.push(new DateAxis())
     dateAxis.renderer.minGridDistance = 60
 
-    chartRef.current.yAxes.push(new ValueAxis())
+    chartRef.current.data = props.data
 
-    // Create series
+    chartRef.current.yAxes.push(new ValueAxis())
     const series = chartRef.current.series.push(new LineSeries())
     series.dataFields = props.dataFields
 
