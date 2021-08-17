@@ -18,5 +18,6 @@ export const GOVERNANCE_PROPOSAL_FRAGMENT = gql`
     executed
     state
     description
+    endVoteDate
   }
 `

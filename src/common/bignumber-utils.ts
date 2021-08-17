@@ -11,8 +11,13 @@ export const bignumberUtils = {
       .multipliedBy(new BigNumber(10).pow(decimals))
       .toString(10),
 
-  format: (amount?: string | number | null) =>
-    new BigNumber(amount || 0).toFormat(2),
+  format: (amount?: string | number | null) => {
+    const result = new BigNumber(amount || 0).toFormat(2)
+
+    const [integerValue, floatValue] = result.split('.')
+
+    return new BigNumber(floatValue).isZero() ? integerValue : result
+  },
 
   getPercentage: (
     count?: string | number | null,
@@ -42,4 +47,10 @@ export const bignumberUtils = {
 
   gte: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isGreaterThanOrEqualTo(num2 || 0),
+
+  gt: (num1?: string | number | null, num2?: string | number | null) =>
+    new BigNumber(num1 || 0).isGreaterThan(num2 || 0),
+
+  eq: (num1?: string | number | null, num2?: string | number | null) =>
+    new BigNumber(num1 || 0).isEqualTo(num2 || 0),
 }
