@@ -4,10 +4,15 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
+import { GovernanceActionsStepper } from '../governance-actions-stepper'
+import { GovernanceAddDelegant } from '../governance-add-delegant'
+import { GovernanceSelfDelegate } from '../governance-self-delegate'
 import * as styles from './governance-delegate-dialog.css'
 
 export type GovernanceDelegateDialogProps = {
-  onConfirm: () => void
+  onConfirm: (address: string) => void
+  votes?: string | null
+  account: string
 }
 
 enum Steps {
@@ -24,11 +29,13 @@ export const GovernanceDelegateDialog: React.VFC<GovernanceDelegateDialogProps> 
 
     const handleAddDelegant = () => setCurrentStep(Steps.delegant)
 
+    const handleBack = () => setCurrentStep(Steps.initial)
+
     const steps = {
       [Steps.initial]: (
         <>
           <Typography align="center" family="mono" transform="uppercase">
-            Redelegate {bignumberUtils.format('91367647')} votes
+            Redelegate {bignumberUtils.format(props.votes)} votes
           </Typography>
           <Typography
             align="center"
@@ -36,7 +43,7 @@ export const GovernanceDelegateDialog: React.VFC<GovernanceDelegateDialogProps> 
             transform="uppercase"
             className={styles.subtitle}
           >
-            BAG tokens represent voting shares in BondAppetit governance.
+            tokens represent voting shares in BondAppetit governance.
           </Typography>
           <Button onClick={handleSelfDelegate} className={styles.self}>
             Self Delegate
@@ -45,11 +52,16 @@ export const GovernanceDelegateDialog: React.VFC<GovernanceDelegateDialogProps> 
         </>
       ),
       [Steps.delegant]: (
-        <>
-          <Button onClick={props.onConfirm}>Add delegant</Button>
-        </>
+        <GovernanceActionsStepper onBack={handleBack}>
+          {[<GovernanceAddDelegant key={0} onSubmit={props.onConfirm} />]}
+        </GovernanceActionsStepper>
       ),
-      [Steps.self]: <></>,
+      [Steps.self]: (
+        <GovernanceSelfDelegate
+          account={props.account}
+          onSubmit={props.onConfirm}
+        />
+      ),
     }
 
     return <Dialog className={styles.root}>{steps[currentStep]}</Dialog>

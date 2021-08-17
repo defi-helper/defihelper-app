@@ -1,10 +1,10 @@
 import { createDomain } from 'effector-logger'
 import { ethers } from 'ethers'
+
 import { abi } from '~/abi'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { history } from '~/common/history'
 import { paths } from '~/paths'
-
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type ProposeParams = {

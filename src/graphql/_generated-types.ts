@@ -163,7 +163,7 @@ export type ContractCreateInputType = {
   /** Is hidden */
   hidden?: Maybe<Scalars['Boolean']>
   /** Events to subscribe in scanner */
-  eventsToSubscribe?: Maybe<Array<Maybe<Scalars['String']>>>
+  eventsToSubscribe?: Maybe<Array<Scalars['String']>>
 }
 
 export type ContractListFilterInputType = {
@@ -352,6 +352,8 @@ export type GovProposalType = {
   startBlock: Scalars['Int']
   /** End block of vote */
   endBlock: Scalars['Int']
+  /** End vote datetime */
+  endVoteDate: Scalars['DateTimeType']
   /** For votes */
   forVotes: Scalars['String']
   /** Against votes */
@@ -392,6 +394,12 @@ export type GovReceiptType = {
   votes: Scalars['String']
   /** The reason given for the vote by the voter */
   reason: Scalars['String']
+}
+
+export type GovVoteType = {
+  __typename?: 'GovVoteType'
+  votes: Scalars['String']
+  delegates: Scalars['String']
 }
 
 export type GovVotesFilterInputType = {
@@ -792,7 +800,7 @@ export type Query = {
   govProposal?: Maybe<GovProposalType>
   govProposals: GovProposalListQuery
   govReceipt?: Maybe<GovReceiptType>
-  govVotes: Scalars['String']
+  govVotes: GovVoteType
 }
 
 export type QueryProtocolArgs = {
@@ -2074,6 +2082,7 @@ export type GovernanceProposalFragmentFragment = {
   | 'executed'
   | 'state'
   | 'description'
+  | 'endVoteDate'
 >
 
 export type GovernanceProposalQueryVariables = Exact<{
@@ -2122,10 +2131,12 @@ export type GovernanceVotesQueryVariables = Exact<{
   filter: GovVotesFilterInputType
 }>
 
-export type GovernanceVotesQuery = { __typename?: 'Query' } & Pick<
-  Query,
-  'govVotes'
->
+export type GovernanceVotesQuery = { __typename?: 'Query' } & {
+  govVotes: { __typename?: 'GovVoteType' } & Pick<
+    GovVoteType,
+    'votes' | 'delegates'
+  >
+}
 
 export type AddWalletMutationVariables = Exact<{
   input: AddWalletInputType
