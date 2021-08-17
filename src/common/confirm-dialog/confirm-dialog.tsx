@@ -1,6 +1,5 @@
-import Typography from '@material-ui/core/Typography'
-import Button from '@material-ui/core/Button'
-
+import { Typography } from '~/common/typography'
+import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
 
 export type ConfirmDialogProps = {

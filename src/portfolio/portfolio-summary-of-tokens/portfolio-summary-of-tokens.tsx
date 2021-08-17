@@ -1,6 +1,6 @@
-import { Typography } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
 
+import { Typography } from '~/common/typography'
 import * as model from './portfolio-summary-of-tokens.model'
 
 export type PortfolioSummaryOfTokensProps = unknown

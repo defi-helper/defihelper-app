@@ -1,4 +1,3 @@
-import Typography from '@material-ui/core/Typography'
 import { Button } from '@material-ui/core'
 
 import { AppLayout } from '~/layouts'
@@ -9,6 +8,7 @@ import { useDialog } from '~/common/dialog'
 import { PortfolioAddWalletDialog } from './common'
 import * as model from './portfolio.model'
 import { Can } from '~/users'
+import { Typography } from '~/common/typography'
 
 export type PortfolioProps = unknown
 

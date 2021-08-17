@@ -29,4 +29,5 @@ export const stakingContractFormSchema = yup.object().shape({
   link: yup.string().url('Must be url').optional(),
   hidden: yup.bool().optional(),
   layout: yup.string().optional(),
+  eventsToSubscribe: yup.array(yup.string()).optional(),
 })

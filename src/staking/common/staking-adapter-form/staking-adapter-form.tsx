@@ -1,6 +1,7 @@
-import { Button, makeStyles, Typography } from '@material-ui/core'
-import React, { useEffect, useState } from 'react'
+import { Button, makeStyles } from '@material-ui/core'
+import { useEffect, useState } from 'react'
 
+import { Typography } from '~/common/typography'
 import { Adapter, AdapterWallet } from '~/common/load-adapter'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { NumericalInput } from '~/common/numerical-input'

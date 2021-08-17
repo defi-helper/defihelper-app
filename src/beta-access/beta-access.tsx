@@ -2,20 +2,20 @@ import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { BrowserRouter as Router } from 'react-router-dom'
 
+import { AppLayout } from '~/layouts'
 import { Link } from '~/common/link'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { Grid } from '~/common/grid'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { AppLayout } from '~/layouts'
 import { contactListModel } from '~/user-contacts'
 import { WalletDetail } from '~/wallets/wallet-detail'
 import { WalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { config } from '~/config'
 import * as styles from './beta-access.css'
 import * as model from './beta-access.model'
-import { config } from '~/config'
 
 export type BetaAccessProps = unknown
 

@@ -1,4 +1,4 @@
-import { Link, Typography } from '@material-ui/core'
+import { Link } from '@material-ui/core'
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import LaunchIcon from '@material-ui/icons/Launch'
@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import { useGate, useStore } from 'effector-react'
 
 import { AppLayout } from '~/layouts'
+import { Typography } from '~/common/typography'
 import { StakingList } from '~/staking/staking-list'
 import * as model from './protocol-detail.model'
 import { ProtocolMetrics } from '~/protocols/protocol-metrics'
@@ -55,8 +56,8 @@ const Protocol: React.VFC<ProtocolDetailProps> = (props) => {
               </Typography>
             )}
           </div>
-          <Typography gutterBottom>{protocol.description}</Typography>
-          <Typography gutterBottom component="div">
+          <Typography>{protocol.description}</Typography>
+          <Typography as="div">
             {protocol.icon && (
               <div>
                 <img
@@ -81,7 +82,7 @@ export const ProtocolDetail: React.FC = () => {
     <AppLayout>
       <Protocol protocolId={params.protocolId} />
       <ProtocolMetrics />
-      <Typography gutterBottom>Staking contracts</Typography>
+      <Typography>Staking contracts</Typography>
       <StakingList protocolId={params.protocolId} />
     </AppLayout>
   )

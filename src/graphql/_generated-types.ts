@@ -162,6 +162,8 @@ export type ContractCreateInputType = {
   link?: Maybe<Scalars['String']>
   /** Is hidden */
   hidden?: Maybe<Scalars['Boolean']>
+  /** Events to subscribe in scanner */
+  eventsToSubscribe?: Maybe<Array<Maybe<Scalars['String']>>>
 }
 
 export type ContractListFilterInputType = {

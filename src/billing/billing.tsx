@@ -1,9 +1,9 @@
-import { Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import { useGate, useStore } from 'effector-react'
 import { Effect } from 'effector'
 import { useLocation } from 'react-router-dom'
 
+import { Typography } from '~/common/typography'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { AppLayout } from '~/layouts'
 import { BillingForm } from './common'
