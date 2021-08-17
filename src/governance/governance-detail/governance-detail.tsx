@@ -14,6 +14,7 @@ import { config } from '~/config'
 import { GovProposalStateEnum } from '~/graphql/_generated-types'
 import { dateUtils } from '~/common/date-utils'
 import {
+  GovernanceReasonDialog,
   GovernanceVoteInfo,
   GovProposalStateEnumColors,
 } from '~/governance/common'
@@ -23,6 +24,7 @@ import { isEthAddress } from '~/common/is-eth-address'
 import { Chip } from '~/common/chip'
 import { Paper } from '~/common/paper'
 import * as styles from './governance-detail.css'
+import { useDialog } from '~/common/dialog'
 
 export type GovernanceDetailProps = unknown
 
@@ -30,6 +32,8 @@ const QUORUM_VOTES = '400000'
 
 export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const params = useParams<{ governanceId: string }>()
+
+  const [openGovernanceReasonDialog] = useDialog(GovernanceReasonDialog)
 
   const loading = useStore(model.fetchGovernanceProposalFx.pending)
   const governanceDetail = useStore(model.$governanceDetail)
@@ -40,22 +44,38 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const loadingExecute = useStore(model.executeFx.pending)
 
   const handleQueueProposal = () => {
-    model.queueFx()
+    model.queueFx(Number(params.governanceId))
   }
   const handleExecuteProposal = () => {
-    model.executeFx()
+    model.executeFx(Number(params.governanceId))
   }
 
   const loadingCastVote = useStore(model.castVoteFx.pending)
 
   const handleVoteFor = () => {
-    model.castVoteFx()
+    model.castVoteFx({
+      proposalId: Number(params.governanceId),
+      support: model.CastVotes.for,
+    })
   }
-  const handleVoteAbstain = () => {
-    model.castVoteFx()
+  const handleVoteAbstain = async () => {
+    try {
+      const reason = await openGovernanceReasonDialog()
+
+      model.castVoteFx({
+        proposalId: Number(params.governanceId),
+        support: model.CastVotes.abstain,
+        reason,
+      })
+    } catch (error) {
+      console.error(error.message)
+    }
   }
   const handleVoteAgainst = () => {
-    model.castVoteFx()
+    model.castVoteFx({
+      proposalId: Number(params.governanceId),
+      support: model.CastVotes.against,
+    })
   }
 
   return (

@@ -70,7 +70,6 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
   return (
     <AppLayout>
       <div className={styles.root}>
-        {loading && 'loading...'}
         {!votesLoading && bignumberUtils.gt(governanceVotes?.votes, 0) && (
           <div>
             <Typography variant="h4" transform="uppercase" align="center">
@@ -99,6 +98,7 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
             )}
           </div>
         )}
+        {loading && 'loading...'}
         {!loading && (
           <Button
             onClick={handleOpenDelegateOpen}

@@ -24,7 +24,7 @@ export const fetchGovernanceListFx = governanceListDomain.createEffect({
       pagination,
       filter: {
         network,
-        contract: GOVERNOR_TOKEN,
+        contract: GOVERNOR_BRAVO,
         cache: true,
       },
     }),
@@ -58,8 +58,8 @@ export const delegateVotesFx = governanceListDomain.createEffect({
     if (!networkProvider) return
 
     const governorBravo = new ethers.Contract(
-      GOVERNOR_BRAVO,
-      abi.GovernorBravo.abi,
+      GOVERNOR_TOKEN,
+      abi.GovernanceToken.abi,
       networkProvider.getSigner()
     )
 
@@ -102,7 +102,7 @@ sample({
   fn: ({ chainId, account }) => ({
     network: chainId,
     wallet: account,
-    contract: GOVERNOR_BRAVO,
+    contract: GOVERNOR_TOKEN,
   }),
   target: fetchGovernanceVotesFx,
 })
