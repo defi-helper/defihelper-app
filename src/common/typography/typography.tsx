@@ -22,7 +22,7 @@ export type TypographyProps = {
   variant?: Variants
   className?: string
   align?: 'left' | 'center' | 'right'
-  as?: TagNames | 'span' | 'div'
+  as?: TagNames | 'span' | 'div' | React.ElementType
   family?: 'square' | 'circle' | 'mono'
   transform?: 'uppercase' | 'lowercase' | 'normal'
   ref?:
@@ -30,7 +30,7 @@ export type TypographyProps = {
     | React.MutableRefObject<HTMLHeadingElement | null>
     | null
   children?: React.ReactNode
-}
+} & React.ComponentProps<'div'>
 
 export const Typography = forwardRef<HTMLHeadingElement, TypographyProps>(
   function Typography(props, ref) {
@@ -40,6 +40,7 @@ export const Typography = forwardRef<HTMLHeadingElement, TypographyProps>(
       family = 'square',
       transform = 'normal',
       as,
+      ...restOfProps
     } = props
 
     const classNames = clsx(
@@ -54,7 +55,7 @@ export const Typography = forwardRef<HTMLHeadingElement, TypographyProps>(
     const Component = as ?? variantMapping[variant]
 
     return (
-      <Component className={classNames} ref={ref}>
+      <Component {...restOfProps} className={classNames} ref={ref}>
         {props.children}
       </Component>
     )

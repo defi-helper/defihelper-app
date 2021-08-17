@@ -10,5 +10,5 @@ globalStyle('body', {
   fontFamily: theme.fonts.square,
   fontSize: '100%',
   background: theme.colors.background,
-  color: theme.colors.textColor,
+  color: theme.colors.textColorPrimary,
 })

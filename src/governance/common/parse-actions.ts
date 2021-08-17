@@ -11,8 +11,8 @@ export const parseActions = (
     return {
       id: nanoid(),
       target,
-      signature: signature.replace('()', ''),
-      callData: callDatas[index].join(', '),
+      signature: signature.replace(/\((.*?)\)/g, ''),
+      callDatas: callDatas[index],
     }
   })
 }

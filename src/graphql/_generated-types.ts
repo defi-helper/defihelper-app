@@ -2103,6 +2103,28 @@ export type GovernanceProposalsQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type GovernanceReceiptQueryVariables = Exact<{
+  filter: GovReceiptFilterInputType
+}>
+
+export type GovernanceReceiptQuery = { __typename?: 'Query' } & {
+  govReceipt?: Maybe<
+    { __typename?: 'GovReceiptType' } & Pick<
+      GovReceiptType,
+      'hasVoted' | 'support' | 'votes' | 'reason'
+    >
+  >
+}
+
+export type GovernanceVotesQueryVariables = Exact<{
+  filter: GovVotesFilterInputType
+}>
+
+export type GovernanceVotesQuery = { __typename?: 'Query' } & Pick<
+  Query,
+  'govVotes'
+>
+
 export type AddWalletMutationVariables = Exact<{
   input: AddWalletInputType
 }>

@@ -13,6 +13,7 @@ import { ReactComponent as HomeIcon } from '~/assets/icons/home.svg'
 import { ReactComponent as SettingsIcon } from '~/assets/icons/settings.svg'
 import { ReactComponent as SettingsArrowIcon } from '~/assets/icons/settings-arrow.svg'
 import { ReactComponent as PlusIcon } from '~/assets/icons/plus.svg'
+import { ReactComponent as BackArrowIcon } from '~/assets/icons/back-arrow.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -32,6 +33,7 @@ const ICONS = {
   settings: SettingsIcon,
   settingsArrow: SettingsArrowIcon,
   plus: PlusIcon,
+  backArrow: BackArrowIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

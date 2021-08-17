@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+import React from 'react'
 import { useGate, useStore } from 'effector-react'
 import { useParams } from 'react-router-dom'
 
@@ -11,12 +13,20 @@ import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { config } from '~/config'
 import { GovProposalStateEnum } from '~/graphql/_generated-types'
 import { dateUtils } from '~/common/date-utils'
-import { GovernanceVoteInfo } from '~/governance/common'
+import {
+  GovernanceVoteInfo,
+  GovProposalStateEnumColors,
+} from '~/governance/common'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { Grid } from '~/common/grid'
 import { Button } from '~/common/button'
+import { isEthAddress } from '~/common/is-eth-address'
+import { Chip } from '~/common/chip'
+import { Paper } from '~/common/paper'
+import * as styles from './governance-detail.css'
 
 export type GovernanceDetailProps = unknown
+
+const QUORUM_VOTES = '400000'
 
 export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const params = useParams<{ governanceId: string }>()
@@ -52,64 +62,101 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
     <AppLayout>
       {loading && <Typography>loading...</Typography>}
       {governanceDetail && (
-        <>
-          <Typography>{governanceDetail.title}</Typography>
+        <div className={styles.root}>
+          <Typography
+            align="center"
+            variant="h2"
+            family="mono"
+            transform="uppercase"
+          >
+            {governanceDetail.title}
+          </Typography>
+          <Chip
+            color={GovProposalStateEnumColors[governanceDetail.state]}
+            className={clsx(styles.status, styles.mb32)}
+          >
+            {governanceDetail.state}
+          </Chip>
           {[
             GovProposalStateEnum.Defeated,
             GovProposalStateEnum.Executed,
             GovProposalStateEnum.Expired,
             GovProposalStateEnum.Succeeded,
           ].includes(governanceDetail.state) && (
-            <Grid.Container variant="fluid">
-              <Grid.Row>
-                <GovernanceVoteInfo
-                  variant="for"
-                  active={false}
-                  total={bignumberUtils.total(
-                    governanceDetail.abstainVotes,
-                    governanceDetail.againstVotes,
-                    governanceDetail.forVotes
-                  )}
-                  count={governanceDetail.forVotes}
-                />
-                <GovernanceVoteInfo
-                  variant="abstain"
-                  active={false}
-                  total={bignumberUtils.total(
-                    governanceDetail.abstainVotes,
-                    governanceDetail.againstVotes,
-                    governanceDetail.forVotes
-                  )}
-                  count={governanceDetail.abstainVotes}
-                />
-                <GovernanceVoteInfo
-                  variant="against"
-                  active={false}
-                  total={bignumberUtils.total(
-                    governanceDetail.abstainVotes,
-                    governanceDetail.againstVotes,
-                    governanceDetail.forVotes
-                  )}
-                  count={governanceDetail.againstVotes}
-                />
-              </Grid.Row>
-            </Grid.Container>
+            <div className={clsx(styles.voteInfo, styles.mb32)}>
+              <GovernanceVoteInfo
+                variant="for"
+                active={false}
+                total={bignumberUtils.total(
+                  governanceDetail.abstainVotes,
+                  governanceDetail.againstVotes,
+                  governanceDetail.forVotes
+                )}
+                count={governanceDetail.forVotes}
+              />
+              <GovernanceVoteInfo
+                variant="abstain"
+                active={false}
+                total={bignumberUtils.total(
+                  governanceDetail.abstainVotes,
+                  governanceDetail.againstVotes,
+                  governanceDetail.forVotes
+                )}
+                count={governanceDetail.abstainVotes}
+              />
+              <GovernanceVoteInfo
+                variant="against"
+                active={false}
+                total={bignumberUtils.total(
+                  governanceDetail.abstainVotes,
+                  governanceDetail.againstVotes,
+                  governanceDetail.forVotes
+                )}
+                count={governanceDetail.againstVotes}
+              />
+            </div>
+          )}
+          {!bignumberUtils.gte(governanceDetail.forVotes, QUORUM_VOTES) && (
+            <Typography
+              variant="body1"
+              align="center"
+              as="div"
+              className={styles.mb32}
+            >
+              In order to be applied, the quorum of 4% must be reached
+            </Typography>
           )}
           {governanceDetail.state === GovProposalStateEnum.Succeeded && (
-            <div>
-              <Button onClick={handleVoteFor} loading={loadingCastVote}>
+            <div className={clsx(styles.voteButtons, styles.mb32)}>
+              <Button
+                className={styles.voteButton}
+                onClick={handleVoteFor}
+                loading={loadingCastVote}
+              >
                 Vote for
               </Button>
-              <Button onClick={handleVoteAbstain} loading={loadingCastVote}>
+              <Button
+                className={styles.voteButton}
+                onClick={handleVoteAbstain}
+                loading={loadingCastVote}
+              >
                 Vote abstain
               </Button>
-              <Button onClick={handleVoteAgainst} loading={loadingCastVote}>
+              <Button
+                className={styles.voteButton}
+                onClick={handleVoteAgainst}
+                loading={loadingCastVote}
+              >
                 Vote against
               </Button>
             </div>
           )}
           {GovProposalStateEnum.Succeeded === governanceDetail.state && (
-            <Button onClick={handleQueueProposal} loading={loadingQueue}>
+            <Button
+              onClick={handleQueueProposal}
+              loading={loadingQueue}
+              className={styles.mb32}
+            >
               Queue
             </Button>
           )}
@@ -118,30 +165,33 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             dateUtils.formatUnix(governanceDetail.eta, 'YYYY-MM-DD HH:mm:ss')
           ) &&
             GovProposalStateEnum.Queued === governanceDetail.state && (
-              <Button onClick={handleExecuteProposal} loading={loadingExecute}>
+              <Button
+                onClick={handleExecuteProposal}
+                loading={loadingExecute}
+                className={styles.mb32}
+              >
                 Execute
               </Button>
             )}
-          <Typography>{governanceDetail.state}</Typography>
           {GovProposalStateEnum.Active === governanceDetail.state && (
-            <span>
+            <Typography align="center" className={styles.mb32}>
               Voting will end on{' '}
               {dateUtils.format(
-                governanceDetail.endBlock,
+                governanceDetail.endVoteDate,
                 'DD MMMM YYYY HH:mm'
               )}
-            </span>
+            </Typography>
           )}
           {GovProposalStateEnum.Queued === governanceDetail.state && (
-            <span>
+            <Typography align="center" className={styles.mb32}>
               Can be executed on{' '}
               {dateUtils.formatUnix(governanceDetail.eta, 'DD MMMM YYYY HH:mm')}
-            </span>
+            </Typography>
           )}
-          <div>
+          <Paper className={clsx(styles.actions, styles.mb32)}>
             {governanceDetail.actions.map(
-              ({ target, callData, signature, id }) => (
-                <div key={id}>
+              ({ target, callDatas, signature, id }) => (
+                <Typography key={id} className={styles.action}>
                   <Link
                     href={buildExplorerUrl({
                       network: config.IS_DEV ? '3' : '1',
@@ -151,13 +201,32 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   >
                     {cutAccount(target)}
                   </Link>
-                  .{signature}({callData})
-                </div>
+                  .{signature}(
+                  {callDatas.map((callData, index) => (
+                    <React.Fragment key={String(index)}>
+                      {isEthAddress(callData) ? (
+                        <Link
+                          href={buildExplorerUrl({
+                            network: config.IS_DEV ? '3' : '1',
+                            address: callData,
+                          })}
+                          target="_blank"
+                        >
+                          {cutAccount(callData)}
+                        </Link>
+                      ) : (
+                        callData
+                      )}
+                      {callDatas.length - 1 === index ? '' : ', '}
+                    </React.Fragment>
+                  ))}
+                  )
+                </Typography>
               )
             )}
-          </div>
+          </Paper>
           <Typography>
-            Proposer:{' '}
+            Author:{' '}
             <Link
               href={buildExplorerUrl({
                 network: config.IS_DEV ? '3' : '1',
@@ -169,7 +238,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             </Link>
           </Typography>
           <MarkdownRender>{governanceDetail.description}</MarkdownRender>
-        </>
+        </div>
       )}
     </AppLayout>
   )

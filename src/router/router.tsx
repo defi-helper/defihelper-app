@@ -107,13 +107,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.billing}>
           <Billing />
         </PrivateRoute>
-        <CanRoute
-          path={paths.governance.create}
-          action="create"
-          subject="Governance"
-        >
+        <Route path={paths.governance.create}>
           <GovernanceCreate />
-        </CanRoute>
+        </Route>
         <Route path={paths.governance.detail()}>
           <GovernanceDetail />
         </Route>

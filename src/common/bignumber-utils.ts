@@ -29,4 +29,17 @@ export const bignumberUtils = {
     numbers
       .reduce((acc, num) => acc.plus(num ?? 0), new BigNumber(0))
       .toString(10),
+
+  estimateGas: <T extends { toString: () => string }>(
+    value: T,
+    options?: {
+      gasSlippage?: number
+    }
+  ) =>
+    new BigNumber(value.toString())
+      .multipliedBy(options?.gasSlippage || 1.2)
+      .toFixed(0),
+
+  gte: (num1?: string | number | null, num2?: string | number | null) =>
+    new BigNumber(num1 || 0).isGreaterThanOrEqualTo(num2 || 0),
 }

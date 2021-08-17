@@ -1,10 +1,10 @@
-const TITLE_REGEX = /(# | \s#) |\n/g
+const TITLE_REGEX = /\n/g
 
 export const parseDescription = (description: string) => {
   const [title] = description.split(TITLE_REGEX) ?? []
 
   return {
-    title,
+    title: title.replace('#', ''),
     description: description.replace(title, ''),
   }
 }

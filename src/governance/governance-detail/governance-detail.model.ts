@@ -34,6 +34,7 @@ export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect({
                 governanceProposal.calldatas,
                 governanceProposal.signatures
               ),
+              endVoteDate: new Date(),
             }
           : null
       ),
