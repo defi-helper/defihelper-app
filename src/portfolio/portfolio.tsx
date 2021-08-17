@@ -5,10 +5,9 @@ import { PortfolioSummaryOfTokens } from '~/portfolio/portfolio-summary-of-token
 import { PortfolioChartOfAllTokens } from '~/portfolio/portfolio-chart-of-all-tokens'
 import { PortfolioBlockchains } from '~/portfolio/portfolio-blockchains'
 import { useDialog } from '~/common/dialog'
+import { Can } from '~/users'
 import { PortfolioAddWalletDialog } from './common'
 import * as model from './portfolio.model'
-import { Can } from '~/users'
-import { Typography } from '~/common/typography'
 
 export type PortfolioProps = unknown
 
@@ -28,12 +27,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
   return (
     <AppLayout>
       <PortfolioSummaryOfTokens />
-      <Typography>all tokens</Typography>
-      <PortfolioChartOfAllTokens id="all_tokens" />
-      <Typography>stable</Typography>
-      <PortfolioChartOfAllTokens stable id="stable_tokens" />
-      <Typography>shit</Typography>
-      <PortfolioChartOfAllTokens stable={false} id="shit_tokens" />
+      <PortfolioChartOfAllTokens />
       <PortfolioBlockchains />
       <Can I="create" a="Wallet">
         <Button onClick={handleOpenAddWalletDialog}>add wallet</Button>
