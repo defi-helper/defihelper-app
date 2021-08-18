@@ -111,22 +111,27 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                   Subscribe for telegram bot to be notified when your portfolio
                   ready to use
                 </Typography>
-                <Button
-                  variant="outlined"
-                  disabled={!account}
-                  onClick={
-                    !contactList.length ? () => model.openTelegram() : undefined
-                  }
-                  as={contactList.length ? Link : undefined}
-                  target={contactList.length ? '_blank' : undefined}
-                  href={
-                    contactList.length
-                      ? `https://t.me/${config.TELEGRAM_BOT_USERNAME}`
-                      : undefined
-                  }
-                >
-                  Open Telegram
-                </Button>
+                {!contactList.length && (
+                  <Button
+                    variant="outlined"
+                    onClick={() => model.openTelegram()}
+                    as={Link}
+                    target="_blank"
+                    href={`https://t.me/${config.TELEGRAM_BOT_USERNAME}`}
+                  >
+                    Open Telegram
+                  </Button>
+                )}
+                {!!contactList.length && (
+                  <Typography
+                    variant="body2"
+                    transform="uppercase"
+                    family="mono"
+                    className={styles.connected}
+                  >
+                    Connected
+                  </Typography>
+                )}
               </Paper>
             </div>
           </Grid.Row>

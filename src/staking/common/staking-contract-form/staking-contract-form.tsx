@@ -7,6 +7,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import { useEffect, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 
+import { NETWORKS_CHAIN_IDS } from '~/common/constants'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 import { stakingContractFormSchema } from './staking-contract-form.validation'
 
@@ -46,7 +47,7 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
 ) => {
   const classes = useStyles()
 
-  const { register, setValue, handleSubmit, reset, formState } =
+  const { register, setValue, handleSubmit, reset, formState, watch } =
     useForm<FormValues>({
       resolver: yupResolver(stakingContractFormSchema),
     })
@@ -72,6 +73,8 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
       setValue('eventsToSubscribe', [])
     }
   }, [subscribeToEventsFromList, setValue])
+
+  const currentBlockChain = watch('blockchain')
 
   return (
     <form
@@ -162,7 +165,16 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
         disabled={props.loading}
         error={Boolean(formState.errors.network)}
         helperText={formState.errors.network?.message}
-      />
+        select
+      >
+        {Object.entries(NETWORKS_CHAIN_IDS.get(currentBlockChain) ?? {}).map(
+          ([label, value]) => (
+            <MenuItem key={label} value={value}>
+              {label}
+            </MenuItem>
+          )
+        )}
+      </TextField>
       <TextField
         type="text"
         label="Blockchain"

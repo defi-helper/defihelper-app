@@ -10,29 +10,45 @@ import * as styles from './wallet-detail.css'
 
 export type WalletDetailProps = {
   onChange: () => void
+  onCancel: () => void
 }
 
 export const WalletDetail: React.VFC<WalletDetailProps> = (props) => {
   const wallet = useStore(walletNetworkModel.$wallet)
 
+  const handleLogout = async () => {
+    try {
+      await walletNetworkModel.diactivateWalletFx(wallet.connector)
+
+      props.onCancel()
+    } catch (error) {
+      console.error(error.message)
+    }
+  }
+
   return (
-    <Dialog>
-      <div className={styles.root}>
-        {!!wallet.account && !!wallet.chainId && (
-          <Link
-            href={buildExplorerUrl({
-              address: wallet.account,
-              network: wallet.chainId,
-            })}
-            target="_blank"
-          >
-            {cutAccount(wallet.account)}
-          </Link>
-        )}
-        <Button onClick={props.onChange} variant="outlined">
-          Change Wallet
-        </Button>
-      </div>
+    <Dialog className={styles.root}>
+      {!!wallet.account && !!wallet.chainId && (
+        <Link
+          href={buildExplorerUrl({
+            address: wallet.account,
+            network: wallet.chainId,
+          })}
+          target="_blank"
+        >
+          {cutAccount(wallet.account)}
+        </Link>
+      )}
+      <Button
+        onClick={props.onChange}
+        variant="outlined"
+        className={styles.change}
+      >
+        Change Wallet
+      </Button>
+      <Button variant="outlined" onClick={handleLogout}>
+        Logout
+      </Button>
     </Dialog>
   )
 }

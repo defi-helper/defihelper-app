@@ -17,10 +17,11 @@ import { makeStyles } from '@material-ui/core'
 import clsx from 'clsx'
 
 export type ChartProps = {
-  dataFields: IXYSeriesDataFields
+  dataFields: Array<IXYSeriesDataFields>
   tooltipText?: string
   data?: Array<unknown>
   id?: string
+  names?: Array<string>
 }
 
 amchartsUseTheme(am4themes_animated)
@@ -55,21 +56,37 @@ export const Chart: React.VFC<ChartProps> = (props) => {
 
     chartRef.current.data = props.data
 
-    chartRef.current.yAxes.push(new ValueAxis())
-    const series = chartRef.current.series.push(new LineSeries())
-    series.dataFields = props.dataFields
+    props.dataFields.forEach((field, index) => {
+      if (!chartRef.current) return
 
-    if (props.tooltipText) {
-      series.tooltipText = props.tooltipText
-    }
+      const valueAxis = chartRef.current.yAxes.push(new ValueAxis())
+      if (chartRef.current.yAxes.indexOf(valueAxis) !== 0) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        valueAxis.syncWithAxis = chartRef.current.yAxes.getIndex(0)
+      }
 
-    if (series.tooltip) {
-      series.tooltip.pointerOrientation = 'vertical'
-    }
+      const series = chartRef.current.series.push(new LineSeries())
 
-    chartRef.current.cursor = new XYCursor()
-    chartRef.current.cursor.snapToSeries = series
-    chartRef.current.cursor.xAxis = dateAxis
+      series.dataFields.valueY = field.valueY
+      series.dataFields.dateX = field.dateX
+
+      const name = props.names?.[index]
+
+      if (name) {
+        series.name = name
+      }
+
+      if (props.tooltipText) {
+        series.tooltipText = props.tooltipText
+      }
+
+      if (series.tooltip) {
+        series.tooltip.pointerOrientation = 'vertical'
+      }
+      chartRef.current.cursor = new XYCursor()
+      chartRef.current.cursor.xAxis = dateAxis
+    })
 
     chartRef.current.scrollbarX = new Scrollbar()
 

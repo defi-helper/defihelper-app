@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import TextField from '@material-ui/core/TextField'
 import Checkbox from '@material-ui/core/Checkbox'
 import Button from '@material-ui/core/Button'
-import { FormLabel, makeStyles } from '@material-ui/core'
+import { FormLabel, makeStyles, MenuItem } from '@material-ui/core'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 import { protocolFormSchema } from './protocol-form.validation'
@@ -21,6 +21,7 @@ export type ProtocolFormProps = {
   loading: boolean
   onSubmit: (formValues: FormValues) => void
   defaultValues?: FormValues
+  adapters: string[]
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -87,7 +88,14 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
         disabled={props.loading}
         error={Boolean(formState.errors.adapter)}
         helperText={formState.errors.adapter?.message}
-      />
+        select
+      >
+        {props.adapters.map((adapter) => (
+          <MenuItem key={adapter} value={adapter}>
+            {adapter}
+          </MenuItem>
+        ))}
+      </TextField>
       <TextField
         type="text"
         label="Link"

@@ -52,12 +52,14 @@ export const ProtocolMetrics: React.FC<unknown> = () => {
   return (
     <>
       <Chart
-        dataFields={{
-          valueY: 'sum',
-          dateX: 'date',
-        }}
+        dataFields={[
+          {
+            valueY: 'sum',
+            dateX: 'date',
+          },
+        ]}
         data={metric[currentGroup]?.data}
-        tooltipText="{sum}"
+        tooltipText={['$', '{sum}'].join('')}
       />
       <div className={classes.actions}>
         {Object.values(metric).map((metricItem) => (

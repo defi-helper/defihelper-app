@@ -8,6 +8,7 @@ import {
   SortOrderEnum,
   UserTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 const domain = createDomain('portfolioChartOfAllTokens')
 
@@ -58,9 +59,10 @@ const fetchChartDataFx = domain.createEffect({
     const firstItem = sortedData[0]
 
     return lastItem.data.map((dataItem, index) => ({
-      [lastItem.name]: dataItem,
-      [firstItem.name]: firstItem.data[index] ?? { sum: '0', data: '0' },
-      [secondItem.name]: secondItem.data[index] ?? { sum: '0', data: '0' },
+      [lastItem.name]: bignumberUtils.format(dataItem.sum),
+      [firstItem.name]: bignumberUtils.format(firstItem.data[index]?.sum),
+      [secondItem.name]: bignumberUtils.format(secondItem.data[index]?.sum),
+      date: dataItem.date,
     }))
   },
 })
