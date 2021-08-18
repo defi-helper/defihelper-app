@@ -70,6 +70,8 @@ export const diactivateWalletFx = networkDomain.createEffect({
   name: 'diactivateWalletFx',
   handler: async (connector?: AbstractConnector) => {
     connector?.deactivate()
+
+    sidUtils.remove()
   },
 })
 

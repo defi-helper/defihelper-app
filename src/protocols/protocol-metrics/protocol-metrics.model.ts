@@ -1,6 +1,7 @@
 import { createDomain } from 'effector-logger'
-import { dateUtils } from '~/common/date-utils'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
+import { dateUtils } from '~/common/date-utils'
 import { Unwrap } from '~/common/types'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
@@ -38,7 +39,10 @@ export const fetchMetricFx = protocolMetricsDomain.createEffect({
 
     return {
       group: params.group,
-      data,
+      data: data.map((dataItem) => ({
+        ...dataItem,
+        sum: bignumberUtils.format(dataItem.sum),
+      })),
     }
   },
 })

@@ -17,13 +17,25 @@ export const PortfolioChartOfAllTokens: React.VFC<PortfolioChartOfAllTokensProps
 
     return (
       <Chart
-        dataFields={{
-          valueY: 'sum',
-          dateX: 'date',
-        }}
+        dataFields={[
+          {
+            valueY: 'allTokens',
+            dateX: 'date',
+          },
+          {
+            valueY: 'stable',
+            dateX: 'date',
+          },
+          {
+            valueY: 'shit',
+            dateX: 'date',
+          },
+        ]}
         id="tokens"
         data={portfolioChartOfAllTokens}
-        tooltipText="{sum}"
+        names={['All tokens', 'Stable', 'Shit']}
+        // eslint-disable-next-line no-template-curly-in-string
+        tooltipText="{name}: [bold]${valueY}[/]"
       />
     )
   }

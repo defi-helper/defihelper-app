@@ -1,10 +1,12 @@
-import { createDomain } from 'effector-logger'
-import { history } from '~/common/history'
+import { createDomain, restore, sample } from 'effector-logger'
+import { createGate } from 'effector-react'
 
+import { history } from '~/common/history'
 import { ProtocolCreateMutationVariables } from '~/graphql/_generated-types'
 import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
 import { protocolsApi } from '../common/protocol.api'
+import { config } from '~/config'
 
 const protocolCreate = createDomain('protocolCreate')
 
@@ -14,6 +16,24 @@ export const protocolCreateFx = protocolCreate.createEffect({
     protocolsApi.protocolCreate({
       input,
     }),
+})
+
+export const fetchAdaptersFx = protocolCreate.createEffect({
+  name: 'fetchAdaptersFx',
+  handler: () =>
+    fetch(config.ADAPTERS_URL).then((res) => res.json()) as Promise<string[]>,
+})
+
+export const $adapters = restore(fetchAdaptersFx.doneData, [])
+
+export const ProtocolCreateGate = createGate({
+  name: 'ProtocolCreateGate',
+  domain: protocolCreate,
+})
+
+sample({
+  clock: ProtocolCreateGate.open,
+  target: fetchAdaptersFx,
 })
 
 protocolCreateFx.doneData.watch((payload) => {

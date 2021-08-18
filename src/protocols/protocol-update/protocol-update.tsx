@@ -12,7 +12,10 @@ export type ProtocolUpdateProps = unknown
 export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
   const params = useParams<{ protocolId: string }>()
 
+  const adapters = useStore(model.$adapters)
+
   useGate(detailModel.ProtocolDetailGate, params)
+  useGate(model.ProtocolUpdateGate)
 
   const protocol = useStore(detailModel.$protocol)
   const loading = useStore(detailModel.fetchProtocolFx.pending)
@@ -38,6 +41,7 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
           onSubmit={(formValues) =>
             model.protocolUpdateFx({ id: params.protocolId, input: formValues })
           }
+          adapters={adapters}
           loading={formLoading}
           defaultValues={defaultValues}
         />
