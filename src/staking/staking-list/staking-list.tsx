@@ -1,7 +1,5 @@
 import { makeStyles, Paper } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
-import Button from '@material-ui/core/Button'
-import Link from '@material-ui/core/Link'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useMemo } from 'react'
 import clsx from 'clsx'
@@ -9,6 +7,8 @@ import clsx from 'clsx'
 import { Can, useAbility } from '~/users'
 import * as model from './staking-list.model'
 import { paths } from '~/paths'
+import { Button } from '~/common/button'
+import { Link } from '~/common/link'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { dateUtils } from '~/common/date-utils'
@@ -114,7 +114,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         <Button
           variant="contained"
           color="primary"
-          component={ReactRouterLink}
+          as={ReactRouterLink}
           to={`${paths.staking.create(
             props.protocolId
           )}?protocol-adapter=${protocolAdapter}`}
@@ -194,7 +194,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                 <Can I="update" a="Contract">
                   <Button
                     variant="contained"
-                    component={ReactRouterLink}
+                    as={ReactRouterLink}
                     to={`${paths.staking.update(
                       props.protocolId,
                       stakingListItem.id

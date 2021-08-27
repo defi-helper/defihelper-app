@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useStore } from 'effector-react'
 import { ConnectorEvent, ConnectorUpdate } from '@web3-react/types'
 
-import { connectors } from '~/wallets/common'
+import { connectors, connectorsByName, ConnectorNames } from '~/wallets/common'
 import {
   $wallet,
   activateWalletFx,
@@ -11,21 +11,44 @@ import {
   updateWalletFx,
 } from './wallet-network.model'
 
+const isAuthorizable = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  lastConnector: any
+): lastConnector is { isAuthorized: () => Promise<boolean> } => {
+  return (
+    typeof lastConnector === 'object' &&
+    lastConnector !== null &&
+    lastConnector.isAuthorized !== undefined
+  )
+}
+
 export const useEagerConnect = () => {
   const wallet = useStore($wallet)
 
   const [tried, setTried] = useState(false)
 
   useEffect(() => {
-    connectors.injected.isAuthorized().then((isAuthorized: boolean) => {
-      if (isAuthorized) {
-        activateWalletFx({ connector: connectors.injected }).catch(() => {
+    const lastConnector =
+      connectorsByName[localStorage.connector as ConnectorNames].connector ??
+      connectors.injected
+
+    if (isAuthorizable(lastConnector)) {
+      lastConnector.isAuthorized().then((isAuthorized: boolean) => {
+        if (isAuthorized) {
+          activateWalletFx({ connector: lastConnector }).catch(() => {
+            setTried(true)
+          })
+        } else {
+          setTried(true)
+        }
+      })
+    } else {
+      lastConnector.activate().then(() => {
+        activateWalletFx({ connector: lastConnector }).catch(() => {
           setTried(true)
         })
-      } else {
-        setTried(true)
-      }
-    })
+      })
+    }
   }, [])
 
   useEffect(() => {

@@ -21,6 +21,7 @@ export class WavesKeeperConnector extends AbstractConnector {
 
     this.activate = this.activate.bind(this)
     this.getAccount = this.getAccount.bind(this)
+    this.isAuthorized = this.isAuthorized.bind(this)
 
     this.options = options
   }
@@ -38,10 +39,14 @@ export class WavesKeeperConnector extends AbstractConnector {
       })
     }
 
-    if (!this.account) {
-      const state = await window.WavesKeeper.auth(this.options.authData)
+    const { account } = await window.WavesKeeper.publicState()
 
-      this.account = state.address
+    this.account = account?.address ?? null
+
+    if (!account?.address || !this.account) {
+      const auth = await window.WavesKeeper.auth(this.options.authData)
+
+      this.account = auth.address
 
       return {
         provider: window.WavesKeeper,
@@ -62,6 +67,8 @@ export class WavesKeeperConnector extends AbstractConnector {
   }
 
   public async getAccount() {
+    if (!window.WavesKeeper) throw new Error('waves keeper does not installed')
+
     const state = await window.WavesKeeper.publicState()
 
     const account = state.account?.address
@@ -73,6 +80,14 @@ export class WavesKeeperConnector extends AbstractConnector {
     }
 
     return Promise.reject(new Error(ERROR_MESSAGE))
+  }
+
+  public async isAuthorized() {
+    if (!window.WavesKeeper) return false
+
+    const state = await window.WavesKeeper.publicState()
+
+    return state.initialized
   }
 
   public async getChainId() {

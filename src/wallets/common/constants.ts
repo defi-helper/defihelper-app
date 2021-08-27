@@ -15,7 +15,7 @@ import * as connectors from './connectors'
 import { config } from '~/config'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 
-enum ConnectorNames {
+export enum ConnectorNames {
   MetaMask = 'MetaMask',
   TrustWallet = 'TrustWallet',
   Ledger = 'Ledger',

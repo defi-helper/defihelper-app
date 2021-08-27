@@ -33,18 +33,22 @@ export type LayoutHeaderProps = {
 }
 
 export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
-  const [opened, setOpen] = useState(false)
+  const [settingsOpened, setSettingsOpen] = useState(false)
 
   const [hided, setHide] = useLocalStorage('dfh:sidebar', false)
 
   const [currentTheme, setTheme, removeTheme] = useTheme()
 
-  const handleSetOpen = () => {
-    setOpen(!opened)
+  const handleSettingsOpen = () => {
+    setSettingsOpen(!settingsOpened)
   }
 
-  const handleChangeTheme = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTheme(event.target.value)
+  const handleSettingsBlur = () => {
+    setSettingsOpen(false)
+  }
+
+  const handleChangeTheme = (variant: 'dark' | 'light') => () => {
+    setTheme(variant)
   }
 
   const handleHide = () => {
@@ -119,12 +123,29 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
             </li>
           ))}
         </ul>
-        <Paper
-          as={ButtonBase}
-          className={styles.settings}
-          onClick={handleSetOpen}
-        >
-          {opened && (
+        <div className={styles.settingsWrap}>
+          <Paper
+            as={ButtonBase}
+            className={styles.settings}
+            onClick={handleSettingsOpen}
+            onBlur={handleSettingsBlur}
+          >
+            <Icon
+              icon="settings"
+              width="24"
+              height="24"
+              className={styles.settingsIcon}
+            />
+            {!hided && (
+              <Icon
+                icon="settingsArrow"
+                width="12"
+                height="8"
+                className={styles.settingsIconArrow}
+              />
+            )}
+          </Paper>
+          {settingsOpened && (
             <div className={styles.settingsDropdown}>
               <label>
                 <input
@@ -133,7 +154,8 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
                   name="theme"
                   checked={currentTheme === 'dark'}
                   value="dark"
-                  onChange={handleChangeTheme}
+                  onMouseDown={handleChangeTheme('dark')}
+                  onChange={handleChangeTheme('dark')}
                 />
                 dark
               </label>
@@ -144,7 +166,8 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
                   name="theme"
                   checked={currentTheme === 'light'}
                   value="light"
-                  onChange={handleChangeTheme}
+                  onMouseDown={handleChangeTheme('light')}
+                  onChange={handleChangeTheme('light')}
                 />
                 light
               </label>
@@ -155,27 +178,14 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
                   name="theme"
                   checked={currentTheme === undefined}
                   value="system"
+                  onMouseDown={removeTheme}
                   onChange={removeTheme}
                 />
                 system
               </label>
             </div>
           )}
-          <Icon
-            icon="settings"
-            width="24"
-            height="24"
-            className={styles.settingsIcon}
-          />
-          {!hided && (
-            <Icon
-              icon="settingsArrow"
-              width="12"
-              height="8"
-              className={styles.settingsIconArrow}
-            />
-          )}
-        </Paper>
+        </div>
       </aside>
     </div>
   )

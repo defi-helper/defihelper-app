@@ -96,6 +96,10 @@ export const active = style({
   opacity: 1,
 })
 
+export const settingsWrap = style({
+  position: 'relative',
+})
+
 export const settings = style({
   marginTop: 'auto',
   borderRadius: 8,

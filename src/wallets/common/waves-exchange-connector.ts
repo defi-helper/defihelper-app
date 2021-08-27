@@ -70,6 +70,14 @@ export class WavesExchangeConnector extends AbstractConnector {
       .catch((error) => console.error(error.message))
   }
 
+  public async isAuthorized() {
+    if (!this.provider) return false
+
+    const state = await this.provider.login()
+
+    return Boolean(state.address)
+  }
+
   public async getAccount() {
     return this.account
   }
