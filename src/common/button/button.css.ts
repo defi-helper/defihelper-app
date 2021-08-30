@@ -7,6 +7,7 @@ export const root = style({
   textTransform: 'uppercase',
   fontFamily: theme.fonts.mono,
   padding: '7px 15px',
+  position: 'relative',
 })
 
 export const colors = styleVariants({
@@ -63,4 +64,25 @@ export const sizes = styleVariants({
   medium: {},
 
   large: {},
+})
+
+export const loading = style({
+  pointerEvents: 'none',
+})
+
+export const circularProgess = style({
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  margin: 'auto',
+})
+
+export const content = style({
+  transition: 'opacity .4s ease-in-out',
+})
+
+export const contentLoading = style({
+  opacity: 0,
 })

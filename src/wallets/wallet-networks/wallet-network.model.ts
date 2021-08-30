@@ -9,10 +9,10 @@ import {
   augmentConnectorUpdate,
   walletApi,
   createEthereumProvider,
-  connectors,
   signMessageWaves,
   signMessageEthereum,
   SIGN_MESSAGE,
+  connectorsByName,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { sidUtils } from '~/users/common'
@@ -41,7 +41,7 @@ type AuthData = {
 export const networkDomain = createDomain('network')
 
 export const activateWalletFx = networkDomain.createEffect({
-  name: 'activateWallet',
+  name: 'activateWalletFx',
   handler: async (params: {
     connector: AbstractConnector
     update?: ConnectorUpdate<number | string>
@@ -53,7 +53,7 @@ export const activateWalletFx = networkDomain.createEffect({
 })
 
 export const updateWalletFx = networkDomain.createEffect({
-  name: 'updateWallet',
+  name: 'updateWalletFx',
   handler: async (params: {
     connector: AbstractConnector
     update: ConnectorUpdate<number | string>
@@ -75,13 +75,25 @@ export const diactivateWalletFx = networkDomain.createEffect({
   },
 })
 
+export const saveLastConnectorFx = networkDomain.createEffect({
+  name: 'saveLastConnectorFx',
+  handler: (lastConnector: AbstractConnector) => {
+    const [lastConnectorName] =
+      Object.entries(connectorsByName).find(
+        ([, { connector }]) => connector === lastConnector
+      ) ?? []
+
+    localStorage.connector = lastConnectorName
+  },
+})
+
 export const $wallet = networkDomain
   .createStore<WalletStore>(
     {
       chainId: config.CHAIN_ETHEREUM_IDS[0],
       account: null,
       provider: null,
-      connector: connectors.injected,
+      connector: undefined,
     },
     {
       name: '$wallet',
@@ -124,7 +136,7 @@ export const signMessageWavesFx = networkDomain.createEffect({
     const data = await walletApi.authWaves(signedMessageData)
 
     if (!data) {
-      throw new Error('user is null')
+      throw new Error('Unable to authenticate')
     }
 
     return data
@@ -149,9 +161,7 @@ export const signMessageEthereumFx = networkDomain.createEffect({
       ...signedMessageData,
     })
 
-    if (!data) {
-      throw new Error('user is null')
-    }
+    if (!data) throw new Error('Unable to authenticate')
 
     return data
   },
@@ -192,9 +202,18 @@ sample({
 
 guard({
   clock: $wallet,
-  target: signMessageFx,
   filter: ({ account }) => Boolean(account) && !sidUtils.get(),
+  target: signMessageFx,
   greedy: true,
+})
+
+guard({
+  clock: [
+    activateWalletFx.map(({ connector }) => connector),
+    updateWalletFx.map(({ connector }) => connector),
+  ],
+  filter: (connector): connector is AbstractConnector => Boolean(connector),
+  target: saveLastConnectorFx,
 })
 
 split({

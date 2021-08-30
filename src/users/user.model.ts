@@ -1,4 +1,4 @@
-import { createDomain, sample } from 'effector-logger'
+import { createDomain, guard, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 
 import { MeQuery } from '~/graphql/_generated-types'
@@ -33,4 +33,27 @@ fetchUserFx.doneData.watch((data) => {
   if (data) return
 
   sidUtils.remove()
+})
+
+guard({
+  source: [$user, walletNetworkModel.$wallet],
+  clock: [walletNetworkModel.$wallet.updates],
+  filter: ([user, { account, chainId }]) => {
+    return Boolean(
+      account &&
+        user &&
+        user.wallets.list &&
+        user.wallets.list.every(({ address, network }) => {
+          if (Number.isNaN(Number(chainId)) && address !== account) return true
+          if (Number.isNaN(Number(chainId)) && address === account) return false
+
+          return (
+            (Number(network) !== chainId &&
+              address === account.toLowerCase()) ||
+            address !== account.toLowerCase()
+          )
+        })
+    )
+  },
+  target: walletNetworkModel.signMessageFx,
 })

@@ -1,5 +1,4 @@
 import { useStore } from 'effector-react'
-import React, { useEffect } from 'react'
 import Snackbar from '@material-ui/core/Snackbar'
 import Alert from '@material-ui/lab/Alert'
 import { makeStyles, Theme } from '@material-ui/core/styles'
@@ -42,20 +41,12 @@ export const ToastProvider: React.FC<ToastProviderProps> = (props) => {
     model.removeToast(key)
   }
 
-  useEffect(() => {
-    if (props.maxItems && toasts.length > props.maxItems) {
-      const [toast] = toasts
-
-      model.removeToast(toast.key)
-    }
-  }, [toasts, props.maxItems])
-
   return (
     <>
       {Boolean(toasts.length) && (
         <Portal>
           <div className={classes.root}>
-            {toasts.map((toast) => {
+            {toasts.slice(0, props.maxItems).map((toast) => {
               const isDefault = toast.variant === 'default'
 
               return (

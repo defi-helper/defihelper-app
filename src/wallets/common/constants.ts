@@ -1,5 +1,3 @@
-import type { AbstractConnector } from '@web3-react/abstract-connector'
-
 import { ReactComponent as MetaMaskIcon } from '~/assets/icons/wallets/metamask.svg'
 import { ReactComponent as LedgerIcon } from '~/assets/icons/wallets/ledger.svg'
 import { ReactComponent as CoinBaseIcon } from '~/assets/icons/wallets/coinbase-wallet.svg'
@@ -15,7 +13,7 @@ import * as connectors from './connectors'
 import { config } from '~/config'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 
-enum ConnectorNames {
+export enum ConnectorNames {
   MetaMask = 'MetaMask',
   TrustWallet = 'TrustWallet',
   Ledger = 'Ledger',
@@ -29,55 +27,63 @@ enum ConnectorNames {
   WavesExchange = 'WavesExchange',
 }
 
-export const connectorsByName: Record<
-  ConnectorNames,
-  { connector: AbstractConnector; logo: typeof MetaMaskIcon }
-> = {
+export const connectorsByName = {
   [ConnectorNames.MetaMask]: {
     connector: connectors.injected,
+    blockchain: 'ethereum',
     logo: MetaMaskIcon,
   },
   [ConnectorNames.TrustWallet]: {
     connector: connectors.injected,
+    blockchain: 'ethereum',
     logo: TrustIcon,
   },
   [ConnectorNames.Ledger]: {
     connector: connectors.ledger,
+    blockchain: 'ethereum',
     logo: LedgerIcon,
   },
   [ConnectorNames.Trezor]: {
     connector: connectors.trezor,
+    blockchain: 'ethereum',
     logo: TrezorIcon,
   },
   [ConnectorNames.CoinBase]: {
     connector: connectors.walletlink,
+    blockchain: 'ethereum',
     logo: CoinBaseIcon,
   },
   [ConnectorNames.WalletConnect]: {
     connector: connectors.walletconnect,
+    blockchain: 'ethereum',
     logo: WalletConnectIcon,
   },
   [ConnectorNames.Binance]: {
     connector: connectors.binance,
+    blockchain: 'ethereum',
     logo: BinanceIcon,
   },
   [ConnectorNames.Fortmatic]: {
     connector: connectors.fortmatic,
+    blockchain: 'ethereum',
     logo: FortmaticIcon,
   },
   [ConnectorNames.Portis]: {
     connector: connectors.portis,
+    blockchain: 'ethereum',
     logo: PortisIcon,
   },
   [ConnectorNames.WavesKeeper]: {
     connector: connectors.wavesKepper,
+    blockchain: 'waves',
     logo: WavesKeeperIcon,
   },
   [ConnectorNames.WavesExchange]: {
     connector: connectors.wavesExchange,
+    blockchain: 'waves',
     logo: WavesExchangeIcon,
   },
-}
+} as const
 
 export type Network = {
   title: string

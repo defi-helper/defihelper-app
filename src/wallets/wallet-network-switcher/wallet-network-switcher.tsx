@@ -1,14 +1,15 @@
-import Button from '@material-ui/core/Button'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
 import { useState } from 'react'
 import { useStore } from 'effector-react'
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
 
 import { useDialog } from '~/common/dialog'
 import { ChangeNetworkDialog } from '~/common/change-network-dialog'
 import { useAbility } from '~/users'
 import { Network, NETWORKS, setupBinance, setupPolygon } from '~/wallets/common'
 import * as model from './wallet-network-switcher.model'
+import { Button } from '~/common/button'
+import * as styles from './wallet-network-switcher.css'
 
 export type WalletNetworkSwitcherProps = {
   className?: string
@@ -50,12 +51,7 @@ export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
 
     return (
       <>
-        <Button
-          aria-controls="simple-menu"
-          aria-haspopup="true"
-          onClick={handleClick}
-          color="inherit"
-        >
+        <Button onClick={handleClick} color="secondary">
           {currentNetwork.title}
         </Button>
         <Menu
@@ -70,6 +66,7 @@ export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
               key={networkItem.title}
               button
               onClick={handleChangeNetwork(networkItem)}
+              className={styles.dropdownItem}
             >
               {networkItem.title}
             </MenuItem>

@@ -1,7 +1,8 @@
 import clsx from 'clsx'
 import { forwardRef } from 'react'
 
-import { ButtonBase, ButtonBaseProps } from '../button-base'
+import { ButtonBase, ButtonBaseProps } from '~/common/button-base'
+import { CircularProgress } from '~/common/circular-progress'
 import * as styles from './button.css'
 
 export type ButtonProps = Omit<ButtonBaseProps, 'size'> & {
@@ -29,13 +30,22 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       className,
       styles.varinats[variant],
       styles.colors[color],
-      styles.sizes[size]
+      styles.sizes[size],
+      {
+        [styles.loading]: loading,
+      }
     )
 
     return (
       <ButtonBase className={classNames} ref={ref} {...props}>
-        {loading && 'loading...'}
-        {!loading && children}
+        {loading && <CircularProgress className={styles.circularProgess} />}
+        <span
+          className={clsx(styles.content, {
+            [styles.contentLoading]: loading,
+          })}
+        >
+          {children}
+        </span>
       </ButtonBase>
     )
   }
