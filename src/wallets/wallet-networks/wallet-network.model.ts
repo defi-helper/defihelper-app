@@ -107,8 +107,6 @@ export const $wallet = networkDomain
   })
   .reset(diactivateWalletFx.done)
 
-export const $connector = $wallet.map(({ connector }) => connector)
-
 export const getNetwork = () => {
   const wallet = $wallet.getState()
 
@@ -196,7 +194,7 @@ export const signMessageFx = networkDomain.createEffect({
 })
 
 sample({
-  source: $connector,
+  source: $wallet.map(({ connector }) => connector),
   clock: [signMessageEthereumFx.fail, signMessageWavesFx.fail],
   target: diactivateWalletFx,
   greedy: true,
@@ -210,7 +208,10 @@ guard({
 })
 
 guard({
-  clock: $connector,
+  clock: [
+    activateWalletFx.map(({ connector }) => connector),
+    updateWalletFx.map(({ connector }) => connector),
+  ],
   filter: (connector): connector is AbstractConnector => Boolean(connector),
   target: saveLastConnectorFx,
 })

@@ -13,6 +13,8 @@ import * as styles from './protocol-list.css'
 import * as model from './protocol-list.model'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
+import { Input } from '~/common/input'
+import { ProtocolTabs } from '../common'
 
 export type ProtocolListProps = unknown
 
@@ -50,6 +52,14 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           <Typography variant="h4" family="square">
             Protocols
           </Typography>
+          {false && ( // TODO: hide for now
+            <>
+              <ProtocolTabs />
+              <div>
+                <Input placeholder="Search" />
+              </div>
+            </>
+          )}
           <Can I="create" a="Protocol">
             <Button
               as={ReactRouterLink}
