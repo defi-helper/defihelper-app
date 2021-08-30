@@ -28,9 +28,10 @@ export const useEagerConnect = () => {
   const [tried, setTried] = useState(false)
 
   useEffect(() => {
+    const lastConnectorName: ConnectorNames = localStorage.connector
+
     const lastConnector =
-      connectorsByName[localStorage.connector as ConnectorNames].connector ??
-      connectors.injected
+      connectorsByName[lastConnectorName]?.connector ?? connectors.injected
 
     if (isAuthorizable(lastConnector)) {
       lastConnector.isAuthorized().then((isAuthorized: boolean) => {
