@@ -69,7 +69,9 @@ export const UserEventSubscriptionList: React.VFC<ContactListProps> = () => {
 
       await model.deleteUserEventSubscriptionFx(id)
     } catch (error) {
-      console.error(error.message)
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
     }
   }
 

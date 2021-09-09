@@ -1,6 +1,6 @@
-import React, { forwardRef } from 'react'
 import clsx from 'clsx'
 
+import { createComponent } from '~/common/create-component'
 import * as styles from './typography.css'
 
 type Variants = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'body1' | 'body2' | 'inherit'
@@ -18,46 +18,54 @@ const variantMapping: Record<Variants, TagNames> = {
   inherit: 'span',
 }
 
-export type TypographyProps = {
+type Props<C extends React.ElementType = 'p'> = {
   variant?: Variants
-  className?: string
   align?: 'left' | 'center' | 'right'
-  as?: TagNames | 'span' | 'div' | React.ElementType
+  as?: C
   family?: 'square' | 'circle' | 'mono'
   transform?: 'uppercase' | 'lowercase' | 'normal'
-  ref?:
-    | ((instance: HTMLHeadingElement | null) => void)
-    | React.MutableRefObject<HTMLHeadingElement | null>
-    | null
-  children?: React.ReactNode
-} & React.ComponentProps<'div'>
+}
 
-export const Typography = forwardRef<HTMLHeadingElement, TypographyProps>(
-  function Typography(props, ref) {
-    const {
-      variant = 'body1',
-      align = 'left',
-      family = 'square',
-      transform = 'normal',
-      as,
-      ...restOfProps
-    } = props
+export type TypographyProps<C extends React.ElementType = 'p'> = Props<C> &
+  Omit<React.ComponentProps<C>, keyof Props<C>>
 
-    const classNames = clsx(
-      styles.root,
-      props.className,
-      styles.variants[variant],
-      styles.aligns[align],
-      styles.fontFamilies[family],
-      styles.transforms[transform]
-    )
+const Typography = <
+  C extends React.ElementType = 'p',
+  R extends HTMLElement = HTMLParagraphElement
+>(
+  props: TypographyProps<C>,
+  ref: React.ForwardedRef<R>
+) => {
+  const {
+    variant = 'body1',
+    align = 'left',
+    family = 'square',
+    transform = 'normal',
+    as,
+    className,
+    ...restOfProps
+  } = props
 
-    const Component = as ?? variantMapping[variant]
+  const classNames = clsx(
+    styles.root,
+    className,
+    styles.variants[variant],
+    styles.aligns[align],
+    styles.fontFamilies[family],
+    styles.transforms[transform]
+  )
 
-    return (
-      <Component {...restOfProps} className={classNames} ref={ref}>
-        {props.children}
-      </Component>
-    )
-  }
-)
+  const Component = as ?? variantMapping[variant]
+
+  return (
+    <Component
+      {...restOfProps}
+      className={classNames}
+      ref={ref as React.ForwardedRef<HTMLParagraphElement>}
+    />
+  )
+}
+
+const Component = createComponent(Typography)
+
+export { Component as Typography }

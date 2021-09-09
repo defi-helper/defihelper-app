@@ -1,13 +1,23 @@
-import { style } from '@vanilla-extract/css'
+import { style, styleVariants } from '@vanilla-extract/css'
 import { theme } from '../theme'
 
 export const root = style({
-  borderRadius: 16,
   backgroundColor: theme.colors.paper,
+  textDecoration: 'none',
+})
 
-  '@media': {
-    [theme.mediaQueries.lg()]: {
-      borderRadius: 24,
+export const radius = styleVariants({
+  8: {
+    borderRadius: 8,
+  },
+
+  24: {
+    borderRadius: 16,
+
+    '@media': {
+      [theme.mediaQueries.lg()]: {
+        borderRadius: 24,
+      },
     },
   },
 })

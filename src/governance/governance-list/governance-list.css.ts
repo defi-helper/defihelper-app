@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css'
+import { theme } from '~/common/theme'
 
 export const root = style({
   display: 'flex',
@@ -8,32 +9,42 @@ export const root = style({
 export const proposal = style({
   textDecoration: 'none',
   color: 'currentcolor',
-  display: 'block',
+  display: 'flex',
+  alignItems: 'center',
+  padding: '21px 32px',
 
   selectors: {
     '&:not(:last-child)': {
-      marginBottom: 16,
+      marginBottom: 8,
     },
   },
 })
 
-export const buttonCreateProposal = style({
-  display: 'block',
-  marginBottom: 16,
-  width: '100%',
-  padding: 32,
-})
-
-export const proposalContent = style({
+export const header = style({
+  marginBottom: 28,
   display: 'flex',
-  justifyContent: 'space-between',
-  padding: 32,
+  alignItems: 'center',
 })
 
 export const status = style({
-  textTransform: 'capitalize',
+  marginLeft: 'auto',
+})
+
+export const votes = style({
+  padding: '8px 20px 8px 15px',
+  display: 'flex',
+  alignItems: 'center',
+  marginLeft: 'auto',
+  marginRight: 24,
 })
 
 export const delegate = style({
-  margin: '0 auto 20px',
+  color: theme.colors.common.green1,
+  marginLeft: 20,
+})
+
+export const dotsButton = style({
+  width: 32,
+  height: 32,
+  marginLeft: 20,
 })

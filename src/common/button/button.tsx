@@ -1,52 +1,68 @@
 import clsx from 'clsx'
-import { forwardRef } from 'react'
 
-import { ButtonBase, ButtonBaseProps } from '~/common/button-base'
+import { ButtonBase } from '~/common/button-base'
 import { CircularProgress } from '~/common/circular-progress'
+import { createComponent } from '~/common/create-component'
 import * as styles from './button.css'
 
-export type ButtonProps = Omit<ButtonBaseProps, 'size'> & {
+type Props<C extends React.ElementType = 'button'> = {
   variant?: 'contained' | 'outlined'
   color?: 'primary' | 'secondary' | 'green' | 'blue'
   loading?: boolean
+  disabled?: boolean
   size?: 'small' | 'medium' | 'large'
+  as?: C
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  function Button(
-    {
-      className,
-      children,
-      loading,
-      variant = 'contained',
-      color = 'primary',
-      size = 'large',
-      ...props
-    },
-    ref
-  ) {
-    const classNames = clsx(
-      styles.root,
-      className,
-      styles.varinats[variant],
-      styles.colors[color],
-      styles.sizes[size],
-      {
-        [styles.loading]: loading,
-      }
-    )
+export type ButtonProps<C extends React.ElementType = 'button'> = Props<C> &
+  Omit<React.ComponentProps<C>, keyof Props<C>>
 
-    return (
-      <ButtonBase className={classNames} ref={ref} {...props}>
-        {loading && <CircularProgress className={styles.circularProgess} />}
-        <span
-          className={clsx(styles.content, {
-            [styles.contentLoading]: loading,
-          })}
-        >
-          {children}
-        </span>
-      </ButtonBase>
-    )
-  }
-)
+const Button = <
+  C extends React.ElementType = 'button',
+  R extends HTMLElement = HTMLButtonElement
+>(
+  props: ButtonProps<C>,
+  ref: React.ForwardedRef<R>
+) => {
+  const {
+    className,
+    children,
+    loading,
+    variant = 'contained',
+    color = 'primary',
+    size = 'medium',
+    ...restOfProps
+  } = props
+
+  const classNames = clsx(
+    styles.root,
+    className,
+    styles.varinats[variant],
+    styles.colors[color],
+    styles.sizes[size],
+    {
+      [styles.loading]: loading,
+    }
+  )
+
+  return (
+    <ButtonBase
+      className={classNames}
+      ref={ref as React.ForwardedRef<HTMLButtonElement>}
+      {...restOfProps}
+    >
+      {loading && <CircularProgress className={styles.circularProgess} />}
+      <span
+        className={clsx(styles.content, {
+          [styles.contentLoading]: loading,
+        })}
+      >
+        {children}
+      </span>
+    </ButtonBase>
+  )
+}
+
+const Component = createComponent(Button)
+
+export { Component as Button }

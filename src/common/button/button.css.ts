@@ -8,6 +8,7 @@ export const root = style({
   fontFamily: theme.fonts.mono,
   padding: '7px 15px',
   position: 'relative',
+  verticalAlign: 'middle',
 })
 
 export const colors = styleVariants({
@@ -51,19 +52,35 @@ export const varinats = styleVariants({
         color: theme.colors.secondary,
       },
 
-      [`&.${colors.green}`]: {},
+      [`&.${colors.green}`]: {
+        color: theme.colors.secondary,
+      },
 
-      [`&.${colors.blue}`]: {},
+      [`&.${colors.blue}`]: {
+        color: theme.colors.common.blue,
+      },
     },
   },
 })
 
 export const sizes = styleVariants({
-  small: {},
+  small: {
+    fontSize: 14,
+    lineHeight: '20px',
+    padding: '6px 12px',
+  },
 
-  medium: {},
+  medium: {
+    fontSize: 16,
+    lineHeight: '24px',
+    padding: '8px 16px',
+  },
 
-  large: {},
+  large: {
+    fontSize: 20,
+    lineHeight: '28px',
+    padding: '12px 20px',
+  },
 })
 
 export const loading = style({
@@ -81,6 +98,7 @@ export const circularProgess = style({
 
 export const content = style({
   transition: 'opacity .4s ease-in-out',
+  display: 'flex',
 })
 
 export const contentLoading = style({

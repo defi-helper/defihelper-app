@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import clsx from 'clsx'
 import { useLocalStorage } from 'react-use'
@@ -17,6 +17,8 @@ import { config } from '~/config'
 import * as styles from './layout-sidebar.css'
 import { Icon } from '~/common/icon'
 import { useTheme } from '~/common/theme/theme.context'
+import { usePopper } from '~/common/hooks'
+import { Portal } from '~/common/portal'
 
 type MenuItem = {
   title: string
@@ -54,6 +56,13 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
   const handleHide = () => {
     setHide(!hided)
   }
+
+  const {
+    popperStyles,
+    popperAttributes,
+    setReferenceElement,
+    setPopperElement,
+  } = usePopper({ placement: 'top-start' })
 
   return (
     <div className={styles.root}>
@@ -129,6 +138,7 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
             className={styles.settings}
             onClick={handleSettingsOpen}
             onBlur={handleSettingsBlur}
+            ref={setReferenceElement}
           >
             <Icon
               icon="settings"
@@ -146,44 +156,51 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
             )}
           </Paper>
           {settingsOpened && (
-            <div className={styles.settingsDropdown}>
-              <label>
-                <input
-                  type="radio"
-                  id="dark"
-                  name="theme"
-                  checked={currentTheme === 'dark'}
-                  value="dark"
-                  onMouseDown={handleChangeTheme('dark')}
-                  onChange={handleChangeTheme('dark')}
-                />
-                dark
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  id="light"
-                  name="theme"
-                  checked={currentTheme === 'light'}
-                  value="light"
-                  onMouseDown={handleChangeTheme('light')}
-                  onChange={handleChangeTheme('light')}
-                />
-                light
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  id="system"
-                  name="theme"
-                  checked={currentTheme === undefined}
-                  value="system"
-                  onMouseDown={removeTheme}
-                  onChange={removeTheme}
-                />
-                system
-              </label>
-            </div>
+            <Portal>
+              <Paper
+                ref={setPopperElement}
+                {...popperAttributes.popper}
+                style={popperStyles.popper}
+                className={styles.settingsDropdown}
+              >
+                <label>
+                  <input
+                    type="radio"
+                    id="dark"
+                    name="theme"
+                    checked={currentTheme === 'dark'}
+                    value="dark"
+                    onMouseDown={handleChangeTheme('dark')}
+                    onChange={handleChangeTheme('dark')}
+                  />
+                  dark
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    id="light"
+                    name="theme"
+                    checked={currentTheme === 'light'}
+                    value="light"
+                    onMouseDown={handleChangeTheme('light')}
+                    onChange={handleChangeTheme('light')}
+                  />
+                  light
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    id="system"
+                    name="theme"
+                    checked={currentTheme === undefined}
+                    value="system"
+                    onMouseDown={removeTheme}
+                    onChange={removeTheme}
+                  />
+                  system
+                </label>
+              </Paper>
+            </Portal>
           )}
         </div>
       </aside>

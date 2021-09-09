@@ -58,7 +58,7 @@ export class WavesExchangeConnector extends AbstractConnector {
         account: this.account,
       }
     } catch (e) {
-      throw new Error(e)
+      throw new Error(typeof e === 'string' ? e : 'Something went wrong')
     }
   }
 

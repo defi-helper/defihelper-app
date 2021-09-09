@@ -28,7 +28,9 @@ const request = async (params: Params) => {
       params: [params],
     })
   } catch (error) {
-    console.error(error.message)
+    if (error instanceof Error) {
+      console.error(error.message)
+    }
     return false
   }
 }

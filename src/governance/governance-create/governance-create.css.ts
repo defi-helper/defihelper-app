@@ -18,6 +18,10 @@ export const input = style({
   },
 })
 
+export const actions = style({
+  padding: 32,
+})
+
 export const action = style({
   paddingBottom: 24,
 })
@@ -40,4 +44,8 @@ export const actionButton = style({
 
 export const error = style({
   color: theme.colors.common.red,
+})
+
+export const submit = style({
+  margin: '0 auto',
 })

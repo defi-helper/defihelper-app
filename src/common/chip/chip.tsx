@@ -25,6 +25,7 @@ export const Chip: React.FC<ChipProps> = (props) => {
     <Typography
       variant="h5"
       as="div"
+      transform="uppercase"
       className={clsx(
         styles.root,
         styles.colors[variant][props.color],

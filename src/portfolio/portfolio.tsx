@@ -20,7 +20,9 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
 
       model.addWalletFx(res)
     } catch (error) {
-      console.error(error.message)
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
     }
   }
 

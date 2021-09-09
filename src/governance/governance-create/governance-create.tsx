@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import isEmpty from 'lodash.isempty'
 import { useForm } from 'react-hook-form'
 import { useStore } from 'effector-react'
+import clsx from 'clsx'
 import { ethers } from 'ethers'
 
 import { AppLayout } from '~/layouts'
@@ -18,8 +19,15 @@ import { ButtonBase } from '~/common/button-base'
 import { isEthAddress } from '~/common/is-eth-address'
 import { cutAccount } from '~/common/cut-account'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { Paper } from '~/common/paper'
 import * as styles from './governance-create.css'
 import * as model from './governance-create.model'
+
+const MarkdownEditor = lazy(() =>
+  import('~/common/markdown-editor').then((c) => ({
+    default: c.MarkdownEditor,
+  }))
+)
 
 export type GovernanceCreateProps = unknown
 
@@ -35,14 +43,17 @@ const joinArguments = (args: GovernanceActionArguments) => {
     .join(', ')
 }
 
-type FormValues = { name: 'string'; description: 'string' }
+type FormValues = {
+  name: string
+  description: string
+}
 
 export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
   const [openGovernanceActionsDialog] = useDialog(GovernanceActionsDialog)
 
   const loading = useStore(model.proposeFx.pending)
 
-  const { register, handleSubmit, formState } = useForm<FormValues>()
+  const { register, handleSubmit, formState, setValue } = useForm<FormValues>()
 
   const [actions, setActions] = useState<GovernanceAction[]>([])
 
@@ -55,9 +66,11 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
     try {
       const result = await openGovernanceActionsDialog()
 
-      setActions((previousActions) => [...previousActions, result])
+      setActions((previousActions) => [...previousActions, ...result])
     } catch (error) {
-      console.error(error.message)
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
     }
   }
 
@@ -76,12 +89,14 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
         })
 
         setActions((previousActions) =>
-          previousActions.map((previousAction, index) =>
-            index === actionIndex ? result : previousAction
+          previousActions.flatMap((previousAction, index) =>
+            index === actionIndex ? result : [previousAction]
           )
         )
       } catch (error) {
-        console.error(error.message)
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
       }
     }
 
@@ -149,46 +164,55 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
         {formState.errors.name?.type === 'required' && (
           <Typography className={styles.error}>required</Typography>
         )}
-        {actions.map((action, index) => (
-          <div key={String(index)} className={styles.action}>
-            <Typography variant="h5" className={styles.actionTitle}>
-              {index + 1}: {action.contract}.{action.method}(
-              {joinArguments(action.arguments)})
-            </Typography>
-            <ButtonBase
-              className={styles.actionButton}
-              onClick={handleEditAction(action, index)}
-              disabled={loading}
-            >
-              Edit
-            </ButtonBase>
-            <ButtonBase
-              className={styles.actionButton}
-              onClick={handleDeleteAction(index)}
-              disabled={loading}
-            >
-              Delete
-            </ButtonBase>
-          </div>
-        ))}
-        <Button
-          className={styles.input}
-          onClick={handleAddAction}
-          disabled={loading}
-        >
-          {isEmpty(actions) ? '+ Add Action' : '+ Add another action'}
-        </Button>
-        <Input
-          type="text"
-          label="Write a description"
-          className={styles.input}
-          disabled={loading}
-          {...register('description', { required: true })}
-        />
+        {!isEmpty(actions) && (
+          <Paper radius={8} className={clsx(styles.actions, styles.input)}>
+            {actions.map((action, index) => (
+              <div key={String(index)} className={styles.action}>
+                <Typography variant="h5" className={styles.actionTitle}>
+                  {index + 1}: {action.contract}.{action.method}(
+                  {joinArguments(action.arguments)})
+                </Typography>
+                <ButtonBase
+                  className={styles.actionButton}
+                  onClick={handleEditAction(action, index)}
+                  disabled={loading}
+                >
+                  Edit
+                </ButtonBase>
+                <ButtonBase
+                  className={styles.actionButton}
+                  onClick={handleDeleteAction(index)}
+                  disabled={loading}
+                >
+                  Delete
+                </ButtonBase>
+              </div>
+            ))}
+            <Button onClick={handleAddAction}>+ Add another action</Button>
+          </Paper>
+        )}
+        {isEmpty(actions) && (
+          <Button
+            className={styles.input}
+            onClick={handleAddAction}
+            disabled={loading}
+          >
+            + Add Action
+          </Button>
+        )}
+        <Suspense fallback="loading...">
+          <MarkdownEditor
+            value=""
+            label="Write a description"
+            disabled={loading}
+            onChange={(value) => setValue('description', value)}
+            className={styles.input}
+          />
+        </Suspense>
         {formState.errors.description?.type === 'required' && (
           <Typography className={styles.error}>required</Typography>
         )}
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" loading={loading} className={styles.submit}>
           Submit proposal
         </Button>
       </form>
