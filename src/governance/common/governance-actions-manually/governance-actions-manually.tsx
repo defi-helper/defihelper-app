@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import { abi, AbiKeys } from '~/abi'
-import { GovernanceActionsParams } from '../governance-actions-params/governance-actions-params'
+import { abi, AbiKeys, isContract } from '~/abi'
+import { GovernanceActionsManuallyParams } from '../governance-actions-manually-params'
 import { GovernanceActionsSelect } from '../governance-actions-select'
 import { GovernanceActionsStepper } from '../governance-actions-stepper'
 import { parseContract, AbiItem } from '../parse-contract'
@@ -12,15 +12,11 @@ import {
 
 export type GovernanceActionsManuallyProps = {
   onBack: () => void
-  onSubmit: (action: GovernanceAction) => void
+  onSubmit: (action: GovernanceAction[]) => void
   initialAction?: GovernanceAction
 }
 
 const contractNames = Object.keys(abi) as AbiKeys[]
-
-const isContracts = (contract: string): contract is AbiKeys => {
-  return contract in abi
-}
 
 export const GovernanceActionsManually: React.VFC<GovernanceActionsManuallyProps> =
   (props) => {
@@ -30,18 +26,16 @@ export const GovernanceActionsManually: React.VFC<GovernanceActionsManuallyProps
     const [method, setMethod] = useState(props.initialAction?.method ?? '')
 
     const handleOnSubmit = (args: GovernanceActionArguments) => {
-      if (!contract) {
-        throw new Error('contract is null')
-      }
-
-      props.onSubmit({
-        contract,
-        method,
-        arguments: args,
-      })
+      props.onSubmit([
+        {
+          contract,
+          method,
+          arguments: args,
+        },
+      ])
     }
 
-    const methods = isContracts(contract)
+    const methods = isContract(contract)
       ? parseContract(abi[contract] as { abi: AbiItem[] })
       : {}
 
@@ -76,7 +70,7 @@ export const GovernanceActionsManually: React.VFC<GovernanceActionsManuallyProps
       >
         {contract}
       </GovernanceActionsSelect>,
-      <GovernanceActionsParams
+      <GovernanceActionsManuallyParams
         key={3}
         onSubmit={handleOnSubmit}
         methodName={method}
@@ -85,7 +79,7 @@ export const GovernanceActionsManually: React.VFC<GovernanceActionsManuallyProps
       >
         {contract} <br />
         {method}
-      </GovernanceActionsParams>,
+      </GovernanceActionsManuallyParams>,
     ]
 
     return (

@@ -1,5 +1,3 @@
-import React from 'react'
-
 import * as styles from './layout-container.css'
 
 export const LayoutContainer: React.FC = (props) => (

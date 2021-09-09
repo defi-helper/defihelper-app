@@ -1,39 +1,40 @@
-import React from 'react'
 import clsx from 'clsx'
 
+import { createComponent } from '~/common/create-component'
 import * as styles from './button-base.css'
 
-export type ButtonBaseProps = React.ComponentProps<'button'> & {
-  as?: React.ElementType
-  href?: string
-  to?: string
-  target?: string
-  ref?:
-    | ((instance: HTMLButtonElement | null) => void)
-    | React.MutableRefObject<HTMLButtonElement | null>
-    | null
+type Props<C extends React.ElementType = 'button'> = {
+  as?: C
 }
 
-export const ButtonBase = React.forwardRef<HTMLButtonElement, ButtonBaseProps>(
-  function ButtonBase(props, ref) {
-    const {
-      as = 'button',
-      type = 'button',
-      className,
-      children,
-      ...restOfProps
-    } = props
+export type ButtonBaseProps<C extends React.ElementType = 'button'> = Props<C> &
+  Omit<React.ComponentProps<C>, keyof Props<C>>
 
-    const Component = as
+const ButtonBase = <
+  C extends React.ElementType = 'button',
+  R extends HTMLElement = HTMLButtonElement
+>(
+  props: ButtonBaseProps<C>,
+  ref: React.ForwardedRef<R>
+) => {
+  const { as = 'button', type = 'button', className, ...restOfProps } = props
 
-    const classNames = clsx(styles.root, className, {
-      [styles.disabled]: props.disabled,
-    })
+  const Component = as
 
-    return (
-      <Component ref={ref} className={classNames} {...restOfProps} type={type}>
-        {children}
-      </Component>
-    )
-  }
-)
+  const classNames = clsx(styles.root, className, {
+    [styles.disabled]: props.disabled,
+  })
+
+  return (
+    <Component
+      {...restOfProps}
+      ref={ref as React.ForwardedRef<HTMLButtonElement>}
+      className={classNames}
+      type={as === 'button' ? type : undefined}
+    />
+  )
+}
+
+const Component = createComponent(ButtonBase)
+
+export { Component as ButtonBase }

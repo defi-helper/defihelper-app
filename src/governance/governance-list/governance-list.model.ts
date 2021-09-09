@@ -1,6 +1,7 @@
 import { createDomain, guard, restore, sample } from 'effector-logger'
 import { createGate } from 'effector-react'
 import { ethers } from 'ethers'
+import contracts from '@defihelper/networks/contracts.json'
 
 import { abi } from '~/abi'
 import { createPagination, PaginationState } from '~/common/create-pagination'
@@ -11,8 +12,8 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export const governanceListDomain = createDomain('governanceListDomain')
 
-const GOVERNOR_TOKEN = '0xa57fEd13d1558116E90009f872AeC868D710D605'
-const GOVERNOR_BRAVO = '0xc8E942D9CA1e8dda3e39C7495A55086581D08858'
+const GOVERNOR_TOKEN = contracts[3].GovernanceToken.address
+const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
 
 export const fetchGovernanceListFx = governanceListDomain.createEffect({
   name: 'fetchGovernanceListFx',
@@ -25,7 +26,7 @@ export const fetchGovernanceListFx = governanceListDomain.createEffect({
       filter: {
         network,
         contract: GOVERNOR_BRAVO,
-        cache: true,
+        cache: false,
       },
     }),
 })

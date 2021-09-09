@@ -1,32 +1,26 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
+
 import { theme } from '~/common/theme'
 
 export const root = style({
-  display: 'inline-flex',
-  flexDirection: 'column',
-  width: '100%',
+  position: 'relative',
   fontFamily: theme.fonts.mono,
   textTransform: 'uppercase',
-  position: 'relative',
-  backgroundColor: theme.colors.common.black6,
-  borderRadius: 10,
   fontSize: 20,
   lineHeight: '28px',
 })
 
 export const input = style({
-  display: 'block',
-  width: 'inherit',
-  height: 'inherit',
-  outline: 'none',
-  border: 'none',
+  display: 'inline-flex',
+  flexDirection: 'column',
+  width: '100%',
+  fontFamily: 'inherit',
+  textTransform: 'inherit',
+  position: 'relative',
+  backgroundColor: theme.colors.common.black6,
+  borderRadius: 10,
   fontSize: 'inherit',
   lineHeight: 'inherit',
-  textTransform: 'inherit',
-  fontFamily: 'inherit',
-  background: 'transparent',
-  padding: '12px 16px',
-  color: 'currentcolor',
 })
 
 export const label = style({
@@ -43,4 +37,10 @@ export const focusedLabel = style({
   lineHeight: '16px',
   opacity: 0.63,
   transform: 'translateY(-25px)',
+})
+
+globalStyle(`${input} .ProseMirror`, {
+  outline: 'none',
+  height: '100%',
+  padding: '0 16px',
 })

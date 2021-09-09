@@ -74,7 +74,9 @@ export const UserContactList: React.VFC<ContactListProps> = () => {
 
       await model.deleteUserContactFx(id)
     } catch (error) {
-      console.error(error.message)
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
     }
   }
 

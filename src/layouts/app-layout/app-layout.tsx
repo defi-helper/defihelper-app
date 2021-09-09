@@ -1,7 +1,5 @@
-import React from 'react'
-
-import { useDialog } from '~/common/dialog'
 import { paths } from '~/paths'
+import { useDialog } from '~/common/dialog'
 import { WalletDetail } from '~/wallets/wallet-detail'
 import { WalletList } from '~/wallets/wallet-list'
 import { WalletNetworkSwitcher } from '~/wallets/wallet-network-switcher'

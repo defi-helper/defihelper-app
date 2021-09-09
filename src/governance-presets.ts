@@ -43,12 +43,12 @@ export const governancePresets: GovernancePreset[] = [
           {
             variable: false,
             type: 'address',
-            value: 'networkConfig.assets.Stable.address',
+            value: '',
           },
           {
             variable: true,
             type: 'address',
-            value: 'networkConfig.contracts.Issuer.address',
+            value: '',
           },
           {
             variable: true,

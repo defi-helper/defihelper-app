@@ -112,7 +112,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                   ready to use
                 </Typography>
                 {!contactList.length && (
-                  <Button
+                  <Button<typeof Link, HTMLAnchorElement>
                     variant="outlined"
                     onClick={() => model.openTelegram()}
                     as={Link}

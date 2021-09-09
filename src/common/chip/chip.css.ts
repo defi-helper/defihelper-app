@@ -6,10 +6,14 @@ export const root = style({
   margin: 0,
   minWidth: 0,
   fontWeight: 400,
-  borderRadius: 8,
-  padding: '0 8px',
+  borderRadius: 100,
+  padding: '6px 12px',
   border: '1px solid currentColor',
   display: 'inline-block',
+  fontSize: 14,
+  lineHeight: '20px',
+  fontFamily: theme.fonts.mono,
+  textTransform: 'uppercase',
 })
 
 export const outlinedColors = styleVariants({

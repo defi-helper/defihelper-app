@@ -98,6 +98,7 @@ export const active = style({
 
 export const settingsWrap = style({
   position: 'relative',
+  marginTop: 'auto',
 })
 
 export const settings = style({
@@ -117,8 +118,6 @@ export const settingsIconArrow = style({
 })
 
 export const settingsDropdown = style({
-  position: 'absolute',
   width: sidebarWidth,
-  bottom: '100%',
-  left: 0,
+  height: 100,
 })

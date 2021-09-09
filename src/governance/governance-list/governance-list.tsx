@@ -14,12 +14,10 @@ import {
 import { useDialog } from '~/common/dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { Link } from '~/common/link'
-import { cutAccount } from '~/common/cut-account'
+import { ButtonBase } from '~/common/button-base'
 import * as model from './governance-list.model'
 import * as styles from './governance-list.css'
-import { buildExplorerUrl } from '~/common/build-explorer-url'
-import { config } from '~/config'
+import { Icon } from '~/common/icon'
 
 export type GovernanceListProps = unknown
 
@@ -28,17 +26,17 @@ const DELEGATE_TO_DEFAULT = '0x0000000000000000000000000000000000000000'
 const getDelegateButtonText = (votes?: string | null, delegateTo?: string) => {
   if (bignumberUtils.gt(votes, 0)) {
     if (DELEGATE_TO_DEFAULT === delegateTo) {
-      return 'Delegate to'
+      return 'Delegate'
     }
 
     return 'Redelegate'
   }
 
-  return 'Unlock votes'
+  return 'Unlock'
 }
 
 export const GovernanceList: React.VFC<GovernanceListProps> = () => {
-  const [openDelegateOpen] = useDialog(GovernanceDelegateDialog)
+  const [openDelegate] = useDialog(GovernanceDelegateDialog)
 
   const { account = null } = useStore(walletNetworkModel.$wallet)
 
@@ -52,94 +50,80 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
 
   useGate(model.GovernanceListGate)
 
-  const handleOpenDelegateOpen = async () => {
+  const handleopenDelegate = async () => {
     if (!account) return
 
     try {
-      const result = await openDelegateOpen({
+      const result = await openDelegate({
         votes: governanceVotes?.votes,
         account,
       })
 
       model.delegateVotesFx(result)
     } catch (error) {
-      console.error(error.message)
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
     }
   }
 
   return (
     <AppLayout>
       <div className={styles.root}>
-        {!votesLoading && bignumberUtils.gt(governanceVotes?.votes, 0) && (
-          <div>
-            <Typography variant="h4" transform="uppercase" align="center">
-              {bignumberUtils.format(governanceVotes?.votes)} Votes
+        <div className={styles.header}>
+          <Typography variant="h3" family="square">
+            Governance
+          </Typography>
+          <Paper radius={8} className={styles.votes}>
+            <Typography variant="body2" as="span">
+              {votesLoading ? '...' : governanceVotes?.votes ?? 0} votes
+              (locked)
             </Typography>
-            {governanceVotes?.delegates && (
-              <Typography variant="h4" transform="uppercase" align="center">
-                {governanceVotes.delegates !== DELEGATE_TO_DEFAULT && (
-                  <>
-                    deligated to{' '}
-                    <Link
-                      href={buildExplorerUrl({
-                        address: governanceVotes.delegates,
-                        network: config.IS_DEV ? '3' : '1',
-                      })}
-                      target="_blank"
-                    >
-                      {cutAccount(governanceVotes?.delegates)}
-                    </Link>
-                  </>
-                )}
-                {bignumberUtils.eq(governanceVotes.votes, 0) && (
-                  <>Unlock it so you can vote</>
-                )}
-              </Typography>
-            )}
-          </div>
-        )}
-        {loading && 'loading...'}
-        {!loading && (
-          <Button
-            onClick={handleOpenDelegateOpen}
-            disabled={delegateLoading}
-            className={styles.delegate}
-          >
-            {getDelegateButtonText(
-              governanceVotes?.votes,
-              governanceVotes?.delegates
-            )}
-          </Button>
-        )}
-        {!loading && (
+            <ButtonBase
+              onClick={handleopenDelegate}
+              disabled={delegateLoading}
+              className={styles.delegate}
+            >
+              {getDelegateButtonText(
+                governanceVotes?.votes,
+                governanceVotes?.delegates
+              )}
+            </ButtonBase>
+          </Paper>
           <Button
             as={ReactRouterLink}
+            variant="contained"
+            color="blue"
             to={paths.governance.create}
-            className={styles.buttonCreateProposal}
-            variant="outlined"
           >
-            + Create new proposal
+            <Icon icon="plus" height="24" width="24" />
           </Button>
-        )}
+        </div>
+        {loading && 'loading...'}
         {!loading && !governanceList.length && 'No proposals yet...'}
         {!loading &&
           Boolean(governanceList.length) &&
           governanceList.map((governanceProposal) => (
-            <ReactRouterLink
+            <Paper
+              as={ReactRouterLink}
               to={paths.governance.detail(String(governanceProposal.id))}
               key={governanceProposal.id}
               className={styles.proposal}
+              radius={8}
             >
-              <Paper className={styles.proposalContent}>
-                <div>{governanceProposal.title}</div>
-                <Chip
-                  color={GovProposalStateEnumColors[governanceProposal.state]}
-                  className={styles.status}
-                >
-                  {governanceProposal.state}
-                </Chip>
-              </Paper>
-            </ReactRouterLink>
+              <Typography variant="body2" as="span">
+                {governanceProposal.title}
+              </Typography>
+              <Chip
+                color={GovProposalStateEnumColors[governanceProposal.state]}
+                className={styles.status}
+              >
+                {governanceProposal.state}
+              </Chip>
+              <ButtonBase className={styles.dotsButton}>
+                <Icon icon="dots" width="16" height="16" />
+              </ButtonBase>
+            </Paper>
           ))}
         <model.GovernanceListPagination />
       </div>

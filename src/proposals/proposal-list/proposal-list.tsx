@@ -1,4 +1,4 @@
-import { Button, Paper, makeStyles } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
 import { Link } from 'react-router-dom'
 
@@ -6,8 +6,10 @@ import { AppLayout } from '~/layouts'
 import { paths } from '~/paths'
 import { Can, userModel } from '~/users'
 import { dateUtils } from '~/common/date-utils'
-import * as model from './proposal-list.model'
+import { Paper } from '~/common/paper'
+import { Button } from '~/common/button'
 import { ProposalVote } from '../common'
+import * as model from './proposal-list.model'
 
 export type ProposalListProps = unknown
 
@@ -62,7 +64,7 @@ export const ProposalList: React.VFC<ProposalListProps> = () => {
     <AppLayout>
       <Can I="create" a="Proposal">
         <Button
-          component={Link}
+          as={Link}
           to={paths.proposals.create}
           variant="contained"
           color="primary"
@@ -87,20 +89,19 @@ export const ProposalList: React.VFC<ProposalListProps> = () => {
                 >
                   {proposal.votes.list?.length}
                 </ProposalVote>
-                <Link
+                <Paper
+                  as={Link}
                   className={classes.link}
                   to={paths.proposals.detail(proposal.id)}
                 >
-                  <Paper>
-                    <div>{proposal.title}</div>
-                    <div>Posted {dateUtils.fromNow(proposal.createdAt)}</div>
-                  </Paper>
-                </Link>
+                  <div>{proposal.title}</div>
+                  <div>Posted {dateUtils.fromNow(proposal.createdAt)}</div>
+                </Paper>
                 <Can I="update" a="Proposal">
                   <Button
                     variant="contained"
                     color="primary"
-                    component={Link}
+                    as={Link}
                     to={paths.proposals.update(proposal.id)}
                   >
                     Edit

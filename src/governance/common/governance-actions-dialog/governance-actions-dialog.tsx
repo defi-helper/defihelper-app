@@ -14,7 +14,7 @@ enum Steps {
 }
 
 export type GovernanceActionsDialogProps = {
-  onConfirm: (action: GovernanceAction) => void
+  onConfirm: (action: GovernanceAction[]) => void
   onCancel: () => void
   initialAction?: GovernanceAction
 }

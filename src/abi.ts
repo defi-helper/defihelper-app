@@ -51,3 +51,7 @@ export const abi = {
 } as const
 
 export type AbiKeys = keyof typeof abi
+
+export const isContract = (contract: string): contract is AbiKeys => {
+  return contract in abi
+}

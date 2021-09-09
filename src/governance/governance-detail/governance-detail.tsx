@@ -68,7 +68,9 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
         reason,
       })
     } catch (error) {
-      console.error(error.message)
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
     }
   }
   const handleVoteAgainst = () => {
@@ -146,7 +148,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               In order to be applied, the quorum of 4% must be reached
             </Typography>
           )}
-          {governanceDetail.state === GovProposalStateEnum.Succeeded && (
+          {governanceDetail.state === GovProposalStateEnum.Active && (
             <div className={clsx(styles.voteButtons, styles.mb32)}>
               <Button
                 className={styles.voteButton}
@@ -171,7 +173,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               </Button>
             </div>
           )}
-          {GovProposalStateEnum.Succeeded === governanceDetail.state && (
+          {governanceDetail.state === GovProposalStateEnum.Succeeded && (
             <Button
               onClick={handleQueueProposal}
               loading={loadingQueue}
@@ -184,7 +186,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             dateUtils.now(),
             dateUtils.formatUnix(governanceDetail.eta, 'YYYY-MM-DD HH:mm:ss')
           ) &&
-            GovProposalStateEnum.Queued === governanceDetail.state && (
+            governanceDetail.state === GovProposalStateEnum.Queued && (
               <Button
                 onClick={handleExecuteProposal}
                 loading={loadingExecute}
@@ -193,7 +195,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                 Execute
               </Button>
             )}
-          {GovProposalStateEnum.Active === governanceDetail.state && (
+          {governanceDetail.state === GovProposalStateEnum.Active && (
             <Typography align="center" className={styles.mb32}>
               Voting will end on{' '}
               {dateUtils.format(
@@ -202,7 +204,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               )}
             </Typography>
           )}
-          {GovProposalStateEnum.Queued === governanceDetail.state && (
+          {governanceDetail.state === GovProposalStateEnum.Queued && (
             <Typography align="center" className={styles.mb32}>
               Can be executed on{' '}
               {dateUtils.formatUnix(governanceDetail.eta, 'DD MMMM YYYY HH:mm')}

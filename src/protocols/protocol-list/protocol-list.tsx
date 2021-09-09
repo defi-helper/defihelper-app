@@ -1,6 +1,7 @@
 import { Link as ReactRouterLink, useLocation } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
 import { useMemo } from 'react'
+import clsx from 'clsx'
 
 import { AppLayout } from '~/layouts'
 import { Button } from '~/common/button'
@@ -34,7 +35,9 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
 
       await model.deleteProtocolFx(id)
     } catch (error) {
-      console.error(error.message)
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
     }
   }
 
@@ -49,7 +52,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     <AppLayout>
       <div className={styles.root}>
         <div className={styles.header}>
-          <Typography variant="h4" family="square">
+          <Typography variant="h3" family="square">
             Protocols
           </Typography>
           {false && ( // TODO: hide for now
@@ -74,38 +77,42 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
         <ul className={styles.protocols}>
           {loading && (
             <li>
-              <Paper className={styles.card}>loading...</Paper>
+              <Paper className={styles.card} radius={8}>
+                loading...
+              </Paper>
             </li>
           )}
           {!loading && !protocols?.length && (
             <li>
-              <Paper className={styles.card}>no protocols found</Paper>
+              <Paper className={styles.card} radius={8}>
+                no protocols found
+              </Paper>
             </li>
           )}
           {!loading &&
             protocols &&
             protocols.map((protocol) => (
               <li key={protocol.id} className={styles.item}>
-                <ReactRouterLink
+                <Paper
+                  as={ReactRouterLink}
                   to={paths.protocols.detail(protocol.id)}
-                  className={styles.link}
+                  className={clsx(styles.link, styles.card)}
+                  radius={8}
                 >
-                  <Paper className={styles.card}>
-                    {protocol.icon && (
-                      <img
-                        src={protocol.icon}
-                        alt={protocol.name}
-                        width="30"
-                        height="30"
-                        className={styles.mr}
-                      />
-                    )}
-                    <div className={styles.mr}>{protocol.name}</div>
-                    <div className={`${styles.mr} ${styles.tokens}`}>
-                      {protocol.createdAt}
-                    </div>
-                  </Paper>
-                </ReactRouterLink>
+                  {protocol.icon && (
+                    <img
+                      src={protocol.icon}
+                      alt={protocol.name}
+                      width="30"
+                      height="30"
+                      className={styles.mr}
+                    />
+                  )}
+                  <div className={styles.mr}>{protocol.name}</div>
+                  <div className={`${styles.mr} ${styles.tokens}`}>
+                    {protocol.createdAt}
+                  </div>
+                </Paper>
                 <Can I="update" a="Protocol">
                   <Button
                     variant="contained"

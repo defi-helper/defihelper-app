@@ -1,5 +1,6 @@
 import { createDomain } from 'effector-logger'
 import { ethers } from 'ethers'
+import contracts from '@defihelper/networks/contracts.json'
 
 import { abi } from '~/abi'
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -15,7 +16,7 @@ export type ProposeParams = {
   description: string
 }
 
-const GOVERNOR_BRAVO = '0xc8E942D9CA1e8dda3e39C7495A55086581D08858'
+const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
 
 export const governanceCreateDomain = createDomain('governanceCreateDomain')
 

@@ -6,7 +6,6 @@ export const root = style({
 })
 
 export const status = style({
-  textTransform: 'capitalize',
   margin: '0 auto',
 })
 
