@@ -15,6 +15,7 @@ import { ReactComponent as SettingsArrowIcon } from '~/assets/icons/settings-arr
 import { ReactComponent as PlusIcon } from '~/assets/icons/plus.svg'
 import { ReactComponent as BackArrowIcon } from '~/assets/icons/back-arrow.svg'
 import { ReactComponent as DotsIcon } from '~/assets/icons/dots.svg'
+import { ReactComponent as StarIcon } from '~/assets/icons/star.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -36,6 +37,7 @@ const ICONS = {
   plus: PlusIcon,
   backArrow: BackArrowIcon,
   dots: DotsIcon,
+  star: StarIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

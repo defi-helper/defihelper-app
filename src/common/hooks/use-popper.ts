@@ -59,8 +59,8 @@ export const usePopper = (options?: Options) => {
   )
 
   return {
-    popperStyles: popper.styles,
-    popperAttributes: popper.attributes,
+    popperStyles: popper.styles.popper,
+    popperAttributes: popper.attributes.popper,
     setReferenceElement: handleSetReferenceElement,
     setPopperElement: handleSetPopperElement,
   }

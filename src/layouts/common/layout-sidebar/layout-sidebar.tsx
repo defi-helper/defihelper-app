@@ -159,8 +159,8 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
             <Portal>
               <Paper
                 ref={setPopperElement}
-                {...popperAttributes.popper}
-                style={popperStyles.popper}
+                {...popperAttributes}
+                style={popperStyles}
                 className={styles.settingsDropdown}
               >
                 <label>
