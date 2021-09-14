@@ -18,7 +18,7 @@ const MENU = [
   },
   {
     title: 'Automations',
-    path: '/automations',
+    path: paths.automations.list,
     icon: 'energy' as const,
   },
   {
