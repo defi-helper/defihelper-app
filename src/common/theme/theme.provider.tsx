@@ -45,8 +45,8 @@ export const ThemeProvider: React.FC = (props) => {
   const currentThemeMode = persistedThemeMode ?? themeMode
 
   const themeValue = useMemo(
-    (): ThemeContext => [persistedThemeMode, handlePersistTheme, remove],
-    [handlePersistTheme, persistedThemeMode, remove]
+    (): ThemeContext => [currentThemeMode, handlePersistTheme, remove],
+    [handlePersistTheme, currentThemeMode, remove]
   )
 
   useLayoutEffect(() => {

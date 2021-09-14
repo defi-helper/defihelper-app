@@ -1,4 +1,4 @@
-import { createDomain, guard, sample } from 'effector-logger'
+import { createDomain, guard, sample } from 'effector-logger/macro'
 
 import { ProtocolFragmentFragment } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'

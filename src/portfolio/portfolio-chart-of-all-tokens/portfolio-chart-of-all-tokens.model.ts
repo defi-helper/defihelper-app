@@ -1,4 +1,4 @@
-import { createDomain, restore, sample } from 'effector-logger'
+import { createDomain, restore, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { dateUtils } from '~/common/date-utils'

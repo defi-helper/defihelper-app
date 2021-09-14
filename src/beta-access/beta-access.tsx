@@ -10,7 +10,6 @@ import { Grid } from '~/common/grid'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { contactListModel } from '~/user-contacts'
-import { WalletDetail } from '~/wallets/wallet-detail'
 import { WalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { config } from '~/config'
@@ -22,18 +21,19 @@ export type BetaAccessProps = unknown
 export const BetaAccess: React.VFC<BetaAccessProps> = () => {
   const { account = null } = walletNetworkModel.useWalletNetwork()
 
-  const [openWalletList, closeWalletList] = useDialog(WalletList)
-  const [openChangeWallet] = useDialog(WalletDetail)
+  const [openWalletList] = useDialog(WalletList)
 
-  const handleOpenWalletList = () =>
-    openWalletList({ onClick: closeWalletList }).catch((error: Error) =>
-      console.error(error.message)
-    )
+  const handleOpenWalletList = async () => {
+    try {
+      const connector = await openWalletList()
 
-  const handleChangeWallet = () =>
-    openChangeWallet({ onChange: handleOpenWalletList }).catch((error: Error) =>
-      console.error(error.message)
-    )
+      walletNetworkModel.activateWalletFx({ connector })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
 
   const contactList = useStore(contactListModel.$userContactList)
 
@@ -88,7 +88,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                     Connect wallet
                   </Button>
                 ) : (
-                  <Button variant="outlined" onClick={handleChangeWallet}>
+                  <Button variant="outlined" onClick={handleOpenWalletList}>
                     Change
                   </Button>
                 )}

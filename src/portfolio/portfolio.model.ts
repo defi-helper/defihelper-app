@@ -1,4 +1,4 @@
-import { createDomain } from 'effector-logger'
+import { createDomain } from 'effector-logger/macro'
 
 import { AddWalletInputType } from '~/graphql/_generated-types'
 import { portfolioApi } from './common'

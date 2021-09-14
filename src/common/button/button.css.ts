@@ -46,6 +46,7 @@ export const varinats = styleVariants({
     selectors: {
       [`&.${colors.primary}`]: {
         color: theme.colors.textColorPrimary,
+        borderColor: theme.colors.separator,
       },
 
       [`&.${colors.secondary}`]: {

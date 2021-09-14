@@ -15,6 +15,26 @@ import { ReactComponent as SettingsArrowIcon } from '~/assets/icons/settings-arr
 import { ReactComponent as PlusIcon } from '~/assets/icons/plus.svg'
 import { ReactComponent as BackArrowIcon } from '~/assets/icons/back-arrow.svg'
 import { ReactComponent as DotsIcon } from '~/assets/icons/dots.svg'
+import { ReactComponent as DoubleArrowLeftIcon } from '~/assets/icons/double-arrow-left.svg'
+import { ReactComponent as LogoMiniIcon } from '~/assets/icons/logo-mini.svg'
+import { ReactComponent as LogoIcon } from '~/assets/icons/logo.svg'
+import { ReactComponent as EnergyIcon } from '~/assets/icons/energy.svg'
+import { ReactComponent as CheckIcon } from '~/assets/icons/check.svg'
+import { ReactComponent as GridIcon } from '~/assets/icons/grid.svg'
+import { ReactComponent as NotificationIcon } from '~/assets/icons/notification.svg'
+import { ReactComponent as SunIcon } from '~/assets/icons/sun.svg'
+import { ReactComponent as MoonIcon } from '~/assets/icons/moon.svg'
+import { ReactComponent as GithubIcon } from '~/assets/icons/socials/github.svg'
+import { ReactComponent as DiscordIcon } from '~/assets/icons/socials/discord.svg'
+import { ReactComponent as MediumIcon } from '~/assets/icons/socials/medium.svg'
+import { ReactComponent as TelegramIcon } from '~/assets/icons/socials/telegram.svg'
+import { ReactComponent as TwitterIcon } from '~/assets/icons/socials/twitter.svg'
+import { ReactComponent as EthereumIcon } from '~/assets/icons/blockchains/ethereum.svg'
+import { ReactComponent as BscIcon } from '~/assets/icons/blockchains/bsc.svg'
+import { ReactComponent as WavesIcon } from '~/assets/icons/blockchains/waves.svg'
+import { ReactComponent as SolanaIcon } from '~/assets/icons/blockchains/solana.svg'
+import { ReactComponent as ArrowTopIcon } from '~/assets/icons/arrow-top.svg'
+import { ReactComponent as CheckedIcon } from '~/assets/icons/checked.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -36,6 +56,26 @@ const ICONS = {
   plus: PlusIcon,
   backArrow: BackArrowIcon,
   dots: DotsIcon,
+  doubleArrowLeft: DoubleArrowLeftIcon,
+  logo: LogoIcon,
+  logoMini: LogoMiniIcon,
+  energy: EnergyIcon,
+  check: CheckIcon,
+  grid: GridIcon,
+  notification: NotificationIcon,
+  sun: SunIcon,
+  moon: MoonIcon,
+  github: GithubIcon,
+  discord: DiscordIcon,
+  medium: MediumIcon,
+  telegram: TelegramIcon,
+  twitter: TwitterIcon,
+  ethereum: EthereumIcon,
+  binance: BscIcon,
+  waves: WavesIcon,
+  solana: SolanaIcon,
+  arrowTop: ArrowTopIcon,
+  checked: CheckedIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

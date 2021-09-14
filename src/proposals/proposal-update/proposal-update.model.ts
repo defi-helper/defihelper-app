@@ -1,4 +1,4 @@
-import { createDomain, guard } from 'effector-logger'
+import { createDomain, guard } from 'effector-logger/macro'
 
 import { history } from '~/common/history'
 import { ProposalUpdateMutationVariables } from '~/graphql/_generated-types'

@@ -7,38 +7,12 @@ const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = {
   babel: {
-    plugins: [
-      '@vanilla-extract/babel-plugin',
-      [
-        'effector/babel-plugin',
-        {
-          storeCreators: ['createStore'],
-          eventCreators: ['createEvent'],
-          effectCreators: ['createEffect'],
-          domainCreators: ['createDomain'],
-          restoreCreators: ['restore'],
-          combineCreators: ['combine'],
-          sampleCreators: ['sample'],
-          forwardCreators: ['forward'],
-          guardCreators: ['guard'],
-          attachCreators: [],
-          splitCreators: [],
-          apiCreators: ['createApi'],
-          mergeCreators: [],
-          domainMethods: {
-            store: ['store', 'createStore'],
-            event: ['event', 'createEvent'],
-            effect: ['effect', 'createEffect'],
-            domain: ['domain', 'createDomain'],
-          },
-        },
-      ],
-    ],
+    plugins: ['@vanilla-extract/babel-plugin'],
   },
   webpack: {
     alias: {
       '~': path.resolve(__dirname, './src'),
-      ...(isProd ? { 'effector-logger': 'effector' } : {}),
+      ...(isProd ? { 'effector-logger/macro': 'effector' } : {}),
     },
     plugins: [new VanillaExtractPlugin()],
   },

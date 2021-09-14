@@ -15,9 +15,9 @@ export const root = style({
 })
 
 export const content = style({
-  background: theme.colors.background,
   color: theme.colors.textColorPrimary,
   maxHeight: '100vh',
   overflowY: 'auto',
   overflowX: 'hidden',
+  border: `1px solid ${theme.colors.border}`,
 })

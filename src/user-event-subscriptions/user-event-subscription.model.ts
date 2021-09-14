@@ -1,4 +1,4 @@
-import { createDomain, sample } from 'effector-logger'
+import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { userEventSubscriptionApi } from '~/user-event-subscriptions/common'

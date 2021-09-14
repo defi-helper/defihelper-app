@@ -95,6 +95,7 @@ export type Network = {
     | 'activatePolygon'
     | 'activateWaves'
   type: 'Networks' | 'AllNetworks'
+  blockchainIcon?: 'ethereum' | 'binance' | 'waves'
 }
 
 export const NETWORKS: Network[] = [
@@ -108,6 +109,7 @@ export const NETWORKS: Network[] = [
     network: config.CHAIN_ETHEREUM_IDS[0],
     onClick: 'activateEthereum' as const,
     type: 'Networks' as const,
+    blockchainIcon: 'ethereum',
   },
   {
     title: 'Ropsten',
@@ -115,13 +117,15 @@ export const NETWORKS: Network[] = [
     network: config.CHAIN_ETHEREUM_IDS[1],
     onClick: 'activateEthereum' as const,
     type: 'Networks' as const,
+    blockchainIcon: 'ethereum',
   },
   {
-    title: 'Binance Smart Chain',
+    title: 'Binance',
     blockchain: BlockchainEnum.Ethereum,
     network: config.CHAIN_BINANCE_IDS[0],
     onClick: 'activateBinance' as const,
     type: 'Networks' as const,
+    blockchainIcon: 'binance',
   },
   {
     title: 'Polygon',
@@ -129,6 +133,7 @@ export const NETWORKS: Network[] = [
     network: config.CHAIN_POLYGON_IDS[0],
     onClick: 'activatePolygon' as const,
     type: 'Networks' as const,
+    blockchainIcon: 'ethereum',
   },
   {
     title: 'Waves',
@@ -136,6 +141,7 @@ export const NETWORKS: Network[] = [
     network: config.CHAIN_WAVES_ID[0],
     onClick: 'activateWaves' as const,
     type: 'Networks' as const,
+    blockchainIcon: 'waves',
   },
 ]
 

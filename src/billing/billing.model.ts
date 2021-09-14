@@ -1,4 +1,4 @@
-import { createDomain, Effect, guard } from 'effector-logger'
+import { createDomain, Effect, guard } from 'effector-logger/macro'
 import { nanoid } from 'nanoid'
 import contracts from '@defihelper/networks/contracts.json'
 import Balance from '@defihelper/networks/abi/Balance.json'

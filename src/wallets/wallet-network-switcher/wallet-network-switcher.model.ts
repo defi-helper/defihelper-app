@@ -1,4 +1,4 @@
-import { createDomain, guard, sample } from 'effector-logger'
+import { createDomain, guard, sample } from 'effector-logger/macro'
 import type { AbstractConnector } from '@web3-react/abstract-connector'
 import { shallowEqual } from 'fast-equals'
 

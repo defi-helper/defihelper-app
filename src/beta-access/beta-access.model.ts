@@ -1,4 +1,4 @@
-import { sample, createDomain, attach } from 'effector-logger'
+import { sample, createDomain, attach } from 'effector-logger/macro'
 
 import { contactListModel } from '~/user-contacts'
 import { UserContactBrokerEnum } from '~/graphql/_generated-types'

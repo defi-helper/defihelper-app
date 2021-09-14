@@ -1,4 +1,4 @@
-import { createDomain } from 'effector-logger'
+import { createDomain } from 'effector-logger/macro'
 import { bignumberUtils } from '~/common/bignumber-utils'
 
 import { dateUtils } from '~/common/date-utils'

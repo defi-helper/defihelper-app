@@ -1,4 +1,4 @@
-import { createDomain, guard, sample } from 'effector-logger'
+import { createDomain, guard, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { MeQuery } from '~/graphql/_generated-types'

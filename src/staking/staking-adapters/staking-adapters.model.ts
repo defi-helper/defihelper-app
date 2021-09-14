@@ -1,4 +1,4 @@
-import { guard, sample, createDomain, combine } from 'effector-logger'
+import { guard, sample, createDomain, combine } from 'effector-logger/macro'
 import omit from 'lodash.omit'
 import { createGate } from 'effector-react'
 
