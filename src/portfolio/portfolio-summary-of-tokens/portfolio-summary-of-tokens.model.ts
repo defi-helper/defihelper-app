@@ -1,4 +1,4 @@
-import { combine, createDomain, sample } from 'effector-logger'
+import { combine, createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {

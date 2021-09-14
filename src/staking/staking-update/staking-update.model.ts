@@ -1,4 +1,4 @@
-import { createDomain } from 'effector-logger'
+import { createDomain } from 'effector-logger/macro'
 
 import { history } from '~/common/history'
 import { StakingContractUpdateMutationVariables } from '~/graphql/_generated-types'

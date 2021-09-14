@@ -7,7 +7,9 @@ export const useBodyScrollLock = (
   useEffect(() => {
     if (!targetElement) return
 
-    disableBodyScroll(targetElement)
+    disableBodyScroll(targetElement, {
+      reserveScrollBarGap: true,
+    })
 
     return () => enableBodyScroll(targetElement)
   }, [targetElement])

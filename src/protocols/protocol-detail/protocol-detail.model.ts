@@ -1,4 +1,4 @@
-import { createDomain, sample } from 'effector-logger'
+import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { ProtocolQuery } from '~/graphql/_generated-types'

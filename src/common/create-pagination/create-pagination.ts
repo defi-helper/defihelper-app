@@ -1,4 +1,4 @@
-import { combine, Domain, sample } from 'effector-logger'
+import { combine, Domain, sample } from 'effector-logger/macro'
 import { createElement } from 'react'
 
 import { Pagination } from './component'

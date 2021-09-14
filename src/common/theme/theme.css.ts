@@ -15,6 +15,7 @@ type Theme = {
     secondary: string
     paper: string
     separator: string
+    border: string
   }
   fonts: {
     square: string
@@ -34,6 +35,7 @@ export const themeContract = createThemeContract<Theme>({
     secondary: '',
     paper: '',
     separator: '',
+    border: '',
   },
 
   fonts: {
@@ -54,6 +56,7 @@ const dark: Theme = {
     secondary: palette.green1,
     paper: palette.black2,
     separator: palette.black2,
+    border: palette.black7,
   },
   fonts: {
     square: "'Basier Square', sans-serif",
@@ -73,6 +76,7 @@ const light: Theme = {
     secondary: palette.green1,
     paper: palette.grey4,
     separator: palette.grey4,
+    border: palette.grey4,
   },
   fonts: {
     square: "'Basier Square', sans-serif",

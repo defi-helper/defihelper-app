@@ -1,78 +1,50 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
-import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link as ReactRouerLink } from 'react-router-dom'
 import clsx from 'clsx'
 import { useLocalStorage } from 'react-use'
+import { cloneElement } from 'react'
 
-import { ReactComponent as LogoMini } from '~/assets/icons/logo-mini.svg'
 import { Link } from '~/common/link'
 import { paths } from '~/paths'
 import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
-import { cutAccount } from '~/common/cut-account'
 import { Typography } from '~/common/typography'
 import { Paper } from '~/common/paper'
 import { config } from '~/config'
+import { LayoutThemeSwitcher } from '~/layouts/common/layout-theme-switcher'
 import * as styles from './layout-sidebar.css'
 import { Icon } from '~/common/icon'
-import { useTheme } from '~/common/theme/theme.context'
-import { usePopper } from '~/common/hooks'
-import { Portal } from '~/common/portal'
+import { SOCIAL_LINKS } from '../constants'
+import { LayoutCurrencySwitcher } from '../layout-currency-switcher'
 
 type MenuItem = {
   title: string
   path: string
-  icon: 'home'
+  icon: 'home' | 'grid' | 'energy' | 'notification' | 'check' | 'settings'
   exact?: boolean
 }
 
 export type LayoutHeaderProps = {
-  onConnect?: () => void
-  account?: string | null
-  onChangeWallet?: () => void
   menu: MenuItem[]
+  children: React.ReactElement
 }
 
-export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
-  const [settingsOpened, setSettingsOpen] = useState(false)
-
+export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
   const [hided, setHide] = useLocalStorage('dfh:sidebar', false)
-
-  const [currentTheme, setTheme, removeTheme] = useTheme()
-
-  const handleSettingsOpen = () => {
-    setSettingsOpen(!settingsOpened)
-  }
-
-  const handleSettingsBlur = () => {
-    setSettingsOpen(false)
-  }
-
-  const handleChangeTheme = (variant: 'dark' | 'light') => () => {
-    setTheme(variant)
-  }
 
   const handleHide = () => {
     setHide(!hided)
   }
 
-  const {
-    popperStyles,
-    popperAttributes,
-    setReferenceElement,
-    setPopperElement,
-  } = usePopper({ placement: 'top-start' })
-
   return (
     <div className={styles.root}>
-      <ButtonBase
-        onClick={handleHide}
-        className={clsx(styles.hideButton, {
-          [styles.hidedHideButton]: hided,
-        })}
-      >
-        {hided ? 'hided' : 'hide'}
+      <ButtonBase onClick={handleHide} className={styles.hideButton}>
+        <Icon
+          icon="doubleArrowLeft"
+          className={clsx(styles.doubleArrow, {
+            [styles.doubleArrowReverted]: hided,
+          })}
+        />
       </ButtonBase>
       <aside
         className={clsx(styles.aside, {
@@ -80,42 +52,19 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
         })}
       >
         <Link href={config.MAIN_URL || paths.main} className={styles.logo}>
-          <LogoMini className={styles.logoIcon} />
+          <Icon
+            icon={hided ? 'logoMini' : 'logo'}
+            className={styles.logoIcon}
+          />
         </Link>
         <div className={styles.actions}>
-          {props.account ? (
-            <Paper
-              onClick={props.onChangeWallet}
-              className={styles.wallet}
-              as={ButtonBase}
-            >
-              <Jazzicon
-                diameter={20}
-                seed={jsNumberForAddress(props.account)}
-              />
-              {!hided && (
-                <Typography
-                  variant="body2"
-                  family="mono"
-                  transform="uppercase"
-                  className={styles.account}
-                >
-                  {cutAccount(props.account)}
-                </Typography>
-              )}
-            </Paper>
-          ) : (
-            <Button color="green" onClick={props.onConnect}>
-              {hided ? 'C' : 'Connect Wallet'}
-            </Button>
-          )}
+          {cloneElement(props.children, { hided })}
         </div>
-        <div className={styles.actions}>{props.children}</div>
         <ul className={styles.menu}>
           {props.menu.map((menuItem) => (
             <li key={menuItem.title}>
               <NavLink
-                className={styles.link}
+                className={clsx(styles.link, hided && styles.linkHided)}
                 activeClassName={styles.active}
                 to={menuItem.path}
               >
@@ -132,77 +81,63 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
             </li>
           ))}
         </ul>
-        <div className={styles.settingsWrap}>
-          <Paper
-            as={ButtonBase}
-            className={styles.settings}
-            onClick={handleSettingsOpen}
-            onBlur={handleSettingsBlur}
-            ref={setReferenceElement}
-          >
-            <Icon
-              icon="settings"
-              width="24"
-              height="24"
-              className={styles.settingsIcon}
-            />
-            {!hided && (
-              <Icon
-                icon="settingsArrow"
-                width="12"
-                height="8"
-                className={styles.settingsIconArrow}
-              />
-            )}
+        {!hided && (
+          <Paper radius={8} className={styles.balance}>
+            <Typography variant="body2" as="div">
+              Balance:
+            </Typography>
+            <Typography
+              variant="body2"
+              as="div"
+              className={styles.balanceValue}
+            >
+              0.00016 ETH
+            </Typography>
+            <Typography
+              variant="body2"
+              as="div"
+              className={styles.balanceValue}
+            >
+              12 Automations
+            </Typography>
+            <Typography
+              variant="body2"
+              as="div"
+              className={styles.balanceValue}
+            >
+              234 Notifications
+            </Typography>
           </Paper>
-          {settingsOpened && (
-            <Portal>
-              <Paper
-                ref={setPopperElement}
-                {...popperAttributes.popper}
-                style={popperStyles.popper}
-                className={styles.settingsDropdown}
-              >
-                <label>
-                  <input
-                    type="radio"
-                    id="dark"
-                    name="theme"
-                    checked={currentTheme === 'dark'}
-                    value="dark"
-                    onMouseDown={handleChangeTheme('dark')}
-                    onChange={handleChangeTheme('dark')}
-                  />
-                  dark
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    id="light"
-                    name="theme"
-                    checked={currentTheme === 'light'}
-                    value="light"
-                    onMouseDown={handleChangeTheme('light')}
-                    onChange={handleChangeTheme('light')}
-                  />
-                  light
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    id="system"
-                    name="theme"
-                    checked={currentTheme === undefined}
-                    value="system"
-                    onMouseDown={removeTheme}
-                    onChange={removeTheme}
-                  />
-                  system
-                </label>
-              </Paper>
-            </Portal>
-          )}
+        )}
+        <div className={styles.spacer} />
+        {!hided && (
+          <div className={styles.switchers}>
+            <LayoutThemeSwitcher />
+            <LayoutCurrencySwitcher />
+          </div>
+        )}
+        <div className={clsx(styles.social, hided && styles.socialHided)}>
+          {SOCIAL_LINKS.map((link) => (
+            <Link
+              key={link.icon}
+              href={link.link}
+              target="_blank"
+              className={styles.socailLink}
+            >
+              <Icon icon={link.icon} className={styles.socialIcon} />
+            </Link>
+          ))}
         </div>
+        {!hided && (
+          <Button
+            as={ReactRouerLink}
+            to={paths.governance.list}
+            variant="outlined"
+            size="small"
+          >
+            Governance
+          </Button>
+        )}
       </aside>
     </div>
   )

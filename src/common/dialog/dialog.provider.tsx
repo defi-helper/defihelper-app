@@ -5,6 +5,7 @@ import React, { useCallback, useRef, useState } from 'react'
 import { Portal } from '~/common/portal'
 import { UserRejectionError } from './dialog.error'
 import { DialogContext, Node } from './dialog.context'
+import * as styles from './dialog.css'
 
 type Fn = (value: unknown) => void
 
@@ -49,7 +50,7 @@ export const DialogProvider: React.FC = (props) => {
     >
       {dialogNode && (
         <Portal>
-          <div onClick={handleClose}>
+          <div onClick={handleClose} className={styles.root}>
             <dialogNode.Dialog
               {...dialogNode.props}
               onCancel={handleClose}

@@ -4,7 +4,7 @@ import {
   createEvent,
   forward,
   Event,
-} from 'effector-logger'
+} from 'effector-logger/macro'
 import { nanoid } from 'nanoid'
 
 type Variants = 'default' | 'success' | 'info' | 'warning' | 'error'

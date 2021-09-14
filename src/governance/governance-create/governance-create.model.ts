@@ -1,4 +1,4 @@
-import { createDomain } from 'effector-logger'
+import { createDomain } from 'effector-logger/macro'
 import { ethers } from 'ethers'
 import contracts from '@defihelper/networks/contracts.json'
 
