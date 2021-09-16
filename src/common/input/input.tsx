@@ -1,10 +1,13 @@
 import clsx from 'clsx'
 import { forwardRef, useEffect, useState } from 'react'
+import { Typography } from '../typography'
 
 import * as styles from './input.css'
 
 export type InputProps = React.ComponentProps<'input'> & {
   label?: string
+  helperText?: string
+  error?: boolean
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
@@ -19,6 +22,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     onChange,
     value,
     defaultValue = '',
+    error,
+    helperText,
     ...restOfProps
   } = props
 
@@ -50,24 +55,28 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   }, [value])
 
   return (
-    <div className={clsx(styles.root, className)}>
-      <label
-        htmlFor={restOfProps.id}
-        className={clsx(styles.label, {
-          [styles.focusedLabel]: focused || Boolean(localValue),
-        })}
-      >
-        {label}
-      </label>
-      <input
-        {...restOfProps}
-        className={styles.input}
-        value={localValue}
-        ref={ref}
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
-        onChange={handleOnChange}
-      />
-    </div>
+    <>
+      <div className={clsx(styles.root, className)}>
+        <label
+          htmlFor={restOfProps.id}
+          className={clsx(styles.label, {
+            [styles.focusedLabel]: focused || Boolean(localValue),
+            [styles.error]: error,
+          })}
+        >
+          {label}
+        </label>
+        <input
+          {...restOfProps}
+          className={styles.input}
+          value={localValue}
+          ref={ref}
+          onFocus={handleOnFocus}
+          onBlur={handleOnBlur}
+          onChange={handleOnChange}
+        />
+      </div>
+      {helperText && <Typography>{helperText}</Typography>}
+    </>
   )
 })
