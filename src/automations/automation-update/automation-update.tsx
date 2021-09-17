@@ -1,20 +1,30 @@
-import { useStore } from 'effector-react'
-import { useRef, useState } from 'react'
+import { useGate, useStore } from 'effector-react'
+import { useEffect, useRef } from 'react'
 import omit from 'lodash.omit'
-import isEmpty from 'lodash.isempty'
 
 import { userModel } from '~/users'
-import { Trigger } from '../common/automation.types'
+import {
+  Action,
+  Condition,
+  isAction,
+  isCondition,
+  Trigger,
+} from '../common/automation.types'
 import { Dialog } from '~/common/dialog'
-import { AutomateTriggerCreateInputType } from '~/graphql/_generated-types'
+import {
+  AutomateActionCreateInputType,
+  AutomateActionUpdateInputType,
+  AutomateConditionCreateInputType,
+  AutomateTriggerCreateInputType,
+} from '~/graphql/_generated-types'
 import { Button } from '~/common/button'
 import { AutomationTriggerForm } from '~/automations/common/automation-trigger-form'
-import * as model from './automation-update.model'
-import * as styles from './automation-update.css'
 import {
   AutomationTriggerExpression,
   AutomationTriggerExpressions,
 } from '../common/automation-trigger-expression'
+import * as model from './automation-update.model'
+import * as styles from './automation-update.css'
 
 export type AutomationUpdateProps = {
   onConfirm: () => void
@@ -25,9 +35,12 @@ export type AutomationUpdateProps = {
 export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const wallets = useStore(userModel.$userWallets)
   const loading = useStore(model.updateTriggerFx.pending)
+  const allExpressionsMap = useStore(model.$allExpressionsMap)
+  const allExpressions = useStore(model.$allExpressions)
 
-  const [expressions, setExpressions] = useState<Record<number, string>>({})
-  const lastIndexRef = useRef(Object.keys(expressions).length)
+  useGate(model.AutomationUpdateGate, props.trigger)
+
+  const lastIndexRef = useRef(0)
 
   const defaultValues = {
     wallet: props.trigger.wallet.id,
@@ -47,27 +60,57 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   }
 
   const handleAddExpression = () => {
-    setExpressions({
-      ...expressions,
+    model.setNewExpression({
       // eslint-disable-next-line no-plusplus
-      [lastIndexRef.current++]: '',
+      [++lastIndexRef.current]: '',
     })
   }
 
   const handleSetTypeOfExpression =
     (index: number, typeOfExpression: string) => () => {
-      const newExpressions = {
-        ...expressions,
-      }
-
-      newExpressions[index] = typeOfExpression
-
-      setExpressions(newExpressions)
+      model.setNewExpression({
+        [index]: typeOfExpression,
+      })
     }
 
-  const handleDeleteExpression = (index: number) => () => {
-    setExpressions(omit(expressions, String(index)))
-  }
+  const handleDeleteExpression =
+    (payload: { priority: number; expression?: Condition | Action }) => () => {
+      if (isAction(payload.expression)) {
+        model.deleteActionFx(payload.expression.id)
+      }
+
+      if (isCondition(payload.expression)) {
+        model.deleteConditonFx(payload.expression.id)
+      }
+    }
+
+  const handleSubmitAction =
+    (id?: string) =>
+    (action: AutomateActionCreateInputType | AutomateActionUpdateInputType) => {
+      if (id) {
+        model.updateActionFx({ ...omit(action, ['trigger', 'type']), id })
+      } else {
+        model.createActionFx(action as AutomateActionCreateInputType)
+      }
+    }
+
+  const handleSubmitConditon =
+    (id?: string) =>
+    (
+      condition:
+        | AutomateConditionCreateInputType
+        | AutomateActionUpdateInputType
+    ) => {
+      if (id) {
+        model.updateConditionFx({ ...omit(condition, ['trigger', 'type']), id })
+      } else {
+        model.createConditionFx(condition as AutomateConditionCreateInputType)
+      }
+    }
+
+  useEffect(() => {
+    lastIndexRef.current = Object.keys(allExpressionsMap).length
+  }, [allExpressionsMap])
 
   return (
     <Dialog>
@@ -78,20 +121,14 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
           defaultValues={defaultValues}
           loading={loading}
         />
-        <Button
-          onClick={handleAddExpression}
-          size="small"
-          disabled={
-            !expressions[lastIndexRef.current - 1] && !isEmpty(expressions)
-          }
-        >
+        <Button onClick={handleAddExpression} size="small">
           +
         </Button>
-        {Object.entries(expressions).map(([id, expression]) => (
-          <div key={id}>
+        {Object.entries(allExpressionsMap).map(([priority, expression]) => (
+          <div key={priority}>
             <Button
               onClick={handleSetTypeOfExpression(
-                Number(id),
+                Number(priority),
                 AutomationTriggerExpressions.action
               )}
               disabled={expression === AutomationTriggerExpressions.action}
@@ -101,7 +138,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
             </Button>
             <Button
               onClick={handleSetTypeOfExpression(
-                Number(id),
+                Number(priority),
                 AutomationTriggerExpressions.condition
               )}
               disabled={expression === AutomationTriggerExpressions.condition}
@@ -111,17 +148,27 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
             </Button>
             {expression && (
               <AutomationTriggerExpression
-                onSubmitAction={console.log}
-                onSubmitCondition={console.log}
+                onSubmitAction={handleSubmitAction(
+                  allExpressions[Number(priority)]?.id
+                )}
+                onSubmitCondition={handleSubmitConditon(
+                  allExpressions[Number(priority)]?.id
+                )}
                 type={expression}
-                priority={Number(id)}
+                expression={allExpressions[Number(priority)]}
+                priority={Number(priority)}
                 trigger={props.trigger.id}
               />
             )}
-            <Button onClick={handleDeleteExpression(Number(id))} size="small">
+            <Button
+              onClick={handleDeleteExpression({
+                priority: Number(priority),
+                expression: allExpressions[Number(priority)],
+              })}
+              size="small"
+            >
               Delete
             </Button>
-            <Button size="small">Save</Button>
           </div>
         ))}
       </div>

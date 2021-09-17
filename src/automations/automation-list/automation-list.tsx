@@ -44,6 +44,12 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           triggers.map((trigger) => (
             <div key={trigger.id}>
               <Typography>{trigger.name}</Typography>
+              <Typography>
+                last call at:{' '}
+                {trigger.lastCallAt ? trigger.lastCallAt : 'never'}
+              </Typography>
+              <Typography>active: {String(trigger.active)}</Typography>
+              <Typography>type: {trigger.type}</Typography>
               <Button onClick={handleEditTrigger(trigger)}>Edit</Button>
               <Button
                 onClick={handleDeleteTrigger(trigger.id)}

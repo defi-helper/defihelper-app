@@ -28,13 +28,69 @@ export const $triggers = automationListDomain
   .on(deleteTriggerFx.done, (state, { params }) =>
     state.filter((trigger) => trigger.id !== params)
   )
-  .on(automationUpdateModel.updateTriggerFx.doneData, (state, payload) => {
-    if (!payload) return undefined
-
-    return state.map((trigger) =>
-      trigger.id === payload.id ? payload : trigger
-    )
+  .on(automationUpdateModel.updateTriggerFx.doneData, (state, payload) =>
+    state.map((trigger) => (trigger.id === payload.id ? payload : trigger))
+  )
+  .on(automationUpdateModel.updateActionFx.doneData, (state, payload) => {
+    return state.map((trigger) => ({
+      ...trigger,
+      actions: {
+        ...trigger.actions,
+        list: trigger.actions.list?.map((action) =>
+          action.id === payload.id ? payload : action
+        ),
+      },
+    }))
   })
+  .on(automationUpdateModel.createActionFx.doneData, (state, payload) => {
+    return state.map((trigger) => ({
+      ...trigger,
+      actions: {
+        ...trigger.actions,
+        list: [...(trigger.actions.list ?? []), payload],
+      },
+    }))
+  })
+  .on(automationUpdateModel.updateConditionFx.doneData, (state, payload) => {
+    return state.map((trigger) => ({
+      ...trigger,
+      conditions: {
+        ...trigger.conditions,
+        list: trigger.conditions.list?.map((condition) =>
+          condition.id === payload.id ? payload : condition
+        ),
+      },
+    }))
+  })
+  .on(automationUpdateModel.createConditionFx.doneData, (state, payload) => {
+    return state.map((trigger) => ({
+      ...trigger,
+      conditions: {
+        ...trigger.conditions,
+        list: [...(trigger.conditions.list ?? []), payload],
+      },
+    }))
+  })
+  .on(
+    [
+      automationUpdateModel.deleteActionFx.done,
+      automationUpdateModel.deleteConditonFx.done,
+    ],
+    (state, { params }) =>
+      state.map((trigger) => ({
+        ...trigger,
+        actions: {
+          ...trigger.actions,
+          list: trigger.actions.list?.filter((action) => action.id === params),
+        },
+        conditions: {
+          ...trigger.conditions,
+          list: trigger.conditions.list?.filter(
+            (condition) => condition.id === params
+          ),
+        },
+      }))
+  )
 
 export const AutomationListGate = createGate({
   domain: automationListDomain,

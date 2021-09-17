@@ -20,15 +20,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     onFocus,
     onBlur,
     onChange,
-    value,
+    value = '',
     defaultValue = '',
     error,
     helperText,
+    placeholder,
     ...restOfProps
   } = props
 
   const [focused, setFocus] = useState(false)
-  const [localValue, setLocalValue] = useState(value ?? defaultValue)
+  const [localValue, setLocalValue] = useState(value || defaultValue)
 
   const handleOnFocus = (event: React.FocusEvent<HTMLInputElement>) => {
     onFocus?.(event)
@@ -71,6 +72,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           className={styles.input}
           value={localValue}
           ref={ref}
+          placeholder={focused ? placeholder : undefined}
           onFocus={handleOnFocus}
           onBlur={handleOnBlur}
           onChange={handleOnChange}
