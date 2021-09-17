@@ -19,6 +19,8 @@ export const $user = userDomain
   .on(fetchUserFx.doneData, (_, payload) => payload)
   .on(walletNetworkModel.saveUserFx.doneData, (_, payload) => payload)
 
+export const $userWallets = $user.map((user) => user?.wallets.list ?? [])
+
 export const UserGate = createGate({
   name: 'UserGate',
   domain: userDomain,
