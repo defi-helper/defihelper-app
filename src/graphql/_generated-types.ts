@@ -1045,7 +1045,8 @@ export type ProtocolCreateInputType = {
 }
 
 export type ProtocolFilterInputType = {
-  id: Scalars['String']
+  id?: Maybe<Scalars['UuidType']>
+  adapter?: Maybe<Scalars['String']>
 }
 
 export type ProtocolListFilterInputType = {

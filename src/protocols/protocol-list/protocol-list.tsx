@@ -1,4 +1,4 @@
-import { Link as ReactRouterLink, useLocation } from 'react-router-dom'
+import { Link as ReactRouterLink } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
 import { useMemo } from 'react'
 import clsx from 'clsx'
@@ -20,8 +20,6 @@ import { ProtocolTabs } from '../common'
 export type ProtocolListProps = unknown
 
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
-  const location = useLocation()
-
   const ability = useAbility()
 
   const [openConfirm] = useDialog(ConfirmDialog)
@@ -46,7 +44,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     [protocolList, ability]
   )
 
-  useGate(model.ProtocolListGate, location.pathname)
+  useGate(model.ProtocolListGate)
 
   return (
     <AppLayout>

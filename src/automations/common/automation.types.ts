@@ -1,3 +1,5 @@
+import type { Fragment, JsonFragment } from '@ethersproject/abi'
+
 import {
   AutomationTriggerFragmentFragment,
   AutomateConditionType,
@@ -12,6 +14,13 @@ export type Condition = AutomateConditionType & {
 
 export type Action = AutomateActionType & {
   kind: 'action'
+}
+
+export type Automates = {
+  protocol: string
+  contract: string
+  contractInterface: string | ReadonlyArray<Fragment | JsonFragment | string>
+  address?: string
 }
 
 export const isAction = (

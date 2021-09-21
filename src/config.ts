@@ -13,8 +13,6 @@ export const config = {
   WAVES_NODE_URL: process.env.REACT_APP_WAVES_NODE_URL ?? '',
   API_URL: process.env.REACT_APP_API_URL,
   ADAPTERS_HOST: process.env.REACT_APP_ADAPTERS_HOST ?? '',
-  ADAPTERS_URL:
-    process.env.REACT_APP_ADAPTERS_HOST?.replace('/adapters', '') ?? '',
   TELEGRAM_BOT_USERNAME: process.env.REACT_APP_TELEGRAM_BOT_USERNAME,
   BETA: process.env.REACT_APP_BETA === 'true',
   MAIN_URL: process.env.REACT_APP_MAIN_URL,

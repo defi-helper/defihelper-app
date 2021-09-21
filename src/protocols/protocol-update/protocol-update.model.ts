@@ -16,11 +16,10 @@ export const protocolUpdateFx = protocolUpdate.createEffect({
     protocolsApi.protocolUpdate(variables),
 })
 
-export const fetchAdaptersFx = protocolUpdate.createEffect({
-  name: 'fetchAdaptersFx',
-  handler: () =>
-    fetch(config.ADAPTERS_URL).then((res) => res.json()) as Promise<string[]>,
-})
+export const fetchAdaptersFx = protocolUpdate.createEffect(
+  () =>
+    fetch(config.ADAPTERS_HOST).then((res) => res.json()) as Promise<string[]>
+)
 
 export const $adapters = restore(fetchAdaptersFx.doneData, [])
 

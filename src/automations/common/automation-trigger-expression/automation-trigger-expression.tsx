@@ -8,6 +8,7 @@ import {
   AutomateConditionCreateInputType,
   AutomateConditionTypeEnum,
   AutomateConditionUpdateInputType,
+  AutomationContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { AutomationActionEthereumRun } from '../automation-action-ethereum-run'
 import { AutomationConditionEthereumBalance } from '../automation-condition-ethereum-balance'
@@ -19,6 +20,8 @@ export type AutomationTriggerExpressionProps = {
   type: string
   priority: number
   trigger: string
+  contracts: AutomationContractFragmentFragment[]
+  onDeploy: () => void
   expression?: Action | Condition
   onSubmitCondition: (
     formValues:
@@ -119,7 +122,9 @@ export const AutomationTriggerExpression: React.VFC<AutomationTriggerExpressionP
           ))}
         </TextField>
         <Component
+          contracts={props.contracts}
           onSubmit={handlers[handler]}
+          onDeploy={props.onDeploy}
           defaultValues={saveParse(props.expression?.params)}
         />
       </div>
