@@ -27,7 +27,7 @@ export const Dialog: React.FC<DialogProps> = (props) => {
 
   return (
     <Paper
-      onClick={handleOnClickContent}
+      onMouseDown={handleOnClickContent}
       className={clsx(styles.content, props.className)}
       radius={8}
       ref={handleSetContent}

@@ -1,6 +1,10 @@
 import { createContext, useContext } from 'react'
 
-export type Node = { Dialog: React.ElementType; props: unknown }
+export type Node = {
+  Dialog: React.ElementType
+  props: unknown
+  id: string
+}
 
 export const DialogContext = createContext<{
   onOpen: <T = unknown, Y = unknown>(
@@ -8,7 +12,7 @@ export const DialogContext = createContext<{
     resolve: (value: T) => void,
     reject: (value: Y) => void
   ) => void
-  onClose: (value?: unknown) => void
+  onClose: (id: string) => () => void
   closeOnOverlay: (value: boolean) => void
 } | null>(null)
 

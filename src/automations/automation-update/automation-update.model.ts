@@ -1,4 +1,4 @@
-import { createDomain, sample, combine } from 'effector-logger/macro'
+import { createDomain, sample, combine, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
@@ -7,10 +7,13 @@ import {
   AutomateConditionCreateInputType,
   AutomateConditionUpdateInputType,
   AutomateTriggerUpdateInputType,
+  AutomationContractFragmentFragment,
+  UserType,
 } from '~/graphql/_generated-types'
 import { automationApi } from '~/automations/common/automation.api'
 import { Trigger, Action, Condition } from '../common/automation.types'
 import { AutomationTriggerExpressions } from '../common/automation-trigger-expression'
+import { userModel } from '~/users'
 
 export const automationUpdateDomain = createDomain()
 
@@ -118,26 +121,6 @@ export const $conditions = automationUpdateDomain
     state.filter((condition) => condition.id !== params)
   )
 
-export const AutomationUpdateGate = createGate<Trigger>({
-  domain: automationUpdateDomain,
-  name: 'AutomationUpdateGate',
-})
-
-sample({
-  clock: AutomationUpdateGate.open,
-  fn: (trigger: Trigger) => ({
-    actions: trigger.actions.list?.map((action) => ({
-      ...action,
-      kind: AutomationTriggerExpressions.action as 'action',
-    })),
-    conditions: trigger.conditions.list?.map((condition) => ({
-      ...condition,
-      kind: AutomationTriggerExpressions.condition as 'condition',
-    })),
-  }),
-  target: setExpressions,
-})
-
 export const $expressions = combine(
   $actions,
   $conditions,
@@ -145,9 +128,6 @@ export const $expressions = combine(
     return [...actions, ...conditions].sort((a, b) => a.priority - b.priority)
   }
 )
-
-$conditions.reset(AutomationUpdateGate.close)
-$actions.reset(AutomationUpdateGate.close)
 
 export const $allExpressionsMap = $expressions
   .map((expressions) =>
@@ -181,3 +161,54 @@ export const $allExpressions = $expressions.map((expressions) =>
     {}
   )
 )
+
+export const fetchContracts = automationUpdateDomain.createEffect(
+  async (userId: string) => {
+    return automationApi.getContracts({ filter: { user: userId } })
+  }
+)
+
+export const setNewContract =
+  automationUpdateDomain.createEvent<AutomationContractFragmentFragment>()
+
+export const $contracts = automationUpdateDomain
+  .createStore<AutomationContractFragmentFragment[]>([])
+  .on(fetchContracts.doneData, (_, { list }) => list)
+  .on(setNewContract, (state, payload) => [...state, payload])
+
+export const AutomationUpdateGate = createGate<Trigger>({
+  domain: automationUpdateDomain,
+  name: 'AutomationUpdateGate',
+})
+
+sample({
+  clock: AutomationUpdateGate.open,
+  fn: (trigger: Trigger) => ({
+    actions: trigger.actions.list?.map((action) => ({
+      ...action,
+      kind: AutomationTriggerExpressions.action as 'action',
+    })),
+    conditions: trigger.conditions.list?.map((condition) => ({
+      ...condition,
+      kind: AutomationTriggerExpressions.condition as 'condition',
+    })),
+  }),
+  target: setExpressions,
+})
+
+sample({
+  clock: guard({
+    source: [userModel.$user, AutomationUpdateGate.status],
+    clock: [userModel.$user.updates, AutomationUpdateGate.open],
+    filter: (source): source is [UserType, boolean] => {
+      const [user, status] = source
+
+      return Boolean(user?.id) && status
+    },
+  }),
+  fn: ([user]) => user.id,
+  target: fetchContracts,
+})
+
+$conditions.reset(AutomationUpdateGate.close)
+$actions.reset(AutomationUpdateGate.close)

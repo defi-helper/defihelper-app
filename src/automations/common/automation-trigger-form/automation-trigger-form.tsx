@@ -1,6 +1,6 @@
 import { Checkbox, FormLabel, MenuItem, TextField } from '@material-ui/core'
 import clsx from 'clsx'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 import {
@@ -27,7 +27,7 @@ export type AutomationTriggerFormProps = {
 export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
   props
 ) => {
-  const { register, handleSubmit, setValue, formState } =
+  const { register, handleSubmit, setValue, formState, control } =
     useForm<AutomateTriggerCreateInputType>({
       defaultValues: props.defaultValues,
       resolver: yupResolver(automationTriggerFormSchema),
@@ -42,38 +42,52 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
       className={clsx(styles.root, props.className)}
       onSubmit={handleSubmit(props.onSubmit)}
     >
-      <TextField
-        label="wallet"
-        select
-        inputProps={register('wallet')}
-        helperText={formState.errors.wallet?.message}
-        error={Boolean(formState.errors.wallet?.message)}
-        disabled={Boolean(props.defaultValues) || props.loading}
-        defaultValue={props.defaultValues?.wallet}
-      >
-        {props.wallets.map(({ id, address, network }) => (
-          <MenuItem key={id} value={id}>
-            address: {address}
-            <br />
-            network: {network}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
-        label="Type"
-        select
-        inputProps={register('type')}
-        helperText={formState.errors.type?.message}
-        error={Boolean(formState.errors.type?.message)}
-        disabled={Boolean(props.defaultValues) || props.loading}
-        defaultValue={props.defaultValues?.type}
-      >
-        {Object.entries(AutomateTriggerTypeEnum).map(([key, value]) => (
-          <MenuItem key={key} value={value}>
-            {value}
-          </MenuItem>
-        ))}
-      </TextField>
+      <Controller
+        render={({ field }) => (
+          <TextField
+            label="wallet"
+            select
+            {...field}
+            helperText={formState.errors.wallet?.message}
+            error={Boolean(formState.errors.wallet?.message)}
+            disabled={Boolean(props.defaultValues) || props.loading}
+            defaultValue={props.defaultValues?.wallet ?? ''}
+            value={field.value ?? ''}
+          >
+            {props.wallets.map(({ id, address, network }) => (
+              <MenuItem key={id} value={id}>
+                address: {address}
+                <br />
+                network: {network}
+              </MenuItem>
+            ))}
+          </TextField>
+        )}
+        name="wallet"
+        control={control}
+      />
+      <Controller
+        render={({ field }) => (
+          <TextField
+            label="Type"
+            select
+            {...field}
+            helperText={formState.errors.type?.message}
+            error={Boolean(formState.errors.type?.message)}
+            disabled={Boolean(props.defaultValues) || props.loading}
+            defaultValue={props.defaultValues?.type ?? ''}
+            value={field.value ?? ''}
+          >
+            {Object.entries(AutomateTriggerTypeEnum).map(([key, value]) => (
+              <MenuItem key={key} value={value}>
+                {value}
+              </MenuItem>
+            ))}
+          </TextField>
+        )}
+        name="type"
+        control={control}
+      />
       <Input
         label="name"
         {...register('name')}

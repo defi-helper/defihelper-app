@@ -1,4 +1,5 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
+import { nanoid } from 'nanoid'
 
 import { useDialogContext } from './dialog.context'
 
@@ -10,6 +11,8 @@ export const useDialog = <T extends React.ElementType>(
 ) => {
   const { onOpen, onClose, closeOnOverlay } = useDialogContext()
 
+  const id = useRef(nanoid())
+
   type Props = T extends React.ElementType<infer Y>
     ? Omit<Y, 'onCancel' | 'onConfirm'>
     : never
@@ -19,7 +22,15 @@ export const useDialog = <T extends React.ElementType>(
   const handleOpen = useCallback(
     (props?: Props): Promise<Result> => {
       const promise = new Promise<Result>((resolve, reject) =>
-        onOpen({ Dialog, props }, resolve, reject)
+        onOpen(
+          {
+            Dialog,
+            props,
+            id: id.current,
+          },
+          resolve,
+          reject
+        )
       )
 
       return promise
@@ -33,5 +44,5 @@ export const useDialog = <T extends React.ElementType>(
     }
   }, [closable, closeOnOverlay])
 
-  return [handleOpen, onClose] as const
+  return [handleOpen, onClose(id.current)] as const
 }

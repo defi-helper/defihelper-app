@@ -10,7 +10,7 @@ import {
   isCondition,
   Trigger,
 } from '../common/automation.types'
-import { Dialog } from '~/common/dialog'
+import { Dialog, useDialog } from '~/common/dialog'
 import {
   AutomateActionCreateInputType,
   AutomateActionUpdateInputType,
@@ -25,6 +25,7 @@ import {
 } from '../common/automation-trigger-expression'
 import * as model from './automation-update.model'
 import * as styles from './automation-update.css'
+import { AutomationDeployContract } from '../automation-deploy-contract'
 
 export type AutomationUpdateProps = {
   onConfirm: () => void
@@ -37,6 +38,10 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const loading = useStore(model.updateTriggerFx.pending)
   const allExpressionsMap = useStore(model.$allExpressionsMap)
   const allExpressions = useStore(model.$allExpressions)
+
+  const [openDeploy] = useDialog(AutomationDeployContract)
+
+  const contracts = useStore(model.$contracts)
 
   useGate(model.AutomationUpdateGate, props.trigger)
 
@@ -108,6 +113,18 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
       }
     }
 
+  const handleOpenDeploy = async () => {
+    try {
+      const result = await openDeploy()
+
+      model.setNewContract(result)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
   useEffect(() => {
     lastIndexRef.current = Object.keys(allExpressionsMap).length
   }, [allExpressionsMap])
@@ -158,6 +175,8 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
                 expression={allExpressions[Number(priority)]}
                 priority={Number(priority)}
                 trigger={props.trigger.id}
+                contracts={contracts}
+                onDeploy={handleOpenDeploy}
               />
             )}
             <Button

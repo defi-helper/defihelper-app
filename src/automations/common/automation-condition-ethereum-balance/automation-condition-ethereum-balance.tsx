@@ -60,6 +60,7 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
               helperText={formState.errors.network?.message}
               error={Boolean(formState.errors.network?.message)}
               defaultValue={props.defaultValues.network}
+              value={field.value || ''}
             >
               {Object.entries(Networks).map(([key, networkId]) => (
                 <MenuItem key={key} value={networkId}>
@@ -87,6 +88,7 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
               helperText={formState.errors.op?.message}
               error={Boolean(formState.errors.op?.message)}
               defaultValue={props.defaultValues.op}
+              value={field.value || ''}
             >
               {Object.entries(ConditionTypes).map(([key, value]) => (
                 <MenuItem key={key} value={value}>

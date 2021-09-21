@@ -1,4 +1,5 @@
 import { getAPIClient } from '~/api'
+import { config } from '~/config'
 import {
   AutomationActionCreateMutation,
   AutomationActionCreateMutationVariables,
@@ -29,6 +30,7 @@ import {
   AutomationTriggerUpdateMutation,
   AutomationTriggerUpdateMutationVariables,
 } from '~/graphql/_generated-types'
+import { Automates } from './automation.types'
 import {
   AUTOMATION_ACTION_CREATE,
   AUTOMATION_ACTION_DELETE,
@@ -178,4 +180,25 @@ export const automationApi = {
       >(AUTOMATION_ACTION_DELETE, variables)
       .toPromise()
       .then(({ data }) => data?.automateActionDelete),
+
+  getAutomationsContracts: (): Promise<
+    Omit<Automates, 'contractInterface'>[]
+  > =>
+    fetch(`${config.ADAPTERS_HOST}/automates/ethereum`).then((res) =>
+      res.json()
+    ),
+
+  getContractInterface: (
+    variables: Omit<Automates, 'contractInterface'> & {
+      chainId: string | number
+    }
+  ) =>
+    fetch(
+      `${config.ADAPTERS_HOST}/automates/ethereum/${variables.protocol}/${variables.contract}/${variables.chainId}`
+    )
+      .then((res) => res.json())
+      .then((res) => ({
+        abi: res.abi as Automates['contractInterface'],
+        address: res.address as string | undefined,
+      })),
 }
