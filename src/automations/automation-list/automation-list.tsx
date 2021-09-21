@@ -17,6 +17,7 @@ export type AutomationListProps = unknown
 export const AutomationList: React.VFC<AutomationListProps> = () => {
   const triggers = useStore(model.$triggers)
   const loading = useStore(model.fetchTriggersFx.pending)
+  const contracts = useStore(model.$contracts)
 
   const [openAutomationUpdate] = useDialog(AutomationUpdate)
 
@@ -26,6 +27,8 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const handleEditTrigger = (trigger: Trigger) => async () => {
     await openAutomationUpdate({
       trigger,
+      contracts,
+      onAddContract: model.setNewContract,
     }).catch((error: Error) => console.error(error.message))
   }
 
@@ -59,6 +62,14 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
               </Button>
             </div>
           ))}
+        {contracts.map((contract) => (
+          <div key={contract.id}>
+            <Typography>{contract.adapter}</Typography>
+            <Typography>{contract.rejectReason}</Typography>
+            <Typography>{contract.verification}</Typography>
+            <Typography>{contract.address}</Typography>
+          </div>
+        ))}
       </div>
     </AppLayout>
   )

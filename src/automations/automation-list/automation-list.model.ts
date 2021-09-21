@@ -1,5 +1,10 @@
-import { createDomain, sample } from 'effector-logger/macro'
+import { createDomain, sample, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
+import {
+  AutomationContractFragmentFragment,
+  UserType,
+} from '~/graphql/_generated-types'
+import { userModel } from '~/users'
 
 import { automationUpdateModel } from '../automation-update'
 import { automationApi } from '../common/automation.api'
@@ -100,4 +105,32 @@ export const AutomationListGate = createGate({
 sample({
   clock: AutomationListGate.open,
   target: fetchTriggersFx,
+})
+
+export const fetchContracts = automationListDomain.createEffect(
+  async (userId: string) => {
+    return automationApi.getContracts({ filter: { user: userId } })
+  }
+)
+
+export const setNewContract =
+  automationListDomain.createEvent<AutomationContractFragmentFragment>()
+
+export const $contracts = automationListDomain
+  .createStore<AutomationContractFragmentFragment[]>([])
+  .on(fetchContracts.doneData, (_, { list }) => list)
+  .on(setNewContract, (state, payload) => [...state, payload])
+
+sample({
+  clock: guard({
+    source: [userModel.$user, AutomationListGate.status],
+    clock: [userModel.$user.updates, AutomationListGate.open],
+    filter: (source): source is [UserType, boolean] => {
+      const [user, status] = source
+
+      return Boolean(user?.id) && status
+    },
+  }),
+  fn: ([user]) => user.id,
+  target: fetchContracts,
 })

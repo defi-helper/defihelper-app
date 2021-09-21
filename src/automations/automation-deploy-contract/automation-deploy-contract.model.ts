@@ -7,7 +7,6 @@ import networks from '@defihelper/networks/contracts.json'
 import { automationApi } from '~/automations/common/automation.api'
 import { Automates } from '../common/automation.types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import mock from './mock.json'
 import { protocolsApi } from '~/protocols/common'
 import { userModel } from '~/users'
 
@@ -36,22 +35,6 @@ export const fetchAutomationContractsFx =
       return contracts
     }
   )
-
-fetchAutomationContractsFx.use(async () => {
-  const data = [
-    { protocol: 'bondappetit', contract: 'SynthetixUniswapLpRestake' },
-  ]
-
-  const contracts: Automates[] = await Promise.all(
-    data.map(async (contract) => ({
-      ...contract,
-      contractInterface: mock.abi as Automates['contractInterface'],
-      address: mock.address,
-    }))
-  )
-
-  return contracts
-}) // TODO: remove
 
 export const $automateContracts = automationDeployContractDomain
   .createStore<Automates[]>([])
