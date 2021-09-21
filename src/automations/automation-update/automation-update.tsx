@@ -1,3 +1,4 @@
+import { Event } from 'effector'
 import { useGate, useStore } from 'effector-react'
 import { useEffect, useRef } from 'react'
 import omit from 'lodash.omit'
@@ -16,6 +17,7 @@ import {
   AutomateActionUpdateInputType,
   AutomateConditionCreateInputType,
   AutomateTriggerCreateInputType,
+  AutomationContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { Button } from '~/common/button'
 import { AutomationTriggerForm } from '~/automations/common/automation-trigger-form'
@@ -31,6 +33,8 @@ export type AutomationUpdateProps = {
   onConfirm: () => void
   onCancel: () => void
   trigger: Trigger
+  contracts: AutomationContractFragmentFragment[]
+  onAddContract: Event<AutomationContractFragmentFragment>
 }
 
 export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
@@ -40,8 +44,6 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const allExpressions = useStore(model.$allExpressions)
 
   const [openDeploy] = useDialog(AutomationDeployContract)
-
-  const contracts = useStore(model.$contracts)
 
   useGate(model.AutomationUpdateGate, props.trigger)
 
@@ -117,7 +119,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     try {
       const result = await openDeploy()
 
-      model.setNewContract(result)
+      props.onAddContract(result)
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -175,7 +177,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
                 expression={allExpressions[Number(priority)]}
                 priority={Number(priority)}
                 trigger={props.trigger.id}
-                contracts={contracts}
+                contracts={props.contracts}
                 onDeploy={handleOpenDeploy}
               />
             )}
