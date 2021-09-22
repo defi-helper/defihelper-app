@@ -6,3 +6,4 @@ export const theme = {
   mediaQueries,
 }
 export * from './theme.provider'
+export { useTheme } from './theme.context'

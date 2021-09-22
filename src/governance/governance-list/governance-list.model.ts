@@ -1,4 +1,4 @@
-import { createDomain, guard, restore, sample } from 'effector-logger'
+import { createDomain, guard, restore, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { ethers } from 'ethers'
 import contracts from '@defihelper/networks/contracts.json'
@@ -91,16 +91,25 @@ sample({
 
 sample({
   clock: guard({
-    source: walletNetworkModel.$wallet,
+    source: [walletNetworkModel.$wallet, GovernanceListGate.status],
     clock: [
       GovernanceListGate.open,
       walletNetworkModel.$wallet.updates,
       delegateVotesFx.done,
     ],
-    filter: (wallet): wallet is { account: string; chainId: number } =>
-      Boolean(wallet.account) && typeof wallet.chainId === 'number',
+    filter: (
+      source
+    ): source is [{ account: string; chainId: number }, boolean] => {
+      const [wallet, gateIsOpened] = source
+
+      return (
+        Boolean(wallet.account) &&
+        typeof wallet.chainId === 'number' &&
+        gateIsOpened
+      )
+    },
   }),
-  fn: ({ chainId, account }) => ({
+  fn: ([{ chainId, account }]) => ({
     network: chainId,
     wallet: account,
     contract: GOVERNOR_TOKEN,

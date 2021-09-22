@@ -81,8 +81,8 @@ export const variants = styleVariants({
 
     '@media': {
       [theme.mediaQueries.lg()]: {
-        fontSize: 16,
-        lineHeight: '24px' as string,
+        fontSize: 15,
+        lineHeight: '22px' as string,
       },
     },
   },

@@ -1,77 +1,138 @@
-import { useState } from 'react'
 import { useStore } from 'effector-react'
-import Menu from '@material-ui/core/Menu'
-import MenuItem from '@material-ui/core/MenuItem'
+import clsx from 'clsx'
 
 import { useDialog } from '~/common/dialog'
 import { ChangeNetworkDialog } from '~/common/change-network-dialog'
 import { useAbility } from '~/users'
+import { cutAccount } from '~/common/cut-account'
+import { ButtonBase } from '~/common/button-base'
+import { Paper } from '~/common/paper'
 import { Network, NETWORKS, setupBinance, setupPolygon } from '~/wallets/common'
+import { WalletList } from '~/wallets/wallet-list'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as model from './wallet-network-switcher.model'
-import { Button } from '~/common/button'
 import * as styles from './wallet-network-switcher.css'
+import { Typography } from '~/common/typography'
+import { Icon } from '~/common/icon'
+import { Button } from '~/common/button'
 
 export type WalletNetworkSwitcherProps = {
   className?: string
+  hided?: boolean
 }
 
-export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> =
-  () => {
-    const ability = useAbility()
+export const WalletNetworkSwitcher: React.VFC<WalletNetworkSwitcherProps> = (
+  props
+) => {
+  const ability = useAbility()
 
-    const currentNetwork = useStore(model.$currentNetwork)
+  const { account = null } = walletNetworkModel.useWalletNetwork()
 
-    const [anchorEl, setAnchorEl] = useState<
-      (EventTarget & HTMLButtonElement) | null
-    >(null)
+  const { blockchain, blockchainIcon, title } = useStore(model.$currentNetwork)
 
-    const handleClose = () => setAnchorEl(null)
+  const [openWalletList] = useDialog(WalletList)
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) =>
-      setAnchorEl(event.currentTarget)
+  const handleOpenWalletList = async () => {
+    try {
+      const connector = await openWalletList({ blockchain })
 
-    const [openChangeNetwork] = useDialog(ChangeNetworkDialog)
-
-    const handlers: Record<string, () => Promise<unknown>> = {
-      activateEthereum: async () => model.activateEthereum(openChangeNetwork),
-      activateBinance: async () => model.activateEthereum(setupBinance),
-      activatePolygon: async () => model.activateEthereum(setupPolygon),
-      activateWaves: async () => model.activateWaves(),
+      walletNetworkModel.activateWalletFx({ connector })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
     }
-
-    const handleChangeNetwork = (networkItem: Network) => () => {
-      const changeNetwork = handlers[networkItem.onClick ?? '']
-
-      if (!changeNetwork) return model.activateNetwork(networkItem)
-
-      changeNetwork()
-        .then(handleClose)
-        .catch((error) => console.error(error.message))
-    }
-
-    return (
-      <>
-        <Button onClick={handleClick} color="secondary">
-          {currentNetwork.title}
-        </Button>
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          {NETWORKS.filter((networkItem) =>
-            ability.can('read', networkItem.type)
-          ).map((networkItem) => (
-            <MenuItem
-              key={networkItem.title}
-              button
-              onClick={handleChangeNetwork(networkItem)}
-              className={styles.dropdownItem}
-            >
-              {networkItem.title}
-            </MenuItem>
-          ))}
-        </Menu>
-      </>
-    )
   }
+
+  const [openChangeNetwork] = useDialog(ChangeNetworkDialog)
+
+  const handlers: Record<string, () => Promise<unknown>> = {
+    activateEthereum: async () => model.activateEthereum(openChangeNetwork),
+    activateBinance: async () => model.activateEthereum(setupBinance),
+    activatePolygon: async () => model.activateEthereum(setupPolygon),
+    activateWaves: async () => model.activateWaves(),
+  }
+
+  const handleChangeNetwork = (networkItem: Network) => () => {
+    const changeNetwork = handlers[networkItem.onClick ?? '']
+
+    if (!changeNetwork) return model.activateNetwork(networkItem)
+
+    changeNetwork().catch((error) => console.error(error.message))
+  }
+
+  return (
+    <div
+      className={clsx(
+        styles.root,
+        props.className,
+        props.hided && styles.hided
+      )}
+    >
+      {!account ? (
+        <Button
+          color="green"
+          className={styles.connectWallet}
+          onClick={handleOpenWalletList}
+          size="small"
+        >
+          {props.hided ? 'C' : 'Connect wallet'}
+        </Button>
+      ) : (
+        <>
+          <Typography
+            variant="body2"
+            family="mono"
+            transform="uppercase"
+            className={clsx(styles.account, props.hided && styles.accountHided)}
+            as="div"
+          >
+            {blockchainIcon && (
+              <Icon
+                icon={blockchainIcon}
+                className={clsx(
+                  styles.networkIcon,
+                  props.hided && styles.networkIconHided
+                )}
+              />
+            )}
+            {!props.hided && (
+              <>
+                {cutAccount(account)}
+                <Icon icon="arrowTop" className={styles.arrowTop} />
+              </>
+            )}
+          </Typography>
+          <Paper className={styles.dropdown} radius={8}>
+            <ButtonBase
+              onClick={handleOpenWalletList}
+              className={clsx(styles.dropdownItem, styles.changeNetwork)}
+            >
+              Change wallet
+            </ButtonBase>
+            {NETWORKS.filter((networkItem) =>
+              ability.can('read', networkItem.type)
+            ).map((networkItem) => (
+              <ButtonBase
+                key={networkItem.title}
+                onClick={handleChangeNetwork(networkItem)}
+                className={styles.dropdownItem}
+              >
+                {networkItem.blockchainIcon && (
+                  <Icon
+                    icon={networkItem.blockchainIcon}
+                    className={styles.networkIcon}
+                  />
+                )}
+                {networkItem.title}
+                {title === networkItem.title && (
+                  <Icon icon="checked" className={styles.checked} />
+                )}
+              </ButtonBase>
+            ))}
+          </Paper>
+        </>
+      )}
+    </div>
+  )
+}

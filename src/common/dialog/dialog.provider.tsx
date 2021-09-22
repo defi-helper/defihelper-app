@@ -1,42 +1,53 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useCallback, useRef, useState } from 'react'
+import omit from 'lodash.omit'
 
 import { Portal } from '~/common/portal'
 import { UserRejectionError } from './dialog.error'
 import { DialogContext, Node } from './dialog.context'
+import * as styles from './dialog.css'
 
 type Fn = (value: unknown) => void
 
 export const DialogProvider: React.FC = (props) => {
-  const [dialogNode, setDialogNode] = useState<Node | null>(null)
+  const [dialogs, setDialogs] = useState<Record<string, Node>>({})
   const [closeOnOverlayClick, setCloseOnOverlayClick] = useState(true)
 
-  const resolveRef = useRef<Fn | null>(null)
-  const rejectRef = useRef<Fn | null>(null)
+  const resolveRef = useRef<Record<string, Fn>>({})
+  const rejectRef = useRef<Record<string, Fn>>({})
 
-  const handleClose = useCallback(() => {
-    if (!closeOnOverlayClick || !rejectRef.current) return
+  const handleClose = useCallback(
+    (id: string) => () => {
+      if (!closeOnOverlayClick) return
 
-    setDialogNode(null)
-    rejectRef.current(new UserRejectionError())
-  }, [closeOnOverlayClick])
+      setDialogs((previousDialogs) => omit(previousDialogs, id))
+      rejectRef.current[id]?.(new UserRejectionError())
+      rejectRef.current = omit(rejectRef.current, id)
+    },
+    [closeOnOverlayClick]
+  )
 
   const handleOnConfirm = useCallback(
-    (value?: unknown) => {
-      if (!closeOnOverlayClick || !resolveRef.current) return
+    (id: string) => (value?: unknown) => {
+      if (!closeOnOverlayClick) return
 
-      setDialogNode(null)
-      resolveRef.current(value)
+      setDialogs((previousDialogs) => omit(previousDialogs, id))
+      resolveRef.current[id]?.(value)
+      resolveRef.current = omit(resolveRef.current, id)
     },
     [closeOnOverlayClick]
   )
 
   const handleOpen = useCallback((node: Node, resolve, reject) => {
-    setDialogNode(node)
+    setDialogs((previousDialogs) => ({ ...previousDialogs, [node.id]: node }))
 
-    resolveRef.current = resolve
-    rejectRef.current = reject
+    resolveRef.current = {
+      ...resolveRef.current,
+      [node.id]: resolve,
+    }
+    rejectRef.current = {
+      ...rejectRef.current,
+      [node.id]: reject,
+    }
   }, [])
 
   return (
@@ -47,17 +58,21 @@ export const DialogProvider: React.FC = (props) => {
         closeOnOverlay: setCloseOnOverlayClick,
       }}
     >
-      {dialogNode && (
-        <Portal>
-          <div onClick={handleClose}>
-            <dialogNode.Dialog
-              {...dialogNode.props}
-              onCancel={handleClose}
-              onConfirm={handleOnConfirm}
+      {Object.values(dialogs).map((node) => (
+        <Portal key={node.id}>
+          <div
+            onMouseDown={handleClose(node.id)}
+            aria-hidden="true"
+            className={styles.root}
+          >
+            <node.Dialog
+              {...node.props}
+              onCancel={handleClose(node.id)}
+              onConfirm={handleOnConfirm(node.id)}
             />
           </div>
         </Portal>
-      )}
+      ))}
       {props.children}
     </DialogContext.Provider>
   )

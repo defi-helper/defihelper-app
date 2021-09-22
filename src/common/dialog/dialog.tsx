@@ -4,16 +4,14 @@ import clsx from 'clsx'
 import { useState } from 'react'
 
 import { useBodyScrollLock } from '~/common/hooks'
+import { Paper } from '~/common/paper'
 import * as styles from './dialog.css'
-import { useDialogContext } from './dialog.context'
 
 export type DialogProps = {
   className?: string
 }
 
 export const Dialog: React.FC<DialogProps> = (props) => {
-  const { onClose } = useDialogContext()
-
   const handleOnClickContent = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => event.stopPropagation()
@@ -23,15 +21,18 @@ export const Dialog: React.FC<DialogProps> = (props) => {
   )
   useBodyScrollLock(contentElement)
 
+  const handleSetContent = (instance: HTMLDivElement | null) => {
+    setContentElement(instance)
+  }
+
   return (
-    <div onClick={onClose} className={styles.root}>
-      <div
-        onClick={handleOnClickContent}
-        className={clsx(styles.content, props.className)}
-        ref={setContentElement}
-      >
-        {props.children}
-      </div>
-    </div>
+    <Paper
+      onMouseDown={handleOnClickContent}
+      className={clsx(styles.content, props.className)}
+      radius={8}
+      ref={handleSetContent}
+    >
+      {props.children}
+    </Paper>
   )
 }

@@ -1,4 +1,4 @@
-import { createDomain, guard, sample } from 'effector-logger'
+import { createDomain, guard, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { MeQuery } from '~/graphql/_generated-types'
@@ -18,6 +18,8 @@ export const $user = userDomain
   })
   .on(fetchUserFx.doneData, (_, payload) => payload)
   .on(walletNetworkModel.saveUserFx.doneData, (_, payload) => payload)
+
+export const $userWallets = $user.map((user) => user?.wallets.list ?? [])
 
 export const UserGate = createGate({
   name: 'UserGate',

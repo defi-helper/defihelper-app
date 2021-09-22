@@ -1,4 +1,4 @@
-import { createDomain, guard, sample } from 'effector-logger'
+import { createDomain, guard, sample } from 'effector-logger/macro'
 import omit from 'lodash.omit'
 
 import { history } from '~/common/history'

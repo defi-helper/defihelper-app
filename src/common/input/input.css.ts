@@ -44,3 +44,5 @@ export const focusedLabel = style({
   opacity: 0.63,
   transform: 'translateY(-25px)',
 })
+
+export const error = style({})

@@ -42,4 +42,11 @@ export const paths = {
       `/governance/${governanceId}` as const,
     create: '/governance/create',
   },
+
+  automations: {
+    list: '/automations',
+    create: '/automations/create',
+    update: (automationId = ':automationId') =>
+      `/automations/update/${automationId}` as const,
+  },
 } as const

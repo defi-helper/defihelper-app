@@ -1,4 +1,4 @@
-import { createDomain, guard } from 'effector-logger'
+import { createDomain, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { history } from '~/common/history'

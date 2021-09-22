@@ -1,4 +1,4 @@
-import { Link as ReactRouterLink, useLocation } from 'react-router-dom'
+import { Link as ReactRouterLink } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
 import { useMemo, useState } from 'react'
 import clsx from 'clsx'
@@ -23,8 +23,6 @@ import * as styles from './protocol-list.css'
 export type ProtocolListProps = unknown
 
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
-  const location = useLocation()
-
   const {
     popperStyles,
     popperAttributes,
@@ -62,7 +60,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     [protocolList, ability]
   )
 
-  useGate(model.ProtocolListGate, location.pathname)
+  useGate(model.ProtocolListGate)
 
   const [active, setActive] = useState(false)
 

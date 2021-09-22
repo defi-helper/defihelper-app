@@ -1,4 +1,4 @@
-import { createDomain, guard, sample } from 'effector-logger'
+import { createDomain, guard, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { createPagination } from '~/common/create-pagination'
@@ -6,7 +6,6 @@ import {
   BlockchainEnum,
   ProtocolFragmentFragment,
 } from '~/graphql/_generated-types'
-import { paths } from '~/paths'
 import { protocolsApi } from '~/protocols/common'
 import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 
@@ -82,7 +81,7 @@ export const ProtocolListPagination = createPagination({
   domain: protocolListDomain,
 })
 
-export const ProtocolListGate = createGate<string>({
+export const ProtocolListGate = createGate({
   domain: protocolListDomain,
   name: 'ProtocolListGate',
 })
@@ -93,12 +92,13 @@ sample({
     ProtocolListPagination.state,
   ],
   clock: guard({
+    source: ProtocolListGate.status,
     clock: [
       walletNetworkSwitcherModel.$currentNetwork.updates,
       ProtocolListGate.open,
       ProtocolListPagination.updates,
     ],
-    filter: () => ProtocolListGate.state.getState() === paths.protocols.list,
+    filter: (gateIsOpened) => gateIsOpened,
   }),
   fn: ([{ network, blockchain }, { offset, limit }]) => ({
     network,

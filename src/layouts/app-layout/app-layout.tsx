@@ -1,9 +1,5 @@
 import { paths } from '~/paths'
-import { useDialog } from '~/common/dialog'
-import { WalletDetail } from '~/wallets/wallet-detail'
-import { WalletList } from '~/wallets/wallet-list'
 import { WalletNetworkSwitcher } from '~/wallets/wallet-network-switcher'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { LayoutSidebar, LayoutContainer } from '../common'
 import * as styles from './app-layout.css'
 
@@ -11,66 +7,51 @@ export type AppLayoutProps = unknown
 
 const MENU = [
   {
-    title: 'Portfolio',
-    path: paths.portfolio,
+    title: 'Profile',
+    path: paths.portfolio as string,
     icon: 'home' as const,
   },
   {
     title: 'Protocols',
-    path: paths.protocols.list,
-    icon: 'home' as const,
+    path: paths.protocols.list as string,
+    icon: 'grid' as const,
   },
   {
-    title: 'Proposals',
-    path: paths.proposals.list,
-    icon: 'home' as const,
+    title: 'Automations',
+    path: paths.automations.list,
+    icon: 'energy' as const,
   },
   {
     title: 'Notifications',
-    path: paths.userEventSubscriptions.list,
-    icon: 'home' as const,
+    path: paths.userEventSubscriptions.list as string,
+    icon: 'notification' as const,
   },
   {
-    title: 'Governance',
-    path: '/governance',
-    icon: 'home' as const,
+    title: 'Roadmap',
+    path: paths.proposals.list as string,
+    icon: 'check' as const,
   },
   {
-    title: 'Billing',
-    path: paths.billing,
-    icon: 'home' as const,
+    title: 'Settings',
+    path: '/settings',
+    icon: 'settings' as const,
   },
-  {
-    title: 'Contacts',
-    path: paths.contacts.list,
-    icon: 'home' as const,
-  },
+  // {
+  //   title: 'Billing',
+  //   path: paths.billing,
+  //   icon: 'home' as const,
+  // },
+  // {
+  //   title: 'Contacts',
+  //   path: paths.contacts.list as string,
+  //   icon: 'home' as const,
+  // },
 ]
 
 export const AppLayout: React.FC<AppLayoutProps> = (props) => {
-  const { account = null } = walletNetworkModel.useWalletNetwork()
-
-  const [openWalletList, closeWalletList] = useDialog(WalletList)
-  const [openChangeWallet] = useDialog(WalletDetail)
-
-  const handleOpenWalletList = () =>
-    openWalletList({ onClick: closeWalletList }).catch((error: Error) =>
-      console.error(error.message)
-    )
-
-  const handleChangeWallet = () =>
-    openChangeWallet({ onChange: handleOpenWalletList }).catch((error: Error) =>
-      console.error(error.message)
-    )
-
   return (
     <div className={styles.root}>
-      <LayoutSidebar
-        account={account}
-        onConnect={handleOpenWalletList}
-        onChangeWallet={handleChangeWallet}
-        menu={MENU}
-      >
+      <LayoutSidebar menu={MENU}>
         <WalletNetworkSwitcher />
       </LayoutSidebar>
       <LayoutContainer>{props.children}</LayoutContainer>
