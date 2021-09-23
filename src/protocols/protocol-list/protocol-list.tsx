@@ -71,20 +71,15 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           <Typography variant="h3" family="square">
             Protocols
           </Typography>
-          {false && ( // TODO: hide for now
-            <>
-              <ProtocolTabs />
-              <div>
-                <Input placeholder="Search" />
-              </div>
-            </>
-          )}
+          <ProtocolTabs className={styles.tabs} />
+          <Input placeholder="Search" className={styles.search} />
           <Can I="create" a="Protocol">
             <Button
               as={ReactRouterLink}
               variant="contained"
               color="blue"
               to={paths.protocols.create}
+              className={styles.create}
             >
               <Icon icon="plus" height="24" width="24" />
             </Button>

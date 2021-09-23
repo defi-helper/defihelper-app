@@ -7,8 +7,20 @@ export const root = style({})
 export const header = style({
   marginBottom: 28,
   display: 'flex',
-  justifyContent: 'space-between',
   alignItems: 'center',
+})
+
+export const tabs = style({
+  marginLeft: 'auto',
+})
+
+export const search = style({
+  width: 211,
+  marginLeft: 24,
+})
+
+export const create = style({
+  marginLeft: 24,
 })
 
 export const protocols = style({

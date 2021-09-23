@@ -22,4 +22,5 @@ export const tab = style({
 
 export const active = style({
   background: theme.colors.common.green2,
+  color: theme.colors.textColorSecondary,
 })

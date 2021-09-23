@@ -2,36 +2,18 @@ import { Link } from '@material-ui/core'
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import LaunchIcon from '@material-ui/icons/Launch'
-import { makeStyles } from '@material-ui/core/styles'
 import { useGate, useStore } from 'effector-react'
 
 import { AppLayout } from '~/layouts'
 import { Typography } from '~/common/typography'
 import { StakingList } from '~/staking/staking-list'
-import * as model from './protocol-detail.model'
 import { ProtocolMetrics } from '~/protocols/protocol-metrics'
+import * as model from './protocol-detail.model'
+import * as styles from './protocol-detail.css'
 
 export type ProtocolDetailProps = {
   protocolId: string
 }
-
-const useStyles = makeStyles(() => ({
-  root: {
-    padding: 0,
-    margin: 0,
-    listStyle: 'none',
-  },
-
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  icon: {
-    verticalAlign: 'middle',
-  },
-}))
 
 const Protocol: React.VFC<ProtocolDetailProps> = (props) => {
   useGate(model.ProtocolDetailGate, props)
@@ -39,19 +21,17 @@ const Protocol: React.VFC<ProtocolDetailProps> = (props) => {
   const protocol = useStore(model.$protocol)
   const loading = useStore(model.fetchProtocolFx.pending)
 
-  const classes = useStyles()
-
   return (
     <>
       {loading && !protocol && 'loading...'}
       {!loading && protocol && (
         <div>
-          <div className={classes.header}>
+          <div className={styles.header}>
             <Typography variant="h2">{protocol.name}</Typography>
             {protocol.link && (
               <Typography>
                 <Link target="_blank" href={protocol.link}>
-                  More info <LaunchIcon className={classes.icon} />
+                  More info <LaunchIcon className={styles.icon} />
                 </Link>
               </Typography>
             )}

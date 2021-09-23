@@ -8,9 +8,9 @@ export type ProtocolTabsProps = {
   className?: string
 }
 
-export const ProtocolTabs: React.VFC<ProtocolTabsProps> = () => {
+export const ProtocolTabs: React.VFC<ProtocolTabsProps> = (props) => {
   return (
-    <Paper className={styles.root}>
+    <Paper className={clsx(styles.root, props.className)}>
       <ButtonBase className={clsx(styles.tab, styles.active)}>
         Invested
       </ButtonBase>
