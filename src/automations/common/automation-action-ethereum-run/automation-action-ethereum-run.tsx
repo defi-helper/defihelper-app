@@ -6,7 +6,7 @@ import { Button } from '~/common/button'
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
 import * as styles from './automation-action-ethereum-run.css'
 
-type FormValues = { contract: string }
+type FormValues = { id: string }
 
 export type AutomationActionEthereumRunProps = {
   className?: string
@@ -27,7 +27,7 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
     })
 
     const handleSubmit = (formValues: FormValues) => {
-      props.onSubmit(JSON.stringify({ id: formValues.contract }))
+      props.onSubmit(JSON.stringify({ id: formValues.id }))
     }
 
     return (
@@ -41,20 +41,20 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
               label="Contract"
               {...field}
               select
-              helperText={formState.errors.contract?.message}
-              error={Boolean(formState.errors.contract?.message)}
-              defaultValue={props.defaultValues?.contract}
+              helperText={formState.errors.id?.message}
+              error={Boolean(formState.errors.id?.message)}
+              defaultValue={props.defaultValues?.id}
               value={field.value || ''}
             >
               {props.contracts.map((contract) => (
-                <MenuItem key={contract.id} value={contract.address}>
+                <MenuItem key={contract.id} value={contract.id}>
                   {contract.adapter}({contract.protocol.name})
                   {contract.wallet.address}
                 </MenuItem>
               ))}
             </TextField>
           )}
-          name="contract"
+          name="id"
           control={control}
         />
         <Button onClick={props.onDeploy}>Deploy new</Button>
