@@ -5,13 +5,12 @@ export const root = style({
   display: 'inline-flex',
   flexDirection: 'column',
   width: '100%',
-  fontFamily: theme.fonts.mono,
-  textTransform: 'uppercase',
+  fontFamily: theme.fonts.square,
   position: 'relative',
   backgroundColor: theme.colors.common.black6,
-  borderRadius: 10,
-  fontSize: 20,
-  lineHeight: '28px',
+  borderRadius: 8,
+  fontSize: 16,
+  lineHeight: '24px',
 })
 
 export const input = style({
@@ -25,7 +24,7 @@ export const input = style({
   textTransform: 'inherit',
   fontFamily: 'inherit',
   background: 'transparent',
-  padding: '12px 16px',
+  padding: '8px 16px',
   color: 'currentcolor',
 })
 
@@ -36,13 +35,6 @@ export const label = style({
   transform: 'translateY(-50%)',
   left: '16px',
   transition: 'transform .2s, font-size .2s',
-})
-
-export const focusedLabel = style({
-  fontSize: 12,
-  lineHeight: '16px',
-  opacity: 0.63,
-  transform: 'translateY(-25px)',
 })
 
 export const error = style({})

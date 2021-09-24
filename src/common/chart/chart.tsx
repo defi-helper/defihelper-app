@@ -13,8 +13,9 @@ import {
 } from '@amcharts/amcharts4/charts'
 import { useEffect, useRef } from 'react'
 import am4themes_animated from '@amcharts/amcharts4/themes/animated'
-import { makeStyles } from '@material-ui/core'
 import clsx from 'clsx'
+
+import * as styles from './chart.css'
 
 export type ChartProps = {
   dataFields: Array<IXYSeriesDataFields>
@@ -26,24 +27,8 @@ export type ChartProps = {
 
 amchartsUseTheme(am4themes_animated)
 
-const useStyles = makeStyles(() => ({
-  root: {
-    width: '100%',
-    height: '300px',
-    margin: '50px 0',
-  },
-
-  flex: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-}))
-
 export const Chart: React.VFC<ChartProps> = (props) => {
   const chartRef = useRef<null | XYChart>(null)
-
-  const classes = useStyles()
 
   const { id = 'chart' } = props
 
@@ -97,8 +82,8 @@ export const Chart: React.VFC<ChartProps> = (props) => {
   }, [props.data, id])
 
   return props.data?.length ? (
-    <div id={id} className={classes.root} />
+    <div id={id} className={styles.root} />
   ) : (
-    <div className={clsx(classes.root, classes.flex)}>no data</div>
+    <div className={clsx(styles.root, styles.flex)}>no data</div>
   )
 }

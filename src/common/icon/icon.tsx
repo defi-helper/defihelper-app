@@ -15,6 +15,7 @@ import { ReactComponent as SettingsArrowIcon } from '~/assets/icons/settings-arr
 import { ReactComponent as PlusIcon } from '~/assets/icons/plus.svg'
 import { ReactComponent as BackArrowIcon } from '~/assets/icons/back-arrow.svg'
 import { ReactComponent as DotsIcon } from '~/assets/icons/dots.svg'
+import { ReactComponent as StarIcon } from '~/assets/icons/star.svg'
 import { ReactComponent as DoubleArrowLeftIcon } from '~/assets/icons/double-arrow-left.svg'
 import { ReactComponent as LogoMiniIcon } from '~/assets/icons/logo-mini.svg'
 import { ReactComponent as LogoIcon } from '~/assets/icons/logo.svg'
@@ -56,6 +57,7 @@ const ICONS = {
   plus: PlusIcon,
   backArrow: BackArrowIcon,
   dots: DotsIcon,
+  star: StarIcon,
   doubleArrowLeft: DoubleArrowLeftIcon,
   logo: LogoIcon,
   logoMini: LogoMiniIcon,

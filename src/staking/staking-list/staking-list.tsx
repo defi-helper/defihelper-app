@@ -1,4 +1,3 @@
-import { makeStyles, Paper } from '@material-ui/core'
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useMemo } from 'react'
@@ -9,6 +8,7 @@ import * as model from './staking-list.model'
 import { paths } from '~/paths'
 import { Button } from '~/common/button'
 import { Link } from '~/common/link'
+import { Paper } from '~/common/paper'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { dateUtils } from '~/common/date-utils'
@@ -16,53 +16,14 @@ import { cutAccount } from '~/common/cut-account'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { StakingAdapters } from '~/staking/staking-adapters'
 import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
+import * as styles from './staking-list.css'
+import { ButtonBase } from '~/common/button-base'
 
 export type StakingListProps = {
   protocolId: string
 }
 
-const useStyles = makeStyles(() => ({
-  root: {
-    padding: 0,
-    margin: 0,
-    listStyle: 'none',
-  },
-
-  card: {
-    padding: '10px 15px',
-    marginBottom: 5,
-    display: 'flex',
-    alignItems: 'center',
-  },
-
-  clickable: {
-    cursor: 'pointer',
-  },
-
-  icons: {
-    display: 'flex',
-
-    '& > *:first-child': {
-      marginRight: -3,
-    },
-
-    '& > *:last-child': {
-      marginLeft: -3,
-    },
-  },
-
-  tvl: {
-    marginLeft: 'auto',
-  },
-
-  mr: {
-    marginRight: 10,
-  },
-}))
-
 export const StakingList: React.VFC<StakingListProps> = (props) => {
-  const classes = useStyles()
-
   const ability = useAbility()
 
   const stakingList = useStore(model.$contracts)
@@ -124,7 +85,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           New contract
         </Button>
       </Can>
-      <ul className={classes.root}>
+      <ul className={styles.root}>
         {loading && <Paper>Loading...</Paper>}
         {!loading && !staking.length && <Paper>no contracts found</Paper>}
         {!loading &&
@@ -135,9 +96,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
               stakingListItem.blockchain === blockchain &&
               (stakingListItem.network === String(network) ||
                 (stakingListItem.network === 'main' && network === 'waves'))
-
-            const clickable =
-              stakingListItem.connected && connectable && !opened
 
             return (
               <li key={stakingListItem.id}>
@@ -156,22 +114,17 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     </Button>
                   )}
                 <Paper
-                  className={clsx(classes.card, {
-                    [classes.clickable]: clickable,
-                  })}
-                  onClick={
-                    clickable
-                      ? handleOpenContract(stakingListItem.address)
-                      : undefined
-                  }
+                  className={clsx(styles.card, styles.clickable)}
+                  onClick={handleOpenContract(stakingListItem.address)}
+                  radius={8}
                 >
-                  <div className={`${classes.icons} ${classes.mr}`}>
+                  <div className={`${styles.icons} ${styles.mr}`}>
                     {stakingListItem.name}
                   </div>
-                  <div className={classes.mr}>{stakingListItem.blockchain}</div>
+                  <div className={styles.mr}>{stakingListItem.blockchain}</div>
                   <div>network: {stakingListItem.network}</div>
                   <Link
-                    className={`${classes.tvl} ${classes.mr}`}
+                    className={`${styles.tvl} ${styles.mr}`}
                     href={buildExplorerUrl({
                       network: stakingListItem.network,
                       address: stakingListItem.address,
@@ -182,20 +135,19 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   </Link>
                   {stakingListItem.link && (
                     <Link
-                      className={classes.mr}
+                      className={styles.mr}
                       href={stakingListItem.link}
                       target="_blank"
                     >
                       More info
                     </Link>
                   )}
-                  <div className={classes.mr}>
+                  <div className={styles.mr}>
                     {dateUtils.format(stakingListItem.createdAt)}
                   </div>
                 </Paper>
                 <Can I="update" a="Contract">
-                  <Button
-                    variant="contained"
+                  <ButtonBase
                     as={ReactRouterLink}
                     to={`${paths.staking.update(
                       props.protocolId,
@@ -203,25 +155,27 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     )}?protocol-adapter=${protocolAdapter}`}
                   >
                     Edit
-                  </Button>
+                  </ButtonBase>
                 </Can>
                 <Can I="delete" a="Contract">
-                  <Button
-                    variant="contained"
-                    color="secondary"
+                  <ButtonBase
                     onClick={handleOpenConfirmDialog(stakingListItem.id)}
                   >
                     Delete
-                  </Button>
+                  </ButtonBase>
                 </Can>
-                {stakingListItem.connected && protocolAdapter && opened && (
-                  <StakingAdapters
-                    protocolAdapter={protocolAdapter}
-                    contractAdapter={stakingListItem.adapter}
-                    contractAddress={stakingListItem.address}
-                    contractLayout={stakingListItem.layout}
-                  />
-                )}
+                {!connectable && opened && <Paper>please change network</Paper>}
+                {stakingListItem.connected &&
+                  connectable &&
+                  protocolAdapter &&
+                  opened && (
+                    <StakingAdapters
+                      protocolAdapter={protocolAdapter}
+                      contractAdapter={stakingListItem.adapter}
+                      contractAddress={stakingListItem.address}
+                      contractLayout={stakingListItem.layout}
+                    />
+                  )}
               </li>
             )
           })}
