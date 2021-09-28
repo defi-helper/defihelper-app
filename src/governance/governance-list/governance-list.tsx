@@ -2,9 +2,9 @@ import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { AppLayout } from '~/layouts'
-import { Paper } from '~/common/paper'
 import { paths } from '~/paths'
 import { Chip } from '~/common/chip'
+import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import { Typography } from '~/common/typography'
 import {
@@ -14,10 +14,10 @@ import {
 import { useDialog } from '~/common/dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { ButtonBase } from '~/common/button-base'
+import { Paper } from '~/common/paper'
+import { Icon } from '~/common/icon'
 import * as model from './governance-list.model'
 import * as styles from './governance-list.css'
-import { Icon } from '~/common/icon'
 
 export type GovernanceListProps = unknown
 

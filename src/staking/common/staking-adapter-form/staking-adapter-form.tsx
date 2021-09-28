@@ -1,10 +1,11 @@
-import { Button, makeStyles } from '@material-ui/core'
 import { useEffect, useState } from 'react'
 
 import { Typography } from '~/common/typography'
 import { Adapter, AdapterWallet } from '~/common/load-adapter'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { NumericalInput } from '~/common/numerical-input'
+import { Button } from '~/common/button'
+import * as styles from './staking-adapter-form.css'
 
 export type StakingAdapterFormProps = {
   metrics: Adapter['metrics']
@@ -23,23 +24,9 @@ export type StakingAdapterFormProps = {
   tokens?: Record<string, string>
 }
 
-const useStyles = makeStyles(() => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    padding: '20px 0',
-  },
-
-  input: {
-    marginBottom: 20,
-  },
-}))
-
 export const StakingAdapterForm: React.VFC<Partial<StakingAdapterFormProps>> = (
   props
 ) => {
-  const classes = useStyles()
-
   const [amount, setAmount] = useState('')
   const [error, setError] = useState('')
 
@@ -70,11 +57,11 @@ export const StakingAdapterForm: React.VFC<Partial<StakingAdapterFormProps>> = (
     <form
       noValidate
       autoComplete="off"
-      className={classes.root}
+      className={styles.root}
       onSubmit={handleSubmit}
     >
       <NumericalInput
-        className={classes.input}
+        className={styles.input}
         label="Amount"
         value={amount}
         onChange={handleChange}

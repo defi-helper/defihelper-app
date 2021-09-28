@@ -45,13 +45,15 @@ const signWavesExchange = async (provider: Provider, message: string) => {
     publicKey = loginPayload.publicKey
 
     signature = await provider.signMessage(message)
-  } catch (error) {
-    throw new Error(error)
-  }
 
-  return {
-    signature,
-    publicKey,
+    return {
+      signature,
+      publicKey,
+    }
+  } catch (error) {
+    if (typeof error === 'string') {
+      throw new Error(error)
+    }
   }
 }
 

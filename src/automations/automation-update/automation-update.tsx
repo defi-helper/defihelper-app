@@ -25,9 +25,9 @@ import {
   AutomationTriggerExpression,
   AutomationTriggerExpressions,
 } from '../common/automation-trigger-expression'
+import { AutomationDeployContract } from '../automation-deploy-contract'
 import * as model from './automation-update.model'
 import * as styles from './automation-update.css'
-import { AutomationDeployContract } from '../automation-deploy-contract'
 
 export type AutomationUpdateProps = {
   onConfirm: () => void

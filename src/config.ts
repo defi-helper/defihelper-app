@@ -16,4 +16,5 @@ export const config = {
   TELEGRAM_BOT_USERNAME: process.env.REACT_APP_TELEGRAM_BOT_USERNAME,
   BETA: process.env.REACT_APP_BETA === 'true',
   MAIN_URL: process.env.REACT_APP_MAIN_URL,
+  AMCHARTS_LICENCE: process.env.REACT_APP_AMCHARTS_LICENCE,
 } as const

@@ -1,4 +1,6 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
+
+import { theme } from '~/common/theme'
 
 export const root = style({
   padding: 0,
@@ -6,33 +8,100 @@ export const root = style({
   listStyle: 'none',
 })
 
-export const card = style({
-  padding: '10px 15px',
-  marginBottom: 5,
+export const header = style({
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: 24,
+})
+
+export const title = style({})
+
+export const tabs = style({
+  marginLeft: 'auto',
+})
+
+export const select = style({
+  padding: '8px 16px',
+  fontSize: 16,
+  lineHeight: '24px',
+  color: theme.colors.textColorGrey,
+  marginLeft: 16,
+})
+
+export const selectArrow = style({
+  width: 8,
+  height: 4,
+  marginLeft: 8,
+  verticalAlign: 'middle',
+  marginTop: '-4px',
+  transform: 'rotate(180deg)',
+})
+
+export const create = style({
+  padding: 8,
+  marginLeft: 16,
+})
+
+export const tableHeader = style({
+  color: theme.colors.textColorGrey,
+})
+
+export const row = style({
+  display: 'grid',
+  gridTemplateColumns: '21% 15% 10% 14% 14% 12% 1fr',
+  padding: '16px 24px',
+
+  selectors: {
+    '&:not(:last-child)': {
+      borderBottom: `1px solid ${theme.colors.common.white2}`,
+    },
+  },
+})
+
+export const card = style({})
+
+export const red = style({
+  color: theme.colors.common.red,
+})
+
+export const lightGreen = style({
+  color: theme.colors.common.green1,
+})
+
+export const green = style({
+  color: theme.colors.common.green2,
+})
+
+export const tableCol = style({
   display: 'flex',
   alignItems: 'center',
 })
 
-export const clickable = style({
-  cursor: 'pointer',
-})
-
-export const icons = style({
-  display: 'flex',
-})
-
-globalStyle(`${icons} > *:first-child`, {
-  marginRight: -3,
-})
-
-globalStyle(`${icons} > *:last-child`, {
-  marginLeft: -3,
-})
-
-export const tvl = style({
-  marginLeft: 'auto',
-})
-
-export const mr = style({
+export const coinIcons = style({
+  display: 'inline-flex',
+  alignItems: 'center',
   marginRight: 10,
+})
+
+export const coinIcon = style({
+  width: 16,
+  height: 16,
+
+  selectors: {
+    '&:first-child': {
+      marginRight: -1,
+    },
+    '&:last-child': {
+      marginLeft: -1,
+    },
+  },
+})
+
+export const accorionButton = style({
+  width: 24,
+  height: 24,
+  padding: 6,
+  marginLeft: 'auto',
+  marginRight: -12,
+  color: theme.colors.textColorGrey,
 })

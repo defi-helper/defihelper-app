@@ -7,9 +7,9 @@ import { Dialog } from '~/common/dialog'
 import { Input } from '~/common/input'
 import { Button } from '~/common/button'
 import { isEthAddress } from '~/common/is-eth-address'
+import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
 import * as model from './automation-deploy-contract.model'
 import * as styles from './automation-deploy-contract.css'
-import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
 
 type FormValues = {
   contract: string

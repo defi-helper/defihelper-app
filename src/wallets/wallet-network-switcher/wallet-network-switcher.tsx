@@ -6,15 +6,15 @@ import { ChangeNetworkDialog } from '~/common/change-network-dialog'
 import { useAbility } from '~/users'
 import { cutAccount } from '~/common/cut-account'
 import { ButtonBase } from '~/common/button-base'
+import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
 import { Network, NETWORKS, setupBinance, setupPolygon } from '~/wallets/common'
 import { WalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import * as model from './wallet-network-switcher.model'
-import * as styles from './wallet-network-switcher.css'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
-import { Button } from '~/common/button'
+import * as model from './wallet-network-switcher.model'
+import * as styles from './wallet-network-switcher.css'
 
 export type WalletNetworkSwitcherProps = {
   className?: string

@@ -32,6 +32,7 @@ import {
 } from '~/governance'
 import { AutomationList } from '~/automations/automation-list'
 import { AutomationCreate } from '~/automations/automation-create'
+import { Settings } from '~/settings'
 
 export type RouterProps = unknown
 
@@ -123,6 +124,9 @@ export const Router: React.VFC<RouterProps> = () => {
         </PrivateRoute>
         <PrivateRoute path={paths.automations.list}>
           <AutomationList />
+        </PrivateRoute>
+        <PrivateRoute path={paths.settings}>
+          <Settings />
         </PrivateRoute>
         <Route>
           <NotFound />

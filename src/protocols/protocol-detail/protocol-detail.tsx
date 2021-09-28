@@ -6,13 +6,18 @@ import clsx from 'clsx'
 import { AppLayout } from '~/layouts'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
+import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
 import { Tabs, Tab, TabPanel } from '~/common/tabs'
 import { StakingList } from '~/staking/staking-list'
-import { ProtocolMetrics } from '~/protocols/protocol-metrics'
-import { clearLink } from '~/protocols/common'
-import { ButtonBase } from '~/common/button-base'
-import { Button } from '~/common/button'
+import { ProtocolMetricEarnings } from '~/protocols/protocol-metric-earnings'
+import { ProtocolMetricOverview } from '~/protocols/protocol-metric-overview'
+import {
+  clearLink,
+  ProtocolDemandMetrics,
+  ProtocolMediaActivity,
+  ProtocolOverview,
+} from '~/protocols/common'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
 
@@ -37,66 +42,6 @@ const EARNINGS = [
     model expects the growth of overall value because of growth of media
     activity and demand.
   </>,
-]
-
-const LINKS = [
-  {
-    title: 'bondappetit.io',
-    href: '#',
-  },
-  {
-    title: 'Whitepaper',
-    href: '#',
-  },
-  {
-    title: 'Docs',
-    href: '#',
-  },
-]
-
-const SOCIALS = [
-  {
-    title: 'Telegram',
-    href: '#',
-  },
-  {
-    title: 'Discord',
-    href: '#',
-  },
-  {
-    title: 'Twitter',
-    href: '#',
-  },
-  {
-    title: 'Medium',
-    href: '#',
-  },
-  {
-    title: 'Github',
-    href: '#',
-  },
-]
-
-const LISTINGS = [
-  {
-    title: 'CoinMARKETCAP',
-    href: '#',
-  },
-  {
-    title: 'Coingeko',
-    href: '#',
-  },
-]
-
-const AUDITS = [
-  {
-    title: 'MixBytes, 20 Jun 2021',
-    href: '#',
-  },
-  {
-    title: 'HashEx, 16 Aug 2021',
-    href: '#',
-  },
 ]
 
 export const ProtocolDetail: React.FC = () => {
@@ -147,103 +92,17 @@ export const ProtocolDetail: React.FC = () => {
                   </Paper>
                 ))}
               </div>
-              <Typography variant="h3" className={styles.subtitle}>
-                Statistics
-              </Typography>
-              <Paper radius={8} className={styles.mb120}>
-                <ProtocolMetrics />
-              </Paper>
-              <Typography variant="h3" className={styles.subtitle}>
-                Staking contracts
-              </Typography>
-              <Paper radius={8}>
-                <StakingList protocolId={params.protocolId} />
-              </Paper>
+              <ProtocolMetricEarnings className={styles.mb120} />
+              <StakingList protocolId={params.protocolId} />
             </TabPanel>
             <TabPanel>
-              <Paper radius={8} className={clsx(styles.card, styles.overview)}>
-                <div>
-                  <Typography variant="body2">
-                    {protocol.description}
-                  </Typography>
-                  <ButtonBase className={styles.grey}>Show more</ButtonBase>
-                </div>
-                <div>
-                  <div className={styles.overviewItem}>
-                    <Typography
-                      variant="body2"
-                      className={styles.overviewTitles}
-                    >
-                      Links
-                    </Typography>
-                    {LINKS.map((link) => (
-                      <Link
-                        href={link.href}
-                        key={link.title}
-                        target="_blank"
-                        className={styles.tag}
-                      >
-                        {link.title}
-                      </Link>
-                    ))}
-                  </div>
-                  <div className={styles.overviewItem}>
-                    <Typography
-                      variant="body2"
-                      className={styles.overviewTitles}
-                    >
-                      Socials
-                    </Typography>
-                    {SOCIALS.map((social) => (
-                      <Link
-                        href={social.href}
-                        key={social.title}
-                        target="_blank"
-                        className={styles.tag}
-                      >
-                        {social.title}
-                      </Link>
-                    ))}
-                  </div>
-                  <div className={styles.overviewItem}>
-                    <Typography
-                      variant="body2"
-                      className={styles.overviewTitles}
-                    >
-                      Listings
-                    </Typography>
-                    {LISTINGS.map((listing) => (
-                      <Link
-                        href={listing.href}
-                        key={listing.title}
-                        target="_blank"
-                        className={styles.tag}
-                      >
-                        {listing.title}
-                      </Link>
-                    ))}
-                  </div>
-                  <div>
-                    <Typography
-                      variant="body2"
-                      className={styles.overviewTitles}
-                    >
-                      Audits
-                    </Typography>
-                    {AUDITS.map((audit) => (
-                      <div key={audit.title}>
-                        <Link
-                          href={audit.href}
-                          target="_blank"
-                          className={styles.grey}
-                        >
-                          {audit.title}
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </Paper>
+              <ProtocolOverview
+                className={clsx(styles.card, styles.mb120)}
+                text={protocol.description}
+              />
+              <ProtocolMetricOverview className={styles.mb120} />
+              <ProtocolMediaActivity className={styles.mb120} />
+              <ProtocolDemandMetrics />
             </TabPanel>
             <TabPanel>
               <Paper radius={8}>Automations</Paper>

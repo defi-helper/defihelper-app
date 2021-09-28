@@ -1,12 +1,12 @@
 import { useForm, Controller } from 'react-hook-form'
 
+import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import { Typography } from '~/common/typography'
 import { Input } from '~/common/input'
-import * as styles from './governance-actions-manually-params.css'
 import { isEthAddress } from '~/common/is-eth-address'
-import { ButtonBase } from '~/common/button-base'
 import { GovernanceActionArguments } from '../governance.types'
+import * as styles from './governance-actions-manually-params.css'
 
 export type GovernanceActionsManuallyParamsProps = {
   contract?: number | string
