@@ -133,22 +133,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   (stakingListItem.network === 'main' && network === 'waves'))
 
               return (
-                <li key={stakingListItem.id}>
-                  {false &&
-                    stakingListItem.wallet?.id &&
-                    !stakingListItem.connected &&
-                    connectable && (
-                      <Button
-                        color="primary"
-                        variant="contained"
-                        onClick={handleConnect({
-                          walletId: stakingListItem.wallet?.id,
-                          contractId: stakingListItem.id,
-                        })}
-                      >
-                        Connect
-                      </Button>
-                    )}
+                <li key={stakingListItem.id} className={styles.listItem}>
                   <div className={clsx(styles.card, styles.row)}>
                     <div className={styles.tableCol}>
                       <div className={styles.coinIcons}>
@@ -232,15 +217,21 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         className={styles.accorionButton}
                         onClick={handleOpenContract(stakingListItem.address)}
                       >
-                        <Icon icon="arrowTop" />
+                        <Icon
+                          icon={opened ? 'arrowTop' : 'arrowDown'}
+                          width="24"
+                          height="24"
+                        />
                       </ButtonBase>
-                      <ButtonBase
-                        ref={setReferenceElement}
-                        className={styles.accorionButton}
-                        onClick={handleToggleManageButton}
-                      >
-                        <Icon icon="dots" />
-                      </ButtonBase>
+                      <Can I="update" a="Contract">
+                        <ButtonBase
+                          ref={setReferenceElement}
+                          className={styles.manageButton}
+                          onClick={handleToggleManageButton}
+                        >
+                          <Icon icon="dots" />
+                        </ButtonBase>
+                      </Can>
                       {open && (
                         <Portal>
                           <div
@@ -276,17 +267,18 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   {!connectable && opened && (
                     <Paper>please change network</Paper>
                   )}
-                  {stakingListItem.connected &&
-                    connectable &&
-                    protocolAdapter &&
-                    opened && (
-                      <StakingAdapters
-                        protocolAdapter={protocolAdapter}
-                        contractAdapter={stakingListItem.adapter}
-                        contractAddress={stakingListItem.address}
-                        contractLayout={stakingListItem.layout}
-                      />
-                    )}
+                  {connectable && protocolAdapter && opened && (
+                    <StakingAdapters
+                      protocolAdapter={protocolAdapter}
+                      contractAdapter={stakingListItem.adapter}
+                      contractAddress={stakingListItem.address}
+                      contractLayout={stakingListItem.layout}
+                      onTurnOn={handleConnect({
+                        walletId: stakingListItem.wallet?.id,
+                        contractId: stakingListItem.id,
+                      })}
+                    />
+                  )}
                 </li>
               )
             })}

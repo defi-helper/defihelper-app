@@ -38,5 +38,5 @@ export const green = style({
 })
 
 export const red = style({
-  color: theme.colors.common.red,
+  color: theme.colors.common.red1,
 })

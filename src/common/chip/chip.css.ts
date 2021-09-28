@@ -22,11 +22,11 @@ export const outlinedColors = styleVariants({
   },
 
   blue: {
-    color: theme.colors.common.blue,
+    color: theme.colors.common.blue1,
   },
 
   red: {
-    color: theme.colors.common.red,
+    color: theme.colors.common.red1,
   },
 
   orange: {
@@ -42,7 +42,7 @@ export const outlinedColors = styleVariants({
   },
 
   pink: {
-    color: theme.colors.common.pink,
+    color: theme.colors.common.pink1,
   },
 
   purple: {
@@ -62,15 +62,15 @@ export const containedColors = styleVariants({
   },
 
   blue: {
-    backgroundColor: theme.colors.common.blue,
+    backgroundColor: theme.colors.common.blue1,
     color: 'inherit',
-    borderColor: theme.colors.common.blue,
+    borderColor: theme.colors.common.blue1,
   },
 
   red: {
-    backgroundColor: theme.colors.common.red,
+    backgroundColor: theme.colors.common.red1,
     color: 'inherit',
-    borderColor: theme.colors.common.red,
+    borderColor: theme.colors.common.red1,
   },
 
   orange: {
@@ -92,9 +92,9 @@ export const containedColors = styleVariants({
   },
 
   pink: {
-    backgroundColor: theme.colors.common.pink,
+    backgroundColor: theme.colors.common.pink1,
     color: 'inherit',
-    borderColor: theme.colors.common.pink,
+    borderColor: theme.colors.common.pink1,
   },
 
   purple: {

@@ -27,7 +27,7 @@ export const percentageVariants = styleVariants({
   },
 
   against: {
-    background: theme.colors.common.red,
+    background: theme.colors.common.red1,
   },
 
   abstain: {

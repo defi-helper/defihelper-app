@@ -22,6 +22,7 @@ export type StakingAdapterFormProps = {
   stake?: boolean
   unstake?: boolean
   tokens?: Record<string, string>
+  onTurnOn: () => void
 }
 
 export const StakingAdapterForm: React.VFC<Partial<StakingAdapterFormProps>> = (
@@ -60,62 +61,117 @@ export const StakingAdapterForm: React.VFC<Partial<StakingAdapterFormProps>> = (
       className={styles.root}
       onSubmit={handleSubmit}
     >
-      <NumericalInput
-        className={styles.input}
-        label="Amount"
-        value={amount}
-        onChange={handleChange}
-        helperText={error}
-        error={Boolean(error)}
-        disabled={props.disabled}
-      />
-      <Typography>
-        APY: {bignumberUtils.format(props.metrics?.aprYear)} %
-      </Typography>
-      <Typography>
-        Total Value Locked: ${bignumberUtils.format(props.metrics?.tvl)}
-      </Typography>
-      {props.wallet && (
-        <Typography>
-          {Object.entries(props.wallet.earned).map(
-            ([address, { balance, usd }]) => (
-              <span key={address}>
-                Balance: {bignumberUtils.format(balance)}{' '}
-                {props.tokens?.[address]} ($
-                {bignumberUtils.format(usd)})
-              </span>
-            )
+      {false && (
+        <>
+          <NumericalInput
+            className={styles.input}
+            label="Amount"
+            value={amount}
+            onChange={handleChange}
+            helperText={error}
+            error={Boolean(error)}
+            disabled={props.disabled}
+          />
+          <Typography>
+            APY: {bignumberUtils.format(props.metrics?.aprYear)} %
+          </Typography>
+          <Typography>
+            Total Value Locked: ${bignumberUtils.format(props.metrics?.tvl)}
+          </Typography>
+          {props.wallet && (
+            <Typography>
+              {Object.entries(props.wallet?.earned ?? {}).map(
+                ([address, { balance, usd }]) => (
+                  <span key={address}>
+                    Balance: {bignumberUtils.format(balance)}{' '}
+                    {props.tokens?.[address]} ($
+                    {bignumberUtils.format(usd)})
+                  </span>
+                )
+              )}
+            </Typography>
           )}
-        </Typography>
+          <Typography>
+            Earned: {bignumberUtils.format(props.wallet?.metrics.earned)}{' '}
+            {Object.keys(props.wallet?.earned ?? {}).map(
+              (address) => props.tokens?.[address]
+            )}{' '}
+            ($
+            {bignumberUtils.format(props.wallet?.metrics.earnedUSD)})
+          </Typography>
+          <Typography>
+            Staked: {bignumberUtils.format(props.wallet?.metrics.staking)}{' '}
+            {Object.keys(props.wallet?.staked ?? {}).map(
+              (address) => props.tokens?.[address]
+            )}{' '}
+            ($
+            {bignumberUtils.format(props.wallet?.metrics.stakingUSD)})
+          </Typography>
+        </>
       )}
-      <Typography>
-        Earned: {bignumberUtils.format(props.wallet?.metrics.earned)}{' '}
-        {Object.keys(props.wallet?.earned ?? {}).map(
-          (address) => props.tokens?.[address]
-        )}{' '}
-        ($
-        {bignumberUtils.format(props.wallet?.metrics.earnedUSD)})
-      </Typography>
-      <Typography>
-        Staked: {bignumberUtils.format(props.wallet?.metrics.staking)}{' '}
-        {Object.keys(props.wallet?.staked ?? {}).map(
-          (address) => props.tokens?.[address]
-        )}{' '}
-        ($
-        {bignumberUtils.format(props.wallet?.metrics.stakingUSD)})
-      </Typography>
-      <Button type="submit" onClick={handleStake} disabled={props.disabled}>
-        {props.stake ? 'loading...' : 'Stake'}
-      </Button>
-      <Button type="submit" onClick={handleUnStake} disabled={props.disabled}>
-        {props.unstake ? 'loading...' : 'Unstake'}
-      </Button>
-      <Button onClick={handleClaim} disabled={props.disabled}>
-        {props.claim ? 'loading...' : 'Claim'}
-      </Button>
-      <Button onClick={handleExit} disabled={props.disabled}>
-        {props.exit ? 'loading...' : 'Exit'}
-      </Button>
+      <div>
+        <Button
+          disabled={props.disabled}
+          size="small"
+          color="pink"
+          variant="light"
+        >
+          {props.stake ? 'loading...' : '0 Notifications'}
+        </Button>
+      </div>
+      <div>
+        <Button
+          type="submit"
+          onClick={handleStake}
+          disabled={props.disabled}
+          size="small"
+          color="blue"
+          variant="light"
+        >
+          {props.stake ? 'loading...' : 'Stake'}
+        </Button>
+      </div>
+      <div className={styles.turnOn}>
+        <Button
+          onClick={props.onTurnOn}
+          disabled={props.disabled}
+          size="small"
+          color="lime"
+          variant="light"
+        >
+          {props.unstake ? 'loading...' : 'Turn on'}
+        </Button>
+      </div>
+      <div>
+        <Button
+          type="submit"
+          onClick={handleUnStake}
+          disabled={props.disabled}
+          size="small"
+          color="red"
+          variant="light"
+        >
+          {props.unstake ? 'loading...' : 'Unstake'}
+        </Button>
+      </div>
+      <div className={styles.claim}>
+        <Button
+          onClick={handleClaim}
+          disabled={props.disabled}
+          size="small"
+          color="green"
+          variant="light"
+        >
+          {props.claim ? 'loading...' : 'Claim'}
+        </Button>
+      </div>
+      {false && (
+        <div>
+          <Button onClick={handleExit} disabled={props.disabled} size="small">
+            {props.exit ? 'loading...' : 'Exit'}
+          </Button>
+        </div>
+      )}
     </form>
   )
 }

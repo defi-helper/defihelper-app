@@ -46,11 +46,7 @@ export const tableHeader = style({
   color: theme.colors.textColorGrey,
 })
 
-export const row = style({
-  display: 'grid',
-  gridTemplateColumns: '21% 15% 10% 14% 14% 12% 1fr',
-  padding: '16px 24px',
-
+export const listItem = style({
   selectors: {
     '&:not(:last-child)': {
       borderBottom: `1px solid ${theme.colors.common.white2}`,
@@ -58,10 +54,16 @@ export const row = style({
   },
 })
 
+export const row = style({
+  display: 'grid',
+  gridTemplateColumns: '21% 15% 10% 14% 14% 12% 1fr',
+  padding: '16px 24px',
+})
+
 export const card = style({})
 
 export const red = style({
-  color: theme.colors.common.red,
+  color: theme.colors.common.red1,
 })
 
 export const lightGreen = style({
@@ -98,10 +100,14 @@ export const coinIcon = style({
 })
 
 export const accorionButton = style({
+  marginLeft: 'auto',
+  marginRight: -12,
+  color: theme.colors.textColorGrey,
+})
+
+export const manageButton = style({
   width: 24,
   height: 24,
   padding: 6,
   marginLeft: 'auto',
-  marginRight: -12,
-  color: theme.colors.textColorGrey,
 })
