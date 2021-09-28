@@ -24,7 +24,7 @@ export type StakingAdapter = {
   reward: Adapter['reward']
 }
 
-const stakingAdaptersDomain = createDomain('stakingAdaptersDomain')
+export const stakingAdaptersDomain = createDomain()
 
 export type Contract = {
   address: string
@@ -33,9 +33,8 @@ export type Contract = {
 
 type Params = { protocolAdapter: string; contracts: Contract[] }
 
-export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect({
-  name: 'fetchContractAdaptersFx',
-  handler: (params: Params) => {
+export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect(
+  (params: Params) => {
     const network = walletNetworkModel.getNetwork()
 
     return Promise.all(
@@ -72,8 +71,8 @@ export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect({
         }
       })
     )
-  },
-})
+  }
+)
 
 const $adapters = stakingAdaptersDomain
   .createStore<StakingAdapter[]>([], { name: '$adapters' })
@@ -108,9 +107,8 @@ export type ContractAction = {
   contractAddress: string
 }
 
-const contractActionFx = stakingAdaptersDomain.createEffect({
-  name: 'contractActionFx',
-  handler: async (contractAction: ContractAction) => {
+const contractActionFx = stakingAdaptersDomain.createEffect(
+  async (contractAction: ContractAction) => {
     const sendAmount = bignumberUtils.toSend(
       contractAction.amount,
       contractAction.decimals
@@ -129,11 +127,11 @@ const contractActionFx = stakingAdaptersDomain.createEffect({
     }
 
     await contractAction.actions[contractAction.action].send(sendAmount)
-  },
-})
+  }
+)
 
 export const contractAction =
-  stakingAdaptersDomain.createEvent<Partial<ContractAction>>('contractAction')
+  stakingAdaptersDomain.createEvent<Partial<ContractAction>>()
 
 guard({
   clock: contractAction,
@@ -169,12 +167,7 @@ export const $actions = stakingAdaptersDomain
         [key: string]: boolean
       }
     >
-  >(
-    {},
-    {
-      name: '$actions',
-    }
-  )
+  >({})
   .on(contractActionFx, (state, payload) => {
     const newState = { ...state }
 
@@ -201,9 +194,8 @@ export const $actions = stakingAdaptersDomain
     omit({ ...state }, params.contractAddress)
   )
 
-const fetchTokensFx = stakingAdaptersDomain.createEffect({
-  name: 'fetchTokensFx',
-  handler: (params: {
+const fetchTokensFx = stakingAdaptersDomain.createEffect(
+  (params: {
     blockchain?: BlockchainEnum
     network?: number | string
     addresses: string[]
@@ -221,11 +213,11 @@ const fetchTokensFx = stakingAdaptersDomain.createEffect({
         address: params.addresses,
       },
     })
-  },
-})
+  }
+)
 
 export const $tokens = stakingAdaptersDomain
-  .createStore<Record<string, string>>({}, { name: '$tokens' })
+  .createStore<Record<string, string>>({})
   .on(fetchTokensFx.doneData, (_, payload) =>
     payload.reduce<Record<string, string>>((acc, token) => {
       acc[token.address] = token.symbol

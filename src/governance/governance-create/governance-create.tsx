@@ -6,6 +6,7 @@ import clsx from 'clsx'
 import { ethers } from 'ethers'
 
 import { AppLayout } from '~/layouts'
+import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import { Input } from '~/common/input'
 import { useDialog } from '~/common/dialog'
@@ -15,7 +16,6 @@ import {
   GovernanceAction,
   GovernanceActionArguments,
 } from '../common/governance.types'
-import { ButtonBase } from '~/common/button-base'
 import { isEthAddress } from '~/common/is-eth-address'
 import { cutAccount } from '~/common/cut-account'
 import { walletNetworkModel } from '~/wallets/wallet-networks'

@@ -7,15 +7,10 @@ import { sidUtils, userApi } from './common'
 
 export const userDomain = createDomain('user')
 
-export const fetchUserFx = userDomain.createEffect({
-  name: 'fetchUserFx',
-  handler: () => userApi.me(),
-})
+export const fetchUserFx = userDomain.createEffect(() => userApi.me())
 
 export const $user = userDomain
-  .createStore<MeQuery['me'] | null>(null, {
-    name: '$user',
-  })
+  .createStore<MeQuery['me'] | null>(null)
   .on(fetchUserFx.doneData, (_, payload) => payload)
   .on(walletNetworkModel.saveUserFx.doneData, (_, payload) => payload)
 

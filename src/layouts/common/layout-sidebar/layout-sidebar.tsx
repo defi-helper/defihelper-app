@@ -12,10 +12,10 @@ import { Typography } from '~/common/typography'
 import { Paper } from '~/common/paper'
 import { config } from '~/config'
 import { LayoutThemeSwitcher } from '~/layouts/common/layout-theme-switcher'
-import * as styles from './layout-sidebar.css'
 import { Icon } from '~/common/icon'
 import { SOCIAL_LINKS } from '../constants'
 import { LayoutCurrencySwitcher } from '../layout-currency-switcher'
+import * as styles from './layout-sidebar.css'
 
 type MenuItem = {
   title: string
@@ -38,7 +38,10 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
 
   return (
     <div className={styles.root}>
-      <ButtonBase onClick={handleHide} className={styles.hideButton}>
+      <ButtonBase
+        onClick={handleHide}
+        className={clsx(styles.hideButton, hided && styles.hideButtonHided)}
+      >
         <Icon
           icon="doubleArrowLeft"
           className={clsx(styles.doubleArrow, {

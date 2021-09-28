@@ -31,10 +31,16 @@ export const colors = styleVariants({
   },
 
   blue: {
-    background: theme.colors.common.blue,
+    background: theme.colors.common.blue1,
     color: theme.colors.common.white1,
-    border: `1px solid ${theme.colors.common.blue}`,
+    border: `1px solid ${theme.colors.common.blue1}`,
   },
+
+  pink: {},
+
+  lime: {},
+
+  red: {},
 })
 
 export const varinats = styleVariants({
@@ -57,7 +63,41 @@ export const varinats = styleVariants({
       },
 
       [`&.${colors.blue}`]: {
-        color: theme.colors.common.blue,
+        color: theme.colors.common.blue1,
+      },
+    },
+  },
+
+  light: {
+    selectors: {
+      [`&.${colors.green}`]: {
+        color: theme.colors.common.green2,
+        background: theme.colors.common.green4,
+        borderColor: 'transparent',
+      },
+
+      [`&.${colors.blue}`]: {
+        color: theme.colors.common.blue1,
+        background: theme.colors.common.blue2,
+        borderColor: 'transparent',
+      },
+
+      [`&.${colors.pink}`]: {
+        color: theme.colors.common.pink3,
+        background: theme.colors.common.pink2,
+        borderColor: 'transparent',
+      },
+
+      [`&.${colors.lime}`]: {
+        color: theme.colors.common.green1,
+        background: theme.colors.common.green3,
+        borderColor: 'transparent',
+      },
+
+      [`&.${colors.red}`]: {
+        color: theme.colors.common.red1,
+        background: theme.colors.common.red2,
+        borderColor: 'transparent',
       },
     },
   },

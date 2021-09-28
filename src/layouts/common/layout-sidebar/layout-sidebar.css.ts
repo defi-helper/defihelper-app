@@ -24,9 +24,9 @@ export const aside = style({
 })
 
 export const hideButton = style({
-  position: 'absolute',
+  position: 'fixed',
   top: 8,
-  right: '-12px',
+  left: sidebarWidth - 12,
   zIndex: 10,
   width: 24,
   height: 24,
@@ -34,6 +34,10 @@ export const hideButton = style({
   background: theme.colors.background,
   boxSizing: 'border-box',
   borderRadius: 4,
+})
+
+export const hideButtonHided = style({
+  left: hidedSidebarWidth - 12,
 })
 
 export const hided = style({

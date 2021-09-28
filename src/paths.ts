@@ -49,4 +49,6 @@ export const paths = {
     update: (automationId = ':automationId') =>
       `/automations/update/${automationId}` as const,
   },
+
+  settings: '/settings',
 } as const

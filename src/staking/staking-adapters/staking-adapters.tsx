@@ -10,6 +10,7 @@ export type StakingAdaptersProps = {
   contractAdapter: string
   protocolAdapter: string
   contractLayout: string
+  onTurnOn: () => void
 }
 
 const FORM_LAYOUTS: Record<string, React.ElementType | undefined> = {
@@ -88,6 +89,7 @@ export const StakingAdapters: React.FC<StakingAdaptersProps> = (props) => {
           onUnStake: handleUnStake,
           onExit: handleExit,
           tokens,
+          onTurnOn: props.onTurnOn,
         })}
     </div>
   )

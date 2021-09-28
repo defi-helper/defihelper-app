@@ -19,6 +19,9 @@ export const bignumberUtils = {
     return new BigNumber(floatValue).isZero() ? integerValue : result
   },
 
+  formatSpecific: (num?: string | null) =>
+    new BigNumber(num?.replace(',', '') || 0).toString(10),
+
   getPercentage: (
     count?: string | number | null,
     total?: string | number | null
@@ -53,4 +56,7 @@ export const bignumberUtils = {
 
   eq: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isEqualTo(num2 || 0),
+
+  plus: (num1?: string | number | null, num2?: string | number | null) =>
+    new BigNumber(num1 || 0).plus(new BigNumber(num2 || 0)).toString(10),
 }

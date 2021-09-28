@@ -6,7 +6,6 @@ import { useParams } from 'react-router-dom'
 import { AppLayout } from '~/layouts'
 import { Typography } from '~/common/typography'
 import { MarkdownRender } from '~/common/markdown-render'
-import * as model from './governance-detail.model'
 import { cutAccount } from '~/common/cut-account'
 import { Link } from '~/common/link'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
@@ -23,8 +22,9 @@ import { Button } from '~/common/button'
 import { isEthAddress } from '~/common/is-eth-address'
 import { Chip } from '~/common/chip'
 import { Paper } from '~/common/paper'
-import * as styles from './governance-detail.css'
 import { useDialog } from '~/common/dialog'
+import * as model from './governance-detail.model'
+import * as styles from './governance-detail.css'
 
 export type GovernanceDetailProps = unknown
 

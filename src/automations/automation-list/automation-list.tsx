@@ -5,12 +5,12 @@ import { Link as ReactRouterLink } from 'react-router-dom'
 import { AppLayout } from '~/layouts/app-layout'
 import { Typography } from '~/common/typography'
 import { Button } from '~/common/button'
-import * as styles from './automation-list.css'
-import * as model from './automation-list.model'
 import { paths } from '~/paths'
 import { useDialog } from '~/common/dialog'
 import { AutomationUpdate } from '../automation-update'
 import { Trigger } from '../common/automation.types'
+import * as styles from './automation-list.css'
+import * as model from './automation-list.model'
 
 export type AutomationListProps = unknown
 

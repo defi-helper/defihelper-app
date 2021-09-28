@@ -6,8 +6,8 @@ import { createComponent } from '~/common/create-component'
 import * as styles from './button.css'
 
 type Props<C extends React.ElementType = 'button'> = {
-  variant?: 'contained' | 'outlined'
-  color?: 'primary' | 'secondary' | 'green' | 'blue'
+  variant?: 'contained' | 'outlined' | 'light'
+  color?: 'primary' | 'secondary' | 'green' | 'blue' | 'pink' | 'lime' | 'red'
   loading?: boolean
   disabled?: boolean
   size?: 'small' | 'medium' | 'large'

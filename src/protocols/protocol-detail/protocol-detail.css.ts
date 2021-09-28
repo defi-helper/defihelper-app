@@ -24,6 +24,7 @@ export const icon = style({
 export const protocolLink = style({
   padding: '8px 16px',
   marginLeft: 'auto',
+  color: theme.colors.textColorGrey,
 })
 
 export const mb120 = style({
@@ -50,7 +51,7 @@ export const green = style({
 })
 
 export const red = style({
-  color: theme.colors.common.red,
+  color: theme.colors.common.red1,
 })
 
 export const card = style({
@@ -66,36 +67,4 @@ export const flex = style({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
-})
-
-export const overview = style({
-  display: 'grid',
-  gridTemplateColumns: '560px 1fr',
-  gridGap: 63,
-})
-
-export const tag = style({
-  background: 'rgba(255, 255, 255, 0.08)',
-  borderRadius: 6,
-  padding: '6px 12px',
-  textTransform: 'uppercase',
-  fontFamily: theme.fonts.mono,
-  marginBottom: 8,
-  fontSize: 14,
-  lineHeight: '20px',
-  color: theme.colors.textColorGrey,
-
-  selectors: {
-    '&:not(:last-child)': {
-      marginRight: 8,
-    },
-  },
-})
-
-export const overviewItem = style({
-  marginBottom: 24,
-})
-
-export const overviewTitles = style({
-  marginBottom: 8,
 })

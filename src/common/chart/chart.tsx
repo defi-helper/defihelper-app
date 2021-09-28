@@ -1,7 +1,10 @@
 import {
   create,
-  Scrollbar,
   useTheme as amchartsUseTheme,
+  unuseAllThemes,
+  percent,
+  addLicense,
+  color,
 } from '@amcharts/amcharts4/core'
 import {
   DateAxis,
@@ -10,25 +13,34 @@ import {
   ValueAxis,
   XYChart,
   XYCursor,
+  Legend,
 } from '@amcharts/amcharts4/charts'
 import { useEffect, useRef } from 'react'
-import am4themes_animated from '@amcharts/amcharts4/themes/animated'
+import amchartsdark from '@amcharts/amcharts4/themes/dark'
 import clsx from 'clsx'
 
+import { useTheme } from '~/common/theme'
+import { config } from '~/config'
 import * as styles from './chart.css'
 
 export type ChartProps = {
-  dataFields: Array<IXYSeriesDataFields>
+  dataFields: Array<IXYSeriesDataFields & { color?: string }>
   tooltipText?: string
   data?: Array<unknown>
   id?: string
   names?: Array<string>
 }
 
-amchartsUseTheme(am4themes_animated)
+if (config.AMCHARTS_LICENCE) {
+  addLicense(config.AMCHARTS_LICENCE)
+}
 
 export const Chart: React.VFC<ChartProps> = (props) => {
   const chartRef = useRef<null | XYChart>(null)
+  const dataFieldsRef = useRef(props.dataFields)
+  const namesRef = useRef(props.names)
+
+  const [themeMode] = useTheme()
 
   const { id = 'chart' } = props
 
@@ -36,12 +48,30 @@ export const Chart: React.VFC<ChartProps> = (props) => {
     if (!props.data?.length) return
 
     chartRef.current = create(id, XYChart)
+
+    if (themeMode === 'dark') {
+      amchartsUseTheme(amchartsdark)
+    } else {
+      unuseAllThemes()
+    }
+
     const dateAxis = chartRef.current.xAxes.push(new DateAxis())
     dateAxis.renderer.minGridDistance = 60
+    dateAxis.baseInterval = {
+      timeUnit: 'day',
+      count: 1,
+    }
+
+    dateAxis.fontSize = 12
+    dateAxis.dateFormats.setKey('month', 'MMM YYYY')
+    dateAxis.renderer.labels.template.rotation = -45
+    dateAxis.width = percent(100)
+    dateAxis.renderer.labels.template.durationFormatter.outputFormat = 'MM-yyyy'
+    dateAxis.userClassName = styles.date
 
     chartRef.current.data = props.data
 
-    props.dataFields.forEach((field, index) => {
+    dataFieldsRef.current.forEach((field, index) => {
       if (!chartRef.current) return
 
       const valueAxis = chartRef.current.yAxes.push(new ValueAxis())
@@ -51,12 +81,20 @@ export const Chart: React.VFC<ChartProps> = (props) => {
         valueAxis.syncWithAxis = chartRef.current.yAxes.getIndex(0)
       }
 
+      valueAxis.fontSize = 12
+      valueAxis.userClassName = styles.valueAxis
+
       const series = chartRef.current.series.push(new LineSeries())
 
       series.dataFields.valueY = field.valueY
       series.dataFields.dateX = field.dateX
+      if (field.color) {
+        series.stroke = color(field.color)
+        series.fill = color(field.color)
+      }
+      series.strokeWidth = 2
 
-      const name = props.names?.[index]
+      const name = namesRef.current?.[index]
 
       if (name) {
         series.name = name
@@ -69,17 +107,35 @@ export const Chart: React.VFC<ChartProps> = (props) => {
       if (series.tooltip) {
         series.tooltip.pointerOrientation = 'vertical'
       }
+
       chartRef.current.cursor = new XYCursor()
       chartRef.current.cursor.xAxis = dateAxis
     })
 
-    chartRef.current.scrollbarX = new Scrollbar()
+    if (dataFieldsRef.current.length > 1) {
+      const legend = new Legend()
+
+      legend.useDefaultMarker = true
+      legend.data = dataFieldsRef.current.map((seriesitem) => ({
+        name: seriesitem.valueY,
+      }))
+      legend.contentAlign = 'left'
+      legend.fontSize = 12
+      if (themeMode === 'dark') {
+        legend.labels.template.fill = color('rgba(255, 255, 255, 0.64)')
+      } else {
+        legend.labels.template.fill = color('rgba(0, 0, 0, 0.64)')
+      }
+      legend.markers.template.height = 12
+      legend.markers.template.width = 32
+
+      chartRef.current.legend = legend
+    }
 
     return () => {
       chartRef.current?.dispose()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.data, id])
+  }, [props.data, id, themeMode, props.tooltipText])
 
   return props.data?.length ? (
     <div id={id} className={styles.root} />

@@ -9,7 +9,7 @@ type Props<C extends React.ElementType = 'div'> = {
 }
 
 export type PaperProps<C extends React.ElementType = 'div'> = Props<C> &
-  Omit<React.ComponentProps<C>, keyof Props<C>>
+  Omit<React.ComponentProps<C>, keyof Props<C> | 'radioGroup'>
 
 const Paper = <
   C extends React.ElementType = 'div',

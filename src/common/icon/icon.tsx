@@ -36,6 +36,7 @@ import { ReactComponent as WavesIcon } from '~/assets/icons/blockchains/waves.sv
 import { ReactComponent as SolanaIcon } from '~/assets/icons/blockchains/solana.svg'
 import { ReactComponent as ArrowTopIcon } from '~/assets/icons/arrow-top.svg'
 import { ReactComponent as CheckedIcon } from '~/assets/icons/checked.svg'
+import { ReactComponent as ArrowDownIcon } from '~/assets/icons/arrow-down.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -78,6 +79,7 @@ const ICONS = {
   solana: SolanaIcon,
   arrowTop: ArrowTopIcon,
   checked: CheckedIcon,
+  arrowDown: ArrowDownIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

@@ -1,4 +1,5 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
+import { theme } from '../theme'
 
 export const root = style({
   width: '100%',
@@ -10,3 +11,19 @@ export const flex = style({
   alignItems: 'center',
   justifyContent: 'center',
 })
+
+export const date = style({})
+
+export const valueAxis = style({})
+
+export const legend = style({
+  fill: theme.colors.textColorGrey,
+})
+
+globalStyle(
+  `${root} ${valueAxis} text, ${root} ${date} *, ${root} ${legend} text`,
+  {
+    fontFamily: theme.fonts.square,
+    fill: theme.colors.textColorGrey,
+  }
+)

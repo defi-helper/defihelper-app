@@ -13,5 +13,5 @@ export const input = style({
 })
 
 export const error = style({
-  color: theme.colors.common.red,
+  color: theme.colors.common.red1,
 })

@@ -4,10 +4,10 @@ import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 import { Input } from '~/common/input'
-import * as styles from './automation-condition-ethereum-balance.css'
 import { Button } from '~/common/button'
 import { automationConditionEthereumSchema } from './automation-condition-ethereum.validation'
 import { NumericalInput } from '~/common/numerical-input'
+import * as styles from './automation-condition-ethereum-balance.css'
 
 type FormValues = {
   wallet: string

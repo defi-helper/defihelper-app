@@ -7,21 +7,23 @@ import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 
 type State = Record<
-  MetricGroupEnum,
+  Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
   {
     data: Unwrap<ReturnType<typeof protocolsApi.protocolDetailMetric>>
-    value: MetricGroupEnum
+    value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
     loading: boolean
   }
 >
 
-const protocolMetricsDomain = createDomain('protocolMetricsDomain')
+const protocolMetricEarningsDomain = createDomain()
 
 const DAYS_LIMIT = 180
 
-export const fetchMetricFx = protocolMetricsDomain.createEffect({
-  name: 'fetchMetricFx',
-  handler: async (params: { protocolId: string; group: MetricGroupEnum }) => {
+export const fetchMetricFx = protocolMetricEarningsDomain.createEffect(
+  async (params: {
+    protocolId: string
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+  }) => {
     const data = await protocolsApi.protocolDetailMetric({
       filter: {
         id: params.protocolId,
@@ -44,11 +46,13 @@ export const fetchMetricFx = protocolMetricsDomain.createEffect({
         sum: bignumberUtils.format(dataItem.sum),
       })),
     }
-  },
-})
+  }
+)
 
 const initialState = Object.values(MetricGroupEnum).reduce<State>(
   (acc, metricGroup) => {
+    if (metricGroup === MetricGroupEnum.Hour) return acc
+
     acc[metricGroup] = {
       data: [],
       value: metricGroup,
@@ -60,8 +64,8 @@ const initialState = Object.values(MetricGroupEnum).reduce<State>(
   {} as State
 )
 
-export const $metric = protocolMetricsDomain
-  .createStore(initialState, { name: '$metric' })
+export const $metric = protocolMetricEarningsDomain
+  .createStore(initialState)
   .on(fetchMetricFx, (state, payload) => ({
     ...state,
     [payload.group]: {

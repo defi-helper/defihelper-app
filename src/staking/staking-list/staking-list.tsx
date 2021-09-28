@@ -1,23 +1,24 @@
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 
 import { Can, useAbility } from '~/users'
-import * as model from './staking-list.model'
 import { paths } from '~/paths'
+import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
-import { Link } from '~/common/link'
+import { StakingTabs } from '../common'
 import { Paper } from '~/common/paper'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
-import { dateUtils } from '~/common/date-utils'
-import { cutAccount } from '~/common/cut-account'
-import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { StakingAdapters } from '~/staking/staking-adapters'
 import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
+import { Typography } from '~/common/typography'
+import { Icon } from '~/common/icon'
+import { Portal } from '~/common/portal'
+import { usePopper } from '~/common/hooks'
+import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
-import { ButtonBase } from '~/common/button-base'
 
 export type StakingListProps = {
   protocolId: string
@@ -39,6 +40,15 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const { network, blockchain } = useStore(
     walletNetworkSwitcherModel.$currentNetwork
   )
+
+  const {
+    popperStyles,
+    popperAttributes,
+    setPopperElement,
+    setReferenceElement,
+  } = usePopper({ placement: 'bottom-start' })
+
+  const [open, setOpen] = useState(false)
 
   const handleOpenConfirmDialog = (id: string) => async () => {
     try {
@@ -71,116 +81,210 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     model.openContract(contractAddress)
   }
 
+  const handleToggleManageButton = () => {
+    setOpen(!open)
+  }
+
   return (
-    <div>
-      <Can I="create" a="Contract">
-        <Button
-          variant="contained"
-          color="primary"
-          as={ReactRouterLink}
-          to={`${paths.staking.create(
-            props.protocolId
-          )}?protocol-adapter=${protocolAdapter}`}
-        >
-          New contract
-        </Button>
-      </Can>
-      <ul className={styles.root}>
-        {loading && <Paper>Loading...</Paper>}
-        {!loading && !staking.length && <Paper>no contracts found</Paper>}
-        {!loading &&
-          staking.map((stakingListItem) => {
-            const opened = stakingListItem.address === openedContract
+    <>
+      <div className={styles.header}>
+        <Typography variant="h3" className={styles.title}>
+          Staking contracts
+        </Typography>
+        <StakingTabs className={styles.tabs} />
+        <Paper radius={8} className={styles.select}>
+          Daily
+          <Icon icon="arrowTop" className={styles.selectArrow} />
+        </Paper>
+        <Can I="create" a="Contract">
+          <Button
+            as={ReactRouterLink}
+            variant="contained"
+            color="blue"
+            to={`${paths.staking.create(
+              props.protocolId
+            )}?protocol-adapter=${protocolAdapter}`}
+            className={styles.create}
+          >
+            <Icon icon="plus" height="24" width="24" />
+          </Button>
+        </Can>
+      </div>
+      <Paper radius={8}>
+        <div className={clsx(styles.tableHeader, styles.row)}>
+          <Typography variant="body2">Pool</Typography>
+          <Typography variant="body2">TVL</Typography>
+          <Typography variant="body2">APR</Typography>
+          <Typography variant="body2">+Autostaking</Typography>
+          <Typography variant="body2">Position</Typography>
+          <Typography variant="body2">Pool share</Typography>
+          <Typography variant="body2">Rewards</Typography>
+        </div>
+        <ul className={styles.root}>
+          {loading && <Paper>Loading...</Paper>}
+          {!loading && !staking.length && <Paper>no contracts found</Paper>}
+          {!loading &&
+            staking.map((stakingListItem) => {
+              const opened = stakingListItem.address === openedContract
 
-            const connectable =
-              stakingListItem.blockchain === blockchain &&
-              (stakingListItem.network === String(network) ||
-                (stakingListItem.network === 'main' && network === 'waves'))
+              const connectable =
+                stakingListItem.blockchain === blockchain &&
+                (stakingListItem.network === String(network) ||
+                  (stakingListItem.network === 'main' && network === 'waves'))
 
-            return (
-              <li key={stakingListItem.id}>
-                {stakingListItem.wallet?.id &&
-                  !stakingListItem.connected &&
-                  connectable && (
-                    <Button
-                      color="primary"
-                      variant="contained"
-                      onClick={handleConnect({
-                        walletId: stakingListItem.wallet?.id,
-                        contractId: stakingListItem.id,
-                      })}
-                    >
-                      Connect
-                    </Button>
-                  )}
-                <Paper
-                  className={clsx(styles.card, styles.clickable)}
-                  onClick={handleOpenContract(stakingListItem.address)}
-                  radius={8}
-                >
-                  <div className={`${styles.icons} ${styles.mr}`}>
-                    {stakingListItem.name}
+              return (
+                <li key={stakingListItem.id} className={styles.listItem}>
+                  <div className={clsx(styles.card, styles.row)}>
+                    <div className={styles.tableCol}>
+                      <div className={styles.coinIcons}>
+                        <Icon icon="BAG" className={styles.coinIcon} />
+                        <Icon icon="BNB" className={styles.coinIcon} />
+                      </div>
+                      <Typography variant="body2" as="div">
+                        {stakingListItem.name}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" as="div">
+                        $782,243.89
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        as="div"
+                        className={styles.red}
+                      >
+                        -12%
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" as="div">
+                        56.72%
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        as="div"
+                        className={styles.red}
+                      >
+                        -12%
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" as="div">
+                        56.72%
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        as="div"
+                        className={styles.lightGreen}
+                      >
+                        +12%
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" as="div">
+                        $1,212,456.5
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        as="div"
+                        className={styles.red}
+                      >
+                        -12%
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="body2" as="div">
+                        0.00012%
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        as="div"
+                        className={styles.red}
+                      >
+                        -0.00002%
+                      </Typography>
+                    </div>
+                    <div className={styles.tableCol}>
+                      <div>
+                        <Typography variant="body2" as="div">
+                          $26,852
+                        </Typography>
+                        <Typography variant="body2" as="div">
+                          +0.9%
+                        </Typography>
+                      </div>
+                      <ButtonBase
+                        className={styles.accorionButton}
+                        onClick={handleOpenContract(stakingListItem.address)}
+                      >
+                        <Icon
+                          icon={opened ? 'arrowTop' : 'arrowDown'}
+                          width="24"
+                          height="24"
+                        />
+                      </ButtonBase>
+                      <Can I="update" a="Contract">
+                        <ButtonBase
+                          ref={setReferenceElement}
+                          className={styles.manageButton}
+                          onClick={handleToggleManageButton}
+                        >
+                          <Icon icon="dots" />
+                        </ButtonBase>
+                      </Can>
+                      {open && (
+                        <Portal>
+                          <div
+                            {...popperAttributes}
+                            style={popperStyles}
+                            ref={setPopperElement}
+                          >
+                            <Can I="update" a="Contract">
+                              <ButtonBase
+                                as={ReactRouterLink}
+                                to={`${paths.staking.update(
+                                  props.protocolId,
+                                  stakingListItem.id
+                                )}?protocol-adapter=${protocolAdapter}`}
+                              >
+                                Edit
+                              </ButtonBase>
+                            </Can>
+                            <Can I="delete" a="Contract">
+                              <ButtonBase
+                                onClick={handleOpenConfirmDialog(
+                                  stakingListItem.id
+                                )}
+                              >
+                                Delete
+                              </ButtonBase>
+                            </Can>
+                          </div>
+                        </Portal>
+                      )}
+                    </div>
                   </div>
-                  <div className={styles.mr}>{stakingListItem.blockchain}</div>
-                  <div>network: {stakingListItem.network}</div>
-                  <Link
-                    className={`${styles.tvl} ${styles.mr}`}
-                    href={buildExplorerUrl({
-                      network: stakingListItem.network,
-                      address: stakingListItem.address,
-                    })}
-                    target="_blank"
-                  >
-                    {cutAccount(stakingListItem.address)}
-                  </Link>
-                  {stakingListItem.link && (
-                    <Link
-                      className={styles.mr}
-                      href={stakingListItem.link}
-                      target="_blank"
-                    >
-                      More info
-                    </Link>
+                  {!connectable && opened && (
+                    <Paper>please change network</Paper>
                   )}
-                  <div className={styles.mr}>
-                    {dateUtils.format(stakingListItem.createdAt)}
-                  </div>
-                </Paper>
-                <Can I="update" a="Contract">
-                  <ButtonBase
-                    as={ReactRouterLink}
-                    to={`${paths.staking.update(
-                      props.protocolId,
-                      stakingListItem.id
-                    )}?protocol-adapter=${protocolAdapter}`}
-                  >
-                    Edit
-                  </ButtonBase>
-                </Can>
-                <Can I="delete" a="Contract">
-                  <ButtonBase
-                    onClick={handleOpenConfirmDialog(stakingListItem.id)}
-                  >
-                    Delete
-                  </ButtonBase>
-                </Can>
-                {!connectable && opened && <Paper>please change network</Paper>}
-                {stakingListItem.connected &&
-                  connectable &&
-                  protocolAdapter &&
-                  opened && (
+                  {connectable && protocolAdapter && opened && (
                     <StakingAdapters
                       protocolAdapter={protocolAdapter}
                       contractAdapter={stakingListItem.adapter}
                       contractAddress={stakingListItem.address}
                       contractLayout={stakingListItem.layout}
+                      onTurnOn={handleConnect({
+                        walletId: stakingListItem.wallet?.id,
+                        contractId: stakingListItem.id,
+                      })}
                     />
                   )}
-              </li>
-            )
-          })}
-      </ul>
-      <model.StakingListPagination />
-    </div>
+                </li>
+              )
+            })}
+        </ul>
+        <model.StakingListPagination />
+      </Paper>
+    </>
   )
 }
