@@ -25,7 +25,7 @@ export const GovernanceReasonDialog: React.VFC<GovernanceReasonDialogProps> = (
         className={styles.form}
       >
         <Input
-          label="Reason"
+          placeholder="Reason"
           {...register('reason')}
           disabled={formState.isSubmitting}
           className={styles.input}

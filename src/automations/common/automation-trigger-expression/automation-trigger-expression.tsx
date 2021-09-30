@@ -11,8 +11,13 @@ import {
   AutomationContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { AutomationActionEthereumRun } from '../automation-action-ethereum-run'
+import { AutomationActionNotification } from '../automation-action-notification/automation-action-notification'
 import { AutomationConditionEthereumBalance } from '../automation-condition-ethereum-balance'
+import { AutomationConditionEthereumGasPrice } from '../automation-condition-ethereum-gas-price/automation-condition-ethereum-gas-price'
+import { AutomationConditionEthereumOptimal } from '../automation-condition-ethereum-optimal/automation-condition-ethereum-optimal'
+import { AutomationConditionSchedule } from '../automation-condition-schedule/automation-condition-schedule'
 import { Action, Condition } from '../automation.types'
+import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-trigger-expression.css'
 
 export type AutomationTriggerExpressionProps = {
@@ -60,8 +65,24 @@ const Forms: Record<
     component: AutomationActionEthereumRun,
     handler: 'onSubmitAction',
   },
+  [AutomateActionTypeEnum.Notification]: {
+    component: AutomationActionNotification,
+    handler: 'onSubmitAction',
+  },
   [AutomateConditionTypeEnum.EthereumBalance]: {
     component: AutomationConditionEthereumBalance,
+    handler: 'onSubmitCondition',
+  },
+  [AutomateConditionTypeEnum.EthereumOptimalAutomateRun]: {
+    component: AutomationConditionEthereumOptimal,
+    handler: 'onSubmitCondition',
+  },
+  [AutomateConditionTypeEnum.EthereumAvgGasPrice]: {
+    component: AutomationConditionEthereumGasPrice,
+    handler: 'onSubmitCondition',
+  },
+  [AutomateConditionTypeEnum.Schedule]: {
+    component: AutomationConditionSchedule,
     handler: 'onSubmitCondition',
   },
 }
@@ -83,7 +104,7 @@ export const AutomationTriggerExpression: React.VFC<AutomationTriggerExpressionP
       setForm(form)
     }, [form])
 
-    const { component: Component, handler } = Forms[form]
+    const { component: Component, handler } = Forms[currentForm] ?? {}
 
     const handlers = {
       onSubmitAction: (params: string) => {
@@ -104,14 +125,6 @@ export const AutomationTriggerExpression: React.VFC<AutomationTriggerExpressionP
       },
     }
 
-    const saveParse = (str = '') => {
-      try {
-        return JSON.parse(str)
-      } catch {
-        return {}
-      }
-    }
-
     return (
       <div className={styles.root}>
         <TextField label="Form" select value={currentForm}>
@@ -121,12 +134,14 @@ export const AutomationTriggerExpression: React.VFC<AutomationTriggerExpressionP
             </MenuItem>
           ))}
         </TextField>
-        <Component
-          contracts={props.contracts}
-          onSubmit={handlers[handler]}
-          onDeploy={props.onDeploy}
-          defaultValues={saveParse(props.expression?.params)}
-        />
+        {Component && (
+          <Component
+            contracts={props.contracts}
+            onSubmit={handlers[handler]}
+            onDeploy={props.onDeploy}
+            defaultValues={safeJsonParse(props.expression?.params)}
+          />
+        )}
       </div>
     )
   }

@@ -5,7 +5,3 @@ export const root = style({
   height: 500,
   padding: 20,
 })
-
-export const input = style({
-  width: '100%',
-})

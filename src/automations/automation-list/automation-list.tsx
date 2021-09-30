@@ -7,8 +7,10 @@ import { Typography } from '~/common/typography'
 import { Button } from '~/common/button'
 import { paths } from '~/paths'
 import { useDialog } from '~/common/dialog'
-import { AutomationUpdate } from '../automation-update'
-import { Trigger } from '../common/automation.types'
+import { AutomationUpdate } from '~/automations/automation-update'
+import { AutomationUpdateContract } from '~/automations/automation-update-contract'
+import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
+import { Trigger } from '~/automations/common/automation.types'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
 
@@ -18,8 +20,10 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const triggers = useStore(model.$triggers)
   const loading = useStore(model.fetchTriggersFx.pending)
   const contracts = useStore(model.$contracts)
+  const automateContracts = useStore(model.$automateContracts)
 
   const [openAutomationUpdate] = useDialog(AutomationUpdate)
+  const [openAutomationUpdateContract] = useDialog(AutomationUpdateContract)
 
   const handleDeleteTrigger = (triggerId: string) => () =>
     model.deleteTriggerFx(triggerId)
@@ -33,6 +37,28 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   }
 
   useGate(model.AutomationListGate)
+
+  const handleAutomationDeleteContract = (contractId: string) => () => {
+    model.deleteContractFx(contractId)
+  }
+
+  const handleAutomationUpdateContract =
+    (contract: AutomationContractFragmentFragment) => async () => {
+      if (!automateContracts[contract.adapter]) return
+
+      try {
+        const result = await openAutomationUpdateContract({
+          contract,
+          automateContract: automateContracts[contract.adapter],
+        })
+
+        model.setUpdateContract(result)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
 
   return (
     <AppLayout>
@@ -60,6 +86,12 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
               >
                 Delete
               </Button>
+              <Button
+                as={ReactRouterLink}
+                to={paths.automations.history(trigger.id)}
+              >
+                History
+              </Button>
             </div>
           ))}
         {contracts.map((contract) => (
@@ -68,6 +100,18 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
             <Typography>{contract.rejectReason}</Typography>
             <Typography>{contract.verification}</Typography>
             <Typography>{contract.address}</Typography>
+            <Button
+              onClick={handleAutomationUpdateContract(contract)}
+              loading={contract.deleting}
+            >
+              Edit
+            </Button>
+            <Button
+              onClick={handleAutomationDeleteContract(contract.id)}
+              loading={contract.deleting}
+            >
+              Delete
+            </Button>
           </div>
         ))}
       </div>

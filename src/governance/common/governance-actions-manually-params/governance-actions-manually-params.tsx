@@ -110,7 +110,7 @@ export const GovernanceActionsManuallyParams: React.FC<GovernanceActionsManually
                   render={({ field }) => (
                     <Input
                       {...field}
-                      label={`Enter ${name}(${input.type})`}
+                      placeholder={`Enter ${name}(${input.type})`}
                       disabled={formState.isSubmitting}
                       value={field.value || input.value}
                     />

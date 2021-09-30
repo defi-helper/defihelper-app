@@ -117,6 +117,7 @@ export type AutomateActionType = {
 }
 
 export enum AutomateActionTypeEnum {
+  Notification = 'notification',
   EthereumAutomateRun = 'ethereumAutomateRun',
 }
 
@@ -183,7 +184,10 @@ export type AutomateConditionType = {
 }
 
 export enum AutomateConditionTypeEnum {
+  Schedule = 'schedule',
+  EthereumAvgGasPrice = 'ethereumAvgGasPrice',
   EthereumBalance = 'ethereumBalance',
+  EthereumOptimalAutomateRun = 'ethereumOptimalAutomateRun',
 }
 
 export type AutomateConditionUpdateInputType = {
@@ -204,6 +208,8 @@ export type AutomateContractCreateInputType = {
   address: Scalars['String']
   /** Adapter name */
   adapter: Scalars['String']
+  /** Init method parameters */
+  initParams: Scalars['String']
 }
 
 export type AutomateContractListFilterInputType = {
@@ -248,9 +254,18 @@ export type AutomateContractType = {
   address: Scalars['String']
   /** Adapter name */
   adapter: Scalars['String']
+  /** Init method parameters */
+  initParams: Scalars['String']
   /** Verification status */
   verification: AutomateContractVerificationStatusEnum
   rejectReason: Scalars['String']
+}
+
+export type AutomateContractUpdateInputType = {
+  /** Contract identifier */
+  id: Scalars['UuidType']
+  /** Init method parameters */
+  initParams?: Maybe<Scalars['String']>
 }
 
 export enum AutomateContractVerificationStatusEnum {
@@ -259,11 +274,50 @@ export enum AutomateContractVerificationStatusEnum {
   Rejected = 'rejected',
 }
 
+export type AutomateTriggerCallHistoryListFilterInputType = {
+  hasError?: Maybe<Scalars['Boolean']>
+}
+
+export type AutomateTriggerCallHistoryListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type AutomateTriggerCallHistoryListQuery = {
+  __typename?: 'AutomateTriggerCallHistoryListQuery'
+  /** Elements */
+  list?: Maybe<Array<AutomateTriggerCallHistoryType>>
+  pagination: Pagination
+}
+
+export type AutomateTriggerCallHistoryListSortInputType = {
+  column: AutomateTriggerCallHistoryListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum AutomateTriggerCallHistoryListSortInputTypeColumnEnum {
+  CreatedAt = 'createdAt',
+}
+
+export type AutomateTriggerCallHistoryType = {
+  __typename?: 'AutomateTriggerCallHistoryType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Call error */
+  error?: Maybe<Scalars['String']>
+  /** Created at date */
+  createdAt: Scalars['DateTimeType']
+}
+
 export type AutomateTriggerCreateInputType = {
   /** Wallet owner */
   wallet: Scalars['UuidType']
   /** Type */
   type: AutomateTriggerTypeEnum
+  /** Parameters */
+  params: Scalars['String']
   /** Name */
   name: Scalars['String']
   /** Is active */
@@ -312,6 +366,8 @@ export type AutomateTriggerType = {
   id: Scalars['UuidType']
   /** Type */
   type: AutomateTriggerTypeEnum
+  /** Trigger parameters */
+  params: Scalars['String']
   /** Wallet of owner */
   wallet: WalletType
   /** Name */
@@ -324,6 +380,7 @@ export type AutomateTriggerType = {
   createdAt: Scalars['DateTimeType']
   conditions: AutomateConditionListType
   actions: AutomateActionListType
+  callHistory: AutomateTriggerCallHistoryListQuery
 }
 
 export type AutomateTriggerTypeConditionsArgs = {
@@ -338,11 +395,18 @@ export type AutomateTriggerTypeActionsArgs = {
   pagination?: Maybe<AutomateActionListPaginationInputType>
 }
 
+export type AutomateTriggerTypeCallHistoryArgs = {
+  filter?: Maybe<AutomateTriggerCallHistoryListFilterInputType>
+  sort?: Maybe<Array<AutomateTriggerCallHistoryListSortInputType>>
+  pagination?: Maybe<AutomateTriggerCallHistoryListPaginationInputType>
+}
+
 export enum AutomateTriggerTypeEnum {
   EveryMonth = 'everyMonth',
   EveryWeek = 'everyWeek',
   EveryDay = 'everyDay',
   EveryHour = 'everyHour',
+  ContractEvent = 'contractEvent',
 }
 
 export type AutomateTriggerUpdateInputType = {
@@ -788,6 +852,7 @@ export type Mutation = {
   automateActionUpdate: AutomateActionType
   automateActionDelete: Scalars['Boolean']
   automateContractCreate: AutomateContractType
+  automateContractUpdate: AutomateContractType
   automateContractDelete: Scalars['Boolean']
 }
 
@@ -932,6 +997,10 @@ export type MutationAutomateActionDeleteArgs = {
 
 export type MutationAutomateContractCreateArgs = {
   input: AutomateContractCreateInputType
+}
+
+export type MutationAutomateContractUpdateArgs = {
+  input: AutomateContractUpdateInputType
 }
 
 export type MutationAutomateContractDeleteArgs = {
@@ -1183,6 +1252,7 @@ export type Query = {
   automateTriggers: AutomateTriggerListQuery
   automateContracts: AutomateContractListQuery
   govToken: GovTokenType
+  restakeStrategy: RestakeStrategyType
 }
 
 export type QueryProtocolArgs = {
@@ -1283,6 +1353,24 @@ export type QueryAutomateContractsArgs = {
 
 export type QueryGovTokenArgs = {
   filter: GovTokenFilterInputType
+}
+
+export type QueryRestakeStrategyArgs = {
+  balance: Scalars['Float']
+  apy: Scalars['Float']
+}
+
+export type RestakeStrategyPointType = {
+  __typename?: 'RestakeStrategyPointType'
+  v: Scalars['Float']
+  t: Scalars['Float']
+}
+
+export type RestakeStrategyType = {
+  __typename?: 'RestakeStrategyType'
+  hold: Array<RestakeStrategyPointType>
+  everyDay: Array<RestakeStrategyPointType>
+  optimal: Array<RestakeStrategyPointType>
 }
 
 export enum SortOrderEnum {
@@ -2442,11 +2530,21 @@ export type AutomationContractDeleteMutation = {
   __typename?: 'Mutation'
 } & Pick<Mutation, 'automateContractDelete'>
 
+export type AutomationContractUpdateMutationVariables = Exact<{
+  input: AutomateContractUpdateInputType
+}>
+
+export type AutomationContractUpdateMutation = { __typename?: 'Mutation' } & {
+  automateContractUpdate: {
+    __typename?: 'AutomateContractType'
+  } & AutomationContractFragmentFragment
+}
+
 export type AutomationContractFragmentFragment = {
   __typename?: 'AutomateContractType'
 } & Pick<
   AutomateContractType,
-  'id' | 'address' | 'adapter' | 'verification' | 'rejectReason'
+  'id' | 'address' | 'adapter' | 'initParams' | 'verification' | 'rejectReason'
 > & {
     wallet: { __typename?: 'WalletType' } & Pick<
       WalletType,
@@ -2484,6 +2582,34 @@ export type AutomationContractsQuery = { __typename?: 'Query' } & {
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
+}
+
+export type AutomationHistoryQueryVariables = Exact<{
+  filter: AutomateTriggerFilterInputType
+  callHistoryFilter?: Maybe<AutomateTriggerCallHistoryListFilterInputType>
+  callHistorySort?: Maybe<
+    | Array<AutomateTriggerCallHistoryListSortInputType>
+    | AutomateTriggerCallHistoryListSortInputType
+  >
+  callHistoryPagination?: Maybe<AutomateTriggerCallHistoryListPaginationInputType>
+}>
+
+export type AutomationHistoryQuery = { __typename?: 'Query' } & {
+  automateTrigger?: Maybe<
+    { __typename?: 'AutomateTriggerType' } & {
+      callHistory: { __typename?: 'AutomateTriggerCallHistoryListQuery' } & {
+        list?: Maybe<
+          Array<
+            { __typename?: 'AutomateTriggerCallHistoryType' } & Pick<
+              AutomateTriggerCallHistoryType,
+              'id' | 'error' | 'createdAt'
+            >
+          >
+        >
+        pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+      }
+    }
+  >
 }
 
 export type AutomationTriggerCreateMutationVariables = Exact<{
@@ -2540,7 +2666,7 @@ export type AutomationTriggerFragmentFragment = {
   __typename?: 'AutomateTriggerType'
 } & Pick<
   AutomateTriggerType,
-  'id' | 'type' | 'name' | 'active' | 'lastCallAt' | 'createdAt'
+  'id' | 'type' | 'params' | 'name' | 'active' | 'lastCallAt' | 'createdAt'
 > & {
     wallet: { __typename?: 'WalletType' } & Pick<
       WalletType,

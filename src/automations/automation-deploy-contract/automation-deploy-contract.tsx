@@ -1,20 +1,15 @@
 import { useGate, useStore } from 'effector-react'
-import { ethers } from 'ethers'
-import { useForm, Controller } from 'react-hook-form'
 import { MenuItem, TextField } from '@material-ui/core'
+import { useState } from 'react'
 
 import { Dialog } from '~/common/dialog'
-import { Input } from '~/common/input'
-import { Button } from '~/common/button'
-import { isEthAddress } from '~/common/is-eth-address'
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
+import {
+  AutomationContractForm,
+  FormValues,
+} from '../common/automation-contract-form'
 import * as model from './automation-deploy-contract.model'
 import * as styles from './automation-deploy-contract.css'
-
-type FormValues = {
-  contract: string
-  inputs: string[]
-}
 
 export type AutomationDeployContractProps = {
   onConfirm: (contract: AutomationContractFragmentFragment) => void
@@ -23,26 +18,23 @@ export type AutomationDeployContractProps = {
 
 export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> =
   (props) => {
-    const {
-      control,
-      formState,
-      watch,
-      register,
-      handleSubmit: reactHookSubmit,
-    } = useForm<FormValues>()
-    const automationContract = useStore(model.$automateContracts)
-    const loading = useStore(model.deployFx.pending)
+    const [contract, setContract] = useState('')
 
-    const currentContract = automationContract.find(
-      ({ contract }) => contract === watch('contract')
-    )
+    const automationContracts = useStore(model.$automateContracts)
+    const loading = useStore(model.deployFx.pending)
 
     useGate(model.AutomationDeployContractGate)
 
+    const currentContract = automationContracts.find(
+      (automationContract) => contract === automationContract.contract
+    )
+
     const handleSubmit = async (formValues: FormValues) => {
+      if (!currentContract || !currentContract.address) return
+
       try {
         const result = await model.deployFx({
-          address: currentContract?.address,
+          address: currentContract.address,
           inputs: formValues.inputs,
           automate: currentContract,
         })
@@ -55,57 +47,28 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
 
     return (
       <Dialog className={styles.root}>
-        <form
-          noValidate
-          autoComplete="off"
-          className={styles.form}
-          onSubmit={reactHookSubmit(handleSubmit)}
+        <TextField
+          label="Contract"
+          select
+          value={contract}
+          className={styles.input}
+          onChange={(event) => setContract(event.target.value)}
         >
-          <Controller
-            render={({ field }) => (
-              <TextField
-                label="Contract"
-                select
-                {...field}
-                helperText={formState.errors.contract?.message}
-                error={Boolean(formState.errors.contract?.message)}
-                value={field.value ?? ''}
-                className={styles.input}
-              >
-                {automationContract.map(({ contract, protocol }) => (
-                  <MenuItem key={contract} value={contract}>
-                    protocol: {protocol}
-                    <br />
-                    contract: {contract}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
-            name="contract"
-            control={control}
+          {automationContracts.map(({ contract: contractName, protocol }) => (
+            <MenuItem key={contractName} value={contractName}>
+              protocol: {protocol}
+              <br />
+              contract: {contractName}
+            </MenuItem>
+          ))}
+        </TextField>
+        {currentContract && (
+          <AutomationContractForm
+            loading={loading}
+            contract={currentContract}
+            onSubmit={handleSubmit}
           />
-          {currentContract &&
-            new ethers.utils.Interface(currentContract.contractInterface)
-              .getFunction('init')
-              .inputs.map(({ name, type }, i) => (
-                <Input
-                  key={name}
-                  type="text"
-                  className={styles.input}
-                  label={`${type} ${name}`}
-                  {...register(`inputs.${i}`, {
-                    required: true,
-                    pattern:
-                      type === 'address' ? isEthAddress.regex : undefined,
-                  })}
-                  helperText={formState.errors.inputs?.[i]?.message}
-                  error={Boolean(formState.errors.inputs?.[i]?.message)}
-                />
-              ))}
-          <Button type="submit" loading={loading}>
-            Deploy
-          </Button>
-        </form>
+        )}
       </Dialog>
     )
   }

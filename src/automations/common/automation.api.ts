@@ -19,6 +19,8 @@ import {
   AutomationContractDeleteMutationVariables,
   AutomationContractsQuery,
   AutomationContractsQueryVariables,
+  AutomationHistoryQuery,
+  AutomationHistoryQueryVariables,
   AutomationTriggerCreateMutation,
   AutomationTriggerCreateMutationVariables,
   AutomationTriggerDeleteMutation,
@@ -29,6 +31,8 @@ import {
   AutomationTriggersQueryVariables,
   AutomationTriggerUpdateMutation,
   AutomationTriggerUpdateMutationVariables,
+  AutomationContractUpdateMutation,
+  AutomationContractUpdateMutationVariables,
 } from '~/graphql/_generated-types'
 import { Automates } from './automation.types'
 import {
@@ -41,6 +45,8 @@ import {
   AUTOMATION_CONTRACTS,
   AUTOMATION_CONTRACT_CREATE,
   AUTOMATION_CONTRACT_DELETE,
+  AUTOMATION_CONTRACT_UPDATE,
+  AUTOMATION_HISTORY,
   AUTOMATION_TRIGGER,
   AUTOMATION_TRIGGERS,
   AUTOMATION_TRIGGER_CREATE,
@@ -117,6 +123,15 @@ export const automationApi = {
       >(AUTOMATION_CONTRACT_CREATE, variables)
       .toPromise()
       .then(({ data }) => data?.automateContractCreate),
+
+  updateContract: (variables: AutomationContractUpdateMutationVariables) =>
+    getAPIClient()
+      .mutation<
+        AutomationContractUpdateMutation,
+        AutomationContractUpdateMutationVariables
+      >(AUTOMATION_CONTRACT_UPDATE, variables)
+      .toPromise()
+      .then(({ data }) => data?.automateContractUpdate),
 
   deleteContract: (variables: AutomationContractDeleteMutationVariables) =>
     getAPIClient()
@@ -200,5 +215,17 @@ export const automationApi = {
       .then((res) => ({
         abi: res.abi as Automates['contractInterface'],
         address: res.address as string | undefined,
+      })),
+
+  getHistory: (variables: AutomationHistoryQueryVariables) =>
+    getAPIClient()
+      .query<AutomationHistoryQuery, AutomationHistoryQueryVariables>(
+        AUTOMATION_HISTORY,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => ({
+        list: data?.automateTrigger?.callHistory.list ?? [],
+        count: data?.automateTrigger?.callHistory.pagination.count ?? 0,
       })),
 }

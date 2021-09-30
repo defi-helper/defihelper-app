@@ -5,10 +5,11 @@ import {
   UserType,
 } from '~/graphql/_generated-types'
 import { userModel } from '~/users'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 import { automationUpdateModel } from '../automation-update'
 import { automationApi } from '../common/automation.api'
-import { Trigger } from '../common/automation.types'
+import { Automates, Trigger } from '../common/automation.types'
 
 export const automationListDomain = createDomain()
 
@@ -107,19 +108,79 @@ sample({
   target: fetchTriggersFx,
 })
 
-export const fetchContracts = automationListDomain.createEffect(
+export const fetchAutomationContractsFx = automationListDomain.createEffect(
+  async (chainId: string | number) => {
+    const data = await automationApi.getAutomationsContracts()
+
+    const contracts: Automates[] = await Promise.all(
+      data.map(async (contract) => {
+        const contractData = await automationApi.getContractInterface({
+          ...contract,
+          chainId,
+        })
+
+        return {
+          ...contract,
+          contractInterface: contractData.abi,
+          address: contractData.address,
+        }
+      })
+    )
+
+    return contracts
+  }
+)
+
+export const $automateContracts = automationListDomain
+  .createStore<Record<string, Automates>>({})
+  .on(fetchAutomationContractsFx.doneData, (_, payload) =>
+    payload.reduce<Record<string, Automates>>((acc, automateContract) => {
+      if (!automateContract.address) return acc
+
+      return {
+        ...acc,
+        [automateContract.contract]: automateContract,
+      }
+    }, {})
+  )
+
+export const fetchContractsFx = automationListDomain.createEffect(
   async (userId: string) => {
     return automationApi.getContracts({ filter: { user: userId } })
+  }
+)
+
+export const deleteContractFx = automationListDomain.createEffect(
+  async (contractId: string) => {
+    const isDeleted = await automationApi.deleteContract({ id: contractId })
+
+    if (!isDeleted) throw new Error('contract is not deleted')
   }
 )
 
 export const setNewContract =
   automationListDomain.createEvent<AutomationContractFragmentFragment>()
 
+export const setUpdateContract =
+  automationListDomain.createEvent<AutomationContractFragmentFragment>()
+
 export const $contracts = automationListDomain
-  .createStore<AutomationContractFragmentFragment[]>([])
-  .on(fetchContracts.doneData, (_, { list }) => list)
+  .createStore<(AutomationContractFragmentFragment & { deleting?: boolean })[]>(
+    []
+  )
+  .on(fetchContractsFx.doneData, (_, { list }) => list)
   .on(setNewContract, (state, payload) => [...state, payload])
+  .on(setUpdateContract, (state, payload) =>
+    state.map((contract) => (contract.id === payload.id ? payload : contract))
+  )
+  .on(deleteContractFx, (state, payload) =>
+    state.map((contract) =>
+      contract.id === payload ? { ...contract, deleting: true } : contract
+    )
+  )
+  .on(deleteContractFx.done, (state, { params }) =>
+    state.filter((contract) => contract.id !== params)
+  )
 
 sample({
   clock: guard({
@@ -132,5 +193,19 @@ sample({
     },
   }),
   fn: ([user]) => user.id,
-  target: fetchContracts,
+  target: fetchContractsFx,
+})
+
+sample({
+  clock: guard({
+    source: [AutomationListGate.status, walletNetworkModel.$wallet],
+    clock: [AutomationListGate.open, walletNetworkModel.$wallet.updates],
+    filter: (source): source is [boolean, { chainId: string | number }] => {
+      const [status, wallet] = source
+
+      return status && Boolean(wallet.chainId)
+    },
+  }),
+  fn: ([, wallet]) => wallet.chainId,
+  target: fetchAutomationContractsFx,
 })

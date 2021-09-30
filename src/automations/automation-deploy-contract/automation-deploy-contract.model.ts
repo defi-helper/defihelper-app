@@ -95,6 +95,7 @@ export const deployFx = automationDeployContractDomain.createEffect(
         address: proxyAddress,
         adapter: params.automate.contract,
         protocol: protocol.id,
+        initParams: JSON.stringify({ inputs: params.inputs }),
       },
     })
 

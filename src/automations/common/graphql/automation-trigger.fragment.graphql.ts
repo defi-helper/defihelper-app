@@ -12,6 +12,7 @@ export const AUTOMATION_TRIGGER_FRAGMENT = gql`
       publicKey
       createdAt
     }
+    params
     name
     active
     lastCallAt

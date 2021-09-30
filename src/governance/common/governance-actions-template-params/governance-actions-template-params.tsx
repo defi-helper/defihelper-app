@@ -130,7 +130,7 @@ export const GovernanceActionsTemplateParams: React.FC<GovernanceActionsTemplate
                         render={({ field }) => (
                           <Input
                             {...field}
-                            label={`Enter ${input.name}(${input.type})`}
+                            placeholder={`Enter ${input.name}(${input.type})`}
                           />
                         )}
                         rules={{
