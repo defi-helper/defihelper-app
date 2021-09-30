@@ -54,6 +54,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     type: props.trigger.type,
     name: props.trigger.name,
     active: props.trigger.active,
+    params: props.trigger.params,
   }
 
   const handleSubmit = (formValues: AutomateTriggerCreateInputType) => {

@@ -28,7 +28,7 @@ export const GovernanceAddDelegant: React.VFC<GovernanceAddDelegantProps> = (
     >
       <div className={styles.input}>
         <Input
-          label="Deligant address"
+          placeholder="Deligant address"
           {...register('address', {
             required: true,
             pattern: isEthAddress.regex,

@@ -12,7 +12,7 @@ module.exports = {
   webpack: {
     alias: {
       '~': path.resolve(__dirname, './src'),
-      ...(isProd ? { 'effector-logger/macro': 'effector' } : {}),
+      ...(isProd ? { 'effector-logger$': 'effector' } : {}),
     },
     plugins: [new VanillaExtractPlugin()],
   },

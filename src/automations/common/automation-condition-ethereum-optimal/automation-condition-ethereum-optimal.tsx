@@ -1,41 +1,34 @@
 import { MenuItem, TextField } from '@material-ui/core'
-import clsx from 'clsx'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '~/common/button'
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
-import * as styles from './automation-action-ethereum-run.css'
+import * as styles from './automation-condition-ethereum-optimal.css'
 
-type FormValues = { id: string }
-
-export type AutomationActionEthereumRunProps = {
-  className?: string
-  onSubmit: (formValues: string) => void
-  onDeploy: () => void
-  contracts: AutomationContractFragmentFragment[]
-  defaultValues?: FormValues
+type FormValues = {
+  id: string
 }
 
-export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunProps> =
+export type AutomationConditionEthereumOptimalProps = {
+  onSubmit: (formValues: string) => void
+  defaultValues?: FormValues
+  contracts: AutomationContractFragmentFragment[]
+}
+
+export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEthereumOptimalProps> =
   (props) => {
-    const {
-      formState,
-      control,
-      handleSubmit: reactHookSubmit,
-    } = useForm<FormValues>({
+    const { handleSubmit, formState, control } = useForm<FormValues>({
       defaultValues: props.defaultValues,
     })
-
-    const handleSubmit = (formValues: FormValues) => {
-      props.onSubmit(JSON.stringify({ id: formValues.id }))
-    }
 
     return (
       <form
         noValidate
         autoComplete="off"
-        className={clsx(styles.root, props.className)}
-        onSubmit={reactHookSubmit(handleSubmit)}
+        className={styles.root}
+        onSubmit={handleSubmit((formValues) =>
+          props.onSubmit(JSON.stringify(formValues))
+        )}
       >
         <Controller
           render={({ field }) => (
@@ -59,10 +52,7 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
           name="id"
           control={control}
         />
-        <Button onClick={props.onDeploy}>Deploy new</Button>
-        <Button type="submit" size="small">
-          Save
-        </Button>
+        <Button type="submit">Submit</Button>
       </form>
     )
   }

@@ -26,15 +26,10 @@ export const input = style({
   background: 'transparent',
   padding: '8px 16px',
   color: 'currentcolor',
-})
 
-export const label = style({
-  position: 'absolute',
-  pointerEvents: 'none',
-  top: '50%',
-  transform: 'translateY(-50%)',
-  left: '16px',
-  transition: 'transform .2s, font-size .2s',
+  '::placeholder': {
+    color: 'inherit',
+  },
 })
 
 export const error = style({})

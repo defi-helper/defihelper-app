@@ -23,6 +23,7 @@ export const AUTOMATION_CONTRACT_FRAGMENT = gql`
     }
     address
     adapter
+    initParams
     verification
     rejectReason
   }

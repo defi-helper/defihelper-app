@@ -7,6 +7,7 @@ import { Input } from '~/common/input'
 import { Button } from '~/common/button'
 import { automationConditionEthereumSchema } from './automation-condition-ethereum.validation'
 import { NumericalInput } from '~/common/numerical-input'
+import { Networks } from '../constants'
 import * as styles from './automation-condition-ethereum-balance.css'
 
 type FormValues = {
@@ -19,7 +20,7 @@ type FormValues = {
 export type AutomationConditionEthereumBalanceProps = {
   className?: string
   onSubmit: (formValues: string) => void
-  defaultValues: FormValues
+  defaultValues?: FormValues
 }
 
 enum ConditionTypes {
@@ -31,12 +32,6 @@ enum ConditionTypes {
   equal = '==',
 }
 
-enum Networks {
-  ethereum = '1',
-  ropsten = '2',
-  binance = '56',
-}
-
 export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEthereumBalanceProps> =
   (props) => {
     const { register, handleSubmit, formState, control } = useForm<FormValues>({
@@ -46,6 +41,8 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
 
     return (
       <form
+        noValidate
+        autoComplete="off"
         className={clsx(styles.root, props.className)}
         onSubmit={handleSubmit((formValues) =>
           props.onSubmit(JSON.stringify(formValues))
@@ -59,7 +56,7 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
               select
               helperText={formState.errors.network?.message}
               error={Boolean(formState.errors.network?.message)}
-              defaultValue={props.defaultValues.network}
+              defaultValue={props.defaultValues?.network}
               value={field.value || ''}
             >
               {Object.entries(Networks).map(([key, networkId]) => (
@@ -73,11 +70,11 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
           control={control}
         />
         <Input
-          label="wallet"
+          placeholder="wallet"
           {...register('wallet')}
           helperText={formState.errors.wallet?.message}
           error={Boolean(formState.errors.wallet?.message)}
-          defaultValue={props.defaultValues.wallet}
+          defaultValue={props.defaultValues?.wallet}
         />
         <Controller
           render={({ field }) => (
@@ -87,7 +84,7 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
               select
               helperText={formState.errors.op?.message}
               error={Boolean(formState.errors.op?.message)}
-              defaultValue={props.defaultValues.op}
+              defaultValue={props.defaultValues?.op}
               value={field.value || ''}
             >
               {Object.entries(ConditionTypes).map(([key, value]) => (
@@ -101,11 +98,11 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
           control={control}
         />
         <NumericalInput
-          label="value"
+          placeholder="value"
           {...register('value')}
           helperText={formState.errors.value?.message}
           error={Boolean(formState.errors.value?.message)}
-          defaultValue={props.defaultValues.value}
+          defaultValue={props.defaultValues?.value}
         />
         <Button type="submit" size="small">
           Save

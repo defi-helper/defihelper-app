@@ -156,7 +156,7 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
       >
         <Input
           type="text"
-          label="Enter the name of proposal"
+          placeholder="Enter the name of proposal"
           className={styles.input}
           disabled={loading}
           {...register('name', { required: true })}
