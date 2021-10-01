@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
+import { useStore } from 'effector-react'
 import { NavLink, Link as ReactRouerLink } from 'react-router-dom'
 import clsx from 'clsx'
 import { useLocalStorage } from 'react-use'
@@ -13,9 +14,11 @@ import { Paper } from '~/common/paper'
 import { config } from '~/config'
 import { LayoutThemeSwitcher } from '~/layouts/common/layout-theme-switcher'
 import { Icon } from '~/common/icon'
+import { userModel } from '~/users'
 import { SOCIAL_LINKS } from '../constants'
 import { LayoutCurrencySwitcher } from '../layout-currency-switcher'
 import * as styles from './layout-sidebar.css'
+import { UserRoleEnum } from '~/graphql/_generated-types'
 
 type MenuItem = {
   title: string
@@ -35,6 +38,8 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
   const handleHide = () => {
     setHide(!hided)
   }
+
+  const user = useStore(userModel.$user)
 
   return (
     <div className={styles.root}>
@@ -84,34 +89,37 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
             </li>
           ))}
         </ul>
-        {!hided && (
-          <Paper radius={8} className={styles.balance}>
-            <Typography variant="body2" as="div">
-              Balance:
-            </Typography>
-            <Typography
-              variant="body2"
-              as="div"
-              className={styles.balanceValue}
-            >
-              0.00016 ETH
-            </Typography>
-            <Typography
-              variant="body2"
-              as="div"
-              className={styles.balanceValue}
-            >
-              12 Automations
-            </Typography>
-            <Typography
-              variant="body2"
-              as="div"
-              className={styles.balanceValue}
-            >
-              234 Notifications
-            </Typography>
-          </Paper>
-        )}
+        {!hided &&
+          ((user?.role &&
+            [UserRoleEnum.User, UserRoleEnum.Admin].includes(user.role)) ||
+            !config.BETA) && (
+            <Paper radius={8} className={styles.balance}>
+              <Typography variant="body2" as="div">
+                Balance:
+              </Typography>
+              <Typography
+                variant="body2"
+                as="div"
+                className={styles.balanceValue}
+              >
+                0.00016 ETH
+              </Typography>
+              <Typography
+                variant="body2"
+                as="div"
+                className={styles.balanceValue}
+              >
+                12 Automations
+              </Typography>
+              <Typography
+                variant="body2"
+                as="div"
+                className={styles.balanceValue}
+              >
+                234 Notifications
+              </Typography>
+            </Paper>
+          )}
         <div className={styles.spacer} />
         {!hided && (
           <div className={styles.switchers}>
