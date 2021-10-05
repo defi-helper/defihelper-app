@@ -15,23 +15,13 @@ import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
 import { ProtocolTabs } from '../common'
 import { Paper } from '~/common/paper'
-import { usePopper } from '~/common/hooks'
-import { Portal } from '~/common/portal'
+import { Dropdown } from '~/common/dropdown'
 import * as model from './protocol-list.model'
 import * as styles from './protocol-list.css'
 
 export type ProtocolListProps = unknown
 
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
-  const {
-    popperStyles,
-    popperAttributes,
-    setPopperElement,
-    setReferenceElement,
-  } = usePopper({ placement: 'bottom-start' })
-
-  const [open, setOpen] = useState(false)
-
   const ability = useAbility()
 
   const [openConfirm] = useDialog(ConfirmDialog)
@@ -49,10 +39,6 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
         console.error(error.message)
       }
     }
-  }
-
-  const handleToggleManageButton = () => {
-    setOpen(!open)
   }
 
   const protocols = useMemo(
@@ -152,43 +138,32 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
                   >
                     +$26,852 (12%)
                     <Can I="update" a="Protocol">
-                      <ButtonBase
-                        className={styles.manage}
-                        ref={setReferenceElement}
-                        onClick={handleToggleManageButton}
+                      <Dropdown
+                        control={
+                          <ButtonBase className={styles.manage}>
+                            <Icon icon="dots" />
+                          </ButtonBase>
+                        }
                       >
-                        <Icon icon="dots" />
-                      </ButtonBase>
-                      {open && (
-                        <Portal>
-                          <Paper
-                            className={styles.manageDropdown}
-                            style={popperStyles}
-                            ref={setPopperElement}
-                            {...popperAttributes}
-                            radius={8}
+                        <Can I="update" a="Protocol">
+                          <ButtonBase
+                            as={ReactRouterLink}
+                            to={paths.protocols.update(protocol.id)}
+                            className={styles.manageDropdownItem}
                           >
-                            <Can I="update" a="Protocol">
-                              <ButtonBase
-                                as={ReactRouterLink}
-                                to={paths.protocols.update(protocol.id)}
-                                className={styles.manageDropdownItem}
-                              >
-                                Edit
-                              </ButtonBase>
-                            </Can>
-                            <Can I="delete" a="Protocol">
-                              <ButtonBase
-                                disabled={protocol.deleting}
-                                onClick={() => handleOpenConfirm(protocol.id)}
-                                className={styles.manageDropdownItem}
-                              >
-                                Delete
-                              </ButtonBase>
-                            </Can>
-                          </Paper>
-                        </Portal>
-                      )}
+                            Edit
+                          </ButtonBase>
+                        </Can>
+                        <Can I="delete" a="Protocol">
+                          <ButtonBase
+                            disabled={protocol.deleting}
+                            onClick={() => handleOpenConfirm(protocol.id)}
+                            className={styles.manageDropdownItem}
+                          >
+                            Delete
+                          </ButtonBase>
+                        </Can>
+                      </Dropdown>
                     </Can>
                   </Typography>
                 </Paper>

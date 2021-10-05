@@ -5,12 +5,7 @@ export const root = style({
   display: 'inline-flex',
   flexDirection: 'column',
   width: '100%',
-  fontFamily: theme.fonts.square,
   position: 'relative',
-  backgroundColor: theme.colors.common.black6,
-  borderRadius: 8,
-  fontSize: 16,
-  lineHeight: '24px',
 })
 
 export const input = style({
@@ -18,14 +13,16 @@ export const input = style({
   width: 'inherit',
   height: 'inherit',
   outline: 'none',
-  border: 'none',
-  fontSize: 'inherit',
-  lineHeight: 'inherit',
+  border: `1px solid ${theme.colors.border}`,
   textTransform: 'inherit',
-  fontFamily: 'inherit',
-  background: 'transparent',
+  fontFamily: theme.fonts.square,
+  backgroundColor: 'transparent',
+  borderRadius: 8,
+  fontSize: 16,
+  lineHeight: '24px',
   padding: '8px 16px',
   color: 'currentcolor',
+  marginBottom: 4,
 
   '::placeholder': {
     color: 'inherit',
@@ -33,3 +30,21 @@ export const input = style({
 })
 
 export const error = style({})
+
+export const label = style({
+  fontFamily: theme.fonts.mono,
+  textTransform: 'uppercase',
+  color: theme.colors.common.brown2,
+  marginBottom: 4,
+})
+
+export const helperText = style({})
+
+export const fs14 = style({
+  fontSize: 14,
+  lineHeight: '20px',
+})
+
+export const helperTextColor = style({
+  color: theme.colors.textColorGrey,
+})

@@ -14,7 +14,7 @@ export const root = style({
 export const colors = styleVariants({
   primary: {
     background: theme.colors.primary,
-    border: `1px solid ${theme.colors.primary}`,
+    border: `1px solid ${theme.colors.primaryButtonBorder}`,
     color: theme.colors.textColorSecondary,
   },
 
@@ -40,7 +40,10 @@ export const colors = styleVariants({
 
   lime: {},
 
-  red: {},
+  red: {
+    background: theme.colors.common.red1,
+    border: `1px solid ${theme.colors.common.red1}`,
+  },
 })
 
 export const varinats = styleVariants({
@@ -64,6 +67,10 @@ export const varinats = styleVariants({
 
       [`&.${colors.blue}`]: {
         color: theme.colors.common.blue1,
+      },
+
+      [`&.${colors.red}`]: {
+        color: theme.colors.common.red1,
       },
     },
   },

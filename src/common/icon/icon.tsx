@@ -37,6 +37,9 @@ import { ReactComponent as SolanaIcon } from '~/assets/icons/blockchains/solana.
 import { ReactComponent as ArrowTopIcon } from '~/assets/icons/arrow-top.svg'
 import { ReactComponent as CheckedIcon } from '~/assets/icons/checked.svg'
 import { ReactComponent as ArrowDownIcon } from '~/assets/icons/arrow-down.svg'
+import { ReactComponent as EmailIcon } from '~/assets/icons/socials/email.svg'
+import { ReactComponent as QuestionIcon } from '~/assets/icons/question.svg'
+import { ReactComponent as AttentionIcon } from '~/assets/icons/attention.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -73,6 +76,7 @@ const ICONS = {
   medium: MediumIcon,
   telegram: TelegramIcon,
   twitter: TwitterIcon,
+  email: EmailIcon,
   ethereum: EthereumIcon,
   binance: BscIcon,
   waves: WavesIcon,
@@ -80,6 +84,8 @@ const ICONS = {
   arrowTop: ArrowTopIcon,
   checked: CheckedIcon,
   arrowDown: ArrowDownIcon,
+  question: QuestionIcon,
+  attention: AttentionIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

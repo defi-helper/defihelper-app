@@ -813,6 +813,7 @@ export enum MetricGroupEnum {
   Hour = 'hour',
   Day = 'day',
   Week = 'week',
+  Month = 'month',
   Year = 'year',
 }
 
@@ -835,6 +836,7 @@ export type Mutation = {
   vote: VoteType
   unvote: Scalars['Boolean']
   userContactCreate: UserContactType
+  userContactUpdate: UserContactType
   userContactEmailConfirm: Scalars['Boolean']
   userContactDelete: Scalars['Boolean']
   userEventSubscriptionCreate: UserEventSubscriptionType
@@ -928,6 +930,11 @@ export type MutationUnvoteArgs = {
 
 export type MutationUserContactCreateArgs = {
   input: UserContactCreateInputType
+}
+
+export type MutationUserContactUpdateArgs = {
+  id: Scalars['UuidType']
+  input: UserContactUpdateInputType
 }
 
 export type MutationUserContactEmailConfirmArgs = {
@@ -1836,6 +1843,8 @@ export type UserContactCreateInputType = {
   broker: UserContactBrokerEnum
   /** Address */
   address: Scalars['String']
+  /** Name */
+  name: Scalars['String']
 }
 
 export type UserContactFilterInputType = {
@@ -1863,6 +1872,7 @@ export type UserContactListQueryFilterInputType = {
   broker?: Maybe<UserContactBrokerEnum>
   /** Status */
   status?: Maybe<UserContactStatusEnum>
+  search?: Maybe<Scalars['String']>
 }
 
 export type UserContactListSortInputType = {
@@ -1892,6 +1902,8 @@ export type UserContactType = {
   broker: UserContactBrokerEnum
   /** Address */
   address: Scalars['String']
+  /** Name */
+  name: Scalars['String']
   /** Status */
   status: UserContactStatusEnum
   /** Confirmation Code */
@@ -1900,6 +1912,11 @@ export type UserContactType = {
   createdAt: Scalars['DateTimeType']
   /** Date of activated */
   activatedAt?: Maybe<Scalars['DateTimeType']>
+}
+
+export type UserContactUpdateInputType = {
+  /** Name */
+  name?: Maybe<Scalars['String']>
 }
 
 export type UserEventSubscriptionCreateInputType = {
@@ -3216,6 +3233,75 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'createdAt'
 >
 
+export type UserContactEmailConfirmMutationVariables = Exact<{
+  input: UserContactConfirmEmailInputType
+}>
+
+export type UserContactEmailConfirmMutation = {
+  __typename?: 'Mutation'
+} & Pick<Mutation, 'userContactEmailConfirm'>
+
+export type UserContactCreateMutationVariables = Exact<{
+  input: UserContactCreateInputType
+}>
+
+export type UserContactCreateMutation = { __typename?: 'Mutation' } & {
+  userContactCreate: {
+    __typename?: 'UserContactType'
+  } & UserContactFragmentFragment
+}
+
+export type UserContactDeleteMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type UserContactDeleteMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'userContactDelete'
+>
+
+export type UserContactsQueryVariables = Exact<{
+  userContactFilter?: Maybe<UserContactListQueryFilterInputType>
+  userContactSort?: Maybe<
+    Array<UserContactListSortInputType> | UserContactListSortInputType
+  >
+  userContactPagination?: Maybe<UserContactListPaginationInputType>
+}>
+
+export type UserContactsQuery = { __typename?: 'Query' } & {
+  userContacts: { __typename?: 'UserContactListQuery' } & {
+    list?: Maybe<
+      Array<{ __typename?: 'UserContactType' } & UserContactFragmentFragment>
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type UserContactUpdateMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: UserContactUpdateInputType
+}>
+
+export type UserContactUpdateMutation = { __typename?: 'Mutation' } & {
+  userContactUpdate: {
+    __typename?: 'UserContactType'
+  } & UserContactFragmentFragment
+}
+
+export type UserContactFragmentFragment = {
+  __typename?: 'UserContactType'
+} & Pick<
+  UserContactType,
+  | 'id'
+  | 'broker'
+  | 'name'
+  | 'address'
+  | 'status'
+  | 'confirmationCode'
+  | 'createdAt'
+  | 'activatedAt'
+>
+
 export type StakingConnectWalletMutationVariables = Exact<{
   contract: Scalars['UuidType']
   wallet: Scalars['UuidType']
@@ -3386,63 +3472,6 @@ export type StakingTokensQuery = { __typename?: 'Query' } & {
     >
   }
 }
-
-export type UserContactEmailConfirmMutationVariables = Exact<{
-  input: UserContactConfirmEmailInputType
-}>
-
-export type UserContactEmailConfirmMutation = {
-  __typename?: 'Mutation'
-} & Pick<Mutation, 'userContactEmailConfirm'>
-
-export type UserContactCreateMutationVariables = Exact<{
-  input: UserContactCreateInputType
-}>
-
-export type UserContactCreateMutation = { __typename?: 'Mutation' } & {
-  userContactCreate: {
-    __typename?: 'UserContactType'
-  } & UserContactFragmentFragment
-}
-
-export type UserContactDeleteMutationVariables = Exact<{
-  id: Scalars['UuidType']
-}>
-
-export type UserContactDeleteMutation = { __typename?: 'Mutation' } & Pick<
-  Mutation,
-  'userContactDelete'
->
-
-export type UserContactsQueryVariables = Exact<{
-  userContactFilter?: Maybe<UserContactListQueryFilterInputType>
-  userContactSort?: Maybe<
-    Array<UserContactListSortInputType> | UserContactListSortInputType
-  >
-  userContactPagination?: Maybe<UserContactListPaginationInputType>
-}>
-
-export type UserContactsQuery = { __typename?: 'Query' } & {
-  userContacts: { __typename?: 'UserContactListQuery' } & {
-    list?: Maybe<
-      Array<{ __typename?: 'UserContactType' } & UserContactFragmentFragment>
-    >
-    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-  }
-}
-
-export type UserContactFragmentFragment = {
-  __typename?: 'UserContactType'
-} & Pick<
-  UserContactType,
-  | 'id'
-  | 'broker'
-  | 'address'
-  | 'status'
-  | 'confirmationCode'
-  | 'createdAt'
-  | 'activatedAt'
->
 
 export type UserEventSubscriptionCreateMutationVariables = Exact<{
   input: UserEventSubscriptionCreateInputType

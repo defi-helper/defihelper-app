@@ -1,6 +1,6 @@
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import clsx from 'clsx'
 
 import { Can, useAbility } from '~/users'
@@ -15,10 +15,9 @@ import { StakingAdapters } from '~/staking/staking-adapters'
 import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
-import { Portal } from '~/common/portal'
-import { usePopper } from '~/common/hooks'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
+import { Dropdown } from '~/common/dropdown'
 
 export type StakingListProps = {
   protocolId: string
@@ -40,15 +39,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const { network, blockchain } = useStore(
     walletNetworkSwitcherModel.$currentNetwork
   )
-
-  const {
-    popperStyles,
-    popperAttributes,
-    setPopperElement,
-    setReferenceElement,
-  } = usePopper({ placement: 'bottom-start' })
-
-  const [open, setOpen] = useState(false)
 
   const handleOpenConfirmDialog = (id: string) => async () => {
     try {
@@ -79,10 +69,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
   const handleOpenContract = (contractAddress: string) => () => {
     model.openContract(contractAddress)
-  }
-
-  const handleToggleManageButton = () => {
-    setOpen(!open)
   }
 
   return (
@@ -224,44 +210,35 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         />
                       </ButtonBase>
                       <Can I="update" a="Contract">
-                        <ButtonBase
-                          ref={setReferenceElement}
-                          className={styles.manageButton}
-                          onClick={handleToggleManageButton}
+                        <Dropdown
+                          control={
+                            <ButtonBase className={styles.manageButton}>
+                              <Icon icon="dots" />
+                            </ButtonBase>
+                          }
                         >
-                          <Icon icon="dots" />
-                        </ButtonBase>
+                          <Can I="update" a="Contract">
+                            <ButtonBase
+                              as={ReactRouterLink}
+                              to={`${paths.staking.update(
+                                props.protocolId,
+                                stakingListItem.id
+                              )}?protocol-adapter=${protocolAdapter}`}
+                            >
+                              Edit
+                            </ButtonBase>
+                          </Can>
+                          <Can I="delete" a="Contract">
+                            <ButtonBase
+                              onClick={handleOpenConfirmDialog(
+                                stakingListItem.id
+                              )}
+                            >
+                              Delete
+                            </ButtonBase>
+                          </Can>
+                        </Dropdown>
                       </Can>
-                      {open && (
-                        <Portal>
-                          <div
-                            {...popperAttributes}
-                            style={popperStyles}
-                            ref={setPopperElement}
-                          >
-                            <Can I="update" a="Contract">
-                              <ButtonBase
-                                as={ReactRouterLink}
-                                to={`${paths.staking.update(
-                                  props.protocolId,
-                                  stakingListItem.id
-                                )}?protocol-adapter=${protocolAdapter}`}
-                              >
-                                Edit
-                              </ButtonBase>
-                            </Can>
-                            <Can I="delete" a="Contract">
-                              <ButtonBase
-                                onClick={handleOpenConfirmDialog(
-                                  stakingListItem.id
-                                )}
-                              >
-                                Delete
-                              </ButtonBase>
-                            </Can>
-                          </div>
-                        </Portal>
-                      )}
                     </div>
                   </div>
                   {!connectable && opened && (

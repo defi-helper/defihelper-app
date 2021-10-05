@@ -113,10 +113,6 @@ export const fontFamilies = styleVariants({
     fontFamily: theme.fonts.square,
   },
 
-  circle: {
-    fontFamily: theme.fonts.circle,
-  },
-
   mono: {
     fontFamily: theme.fonts.mono,
   },

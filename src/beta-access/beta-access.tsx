@@ -10,7 +10,6 @@ import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { Grid } from '~/common/grid'
 import { Typography } from '~/common/typography'
-import { contactListModel } from '~/user-contacts'
 import { WalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { config } from '~/config'
@@ -18,6 +17,7 @@ import { Paper } from '~/common/paper'
 import { userModel } from '~/users'
 import { BetaAccessSuccess } from './common/wallet-success'
 import { UserRoleEnum } from '~/graphql/_generated-types'
+import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './beta-access.css'
 import * as model from './beta-access.model'
 
@@ -46,7 +46,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
 
   const contactList = useStore(contactListModel.$userContactList)
 
-  useGate(contactListModel.UserContactListGate)
+  useGate(contactListModel.SettingsContactsGate)
 
   useEffect(() => {
     if (

@@ -20,8 +20,7 @@ import { ProposalList } from '~/proposals/proposal-list'
 import { ProposalDetail } from '~/proposals/proposal-detail'
 import { ProposalCreate } from '~/proposals/proposal-create'
 import { ProposalUpdate } from '~/proposals/proposal-update'
-import { UserContactList } from '~/user-contacts'
-import { UserContactConfirmEmail } from '~/user-contacts/user-contact-confirm-email'
+import { SettingsConfirmEmail } from '~/settings/settings-confirm-email'
 import { UserEventSubscriptionList } from '~/user-event-subscriptions'
 import { Billing } from '~/billing'
 import { NotFound } from '~/not-found'
@@ -99,12 +98,6 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.proposals.list}>
           <ProposalList />
         </Route>
-        <Route path={paths.contacts.list}>
-          <UserContactList />
-        </Route>
-        <Route path={paths.contacts.confirmEmail()}>
-          <UserContactConfirmEmail />
-        </Route>
         <Route path={paths.userEventSubscriptions.list}>
           <UserEventSubscriptionList />
         </Route>
@@ -129,7 +122,10 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.automations.list}>
           <AutomationList />
         </PrivateRoute>
-        <PrivateRoute path={paths.settings}>
+        <Route path={paths.settings.confirmEmail()}>
+          <SettingsConfirmEmail />
+        </Route>
+        <PrivateRoute path={paths.settings.list}>
           <Settings />
         </PrivateRoute>
         <Route>

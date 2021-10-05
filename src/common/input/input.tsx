@@ -6,7 +6,7 @@ import * as styles from './input.css'
 
 export type InputProps = React.ComponentProps<'input'> & {
   label?: string
-  helperText?: string
+  helperText?: React.ReactNode
   error?: boolean
 }
 
@@ -14,14 +14,34 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   props,
   ref
 ) {
-  const { className, error, helperText, ...restOfProps } = props
+  const { className, label, error, helperText, ...restOfProps } = props
 
   return (
-    <>
-      <div className={clsx(styles.root, error && styles.error, className)}>
-        <input {...restOfProps} className={styles.input} ref={ref} />
-      </div>
-      {helperText && <Typography>{helperText}</Typography>}
-    </>
+    <div className={clsx(styles.root, error && styles.error, className)}>
+      {label && (
+        <Typography
+          as="label"
+          id={restOfProps.id}
+          variant="body2"
+          className={clsx(styles.fs14, styles.label)}
+        >
+          {label}
+        </Typography>
+      )}
+      <input {...restOfProps} className={styles.input} ref={ref} />
+      {helperText && (
+        <Typography
+          variant="body2"
+          className={clsx(
+            styles.helperText,
+            styles.fs14,
+            !error && styles.helperTextColor
+          )}
+          as="span"
+        >
+          {helperText}
+        </Typography>
+      )}
+    </div>
   )
 })

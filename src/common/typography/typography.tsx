@@ -22,7 +22,7 @@ type Props<C extends React.ElementType = 'p'> = {
   variant?: Variants
   align?: 'left' | 'center' | 'right'
   as?: C
-  family?: 'square' | 'circle' | 'mono'
+  family?: 'square' | 'mono'
   transform?: 'uppercase' | 'lowercase' | 'normal'
 }
 

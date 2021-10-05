@@ -1,4 +1,4 @@
-import { RefObject, useEffect } from 'react'
+import { RefObject, useEffect, useRef } from 'react'
 
 type AnyEvent = MouseEvent | TouchEvent
 
@@ -6,6 +6,8 @@ export function useClickAway<T extends HTMLElement = HTMLElement>(
   ref: RefObject<T>,
   handler: (event: AnyEvent) => void
 ): void {
+  const hanlderRef = useRef(handler)
+
   useEffect(() => {
     const listener = (event: AnyEvent) => {
       const el = ref?.current
@@ -14,15 +16,15 @@ export function useClickAway<T extends HTMLElement = HTMLElement>(
         return
       }
 
-      handler(event)
+      hanlderRef.current(event)
     }
 
-    document.addEventListener(`mousedown`, listener)
-    document.addEventListener(`touchstart`, listener)
+    document.addEventListener('click', listener)
+    document.addEventListener('touchstart', listener)
 
     return () => {
-      document.removeEventListener(`mousedown`, listener)
-      document.removeEventListener(`touchstart`, listener)
+      document.removeEventListener('click', listener)
+      document.removeEventListener('touchstart', listener)
     }
-  }, [ref, handler])
+  }, [ref])
 }

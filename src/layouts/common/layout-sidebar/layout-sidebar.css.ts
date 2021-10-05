@@ -102,15 +102,6 @@ export const active = style({
   opacity: 1,
 })
 
-export const balance = style({
-  marginBottom: 'auto',
-  padding: '9px 16px 14px',
-})
-
-export const balanceValue = style({
-  opacity: 0.64,
-})
-
 export const spacer = style({
   margin: 'auto',
   minHeight: 40,
@@ -151,4 +142,8 @@ export const switchers = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
+})
+
+export const govButton = style({
+  borderColor: theme.colors.border,
 })

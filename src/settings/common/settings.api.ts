@@ -8,15 +8,18 @@ import {
   UserContactEmailConfirmMutationVariables,
   UserContactsQuery,
   UserContactsQueryVariables,
+  UserContactUpdateMutation,
+  UserContactUpdateMutationVariables,
 } from '~/graphql/_generated-types'
 import {
   USER_CONTACTS,
   USER_CONTACT_CREATE,
   USER_CONTACT_DELETE,
+  USER_CONTACT_CONFIRM_EMAIL,
+  USER_CONTACT_UPDATE,
 } from './graphql'
-import { USER_CONTACT_CONFIRM_EMAIL } from '~/user-contacts/common/graphql'
 
-export const userContactApi = {
+export const settingsApi = {
   userContactList: (variables: UserContactsQueryVariables) =>
     getAPIClient()
       .query<UserContactsQuery, UserContactsQueryVariables>(
@@ -54,4 +57,13 @@ export const userContactApi = {
       >(USER_CONTACT_CONFIRM_EMAIL, variables)
       .toPromise()
       .then(({ data }) => data?.userContactEmailConfirm),
+
+  userContactUpdate: (variables: UserContactUpdateMutationVariables) =>
+    getAPIClient()
+      .mutation<UserContactUpdateMutation, UserContactUpdateMutationVariables>(
+        USER_CONTACT_UPDATE,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.userContactUpdate),
 }
