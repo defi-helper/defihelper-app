@@ -146,26 +146,32 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
         </Button>
         {Object.entries(allExpressionsMap).map(([priority, expression]) => (
           <div key={priority}>
-            <Button
-              onClick={handleSetTypeOfExpression(
-                Number(priority),
-                AutomationTriggerExpressions.action
-              )}
-              disabled={expression === AutomationTriggerExpressions.action}
-              size="small"
-            >
-              Action
-            </Button>
-            <Button
-              onClick={handleSetTypeOfExpression(
-                Number(priority),
-                AutomationTriggerExpressions.condition
-              )}
-              disabled={expression === AutomationTriggerExpressions.condition}
-              size="small"
-            >
-              Condition
-            </Button>
+            {!allExpressions[Number(priority)]?.id && (
+              <>
+                <Button
+                  onClick={handleSetTypeOfExpression(
+                    Number(priority),
+                    AutomationTriggerExpressions.action
+                  )}
+                  disabled={expression === AutomationTriggerExpressions.action}
+                  size="small"
+                >
+                  Action
+                </Button>
+                <Button
+                  onClick={handleSetTypeOfExpression(
+                    Number(priority),
+                    AutomationTriggerExpressions.condition
+                  )}
+                  disabled={
+                    expression === AutomationTriggerExpressions.condition
+                  }
+                  size="small"
+                >
+                  Condition
+                </Button>
+              </>
+            )}
             {expression && (
               <AutomationTriggerExpression
                 onSubmitAction={handleSubmitAction(

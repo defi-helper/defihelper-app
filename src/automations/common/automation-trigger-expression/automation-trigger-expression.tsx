@@ -1,5 +1,5 @@
 import { MenuItem, TextField } from '@material-ui/core'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import {
   AutomateActionCreateInputType,
@@ -11,11 +11,11 @@ import {
   AutomationContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { AutomationActionEthereumRun } from '../automation-action-ethereum-run'
-import { AutomationActionNotification } from '../automation-action-notification/automation-action-notification'
+import { AutomationActionNotification } from '../automation-action-notification'
 import { AutomationConditionEthereumBalance } from '../automation-condition-ethereum-balance'
-import { AutomationConditionEthereumGasPrice } from '../automation-condition-ethereum-gas-price/automation-condition-ethereum-gas-price'
-import { AutomationConditionEthereumOptimal } from '../automation-condition-ethereum-optimal/automation-condition-ethereum-optimal'
-import { AutomationConditionSchedule } from '../automation-condition-schedule/automation-condition-schedule'
+import { AutomationConditionEthereumGasPrice } from '../automation-condition-ethereum-gas-price'
+import { AutomationConditionEthereumOptimal } from '../automation-condition-ethereum-optimal'
+import { AutomationConditionSchedule } from '../automation-condition-schedule'
 import { Action, Condition } from '../automation.types'
 import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-trigger-expression.css'
@@ -94,15 +94,11 @@ export const AutomationTriggerExpression: React.VFC<AutomationTriggerExpressionP
 
     const [[, form]] = forms
 
-    const [currentForm, setForm] = useState(form)
+    const [currentForm, setForm] = useState(props.expression?.type ?? form)
 
     const handleSetForm = (value: string) => () => {
       setForm(value)
     }
-
-    useEffect(() => {
-      setForm(form)
-    }, [form])
 
     const { component: Component, handler } = Forms[currentForm] ?? {}
 
@@ -111,7 +107,7 @@ export const AutomationTriggerExpression: React.VFC<AutomationTriggerExpressionP
         props.onSubmitAction({
           trigger: props.trigger,
           params,
-          type: form as AutomateActionTypeEnum,
+          type: currentForm as AutomateActionTypeEnum,
           priority: props.priority,
         })
       },
@@ -119,7 +115,7 @@ export const AutomationTriggerExpression: React.VFC<AutomationTriggerExpressionP
         props.onSubmitCondition({
           trigger: props.trigger,
           params,
-          type: form as AutomateConditionTypeEnum,
+          type: currentForm as AutomateConditionTypeEnum,
           priority: props.priority,
         })
       },
