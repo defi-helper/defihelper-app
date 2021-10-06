@@ -6,9 +6,11 @@ import {
   SettingsHeader,
   SettingsContactFormDialog,
   SettingsContactCard,
+  SettingsPaper,
+  SettingsInitialCard,
+  SettingsConfirmDialog,
 } from '~/settings/common'
 import { useDialog } from '~/common/dialog'
-import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as model from './settings-contact.model'
 import * as styles from './settings-contacts.css'
 
@@ -18,7 +20,7 @@ export type SettingsContactsProps = {
 
 export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const [openContactForm] = useDialog(SettingsContactFormDialog)
-  const [openConfirm] = useDialog(ConfirmDialog)
+  const [openConfirm] = useDialog(SettingsConfirmDialog)
 
   const loading = useStore(model.fetchUserContactListFx.pending)
   const contactList = useStore(model.$userContactList)
@@ -38,17 +40,18 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
     }
   }
 
-  const handleDeleteContact = (contactId: string) => async () => {
-    try {
-      await openConfirm()
+  const handleDeleteContact =
+    (contact: typeof contactList[number]) => async () => {
+      try {
+        await openConfirm({ name: contact.name })
 
-      model.deleteUserContactFx(contactId)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
+        model.deleteUserContactFx(contact.id)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
       }
     }
-  }
 
   const handleUpdateContact =
     (contact: typeof contactList[number]) => async () => {
@@ -72,6 +75,8 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
       }
     }
 
+  const paperCount = (contactList.length ? 3 : 2) - contactList.length
+
   return (
     <div className={props.className}>
       <SettingsHeader className={styles.header}>
@@ -86,10 +91,18 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
       </SettingsHeader>
       <div className={styles.list}>
         {loading && <>loading...</>}
-        {!loading && !contactList?.length && <>No contacts found</>}
-
+        {!loading && !contactList.length && (
+          <SettingsInitialCard>
+            <Typography variant="body2">
+              Add contact so you can recieve notifications about any actions.
+            </Typography>
+            <Button onClick={handleOpenContactForm} size="small">
+              + Add Contact
+            </Button>
+          </SettingsInitialCard>
+        )}
         {!loading &&
-          contactList &&
+          Boolean(contactList.length) &&
           contactList.map((contact) => (
             <SettingsContactCard
               address={contact.address}
@@ -99,8 +112,13 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
               deleting={contact.deleting}
               editing={contact.editing}
               onEdit={handleUpdateContact(contact)}
-              onDelete={handleDeleteContact(contact.id)}
+              onDelete={handleDeleteContact(contact)}
             />
+          ))}
+        {!loading &&
+          paperCount > 0 &&
+          Array.from(Array(paperCount)).map((_, index) => (
+            <SettingsPaper key={String(index)} />
           ))}
       </div>
     </div>

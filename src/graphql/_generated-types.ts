@@ -822,6 +822,8 @@ export type Mutation = {
   authEth?: Maybe<AuthType>
   authWaves?: Maybe<AuthType>
   addWallet?: Maybe<AuthType>
+  walletUpdate: WalletType
+  walletDelete: Scalars['Boolean']
   protocolCreate: ProtocolType
   protocolUpdate: ProtocolType
   protocolDelete: Scalars['Boolean']
@@ -868,6 +870,15 @@ export type MutationAuthWavesArgs = {
 
 export type MutationAddWalletArgs = {
   input: AddWalletInputType
+}
+
+export type MutationWalletUpdateArgs = {
+  id: Scalars['UuidType']
+  input: WalletUpdateInputType
+}
+
+export type MutationWalletDeleteArgs = {
+  id: Scalars['UuidType']
 }
 
 export type MutationProtocolCreateArgs = {
@@ -2428,6 +2439,8 @@ export type WalletType = {
   address: Scalars['String']
   /** Public key */
   publicKey: Scalars['String']
+  /** Name */
+  name: Scalars['String']
   contracts: WalletContractListType
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
@@ -2456,6 +2469,11 @@ export type WalletTypeTokenMetricChartArgs = {
   filter?: Maybe<WalletTokenMetricChartFilterInputType>
   sort?: Maybe<Array<WalletTokenMetricChartSortInputType>>
   pagination?: Maybe<WalletTokenMetricChartPaginationInputType>
+}
+
+export type WalletUpdateInputType = {
+  /** Name */
+  name?: Maybe<Scalars['String']>
 }
 
 export type AutomationActionCreateMutationVariables = Exact<{
@@ -3301,6 +3319,61 @@ export type UserContactFragmentFragment = {
   | 'createdAt'
   | 'activatedAt'
 >
+
+export type WalletDeleteMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type WalletDeleteMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'walletDelete'
+>
+
+export type WalletListQueryVariables = Exact<{
+  filter?: Maybe<WalletListFilterInputType>
+  sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
+  pagination?: Maybe<WalletListPaginationInputType>
+}>
+
+export type WalletListQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      wallets: { __typename?: 'WalletListType' } & {
+        list?: Maybe<
+          Array<{ __typename?: 'WalletType' } & WalletFragmentFragment>
+        >
+        pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+      }
+    }
+  >
+}
+
+export type WalletUpdateMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: WalletUpdateInputType
+}>
+
+export type WalletUpdateMutation = { __typename?: 'Mutation' } & {
+  walletUpdate: { __typename?: 'WalletType' } & WalletFragmentFragment
+}
+
+export type WalletFragmentFragment = { __typename?: 'WalletType' } & Pick<
+  WalletType,
+  | 'id'
+  | 'blockchain'
+  | 'network'
+  | 'address'
+  | 'publicKey'
+  | 'name'
+  | 'createdAt'
+> & {
+    billing: { __typename?: 'WalletBillingType' } & {
+      balance: { __typename?: 'BillingBalanceType' } & Pick<
+        BillingBalanceType,
+        'balance' | 'netBalance' | 'claim'
+      >
+    }
+  }
 
 export type StakingConnectWalletMutationVariables = Exact<{
   contract: Scalars['UuidType']

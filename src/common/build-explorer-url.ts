@@ -10,6 +10,7 @@ const explorers: Record<string | number, string> = {
   137: 'https://polygonscan.com/address',
   waves: 'https://wavesexplorer.com/address',
   main: 'https://wavesexplorer.com/address',
+  W: 'https://wavesexplorer.com/address',
 }
 
 type Options = {

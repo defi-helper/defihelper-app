@@ -36,16 +36,6 @@ const MENU = [
     path: '/settings',
     icon: 'settings' as const,
   },
-  // {
-  //   title: 'Billing',
-  //   path: paths.billing,
-  //   icon: 'home' as const,
-  // },
-  // {
-  //   title: 'Contacts',
-  //   path: paths.contacts.list as string,
-  //   icon: 'home' as const,
-  // },
 ]
 
 export const AppLayout: React.FC<AppLayoutProps> = (props) => {

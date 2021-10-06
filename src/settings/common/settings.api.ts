@@ -10,6 +10,12 @@ import {
   UserContactsQueryVariables,
   UserContactUpdateMutation,
   UserContactUpdateMutationVariables,
+  WalletDeleteMutation,
+  WalletDeleteMutationVariables,
+  WalletListQuery,
+  WalletListQueryVariables,
+  WalletUpdateMutation,
+  WalletUpdateMutationVariables,
 } from '~/graphql/_generated-types'
 import {
   USER_CONTACTS,
@@ -17,6 +23,9 @@ import {
   USER_CONTACT_DELETE,
   USER_CONTACT_CONFIRM_EMAIL,
   USER_CONTACT_UPDATE,
+  WALLET_LIST,
+  WALLET_UPDATE,
+  WALLET_DELETE,
 } from './graphql'
 
 export const settingsApi = {
@@ -66,4 +75,31 @@ export const settingsApi = {
       )
       .toPromise()
       .then(({ data }) => data?.userContactUpdate),
+
+  walletList: (variables: WalletListQueryVariables) =>
+    getAPIClient()
+      .query<WalletListQuery, WalletListQueryVariables>(WALLET_LIST, variables)
+      .toPromise()
+      .then(({ data }) => ({
+        list: data?.me?.wallets.list ?? [],
+        count: data?.me?.wallets.pagination.count ?? 0,
+      })),
+
+  walletUpdate: (variables: WalletUpdateMutationVariables) =>
+    getAPIClient()
+      .query<WalletUpdateMutation, WalletUpdateMutationVariables>(
+        WALLET_UPDATE,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.walletUpdate),
+
+  walletDelete: (variables: WalletDeleteMutationVariables) =>
+    getAPIClient()
+      .query<WalletDeleteMutation, WalletDeleteMutationVariables>(
+        WALLET_DELETE,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.walletDelete),
 }

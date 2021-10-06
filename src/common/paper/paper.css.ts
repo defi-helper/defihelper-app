@@ -1,6 +1,6 @@
 import { style, styleVariants } from '@vanilla-extract/css'
 
-import { theme } from '../theme'
+import { theme } from '~/common/theme'
 
 export const root = style({
   backgroundColor: theme.colors.paper,

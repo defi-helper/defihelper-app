@@ -27,6 +27,7 @@ export const manage = style({
   marginRight: -12,
   marginTop: -24,
   opacity: 0.64,
+  position: 'relative',
 
   '@media': {
     [theme.mediaQueries.hover()]: {
@@ -37,11 +38,30 @@ export const manage = style({
   },
 })
 
+export const manageLoading = style({
+  pointerEvents: 'none',
+})
+
 export const manageActive = style({
   opacity: 1,
 })
 
 export const manageIcon = style({
+  width: 16,
+  height: 16,
+})
+
+export const manageIconloading = style({
+  opacity: 0,
+})
+
+export const circularProgress = style({
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+  margin: 'auto',
   width: 16,
   height: 16,
 })

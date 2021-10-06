@@ -8,4 +8,5 @@ export const list = style({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr 1fr',
   gridGap: 24,
+  minHeight: 168,
 })

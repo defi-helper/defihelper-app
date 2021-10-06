@@ -6,10 +6,14 @@ import { Icon } from '~/common/icon'
 import { ButtonBase } from '~/common/button-base'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import * as styles from './settings-wallet-card.css'
 import { cutAccount } from '~/common/cut-account'
 import { Button } from '~/common/button'
 import { Link } from '~/common/link'
+import { buildExplorerUrl } from '~/common/build-explorer-url'
+import { CircularProgress } from '~/common/circular-progress'
+import { BLOCKCHAINS, BLOCKCHAIN_COINS } from '~/settings/common/constants'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import * as styles from './settings-wallet-card.css'
 
 export type SettingsWalletCardProps = {
   className?: string
@@ -23,13 +27,20 @@ export type SettingsWalletCardProps = {
   onRename: () => void
   onDelete: () => void
   error?: boolean
-  feeFunds: string
-  locked: string
+  feeFunds: number
+  locked: number
+  deleting?: boolean
+  editing?: boolean
+  depositing?: boolean
+  refunding?: boolean
 }
 
 export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
   props
 ) => {
+  const pending =
+    props.deleting || props.editing || props.depositing || props.refunding
+
   return (
     <Paper className={clsx(styles.root, props.className)} radius={8}>
       <div className={styles.header}>
@@ -41,9 +52,23 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           <Dropdown
             control={(active) => (
               <ButtonBase
-                className={clsx(styles.manage, active && styles.manageActive)}
+                className={clsx(
+                  styles.manage,
+                  active && styles.manageActive,
+                  pending && styles.manageLoading
+                )}
               >
-                <Icon icon="dots" className={styles.manageIcon} />
+                {(props.deleting || props.editing) && (
+                  <CircularProgress className={styles.circularProgress} />
+                )}
+                <Icon
+                  icon="dots"
+                  className={clsx(
+                    styles.manageIcon,
+                    (props.deleting || props.editing) &&
+                      styles.manageIconloading
+                  )}
+                />
               </ButtonBase>
             )}
             className={styles.dropdown}
@@ -56,7 +81,17 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             >
               Rename
             </ButtonBase>
-            <ButtonBase className={styles.dropdownItem}>Explorer</ButtonBase>
+            <ButtonBase
+              className={styles.dropdownItem}
+              as="a"
+              href={buildExplorerUrl({
+                network: props.network,
+                address: props.address,
+              })}
+              target="_blank"
+            >
+              Explorer
+            </ButtonBase>
             <ButtonBase
               className={clsx(styles.dropdownItem, styles.deleteButton)}
               onClick={props.onDelete}
@@ -86,7 +121,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             Network
           </Typography>
           <Typography variant="body2" as="span">
-            {props.network}
+            {BLOCKCHAINS[props.network]}
           </Typography>
         </div>
         <div className={styles.row}>
@@ -128,7 +163,8 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             </Dropdown>
           </Typography>
           <Typography variant="body2" as="span">
-            {props.feeFunds}
+            {bignumberUtils.format(props.feeFunds)}{' '}
+            {BLOCKCHAIN_COINS[props.network]}
           </Typography>
         </div>
         <div className={styles.row}>
@@ -156,7 +192,8 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             </Dropdown>
           </Typography>
           <Typography variant="body2" as="span">
-            {props.locked}
+            {bignumberUtils.format(props.locked)}{' '}
+            {BLOCKCHAIN_COINS[props.network]}
           </Typography>
         </div>
         <div className={styles.buttons}>
@@ -164,6 +201,8 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             size="small"
             className={styles.deposit}
             onClick={props.onDeposit}
+            loading={props.depositing}
+            disabled={props.editing || props.deleting || props.refunding}
           >
             Deposit
           </Button>
@@ -172,6 +211,8 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             variant="light"
             className={styles.refund}
             onClick={props.onRefund}
+            loading={props.refunding}
+            disabled={props.editing || props.deleting || props.depositing}
           >
             Refund
           </Button>

@@ -4,26 +4,35 @@ import { Dialog } from '~/common/dialog'
 import * as styles from './confirm-dialog.css'
 
 export type ConfirmDialogProps = {
-  onConfirm: () => void
-  onCancel: () => void
+  onConfirm?: () => void
+  onCancel?: () => void
+  title?: React.ReactNode
+  actions?: React.ReactNode
 }
 
 export const ConfirmDialog: React.VFC<ConfirmDialogProps> = (props) => {
-  return (
-    <Dialog className={styles.root}>
-      <Typography className={styles.title}>Are you sure?</Typography>
-      <div className={styles.buttons}>
-        <Button onClick={() => props.onConfirm()} color="red" size="small">
+  const {
+    title = 'Are you sure?',
+    actions = (
+      <>
+        <Button onClick={() => props.onConfirm?.()} color="red" size="small">
           yes
         </Button>
         <Button
-          onClick={() => props.onCancel()}
+          onClick={() => props.onCancel?.()}
           variant="outlined"
           size="small"
         >
           cancel
         </Button>
-      </div>
+      </>
+    ),
+  } = props
+
+  return (
+    <Dialog className={styles.root}>
+      <Typography className={styles.title}>{title}</Typography>
+      <div className={styles.buttons}>{actions}</div>
     </Dialog>
   )
 }
