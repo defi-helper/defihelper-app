@@ -63,10 +63,6 @@ export const logoIcon = style({
   display: 'block',
 })
 
-export const actions = style({
-  marginBottom: 48,
-})
-
 export const menu = style({
   listStyle: 'none',
   padding: 0,

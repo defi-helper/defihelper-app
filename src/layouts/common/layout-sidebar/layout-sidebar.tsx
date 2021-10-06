@@ -2,7 +2,6 @@
 import { NavLink, Link as ReactRouerLink } from 'react-router-dom'
 import clsx from 'clsx'
 import { useLocalStorage } from 'react-use'
-import { cloneElement } from 'react'
 
 import { Link } from '~/common/link'
 import { paths } from '~/paths'
@@ -24,7 +23,6 @@ type MenuItem = {
 
 export type LayoutHeaderProps = {
   menu: MenuItem[]
-  children: React.ReactElement
 }
 
 export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
@@ -58,9 +56,6 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
             className={styles.logoIcon}
           />
         </Link>
-        <div className={styles.actions}>
-          {cloneElement(props.children, { hided })}
-        </div>
         <ul className={styles.menu}>
           {props.menu.map((menuItem) => (
             <li key={menuItem.title}>

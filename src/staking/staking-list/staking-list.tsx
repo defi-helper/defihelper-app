@@ -12,7 +12,6 @@ import { Paper } from '~/common/paper'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { StakingAdapters } from '~/staking/staking-adapters'
-import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
 import * as model from './staking-list.model'
@@ -35,10 +34,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   useGate(model.StakingListGate, props)
-
-  const { network, blockchain } = useStore(
-    walletNetworkSwitcherModel.$currentNetwork
-  )
 
   const handleOpenConfirmDialog = (id: string) => async () => {
     try {
@@ -112,11 +107,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           {!loading &&
             staking.map((stakingListItem) => {
               const opened = stakingListItem.address === openedContract
-
-              const connectable =
-                stakingListItem.blockchain === blockchain &&
-                (stakingListItem.network === String(network) ||
-                  (stakingListItem.network === 'main' && network === 'waves'))
 
               return (
                 <li key={stakingListItem.id} className={styles.listItem}>
@@ -241,10 +231,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       </Can>
                     </div>
                   </div>
-                  {!connectable && opened && (
-                    <Paper>please change network</Paper>
-                  )}
-                  {connectable && protocolAdapter && opened && (
+                  {protocolAdapter && opened && (
                     <StakingAdapters
                       protocolAdapter={protocolAdapter}
                       contractAdapter={stakingListItem.adapter}

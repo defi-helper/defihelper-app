@@ -7,7 +7,6 @@ import {
   ProtocolFragmentFragment,
 } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
-import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 
 const protocolListDomain = createDomain('protocolList')
 
@@ -87,22 +86,13 @@ export const ProtocolListGate = createGate({
 })
 
 sample({
-  source: [
-    walletNetworkSwitcherModel.$currentNetwork,
-    ProtocolListPagination.state,
-  ],
+  source: ProtocolListPagination.state,
   clock: guard({
     source: ProtocolListGate.status,
-    clock: [
-      walletNetworkSwitcherModel.$currentNetwork.updates,
-      ProtocolListGate.open,
-      ProtocolListPagination.updates,
-    ],
+    clock: [ProtocolListGate.open, ProtocolListPagination.updates],
     filter: (gateIsOpened) => gateIsOpened,
   }),
-  fn: ([{ network, blockchain }, { offset, limit }]) => ({
-    network,
-    blockchain,
+  fn: ({ offset, limit }) => ({
     offset,
     limit,
   }),

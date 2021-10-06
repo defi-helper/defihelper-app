@@ -9,10 +9,8 @@ import {
   Adapter,
   AdapterWallet,
 } from '~/common/load-adapter'
-import { BlockchainEnum } from '~/graphql/_generated-types'
 import { toastsService } from '~/toasts'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
-import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type StakingAdapter = {
@@ -195,21 +193,9 @@ export const $actions = stakingAdaptersDomain
   )
 
 const fetchTokensFx = stakingAdaptersDomain.createEffect(
-  (params: {
-    blockchain?: BlockchainEnum
-    network?: number | string
-    addresses: string[]
-  }) => {
+  (params: { addresses: string[] }) => {
     return stakingApi.tokens({
       filter: {
-        ...(params.blockchain
-          ? {
-              blockchain: {
-                protocol: params.blockchain,
-                ...(params.network ? { network: String(params.network) } : {}),
-              },
-            }
-          : {}),
         address: params.addresses,
       },
     })
@@ -227,11 +213,8 @@ export const $tokens = stakingAdaptersDomain
   )
 
 sample({
-  source: walletNetworkSwitcherModel.$currentNetwork,
   clock: fetchContractAdaptersFx.doneData,
-  fn: (source, clock) => ({
-    blockchain: source.blockchain,
-    network: source.network,
+  fn: (clock) => ({
     addresses: [
       ...clock.reduce<string[]>((acc, { wallet }) => {
         acc.push(
