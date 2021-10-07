@@ -11,7 +11,10 @@ import { useDialog } from '~/common/dialog'
 import { Grid } from '~/common/grid'
 import { Typography } from '~/common/typography'
 import { WalletList } from '~/wallets/wallet-list'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
+import {
+  walletNetworkModel,
+  useEthereumNetwork,
+} from '~/wallets/wallet-networks'
 import { config } from '~/config'
 import { Paper } from '~/common/paper'
 import { userModel } from '~/users'
@@ -24,6 +27,8 @@ import * as model from './beta-access.model'
 export type BetaAccessProps = unknown
 
 export const BetaAccess: React.VFC<BetaAccessProps> = () => {
+  useEthereumNetwork()
+
   const { account = null } = walletNetworkModel.useWalletNetwork()
   const user = useStore(userModel.$user)
 
@@ -34,9 +39,9 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
 
   const handleOpenWalletList = async () => {
     try {
-      const connector = await openWalletList()
+      const data = await openWalletList()
 
-      walletNetworkModel.activateWalletFx({ connector })
+      walletNetworkModel.activateWalletFx({ connector: data.connector })
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)

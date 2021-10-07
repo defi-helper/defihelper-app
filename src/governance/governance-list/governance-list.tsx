@@ -13,9 +13,9 @@ import {
 } from '~/governance/common'
 import { useDialog } from '~/common/dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Paper } from '~/common/paper'
 import { Icon } from '~/common/icon'
+import { useWalletList } from '~/wallets/wallet-list'
 import * as model from './governance-list.model'
 import * as styles from './governance-list.css'
 
@@ -37,8 +37,7 @@ const getDelegateButtonText = (votes?: string | null, delegateTo?: string) => {
 
 export const GovernanceList: React.VFC<GovernanceListProps> = () => {
   const [openDelegate] = useDialog(GovernanceDelegateDialog)
-
-  const { account = null } = useStore(walletNetworkModel.$wallet)
+  const [openWalletList] = useWalletList()
 
   const loading = useStore(model.fetchGovernanceListFx.pending)
   const governanceList = useStore(model.$governanceList)
@@ -51,15 +50,22 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
   useGate(model.GovernanceListGate)
 
   const handleopenDelegate = async () => {
-    if (!account) return
-
     try {
+      const wallet = await openWalletList()
+
+      if (!wallet.account) return
+
       const result = await openDelegate({
         votes: governanceVotes?.votes,
-        account,
+        account: wallet.account,
       })
 
-      model.delegateVotesFx(result)
+      model.delegateVotesFx({
+        delegateAccount: result,
+        account: wallet.account,
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
+      })
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)

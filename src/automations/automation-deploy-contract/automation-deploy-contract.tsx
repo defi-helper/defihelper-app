@@ -8,6 +8,7 @@ import {
   AutomationContractForm,
   FormValues,
 } from '../common/automation-contract-form'
+import { useWalletList } from '~/wallets/wallet-list'
 import * as model from './automation-deploy-contract.model'
 import * as styles from './automation-deploy-contract.css'
 
@@ -22,6 +23,7 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
 
     const automationContracts = useStore(model.$automateContracts)
     const loading = useStore(model.deployFx.pending)
+    const [openWalletList] = useWalletList()
 
     useGate(model.AutomationDeployContractGate)
 
@@ -33,10 +35,17 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
       if (!currentContract || !currentContract.address) return
 
       try {
+        const wallet = await openWalletList()
+
+        if (!wallet.account) return
+
         const result = await model.deployFx({
           address: currentContract.address,
           inputs: formValues.inputs,
           automate: currentContract,
+          account: wallet.account,
+          chainId: String(wallet.chainId),
+          provider: wallet.provider,
         })
 
         props.onConfirm(result)

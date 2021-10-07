@@ -1,8 +1,9 @@
-import { createDomain, guard, sample } from 'effector-logger/macro'
+import { createDomain, sample, split, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { MeQuery } from '~/graphql/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { sidUtils, userApi } from './common'
 
 export const userDomain = createDomain('user')
@@ -14,7 +15,7 @@ export const $user = userDomain
   .on(fetchUserFx.doneData, (_, payload) => payload)
   .on(walletNetworkModel.saveUserFx.doneData, (_, payload) => payload)
 
-export const $userWallets = $user.map((user) => user?.wallets.list ?? [])
+export const $userWallets = settingsWalletModel.$wallets
 
 export const UserGate = createGate({
   name: 'UserGate',
@@ -26,31 +27,48 @@ sample({
   target: fetchUserFx,
 })
 
+sample({
+  clock: $user.updates,
+  target: settingsWalletModel.fetchWalletListFx,
+})
+
 fetchUserFx.doneData.watch((data) => {
   if (data) return
 
   sidUtils.remove()
 })
 
-guard({
-  source: [$user, walletNetworkModel.$wallet],
-  clock: [walletNetworkModel.$wallet.updates],
-  filter: ([user, { account, chainId }]) => {
-    return Boolean(
-      account &&
-        user &&
-        user.wallets.list &&
-        user.wallets.list.every(({ address, network }) => {
-          if (Number.isNaN(Number(chainId)) && address !== account) return true
-          if (Number.isNaN(Number(chainId)) && address === account) return false
+split({
+  source: guard({
+    clock: sample({
+      source: $userWallets,
+      clock: walletNetworkModel.signMessage,
+      fn: (wallets, signMessage) => ({ wallets, ...signMessage }),
+    }),
+    filter: (clock) => {
+      if (!clock.wallets.length) return true
 
-          return (
-            (Number(network) !== chainId &&
-              address === account.toLowerCase()) ||
-            address !== account.toLowerCase()
-          )
-        })
-    )
+      return Boolean(
+        clock.account &&
+          clock.wallets?.every(({ address, network }) => {
+            if (clock.chainId === 'W' && address !== clock.account) return true
+            if (clock.chainId === 'W' && address === clock.account) return false
+
+            return (
+              (Number(network) !== Number(clock.chainId) &&
+                address === clock.account.toLowerCase()) ||
+              address !== clock.account.toLowerCase()
+            )
+          })
+      )
+    },
+  }),
+  match: {
+    waves: (source) => source.chainId === 'W' && Boolean(source.provider),
+    ethereum: (source) => Boolean(source.provider),
   },
-  target: walletNetworkModel.signMessageFx,
+  cases: {
+    waves: walletNetworkModel.signMessageWavesFx,
+    ethereum: walletNetworkModel.signMessageEthereumFx,
+  },
 })

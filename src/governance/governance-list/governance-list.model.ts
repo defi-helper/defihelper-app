@@ -51,10 +51,17 @@ export const fetchGovernanceVotesFx = governanceListDomain.createEffect({
 
 export const $governanceVotes = restore(fetchGovernanceVotesFx.doneData, null)
 
-export const delegateVotesFx = governanceListDomain.createEffect({
-  name: 'delegateVotesFx',
-  handler: async (account: string) => {
-    const { networkProvider } = walletNetworkModel.getNetwork()
+export const delegateVotesFx = governanceListDomain.createEffect(
+  async (params: {
+    delegateAccount: string
+    account: string
+    chainId: string
+    provider: unknown
+  }) => {
+    const networkProvider = walletNetworkModel.getNetwork(
+      params.provider,
+      params.chainId
+    )
 
     if (!networkProvider) return
 
@@ -64,11 +71,13 @@ export const delegateVotesFx = governanceListDomain.createEffect({
       networkProvider.getSigner()
     )
 
-    const transactionReceipt = await governorBravo.delegate(account)
+    const transactionReceipt = await governorBravo.delegate(
+      params.delegateAccount
+    )
 
     await transactionReceipt.wait()
-  },
-})
+  }
+)
 
 export const GovernanceListPagination = createPagination({
   domain: governanceListDomain,

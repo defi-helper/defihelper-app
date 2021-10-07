@@ -237,6 +237,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       contractAdapter={stakingListItem.adapter}
                       contractAddress={stakingListItem.address}
                       contractLayout={stakingListItem.layout}
+                      blockchain={stakingListItem.blockchain}
                       onTurnOn={handleConnect({
                         walletId: stakingListItem.wallet?.id,
                         contractId: stakingListItem.id,

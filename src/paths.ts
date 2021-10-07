@@ -34,8 +34,6 @@ export const paths = {
     list: '/user-event-subscriptions',
   },
 
-  billing: '/billing',
-
   governance: {
     list: '/governance',
     detail: (governanceId = ':governanceId') =>

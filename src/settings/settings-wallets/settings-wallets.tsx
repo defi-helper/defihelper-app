@@ -14,8 +14,10 @@ import {
   SettingsBillingFormDialog,
 } from '~/settings/common'
 import { cutAccount } from '~/common/cut-account'
+import { useWalletList } from '~/wallets/wallet-list'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type SettingsWalletsProps = {
   className?: string
@@ -29,14 +31,21 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   const [openConfirm] = useDialog(SettingsConfirmDialog)
   const [openBillingForm] = useDialog(SettingsBillingFormDialog)
 
+  const [openWalletList] = useWalletList()
+
   const handleDeposit = (wallet: typeof wallets[number]) => async () => {
     try {
+      const walletData = await openWalletList({ blockchain: wallet.blockchain })
+
+      if (!walletData.account) return
+
       const result = await openBillingForm()
 
       model.depositFx({
         amount: result.amount,
-        walletAddress: wallet.address,
-        chainId: wallet.network,
+        walletAddress: walletData.account,
+        chainId: String(walletData.chainId),
+        provider: walletData.provider,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -46,12 +55,17 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   }
   const handleRefund = (wallet: typeof wallets[number]) => async () => {
     try {
+      const walletData = await openWalletList({ blockchain: wallet.blockchain })
+
+      if (!walletData.account) return
+
       const result = await openBillingForm()
 
       model.refundFx({
         amount: result.amount,
-        walletAddress: wallet.address,
-        chainId: wallet.network,
+        walletAddress: walletData.account,
+        chainId: String(walletData.chainId),
+        provider: walletData.provider,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -89,6 +103,24 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     }
   }
 
+  const handleAddWallet = async () => {
+    try {
+      const wallet = await openWalletList()
+
+      if (!wallet.account) return
+
+      walletNetworkModel.signMessage({
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
+        account: wallet.account,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
   useGate(model.SettingsWalletGate)
 
   const paperCount = (wallets.length ? 3 : 2) - wallets.length
@@ -97,7 +129,9 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     <div className={clsx(styles.root, props.className)}>
       <SettingsHeader className={styles.header}>
         <Typography variant="h3">Wallets and Funds</Typography>
-        <Button color="blue">+ Add Wallet</Button>
+        <Button color="blue" onClick={handleAddWallet}>
+          + Add Wallet
+        </Button>
       </SettingsHeader>
       <div className={styles.list}>
         {loading && 'loading...'}
@@ -107,7 +141,9 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
               Connect your wallets. You will see all statistics in portfolio,
               will be able to automate actions and setup notifications.
             </Typography>
-            <Button size="small">+ Add Wallet</Button>
+            <Button size="small" onClick={handleAddWallet}>
+              + Add Wallet
+            </Button>
           </SettingsInitialCard>
         )}
         {wallets.map((wallet) => (
@@ -122,8 +158,8 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
             onRefund={handleRefund(wallet)}
             onRename={handleRename(wallet)}
             onDelete={handleDelete(wallet)}
-            feeFunds={wallet.billing.balance.netBalance}
-            locked={wallet.billing.balance.claim}
+            feeFunds={wallet.billing?.balance?.netBalance}
+            locked={wallet.billing?.balance?.claim}
             editing={wallet.editing}
             deleting={wallet.deleting}
             depositing={wallet.depositing}

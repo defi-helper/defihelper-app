@@ -25,6 +25,7 @@ import { Paper } from '~/common/paper'
 import { useDialog } from '~/common/dialog'
 import * as model from './governance-detail.model'
 import * as styles from './governance-detail.css'
+import { useWalletList } from '~/wallets/wallet-list'
 
 export type GovernanceDetailProps = unknown
 
@@ -34,6 +35,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const params = useParams<{ governanceId: string }>()
 
   const [openGovernanceReasonDialog] = useDialog(GovernanceReasonDialog)
+  const [openWalletList] = useWalletList()
 
   const loading = useStore(model.fetchGovernanceProposalFx.pending)
   const governanceDetail = useStore(model.$governanceDetail)
@@ -43,29 +45,17 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const loadingQueue = useStore(model.queueFx.pending)
   const loadingExecute = useStore(model.executeFx.pending)
 
-  const handleQueueProposal = () => {
-    model.queueFx(Number(params.governanceId))
-  }
-  const handleExecuteProposal = () => {
-    model.executeFx(Number(params.governanceId))
-  }
-
-  const loadingCastVote = useStore(model.castVoteFx.pending)
-
-  const handleVoteFor = () => {
-    model.castVoteFx({
-      proposalId: Number(params.governanceId),
-      support: model.CastVotes.for,
-    })
-  }
-  const handleVoteAbstain = async () => {
+  const handleQueueProposal = async () => {
     try {
-      const reason = await openGovernanceReasonDialog()
+      const wallet = await openWalletList()
 
-      model.castVoteFx({
-        proposalId: Number(params.governanceId),
-        support: model.CastVotes.abstain,
-        reason,
+      if (!wallet.account) return
+
+      model.queueFx({
+        governanceId: Number(params.governanceId),
+        account: wallet.account,
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -73,11 +63,86 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
       }
     }
   }
-  const handleVoteAgainst = () => {
-    model.castVoteFx({
-      proposalId: Number(params.governanceId),
-      support: model.CastVotes.against,
-    })
+  const handleExecuteProposal = async () => {
+    try {
+      const wallet = await openWalletList()
+
+      if (!wallet.account) return
+
+      model.executeFx({
+        governanceId: Number(params.governanceId),
+        account: wallet.account,
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const loadingCastVote = useStore(model.castVoteFx.pending)
+
+  const handleVoteFor = async () => {
+    try {
+      const wallet = await openWalletList()
+
+      if (!wallet.account) return
+
+      model.castVoteFx({
+        proposalId: Number(params.governanceId),
+        support: model.CastVotes.for,
+        account: wallet.account,
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+  const handleVoteAbstain = async () => {
+    try {
+      const wallet = await openWalletList()
+
+      if (!wallet.account) return
+
+      const reason = await openGovernanceReasonDialog()
+
+      model.castVoteFx({
+        proposalId: Number(params.governanceId),
+        support: model.CastVotes.abstain,
+        reason,
+        account: wallet.account,
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+  const handleVoteAgainst = async () => {
+    try {
+      const wallet = await openWalletList()
+
+      if (!wallet.account) return
+
+      model.castVoteFx({
+        proposalId: Number(params.governanceId),
+        support: model.CastVotes.against,
+        account: wallet.account,
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
   }
 
   return (

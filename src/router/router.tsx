@@ -5,7 +5,6 @@ import {
   Redirect,
 } from 'react-router-dom'
 
-import { PrivateRoute } from './private-route'
 import { CanRoute } from './can-route'
 import { paths } from '~/paths'
 import { history } from '~/common/history'
@@ -22,7 +21,6 @@ import { ProposalCreate } from '~/proposals/proposal-create'
 import { ProposalUpdate } from '~/proposals/proposal-update'
 import { SettingsConfirmEmail } from '~/settings/settings-confirm-email'
 import { UserEventSubscriptionList } from '~/user-event-subscriptions'
-import { Billing } from '~/billing'
 import { NotFound } from '~/not-found'
 import {
   GovernanceCreate,
@@ -75,9 +73,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.protocols.list}>
           <ProtocolList />
         </Route>
-        <PrivateRoute path={paths.portfolio}>
+        <Route path={paths.portfolio}>
           <Portfolio />
-        </PrivateRoute>
+        </Route>
         <CanRoute
           path={paths.proposals.create}
           action="create"
@@ -101,9 +99,6 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.userEventSubscriptions.list}>
           <UserEventSubscriptionList />
         </Route>
-        <PrivateRoute path={paths.billing}>
-          <Billing />
-        </PrivateRoute>
         <Route path={paths.governance.create}>
           <GovernanceCreate />
         </Route>
@@ -113,21 +108,21 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.governance.list}>
           <GovernanceList />
         </Route>
-        <PrivateRoute path={paths.automations.create}>
+        <Route path={paths.automations.create}>
           <AutomationCreate />
-        </PrivateRoute>
-        <PrivateRoute path={paths.automations.history()}>
+        </Route>
+        <Route path={paths.automations.history()}>
           <AutomationHistoryList />
-        </PrivateRoute>
-        <PrivateRoute path={paths.automations.list}>
+        </Route>
+        <Route path={paths.automations.list}>
           <AutomationList />
-        </PrivateRoute>
+        </Route>
         <Route path={paths.settings.confirmEmail()}>
           <SettingsConfirmEmail />
         </Route>
-        <PrivateRoute path={paths.settings.list}>
+        <Route path={paths.settings.list}>
           <Settings />
-        </PrivateRoute>
+        </Route>
         <Route>
           <NotFound />
         </Route>

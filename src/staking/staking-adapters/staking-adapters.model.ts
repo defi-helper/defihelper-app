@@ -1,6 +1,5 @@
 import { guard, sample, createDomain, combine } from 'effector-logger/macro'
 import omit from 'lodash.omit'
-import { createGate } from 'effector-react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import {
@@ -29,11 +28,20 @@ export type Contract = {
   adapter: string
 }
 
-type Params = { protocolAdapter: string; contracts: Contract[] }
+type Params = {
+  protocolAdapter: string
+  contracts: Contract[]
+  provider: unknown
+  account: string
+  chainId: string
+}
 
 export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect(
   (params: Params) => {
-    const network = walletNetworkModel.getNetwork()
+    const networkProvider = walletNetworkModel.getNetwork(
+      params.provider,
+      params.chainId
+    )
 
     return Promise.all(
       params.contracts.map(async (contract) => {
@@ -43,20 +51,20 @@ export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect(
         )
 
         const adapter = await adapterContract(
-          network.networkProvider,
+          networkProvider,
           contract.address,
           {
             blockNumber: 'latest',
-            signer: network.networkProvider?.getSigner(),
+            signer: networkProvider?.getSigner(),
           }
         )
 
-        const wallet = network.account
-          ? await adapter.wallet(network.account)
+        const wallet = params.account
+          ? await adapter.wallet(params.account)
           : null
 
-        const actions = network.account
-          ? await adapter.actions(network.account)
+        const actions = params.account
+          ? await adapter.actions(params.account)
           : null
 
         return {
@@ -75,19 +83,6 @@ export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect(
 const $adapters = stakingAdaptersDomain
   .createStore<StakingAdapter[]>([], { name: '$adapters' })
   .on(fetchContractAdaptersFx.doneData, (_, payload) => payload)
-
-export const StakingAdaptersGate = createGate<Params>({
-  domain: stakingAdaptersDomain,
-  name: 'StakingAdaptersGate',
-})
-
-sample({
-  source: walletNetworkModel.$wallet,
-  clock: StakingAdaptersGate.open,
-  fn: (source, clock) => ({ ...clock, provider: source.provider }),
-  target: fetchContractAdaptersFx,
-  greedy: true,
-})
 
 export const $contracts = combine($adapters, (adapters) => {
   return adapters.reduce((acc, adapter) => {

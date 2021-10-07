@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { isValidElement, cloneElement, useRef } from 'react'
 import type { Placement } from '@popperjs/core'
+import { useKey } from 'react-use'
 
 import { useClickAway, usePopper } from '~/common/hooks'
 import { Paper } from '~/common/paper'
@@ -46,6 +47,8 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
   }
 
   useClickAway(localRef, handleOnClickControl.bind(null, null))
+
+  useKey('Escape', handleOnClickControl.bind(null, null))
 
   const control =
     typeof props.control === 'function'

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { nanoid } from 'nanoid'
+import { useKey } from 'react-use'
 
 import { useDialogContext } from './dialog.context'
 
@@ -43,6 +44,8 @@ export const useDialog = <T extends React.ElementType>(
       closeOnOverlay(closable)
     }
   }, [closable, closeOnOverlay])
+
+  useKey('Escape', onClose(id.current))
 
   return [handleOpen, onClose(id.current)] as const
 }

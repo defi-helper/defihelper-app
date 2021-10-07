@@ -44,8 +44,8 @@ export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect({
       ),
 })
 
-const createContract = () => {
-  const { networkProvider } = walletNetworkModel.getNetwork()
+const createContract = (provider: unknown, chainId: string) => {
+  const networkProvider = walletNetworkModel.getNetwork(provider, chainId)
 
   if (!networkProvider) {
     throw new Error('networkprovider is null')
@@ -68,12 +68,17 @@ type CastVoteWithReason = {
   proposalId: number
   support: CastVotes
   reason?: string
+  account: string
+  chainId: string
+  provider: unknown
 }
 
-export const castVoteFx = governanceDetailDomain.createEffect({
-  name: 'castVoteFx',
-  handler: async ({ reason = '', ...restOfParams }: CastVoteWithReason) => {
-    const governorBravo = createContract()
+export const castVoteFx = governanceDetailDomain.createEffect(
+  async ({ reason = '', ...restOfParams }: CastVoteWithReason) => {
+    const governorBravo = createContract(
+      restOfParams.proposalId,
+      restOfParams.chainId
+    )
 
     const transactionReceipt = await governorBravo.castVoteWithReason(
       restOfParams.proposalId,
@@ -82,36 +87,47 @@ export const castVoteFx = governanceDetailDomain.createEffect({
     )
 
     await transactionReceipt.wait()
-  },
-})
+  }
+)
 
-export const executeFx = governanceDetailDomain.createEffect({
-  name: 'executeFx',
-  handler: async (governanceId: number) => {
-    const governorBravo = createContract()
+export const executeFx = governanceDetailDomain.createEffect(
+  async (params: {
+    governanceId: number
+    account: string
+    chainId: string
+    provider: unknown
+  }) => {
+    const governorBravo = createContract(params.provider, params.chainId)
 
     const gasLimit = bignumberUtils.estimateGas(
-      await governorBravo.estimateGas.execute(governanceId)
+      await governorBravo.estimateGas.execute(params.governanceId)
     )
 
-    const transactionReceipt = await governorBravo.execute(governanceId, {
-      gasLimit,
-    })
+    const transactionReceipt = await governorBravo.execute(
+      params.governanceId,
+      {
+        gasLimit,
+      }
+    )
 
     await transactionReceipt.wait()
-  },
-})
+  }
+)
 
-export const queueFx = governanceDetailDomain.createEffect({
-  name: 'queueFx',
-  handler: async (governanceId: number) => {
-    const governorBravo = createContract()
+export const queueFx = governanceDetailDomain.createEffect(
+  async (params: {
+    governanceId: number
+    account: string
+    chainId: string
+    provider: unknown
+  }) => {
+    const governorBravo = createContract(params.provider, params.chainId)
 
-    const transactionReceipt = await governorBravo.queue(governanceId)
+    const transactionReceipt = await governorBravo.queue(params.governanceId)
 
     await transactionReceipt.wait()
-  },
-})
+  }
+)
 
 export const $governanceDetail = restore(
   fetchGovernanceProposalFx.doneData,

@@ -13,6 +13,7 @@ import {
 import { useDialog } from '~/common/dialog'
 import * as model from './settings-contact.model'
 import * as styles from './settings-contacts.css'
+import { userModel } from '~/users'
 
 export type SettingsContactsProps = {
   className?: string
@@ -22,6 +23,8 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const [openContactForm] = useDialog(SettingsContactFormDialog)
   const [openConfirm] = useDialog(SettingsConfirmDialog)
 
+  const user = useStore(userModel.$user)
+
   const loading = useStore(model.fetchUserContactListFx.pending)
   const contactList = useStore(model.$userContactList)
   const contactCreating = useStore(model.createUserContactFx.pending)
@@ -30,6 +33,8 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
 
   const handleOpenContactForm = async () => {
     try {
+      if (!user) return
+
       const result = await openContactForm()
 
       model.createUserContactFx(result)

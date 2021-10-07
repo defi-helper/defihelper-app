@@ -148,9 +148,9 @@ const $connectedContracts = stakingListDomain
     [params.contract]: true,
   }))
 
-const $wallets = userModel.$user.map(
-  (user) =>
-    user?.wallets.list?.reduce<
+const $wallets = userModel.$userWallets.map(
+  (wallets) =>
+    wallets.reduce<
       Record<string, { id: string; blockchain: string; network: string }>
     >((acc, { address, id, blockchain, network }) => {
       acc[address.toLowerCase()] = {

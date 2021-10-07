@@ -30,7 +30,7 @@ export async function augmentConnectorUpdate(
   return {
     connector,
     provider,
-    chainId: chainId !== 'waves' ? normalizedChainId : chainId,
+    chainId: chainId !== 'W' ? normalizedChainId : chainId,
     account,
   }
 }

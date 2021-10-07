@@ -4,18 +4,35 @@ import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
-import { Dialog } from '~/common/dialog'
-import { connectorsByName } from '~/wallets/common'
+import { Dialog, useDialog } from '~/common/dialog'
+import { augmentConnectorUpdate, connectorsByName } from '~/wallets/common'
 import * as styles from './wallet-list.css'
 
 export type WalletListProps = {
-  onConfirm: (connector: AbstractConnector) => void
+  onConfirm: (data: {
+    connector: AbstractConnector
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    provider: any
+    chainId: string | number
+    account: string | null
+  }) => void
+  onCancel: (value: unknown) => void
   blockchain?: string
 }
 
 export const WalletList: React.VFC<WalletListProps> = (props) => {
-  const handleActivate = (connector: AbstractConnector) => () =>
-    props.onConfirm(connector)
+  const handleActivate = (connector: AbstractConnector) => async () => {
+    try {
+      const data = await augmentConnectorUpdate(
+        connector,
+        await connector.activate()
+      )
+
+      props.onConfirm(data)
+    } catch (error) {
+      props.onCancel(error)
+    }
+  }
 
   return (
     <Dialog>
@@ -41,3 +58,5 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
     </Dialog>
   )
 }
+
+export const useWalletList = () => useDialog(WalletList)

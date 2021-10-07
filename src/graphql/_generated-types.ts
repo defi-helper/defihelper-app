@@ -1713,6 +1713,7 @@ export type UserBillingTransferListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   deposit?: Maybe<Scalars['Boolean']>
   claim?: Maybe<Scalars['Boolean']>
+  wallet?: Maybe<Array<Scalars['UuidType']>>
 }
 
 export type UserBillingTransferListPaginationInputType = {
@@ -2784,117 +2785,6 @@ export type AutomationTriggersQuery = { __typename?: 'Query' } & {
   }
 }
 
-export type BillingBillsQueryVariables = Exact<{
-  filter?: Maybe<UserBillingBillListFilterInputType>
-  sort?: Maybe<
-    Array<UserBillingBillListSortInputType> | UserBillingBillListSortInputType
-  >
-  pagination?: Maybe<UserBillingBillListPaginationInputType>
-}>
-
-export type BillingBillsQuery = { __typename?: 'Query' } & {
-  me?: Maybe<
-    { __typename?: 'UserType' } & {
-      billing: { __typename?: 'UserBillingType' } & {
-        bills: { __typename?: 'UserBillingBillListType' } & {
-          list?: Maybe<
-            Array<
-              { __typename?: 'BillingBillType' } & Pick<
-                BillingBillType,
-                | 'id'
-                | 'blockchain'
-                | 'network'
-                | 'account'
-                | 'claimant'
-                | 'claimGasFee'
-                | 'claimProtocolFee'
-                | 'gasFee'
-                | 'protocolFee'
-                | 'claim'
-                | 'status'
-                | 'tx'
-                | 'createdAt'
-                | 'updatedAt'
-              >
-            >
-          >
-          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-        }
-      }
-    }
-  >
-}
-
-export type BillingQueryVariables = Exact<{ [key: string]: never }>
-
-export type BillingQuery = { __typename?: 'Query' } & {
-  me?: Maybe<
-    { __typename?: 'UserType' } & {
-      billing: { __typename?: 'UserBillingType' } & {
-        balance: { __typename?: 'BillingBalanceType' } & Pick<
-          BillingBalanceType,
-          'balance' | 'claim' | 'netBalance'
-        >
-      }
-    }
-  >
-}
-
-export type BillingHistoryQueryVariables = Exact<{
-  filter?: Maybe<UserBillingTransferListFilterInputType>
-  sort?: Maybe<
-    | Array<UserBillingTransferListSortInputType>
-    | UserBillingTransferListSortInputType
-  >
-  pagination?: Maybe<UserBillingTransferListPaginationInputType>
-}>
-
-export type BillingHistoryQuery = { __typename?: 'Query' } & {
-  me?: Maybe<
-    { __typename?: 'UserType' } & {
-      billing: { __typename?: 'UserBillingType' } & {
-        transfers: { __typename?: 'UserBillingTransferListType' } & {
-          list?: Maybe<
-            Array<
-              { __typename?: 'BillingTransferType' } & Pick<
-                BillingTransferType,
-                | 'id'
-                | 'blockchain'
-                | 'network'
-                | 'account'
-                | 'amount'
-                | 'tx'
-                | 'createdAt'
-              > & {
-                  bill?: Maybe<
-                    { __typename?: 'BillingBillType' } & Pick<
-                      BillingBillType,
-                      | 'id'
-                      | 'blockchain'
-                      | 'network'
-                      | 'account'
-                      | 'claimant'
-                      | 'claimGasFee'
-                      | 'claimProtocolFee'
-                      | 'gasFee'
-                      | 'protocolFee'
-                      | 'claim'
-                      | 'status'
-                      | 'tx'
-                      | 'createdAt'
-                      | 'updatedAt'
-                    >
-                  >
-                }
-            >
-          >
-          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-        }
-      }
-    }
-  >
-}
-
 export type GovernanceProposalFragmentFragment = {
   __typename?: 'GovProposalType'
 } & Pick<
@@ -3251,6 +3141,61 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'createdAt'
 >
 
+export type BillingHistoryQueryVariables = Exact<{
+  filter?: Maybe<UserBillingTransferListFilterInputType>
+  sort?: Maybe<
+    | Array<UserBillingTransferListSortInputType>
+    | UserBillingTransferListSortInputType
+  >
+  pagination?: Maybe<UserBillingTransferListPaginationInputType>
+}>
+
+export type BillingHistoryQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      billing: { __typename?: 'UserBillingType' } & {
+        transfers: { __typename?: 'UserBillingTransferListType' } & {
+          list?: Maybe<
+            Array<
+              { __typename?: 'BillingTransferType' } & Pick<
+                BillingTransferType,
+                | 'id'
+                | 'blockchain'
+                | 'network'
+                | 'account'
+                | 'amount'
+                | 'tx'
+                | 'createdAt'
+              > & {
+                  bill?: Maybe<
+                    { __typename?: 'BillingBillType' } & Pick<
+                      BillingBillType,
+                      | 'id'
+                      | 'blockchain'
+                      | 'network'
+                      | 'account'
+                      | 'claimant'
+                      | 'claimGasFee'
+                      | 'claimProtocolFee'
+                      | 'gasFee'
+                      | 'protocolFee'
+                      | 'claim'
+                      | 'status'
+                      | 'tx'
+                      | 'createdAt'
+                      | 'updatedAt'
+                    >
+                  >
+                }
+            >
+          >
+          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+        }
+      }
+    }
+  >
+}
+
 export type UserContactEmailConfirmMutationVariables = Exact<{
   input: UserContactConfirmEmailInputType
 }>
@@ -3601,35 +3546,11 @@ export type UserEventSubscriptionsQuery = { __typename?: 'Query' } & {
   }
 }
 
-export type MeQueryVariables = Exact<{
-  filter?: Maybe<WalletListFilterInputType>
-  sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
-  pagination?: Maybe<WalletListPaginationInputType>
-}>
+export type MeQueryVariables = Exact<{ [key: string]: never }>
 
 export type MeQuery = { __typename?: 'Query' } & {
   me?: Maybe<
-    { __typename?: 'UserType' } & Pick<
-      UserType,
-      'id' | 'role' | 'createdAt'
-    > & {
-        wallets: { __typename?: 'WalletListType' } & {
-          list?: Maybe<
-            Array<
-              { __typename?: 'WalletType' } & Pick<
-                WalletType,
-                | 'id'
-                | 'blockchain'
-                | 'network'
-                | 'address'
-                | 'publicKey'
-                | 'createdAt'
-              >
-            >
-          >
-          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-        }
-      }
+    { __typename?: 'UserType' } & Pick<UserType, 'id' | 'role' | 'createdAt'>
   >
 }
 

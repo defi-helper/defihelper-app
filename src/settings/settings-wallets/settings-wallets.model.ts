@@ -43,14 +43,16 @@ export const deleteWalletFx = walletListDomain.createEffect(
 )
 
 const isChainId = (chainId: unknown): chainId is ChainIdEnum =>
-  typeof chainId === 'string' && chainId in contracts
+  String(chainId) in contracts
 
-const createContract = () => {
-  const { chainId, networkProvider, account } = walletNetworkModel.getNetwork()
+const createContract = (
+  provider: unknown,
+  chainId: string | number,
+  account: string
+) => {
+  const networkProvider = walletNetworkModel.getNetwork(provider, chainId)
 
-  const chainIdString = String(chainId)
-
-  if (!isChainId(chainIdString) || !networkProvider) {
+  if (!isChainId(chainId) || !networkProvider) {
     throw new Error('chainId does not support')
   }
 
@@ -58,7 +60,7 @@ const createContract = () => {
     throw new Error('Account is required')
   }
 
-  const contract = contracts[chainIdString]
+  const contract = contracts[chainId]
 
   const balanceContract = new ethers.Contract(
     contract.Balance.address,
@@ -77,11 +79,16 @@ type Params = {
   amount: string
   walletAddress: string
   chainId: string
+  provider: unknown
 }
 
 export const depositFx = walletListDomain.createEffect(
   async (params: Params) => {
-    const { networkProvider, account, balanceContract } = createContract()
+    const { networkProvider, account, balanceContract } = createContract(
+      params.provider,
+      params.chainId,
+      params.walletAddress
+    )
 
     const amountNormalized = bignumberUtils.toSend(params.amount, 18)
 
@@ -101,7 +108,11 @@ export const depositFx = walletListDomain.createEffect(
 
 export const refundFx = walletListDomain.createEffect(
   async (params: Params) => {
-    const { account, balanceContract } = createContract()
+    const { account, balanceContract } = createContract(
+      params.provider,
+      params.chainId,
+      params.walletAddress
+    )
 
     const amountNormalized = bignumberUtils.toSend(params.amount, 18)
 

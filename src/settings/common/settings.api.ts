@@ -1,5 +1,7 @@
 import { getAPIClient } from '~/api'
 import {
+  BillingHistoryQuery,
+  BillingHistoryQueryVariables,
   UserContactCreateMutation,
   UserContactCreateMutationVariables,
   UserContactDeleteMutation,
@@ -26,6 +28,7 @@ import {
   WALLET_LIST,
   WALLET_UPDATE,
   WALLET_DELETE,
+  BILLING_HISTORY,
 } from './graphql'
 
 export const settingsApi = {
@@ -102,4 +105,16 @@ export const settingsApi = {
       )
       .toPromise()
       .then(({ data }) => data?.walletDelete),
+
+  history: (variables?: BillingHistoryQueryVariables) =>
+    getAPIClient()
+      .query<BillingHistoryQuery, BillingHistoryQueryVariables>(
+        BILLING_HISTORY,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => ({
+        list: data?.me?.billing.transfers.list ?? [],
+        count: data?.me?.billing.transfers.pagination.count ?? 0,
+      })),
 }
