@@ -1,5 +1,4 @@
 import { paths } from '~/paths'
-import { WalletNetworkSwitcher } from '~/wallets/wallet-network-switcher'
 import { LayoutSidebar, LayoutContainer } from '../common'
 import * as styles from './app-layout.css'
 
@@ -36,24 +35,12 @@ const MENU = [
     path: '/settings',
     icon: 'settings' as const,
   },
-  // {
-  //   title: 'Billing',
-  //   path: paths.billing,
-  //   icon: 'home' as const,
-  // },
-  // {
-  //   title: 'Contacts',
-  //   path: paths.contacts.list as string,
-  //   icon: 'home' as const,
-  // },
 ]
 
 export const AppLayout: React.FC<AppLayoutProps> = (props) => {
   return (
     <div className={styles.root}>
-      <LayoutSidebar menu={MENU}>
-        <WalletNetworkSwitcher />
-      </LayoutSidebar>
+      <LayoutSidebar menu={MENU} />
       <LayoutContainer>{props.children}</LayoutContainer>
     </div>
   )

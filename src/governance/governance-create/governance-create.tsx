@@ -20,6 +20,7 @@ import { isEthAddress } from '~/common/is-eth-address'
 import { cutAccount } from '~/common/cut-account'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Paper } from '~/common/paper'
+import { useWalletList } from '~/wallets/wallet-list'
 import * as styles from './governance-create.css'
 import * as model from './governance-create.model'
 
@@ -56,6 +57,8 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
   const { register, handleSubmit, formState, setValue } = useForm<FormValues>()
 
   const [actions, setActions] = useState<GovernanceAction[]>([])
+
+  const [openWalletList] = useWalletList()
 
   const { chainId } = walletNetworkModel.useWalletNetwork()
   useEffect(() => {
@@ -100,7 +103,7 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
       }
     }
 
-  const handleCreateProposal = (formValues: FormValues) => {
+  const handleCreateProposal = async (formValues: FormValues) => {
     const description = `#${formValues.name.trim()}\n${formValues.description.trim()}`
 
     const callDatas = actions.flatMap((action) => {
@@ -137,13 +140,26 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
       }, [])
       .map(({ value }) => value)
 
-    model.proposeFx({
-      addresses,
-      values,
-      signatures,
-      callDatas,
-      description,
-    })
+    try {
+      const wallet = await openWalletList()
+
+      if (!wallet.account) return
+
+      model.proposeFx({
+        addresses,
+        values,
+        signatures,
+        callDatas,
+        description,
+        account: wallet.account,
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
   }
 
   return (

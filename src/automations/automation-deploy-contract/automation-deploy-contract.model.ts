@@ -45,17 +45,19 @@ export const deployFx = automationDeployContractDomain.createEffect(
     inputs: string[]
     address?: string
     automate?: Automates
+    account: string
+    chainId: string
+    provider: unknown
   }) => {
-    const {
-      networkProvider,
-      chainId,
-      account = null,
-    } = walletNetworkModel.getNetwork()
+    const networkProvider = walletNetworkModel.getNetwork(
+      params.provider,
+      params.chainId
+    )
     const wallets = userModel.$userWallets.getState()
 
     if (!params.automate) throw new Error('error')
 
-    const network = networks[chainId as '3']
+    const network = networks[params.chainId as '3']
 
     const proxyFactory = new ethers.Contract(
       network.ProxyFactory.address,
@@ -84,7 +86,7 @@ export const deployFx = automationDeployContractDomain.createEffect(
     })
 
     const currentWallet = wallets.find(
-      (wallet) => wallet.address === account?.toLowerCase()
+      (wallet) => wallet.address === params.account.toLowerCase()
     )
 
     if (!protocol || !currentWallet) throw new Error('something went wrong')

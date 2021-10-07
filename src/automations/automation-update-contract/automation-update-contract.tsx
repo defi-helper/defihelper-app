@@ -2,6 +2,7 @@ import { useStore } from 'effector-react'
 
 import { Dialog } from '~/common/dialog'
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
+import { useWalletList } from '~/wallets/wallet-list'
 import {
   AutomationContractForm,
   FormValues,
@@ -22,13 +23,22 @@ export const AutomationUpdateContract: React.VFC<AutomationUpdateContractProps> 
   (props) => {
     const loading = useStore(model.deployFx.pending)
 
+    const [openWalletList] = useWalletList()
+
     const handleSubmit = async (formValues: FormValues) => {
       try {
+        const wallet = await openWalletList()
+
+        if (!wallet.account) return
+
         const result = await model.deployFx({
           contractId: props.contract.id,
           address: props.automateContract.address,
           automate: props.automateContract,
           inputs: formValues.inputs,
+          provider: wallet.provider,
+          account: wallet.account,
+          chainId: String(wallet.chainId),
         })
 
         props.onConfirm(result)

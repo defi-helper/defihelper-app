@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 import * as Popper from 'react-popper'
 import * as PopperJS from '@popperjs/core'
 
-const sameWidth: Popper.Modifier<string, Record<string, unknown>> = {
+const sameWidth: Partial<PopperJS.Modifier<string, unknown>> = {
   name: 'sameWidth',
   enabled: true,
   phase: 'beforeWrite',
@@ -19,24 +19,22 @@ const sameWidth: Popper.Modifier<string, Record<string, unknown>> = {
   },
 }
 
-type Modifiers = 'sameWidth'
+const getOffset = (
+  offset: number[]
+): Partial<PopperJS.Modifier<string, unknown>> => ({
+  name: 'offset',
+  options: {
+    offset,
+  },
+})
 
-const modifiers: Record<
-  Modifiers,
-  Popper.Modifier<string, Record<string, unknown>>
-> = {
+const modifiers = {
   sameWidth,
+  getOffset,
 }
 
-type Options = Omit<Partial<PopperJS.Options>, 'modifiers'> & {
-  modifiers?: Modifiers
-}
-
-export const usePopper = (options?: Options) => {
-  const optionsRef = useRef({
-    ...options,
-    modifiers: options?.modifiers ? [modifiers[options.modifiers]] : undefined,
-  })
+export const usePopper = (options?: Partial<PopperJS.Options>) => {
+  const optionsRef = useRef(options)
 
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(
     null
@@ -52,16 +50,19 @@ export const usePopper = (options?: Options) => {
     []
   )
 
-  const popper = Popper.usePopper(
+  const { attributes, styles } = Popper.usePopper(
     referenceElement,
     popperElement,
     optionsRef.current
   )
 
   return {
-    popperStyles: popper.styles.popper,
-    popperAttributes: popper.attributes.popper,
+    popperAttributes: attributes.popper,
+    popperStyles: styles.popper,
+    referenceElement,
     setReferenceElement: handleSetReferenceElement,
     setPopperElement: handleSetPopperElement,
   }
 }
+
+usePopper.modifiers = modifiers

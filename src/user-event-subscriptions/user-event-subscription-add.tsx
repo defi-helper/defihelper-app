@@ -10,7 +10,7 @@ import {
 
 import { useGate, useStore } from 'effector-react'
 import * as model from '~/user-event-subscriptions/user-event-subscription.model'
-import * as contactModel from '~/user-contacts/user-contact.model'
+import * as contactModel from '~/settings/settings-contacts/settings-contact.model'
 import * as protocolsModel from '~/protocols/protocol-list/protocol-list.model'
 import * as stackingModel from '~/staking/staking-list/staking-list.model'
 import {
@@ -138,7 +138,7 @@ export const UserEventSubscriptionAdd: React.VFC = () => {
 
   const classes = useStyles()
 
-  useGate(contactModel.UserContactListGate)
+  useGate(contactModel.SettingsContactsGate)
   useGate(protocolsModel.ProtocolListGate)
 
   const handleSubmit = (event: React.FormEvent) => {

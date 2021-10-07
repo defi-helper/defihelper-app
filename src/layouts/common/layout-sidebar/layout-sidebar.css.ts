@@ -63,10 +63,6 @@ export const logoIcon = style({
   display: 'block',
 })
 
-export const actions = style({
-  marginBottom: 48,
-})
-
 export const menu = style({
   listStyle: 'none',
   padding: 0,
@@ -100,15 +96,6 @@ export const active = style({
   borderRadius: 8,
   backgroundColor: theme.colors.paper,
   opacity: 1,
-})
-
-export const balance = style({
-  marginBottom: 'auto',
-  padding: '9px 16px 14px',
-})
-
-export const balanceValue = style({
-  opacity: 0.64,
 })
 
 export const spacer = style({
@@ -151,4 +138,8 @@ export const switchers = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
+})
+
+export const govButton = style({
+  borderColor: theme.colors.border,
 })

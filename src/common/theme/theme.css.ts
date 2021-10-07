@@ -17,11 +17,11 @@ type Theme = {
     paper: string
     separator: string
     border: string
+    primaryButtonBorder: string
   }
   fonts: {
     square: string
     mono: string
-    circle: string
   }
 }
 
@@ -38,12 +38,12 @@ export const themeContract = createThemeContract<Theme>({
     paper: '',
     separator: '',
     border: '',
+    primaryButtonBorder: '',
   },
 
   fonts: {
     square: '',
     mono: '',
-    circle: '',
   },
 })
 
@@ -60,11 +60,11 @@ const dark: Theme = {
     paper: palette.black2,
     separator: palette.black2,
     border: palette.black7,
+    primaryButtonBorder: palette.grey2,
   },
   fonts: {
     square: "'Basier Square', sans-serif",
     mono: "'Basier Square Mono', sans-serif",
-    circle: "'Basier Circle Mono', sans-serif",
   },
 }
 
@@ -80,12 +80,12 @@ const light: Theme = {
     secondary: palette.green1,
     paper: palette.grey4,
     separator: palette.grey4,
-    border: palette.grey4,
+    border: palette.black10,
+    primaryButtonBorder: palette.black9,
   },
   fonts: {
     square: "'Basier Square', sans-serif",
     mono: "'Basier Square Mono', sans-serif",
-    circle: "'Basier Circle Mono', sans-serif",
   },
 }
 

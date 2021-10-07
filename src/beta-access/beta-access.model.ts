@@ -1,6 +1,7 @@
 import { sample, createDomain, attach } from 'effector-logger/macro'
 
-import { contactListModel } from '~/user-contacts'
+import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
+
 import { UserContactBrokerEnum } from '~/graphql/_generated-types'
 import { config } from '~/config'
 
@@ -30,6 +31,7 @@ sample({
   fn: () => ({
     broker: UserContactBrokerEnum.Telegram,
     address: '',
+    name: '',
   }),
   target: createUserContactFx,
 })

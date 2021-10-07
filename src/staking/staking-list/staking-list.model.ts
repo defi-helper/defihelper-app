@@ -8,7 +8,6 @@ import {
 import { userModel } from '~/users'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { stakingApi } from '~/staking/common'
-import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 import { createPagination, PaginationState } from '~/common/create-pagination'
 
 export const stakingListDomain = createDomain('stakingList')
@@ -121,7 +120,6 @@ export const $openedContract = stakingListDomain
     name: '$openedContract',
   })
   .on(openContract, (_, payload) => payload)
-  .on(walletNetworkSwitcherModel.activateNetwork, () => null)
 
 export const $protocolAdapter = stakingListDomain
   .createStore<string | null>(null, {
@@ -150,9 +148,9 @@ const $connectedContracts = stakingListDomain
     [params.contract]: true,
   }))
 
-const $wallets = userModel.$user.map(
-  (user) =>
-    user?.wallets.list?.reduce<
+const $wallets = userModel.$userWallets.map(
+  (wallets) =>
+    wallets.reduce<
       Record<string, { id: string; blockchain: string; network: string }>
     >((acc, { address, id, blockchain, network }) => {
       acc[address.toLowerCase()] = {
@@ -190,11 +188,7 @@ export const StakingListPagination = createPagination({
 
 const fetchStakingList = sample({
   source: StakingListPagination.state,
-  clock: [
-    walletNetworkSwitcherModel.$currentNetwork.updates,
-    StakingListGate.open,
-    StakingListPagination.updates,
-  ],
+  clock: [StakingListGate.open, StakingListPagination.updates],
   fn: (pagination) => ({
     ...pagination,
     ...StakingListGate.state.getState(),
@@ -209,8 +203,7 @@ guard({
 })
 
 sample({
-  source: fetchStakingListFx.done,
-  clock: [fetchStakingListFx.done, walletNetworkSwitcherModel.$currentNetwork],
+  clock: fetchStakingListFx.done,
   fn: ({ params }) => params,
   target: fetchConnectedContractsFx,
   greedy: true,

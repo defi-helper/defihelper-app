@@ -24,17 +24,15 @@ export const paths = {
     update: (id = ':proposalId') => `/proposals/update/${id}` as const,
   },
 
-  contacts: {
-    list: '/contacts',
+  settings: {
+    list: '/settings',
     confirmEmail: (code = ':confirmationCode') =>
-      `/confirm-email/${code}` as const,
+      `/settings/confirm-email/${code}` as const,
   },
 
   userEventSubscriptions: {
     list: '/user-event-subscriptions',
   },
-
-  billing: '/billing',
 
   governance: {
     list: '/governance',
@@ -51,6 +49,4 @@ export const paths = {
     history: (automationId = ':automationId') =>
       `/automations/history/${automationId}` as const,
   },
-
-  settings: '/settings',
 } as const

@@ -14,16 +14,21 @@ export type ProposeParams = {
   signatures: string[]
   callDatas: string[]
   description: string
+  account: string
+  chainId: string
+  provider: unknown
 }
 
 const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
 
 export const governanceCreateDomain = createDomain('governanceCreateDomain')
 
-export const proposeFx = governanceCreateDomain.createEffect({
-  name: 'proposeFx',
-  handler: async (params: ProposeParams) => {
-    const { networkProvider } = walletNetworkModel.getNetwork()
+export const proposeFx = governanceCreateDomain.createEffect(
+  async (params: ProposeParams) => {
+    const networkProvider = walletNetworkModel.getNetwork(
+      params.provider,
+      params.chainId
+    )
 
     if (!networkProvider) return
 
@@ -55,8 +60,8 @@ export const proposeFx = governanceCreateDomain.createEffect({
     )
 
     await transactionReceipt.wait()
-  },
-})
+  }
+)
 
 proposeFx.done.watch(() => {
   history.push(paths.governance.list)

@@ -1,6 +1,5 @@
 import { guard, sample, createDomain, combine } from 'effector-logger/macro'
 import omit from 'lodash.omit'
-import { createGate } from 'effector-react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import {
@@ -9,10 +8,8 @@ import {
   Adapter,
   AdapterWallet,
 } from '~/common/load-adapter'
-import { BlockchainEnum } from '~/graphql/_generated-types'
 import { toastsService } from '~/toasts'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
-import { walletNetworkSwitcherModel } from '~/wallets/wallet-network-switcher'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type StakingAdapter = {
@@ -31,11 +28,20 @@ export type Contract = {
   adapter: string
 }
 
-type Params = { protocolAdapter: string; contracts: Contract[] }
+type Params = {
+  protocolAdapter: string
+  contracts: Contract[]
+  provider: unknown
+  account: string
+  chainId: string
+}
 
 export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect(
   (params: Params) => {
-    const network = walletNetworkModel.getNetwork()
+    const networkProvider = walletNetworkModel.getNetwork(
+      params.provider,
+      params.chainId
+    )
 
     return Promise.all(
       params.contracts.map(async (contract) => {
@@ -45,20 +51,20 @@ export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect(
         )
 
         const adapter = await adapterContract(
-          network.networkProvider,
+          networkProvider,
           contract.address,
           {
             blockNumber: 'latest',
-            signer: network.networkProvider?.getSigner(),
+            signer: networkProvider?.getSigner(),
           }
         )
 
-        const wallet = network.account
-          ? await adapter.wallet(network.account)
+        const wallet = params.account
+          ? await adapter.wallet(params.account)
           : null
 
-        const actions = network.account
-          ? await adapter.actions(network.account)
+        const actions = params.account
+          ? await adapter.actions(params.account)
           : null
 
         return {
@@ -77,19 +83,6 @@ export const fetchContractAdaptersFx = stakingAdaptersDomain.createEffect(
 const $adapters = stakingAdaptersDomain
   .createStore<StakingAdapter[]>([], { name: '$adapters' })
   .on(fetchContractAdaptersFx.doneData, (_, payload) => payload)
-
-export const StakingAdaptersGate = createGate<Params>({
-  domain: stakingAdaptersDomain,
-  name: 'StakingAdaptersGate',
-})
-
-sample({
-  source: walletNetworkModel.$wallet,
-  clock: StakingAdaptersGate.open,
-  fn: (source, clock) => ({ ...clock, provider: source.provider }),
-  target: fetchContractAdaptersFx,
-  greedy: true,
-})
 
 export const $contracts = combine($adapters, (adapters) => {
   return adapters.reduce((acc, adapter) => {
@@ -195,21 +188,9 @@ export const $actions = stakingAdaptersDomain
   )
 
 const fetchTokensFx = stakingAdaptersDomain.createEffect(
-  (params: {
-    blockchain?: BlockchainEnum
-    network?: number | string
-    addresses: string[]
-  }) => {
+  (params: { addresses: string[] }) => {
     return stakingApi.tokens({
       filter: {
-        ...(params.blockchain
-          ? {
-              blockchain: {
-                protocol: params.blockchain,
-                ...(params.network ? { network: String(params.network) } : {}),
-              },
-            }
-          : {}),
         address: params.addresses,
       },
     })
@@ -227,11 +208,8 @@ export const $tokens = stakingAdaptersDomain
   )
 
 sample({
-  source: walletNetworkSwitcherModel.$currentNetwork,
   clock: fetchContractAdaptersFx.doneData,
-  fn: (source, clock) => ({
-    blockchain: source.blockchain,
-    network: source.network,
+  fn: (clock) => ({
     addresses: [
       ...clock.reduce<string[]>((acc, { wallet }) => {
         acc.push(

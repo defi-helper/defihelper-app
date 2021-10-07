@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react'
+import { forwardRef } from 'react'
 
 export const createComponent = <T, P = Record<string, unknown>>(
   render: (props: P, ref: React.Ref<T>) => React.ReactElement | null
