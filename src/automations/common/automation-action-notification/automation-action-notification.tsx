@@ -1,7 +1,9 @@
-import { useForm } from 'react-hook-form'
+import { MenuItem, TextField } from '@material-ui/core'
+import { useForm, Controller } from 'react-hook-form'
 
 import { Button } from '~/common/button'
 import { Input } from '~/common/input'
+import { UserContactFragmentFragment } from '~/graphql/_generated-types'
 import * as styles from './automation-action-notification.css'
 
 type FormValues = {
@@ -12,11 +14,12 @@ type FormValues = {
 export type AutomationActionNotificationProps = {
   onSubmit: (formValues: string) => void
   defaultValues?: FormValues
+  contacts: UserContactFragmentFragment[]
 }
 
 export const AutomationActionNotification: React.VFC<AutomationActionNotificationProps> =
   (props) => {
-    const { handleSubmit, register, formState } = useForm<FormValues>({
+    const { handleSubmit, register, formState, control } = useForm<FormValues>({
       defaultValues: props.defaultValues,
     })
 
@@ -29,12 +32,26 @@ export const AutomationActionNotification: React.VFC<AutomationActionNotificatio
         )}
         className={styles.root}
       >
-        <Input
-          placeholder="Contact Id"
-          {...register('contactId', { required: true })}
-          error={Boolean(formState.errors.contactId?.message)}
-          helperText={formState.errors.contactId?.message}
-          defaultValue={props.defaultValues?.contactId}
+        <Controller
+          render={({ field }) => (
+            <TextField
+              label="Contact"
+              {...field}
+              select
+              helperText={formState.errors.contactId?.message}
+              error={Boolean(formState.errors.contactId?.message)}
+              defaultValue={props.defaultValues?.contactId}
+              value={field.value || ''}
+            >
+              {props.contacts.map((contact) => (
+                <MenuItem key={contact.id} value={contact.id}>
+                  {contact.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
+          name="contactId"
+          control={control}
         />
         <Input
           placeholder="Message"
