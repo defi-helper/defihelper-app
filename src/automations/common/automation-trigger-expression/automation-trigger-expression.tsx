@@ -9,6 +9,7 @@ import {
   AutomateConditionTypeEnum,
   AutomateConditionUpdateInputType,
   AutomationContractFragmentFragment,
+  UserContactFragmentFragment,
 } from '~/graphql/_generated-types'
 import { AutomationActionEthereumRun } from '../automation-action-ethereum-run'
 import { AutomationActionNotification } from '../automation-action-notification'
@@ -28,14 +29,15 @@ export type AutomationTriggerExpressionProps = {
   contracts: AutomationContractFragmentFragment[]
   onDeploy: () => void
   expression?: Action | Condition
-  onSubmitCondition: (
+  onSubmitCondition?: (
     formValues:
       | AutomateConditionCreateInputType
       | AutomateConditionUpdateInputType
   ) => void
-  onSubmitAction: (
+  onSubmitAction?: (
     formValues: AutomateActionCreateInputType | AutomateActionUpdateInputType
   ) => void
+  contacts: UserContactFragmentFragment[]
 }
 
 export enum AutomationTriggerExpressions {
@@ -104,7 +106,7 @@ export const AutomationTriggerExpression: React.VFC<AutomationTriggerExpressionP
 
     const handlers = {
       onSubmitAction: (params: string) => {
-        props.onSubmitAction({
+        props.onSubmitAction?.({
           trigger: props.trigger,
           params,
           type: currentForm as AutomateActionTypeEnum,
@@ -112,7 +114,7 @@ export const AutomationTriggerExpression: React.VFC<AutomationTriggerExpressionP
         })
       },
       onSubmitCondition: (params: string) => {
-        props.onSubmitCondition({
+        props.onSubmitCondition?.({
           trigger: props.trigger,
           params,
           type: currentForm as AutomateConditionTypeEnum,
@@ -135,6 +137,7 @@ export const AutomationTriggerExpression: React.VFC<AutomationTriggerExpressionP
             contracts={props.contracts}
             onSubmit={handlers[handler]}
             onDeploy={props.onDeploy}
+            contacts={props.contacts}
             defaultValues={safeJsonParse(props.expression?.params)}
           />
         )}

@@ -1,6 +1,5 @@
 import { Event } from 'effector'
 import { useGate, useStore } from 'effector-react'
-import { useEffect, useRef } from 'react'
 import omit from 'lodash.omit'
 
 import { userModel } from '~/users'
@@ -21,12 +20,11 @@ import {
 } from '~/graphql/_generated-types'
 import { Button } from '~/common/button'
 import { AutomationTriggerForm } from '~/automations/common/automation-trigger-form'
-import {
-  AutomationTriggerExpression,
-  AutomationTriggerExpressions,
-} from '../common/automation-trigger-expression'
+import { AutomationTriggerExpression } from '../common/automation-trigger-expression'
 import { AutomationDeployContract } from '../automation-deploy-contract'
+import { Tab, TabPanel, Tabs } from '~/common/tabs'
 import * as model from './automation-update.model'
+import * as contactModel from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './automation-update.css'
 
 export type AutomationUpdateProps = {
@@ -40,14 +38,18 @@ export type AutomationUpdateProps = {
 export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const wallets = useStore(userModel.$userWallets)
   const loading = useStore(model.updateTriggerFx.pending)
-  const allExpressionsMap = useStore(model.$allExpressionsMap)
-  const allExpressions = useStore(model.$allExpressions)
+  const actions = useStore(model.$actions)
+  const conditions = useStore(model.$conditions)
+
+  const conditionsCount = useStore(model.$conditionsCount)
+  const actionsCount = useStore(model.$actionsCount)
+
+  const contacts = useStore(contactModel.$userContactList)
 
   const [openDeploy] = useDialog(AutomationDeployContract)
 
   useGate(model.AutomationUpdateGate, props.trigger)
-
-  const lastIndexRef = useRef(0)
+  useGate(contactModel.SettingsContactsGate)
 
   const defaultValues = {
     wallet: props.trigger.wallet.id,
@@ -67,30 +69,22 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     })
   }
 
-  const handleAddExpression = () => {
-    model.setNewExpression({
-      // eslint-disable-next-line no-plusplus
-      [++lastIndexRef.current]: '',
-    })
+  const handleAddAction = () => {
+    model.setAction(actionsCount.length + 1)
+  }
+  const handleAddCondition = () => {
+    model.setCondition(conditionsCount.length + 1)
   }
 
-  const handleSetTypeOfExpression =
-    (index: number, typeOfExpression: string) => () => {
-      model.setNewExpression({
-        [index]: typeOfExpression,
-      })
+  const handleDeleteExpression = (expression?: Condition | Action) => () => {
+    if (isAction(expression)) {
+      model.deleteActionFx(expression.id)
     }
 
-  const handleDeleteExpression =
-    (payload: { priority: number; expression?: Condition | Action }) => () => {
-      if (isAction(payload.expression)) {
-        model.deleteActionFx(payload.expression.id)
-      }
-
-      if (isCondition(payload.expression)) {
-        model.deleteConditonFx(payload.expression.id)
-      }
+    if (isCondition(expression)) {
+      model.deleteConditonFx(expression.id)
     }
+  }
 
   const handleSubmitAction =
     (id?: string) =>
@@ -128,77 +122,77 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     }
   }
 
-  useEffect(() => {
-    lastIndexRef.current = Object.keys(allExpressionsMap).length
-  }, [allExpressionsMap])
-
   return (
     <Dialog>
       <div className={styles.root}>
-        <AutomationTriggerForm
-          wallets={wallets}
-          onSubmit={handleSubmit}
-          defaultValues={defaultValues}
-          loading={loading}
-        />
-        <Button onClick={handleAddExpression} size="small">
-          +
-        </Button>
-        {Object.entries(allExpressionsMap).map(([priority, expression]) => (
-          <div key={priority}>
-            {!allExpressions[Number(priority)]?.id && (
-              <>
-                <Button
-                  onClick={handleSetTypeOfExpression(
-                    Number(priority),
-                    AutomationTriggerExpressions.action
-                  )}
-                  disabled={expression === AutomationTriggerExpressions.action}
-                  size="small"
-                >
-                  Action
-                </Button>
-                <Button
-                  onClick={handleSetTypeOfExpression(
-                    Number(priority),
-                    AutomationTriggerExpressions.condition
-                  )}
-                  disabled={
-                    expression === AutomationTriggerExpressions.condition
-                  }
-                  size="small"
-                >
-                  Condition
-                </Button>
-              </>
-            )}
-            {expression && (
-              <AutomationTriggerExpression
-                onSubmitAction={handleSubmitAction(
-                  allExpressions[Number(priority)]?.id
-                )}
-                onSubmitCondition={handleSubmitConditon(
-                  allExpressions[Number(priority)]?.id
-                )}
-                type={expression}
-                expression={allExpressions[Number(priority)]}
-                priority={Number(priority)}
-                trigger={props.trigger.id}
-                contracts={props.contracts}
-                onDeploy={handleOpenDeploy}
-              />
-            )}
-            <Button
-              onClick={handleDeleteExpression({
-                priority: Number(priority),
-                expression: allExpressions[Number(priority)],
-              })}
-              size="small"
-            >
-              Delete
+        <Tabs>
+          <Tab>Trigger</Tab>
+          <Tab>Actions</Tab>
+          <Tab>Conditions</Tab>
+          <TabPanel>
+            <AutomationTriggerForm
+              wallets={wallets}
+              onSubmit={handleSubmit}
+              defaultValues={defaultValues}
+              loading={loading}
+            />
+          </TabPanel>
+          <TabPanel>
+            {actionsCount.map((priority) => {
+              const action = actions[priority]
+
+              return (
+                <div key={String(priority)}>
+                  <AutomationTriggerExpression
+                    onSubmitAction={handleSubmitAction(action?.id)}
+                    type="action"
+                    expression={action}
+                    priority={Number(priority)}
+                    trigger={props.trigger.id}
+                    contracts={props.contracts}
+                    onDeploy={handleOpenDeploy}
+                    contacts={contacts}
+                  />
+                  <Button onClick={handleDeleteExpression(action)} size="small">
+                    Delete
+                  </Button>
+                </div>
+              )
+            })}
+            <Button onClick={handleAddAction} size="small">
+              +
             </Button>
-          </div>
-        ))}
+          </TabPanel>
+          <TabPanel>
+            {conditionsCount.map((priority) => {
+              const condition = conditions[priority]
+
+              return (
+                <div key={String(priority)}>
+                  <AutomationTriggerExpression
+                    onSubmitCondition={handleSubmitConditon(condition?.id)}
+                    type="condition"
+                    expression={condition}
+                    priority={Number(priority)}
+                    trigger={props.trigger.id}
+                    contracts={props.contracts}
+                    onDeploy={handleOpenDeploy}
+                    contacts={contacts}
+                  />
+                  <Button
+                    onClick={handleDeleteExpression(condition)}
+                    size="small"
+                  >
+                    Delete
+                  </Button>
+                </div>
+              )
+            })}
+            <Button onClick={handleAddCondition} size="small">
+              +
+            </Button>
+          </TabPanel>
+        </Tabs>
       </div>
     </Dialog>
   )

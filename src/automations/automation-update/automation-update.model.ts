@@ -1,4 +1,4 @@
-import { createDomain, sample, combine } from 'effector-logger/macro'
+import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
@@ -81,9 +81,6 @@ export const setExpressions = automationUpdateDomain.createEvent<{
   actions: Action[] | undefined
 }>()
 
-export const setNewExpression =
-  automationUpdateDomain.createEvent<Record<number, string>>()
-
 export const $actions = automationUpdateDomain
   .createStore<Action[]>([])
   .on(setExpressions, (_, payload) => payload.actions)
@@ -99,6 +96,15 @@ export const $actions = automationUpdateDomain
   .on(deleteActionFx.done, (state, { params }) =>
     state.filter((action) => action.id !== params)
   )
+
+const createNumberArray = (num: number) =>
+  Array.from(Array(num), (_, index) => index)
+
+export const setAction = automationUpdateDomain.createEvent<number>()
+
+export const $actionsCount = $actions
+  .map((actions) => createNumberArray(actions.length))
+  .on(setAction, (_, payload) => createNumberArray(payload))
 
 export const $conditions = automationUpdateDomain
   .createStore<Condition[]>([])
@@ -118,46 +124,11 @@ export const $conditions = automationUpdateDomain
     state.filter((condition) => condition.id !== params)
   )
 
-export const $expressions = combine(
-  $actions,
-  $conditions,
-  (actions, conditions) => {
-    return [...actions, ...conditions].sort((a, b) => a.priority - b.priority)
-  }
-)
+export const setCondition = automationUpdateDomain.createEvent<number>()
 
-export const $allExpressionsMap = $expressions
-  .map((expressions) =>
-    expressions.reduce<Record<number, string>>((acc, { priority, kind }) => {
-      return {
-        ...acc,
-        [priority]: kind,
-      }
-    }, {})
-  )
-  .on(setNewExpression, (state, payload) => {
-    const newState = {
-      ...state,
-    }
-
-    const [[priority, kind]] = Object.entries(payload)
-
-    newState[Number(priority)] = kind
-
-    return newState
-  })
-
-export const $allExpressions = $expressions.map((expressions) =>
-  expressions.reduce<Record<number, Condition | Action>>(
-    (acc, actionOrCondition) => {
-      return {
-        ...acc,
-        [actionOrCondition.priority]: actionOrCondition,
-      }
-    },
-    {}
-  )
-)
+export const $conditionsCount = $conditions
+  .map((conditions) => createNumberArray(conditions.length))
+  .on(setCondition, (_, payload) => createNumberArray(payload))
 
 export const AutomationUpdateGate = createGate<Trigger>({
   domain: automationUpdateDomain,
