@@ -145,4 +145,15 @@ export const NETWORKS: Network[] = [
   },
 ]
 
-export const SIGN_MESSAGE = 'By clicking "SIGN" you acknowledge and agree that you understand all the applicable risks, in particular, the risks related to development failures, bugs and other technical disadvantages which may result in the theft, loss or devaluation of your funds. You also acknowledge agree that you are not a citizen or entity of; (ii) formed in; (iii) do not reside in; (iv) located in; (v) do not have a place of business in; and (vi) conducting business in the USA, any jurisdictions which have restrictions/prohibitions on the use of virtual currencies or any other state, country or region that is subject to sanctions enforced by the US, the UK or the EU.  If you do not agree with any statement given above, then you must refrain from any further actions.'
+export const SIGN_MESSAGE =
+  'By clicking "SIGN" you acknowledge and agree that you understand all ' +
+  'the applicable risks, in particular, the risks related to development ' +
+  'failures, bugs and other technical disadvantages which may result in ' +
+  'the theft, loss or devaluation of your funds. You also acknowledge ' +
+  'agree that you are not a citizen or entity of; (ii) formed in; (iii)' +
+  ' do not reside in; (iv) located in; (v) do not have a place of business' +
+  ' in; and (vi) conducting business in the USA, any jurisdictions which' +
+  ' have restrictions/prohibitions on the use of virtual currencies or' +
+  ' any other state, country or region that is subject to sanctions' +
+  ' enforced by the US, the UK or the EU.  If you do not agree with any' +
+  ' statement given above, then you must refrain from any further actions.'
