@@ -17,11 +17,9 @@ export const paths = {
 
   portfolio: '/portfolio',
 
-  proposals: {
-    list: '/proposals',
-    detail: (id = ':proposalId') => `/proposals/${id}` as const,
-    create: '/proposals/create',
-    update: (id = ':proposalId') => `/proposals/update/${id}` as const,
+  roadmap: {
+    list: '/roadmap',
+    detail: (id = ':proposalId') => `/roadmap/${id}` as const,
   },
 
   settings: {

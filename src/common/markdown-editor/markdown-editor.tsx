@@ -7,7 +7,7 @@ import Bold from '@tiptap/extension-bold'
 import { Remarkable } from 'remarkable'
 import TurndownService from 'turndown'
 import Italic from '@tiptap/extension-italic'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import clsx from 'clsx'
 
 import { Button } from '~/common/button'
@@ -27,8 +27,6 @@ const md = new Remarkable()
 const turndownService = new TurndownService()
 
 export const MarkdownEditor: React.FC<MarkdownEditorProps> = (props) => {
-  const [focused, setFocus] = useState(false)
-
   const editor = useEditor({
     extensions: [Document, Paragraph, Text, Link, Bold, Italic],
     content: md.render(props.value),
@@ -51,24 +49,13 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = (props) => {
     editor.setOptions({ editable: !props.disabled })
   }, [editor, props.disabled])
 
-  const handleOnFocus = () => {
-    setFocus(true)
-  }
-
-  const handleOnBlur = () => {
-    setFocus(false)
-  }
-
   return (
     <div className={clsx(styles.root, props.className)}>
-      <label
-        htmlFor="markdown"
-        className={clsx(styles.label, {
-          [styles.focusedLabel]: focused || !editor?.isEmpty,
-        })}
-      >
-        {props.label}
-      </label>
+      {props.label && (
+        <label htmlFor="markdown" className={clsx(styles.label)}>
+          {props.label}
+        </label>
+      )}
       {editor && (
         <BubbleMenu editor={editor}>
           <Button
@@ -105,8 +92,6 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = (props) => {
         disabled={props.disabled}
         className={clsx(styles.input)}
         id="markdown"
-        onFocus={handleOnFocus}
-        onBlur={handleOnBlur}
       />
     </div>
   )

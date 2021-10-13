@@ -15,10 +15,8 @@ import { ProtocolUpdate } from '~/protocols/protocol-update'
 import { StakingCreate } from '~/staking/staking-create'
 import { StakingUpdate } from '~/staking/staking-update'
 import { Portfolio } from '~/portfolio'
-import { ProposalList } from '~/proposals/proposal-list'
-import { ProposalDetail } from '~/proposals/proposal-detail'
-import { ProposalCreate } from '~/proposals/proposal-create'
-import { ProposalUpdate } from '~/proposals/proposal-update'
+import { RoadmapList } from '~/roadmap/roadmap-list'
+import { RoadmapDetail } from '~/roadmap/roadmap-detail'
 import { SettingsConfirmEmail } from '~/settings/settings-confirm-email'
 import { UserEventSubscriptionList } from '~/user-event-subscriptions'
 import { NotFound } from '~/not-found'
@@ -76,25 +74,11 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.portfolio}>
           <Portfolio />
         </Route>
-        <CanRoute
-          path={paths.proposals.create}
-          action="create"
-          subject="Proposal"
-        >
-          <ProposalCreate />
-        </CanRoute>
-        <CanRoute
-          path={paths.proposals.update()}
-          action="update"
-          subject="Proposal"
-        >
-          <ProposalUpdate />
-        </CanRoute>
-        <Route path={paths.proposals.detail()}>
-          <ProposalDetail />
+        <Route path={paths.roadmap.detail()}>
+          <RoadmapDetail />
         </Route>
-        <Route path={paths.proposals.list}>
-          <ProposalList />
+        <Route path={paths.roadmap.list}>
+          <RoadmapList />
         </Route>
         <Route path={paths.userEventSubscriptions.list}>
           <UserEventSubscriptionList />

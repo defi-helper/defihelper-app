@@ -87,6 +87,11 @@ export const variants = styleVariants({
     },
   },
 
+  body3: {
+    fontSize: 14,
+    lineHeight: '20px',
+  },
+
   inherit: {
     fontWeight: 'inherit',
     fontSize: 'inherit',

@@ -3,7 +3,16 @@ import clsx from 'clsx'
 import { createComponent } from '~/common/create-component'
 import * as styles from './typography.css'
 
-type Variants = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'body1' | 'body2' | 'inherit'
+type Variants =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'body1'
+  | 'body2'
+  | 'body3'
+  | 'inherit'
 
 type TagNames = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span'
 
@@ -15,6 +24,7 @@ const variantMapping: Record<Variants, TagNames> = {
   h5: 'h5',
   body1: 'p',
   body2: 'p',
+  body3: 'p',
   inherit: 'span',
 }
 

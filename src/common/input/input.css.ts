@@ -22,7 +22,6 @@ export const input = style({
   lineHeight: '24px',
   padding: '8px 16px',
   color: 'currentcolor',
-  marginBottom: 4,
 
   '::placeholder': {
     color: 'inherit',

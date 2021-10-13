@@ -27,12 +27,12 @@ const MENU = [
   },
   {
     title: 'Roadmap',
-    path: paths.proposals.list as string,
+    path: paths.roadmap.list as string,
     icon: 'check' as const,
   },
   {
     title: 'Settings',
-    path: '/settings',
+    path: paths.settings.list,
     icon: 'settings' as const,
   },
 ]

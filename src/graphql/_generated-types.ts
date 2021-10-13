@@ -1076,6 +1076,8 @@ export enum ProposalListSortInputTypeColumnEnum {
 export enum ProposalStatusEnum {
   /** Proposal is open for vote */
   Open = 'open',
+  /** Proposal in process */
+  InProcess = 'in_process',
   /** Proposal is executed */
   Executed = 'executed',
   /** Proposal is defeated */
@@ -1095,6 +1097,10 @@ export type ProposalType = {
   /** Author */
   author?: Maybe<UserType>
   votes: VoteListType
+  /** Planned date */
+  plannedAt?: Maybe<Scalars['DateTimeType']>
+  /** Released date */
+  releasedAt?: Maybe<Scalars['DateTimeType']>
   /** Date of updated */
   updatedAt: Scalars['DateTimeType']
   /** Date of created */
@@ -1114,6 +1120,10 @@ export type ProposalUpdateInputType = {
   description?: Maybe<Scalars['String']>
   /** Current status */
   status?: Maybe<ProposalStatusEnum>
+  /** Planned date */
+  plannedAt?: Maybe<Scalars['DateTimeType']>
+  /** Released date */
+  releasedAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export type ProtocolCreateInputType = {
@@ -1271,6 +1281,7 @@ export type Query = {
   automateContracts: AutomateContractListQuery
   govToken: GovTokenType
   restakeStrategy: RestakeStrategyType
+  treasury: TreasuryType
 }
 
 export type QueryProtocolArgs = {
@@ -1677,6 +1688,11 @@ export type TokenType = {
   symbol: Scalars['String']
   /** Decimals */
   decimals: Scalars['Int']
+}
+
+export type TreasuryType = {
+  __typename?: 'TreasuryType'
+  balanceUSD: Scalars['Float']
 }
 
 export type UserBillingBillListFilterInputType = {
@@ -2950,109 +2966,6 @@ export type TokenMetricChartQuery = { __typename?: 'Query' } & {
   >
 }
 
-export type ProposalCreateMutationVariables = Exact<{
-  input: ProposalCreateInputType
-}>
-
-export type ProposalCreateMutation = { __typename?: 'Mutation' } & {
-  proposalCreate: { __typename?: 'ProposalType' } & Pick<ProposalType, 'id'>
-}
-
-export type ProposalDeleteMutationVariables = Exact<{
-  id: Scalars['UuidType']
-}>
-
-export type ProposalDeleteMutation = { __typename?: 'Mutation' } & Pick<
-  Mutation,
-  'proposalDelete'
->
-
-export type ProposalQueryVariables = Exact<{
-  filter: ProposalFilterInputType
-}>
-
-export type ProposalQuery = { __typename?: 'Query' } & {
-  proposal?: Maybe<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
-}
-
-export type ProposalsQueryVariables = Exact<{
-  filter?: Maybe<ProposalListFilterInputType>
-  sort?: Maybe<Array<ProposalListSortInputType> | ProposalListSortInputType>
-  pagination?: Maybe<ProposalListPaginationInputType>
-}>
-
-export type ProposalsQuery = { __typename?: 'Query' } & {
-  proposals: { __typename?: 'ProposalListQuery' } & {
-    list?: Maybe<
-      Array<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
-    >
-    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-  }
-}
-
-export type ProposalUnvoteMutationVariables = Exact<{
-  proposal: Scalars['UuidType']
-}>
-
-export type ProposalUnvoteMutation = { __typename?: 'Mutation' } & Pick<
-  Mutation,
-  'unvote'
->
-
-export type ProposalUpdateMutationVariables = Exact<{
-  id: Scalars['UuidType']
-  input: ProposalUpdateInputType
-}>
-
-export type ProposalUpdateMutation = { __typename?: 'Mutation' } & {
-  proposalUpdate: { __typename?: 'ProposalType' } & ProposalFragmentFragment
-}
-
-export type ProposalVoteFragmentFragment = { __typename?: 'VoteType' } & Pick<
-  VoteType,
-  'id' | 'updatedAt' | 'createdAt'
-> & {
-    user: { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'> & {
-        wallets: { __typename?: 'WalletListType' } & {
-          list?: Maybe<
-            Array<
-              { __typename?: 'WalletType' } & Pick<
-                WalletType,
-                | 'id'
-                | 'blockchain'
-                | 'network'
-                | 'address'
-                | 'publicKey'
-                | 'createdAt'
-              >
-            >
-          >
-        }
-      }
-  }
-
-export type ProposalVoteMutationVariables = Exact<{
-  proposal: Scalars['UuidType']
-}>
-
-export type ProposalVoteMutation = { __typename?: 'Mutation' } & {
-  vote: { __typename?: 'VoteType' } & ProposalVoteFragmentFragment
-}
-
-export type ProposalFragmentFragment = { __typename?: 'ProposalType' } & Pick<
-  ProposalType,
-  'id' | 'title' | 'description' | 'status' | 'updatedAt' | 'createdAt'
-> & {
-    author?: Maybe<
-      { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'>
-    >
-    votes: { __typename?: 'VoteListType' } & {
-      list?: Maybe<
-        Array<{ __typename?: 'VoteType' } & ProposalVoteFragmentFragment>
-      >
-    }
-  }
-
 export type ProtocolCreateMutationVariables = Exact<{
   input: ProtocolCreateInputType
 }>
@@ -3140,6 +3053,148 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'hidden'
   | 'createdAt'
 >
+
+export type ProposalCreateMutationVariables = Exact<{
+  input: ProposalCreateInputType
+}>
+
+export type ProposalCreateMutation = { __typename?: 'Mutation' } & {
+  proposalCreate: { __typename?: 'ProposalType' } & ProposalFragmentFragment
+}
+
+export type ProposalDeleteMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type ProposalDeleteMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'proposalDelete'
+>
+
+export type ProposalQueryVariables = Exact<{
+  filter: ProposalFilterInputType
+}>
+
+export type ProposalQuery = { __typename?: 'Query' } & {
+  proposal?: Maybe<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
+}
+
+export type ProposalsByStatusQueryVariables = Exact<{
+  sort?: Maybe<Array<ProposalListSortInputType> | ProposalListSortInputType>
+  pagination?: Maybe<ProposalListPaginationInputType>
+}>
+
+export type ProposalsByStatusQuery = { __typename?: 'Query' } & {
+  open: { __typename?: 'ProposalListQuery' } & {
+    list?: Maybe<
+      Array<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+  in_process: { __typename?: 'ProposalListQuery' } & {
+    list?: Maybe<
+      Array<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+  executed: { __typename?: 'ProposalListQuery' } & {
+    list?: Maybe<
+      Array<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+  defeated: { __typename?: 'ProposalListQuery' } & {
+    list?: Maybe<
+      Array<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type ProposalsQueryVariables = Exact<{
+  filter?: Maybe<ProposalListFilterInputType>
+  sort?: Maybe<Array<ProposalListSortInputType> | ProposalListSortInputType>
+  pagination?: Maybe<ProposalListPaginationInputType>
+}>
+
+export type ProposalsQuery = { __typename?: 'Query' } & {
+  proposals: { __typename?: 'ProposalListQuery' } & {
+    list?: Maybe<
+      Array<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type ProposalUnvoteMutationVariables = Exact<{
+  proposal: Scalars['UuidType']
+}>
+
+export type ProposalUnvoteMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'unvote'
+>
+
+export type ProposalUpdateMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: ProposalUpdateInputType
+}>
+
+export type ProposalUpdateMutation = { __typename?: 'Mutation' } & {
+  proposalUpdate: { __typename?: 'ProposalType' } & ProposalFragmentFragment
+}
+
+export type ProposalVoteFragmentFragment = { __typename?: 'VoteType' } & Pick<
+  VoteType,
+  'id' | 'updatedAt' | 'createdAt'
+> & {
+    user: { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'> & {
+        wallets: { __typename?: 'WalletListType' } & {
+          list?: Maybe<
+            Array<
+              { __typename?: 'WalletType' } & Pick<
+                WalletType,
+                | 'id'
+                | 'blockchain'
+                | 'network'
+                | 'address'
+                | 'publicKey'
+                | 'createdAt'
+              >
+            >
+          >
+        }
+      }
+  }
+
+export type ProposalVoteMutationVariables = Exact<{
+  proposal: Scalars['UuidType']
+}>
+
+export type ProposalVoteMutation = { __typename?: 'Mutation' } & {
+  vote: { __typename?: 'VoteType' } & ProposalVoteFragmentFragment
+}
+
+export type ProposalFragmentFragment = { __typename?: 'ProposalType' } & Pick<
+  ProposalType,
+  | 'id'
+  | 'title'
+  | 'description'
+  | 'status'
+  | 'releasedAt'
+  | 'plannedAt'
+  | 'updatedAt'
+  | 'createdAt'
+> & {
+    author?: Maybe<
+      { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'>
+    >
+    votes: { __typename?: 'VoteListType' } & {
+      list?: Maybe<
+        Array<{ __typename?: 'VoteType' } & ProposalVoteFragmentFragment>
+      >
+    }
+  }
 
 export type BillingHistoryQueryVariables = Exact<{
   filter?: Maybe<UserBillingTransferListFilterInputType>
