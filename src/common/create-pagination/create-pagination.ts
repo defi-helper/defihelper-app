@@ -55,10 +55,15 @@ export const createPagination = (options: Options) => {
       changePage,
     })
 
-  Component.state = combine($limit, $offset, (limit, offset) => ({
-    limit,
-    offset,
-  }))
+  Component.state = combine(
+    $limit,
+    $offset,
+    (limit, offset) =>
+      ({
+        limit,
+        offset,
+      } as PaginationState)
+  )
   Component.totalElements = totalElements
   Component.updates = Component.state.updates
 

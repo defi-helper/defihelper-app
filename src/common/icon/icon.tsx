@@ -42,6 +42,7 @@ import { ReactComponent as QuestionIcon } from '~/assets/icons/question.svg'
 import { ReactComponent as AttentionIcon } from '~/assets/icons/attention.svg'
 import { ReactComponent as ArrowLeftIcon } from '~/assets/icons/arrow-left.svg'
 import { ReactComponent as ArrowRightIcon } from '~/assets/icons/arrow-right.svg'
+import { ReactComponent as UpvoteIcon } from '~/assets/icons/upvote.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -90,6 +91,7 @@ const ICONS = {
   attention: AttentionIcon,
   arrowLeft: ArrowLeftIcon,
   arrowRight: ArrowRightIcon,
+  upvote: UpvoteIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

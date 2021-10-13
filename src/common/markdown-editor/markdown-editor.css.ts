@@ -4,43 +4,44 @@ import { theme } from '~/common/theme'
 
 export const root = style({
   position: 'relative',
-  fontFamily: theme.fonts.mono,
-  textTransform: 'uppercase',
-  fontSize: 20,
-  lineHeight: '28px',
-})
-
-export const input = style({
   display: 'inline-flex',
   flexDirection: 'column',
   width: '100%',
-  fontFamily: 'inherit',
+})
+
+export const input = style({
+  display: 'block',
+  width: 'inherit',
+  height: 'inherit',
+  outline: 'none',
+  border: `1px solid ${theme.colors.border}`,
   textTransform: 'inherit',
-  position: 'relative',
-  backgroundColor: theme.colors.common.black6,
-  borderRadius: 10,
-  fontSize: 'inherit',
-  lineHeight: 'inherit',
+  fontFamily: theme.fonts.square,
+  backgroundColor: 'transparent',
+  borderRadius: 8,
+  fontSize: 16,
+  lineHeight: '24px',
+  padding: '8px 16px',
+  color: 'currentcolor',
+
+  '::placeholder': {
+    color: 'inherit',
+  },
 })
 
 export const label = style({
-  position: 'absolute',
-  pointerEvents: 'none',
-  top: '50%',
-  transform: 'translateY(-50%)',
-  left: '16px',
-  transition: 'transform .2s, font-size .2s',
-})
-
-export const focusedLabel = style({
-  fontSize: 12,
-  lineHeight: '16px',
-  opacity: 0.63,
-  transform: 'translateY(-25px)',
+  fontFamily: theme.fonts.mono,
+  textTransform: 'uppercase',
+  color: theme.colors.common.brown2,
+  marginBottom: 4,
 })
 
 globalStyle(`${input} .ProseMirror`, {
   outline: 'none',
   height: '100%',
-  padding: '0 16px',
+})
+
+globalStyle(`${input} .ProseMirror *`, {
+  margin: 0,
+  padding: 0,
 })
