@@ -1,5 +1,6 @@
 import { useGate, useStore } from 'effector-react'
 
+import { Head } from '~/common/head'
 import { AppLayout } from '~/layouts'
 import { ProtocolForm } from '~/protocols/common'
 import * as model from './protocol-create.model'
@@ -15,6 +16,7 @@ export const ProtocolCreate: React.VFC<ProtocolCreateProps> = () => {
 
   return (
     <AppLayout>
+      <Head title="Protocol create" />
       <ProtocolForm
         onSubmit={model.protocolCreateFx}
         loading={loading}

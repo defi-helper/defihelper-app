@@ -11,6 +11,7 @@ import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import * as model from './roadmap-detail.model'
+import { Head } from '~/common/head'
 
 export type RoadmapDetailProps = unknown
 
@@ -39,6 +40,7 @@ export const RoadmapDetail: React.VFC<RoadmapDetailProps> = () => {
 
   return (
     <AppLayout>
+      <Head title={loading ? 'loading...' : proposal?.title} />
       <Paper radius={8}>
         {!loading && proposal && (
           <div>

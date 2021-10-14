@@ -18,6 +18,7 @@ import {
   ProtocolMediaActivity,
   ProtocolOverview,
 } from '~/protocols/common'
+import { Head } from '~/common/head'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
 
@@ -53,6 +54,7 @@ export const ProtocolDetail: React.FC = () => {
 
   return (
     <AppLayout>
+      <Head title={protocol?.name} />
       {loading && !protocol && 'loading...'}
       {!loading && protocol && (
         <>

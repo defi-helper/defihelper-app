@@ -21,6 +21,7 @@ import { userModel } from '~/users'
 import { BetaAccessSuccess } from './common/wallet-success'
 import { UserRoleEnum } from '~/graphql/_generated-types'
 import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
+import { Head } from '~/common/head'
 import * as styles from './beta-access.css'
 import * as model from './beta-access.model'
 
@@ -70,6 +71,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
   return (
     <Router>
       <AppLayout>
+        <Head title="Beta access" />
         <Grid.Container variant="md" className={styles.root}>
           <Typography
             variant="h2"

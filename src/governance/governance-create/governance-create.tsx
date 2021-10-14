@@ -21,6 +21,7 @@ import { cutAccount } from '~/common/cut-account'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Paper } from '~/common/paper'
 import { useWalletList } from '~/wallets/wallet-list'
+import { Head } from '~/common/head'
 import * as styles from './governance-create.css'
 import * as model from './governance-create.model'
 
@@ -164,6 +165,7 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
 
   return (
     <AppLayout>
+      <Head title="Create proposal" />
       <form
         noValidate
         autoComplete="off"

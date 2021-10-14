@@ -2,6 +2,7 @@ import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { AppLayout } from '~/layouts'
+import { Head } from '~/common/head'
 import { paths } from '~/paths'
 import { Chip } from '~/common/chip'
 import { ButtonBase } from '~/common/button-base'
@@ -75,6 +76,7 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
 
   return (
     <AppLayout>
+      <Head title="Governance" />
       <div className={styles.root}>
         <div className={styles.header}>
           <Typography variant="h3" family="square">

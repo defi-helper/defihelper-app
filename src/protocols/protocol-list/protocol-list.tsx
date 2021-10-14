@@ -3,6 +3,7 @@ import { useStore, useGate } from 'effector-react'
 import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 
+import { Head } from '~/common/head'
 import { AppLayout } from '~/layouts'
 import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
@@ -52,6 +53,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
 
   return (
     <AppLayout>
+      <Head title="Protocols" />
       <div className={styles.root}>
         <div className={styles.header}>
           <Typography variant="h3" family="square">

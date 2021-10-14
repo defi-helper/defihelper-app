@@ -1,3 +1,5 @@
+import { HelmetProvider } from 'react-helmet-async'
+
 import { Router } from './router'
 import { DialogProvider } from './common/dialog'
 import { ThemeProvider } from './common/theme'
@@ -10,14 +12,16 @@ import './assets/fonts/Basier-Square-regular-webfont/stylesheet.css'
 
 export const App: React.VFC = () => {
   return (
-    <ThemeProvider>
-      <DialogProvider>
-        <ToastProvider maxItems={6}>
-          <UserProvider>
-            <Router />
-          </UserProvider>
-        </ToastProvider>
-      </DialogProvider>
-    </ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider>
+        <DialogProvider>
+          <ToastProvider maxItems={6}>
+            <UserProvider>
+              <Router />
+            </UserProvider>
+          </ToastProvider>
+        </DialogProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   )
 }
