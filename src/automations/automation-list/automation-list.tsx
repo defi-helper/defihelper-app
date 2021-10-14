@@ -11,6 +11,7 @@ import { AutomationUpdate } from '~/automations/automation-update'
 import { AutomationUpdateContract } from '~/automations/automation-update-contract'
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
 import { Trigger } from '~/automations/common/automation.types'
+import { Head } from '~/common/head'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
 
@@ -62,6 +63,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
 
   return (
     <AppLayout>
+      <Head title="Automations" />
       <div className={styles.root}>
         <Button as={ReactRouterLink} to={paths.automations.create}>
           Create automation

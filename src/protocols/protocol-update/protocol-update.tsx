@@ -2,6 +2,7 @@ import { useGate, useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { Head } from '~/common/head'
 import { AppLayout } from '~/layouts'
 import { ProtocolForm } from '~/protocols/common'
 import { detailModel } from '~/protocols/protocol-detail'
@@ -36,6 +37,7 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
 
   return (
     <AppLayout>
+      <Head title={loading ? 'loading...' : `${protocol?.name ?? ''} update`} />
       {!loading && (
         <ProtocolForm
           onSubmit={(formValues) =>

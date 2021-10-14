@@ -18,6 +18,7 @@ import { Input } from '~/common/input'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { useQueryParams } from '~/common/hooks'
+import { Head } from '~/common/head'
 import * as model from './roadmap-list.model'
 import * as styles from './roadmap-list.css'
 
@@ -99,6 +100,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
 
   return (
     <AppLayout>
+      <Head title="Roadmap" />
       <div className={styles.header}>
         <Typography variant="h3">Roadmap</Typography>
         <Input placeholder="Search" className={styles.input} />

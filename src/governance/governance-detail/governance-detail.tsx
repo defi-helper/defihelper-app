@@ -23,9 +23,10 @@ import { isEthAddress } from '~/common/is-eth-address'
 import { Chip } from '~/common/chip'
 import { Paper } from '~/common/paper'
 import { useDialog } from '~/common/dialog'
+import { useWalletList } from '~/wallets/wallet-list'
+import { Head } from '~/common/head'
 import * as model from './governance-detail.model'
 import * as styles from './governance-detail.css'
-import { useWalletList } from '~/wallets/wallet-list'
 
 export type GovernanceDetailProps = unknown
 
@@ -147,6 +148,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
 
   return (
     <AppLayout>
+      <Head title={governanceDetail?.title} />
       {loading && <Typography>loading...</Typography>}
       {governanceDetail && (
         <div className={styles.root}>

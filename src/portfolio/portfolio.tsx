@@ -8,6 +8,7 @@ import { useDialog } from '~/common/dialog'
 import { Can } from '~/users'
 import { PortfolioAddWalletDialog } from './common'
 import * as model from './portfolio.model'
+import { Head } from '~/common/head'
 
 export type PortfolioProps = unknown
 
@@ -28,6 +29,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
 
   return (
     <AppLayout>
+      <Head title="Portfolio" />
       <PortfolioSummaryOfTokens />
       <PortfolioChartOfAllTokens />
       <PortfolioBlockchains />
