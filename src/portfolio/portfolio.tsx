@@ -1,14 +1,16 @@
-import { Button } from '@material-ui/core'
-
 import { AppLayout } from '~/layouts'
 import { PortfolioSummaryOfTokens } from '~/portfolio/portfolio-summary-of-tokens'
 import { PortfolioChartOfAllTokens } from '~/portfolio/portfolio-chart-of-all-tokens'
-import { PortfolioBlockchains } from '~/portfolio/portfolio-blockchains'
 import { useDialog } from '~/common/dialog'
 import { Can } from '~/users'
-import { PortfolioAddWalletDialog } from './common'
-import * as model from './portfolio.model'
 import { Head } from '~/common/head'
+import { Typography } from '~/common/typography'
+import { PortfolioAddWalletDialog, PortfolioMetricCard } from './common'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { Button } from '~/common/button'
+import { PortfolioAssets } from './portfolio-assets'
+import * as model from './portfolio.model'
+import * as styles from './portfolio.css'
 
 export type PortfolioProps = unknown
 
@@ -30,11 +32,44 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
   return (
     <AppLayout>
       <Head title="Portfolio" />
+      <Typography variant="h3" className={styles.title}>
+        Portfolio
+      </Typography>
+      <div className={styles.cards}>
+        <PortfolioMetricCard
+          title="Total Net Worth"
+          value={<>${bignumberUtils.format('1248726')}</>}
+          growthValue={
+            <>
+              {bignumberUtils.format('24546')} ({bignumberUtils.format('6')}%)
+            </>
+          }
+          positive
+        />
+        <PortfolioMetricCard
+          title="Avg. APY total"
+          value={<>{bignumberUtils.format('12')}%</>}
+          growthValue={<>{bignumberUtils.format('-0.4')}</>}
+          positive={false}
+        />
+        <PortfolioMetricCard
+          title="Unclaimed reward"
+          value={<>${bignumberUtils.format('527862')}</>}
+          growthValue={
+            <>
+              {bignumberUtils.format('24546')} ({bignumberUtils.format('6')}%)
+            </>
+          }
+          positive
+        />
+      </div>
       <PortfolioSummaryOfTokens />
       <PortfolioChartOfAllTokens />
-      <PortfolioBlockchains />
+      <PortfolioAssets />
       <Can I="create" a="Wallet">
-        <Button onClick={handleOpenAddWalletDialog}>add wallet</Button>
+        <Button color="blue" onClick={handleOpenAddWalletDialog}>
+          + add wallet
+        </Button>
       </Can>
     </AppLayout>
   )

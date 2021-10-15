@@ -49,7 +49,11 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
 
   useGate(model.ProtocolListGate)
 
-  const [active, setActive] = useState(false)
+  const [favourites, setFavourite] = useState<Record<string, boolean>>({})
+
+  const handleFavourite = (protocolId: string) => () => {
+    setFavourite({ ...favourites, [protocolId]: !favourites[protocolId] })
+  }
 
   return (
     <AppLayout>
@@ -101,9 +105,9 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
                   <ButtonBase
                     className={clsx(
                       styles.favorite,
-                      active && styles.favoriteActive
+                      favourites[protocol.id] && styles.favoriteActive
                     )}
-                    onClick={() => setActive(!active)}
+                    onClick={handleFavourite(protocol.id)}
                   >
                     <Icon icon="star" />
                   </ButtonBase>
