@@ -148,6 +148,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                     as={Link}
                     target="_blank"
                     href={`https://t.me/${config.TELEGRAM_BOT_USERNAME}`}
+                    disabled={!user}
                   >
                     Open Telegram
                   </Button>
