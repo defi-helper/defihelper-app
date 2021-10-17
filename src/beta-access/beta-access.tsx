@@ -82,7 +82,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
           </Typography>
           <Typography className={clsx(styles.subtitle, styles.grey)}>
             DeFiHelper is in the final phase of development. Connect your
-            wallet, subscribe to a Telegram bot, and be among the early
+            wallet, subscribe to the Telegram bot, and be among the early
             adopters.
           </Typography>
           <Grid.Row>
