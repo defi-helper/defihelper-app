@@ -43,6 +43,10 @@ import { ReactComponent as AttentionIcon } from '~/assets/icons/attention.svg'
 import { ReactComponent as ArrowLeftIcon } from '~/assets/icons/arrow-left.svg'
 import { ReactComponent as ArrowRightIcon } from '~/assets/icons/arrow-right.svg'
 import { ReactComponent as UpvoteIcon } from '~/assets/icons/upvote.svg'
+import { ReactComponent as AutomationIcon } from '~/assets/icons/automation.svg'
+import { ReactComponent as BnbRegularIcon } from '~/assets/icons/bnb-regular.svg'
+import { ReactComponent as EthereumRegularIcon } from '~/assets/icons/ethereum-regular.svg'
+import { ReactComponent as WavesRegularIcon } from '~/assets/icons/waves-regular.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -92,6 +96,10 @@ const ICONS = {
   arrowLeft: ArrowLeftIcon,
   arrowRight: ArrowRightIcon,
   upvote: UpvoteIcon,
+  automation: AutomationIcon,
+  wavesRegular: WavesRegularIcon,
+  ethereumRegular: EthereumRegularIcon,
+  bnbRegular: BnbRegularIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

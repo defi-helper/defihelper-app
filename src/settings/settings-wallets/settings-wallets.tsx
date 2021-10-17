@@ -15,9 +15,9 @@ import {
 } from '~/settings/common'
 import { cutAccount } from '~/common/cut-account'
 import { useWalletList } from '~/wallets/wallet-list'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type SettingsWalletsProps = {
   className?: string
