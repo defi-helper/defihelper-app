@@ -5,26 +5,22 @@ import * as contactListModel from '~/settings/settings-contacts/settings-contact
 import { UserContactBrokerEnum } from '~/graphql/_generated-types'
 import { config } from '~/config'
 
-const betaAccessDomain = createDomain('betaAccess')
+const betaAccessDomain = createDomain()
 
 const createUserContactFx = attach({
   effect: contactListModel.createUserContactFx,
 })
 
-export const openTelegram = betaAccessDomain.createEvent('openTelegram')
+export const openTelegram = betaAccessDomain.createEvent()
 
-export const openTelegramFx = betaAccessDomain.createEffect({
-  name: 'openTelegramFx',
-  handler: async (userContact: {
-    broker: UserContactBrokerEnum
-    confirmationCode: string
-  }) => {
+export const openTelegramFx = betaAccessDomain.createEffect(
+  async (userContact: { confirmationCode: string }) => {
     window.open(
       `https://t.me/${config.TELEGRAM_BOT_USERNAME}?start=${userContact.confirmationCode}`,
       '_blank'
     )
-  },
-})
+  }
+)
 
 sample({
   clock: openTelegram,
