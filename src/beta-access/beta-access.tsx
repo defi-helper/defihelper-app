@@ -5,7 +5,6 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import { useLocalStorage } from 'react-use'
 
 import { AppLayout } from '~/layouts'
-import { Link } from '~/common/link'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { Grid } from '~/common/grid'
