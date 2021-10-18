@@ -90,7 +90,10 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
               key={link.icon}
               href={link.link}
               target="_blank"
-              className={styles.socailLink}
+              className={clsx(
+                styles.socailLink,
+                hided && styles.socailLinkHided
+              )}
             >
               <Icon icon={link.icon} className={styles.socialIcon} />
             </Link>

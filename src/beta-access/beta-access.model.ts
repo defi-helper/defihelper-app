@@ -7,7 +7,7 @@ import { config } from '~/config'
 
 const betaAccessDomain = createDomain()
 
-const createUserContactFx = attach({
+export const createUserContactFx = attach({
   effect: contactListModel.createUserContactFx,
 })
 
@@ -21,6 +21,10 @@ export const openTelegramFx = betaAccessDomain.createEffect(
     )
   }
 )
+
+export const $userContact = betaAccessDomain
+  .createStore<null | unknown>(null)
+  .on(createUserContactFx.doneData, (_, payload) => payload)
 
 sample({
   clock: openTelegram,

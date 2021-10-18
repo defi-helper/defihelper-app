@@ -128,6 +128,10 @@ export const socailLink = style({
   },
 })
 
+export const socailLinkHided = style({
+  padding: '12px 0',
+})
+
 export const socialIcon = style({
   width: 20,
   height: 20,

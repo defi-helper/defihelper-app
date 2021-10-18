@@ -11,6 +11,8 @@ type Theme = {
     textColorPrimary: string
     textColorSecondary: string
     textColorGrey: string
+    textColorGreen: string
+    textColorBrown: string
     attention: string
     primary: string
     secondary: string
@@ -32,6 +34,8 @@ export const themeContract = createThemeContract<Theme>({
     textColorPrimary: '',
     textColorSecondary: '',
     textColorGrey: '',
+    textColorGreen: '',
+    textColorBrown: '',
     attention: '',
     primary: '',
     secondary: '',
@@ -54,6 +58,8 @@ const dark: Theme = {
     textColorPrimary: palette.white1,
     textColorSecondary: palette.black1,
     textColorGrey: palette.grey1,
+    textColorGreen: palette.green1,
+    textColorBrown: palette.brown2,
     attention: palette.white1,
     primary: palette.white1,
     secondary: palette.green1,
@@ -75,6 +81,8 @@ const light: Theme = {
     textColorPrimary: palette.black1,
     textColorSecondary: palette.white1,
     textColorGrey: palette.black8,
+    textColorGreen: palette.green2,
+    textColorBrown: palette.brown1,
     attention: palette.white1,
     primary: palette.black1,
     secondary: palette.green1,

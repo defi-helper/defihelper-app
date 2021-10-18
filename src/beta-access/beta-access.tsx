@@ -19,8 +19,8 @@ import { Paper } from '~/common/paper'
 import { userModel } from '~/users'
 import { BetaAccessSuccess } from './common/wallet-success'
 import { UserRoleEnum } from '~/graphql/_generated-types'
-import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
 import { Head } from '~/common/head'
+import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './beta-access.css'
 import * as model from './beta-access.model'
 
@@ -31,6 +31,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
 
   const { account = null } = walletNetworkModel.useWalletNetwork()
   const user = useStore(userModel.$user)
+  const userContact = useStore(model.$userContact)
 
   const [connected, setConnected] = useLocalStorage('connected', false)
 
@@ -55,6 +56,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
 
   useEffect(() => {
     if (
+      userContact &&
       user &&
       config.BETA &&
       user.role === UserRoleEnum.Candidate &&
@@ -62,10 +64,10 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
     ) {
       openSuccess()
         .then(() => setConnected(true))
-        .catch(console.error)
+        .catch(() => setConnected(true))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, connected])
+  }, [user, connected, userContact])
 
   return (
     <Router>
