@@ -5,7 +5,6 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import { useLocalStorage } from 'react-use'
 
 import { AppLayout } from '~/layouts'
-import { Link } from '~/common/link'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { Grid } from '~/common/grid'
@@ -20,8 +19,8 @@ import { Paper } from '~/common/paper'
 import { userModel } from '~/users'
 import { BetaAccessSuccess } from './common/wallet-success'
 import { UserRoleEnum } from '~/graphql/_generated-types'
-import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
 import { Head } from '~/common/head'
+import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './beta-access.css'
 import * as model from './beta-access.model'
 
@@ -32,6 +31,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
 
   const { account = null } = walletNetworkModel.useWalletNetwork()
   const user = useStore(userModel.$user)
+  const userContact = useStore(model.$userContact)
 
   const [connected, setConnected] = useLocalStorage('connected', false)
 
@@ -56,6 +56,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
 
   useEffect(() => {
     if (
+      userContact &&
       user &&
       config.BETA &&
       user.role === UserRoleEnum.Candidate &&
@@ -63,10 +64,10 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
     ) {
       openSuccess()
         .then(() => setConnected(true))
-        .catch(console.error)
+        .catch(() => setConnected(true))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, connected])
+  }, [user, connected, userContact])
 
   return (
     <Router>
@@ -83,7 +84,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
           </Typography>
           <Typography className={clsx(styles.subtitle, styles.grey)}>
             DeFiHelper is in the final phase of development. Connect your
-            wallet, subscribe to a Telegram bot, and be among the early
+            wallet, subscribe to the Telegram bot, and be among the early
             adopters.
           </Typography>
           <Grid.Row>
@@ -142,12 +143,10 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                   launched
                 </Typography>
                 {!contactList.length && (
-                  <Button<typeof Link, HTMLAnchorElement>
+                  <Button
                     variant="outlined"
                     onClick={() => model.openTelegram()}
-                    as={Link}
-                    target="_blank"
-                    href={`https://t.me/${config.TELEGRAM_BOT_USERNAME}`}
+                    disabled={!user}
                   >
                     Open Telegram
                   </Button>

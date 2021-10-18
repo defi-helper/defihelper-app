@@ -69,17 +69,12 @@ export const diactivateWalletFx = networkDomain.createEffect(
 )
 
 export const $wallet = networkDomain
-  .createStore<WalletStore>(
-    {
-      chainId: config.CHAIN_ETHEREUM_IDS[0],
-      account: null,
-      provider: null,
-      connector: undefined,
-    },
-    {
-      name: '$wallet',
-    }
-  )
+  .createStore<WalletStore>({
+    chainId: config.CHAIN_ETHEREUM_IDS[0],
+    account: null,
+    provider: null,
+    connector: undefined,
+  })
   .on(activateWalletFx.doneData, (state, payload) => {
     return shallowEqual(state, payload) ? undefined : payload
   })
@@ -169,6 +164,26 @@ sample({
   source: $wallet.map(({ connector }) => connector),
   clock: [signMessageEthereumFx.fail, signMessageWavesFx.fail],
   target: diactivateWalletFx,
+})
+
+sample({
+  clock: guard({
+    clock: activateWalletFx.doneData,
+    filter: (
+      clock
+    ): clock is {
+      chainId: string | number
+      account: string
+      provider: unknown
+      connector: AbstractConnector
+    } => Boolean(clock.account) && Boolean(clock.chainId) && !sidUtils.get(),
+  }),
+  fn: ({ account, chainId, provider }) => ({
+    account,
+    chainId: String(chainId),
+    provider,
+  }),
+  target: signMessage,
 })
 
 toastsService.forwardErrors(

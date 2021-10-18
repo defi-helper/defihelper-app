@@ -1,18 +1,18 @@
 export const SOCIAL_LINKS = [
   {
-    link: '/',
+    link: 'https://defihelper.medium.com/',
     icon: 'medium',
   },
   {
-    link: '/',
+    link: 'https://github.com/defi-helper',
     icon: 'github',
   },
   {
-    link: '/',
+    link: 'https://twitter.com/defihelper',
     icon: 'twitter',
   },
   {
-    link: '/',
+    link: 'https://t.me/defihelper_chat',
     icon: 'telegram',
   },
   {
