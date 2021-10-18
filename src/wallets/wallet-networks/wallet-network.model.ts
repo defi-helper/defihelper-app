@@ -176,7 +176,7 @@ sample({
       account: string
       provider: unknown
       connector: AbstractConnector
-    } => Boolean(clock.account) && Boolean(clock.chainId),
+    } => Boolean(clock.account) && Boolean(clock.chainId) && !sidUtils.get(),
   }),
   fn: ({ account, chainId, provider }) => ({
     account,
