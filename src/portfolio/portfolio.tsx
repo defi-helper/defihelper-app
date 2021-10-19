@@ -1,5 +1,6 @@
+import clsx from 'clsx'
+
 import { AppLayout } from '~/layouts'
-import { PortfolioSummaryOfTokens } from '~/portfolio/portfolio-summary-of-tokens'
 import { PortfolioChartOfAllTokens } from '~/portfolio/portfolio-chart-of-all-tokens'
 import { Head } from '~/common/head'
 import { Typography } from '~/common/typography'
@@ -46,9 +47,18 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           positive
         />
       </div>
-      <PortfolioSummaryOfTokens />
-      <PortfolioChartOfAllTokens />
-      <PortfolioAssets />
+      <div className={clsx(styles.grid, styles.section)}>
+        <PortfolioChartOfAllTokens variant="total" className={styles.mainChart}>
+          Total Net Worth Dynamics
+        </PortfolioChartOfAllTokens>
+        <PortfolioChartOfAllTokens variant="estimated">
+          Estimated Earnings
+        </PortfolioChartOfAllTokens>
+        <PortfolioChartOfAllTokens variant="balance">
+          Coin Balance
+        </PortfolioChartOfAllTokens>
+      </div>
+      <PortfolioAssets className={styles.section} />
       <PortfolioWallets />
     </AppLayout>
   )

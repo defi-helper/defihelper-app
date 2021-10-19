@@ -1,4 +1,4 @@
-import { createDomain, restore, sample } from 'effector-logger/macro'
+import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { dateUtils } from '~/common/date-utils'
@@ -10,13 +10,21 @@ import {
 } from '~/graphql/_generated-types'
 import { bignumberUtils } from '~/common/bignumber-utils'
 
-const domain = createDomain('portfolioChartOfAllTokens')
+const portfolioChartOfAllTokens = createDomain()
 
 const DAYS_LIMIT = 180
 
+type State = Record<
+  Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
+  {
+    data: Record<string, string>[]
+    value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    loading: boolean
+  }
+>
+
 const defaultVariables = {
   metric: 'usd',
-  group: MetricGroupEnum.Day,
   pagination: {
     limit: DAYS_LIMIT,
   },
@@ -28,11 +36,16 @@ const defaultVariables = {
   ],
 }
 
-const fetchChartDataFx = domain.createEffect({
-  name: 'fetchChartDataFx',
-  handler: async (params: string[]) => {
-    const result = params.map(async (param) => {
+type Gate = {
+  tokens: string[]
+  group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+}
+
+const fetchChartDataFx = portfolioChartOfAllTokens.createEffect(
+  async (params: Gate) => {
+    const result = params.tokens.map(async (param) => {
       const data = await portfolioApi.getTokenMetricChart({
+        group: params.group,
         ...defaultVariables,
         ...(param === 'stable' || param === 'shit'
           ? {
@@ -64,14 +77,46 @@ const fetchChartDataFx = domain.createEffect({
       [secondItem.name]: bignumberUtils.format(secondItem.data[index]?.sum),
       date: dataItem.date,
     }))
-  },
-})
+  }
+)
 
-export const $portfolioChartOfAllTokens = restore(fetchChartDataFx.doneData, [])
+export const $portfolioChartOfAllTokens = portfolioChartOfAllTokens
+  .createStore(
+    Object.values(MetricGroupEnum).reduce<State>((acc, metricGroup) => {
+      if (metricGroup === MetricGroupEnum.Hour) return acc
 
-export const PortfolioChartOfAllTokensGate = createGate<string[]>({
+      acc[metricGroup] = {
+        data: [],
+        value: metricGroup,
+        loading: false,
+      }
+
+      return acc
+    }, {} as State)
+  )
+  .on(fetchChartDataFx, (state, payload) => {
+    return {
+      ...state,
+      [payload.group]: {
+        ...state[payload.group],
+        loading: true,
+      },
+    }
+  })
+  .on(fetchChartDataFx.done, (state, { params, result }) => {
+    return {
+      ...state,
+      [params.group]: {
+        ...state[params.group],
+        loading: false,
+        data: result,
+      },
+    }
+  })
+
+export const PortfolioChartOfAllTokensGate = createGate<Gate>({
   name: 'PortfolioChartOfAllTokensGate',
-  domain,
+  domain: portfolioChartOfAllTokens,
 })
 
 sample({

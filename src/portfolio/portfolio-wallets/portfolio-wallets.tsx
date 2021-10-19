@@ -111,7 +111,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
         <div className={styles.tableBody}>
           {wallets.map((wallet) => (
             <div key={wallet.id} className={styles.tableRow}>
-              <Typography variant="body2">
+              <Typography variant="body2" as="div">
                 <Jazzicon
                   diameter={20}
                   seed={jsNumberForAddress(wallet.address)}
@@ -119,7 +119,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                 />{' '}
                 {wallet.name || 'untitled'}
               </Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" as="div">
                 <Icon
                   icon={BLOCKCHAIN_ICONS[wallet.network]}
                   className={styles.blockchainIcon}
@@ -134,16 +134,22 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                   {cutAccount(wallet.address)}
                 </Link>
               </Typography>
-              <Typography variant="body2">12%</Typography>
-              <Typography variant="body2">4</Typography>
-              <Typography variant="body2">12</Typography>
-              <Typography variant="body2">
+              <Typography variant="body2" as="div">
+                12%
+              </Typography>
+              <Typography variant="body2" as="div">
+                4
+              </Typography>
+              <Typography variant="body2" as="div">
+                12
+              </Typography>
+              <Typography variant="body2" as="div">
                 ${bignumberUtils.format('720864')}
               </Typography>
-              <Typography variant="body2" className={styles.positive}>
+              <Typography variant="body2" as="div" className={styles.positive}>
                 {bignumberUtils.format('0.2')}%
               </Typography>
-              <Typography variant="body2" className={styles.negative}>
+              <Typography variant="body2" as="div" className={styles.negative}>
                 {bignumberUtils.format('-0.2')}%
               </Typography>
             </div>

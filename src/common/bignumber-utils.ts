@@ -20,7 +20,7 @@ export const bignumberUtils = {
   },
 
   formatSpecific: (num?: string | null) =>
-    new BigNumber(num?.replace(',', '') || 0).toString(10),
+    new BigNumber(num?.replace(/,/g, '') || 0).toString(10),
 
   getPercentage: (
     count?: string | number | null,

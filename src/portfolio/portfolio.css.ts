@@ -7,4 +7,20 @@ export const title = style({
 export const cards = style({
   display: 'flex',
   gap: 24,
+  marginBottom: 24,
+})
+
+export const grid = style({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 24,
+})
+
+export const mainChart = style({
+  gridColumnStart: 1,
+  gridColumnEnd: 3,
+})
+
+export const section = style({
+  marginBottom: 64,
 })
