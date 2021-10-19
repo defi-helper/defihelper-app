@@ -1,17 +1,17 @@
 import { style } from '@vanilla-extract/css'
 
-import { theme } from '~/common/theme'
-
 export const root = style({
+  padding: 32,
+  width: 352,
+})
+
+export const form = style({
   display: 'flex',
   flexDirection: 'column',
-  background: theme.colors.common.white1,
+  alignItems: 'flex-start',
 })
 
 export const input = style({
-  marginBottom: 30,
-})
-
-export const label = style({
-  color: theme.colors.common.black1,
+  marginBottom: 24,
+  width: '100%',
 })
