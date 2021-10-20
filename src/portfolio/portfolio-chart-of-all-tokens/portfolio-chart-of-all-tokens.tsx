@@ -14,15 +14,10 @@ export type PortfolioChartOfAllTokensProps = {
   stable?: boolean
   className?: string
   variant: 'total' | 'estimated' | 'balance'
+  id: string
 }
 
 const TOTAL_NET_WORTH = [
-  {
-    valueY: 'allTokens',
-    name: 'Total Net Worth',
-    dateX: 'date',
-    color: '#39C077',
-  },
   {
     valueY: 'stable',
     name: 'On Wallets',
@@ -61,13 +56,13 @@ const BALANCE = [
   },
   {
     valueY: 'allTokens',
-    name: 'Altcoinss',
+    name: 'Altcoins',
     dateX: 'date',
     color: '#CCFF3C',
   },
 ]
 
-const TOKENS = ['allTokens', 'stable']
+const TOKENS = ['shit', 'stable']
 
 const variants = {
   total: TOTAL_NET_WORTH,
@@ -106,9 +101,9 @@ export const PortfolioChartOfAllTokens: React.FC<PortfolioChartOfAllTokensProps>
         </div>
         <Chart
           dataFields={variants[props.variant]}
-          id="tokens"
+          id={props.id}
           data={portfolioChartOfAllTokens[currentGroup].data}
-          names={['All tokens', 'Stable', 'Shit']}
+          names={['Stable', 'Altcoins']}
           // eslint-disable-next-line no-template-curly-in-string
           tooltipText="{name}: [bold]${valueY}[/]"
         />

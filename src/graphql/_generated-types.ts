@@ -2943,6 +2943,30 @@ export type BlockChainsQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type TokenMetricQueryVariables = Exact<{
+  totalNetWorth?: Scalars['MetricColumnType']
+  unclaimedReward?: Scalars['MetricColumnType']
+  group?: MetricGroupEnum
+  filter?: Maybe<UserMetricChartFilterInputType>
+  sort?: Maybe<
+    Array<UserMetricChartSortInputType> | UserMetricChartSortInputType
+  >
+  pagination?: Maybe<UserMetricChartPaginationInputType>
+}>
+
+export type TokenMetricQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      totalNetWorth: Array<
+        { __typename?: 'MetricChartType' } & Pick<MetricChartType, 'sum'>
+      >
+      unclaimedReward: Array<
+        { __typename?: 'MetricChartType' } & Pick<MetricChartType, 'sum'>
+      >
+    }
+  >
+}
+
 export type TokenMetricChartQueryVariables = Exact<{
   metric: Scalars['MetricColumnType']
   group: MetricGroupEnum

@@ -5,8 +5,6 @@ export const title = style({
 })
 
 export const cards = style({
-  display: 'flex',
-  gap: 24,
   marginBottom: 24,
 })
 
