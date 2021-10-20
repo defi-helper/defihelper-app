@@ -4,6 +4,7 @@ import { createGate } from 'effector-react'
 import { createPagination } from '~/common/create-pagination'
 import {
   BlockchainEnum,
+  MetricChartType,
   ProtocolFragmentFragment,
 } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
@@ -54,10 +55,14 @@ export const deleteProtocolFx = protocolListDomain.createEffect({
   },
 })
 
+type Protocol = ProtocolFragmentFragment & {
+  deleting: boolean
+  type: 'Protocol'
+  metricChart: Pick<MetricChartType, 'avg'>[]
+}
+
 export const $protocolList = protocolListDomain
-  .createStore<
-    (ProtocolFragmentFragment & { deleting: boolean; type: 'Protocol' })[]
-  >([], {
+  .createStore<Protocol[]>([], {
     name: '$protocolList',
   })
   .on(fetchProtocolListFx.doneData, (_, payload) =>

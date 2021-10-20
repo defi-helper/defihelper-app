@@ -11,52 +11,7 @@ export type PortfolioAssetsProps = {
   className?: string
 }
 
-const DATA = [
-  [
-    '48%',
-    'BAG',
-    'BondAppetit',
-    '1',
-    '$0.22',
-    '2240.86',
-    '$720,864.5',
-    '-6.4%',
-    '-12.8%',
-  ],
-  [
-    '48%',
-    'BAG',
-    'BondAppetit',
-    '1',
-    '$0.22',
-    '2240.86',
-    '$720,864.5',
-    '-6.4%',
-    '-12.8%',
-  ],
-  [
-    '48%',
-    'BAG',
-    'BondAppetit',
-    '1',
-    '$0.22',
-    '2240.86',
-    '$720,864.5',
-    '-6.4%',
-    '-12.8%',
-  ],
-  [
-    '48%',
-    'BAG',
-    'BondAppetit',
-    '1',
-    '$0.22',
-    '2240.86',
-    '$720,864.5',
-    '-6.4%',
-    '-12.8%',
-  ],
-]
+const DATA = [['-', '-', '-', '-', '-', '-', '-', '-', '-']]
 
 export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   return (

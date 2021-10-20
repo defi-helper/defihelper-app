@@ -7,6 +7,13 @@ export const PROTOCOLS = gql`
     $protocolFilter: ProtocolListFilterInputType
     $protocolSort: [ProtocolListSortInputType!]
     $protocolPagination: ProtocolListPaginationInputType
+    $metric: MetricColumnType! = usd
+    $metricGroup: MetricGroupEnum! = day
+    $metricFilter: ProtocolMetricChartFilterInputType
+    $metricSort: [ProtocolMetricChartSortInputType!] = [
+      { column: date, order: desc }
+    ]
+    $metricPagination: ProtocolMetricChartPaginationInputType = { limit: 1 }
   ) {
     protocols(
       filter: $protocolFilter
@@ -15,6 +22,15 @@ export const PROTOCOLS = gql`
     ) {
       list {
         ...protocolFragment
+        metricChart(
+          metric: $metric
+          group: $metricGroup
+          filter: $metricFilter
+          sort: $metricSort
+          pagination: $metricPagination
+        ) {
+          avg
+        }
       }
       pagination {
         count

@@ -18,6 +18,8 @@ import {
   StakingTokensQueryVariables,
   StakingContractEventsQuery,
   StakingContractEventsQueryVariables,
+  StakingContractMetricQueryVariables,
+  StakingContractMetricQuery,
 } from '~/graphql/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -27,6 +29,7 @@ import {
   STAKING_CONNECT_WALLET,
   STAKING_DISCONNECT_WALLET,
   STAKING_TOKENS,
+  STAKING_CONTRACT_METRIC,
 } from './graphql'
 import { STAKING_CONNECTED_CONTRACTS } from './graphql/staking-connected-contracts.graphql'
 import { STAKING_CONTRACTS_EVENTS } from '~/staking/common/graphql/staking-contract-events.graphql'
@@ -122,4 +125,13 @@ export const stakingApi = {
       )
       .toPromise()
       .then(({ data }) => data?.tokens.list ?? []),
+
+  contractMetric: (variables: StakingContractMetricQueryVariables) =>
+    getAPIClient()
+      .query<StakingContractMetricQuery, StakingContractMetricQueryVariables>(
+        STAKING_CONTRACT_METRIC,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.me),
 }

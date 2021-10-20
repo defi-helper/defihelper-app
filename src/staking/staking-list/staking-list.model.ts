@@ -3,6 +3,7 @@ import { createGate } from 'effector-react'
 
 import {
   BlockchainEnum,
+  MetricChartType,
   StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { userModel } from '~/users'
@@ -19,9 +20,34 @@ type GateState = {
   network?: number | string
 }
 
-export const fetchStakingListFx = stakingListDomain.createEffect({
-  name: 'fetchStakingList',
-  handler: (params: GateState & PaginationState) =>
+type ConnectParams = {
+  contract: string
+  wallet: string
+}
+
+interface ContractEvent {
+  protocolId: string
+  contractId: string
+  events: string[]
+}
+
+type Contract = StakingContractFragmentFragment & {
+  type: 'Contract'
+}
+
+export type ContractMetric = {
+  tvl: Array<Pick<MetricChartType, 'avg'>>
+  apr: Array<Pick<MetricChartType, 'avg'>>
+  stakingUSD: Array<Pick<MetricChartType, 'avg'>>
+  earnedUSD: Array<Pick<MetricChartType, 'avg'>>
+}
+
+const NOT_DELETED = 'Not deleted'
+const NOT_CONNECTED = 'Not connected'
+const NOT_DISCONNECTED = 'Not disconnected'
+
+export const fetchStakingListFx = stakingListDomain.createEffect(
+  (params: GateState & PaginationState) =>
     stakingApi.contractList({
       filter: {
         id: params.protocolId,
@@ -42,14 +68,11 @@ export const fetchStakingListFx = stakingListDomain.createEffect({
         offset: params?.offset,
         limit: params?.limit,
       },
-    }),
-})
+    })
+)
 
-const NOT_DELETED = 'Not deleted'
-
-export const deleteStakingFx = stakingListDomain.createEffect({
-  name: 'deleteStakingFx',
-  handler: async (id: string) => {
+export const deleteStakingFx = stakingListDomain.createEffect(
+  async (id: string) => {
     const isDeleted = await stakingApi.contractDelete(id)
 
     if (isDeleted) {
@@ -57,54 +80,44 @@ export const deleteStakingFx = stakingListDomain.createEffect({
     }
 
     throw new Error(NOT_DELETED)
-  },
-})
+  }
+)
 
-const NOT_CONNECTED = 'Not connected'
-
-type ConnectParams = {
-  contract: string
-  wallet: string
-}
-
-export const connectWalletFx = stakingListDomain.createEffect({
-  name: 'connectWalletFx',
-  handler: async (params: ConnectParams) => {
+export const connectWalletFx = stakingListDomain.createEffect(
+  async (params: ConnectParams) => {
     const isConnected = await stakingApi.connectWallet(params)
 
     if (isConnected) return
 
     throw new Error(NOT_CONNECTED)
-  },
-})
+  }
+)
 
-const NOT_DISCONNECTED = 'Not disconnected'
-
-export const disconnectWalletFx = stakingListDomain.createEffect({
-  name: 'disconnectWalletFx',
-  handler: async (params: ConnectParams) => {
+export const disconnectWalletFx = stakingListDomain.createEffect(
+  async (params: ConnectParams) => {
     const isDisconnected = await stakingApi.disconnectWallet(params)
 
     if (isDisconnected) return
 
     throw new Error(NOT_DISCONNECTED)
-  },
-})
+  }
+)
 
-export const fetchConnectedContractsFx = stakingListDomain.createEffect({
-  name: 'fetchConnectedContractsFx',
-  handler: (params: GateState) =>
-    stakingApi.connectedContracts(params.protocolId),
-})
+export const fetchConnectedContractsFx = stakingListDomain.createEffect(
+  (params: GateState) => stakingApi.connectedContracts(params.protocolId)
+)
 
-type Contract = StakingContractFragmentFragment & {
-  type: 'Contract'
-}
+export const fetchContractMetricFx = stakingListDomain.createEffect(
+  (contractIds: string[]) =>
+    stakingApi.contractMetric({
+      metricFilter: {
+        contract: contractIds,
+      },
+    })
+)
 
 const $contractList = stakingListDomain
-  .createStore<Contract[]>([], {
-    name: '$contractList',
-  })
+  .createStore<Contract[]>([])
   .on(fetchStakingListFx.doneData, (_, payload) =>
     payload.contracts.map((contract) => ({ ...contract, type: 'Contract' }))
   )
@@ -112,28 +125,18 @@ const $contractList = stakingListDomain
     return state.filter(({ id }) => id !== payload)
   })
 
-export const openContract =
-  stakingListDomain.createEvent<string>('openContract')
+export const openContract = stakingListDomain.createEvent<string>()
 
 export const $openedContract = stakingListDomain
-  .createStore<string | null>(null, {
-    name: '$openedContract',
-  })
+  .createStore<string | null>(null)
   .on(openContract, (_, payload) => payload)
 
 export const $protocolAdapter = stakingListDomain
-  .createStore<string | null>(null, {
-    name: '$protocolAdapter',
-  })
+  .createStore<string | null>(null)
   .on(fetchStakingListFx.doneData, (_, { adapter }) => adapter)
 
 const $connectedContracts = stakingListDomain
-  .createStore<Record<string, boolean>>(
-    {},
-    {
-      name: '$connectedContracts',
-    }
-  )
+  .createStore<Record<string, boolean>>({})
   .on(fetchConnectedContractsFx.doneData, (_, payload) => {
     return payload?.reduce<Record<string, boolean>>((acc, contract) => {
       if (!contract) return acc
@@ -215,9 +218,8 @@ sample({
   target: StakingListPagination.totalElements,
 })
 
-export const fetchContractEventsFx = contractsEventListDomain.createEffect({
-  name: 'fetchContractEventsFx',
-  handler: async (input: { protocolId: string; contractId: string }) => {
+export const fetchContractEventsFx = contractsEventListDomain.createEffect(
+  async (input: { protocolId: string; contractId: string }) => {
     return stakingApi.contractsEventsList({
       filter: {
         id: input.protocolId,
@@ -226,22 +228,11 @@ export const fetchContractEventsFx = contractsEventListDomain.createEffect({
         id: input.contractId,
       },
     })
-  },
-})
-
-interface ContractEvent {
-  protocolId: string
-  contractId: string
-  events: string[]
-}
+  }
+)
 
 export const $contractsEventsList = contractsEventListDomain
-  .createStore<Record<string, ContractEvent>>(
-    {},
-    {
-      name: '$contractsEventsList',
-    }
-  )
+  .createStore<Record<string, ContractEvent>>({})
   .on(fetchContractEventsFx.done, (state, payload) => {
     const events = (payload.result || []).reduce((res, c) => {
       res[c.id] = res[c.id] || {

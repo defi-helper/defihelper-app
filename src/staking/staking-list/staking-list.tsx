@@ -113,8 +113,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   <div className={clsx(styles.card, styles.row)}>
                     <div className={styles.tableCol}>
                       <div className={styles.coinIcons}>
-                        <Icon icon="BAG" className={styles.coinIcon} />
-                        <Icon icon="BNB" className={styles.coinIcon} />
+                        -
+                        {false && (
+                          <>
+                            <Icon icon="BAG" className={styles.coinIcon} />
+                            <Icon icon="BNB" className={styles.coinIcon} />
+                          </>
+                        )}
                       </div>
                       <Typography variant="body2" as="div">
                         {stakingListItem.name}
@@ -122,71 +127,71 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     </div>
                     <div>
                       <Typography variant="body2" as="div">
-                        $782,243.89
+                        -
                       </Typography>
                       <Typography
                         variant="body2"
                         as="div"
                         className={styles.red}
                       >
-                        -12%
+                        -
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="body2" as="div">
-                        56.72%
+                        -
                       </Typography>
                       <Typography
                         variant="body2"
                         as="div"
                         className={styles.red}
                       >
-                        -12%
+                        -
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="body2" as="div">
-                        56.72%
+                        -
                       </Typography>
                       <Typography
                         variant="body2"
                         as="div"
                         className={styles.lightGreen}
                       >
-                        +12%
+                        -
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="body2" as="div">
-                        $1,212,456.5
+                        -
                       </Typography>
                       <Typography
                         variant="body2"
                         as="div"
                         className={styles.red}
                       >
-                        -12%
+                        -
                       </Typography>
                     </div>
                     <div>
                       <Typography variant="body2" as="div">
-                        0.00012%
+                        -
                       </Typography>
                       <Typography
                         variant="body2"
                         as="div"
                         className={styles.red}
                       >
-                        -0.00002%
+                        -
                       </Typography>
                     </div>
                     <div className={styles.tableCol}>
                       <div>
                         <Typography variant="body2" as="div">
-                          $26,852
+                          -
                         </Typography>
                         <Typography variant="body2" as="div">
-                          +0.9%
+                          -
                         </Typography>
                       </div>
                       <ButtonBase

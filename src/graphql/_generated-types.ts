@@ -3018,12 +3018,25 @@ export type ProtocolsQueryVariables = Exact<{
     Array<ProtocolListSortInputType> | ProtocolListSortInputType
   >
   protocolPagination?: Maybe<ProtocolListPaginationInputType>
+  metric?: Scalars['MetricColumnType']
+  metricGroup?: MetricGroupEnum
+  metricFilter?: Maybe<ProtocolMetricChartFilterInputType>
+  metricSort?: Maybe<
+    Array<ProtocolMetricChartSortInputType> | ProtocolMetricChartSortInputType
+  >
+  metricPagination?: Maybe<ProtocolMetricChartPaginationInputType>
 }>
 
 export type ProtocolsQuery = { __typename?: 'Query' } & {
   protocols: { __typename?: 'ProtocolListQuery' } & {
     list?: Maybe<
-      Array<{ __typename?: 'ProtocolType' } & ProtocolFragmentFragment>
+      Array<
+        { __typename?: 'ProtocolType' } & {
+          metricChart: Array<
+            { __typename?: 'MetricChartType' } & Pick<MetricChartType, 'avg'>
+          >
+        } & ProtocolFragmentFragment
+      >
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
@@ -3481,6 +3494,38 @@ export type StakingContractListQuery = { __typename?: 'Query' } & {
           pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
         }
       }
+  >
+}
+
+export type StakingContractMetricQueryVariables = Exact<{
+  metricTvl?: Scalars['MetricColumnType']
+  metricApr?: Scalars['MetricColumnType']
+  metricStakingUSD?: Scalars['MetricColumnType']
+  metricEarnedUSD?: Scalars['MetricColumnType']
+  metricGroup?: MetricGroupEnum
+  metricFilter?: Maybe<UserMetricChartFilterInputType>
+  metricSort?: Maybe<
+    Array<UserMetricChartSortInputType> | UserMetricChartSortInputType
+  >
+  metricPagination?: Maybe<UserMetricChartPaginationInputType>
+}>
+
+export type StakingContractMetricQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      tvl: Array<
+        { __typename?: 'MetricChartType' } & Pick<MetricChartType, 'avg'>
+      >
+      apr: Array<
+        { __typename?: 'MetricChartType' } & Pick<MetricChartType, 'avg'>
+      >
+      stakingUSD: Array<
+        { __typename?: 'MetricChartType' } & Pick<MetricChartType, 'avg'>
+      >
+      earnedUSD: Array<
+        { __typename?: 'MetricChartType' } & Pick<MetricChartType, 'avg'>
+      >
+    }
   >
 }
 

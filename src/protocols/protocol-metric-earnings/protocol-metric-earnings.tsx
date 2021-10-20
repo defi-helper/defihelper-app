@@ -128,13 +128,13 @@ export const ProtocolMetricEarnings: React.VFC<{ className?: string }> = (
           <Typography variant="body2" className={styles.totalTitle}>
             Total Claimed Reward
           </Typography>
-          <Typography variant="h4">$0</Typography>
+          <Typography variant="h4">-</Typography>
         </Paper>
         <Paper radius={8} className={styles.totalItem}>
           <Typography variant="body2" className={styles.totalTitle}>
             Total Unclaimed Reward
           </Typography>
-          <Typography variant="h4">$0</Typography>
+          <Typography variant="h4">-</Typography>
         </Paper>
       </div>
     </div>
