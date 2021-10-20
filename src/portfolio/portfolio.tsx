@@ -23,28 +23,17 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
         <PortfolioMetricCard
           title="Total Net Worth"
           value={<>${bignumberUtils.format('1248726')}</>}
-          growthValue={
-            <>
-              {bignumberUtils.format('24546')} ({bignumberUtils.format('6')}%)
-            </>
-          }
-          positive
+          growthValue={<>-</>}
         />
         <PortfolioMetricCard
           title="Avg. APY total"
-          value={<>{bignumberUtils.format('12')}%</>}
-          growthValue={<>{bignumberUtils.format('-0.4')}</>}
-          positive={false}
+          value={<>-</>}
+          growthValue={<>-</>}
         />
         <PortfolioMetricCard
           title="Unclaimed reward"
-          value={<>${bignumberUtils.format('527862')}</>}
-          growthValue={
-            <>
-              {bignumberUtils.format('24546')} ({bignumberUtils.format('6')}%)
-            </>
-          }
-          positive
+          value={<>-</>}
+          growthValue={<>-</>}
         />
       </div>
       <div className={clsx(styles.grid, styles.section)}>

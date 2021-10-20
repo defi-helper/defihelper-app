@@ -78,7 +78,6 @@ export const ProtocolDetail: React.FC = () => {
           <Tabs>
             <Tab>Earnings</Tab>
             <Tab>Overview</Tab>
-            <Tab>Automations</Tab>
             <TabPanel>
               <div className={clsx(styles.grid, styles.mb120)}>
                 {EARNINGS.map((earn, index) => (
@@ -105,9 +104,6 @@ export const ProtocolDetail: React.FC = () => {
               <ProtocolMetricOverview className={styles.mb120} />
               <ProtocolMediaActivity className={styles.mb120} />
               <ProtocolDemandMetrics />
-            </TabPanel>
-            <TabPanel>
-              <Paper radius={8}>Automations</Paper>
             </TabPanel>
           </Tabs>
         </>

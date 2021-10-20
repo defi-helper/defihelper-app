@@ -54,20 +54,20 @@ const ESTIMATED = [
 
 const BALANCE = [
   {
-    valueY: 'allTokens',
+    valueY: 'stable',
     name: 'Stablecoins',
     dateX: 'date',
     color: '#F08BA9',
   },
   {
-    valueY: 'stable',
+    valueY: 'allTokens',
     name: 'Altcoinss',
     dateX: 'date',
     color: '#CCFF3C',
   },
 ]
 
-const TOKENS = ['allTokens', 'stable', 'shit']
+const TOKENS = ['allTokens', 'stable']
 
 const variants = {
   total: TOTAL_NET_WORTH,

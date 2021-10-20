@@ -17,6 +17,7 @@ import { Input } from '~/common/input'
 import { ProtocolTabs } from '../common'
 import { Paper } from '~/common/paper'
 import { Dropdown } from '~/common/dropdown'
+import { bignumberUtils } from '~/common/bignumber-utils'
 import * as model from './protocol-list.model'
 import * as styles from './protocol-list.css'
 
@@ -102,15 +103,18 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
             protocols.map((protocol) => (
               <li key={protocol.id} className={styles.item}>
                 <Paper className={clsx(styles.card)} radius={8}>
-                  <ButtonBase
-                    className={clsx(
-                      styles.favorite,
-                      favourites[protocol.id] && styles.favoriteActive
-                    )}
-                    onClick={handleFavourite(protocol.id)}
-                  >
-                    <Icon icon="star" />
-                  </ButtonBase>
+                  <div className={styles.favorite}>-</div>
+                  {false && (
+                    <ButtonBase
+                      className={clsx(
+                        styles.favorite,
+                        favourites[protocol.id] && styles.favoriteActive
+                      )}
+                      onClick={handleFavourite(protocol.id)}
+                    >
+                      <Icon icon="star" />
+                    </ButtonBase>
+                  )}
                   <Typography
                     as={ReactRouterLink}
                     to={paths.protocols.detail(protocol.id)}
@@ -129,20 +133,20 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
                     {protocol.name}
                   </Typography>
                   <Typography variant="body2" as="span">
-                    $3.75M
+                    ${bignumberUtils.format(protocol.metricChart?.[0]?.avg)}
                   </Typography>
                   <Typography variant="body2" as="span">
-                    0.19%
+                    -
                   </Typography>
                   <Typography variant="body2" as="span">
-                    $124,486
+                    -
                   </Typography>
                   <Typography
                     variant="body2"
                     as="span"
                     className={styles.profit}
                   >
-                    +$26,852 (12%)
+                    -
                     <Can I="update" a="Protocol">
                       <Dropdown
                         control={

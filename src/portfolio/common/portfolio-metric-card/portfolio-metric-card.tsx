@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as styles from './portfolio-metric-card.css'
@@ -6,7 +8,7 @@ export type PortfolioMetricCardProps = {
   title: React.ReactNode
   value: React.ReactNode
   growthValue: React.ReactNode
-  positive: boolean
+  positive?: boolean
 }
 
 export const PortfolioMetricCard: React.VFC<PortfolioMetricCardProps> = (
@@ -23,9 +25,10 @@ export const PortfolioMetricCard: React.VFC<PortfolioMetricCardProps> = (
       <Typography variant="body2">
         <Typography
           variant="inherit"
-          className={
-            props.positive ? styles.variant.positive : styles.variant.negative
-          }
+          className={clsx(
+            props.positive && styles.variant.positive,
+            props.positive === false && styles.variant.negative
+          )}
         >
           {props.growthValue}
         </Typography>{' '}
