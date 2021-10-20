@@ -16,7 +16,7 @@ export const SOCIAL_LINKS = [
     icon: 'telegram',
   },
   {
-    link: 'https://discord.gg/n2bQNFe3ts',
+    link: 'https://discord.gg/2sT3bmjPhf',
     icon: 'discord',
   },
 ] as const
