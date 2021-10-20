@@ -4,8 +4,7 @@ import { AppLayout } from '~/layouts'
 import { PortfolioChartOfAllTokens } from '~/portfolio/portfolio-chart-of-all-tokens'
 import { Head } from '~/common/head'
 import { Typography } from '~/common/typography'
-import { PortfolioMetricCard } from './common'
-import { bignumberUtils } from '~/common/bignumber-utils'
+import { PortfolioMetricCards } from './portfolio-metric-cards'
 import { PortfolioAssets } from './portfolio-assets'
 import { PortfolioWallets } from './portfolio-wallets/portfolio-wallets'
 import * as styles from './portfolio.css'
@@ -19,31 +18,19 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
       <Typography variant="h3" className={styles.title}>
         Portfolio
       </Typography>
-      <div className={styles.cards}>
-        <PortfolioMetricCard
-          title="Total Net Worth"
-          value={<>${bignumberUtils.format('1248726')}</>}
-          growthValue={<>-</>}
-        />
-        <PortfolioMetricCard
-          title="Avg. APY total"
-          value={<>-</>}
-          growthValue={<>-</>}
-        />
-        <PortfolioMetricCard
-          title="Unclaimed reward"
-          value={<>-</>}
-          growthValue={<>-</>}
-        />
-      </div>
+      <PortfolioMetricCards className={styles.cards} />
       <div className={clsx(styles.grid, styles.section)}>
-        <PortfolioChartOfAllTokens variant="total" className={styles.mainChart}>
+        <PortfolioChartOfAllTokens
+          variant="total"
+          className={styles.mainChart}
+          id="total"
+        >
           Total Net Worth Dynamics
         </PortfolioChartOfAllTokens>
-        <PortfolioChartOfAllTokens variant="estimated">
+        <PortfolioChartOfAllTokens variant="estimated" id="earnings">
           Estimated Earnings
         </PortfolioChartOfAllTokens>
-        <PortfolioChartOfAllTokens variant="balance">
+        <PortfolioChartOfAllTokens variant="balance" id="balance">
           Coin Balance
         </PortfolioChartOfAllTokens>
       </div>

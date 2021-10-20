@@ -120,10 +120,12 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                 {wallet.name || 'untitled'}
               </Typography>
               <Typography variant="body2" as="div">
-                <Icon
-                  icon={BLOCKCHAIN_ICONS[wallet.network]}
-                  className={styles.blockchainIcon}
-                />{' '}
+                {BLOCKCHAIN_ICONS[wallet.network] && (
+                  <Icon
+                    icon={BLOCKCHAIN_ICONS[wallet.network]}
+                    className={styles.blockchainIcon}
+                  />
+                )}{' '}
                 <Link
                   href={buildExplorerUrl({
                     network: wallet.network,

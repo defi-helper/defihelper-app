@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { BrowserRouter as Router } from 'react-router-dom'
-import { useLocalStorage } from 'react-use'
 
 import { AppLayout } from '~/layouts'
 import { Button } from '~/common/button'
@@ -10,10 +9,7 @@ import { useDialog } from '~/common/dialog'
 import { Grid } from '~/common/grid'
 import { Typography } from '~/common/typography'
 import { WalletList } from '~/wallets/wallet-list'
-import {
-  walletNetworkModel,
-  useEthereumNetwork,
-} from '~/wallets/wallet-networks'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { config } from '~/config'
 import { Paper } from '~/common/paper'
 import { userModel } from '~/users'
@@ -27,13 +23,9 @@ import * as model from './beta-access.model'
 export type BetaAccessProps = unknown
 
 export const BetaAccess: React.VFC<BetaAccessProps> = () => {
-  useEthereumNetwork()
-
-  const { account = null } = walletNetworkModel.useWalletNetwork()
   const user = useStore(userModel.$user)
   const userContact = useStore(model.$userContact)
-
-  const [connected, setConnected] = useLocalStorage('connected', false)
+  const userContacts = useStore(contactListModel.$userContactList)
 
   const [openWalletList] = useDialog(WalletList)
   const [openSuccess] = useDialog(BetaAccessSuccess)
@@ -42,7 +34,9 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
     try {
       const data = await openWalletList()
 
-      walletNetworkModel.activateWalletFx({ connector: data.connector })
+      walletNetworkModel.activateWalletFx({
+        connector: data.connector,
+      })
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -56,18 +50,15 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
 
   useEffect(() => {
     if (
-      userContact &&
+      (userContact || userContacts.length) &&
       user &&
       config.BETA &&
-      user.role === UserRoleEnum.Candidate &&
-      !connected
+      user.role === UserRoleEnum.Candidate
     ) {
-      openSuccess()
-        .then(() => setConnected(true))
-        .catch(() => setConnected(true))
+      openSuccess().catch((error) => console.error(error.message))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, connected, userContact])
+  }, [user, userContact, userContacts])
 
   return (
     <Router>
@@ -104,7 +95,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                 >
                   Connect your wallet and be among the first users of DFH
                 </Typography>
-                {account && (
+                {Boolean(user) && (
                   <Typography
                     variant="body2"
                     transform="uppercase"
@@ -114,7 +105,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                     Connected
                   </Typography>
                 )}
-                {!account ? (
+                {!user ? (
                   <Button variant="outlined" onClick={handleOpenWalletList}>
                     Connect wallet
                   </Button>
