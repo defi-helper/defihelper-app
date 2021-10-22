@@ -29,6 +29,7 @@ export const palette = {
   pink1: '#e8c8dd',
   pink2: 'rgba(240, 139, 169, 0.16)',
   pink3: '#f08ba9',
+  pink4: '#eec3dd',
   grey1: rgba('#fff', 0.64),
   grey2: rgba('#fff', 0.4),
   grey3: rgba('#fff', 0.24),

@@ -1,7 +1,8 @@
 import clsx from 'clsx'
 import { isValidElement, cloneElement, useRef } from 'react'
-import type { Placement } from '@popperjs/core'
+import type { Placement, Modifier } from '@popperjs/core'
 import { useKey } from 'react-use'
+import isEmpty from 'lodash.isempty'
 
 import { useClickAway, usePopper } from '~/common/hooks'
 import { Paper } from '~/common/paper'
@@ -13,6 +14,7 @@ export type DropdownProps = {
   className?: string
   placement?: Placement
   offset?: number[]
+  sameWidth?: boolean
 }
 
 export const Dropdown: React.FC<DropdownProps> = (props) => {
@@ -23,6 +25,12 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
 
   const localRef = useRef(null)
 
+  const modifiers = useRef<Partial<Modifier<string, unknown>>[]>([])
+
+  if (props.offset)
+    modifiers.current.push(usePopper.modifiers.getOffset(props.offset))
+  if (props.sameWidth) modifiers.current.push(usePopper.modifiers.sameWidth)
+
   const {
     popperStyles,
     popperAttributes,
@@ -31,9 +39,7 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
     referenceElement,
   } = usePopper({
     placement,
-    modifiers: props.offset
-      ? [usePopper.modifiers.getOffset(props.offset)]
-      : undefined,
+    modifiers: isEmpty(modifiers.current) ? undefined : modifiers.current,
   })
 
   const handleOnClickControl = (event: Event | null) => {

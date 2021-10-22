@@ -42,7 +42,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
           loading ? (
             'loading...'
           ) : (
-            <>${bignumberUtils.format(metric?.unclaimedReward?.[0].sum)}</>
+            <>${bignumberUtils.format(metric?.unclaimedReward?.[0]?.sum)}</>
           )
         }
         growthValue={loading ? 'loading...' : <>-</>}

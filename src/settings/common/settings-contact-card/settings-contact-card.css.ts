@@ -7,6 +7,12 @@ export const root = style({
   flexDirection: 'column',
 })
 
+export const title = style({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+})
+
 export const subtitle = style({
   opacity: 0.64,
   marginBottom: 10,
