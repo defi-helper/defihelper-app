@@ -1,5 +1,6 @@
 import { createDomain, guard, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
+import { debounce } from 'patronum/debounce'
 
 import { createPagination } from '~/common/create-pagination'
 import {
@@ -9,27 +10,21 @@ import {
 } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 
-const protocolListDomain = createDomain('protocolList')
+const protocolListDomain = createDomain()
 
-export const fetchProtocolListFx = protocolListDomain.createEffect({
-  name: 'fetchProtocolListFx',
-  handler: (params?: {
+export const fetchProtocolListFx = protocolListDomain.createEffect(
+  (params?: {
     blockchain: BlockchainEnum
     network?: string | number
     offset: number
     limit: number
+    search: string
   }) =>
     protocolsApi.protocolList({
-      ...(params?.blockchain
+      ...(params?.search
         ? {
             protocolFilter: {
-              blockchain: {
-                protocol: params.blockchain,
-                network:
-                  params.network !== 'waves'
-                    ? String(params.network)
-                    : undefined,
-              },
+              search: params?.search,
             },
           }
         : {}),
@@ -37,14 +32,13 @@ export const fetchProtocolListFx = protocolListDomain.createEffect({
         offset: params?.offset,
         limit: params?.limit,
       },
-    }),
-})
+    })
+)
 
 const ERROR = 'Not deleted'
 
-export const deleteProtocolFx = protocolListDomain.createEffect({
-  name: 'deleteProtocol',
-  handler: async (id: string) => {
+export const deleteProtocolFx = protocolListDomain.createEffect(
+  async (id: string) => {
     const isDeleted = await protocolsApi.protocolDelete(id)
 
     if (isDeleted) {
@@ -52,8 +46,8 @@ export const deleteProtocolFx = protocolListDomain.createEffect({
     }
 
     throw new Error(ERROR)
-  },
-})
+  }
+)
 
 type Protocol = ProtocolFragmentFragment & {
   deleting: boolean
@@ -62,9 +56,7 @@ type Protocol = ProtocolFragmentFragment & {
 }
 
 export const $protocolList = protocolListDomain
-  .createStore<Protocol[]>([], {
-    name: '$protocolList',
-  })
+  .createStore<Protocol[]>([])
   .on(fetchProtocolListFx.doneData, (_, payload) =>
     payload.list.map((protocol) => ({
       ...protocol,
@@ -85,21 +77,27 @@ export const ProtocolListPagination = createPagination({
   domain: protocolListDomain,
 })
 
-export const ProtocolListGate = createGate({
+export const ProtocolListGate = createGate<string>({
   domain: protocolListDomain,
   name: 'ProtocolListGate',
 })
 
+const gateUpdated = debounce({
+  source: ProtocolListGate.state.updates,
+  timeout: 500,
+})
+
 sample({
-  source: ProtocolListPagination.state,
+  source: [ProtocolListPagination.state, ProtocolListGate.state],
   clock: guard({
     source: ProtocolListGate.status,
-    clock: [ProtocolListGate.open, ProtocolListPagination.updates],
+    clock: [ProtocolListGate.open, ProtocolListPagination.updates, gateUpdated],
     filter: (gateIsOpened) => gateIsOpened,
   }),
-  fn: ({ offset, limit }) => ({
+  fn: ([{ offset, limit }, search]) => ({
     offset,
     limit,
+    search,
   }),
   target: fetchProtocolListFx,
 })

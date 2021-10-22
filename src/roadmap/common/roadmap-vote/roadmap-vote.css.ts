@@ -4,8 +4,8 @@ import { theme } from '~/common/theme'
 
 export const root = style({
   borderRadius: 100,
-  border: `1px solid ${theme.colors.common.green1}`,
-  color: theme.colors.common.green1,
+  border: `1px solid ${theme.colors.textColorGreen}`,
+  color: theme.colors.textColorGreen,
   padding: '6px 12px',
 })
 
@@ -19,6 +19,6 @@ export const title = style({
 })
 
 export const voted = style({
-  background: theme.colors.common.green1,
+  background: theme.colors.textColorGreen,
   color: theme.colors.common.black1,
 })

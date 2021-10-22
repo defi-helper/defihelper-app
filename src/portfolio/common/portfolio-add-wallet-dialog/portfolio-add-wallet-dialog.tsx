@@ -1,11 +1,10 @@
-import { MenuItem } from '@material-ui/core'
-import TextField from '@material-ui/core/TextField'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 
 import { Dialog } from '~/common/dialog'
 import { Input } from '~/common/input'
 import { Button } from '~/common/button'
 import { AddWalletInputType, BlockchainEnum } from '~/graphql/_generated-types'
+import { Select, SelectOption } from '~/common/select'
 import * as styles from './portfolio-add-wallet-dialog.css'
 
 export type PortfolioAddWalletDialogProps = {
@@ -14,33 +13,37 @@ export type PortfolioAddWalletDialogProps = {
 
 export const PortfolioAddWalletDialog: React.VFC<PortfolioAddWalletDialogProps> =
   (props) => {
-    const { register, formState, handleSubmit } = useForm<AddWalletInputType>()
+    const { register, formState, handleSubmit, control } =
+      useForm<AddWalletInputType>()
 
     return (
       <Dialog className={styles.root}>
         <form className={styles.form} onSubmit={handleSubmit(props.onConfirm)}>
           <div className={styles.input}>
-            <TextField
-              type="text"
-              label="Blockchain"
-              inputProps={register('blockchain')}
-              disabled={formState.isSubmitted}
-              error={Boolean(formState.errors.blockchain)}
-              helperText={formState.errors.blockchain?.message}
-              select
-            >
-              {Object.entries(BlockchainEnum).map(([label, value]) => (
-                <MenuItem key={label} value={value}>
-                  {label}
-                </MenuItem>
-              ))}
-            </TextField>
+            <Controller
+              render={({ field }) => (
+                <Select
+                  label="Blockchain"
+                  {...field}
+                  error={Boolean(formState.errors.blockchain)}
+                  helperText={formState.errors.blockchain?.message}
+                >
+                  {Object.entries(BlockchainEnum).map(([label, value]) => (
+                    <SelectOption key={value} value={value}>
+                      {label}
+                    </SelectOption>
+                  ))}
+                </Select>
+              )}
+              name="blockchain"
+              control={control}
+            />
           </div>
           <Input
             type="text"
             label="Address"
             {...register('address')}
-            disabled={formState.isSubmitted}
+            disabled={formState.isSubmitting}
             error={Boolean(formState.errors.address)}
             helperText={formState.errors.address?.message}
             className={styles.input}
@@ -49,7 +52,7 @@ export const PortfolioAddWalletDialog: React.VFC<PortfolioAddWalletDialogProps> 
             type="text"
             label="Title"
             {...register('network')}
-            disabled={formState.isSubmitted}
+            disabled={formState.isSubmitting}
             error={Boolean(formState.errors.network)}
             helperText={formState.errors.network?.message}
             className={styles.input}
