@@ -3,22 +3,16 @@ import { style } from '@vanilla-extract/css'
 export const root = style({
   width: 352,
   padding: '24px 32px 32px',
-})
-
-export const form = style({
   display: 'flex',
   flexDirection: 'column',
+  alignItems: 'center',
 })
 
-export const input = style({
-  selectors: {
-    '&:not(:last-child)': {
-      marginBottom: 24,
-    },
-  },
+export const title = style({
+  marginBottom: 10,
 })
 
-export const buttons = style({
+export const actions = style({
   display: 'flex',
-  gap: 16,
+  gap: 8,
 })

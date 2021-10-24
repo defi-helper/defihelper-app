@@ -9,6 +9,7 @@ import {
   SettingsPaper,
   SettingsInitialCard,
   SettingsConfirmDialog,
+  SettingsContactSuccessDialog,
 } from '~/settings/common'
 import { useDialog } from '~/common/dialog'
 import * as model from './settings-contact.model'
@@ -22,6 +23,7 @@ export type SettingsContactsProps = {
 export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const [openContactForm] = useDialog(SettingsContactFormDialog)
   const [openConfirm] = useDialog(SettingsConfirmDialog)
+  const [openSuccess] = useDialog(SettingsContactSuccessDialog)
 
   const user = useStore(userModel.$user)
 
@@ -37,7 +39,12 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
 
       const result = await openContactForm()
 
-      model.createUserContactFx(result)
+      const data = await model.createUserContactFx(result)
+
+      await openSuccess({
+        type: result.broker,
+        confirmationCode: data.confirmationCode,
+      })
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -116,6 +123,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
               type={contact.broker}
               deleting={contact.deleting}
               editing={contact.editing}
+              status={contact.status}
               onEdit={handleUpdateContact(contact)}
               onDelete={handleDeleteContact(contact)}
             />

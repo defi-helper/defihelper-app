@@ -24,6 +24,8 @@ import * as styles from './protocol-list.css'
 export type ProtocolListProps = unknown
 
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
+  const [search, setSearch] = useState('')
+
   const ability = useAbility()
 
   const [openConfirm] = useDialog(ConfirmDialog)
@@ -48,12 +50,16 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     [protocolList, ability]
   )
 
-  useGate(model.ProtocolListGate)
+  useGate(model.ProtocolListGate, search)
 
   const [favourites, setFavourite] = useState<Record<string, boolean>>({})
 
   const handleFavourite = (protocolId: string) => () => {
     setFavourite({ ...favourites, [protocolId]: !favourites[protocolId] })
+  }
+
+  const handleSearch = (event: React.FormEvent<HTMLInputElement>) => {
+    setSearch(event.currentTarget.value)
   }
 
   return (
@@ -65,7 +71,12 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
             Protocols
           </Typography>
           <ProtocolTabs className={styles.tabs} />
-          <Input placeholder="Search" className={styles.search} />
+          <Input
+            placeholder="Search"
+            className={styles.search}
+            value={search}
+            onChange={handleSearch}
+          />
           <Can I="create" a="Protocol">
             <Button
               as={ReactRouterLink}

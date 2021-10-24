@@ -6,8 +6,10 @@ import {
   BlockChainsQueryVariables,
   TokenMetricChartQuery,
   TokenMetricChartQueryVariables,
+  TokenMetricQuery,
+  TokenMetricQueryVariables,
 } from '~/graphql/_generated-types'
-import { ADD_WALLET, BLOCKCHAINS } from './graphql'
+import { ADD_WALLET, BLOCKCHAINS, TOKEN_METRIC } from './graphql'
 import { TOKEN_METRIC_CHART } from './graphql/token-metrick-chart.graphql'
 
 export const portfolioApi = {
@@ -31,10 +33,19 @@ export const portfolioApi = {
 
   addWallet: (variables: AddWalletMutationVariables) =>
     getAPIClient()
-      .query<AddWalletMutation, AddWalletMutationVariables>(
+      .mutation<AddWalletMutation, AddWalletMutationVariables>(
         ADD_WALLET,
         variables
       )
       .toPromise()
       .then(({ data }) => data?.addWallet),
+
+  getTokenMetric: (variables?: TokenMetricQueryVariables) =>
+    getAPIClient()
+      .query<TokenMetricQuery, TokenMetricQueryVariables>(
+        TOKEN_METRIC,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.me),
 }

@@ -12,6 +12,7 @@ import {
   SettingsRenameWalletDialog,
   SettingsConfirmDialog,
   SettingsBillingFormDialog,
+  SettingsWalletLoading,
 } from '~/settings/common'
 import { cutAccount } from '~/common/cut-account'
 import { useWalletList } from '~/wallets/wallet-list'
@@ -134,7 +135,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
         </Button>
       </SettingsHeader>
       <div className={styles.list}>
-        {loading && 'loading...'}
+        {loading && <SettingsWalletLoading />}
         {!loading && !wallets.length && (
           <SettingsInitialCard>
             <Typography variant="body2">
