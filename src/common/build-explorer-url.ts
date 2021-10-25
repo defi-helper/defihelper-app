@@ -8,6 +8,7 @@ const explorers: Record<string | number, string> = {
   56: 'https://bscscan.com/address',
   97: 'https://testnet.bscscan.com/address',
   137: 'https://polygonscan.com/address',
+  43114: 'https://explorer.avax.network/address',
   waves: 'https://wavesexplorer.com/address',
   main: 'https://wavesexplorer.com/address',
   W: 'https://wavesexplorer.com/address',
