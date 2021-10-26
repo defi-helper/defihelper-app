@@ -4,55 +4,21 @@ import { theme } from '~/common/theme'
 
 const sidebarWidth = 240
 
-const hidedSidebarWidth = 57
+const hiddenSidebarWidth = 57
 
 export const root = style({
-  position: 'relative',
-})
-
-export const aside = style({
   padding: '40px 16px 16px',
   width: sidebarWidth,
-  borderRight: `1px solid ${theme.colors.separator}`,
   display: 'flex',
   flexDirection: 'column',
   height: '100vh',
   overflowX: 'hidden',
   overflowY: 'auto',
-  position: 'sticky',
-  top: 0,
 })
 
-export const hideButton = style({
-  position: 'fixed',
-  top: 8,
-  left: sidebarWidth - 12,
-  zIndex: 10,
-  width: 24,
-  height: 24,
-  border: `1px solid ${theme.colors.separator}`,
-  background: theme.colors.background,
-  boxSizing: 'border-box',
-  borderRadius: 4,
-})
-
-export const hideButtonHided = style({
-  left: hidedSidebarWidth - 12,
-})
-
-export const hided = style({
-  width: hidedSidebarWidth,
+export const hidden = style({
+  width: hiddenSidebarWidth,
   padding: '40px 8px 8px',
-})
-
-export const doubleArrow = style({
-  width: 16,
-  height: 16,
-  opacity: 0.64,
-})
-
-export const doubleArrowReverted = style({
-  transform: 'rotate(180deg)',
 })
 
 export const logo = style({
@@ -82,7 +48,7 @@ export const link = style({
   alignItems: 'center',
 })
 
-export const linkHided = style({
+export const linkHidden = style({
   padding: 8,
 })
 
@@ -110,7 +76,7 @@ export const social = style({
   justifyContent: 'center',
 })
 
-export const socialHided = style({
+export const socialHidden = style({
   flexDirection: 'column',
   height: 'auto',
   marginTop: 'auto',
@@ -128,7 +94,7 @@ export const socailLink = style({
   },
 })
 
-export const socailLinkHided = style({
+export const socailLinkHidden = style({
   padding: '12px 0',
 })
 
@@ -139,11 +105,31 @@ export const socialIcon = style({
 })
 
 export const switchers = style({
-  display: 'flex',
+  display: 'grid',
   alignItems: 'center',
-  justifyContent: 'space-between',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 16,
 })
 
 export const govButton = style({
   borderColor: theme.colors.border,
+  minHeight: 32,
+})
+
+export const logout = style({
+  fontFamily: theme.fonts.mono,
+  textTransform: 'uppercase',
+  fontSize: 14,
+  lineHeight: '20px',
+  opacity: 0.64,
+  transition: 'opacity .3s ease-in-out',
+  marginTop: 16,
+
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      ':hover': {
+        opacity: 1,
+      },
+    },
+  },
 })

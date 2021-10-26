@@ -6,8 +6,14 @@ export const root = style({})
 
 export const header = style({
   display: 'flex',
-  marginBottom: 24,
+  marginBottom: 16,
   gap: 23,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      marginBottom: 24,
+    },
+  },
 })
 
 export const title = style({})
@@ -16,8 +22,20 @@ export const grey = style({
   color: theme.colors.textColorGrey,
 })
 
+export const tableWrap = style({
+  overflowX: 'auto',
+  overflowY: 'hidden',
+})
+
 export const table = style({
-  padding: '24px 26px',
+  padding: 16,
+  minWidth: 900,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '24px 26px',
+    },
+  },
 })
 
 export const tableRow = style({

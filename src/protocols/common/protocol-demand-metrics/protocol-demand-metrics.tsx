@@ -38,11 +38,11 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
   props
 ) => {
   return (
-    <div className={props.className}>
+    <div className={clsx(styles.root, props.className)}>
       <Typography variant="h3" className={styles.title}>
         Statistics
       </Typography>
-      <Paper radius={8} className={styles.root}>
+      <Paper radius={8} className={styles.tableInner}>
         {DEMAND_METRICS.map((row, rowIndex) => (
           <div
             key={String(rowIndex)}

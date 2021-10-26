@@ -16,7 +16,7 @@ export const icon = style({
 
 export const button = style({
   opacity: 0.64,
-  width: 45,
+  width: '50%',
   height: 26,
   borderRadius: 6,
 })

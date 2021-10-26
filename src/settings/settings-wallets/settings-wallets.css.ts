@@ -1,14 +1,49 @@
 import { style } from '@vanilla-extract/css'
 
+import { theme } from '~/common/theme'
+
 export const root = style({})
 
 export const header = style({
-  marginBottom: 32,
+  marginBottom: 16,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      marginBottom: 32,
+    },
+  },
 })
 
 export const list = style({
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr',
   gap: 24,
   minHeight: 314,
+  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+
+  '@media': {
+    [theme.mediaQueries.sm()]: {
+      gridTemplateColumns: 'repeat(auto-fit, minmax(351px, 1fr))',
+    },
+  },
+})
+
+export const addButton = style({
+  '@media': {
+    [theme.mediaQueries.down(959)]: {
+      padding: 6,
+      width: 24,
+      height: 24,
+    },
+  },
+})
+
+export const addButtonTitle = style({
+  display: 'none',
+  marginLeft: 11,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      display: 'inline',
+    },
+  },
 })

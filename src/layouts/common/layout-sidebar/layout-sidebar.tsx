@@ -1,7 +1,5 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import { NavLink, Link as ReactRouerLink } from 'react-router-dom'
 import clsx from 'clsx'
-import { useLocalStorage } from 'react-use'
 
 import { Link } from '~/common/link'
 import { paths } from '~/paths'
@@ -23,94 +21,87 @@ type MenuItem = {
 
 export type LayoutHeaderProps = {
   menu: MenuItem[]
+  onLogout?: () => void
+  hidden?: boolean
+  className?: string
 }
 
 export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
-  const [hided, setHide] = useLocalStorage('dfh:sidebar', false)
-
-  const handleHide = () => {
-    setHide(!hided)
-  }
-
   return (
-    <div className={styles.root}>
-      <ButtonBase
-        onClick={handleHide}
-        className={clsx(styles.hideButton, hided && styles.hideButtonHided)}
-      >
+    <aside
+      className={clsx(
+        styles.root,
+        {
+          [styles.hidden]: props.hidden,
+        },
+        props.className
+      )}
+    >
+      <Link href={config.MAIN_URL || paths.main} className={styles.logo}>
         <Icon
-          icon="doubleArrowLeft"
-          className={clsx(styles.doubleArrow, {
-            [styles.doubleArrowReverted]: hided,
-          })}
+          icon={props.hidden ? 'logoMini' : 'logo'}
+          className={styles.logoIcon}
         />
-      </ButtonBase>
-      <aside
-        className={clsx(styles.aside, {
-          [styles.hided]: hided,
-        })}
-      >
-        <Link href={config.MAIN_URL || paths.main} className={styles.logo}>
-          <Icon
-            icon={hided ? 'logoMini' : 'logo'}
-            className={styles.logoIcon}
-          />
-        </Link>
-        <ul className={styles.menu}>
-          {props.menu.map((menuItem) => (
-            <li key={menuItem.title}>
-              <NavLink
-                className={clsx(styles.link, hided && styles.linkHided)}
-                activeClassName={styles.active}
-                to={menuItem.path}
-              >
-                <Icon
-                  icon={menuItem.icon}
-                  width="24"
-                  height="24"
-                  className={styles.menuIcon}
-                />
-                {!hided && (
-                  <span className={styles.menuTitle}>{menuItem.title}</span>
-                )}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-        <div className={styles.spacer} />
-        {!hided && (
-          <div className={styles.switchers}>
-            <LayoutThemeSwitcher />
-            <LayoutCurrencySwitcher />
-          </div>
-        )}
-        <div className={clsx(styles.social, hided && styles.socialHided)}>
-          {SOCIAL_LINKS.map((link) => (
-            <Link
-              key={link.icon}
-              href={link.link}
-              target="_blank"
-              className={clsx(
-                styles.socailLink,
-                hided && styles.socailLinkHided
-              )}
+      </Link>
+      <ul className={styles.menu}>
+        {props.menu.map((menuItem) => (
+          <li key={menuItem.title}>
+            <NavLink
+              className={clsx(styles.link, props.hidden && styles.linkHidden)}
+              activeClassName={styles.active}
+              to={menuItem.path}
             >
-              <Icon icon={link.icon} className={styles.socialIcon} />
-            </Link>
-          ))}
+              <Icon
+                icon={menuItem.icon}
+                width="24"
+                height="24"
+                className={styles.menuIcon}
+              />
+              {!props.hidden && (
+                <span className={styles.menuTitle}>{menuItem.title}</span>
+              )}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+      <div className={styles.spacer} />
+      {!props.hidden && (
+        <div className={styles.switchers}>
+          <LayoutThemeSwitcher />
+          <LayoutCurrencySwitcher />
         </div>
-        {!hided && (
-          <Button
-            as={ReactRouerLink}
-            to={paths.governance.list}
-            variant="outlined"
-            size="small"
-            className={styles.govButton}
+      )}
+      <div className={clsx(styles.social, props.hidden && styles.socialHidden)}>
+        {SOCIAL_LINKS.map((link) => (
+          <Link
+            key={link.icon}
+            href={link.link}
+            target="_blank"
+            className={clsx(
+              styles.socailLink,
+              props.hidden && styles.socailLinkHidden
+            )}
           >
-            Governance
-          </Button>
-        )}
-      </aside>
-    </div>
+            <Icon icon={link.icon} className={styles.socialIcon} />
+          </Link>
+        ))}
+      </div>
+      {!props.hidden && (
+        <Button
+          as={ReactRouerLink}
+          to={paths.governance.list}
+          variant="outlined"
+          size="small"
+          className={styles.govButton}
+        >
+          Governance
+        </Button>
+      )}
+      {props.onLogout && !props.hidden && (
+        <ButtonBase className={styles.logout} onClick={props.onLogout}>
+          Log Out
+        </ButtonBase>
+      )}
+    </aside>
   )
 }

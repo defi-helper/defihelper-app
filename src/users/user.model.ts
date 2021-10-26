@@ -6,14 +6,17 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { sidUtils, userApi } from './common'
 
-export const userDomain = createDomain('user')
+export const userDomain = createDomain()
 
-export const fetchUserFx = userDomain.createEffect(() => userApi.me())
+export const fetchUserFx = userDomain.createEffect(userApi.me)
+
+export const logoutFx = userDomain.createEffect(sidUtils.remove)
 
 export const $user = userDomain
   .createStore<MeQuery['me'] | null>(null)
   .on(fetchUserFx.doneData, (_, payload) => payload)
   .on(walletNetworkModel.saveUserFx.doneData, (_, payload) => payload)
+  .reset(logoutFx.done)
 
 export const $userWallets = settingsWalletModel.$wallets
 

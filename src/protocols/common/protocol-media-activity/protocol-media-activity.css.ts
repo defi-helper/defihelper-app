@@ -10,8 +10,14 @@ export const title = style({
 
 export const grid = style({
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(352px, 1fr))',
-  gridGap: 24,
+  gap: 16,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gridTemplateColumns: 'repeat(auto-fill, minmax(352px, 1fr))',
+      gap: 24,
+    },
+  },
 })
 
 export const card = style({

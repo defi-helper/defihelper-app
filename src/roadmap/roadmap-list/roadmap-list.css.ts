@@ -1,9 +1,35 @@
 import { style } from '@vanilla-extract/css'
 
+import { theme } from '~/common/theme'
+
 export const header = style({
-  display: 'flex',
+  display: 'none',
   alignItems: 'center',
   marginBottom: 32,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      display: 'flex',
+    },
+  },
+})
+
+export const searchButton = style({
+  backgroundColor: theme.colors.paper,
+  padding: 4,
+  borderRadius: 6,
+})
+
+export const action = style({
+  display: 'flex',
+  gap: 8,
+})
+
+export const createMobile = style({
+  width: 24,
+  height: 24,
+  padding: 6,
+  borderRadius: 6,
 })
 
 export const input = style({
@@ -13,10 +39,4 @@ export const input = style({
 
 export const addButton = style({
   marginLeft: 24,
-})
-
-export const grid = style({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr 1fr',
-  gridGap: 24,
 })

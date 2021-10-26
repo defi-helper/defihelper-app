@@ -1,12 +1,11 @@
-import TextField from '@material-ui/core/TextField'
-import { useForm } from 'react-hook-form'
-import MenuItem from '@material-ui/core/MenuItem'
+import { Controller, useForm } from 'react-hook-form'
 import { lazy, Suspense } from 'react'
 
 import { ProposalStatusEnum } from '~/graphql/_generated-types'
 import { Input } from '~/common/input'
 import { Dialog } from '~/common/dialog'
 import { Button } from '~/common/button'
+import { Select, SelectOption } from '~/common/select'
 import * as styles from './roadmap-form.css'
 
 const MarkdownEditor = lazy(() =>
@@ -31,9 +30,8 @@ export type RoadmapFormProps = {
 }
 
 export const RoadmapForm: React.VFC<RoadmapFormProps> = (props) => {
-  const { register, handleSubmit, formState, setValue } = useForm<FormValues>()
-
-  const status = props.defaultValues ? register('status') : null
+  const { register, handleSubmit, formState, setValue, control } =
+    useForm<FormValues>()
 
   const handleOnSubmit = (formValues: FormValues) => {
     props.onConfirm({
@@ -70,7 +68,7 @@ export const RoadmapForm: React.VFC<RoadmapFormProps> = (props) => {
         </Suspense>
         {props.defaultValues && (
           <Input
-            type="text"
+            type="date"
             label="Planned at"
             defaultValue={props.defaultValues?.plannedAt || ''}
             {...register('plannedAt')}
@@ -82,7 +80,7 @@ export const RoadmapForm: React.VFC<RoadmapFormProps> = (props) => {
         )}
         {props.defaultValues && (
           <Input
-            type="text"
+            type="date"
             label="Released at"
             defaultValue={props.defaultValues?.releasedAt || ''}
             {...register('releasedAt')}
@@ -92,27 +90,30 @@ export const RoadmapForm: React.VFC<RoadmapFormProps> = (props) => {
             className={styles.input}
           />
         )}
-        {status && (
-          <TextField
-            type="text"
-            label="Status"
-            defaultValue={
-              props.defaultValues?.status ?? ProposalStatusEnum.Open
-            }
-            select
-            disabled={props.loading}
-            inputRef={status.ref}
-            {...status}
-            error={Boolean(formState.errors.status)}
-            helperText={formState.errors.status?.message}
-            className={styles.input}
-          >
-            {Object.entries(ProposalStatusEnum).map(([label, value]) => (
-              <MenuItem key={label} value={value}>
-                {label}
-              </MenuItem>
-            ))}
-          </TextField>
+        {props.defaultValues && (
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                label="Status"
+                defaultValue={
+                  props.defaultValues?.status ?? ProposalStatusEnum.Open
+                }
+                disabled={props.loading}
+                error={Boolean(formState.errors.status)}
+                helperText={formState.errors.status?.message}
+                className={styles.input}
+              >
+                {Object.entries(ProposalStatusEnum).map(([label, value]) => (
+                  <SelectOption key={label} value={value}>
+                    {label}
+                  </SelectOption>
+                ))}
+              </Select>
+            )}
+          />
         )}
         <div className={styles.actions}>
           <Button

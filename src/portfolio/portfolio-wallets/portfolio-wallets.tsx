@@ -88,76 +88,96 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
             onClick={handleOpenAddWalletDialog}
             className={styles.addWalletAdmin}
           >
-            + add wallet(admin)
+            +
+            <Typography variant="inherit" className={styles.addWalletTitle}>
+              add wallet(admin)
+            </Typography>
           </Button>
         </Can>
-        <Button color="blue" onClick={handleOpenWalletList}>
-          + add wallet
+        <Button
+          color="blue"
+          onClick={handleOpenWalletList}
+          className={styles.addWallet}
+        >
+          +
+          <Typography variant="inherit" className={styles.addWalletTitle}>
+            add wallet
+          </Typography>
         </Button>
       </div>
-      <Paper className={styles.table} radius={8}>
-        <div className={clsx(styles.tableRow, styles.tableHeader)}>
-          <Typography variant="body3">Wallet</Typography>
-          <Typography variant="body3">Address</Typography>
-          <Typography variant="body3">Portfolio %</Typography>
-          <Typography variant="body3">
-            <Icon icon="automation" width="20" height="20" />
-          </Typography>
-          <Typography variant="body3">Assets</Typography>
-          <Typography variant="body3">Value</Typography>
-          <Typography variant="body3">Value 24h</Typography>
-          <Typography variant="body3">Value 7d</Typography>
-        </div>
-        <div className={styles.tableBody}>
-          {wallets.map((wallet) => (
-            <div key={wallet.id} className={styles.tableRow}>
-              <Typography variant="body2" as="div">
-                <Jazzicon
-                  diameter={20}
-                  seed={jsNumberForAddress(wallet.address)}
-                  paperStyles={{ verticalAlign: 'middle' }}
-                />{' '}
-                {wallet.name || 'untitled'}
-              </Typography>
-              <Typography variant="body2" as="div">
-                {BLOCKCHAIN_ICONS[wallet.network] && (
-                  <Icon
-                    icon={BLOCKCHAIN_ICONS[wallet.network]}
-                    className={styles.blockchainIcon}
-                  />
-                )}{' '}
-                <Link
-                  href={buildExplorerUrl({
-                    network: wallet.network,
-                    address: wallet.address,
-                  })}
-                  target="_blank"
+      <div className={styles.tableWrap}>
+        <Paper className={styles.table} radius={8}>
+          <div className={clsx(styles.tableRow, styles.tableHeader)}>
+            <Typography variant="body3">Wallet</Typography>
+            <Typography variant="body3">Address</Typography>
+            <Typography variant="body3">Portfolio %</Typography>
+            <Typography variant="body3">
+              <Icon icon="automation" width="20" height="20" />
+            </Typography>
+            <Typography variant="body3">Assets</Typography>
+            <Typography variant="body3">Value</Typography>
+            <Typography variant="body3">Value 24h</Typography>
+            <Typography variant="body3">Value 7d</Typography>
+          </div>
+          <div className={styles.tableBody}>
+            {wallets.map((wallet) => (
+              <div key={wallet.id} className={styles.tableRow}>
+                <Typography variant="body2" as="div">
+                  <Jazzicon
+                    diameter={20}
+                    seed={jsNumberForAddress(wallet.address)}
+                    paperStyles={{ verticalAlign: 'middle' }}
+                  />{' '}
+                  {wallet.name || 'untitled'}
+                </Typography>
+                <Typography variant="body2" as="div">
+                  {BLOCKCHAIN_ICONS[wallet.network] && (
+                    <Icon
+                      icon={BLOCKCHAIN_ICONS[wallet.network]}
+                      className={styles.blockchainIcon}
+                    />
+                  )}{' '}
+                  <Link
+                    href={buildExplorerUrl({
+                      network: wallet.network,
+                      address: wallet.address,
+                    })}
+                    target="_blank"
+                  >
+                    {cutAccount(wallet.address)}
+                  </Link>
+                </Typography>
+                <Typography variant="body2" as="div">
+                  12%
+                </Typography>
+                <Typography variant="body2" as="div">
+                  4
+                </Typography>
+                <Typography variant="body2" as="div">
+                  12
+                </Typography>
+                <Typography variant="body2" as="div">
+                  ${bignumberUtils.format('720864')}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  as="div"
+                  className={styles.positive}
                 >
-                  {cutAccount(wallet.address)}
-                </Link>
-              </Typography>
-              <Typography variant="body2" as="div">
-                12%
-              </Typography>
-              <Typography variant="body2" as="div">
-                4
-              </Typography>
-              <Typography variant="body2" as="div">
-                12
-              </Typography>
-              <Typography variant="body2" as="div">
-                ${bignumberUtils.format('720864')}
-              </Typography>
-              <Typography variant="body2" as="div" className={styles.positive}>
-                {bignumberUtils.format('0.2')}%
-              </Typography>
-              <Typography variant="body2" as="div" className={styles.negative}>
-                {bignumberUtils.format('-0.2')}%
-              </Typography>
-            </div>
-          ))}
-        </div>
-      </Paper>
+                  {bignumberUtils.format('0.2')}%
+                </Typography>
+                <Typography
+                  variant="body2"
+                  as="div"
+                  className={styles.negative}
+                >
+                  {bignumberUtils.format('-0.2')}%
+                </Typography>
+              </div>
+            ))}
+          </div>
+        </Paper>
+      </div>
     </div>
   )
 }

@@ -1,8 +1,20 @@
+import { useStore } from 'effector-react'
+import { useLocalStorage } from 'react-use'
+import clsx from 'clsx'
+import { useState } from 'react'
+
 import { paths } from '~/paths'
 import { LayoutSidebar, LayoutContainer } from '../common'
+import { userModel } from '~/users'
+import { ButtonBase } from '~/common/button-base'
+import { Icon } from '~/common/icon'
 import * as styles from './app-layout.css'
+import { useBodyScrollLock } from '~/common/hooks'
 
-export type AppLayoutProps = unknown
+export type AppLayoutProps = {
+  title?: React.ReactNode
+  action?: React.ReactNode
+}
 
 const MENU = [
   {
@@ -38,9 +50,69 @@ const MENU = [
 ]
 
 export const AppLayout: React.FC<AppLayoutProps> = (props) => {
+  const user = useStore(userModel.$user)
+
+  const [hidden, setHide] = useLocalStorage('dfh:sidebar', false)
+
+  const [openSidebar, setOpenSidebar] = useState(false)
+  const [sidebar, setSidebar] = useState<HTMLDivElement | null>(null)
+
+  const handleHideSidebar = () => {
+    setHide(!hidden)
+  }
+
+  const handleLogout = () => {
+    userModel.logoutFx()
+  }
+
+  const handleToggleSidebar = () => {
+    setOpenSidebar(!openSidebar)
+  }
+
+  useBodyScrollLock(sidebar)
+
   return (
     <div className={styles.root}>
-      <LayoutSidebar menu={MENU} />
+      <div className={styles.sidebarDesktop}>
+        <LayoutSidebar
+          menu={MENU}
+          onLogout={user ? handleLogout : undefined}
+          hidden={hidden}
+        />
+        <ButtonBase onClick={handleHideSidebar} className={styles.hideButton}>
+          <Icon
+            icon="doubleArrowLeft"
+            className={clsx(styles.doubleArrow, {
+              [styles.doubleArrowReverted]: hidden,
+            })}
+          />
+        </ButtonBase>
+      </div>
+      <div className={styles.header}>
+        <div className={styles.title}>
+          <ButtonBase onClick={handleToggleSidebar}>
+            <Icon icon="burger" width="24" height="24" />
+          </ButtonBase>
+          {props.title}
+        </div>
+        <div className={styles.action}>{props.action}</div>
+      </div>
+      {openSidebar && (
+        <div ref={setSidebar} className={styles.sidebarMobile}>
+          <ButtonBase
+            onClick={handleToggleSidebar}
+            className={styles.closeButton}
+          >
+            <Icon icon="close" width="24" height="24" />
+          </ButtonBase>
+          <LayoutSidebar
+            menu={MENU}
+            onLogout={user ? handleLogout : undefined}
+            hidden={false}
+            className={styles.sidebarMobileInner}
+          />
+        </div>
+      )}
       <LayoutContainer>{props.children}</LayoutContainer>
     </div>
   )

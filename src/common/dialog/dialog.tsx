@@ -1,15 +1,17 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import clsx from 'clsx'
 import { useState } from 'react'
+import { animated } from '@react-spring/web'
 
 import { useBodyScrollLock } from '~/common/hooks'
 import { Paper } from '~/common/paper'
+import { useAnimatedContext } from './dialog.context'
 import * as styles from './dialog.css'
 
 export type DialogProps = {
   className?: string
 }
+
+const AnimatedPaper = animated(Paper)
 
 export const Dialog: React.FC<DialogProps> = (props) => {
   const handleOnClickContent = (
@@ -25,14 +27,17 @@ export const Dialog: React.FC<DialogProps> = (props) => {
     setContentElement(instance)
   }
 
+  const animatedContext = useAnimatedContext()
+
   return (
-    <Paper
+    <AnimatedPaper
+      {...animatedContext}
       onMouseDown={handleOnClickContent}
       className={clsx(styles.content, props.className)}
       radius={8}
       ref={handleSetContent}
     >
       {props.children}
-    </Paper>
+    </AnimatedPaper>
   )
 }

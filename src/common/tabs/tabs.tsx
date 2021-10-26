@@ -1,8 +1,11 @@
+import clsx from 'clsx'
 import { Children, useState, isValidElement, cloneElement } from 'react'
 
 import * as styles from './tabs.css'
 
-export type TabsProps = unknown
+export type TabsProps = {
+  className?: string
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const is = (type: string) => (element: any) => {
@@ -16,7 +19,7 @@ export const Tabs: React.FC<TabsProps> = (props) => {
   const [activeTab, setActiveTab] = useState(0)
 
   const tabList = Children.toArray(props.children).filter(isTab)
-  const tabPanes = Children.toArray(props.children).filter(isTabPanel)
+  const tabPanels = Children.toArray(props.children).filter(isTabPanel)
 
   const handleClickOnTab =
     (index: number, cb?: (...args: unknown[]) => void) =>
@@ -28,7 +31,7 @@ export const Tabs: React.FC<TabsProps> = (props) => {
 
   return (
     <div className={styles.root}>
-      <div className={styles.tabList}>
+      <div className={clsx(styles.tabList, props.className)}>
         {Children.map(
           tabList,
           (child, index) =>
@@ -40,7 +43,7 @@ export const Tabs: React.FC<TabsProps> = (props) => {
             })
         )}
       </div>
-      <div className={styles.tabPanes}>{tabPanes[activeTab]}</div>
+      <div className={styles.tabPanes}>{tabPanels[activeTab]}</div>
     </div>
   )
 }

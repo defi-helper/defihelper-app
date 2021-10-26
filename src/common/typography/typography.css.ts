@@ -9,6 +9,16 @@ export const root = style({
   fontWeight: 'normal',
 })
 
+export const fontFamilies = styleVariants({
+  square: {
+    fontFamily: theme.fonts.square,
+  },
+
+  mono: {
+    fontFamily: theme.fonts.mono,
+  },
+})
+
 export const variants = styleVariants({
   h1: {
     fontSize: 48,
@@ -96,6 +106,7 @@ export const variants = styleVariants({
     fontWeight: 'inherit',
     fontSize: 'inherit',
     lineHeight: 'inherit',
+    fontFamily: 'inherit',
   },
 })
 
@@ -110,16 +121,6 @@ export const aligns = styleVariants({
 
   right: {
     textAlign: 'right',
-  },
-})
-
-export const fontFamilies = styleVariants({
-  square: {
-    fontFamily: theme.fonts.square,
-  },
-
-  mono: {
-    fontFamily: theme.fonts.mono,
   },
 })
 

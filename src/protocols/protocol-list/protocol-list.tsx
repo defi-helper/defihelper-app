@@ -1,11 +1,9 @@
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
 import { useMemo, useState } from 'react'
-import clsx from 'clsx'
 
 import { Head } from '~/common/head'
 import { AppLayout } from '~/layouts'
-import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import { paths } from '~/paths'
 import { Can, useAbility } from '~/users'
@@ -14,10 +12,9 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
-import { ProtocolTabs } from '../common'
+import { ProtocolCard, ProtocolTabs } from '../common'
 import { Paper } from '~/common/paper'
-import { Dropdown } from '~/common/dropdown'
-import { bignumberUtils } from '~/common/bignumber-utils'
+import { ButtonBase } from '~/common/button-base'
 import * as model from './protocol-list.model'
 import * as styles from './protocol-list.css'
 
@@ -33,11 +30,11 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const loading = useStore(model.fetchProtocolListFx.pending)
   const protocolList = useStore(model.$protocolList)
 
-  const handleOpenConfirm = async (id: string) => {
+  const handleOpenConfirm = (protocolId: string) => async () => {
     try {
       await openConfirm()
 
-      await model.deleteProtocolFx(id)
+      await model.deleteProtocolFx(protocolId)
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -63,7 +60,30 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   }
 
   return (
-    <AppLayout>
+    <AppLayout
+      title="Protocols"
+      action={
+        <div className={styles.action}>
+          <ButtonBase className={styles.select}>
+            All <Icon icon="arrowDown" width="12" height="12" />
+          </ButtonBase>
+          <ButtonBase className={styles.searchButton}>
+            <Icon icon="search" width="16" height="16" />
+          </ButtonBase>
+          <Can I="create" a="Protocol">
+            <Button
+              as={ReactRouterLink}
+              variant="contained"
+              color="blue"
+              to={paths.protocols.create}
+              className={styles.createMobile}
+            >
+              +
+            </Button>
+          </Can>
+        </div>
+      }
+    >
       <Head title="Protocols" />
       <div className={styles.root}>
         <div className={styles.header}>
@@ -94,9 +114,14 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
             Name
           </Typography>
           <Typography variant="body2">Protocol TVL</Typography>
-          <Typography variant="body2">My APR</Typography>
+          <Typography variant="body2">My APY</Typography>
           <Typography variant="body2">My position</Typography>
-          <Typography variant="body2">My profit Daily</Typography>
+          <Typography variant="body2">
+            My profit{' '}
+            <Typography variant="inherit" className={styles.today}>
+              today
+            </Typography>
+          </Typography>
         </div>
         <ul className={styles.protocols}>
           {loading && (
@@ -113,81 +138,12 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
             protocols &&
             protocols.map((protocol) => (
               <li key={protocol.id} className={styles.item}>
-                <Paper className={clsx(styles.card)} radius={8}>
-                  <div className={styles.favorite}>-</div>
-                  {false && (
-                    <ButtonBase
-                      className={clsx(
-                        styles.favorite,
-                        favourites[protocol.id] && styles.favoriteActive
-                      )}
-                      onClick={handleFavourite(protocol.id)}
-                    >
-                      <Icon icon="star" />
-                    </ButtonBase>
-                  )}
-                  <Typography
-                    as={ReactRouterLink}
-                    to={paths.protocols.detail(protocol.id)}
-                    variant="body2"
-                    className={clsx(styles.link)}
-                  >
-                    {protocol.icon && (
-                      <img
-                        src={protocol.icon}
-                        alt={protocol.name}
-                        width="24"
-                        height="24"
-                        className={styles.logo}
-                      />
-                    )}
-                    {protocol.name}
-                  </Typography>
-                  <Typography variant="body2" as="span">
-                    ${bignumberUtils.format(protocol.metricChart?.[0]?.avg)}
-                  </Typography>
-                  <Typography variant="body2" as="span">
-                    -
-                  </Typography>
-                  <Typography variant="body2" as="span">
-                    -
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    as="span"
-                    className={styles.profit}
-                  >
-                    -
-                    <Can I="update" a="Protocol">
-                      <Dropdown
-                        control={
-                          <ButtonBase className={styles.manage}>
-                            <Icon icon="dots" />
-                          </ButtonBase>
-                        }
-                      >
-                        <Can I="update" a="Protocol">
-                          <ButtonBase
-                            as={ReactRouterLink}
-                            to={paths.protocols.update(protocol.id)}
-                            className={styles.manageDropdownItem}
-                          >
-                            Edit
-                          </ButtonBase>
-                        </Can>
-                        <Can I="delete" a="Protocol">
-                          <ButtonBase
-                            disabled={protocol.deleting}
-                            onClick={() => handleOpenConfirm(protocol.id)}
-                            className={styles.manageDropdownItem}
-                          >
-                            Delete
-                          </ButtonBase>
-                        </Can>
-                      </Dropdown>
-                    </Can>
-                  </Typography>
-                </Paper>
+                <ProtocolCard
+                  protocol={protocol}
+                  onFavourite={handleFavourite(protocol.id)}
+                  onDelete={handleOpenConfirm(protocol.id)}
+                  favourites={favourites}
+                />
               </li>
             ))}
         </ul>

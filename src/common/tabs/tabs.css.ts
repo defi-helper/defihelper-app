@@ -2,14 +2,17 @@ import { style } from '@vanilla-extract/css'
 
 import { theme } from '../theme'
 
-export const root = style({})
+export const root = style({
+  maxWidth: '100%',
+})
 
 export const tabList = style({
-  marginBottom: 64,
   display: 'flex',
 })
 
-export const tabPanes = style({})
+export const tabPanes = style({
+  width: '100%',
+})
 
 export const tab = style({
   borderRadius: 8,
@@ -24,4 +27,6 @@ export const tabActive = style({
   opacity: 1,
 })
 
-export const tabPane = style({})
+export const tabPane = style({
+  width: '100%',
+})

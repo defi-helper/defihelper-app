@@ -1,4 +1,5 @@
-import React from 'react'
+/* eslint-disable no-unused-vars */
+import { useMedia } from 'react-use'
 import { useParams } from 'react-router-dom'
 import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
@@ -19,11 +20,23 @@ import {
   ProtocolOverview,
 } from '~/protocols/common'
 import { Head } from '~/common/head'
+import { Icon } from '~/common/icon'
+import { Carousel } from '~/common/carousel'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
 
 export type ProtocolDetailProps = {
   protocolId: string
+}
+
+const Grid: React.FC = (props) => {
+  const isDesktop = useMedia('(min-width: 960px)')
+
+  return isDesktop ? (
+    <div className={clsx(styles.grid, styles.mb120)}>{props.children}</div>
+  ) : (
+    <Carousel className={styles.carousel}>{props.children}</Carousel>
+  )
 }
 
 const EARNINGS = [
@@ -53,8 +66,36 @@ export const ProtocolDetail: React.FC = () => {
   const loading = useStore(model.fetchProtocolFx.pending)
 
   return (
-    <AppLayout>
-      <Head title={protocol?.name} />
+    <AppLayout
+      title={
+        loading ? (
+          'loading...'
+        ) : (
+          <div>
+            {protocol?.icon && (
+              <img src={protocol?.icon} alt="" className={styles.icon} />
+            )}
+            {protocol?.name}
+          </div>
+        )
+      }
+      action={
+        loading ? (
+          'loading...'
+        ) : (
+          <Paper
+            target="_blank"
+            href={protocol?.link}
+            as={Link}
+            radius={8}
+            className={styles.protocolLink}
+          >
+            <Icon icon="link" width="16" height="16" />
+          </Paper>
+        )
+      }
+    >
+      <Head title={loading ? 'loading...' : protocol?.name} />
       {loading && !protocol && 'loading...'}
       {!loading && protocol && (
         <>
@@ -75,11 +116,11 @@ export const ProtocolDetail: React.FC = () => {
               </Paper>
             )}
           </div>
-          <Tabs>
+          <Tabs className={styles.tabs}>
             <Tab>Earnings</Tab>
             <Tab>Overview</Tab>
             <TabPanel>
-              <div className={clsx(styles.grid, styles.mb120)}>
+              <Grid>
                 {EARNINGS.map((earn, index) => (
                   <Paper
                     radius={8}
@@ -92,7 +133,7 @@ export const ProtocolDetail: React.FC = () => {
                     )}
                   </Paper>
                 ))}
-              </div>
+              </Grid>
               <ProtocolMetricEarnings className={styles.mb120} />
               <StakingList protocolId={params.protocolId} />
             </TabPanel>
