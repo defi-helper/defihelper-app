@@ -1,11 +1,26 @@
 import { style } from '@vanilla-extract/css'
 
+import { theme } from '~/common/theme'
+
 export const root = style({
-  flex: '1 0 auto',
+  width: '100%',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      width: 'calc(100% - 240px)',
+    },
+  },
 })
 
 export const content = style({
-  width: 1104,
+  maxWidth: 1136,
+  width: '100%',
   margin: '0 auto',
-  padding: '28px 0',
+  padding: '0 16px',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '28px 16px',
+    },
+  },
 })

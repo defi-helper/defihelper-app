@@ -47,6 +47,10 @@ import { ReactComponent as AutomationIcon } from '~/assets/icons/automation.svg'
 import { ReactComponent as BnbRegularIcon } from '~/assets/icons/bnb-regular.svg'
 import { ReactComponent as EthereumRegularIcon } from '~/assets/icons/ethereum-regular.svg'
 import { ReactComponent as WavesRegularIcon } from '~/assets/icons/waves-regular.svg'
+import { ReactComponent as BurgerIcon } from '~/assets/icons/burger.svg'
+import { ReactComponent as CloseIcon } from '~/assets/icons/close.svg'
+import { ReactComponent as LinkIcon } from '~/assets/icons/link.svg'
+import { ReactComponent as SearchIcon } from '~/assets/icons/search.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -100,6 +104,10 @@ const ICONS = {
   wavesRegular: WavesRegularIcon,
   ethereumRegular: EthereumRegularIcon,
   bnbRegular: BnbRegularIcon,
+  burger: BurgerIcon,
+  close: CloseIcon,
+  link: LinkIcon,
+  search: SearchIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

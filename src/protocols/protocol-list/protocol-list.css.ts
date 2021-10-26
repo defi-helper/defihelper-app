@@ -1,14 +1,26 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { composeStyles, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
 export const root = style({})
 
-export const header = style({
-  marginBottom: 28,
-  display: 'flex',
-  alignItems: 'center',
+export const hide = style({
+  display: 'none',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      display: 'flex',
+    },
+  },
 })
+
+export const header = composeStyles(
+  hide,
+  style({
+    marginBottom: 28,
+    alignItems: 'center',
+  })
+)
 
 export const tabs = style({
   marginLeft: 'auto',
@@ -29,24 +41,18 @@ export const protocols = style({
   listStyle: 'none',
 })
 
-export const link = style({
-  textDecoration: 'none',
-  color: 'currentcolor',
-  display: 'flex',
-  padding: '16px 0',
-  alignItems: 'center',
-})
-
-export const logo = style({
-  marginRight: 8,
-})
-
 export const proposalsHeader = style({
-  display: 'grid',
   alignItems: 'center',
   gridTemplateColumns: '1fr 21% 16% 15% 18% 21%',
-  opacity: 0.4,
+  color: theme.colors.textColorGrey,
   marginBottom: 8,
+  display: 'none',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      display: 'grid',
+    },
+  },
 })
 
 export const name = style({
@@ -63,54 +69,32 @@ export const item = style({
   },
 })
 
-export const card = style({
-  display: 'grid',
-  alignItems: 'center',
-  gridTemplateColumns: '1fr 21% 16% 15% 18% 21%',
+export const today = style({
+  color: theme.colors.common.blue1,
 })
 
-export const favorite = style({
-  width: 20,
-  height: 20,
-  opacity: 0.24,
-  padding: 2,
-  marginLeft: 18,
-  transition: 'opacity .1s ease-in-out, color .1s ease-in-out',
-})
-
-export const favoriteActive = style({
-  color: theme.colors.common.yellow,
-  opacity: 1,
-})
-
-globalStyle(`${favorite}:not(${favoriteActive}):hover`, {
-  '@media': {
-    [theme.mediaQueries.hover()]: {
-      color: theme.colors.common.yellow,
-      opacity: 0.5,
-    },
-  },
-})
-
-export const profit = style({
+export const action = style({
   display: 'flex',
-  alignItems: 'center',
-  color: theme.colors.common.green2,
+  gap: 8,
 })
 
-export const manage = style({
-  width: 20,
-  height: 20,
-  color: theme.colors.textColorPrimary,
-  margin: '0 auto',
+export const searchButton = style({
+  backgroundColor: theme.colors.paper,
+  padding: 4,
+  borderRadius: 6,
 })
 
-export const manageDropdown = style({
-  display: 'flex',
-  flexDirection: 'column',
-  padding: 10,
-})
+export const select = composeStyles(
+  searchButton,
+  style({
+    fontSize: 12,
+    lineHeight: '16px',
+  })
+)
 
-export const manageDropdownItem = style({
-  justifyContent: 'flex-start',
+export const createMobile = style({
+  width: 24,
+  height: 24,
+  padding: 6,
+  borderRadius: 6,
 })

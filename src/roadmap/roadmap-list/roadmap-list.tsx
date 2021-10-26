@@ -12,13 +12,15 @@ import {
   RoadmapGrid,
   RoadmapGroupedByStatus,
   RoadmapSuccessDialog,
-} from '../common'
+} from '~/roadmap/common'
 import { Typography } from '~/common/typography'
 import { Input } from '~/common/input'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { useQueryParams } from '~/common/hooks'
 import { Head } from '~/common/head'
+import { ButtonBase } from '~/common/button-base'
+import { Icon } from '~/common/icon'
 import * as model from './roadmap-list.model'
 import * as styles from './roadmap-list.css'
 
@@ -99,7 +101,27 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
   )
 
   return (
-    <AppLayout>
+    <AppLayout
+      title="Roadmap"
+      action={
+        <div className={styles.action}>
+          <ButtonBase className={styles.searchButton}>
+            <Icon icon="search" width="16" height="16" />
+          </ButtonBase>
+          <Can I="create" a="Proposal">
+            <Button
+              variant="contained"
+              color="blue"
+              onClick={handleAdd}
+              loading={createLoading}
+              className={styles.createMobile}
+            >
+              +
+            </Button>
+          </Can>
+        </div>
+      }
+    >
       <Head title="Roadmap" />
       <div className={styles.header}>
         <Typography variant="h3">Roadmap</Typography>

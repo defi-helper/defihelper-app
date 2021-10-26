@@ -2,7 +2,21 @@ import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
-export const root = style({})
+export const root = style({
+  overflowX: 'auto',
+  overflowY: 'hidden',
+})
+
+export const tableInner = style({
+  padding: 16,
+  minWidth: 900,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '24px 26px',
+    },
+  },
+})
 
 export const title = style({
   marginBottom: 24,

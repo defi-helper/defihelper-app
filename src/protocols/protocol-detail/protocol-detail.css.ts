@@ -2,29 +2,43 @@ import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
-export const root = style({
-  padding: 0,
-  margin: 0,
-  listStyle: 'none',
-})
-
 export const header = style({
-  display: 'flex',
   alignItems: 'center',
   marginBottom: 28,
+  display: 'none',
+  width: '100%',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      display: 'flex',
+    },
+  },
 })
 
 export const icon = style({
   verticalAlign: 'middle',
-  width: 36,
-  height: 36,
   marginRight: 12,
+  width: 24,
+  height: 24,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      width: 36,
+      height: 36,
+    },
+  },
 })
 
 export const protocolLink = style({
-  padding: '8px 16px',
   marginLeft: 'auto',
   color: theme.colors.textColorGrey,
+  padding: 4,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '8px 16px',
+    },
+  },
 })
 
 export const mb120 = style({
@@ -33,8 +47,18 @@ export const mb120 = style({
 
 export const grid = style({
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(352px, 1fr))',
-  gridGap: 24,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+      gap: 24,
+    },
+  },
+})
+
+export const carousel = style({
+  marginLeft: -16,
+  marginRight: -16,
 })
 
 export const grey = style({
@@ -55,8 +79,15 @@ export const red = style({
 })
 
 export const card = style({
-  padding: '24px 32px',
-  minHeight: 400,
+  padding: 16,
+  minHeight: 280,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '24px 32px',
+      minHeight: 400,
+    },
+  },
 })
 
 export const subtitle = style({
@@ -67,4 +98,14 @@ export const flex = style({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
+})
+
+export const tabs = style({
+  marginBottom: 32,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      marginBottom: 64,
+    },
+  },
 })

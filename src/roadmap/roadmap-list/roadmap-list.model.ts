@@ -1,5 +1,6 @@
 import { createDomain, sample, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
+import omit from 'lodash.omit'
 
 import { createPagination, PaginationState } from '~/common/create-pagination'
 import {
@@ -56,7 +57,7 @@ export const updateProposalFx = proposalListDomain.createEffect(
   async (
     variables: ProposalUpdateMutationVariables & { proposal: Proposal }
   ) => {
-    const data = await roadmapApi.proposalUpdate(variables)
+    const data = await roadmapApi.proposalUpdate(omit(variables, 'proposal'))
 
     if (!data) throw new Error('not updated')
 

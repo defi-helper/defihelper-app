@@ -4,8 +4,13 @@ import { theme } from '~/common/theme'
 
 export const overview = style({
   display: 'grid',
-  gridTemplateColumns: '560px 1fr',
-  gridGap: 63,
+  gap: 63,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gridTemplateColumns: '560px 1fr',
+    },
+  },
 })
 
 export const overviewItem = style({

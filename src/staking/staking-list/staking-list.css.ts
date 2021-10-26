@@ -1,8 +1,10 @@
-import { style } from '@vanilla-extract/css'
+import { composeStyles, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
-export const root = style({
+export const root = style({})
+
+export const list = style({
   padding: 0,
   margin: 0,
   listStyle: 'none',
@@ -16,17 +18,33 @@ export const header = style({
 
 export const title = style({})
 
-export const tabs = style({
-  marginLeft: 'auto',
+export const hide = style({
+  display: 'none',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      display: 'block',
+    },
+  },
 })
 
-export const select = style({
-  padding: '8px 16px',
-  fontSize: 16,
-  lineHeight: '24px',
-  color: theme.colors.textColorGrey,
-  marginLeft: 16,
-})
+export const tabs = composeStyles(
+  hide,
+  style({
+    marginLeft: 'auto',
+  })
+)
+
+export const select = composeStyles(
+  hide,
+  style({
+    padding: '8px 16px',
+    fontSize: 16,
+    lineHeight: '24px',
+    color: theme.colors.textColorGrey,
+    marginLeft: 16,
+  })
+)
 
 export const selectArrow = style({
   width: 8,
@@ -38,8 +56,31 @@ export const selectArrow = style({
 })
 
 export const create = style({
-  padding: 8,
-  marginLeft: 16,
+  padding: 2,
+  marginLeft: 'auto',
+
+  '@media': {
+    [theme.mediaQueries.down(959)]: {
+      borderRadius: 6,
+    },
+
+    [theme.mediaQueries.md()]: {
+      padding: 8,
+      marginLeft: 16,
+    },
+  },
+})
+
+export const createIcon = style({
+  width: 12,
+  height: 12,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      width: 24,
+      height: 24,
+    },
+  },
 })
 
 export const tableHeader = style({
@@ -61,6 +102,22 @@ export const row = style({
 })
 
 export const card = style({})
+
+export const table = style({
+  overflowX: 'auto',
+  overflowY: 'hidden',
+})
+
+export const tableInner = style({
+  padding: 16,
+  minWidth: 900,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '24px 26px',
+    },
+  },
+})
 
 export const red = style({
   color: theme.colors.common.red1,

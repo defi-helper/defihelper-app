@@ -3,17 +3,30 @@ import { style } from '@vanilla-extract/css'
 import { theme } from '~/common/theme'
 
 export const root = style({
-  padding: '24px 32px',
   textDecoration: 'none',
   color: 'inherit',
   display: 'flex',
   position: 'relative',
   flexDirection: 'column',
-  minHeight: 196,
+  minHeight: 172,
+  padding: 16,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '24px 32px',
+      minHeight: 196,
+    },
+  },
+})
+
+export const header = style({
+  display: 'flex',
+  alignItems: 'center',
 })
 
 export const proposalTitle = style({
   textDecoration: 'none',
+  width: '100%',
 })
 
 export const description = style({
@@ -37,9 +50,6 @@ export const info = style({
 export const manageButton = style({
   width: 20,
   height: 20,
-  position: 'absolute',
-  right: 32,
-  top: 24,
 })
 
 export const manageButtonItem = style({

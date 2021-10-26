@@ -9,13 +9,14 @@ export type PortfolioMetricCardProps = {
   value: React.ReactNode
   growthValue: React.ReactNode
   positive?: boolean
+  className?: string
 }
 
 export const PortfolioMetricCard: React.VFC<PortfolioMetricCardProps> = (
   props
 ) => {
   return (
-    <Paper radius={8} className={styles.root}>
+    <Paper radius={8} className={clsx(styles.root, props.className)}>
       <Typography variant="body2" className={styles.title}>
         {props.title}
       </Typography>

@@ -1,10 +1,8 @@
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
+import { ButtonBase } from '~/common/button-base'
 import { Dialog, useDialog } from '~/common/dialog'
+import { Typography } from '~/common/typography'
 import { augmentConnectorUpdate, connectorsByName } from '~/wallets/common'
 import * as styles from './wallet-list.css'
 
@@ -35,26 +33,25 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
   }
 
   return (
-    <Dialog>
-      <List>
+    <Dialog className={styles.root}>
+      <ul className={styles.list}>
         {Object.entries(connectorsByName)
           .filter(
             ([, wallet]) =>
               !props.blockchain || wallet.blockchain === props.blockchain
           )
           .map(([walletName, wallet]) => (
-            <ListItem
-              button
-              key={walletName}
-              onClick={handleActivate(wallet.connector)}
-            >
-              <ListItemIcon>
+            <li key={walletName}>
+              <ButtonBase
+                onClick={handleActivate(wallet.connector)}
+                className={styles.wallet}
+              >
                 <wallet.logo className={styles.icon} />
-              </ListItemIcon>
-              <ListItemText primary={walletName} />
-            </ListItem>
+                <Typography as="span">{walletName}</Typography>
+              </ButtonBase>
+            </li>
           ))}
-      </List>
+      </ul>
     </Dialog>
   )
 }

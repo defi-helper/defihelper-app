@@ -1,7 +1,9 @@
 import { useGate, useStore } from 'effector-react'
+import { useMedia } from 'react-use'
 
 import { Button } from '~/common/button'
 import { Typography } from '~/common/typography'
+import { Carousel } from '~/common/carousel'
 import {
   SettingsHeader,
   SettingsContactFormDialog,
@@ -12,12 +14,22 @@ import {
   SettingsContactSuccessDialog,
 } from '~/settings/common'
 import { useDialog } from '~/common/dialog'
+import { userModel } from '~/users'
 import * as model from './settings-contact.model'
 import * as styles from './settings-contacts.css'
-import { userModel } from '~/users'
 
 export type SettingsContactsProps = {
   className?: string
+}
+
+const Grid: React.FC = (props) => {
+  const isDesktop = useMedia('(min-width: 960px)')
+
+  return isDesktop ? (
+    <div className={styles.list}>{props.children}</div>
+  ) : (
+    <Carousel className={styles.carousel}>{props.children}</Carousel>
+  )
 }
 
 export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
@@ -97,11 +109,15 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           color="blue"
           onClick={handleOpenContactForm}
           loading={contactCreating}
+          className={styles.addButton}
         >
-          + New Contact
+          +
+          <Typography variant="inherit" className={styles.addButtonTitle}>
+            New Contact
+          </Typography>
         </Button>
       </SettingsHeader>
-      <div className={styles.list}>
+      <Grid>
         {loading && <>loading...</>}
         {!loading && !contactList.length && (
           <SettingsInitialCard>
@@ -133,36 +149,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           Array.from(Array(paperCount)).map((_, index) => (
             <SettingsPaper key={String(index)} />
           ))}
-      </div>
+      </Grid>
     </div>
   )
 }
-
-/* <ListItemText
-    primary={contact.address}
-    secondary={contact.broker}
-  />
-  <ListItemSecondaryAction>
-    {contact.broker === UserContactBrokerEnum.Telegram &&
-    contact.status === UserContactStatusEnum.Inactive && (
-      <Button
-        variant="contained"
-        color="primary"
-        className={classes.telegramConfirm}
-        disabled={contact.deleting}
-        target="_blank"
-        href={`https://t.me/${config.TELEGRAM_BOT_USERNAME}?start=${contact.confirmationCode}`}
-      >
-        Confirm
-      </Button>
-    )}
-
-  <Button
-    variant="contained"
-    color="secondary"
-    disabled={contact.deleting}
-    onClick={() => handleOpenConfirm(contact.id)}
-  >
-    Delete
-  </Button>
-</ListItemSecondaryAction> */

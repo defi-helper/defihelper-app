@@ -10,13 +10,26 @@ export const title = style({
 
 export const charts = style({
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gridGap: 24,
-  marginBottom: 24,
+  gap: 16,
+  marginBottom: 16,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gridTemplateColumns: '1fr 1fr',
+      gap: 24,
+      marginBottom: 24,
+    },
+  },
 })
 
 export const chart = style({
-  padding: '24px 32px',
+  padding: 16,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '24px 32px',
+    },
+  },
 })
 
 export const header = style({
@@ -27,8 +40,14 @@ export const header = style({
 
 export const total = style({
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr',
-  gridGap: 24,
+  gap: 16,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gridTemplateColumns: '1fr 1fr 1fr',
+      gap: 24,
+    },
+  },
 })
 
 export const totalTitle = style({

@@ -9,7 +9,7 @@ export type SettingsProps = unknown
 
 export const Settings: React.VFC<SettingsProps> = () => {
   return (
-    <AppLayout>
+    <AppLayout title="Settings">
       <Head title="Settings" />
       <div className={styles.root}>
         <SettingsContacts className={styles.section} />

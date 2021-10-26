@@ -13,7 +13,7 @@ export type PortfolioProps = unknown
 
 export const Portfolio: React.VFC<PortfolioProps> = () => {
   return (
-    <AppLayout>
+    <AppLayout title="Portfolio">
       <Head title="Portfolio" />
       <Typography variant="h3" className={styles.title}>
         Portfolio

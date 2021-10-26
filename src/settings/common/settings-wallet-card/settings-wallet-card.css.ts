@@ -93,6 +93,7 @@ export const footer = style({
   padding: '16px 24px 24px',
   background: theme.colors.common.blue1,
   color: theme.colors.common.white1,
+  height: '100%',
 })
 
 export const error = style({

@@ -16,6 +16,7 @@ export const palette = {
   black9: rgba('#000', 0.4),
   black10: rgba('#000', 0.06),
   black11: rgba('#000', 0.16),
+  black12: rgba('#000', 0.8),
   blue1: '#4463ee',
   blue2: 'rgba(68, 99, 238, 0.16)',
   brown1: '#8a7a63',

@@ -1,4 +1,5 @@
-import { style } from '@vanilla-extract/css'
+import { style, globalStyle } from '@vanilla-extract/css'
+
 import { theme } from '~/common/theme'
 
 export const root = style({
@@ -6,6 +7,11 @@ export const root = style({
   flexDirection: 'column',
   width: '100%',
   position: 'relative',
+})
+
+export const disabled = style({
+  pointerEvents: 'none',
+  opacity: 0.8,
 })
 
 export const input = style({
@@ -22,13 +28,30 @@ export const input = style({
   lineHeight: '24px',
   padding: '8px 16px',
   color: 'currentcolor',
+  transition: 'border .2s ease-in-out',
 
   '::placeholder': {
     color: 'inherit',
   },
+
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      ':hover': {
+        borderColor: theme.colors.textColorGrey,
+      },
+    },
+  },
+
+  ':focus': {
+    borderColor: theme.colors.textColorPrimary,
+  },
 })
 
 export const error = style({})
+
+globalStyle(`${error} ${input}`, {
+  borderColor: theme.colors.common.red1,
+})
 
 export const label = style({
   fontFamily: theme.fonts.mono,

@@ -3,9 +3,16 @@ import { style, styleVariants } from '@vanilla-extract/css'
 import { theme } from '~/common/theme'
 
 export const root = style({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr 1fr',
-  gridGap: 24,
+  display: 'flex',
+  overflowX: 'auto',
+  overflowY: 'hidden',
+  gap: 16,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gap: 24,
+    },
+  },
 })
 
 export const list = style({
@@ -14,13 +21,26 @@ export const list = style({
   margin: 0,
   display: 'flex',
   flexDirection: 'column',
-  gap: 16,
+  gap: 8,
+  width: '258px',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gap: 16,
+    },
+  },
 })
 
 export const colTitle = style({
-  marginBottom: 16,
   display: 'block',
   textDecoration: 'none',
+  marginBottom: 8,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      marginBottom: 16,
+    },
+  },
 })
 
 export const colTitles = styleVariants({

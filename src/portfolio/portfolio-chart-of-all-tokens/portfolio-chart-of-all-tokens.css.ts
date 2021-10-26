@@ -1,7 +1,15 @@
 import { style } from '@vanilla-extract/css'
 
+import { theme } from '~/common/theme'
+
 export const root = style({
-  padding: '24px 32px',
+  padding: 16,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '24px 32px',
+    },
+  },
 })
 
 export const header = style({

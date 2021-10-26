@@ -130,8 +130,15 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     <div className={clsx(styles.root, props.className)}>
       <SettingsHeader className={styles.header}>
         <Typography variant="h3">Wallets and Funds</Typography>
-        <Button color="blue" onClick={handleAddWallet}>
-          + Add Wallet
+        <Button
+          color="blue"
+          onClick={handleAddWallet}
+          className={styles.addButton}
+        >
+          +
+          <Typography variant="inherit" className={styles.addButtonTitle}>
+            Add Wallet
+          </Typography>
         </Button>
       </SettingsHeader>
       <div className={styles.list}>

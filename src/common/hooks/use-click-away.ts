@@ -20,11 +20,9 @@ export function useClickAway<T extends HTMLElement = HTMLElement>(
     }
 
     document.addEventListener('click', listener)
-    document.addEventListener('touchstart', listener)
 
     return () => {
       document.removeEventListener('click', listener)
-      document.removeEventListener('touchstart', listener)
     }
   }, [ref])
 }

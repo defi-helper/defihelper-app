@@ -11,16 +11,17 @@ import { Input, InputProps } from '~/common/input'
 import { Dropdown } from '~/common/dropdown'
 import * as styles from './select.css'
 
-export type SelectProps = Omit<InputProps, 'value'> & {
+export type SelectProps = Omit<InputProps, 'value' | 'defaultValue'> & {
   sameWidth?: boolean
   value?: string | number
+  defaultValue?: string | number
 }
 
 export const Select = forwardRef<HTMLInputElement, SelectProps>(
   (props, ref) => {
-    const { sameWidth = true, value, className } = props
+    const { sameWidth = true, value, defaultValue, className } = props
 
-    const [localValue, setLocalValue] = useState(value ?? '')
+    const [localValue, setLocalValue] = useState(defaultValue ?? value ?? '')
 
     const children = Children.toArray(props.children)
 
