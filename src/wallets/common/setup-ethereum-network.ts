@@ -77,3 +77,24 @@ export const setupPolygon = async () => {
 
   return request(params)
 }
+
+export const setupAvalanch = async () => {
+  const [chainId] = config.CHAIN_AVALANCH_IDS
+
+  const params = {
+    chainId: `0x${chainId.toString(16)}`,
+    chainName: 'Avalanch Mainnet',
+    nativeCurrency: {
+      name: 'AVAX',
+      symbol: 'AVAX',
+      decimals: 18,
+    },
+    rpcUrls: [
+      'https://api.avax.network/ext/bc/C/rpc',
+      'https://api.avax.network/ext/bc/C/rpc',
+    ],
+    blockExplorerUrls: ['https://cchain.explorer.avax.network/'],
+  }
+
+  return request(params)
+}
