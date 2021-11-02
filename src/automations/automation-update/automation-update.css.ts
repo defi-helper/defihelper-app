@@ -2,7 +2,9 @@ import { style } from '@vanilla-extract/css'
 
 export const root = style({
   padding: 20,
-  width: 700,
+  width: 360,
+  maxHeight: 536,
+  height: '100%',
 })
 
 export const dropdown = style({

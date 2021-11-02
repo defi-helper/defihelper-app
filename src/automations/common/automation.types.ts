@@ -4,6 +4,7 @@ import {
   AutomationTriggerFragmentFragment,
   AutomateConditionType,
   AutomateActionType,
+  WalletType,
 } from '~/graphql/_generated-types'
 
 export type Trigger = AutomationTriggerFragmentFragment & { deleting?: boolean }
@@ -38,3 +39,19 @@ export const isCondition = (
     conditioinOrAction !== undefined && conditioinOrAction.kind === 'condition'
   )
 }
+
+export type AutomationNetwork = {
+  title: string
+  icon: 'ethereumRegular' | 'ethereumRegular' | 'bnbRegular' | 'wavesRegular'
+}
+
+export type Wallet = Pick<
+  WalletType,
+  | 'address'
+  | 'id'
+  | 'network'
+  | 'createdAt'
+  | 'blockchain'
+  | 'publicKey'
+  | 'name'
+>

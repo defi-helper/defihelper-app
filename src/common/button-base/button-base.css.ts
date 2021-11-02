@@ -13,6 +13,7 @@ export const root = style({
   fontFamily: 'inherit',
   color: 'currentColor',
   textDecoration: 'none',
+  textTransform: 'inherit',
 })
 
 export const disabled = style({

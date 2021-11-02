@@ -18,7 +18,6 @@ import { Portfolio } from '~/portfolio'
 import { RoadmapList } from '~/roadmap/roadmap-list'
 import { RoadmapDetail } from '~/roadmap/roadmap-detail'
 import { SettingsConfirmEmail } from '~/settings/settings-confirm-email'
-import { UserEventSubscriptionList } from '~/user-event-subscriptions'
 import { NotFound } from '~/not-found'
 import {
   GovernanceCreate,
@@ -26,7 +25,6 @@ import {
   GovernanceList,
 } from '~/governance'
 import { AutomationList } from '~/automations/automation-list'
-import { AutomationCreate } from '~/automations/automation-create'
 import { Settings } from '~/settings'
 import { AutomationHistoryList } from '~/automations/automation-history-list'
 
@@ -80,9 +78,6 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.roadmap.list}>
           <RoadmapList />
         </Route>
-        <Route path={paths.userEventSubscriptions.list}>
-          <UserEventSubscriptionList />
-        </Route>
         <Route path={paths.governance.create}>
           <GovernanceCreate />
         </Route>
@@ -91,9 +86,6 @@ export const Router: React.VFC<RouterProps> = () => {
         </Route>
         <Route path={paths.governance.list}>
           <GovernanceList />
-        </Route>
-        <Route path={paths.automations.create}>
-          <AutomationCreate />
         </Route>
         <Route path={paths.automations.history()}>
           <AutomationHistoryList />

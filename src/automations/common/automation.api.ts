@@ -196,10 +196,10 @@ export const automationApi = {
       .toPromise()
       .then(({ data }) => data?.automateActionDelete),
 
-  getAutomationsContracts: (): Promise<
-    Omit<Automates, 'contractInterface'>[]
-  > =>
-    fetch(`${config.ADAPTERS_HOST}/automates/ethereum`).then((res) =>
+  getAutomationsContracts: (
+    network = 'ethereum'
+  ): Promise<Omit<Automates, 'contractInterface'>[]> =>
+    fetch(`${config.ADAPTERS_HOST}/automates/${network}`).then((res) =>
       res.json()
     ),
 

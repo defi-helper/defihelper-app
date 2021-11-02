@@ -1,12 +1,13 @@
 import { createDomain, sample, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
+import { config } from '~/config'
+
 import {
+  AutomateTriggerCreateInputType,
   AutomationContractFragmentFragment,
   UserType,
 } from '~/graphql/_generated-types'
 import { userModel } from '~/users'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
-
 import { automationUpdateModel } from '../automation-update'
 import { automationApi } from '../common/automation.api'
 import { Automates, Trigger } from '../common/automation.types'
@@ -23,6 +24,24 @@ export const deleteTriggerFx = automationListDomain.createEffect(
   }
 )
 
+export const createTriggerFx = automationListDomain.createEffect(
+  (input: AutomateTriggerCreateInputType) => {
+    return automationApi.createTrigger({ input })
+  }
+)
+
+export const toggleTriggerFx = automationListDomain.createEffect(
+  async (params: { triggerId: string; active: boolean }) => {
+    const data = await automationApi.updateTrigger({
+      input: { id: params.triggerId, active: params.active },
+    })
+
+    if (!data) throw new Error('something went wrong')
+
+    return data
+  }
+)
+
 export const $triggers = automationListDomain
   .createStore<Trigger[]>([])
   .on(fetchTriggersFx.doneData, (_, { list }) => list)
@@ -30,6 +49,12 @@ export const $triggers = automationListDomain
     state.map((trigger) =>
       trigger.id === triggerId ? { ...trigger, deleting: true } : trigger
     )
+  )
+  .on(createTriggerFx.doneData, (state, payload) =>
+    payload ? [...state, payload] : state
+  )
+  .on(toggleTriggerFx.doneData, (state, payload) =>
+    state.map((trigger) => (trigger.id === payload.id ? payload : trigger))
   )
   .on(deleteTriggerFx.done, (state, { params }) =>
     state.filter((trigger) => trigger.id !== params)
@@ -109,7 +134,7 @@ sample({
 })
 
 export const fetchAutomationContractsFx = automationListDomain.createEffect(
-  async (chainId: string | number) => {
+  async (chainId: string) => {
     const data = await automationApi.getAutomationsContracts()
 
     const contracts: Automates[] = await Promise.all(
@@ -197,15 +222,7 @@ sample({
 })
 
 sample({
-  clock: guard({
-    source: [AutomationListGate.status, walletNetworkModel.$wallet],
-    clock: [AutomationListGate.open, walletNetworkModel.$wallet.updates],
-    filter: (source): source is [boolean, { chainId: string | number }] => {
-      const [status, wallet] = source
-
-      return status && Boolean(wallet.chainId)
-    },
-  }),
-  fn: ([, wallet]) => wallet.chainId,
+  clock: AutomationListGate.open,
+  fn: () => (config.IS_DEV ? '3' : '1'),
   target: fetchAutomationContractsFx,
 })

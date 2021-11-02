@@ -33,11 +33,6 @@ const MENU = [
     icon: 'energy' as const,
   },
   {
-    title: 'Notifications',
-    path: paths.userEventSubscriptions.list as string,
-    icon: 'notification' as const,
-  },
-  {
     title: 'Roadmap',
     path: paths.roadmap.list as string,
     icon: 'check' as const,

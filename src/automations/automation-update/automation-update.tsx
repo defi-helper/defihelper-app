@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Event } from 'effector'
 import { useGate, useStore } from 'effector-react'
 import omit from 'lodash.omit'
@@ -30,7 +31,7 @@ import * as styles from './automation-update.css'
 export type AutomationUpdateProps = {
   onConfirm: () => void
   onCancel: () => void
-  trigger: Trigger
+  trigger?: Trigger
   contracts: AutomationContractFragmentFragment[]
   onAddContract: Event<AutomationContractFragmentFragment>
 }
@@ -51,19 +52,22 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   useGate(model.AutomationUpdateGate, props.trigger)
   useGate(contactModel.SettingsContactsGate)
 
-  const defaultValues = {
-    wallet: props.trigger.wallet.id,
-    type: props.trigger.type,
-    name: props.trigger.name,
-    active: props.trigger.active,
-    params: props.trigger.params,
-  }
+  const defaultValues = props.trigger
+    ? {
+        wallet: props.trigger.wallet.id,
+        type: props.trigger.type,
+        name: props.trigger.name,
+        active: props.trigger.active,
+        params: props.trigger.params,
+      }
+    : undefined
 
   const handleSubmit = (formValues: AutomateTriggerCreateInputType) => {
     const { name, active } = formValues
 
     model.updateTriggerFx({
-      id: props.trigger.id,
+      // @ts-ignore
+      id: props.trigger?.id,
       name,
       active,
     })
@@ -132,6 +136,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
           <TabPanel>
             <AutomationTriggerForm
               wallets={wallets}
+              // @ts-ignore
               onSubmit={handleSubmit}
               defaultValues={defaultValues}
               loading={loading}
@@ -148,7 +153,8 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
                     type="action"
                     expression={action}
                     priority={Number(priority)}
-                    trigger={props.trigger.id}
+                    // @ts-ignore
+                    trigger={props.trigger?.id}
                     contracts={props.contracts}
                     onDeploy={handleOpenDeploy}
                     contacts={contacts}
@@ -174,7 +180,8 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
                     type="condition"
                     expression={condition}
                     priority={Number(priority)}
-                    trigger={props.trigger.id}
+                    // @ts-ignore
+                    trigger={props.trigger?.id}
                     contracts={props.contracts}
                     onDeploy={handleOpenDeploy}
                     contacts={contacts}

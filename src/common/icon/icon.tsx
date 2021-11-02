@@ -51,6 +51,7 @@ import { ReactComponent as BurgerIcon } from '~/assets/icons/burger.svg'
 import { ReactComponent as CloseIcon } from '~/assets/icons/close.svg'
 import { ReactComponent as LinkIcon } from '~/assets/icons/link.svg'
 import { ReactComponent as SearchIcon } from '~/assets/icons/search.svg'
+import { ReactComponent as ExclamationIcon } from '~/assets/icons/exclamation.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -108,6 +109,7 @@ const ICONS = {
   close: CloseIcon,
   link: LinkIcon,
   search: SearchIcon,
+  exclamation: ExclamationIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

@@ -20,6 +20,7 @@ type Theme = {
     separator: string
     border: string
     primaryButtonBorder: string
+    switchTrack: string
   }
   fonts: {
     square: string
@@ -43,6 +44,7 @@ export const themeContract = createThemeContract<Theme>({
     separator: '',
     border: '',
     primaryButtonBorder: '',
+    switchTrack: '',
   },
 
   fonts: {
@@ -67,6 +69,7 @@ const dark: Theme = {
     separator: palette.black2,
     border: palette.black7,
     primaryButtonBorder: palette.grey2,
+    switchTrack: palette.white3,
   },
   fonts: {
     square: "'Basier Square', sans-serif",
@@ -90,6 +93,7 @@ const light: Theme = {
     separator: palette.grey4,
     border: palette.black10,
     primaryButtonBorder: palette.black9,
+    switchTrack: palette.black11,
   },
   fonts: {
     square: "'Basier Square', sans-serif",

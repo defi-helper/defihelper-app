@@ -16,7 +16,7 @@ export const content = style({
   maxWidth: 1136,
   width: '100%',
   margin: '0 auto',
-  padding: '0 16px',
+  padding: '0 16px 16px',
 
   '@media': {
     [theme.mediaQueries.md()]: {
