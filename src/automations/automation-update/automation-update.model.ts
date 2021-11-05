@@ -150,17 +150,6 @@ sample({
   target: setExpressions,
 })
 
-const fetchDescriptionFx = automationUpdateDomain.createEffect(() =>
-  automationApi.getDescription()
-)
-
-export const $descriptions = restore(fetchDescriptionFx.doneData, null)
-
-sample({
-  clock: AutomationUpdateGate.open,
-  target: fetchDescriptionFx,
-})
-
 export const $actionsPriority = restore(
   sample({
     clock: $actions.updates,

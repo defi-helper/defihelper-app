@@ -9,8 +9,15 @@ import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Switch } from '~/common/switch'
 import { Typography } from '~/common/typography'
-import { AutomateTriggerTypeEnum } from '~/graphql/_generated-types'
+import {
+  AutomateActionType,
+  AutomateConditionType,
+  AutomateTriggerTypeEnum,
+  AutomationDescriptionQuery,
+} from '~/graphql/_generated-types'
 import { paths } from '~/paths'
+import { NETWORKS } from '../constants'
+import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-card.css'
 
 export type AutomationCardProps = {
@@ -23,6 +30,11 @@ export type AutomationCardProps = {
   id: string
   className?: string
   type: AutomateTriggerTypeEnum
+  actions: AutomateActionType[]
+  conditions: AutomateConditionType[]
+  descriptions?: AutomationDescriptionQuery['automateDescription'] | null
+  wallet: string
+  walletNetwork: string
 }
 
 type LabelProps = {
@@ -60,6 +72,16 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
     AutomateTriggerTypeEnum.EveryMonth,
     AutomateTriggerTypeEnum.EveryWeek,
   ].includes(props.type)
+
+  const networks = props.conditions
+    .map(({ params }) => NETWORKS[safeJsonParse(params).network]?.title)
+    .filter(Boolean)
+    .join(', ')
+
+  const actions = props.actions
+    .map((action) => props.descriptions?.actions[action.type]?.name)
+    .filter(Boolean)
+    .join(', ')
 
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
@@ -116,20 +138,17 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
       </div>
       <Label
         title="Condition"
-        value="4 Triggers"
-        subtitle="BondAppetit, Etherium"
+        value={`${props.conditions.length} Conditions`}
+        subtitle={networks}
         automation={automation}
       />
-      <Label
-        title="Action"
-        value="Claim, Exchange, Transfer"
-        subtitle="from BAG+USDC, to USDT, to 0x684..."
-        automation={automation}
-      />
+      {Boolean(props.actions.length) && (
+        <Label title="Action" value={actions} automation={automation} />
+      )}
       <Label
         title="Wallet"
-        value="wallet main eth"
-        subtitle="Fee Funds: 2.015 ETH"
+        value={props.wallet}
+        subtitle={NETWORKS[props.walletNetwork]?.title}
         automation={automation}
       />
       <Switch checked={props.active} onChange={props.onActivate} />

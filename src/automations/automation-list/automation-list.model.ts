@@ -1,5 +1,6 @@
-import { createDomain, sample, guard } from 'effector-logger/macro'
+import { createDomain, sample, guard, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
+
 import { config } from '~/config'
 
 import {
@@ -7,7 +8,7 @@ import {
   UserType,
 } from '~/graphql/_generated-types'
 import { userModel } from '~/users'
-import * as automationUpdateModel from '~/automations/automation-update-new/automation-update.model'
+import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import { automationApi } from '../common/automation.api'
 import { Automates, Trigger } from '../common/automation.types'
 
@@ -219,4 +220,15 @@ sample({
   clock: AutomationListGate.open,
   fn: () => (config.IS_DEV ? '3' : '1'),
   target: fetchAutomationContractsFx,
+})
+
+const fetchDescriptionFx = automationListDomain.createEffect(() =>
+  automationApi.getDescription()
+)
+
+export const $descriptions = restore(fetchDescriptionFx.doneData, null)
+
+sample({
+  clock: AutomationListGate.open,
+  target: fetchDescriptionFx,
 })

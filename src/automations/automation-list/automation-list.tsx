@@ -16,7 +16,7 @@ import { Input } from '~/common/input'
 import { ButtonBase } from '~/common/button-base'
 import { AutomationTriggerDescriptionDialog } from '~/automations/common/automation-trigger-description-dialog'
 import { Icon } from '~/common/icon'
-import { AutomationTriggerDialog } from '~/automations/automation-update-new'
+import { AutomationUpdate } from '~/automations/automation-update'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
@@ -28,10 +28,11 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const loading = useStore(model.fetchTriggersFx.pending)
   const contracts = useStore(model.$contracts)
   const automateContracts = useStore(model.$automateContracts)
+  const descriptions = useStore(model.$descriptions)
 
   const [dontShow, setDontShow] = useLocalStorage('dontShow', false)
 
-  const [openAutomationTrigger] = useDialog(AutomationTriggerDialog)
+  const [openAutomationTrigger] = useDialog(AutomationUpdate)
   const [openAutomationUpdateContract] = useDialog(AutomationUpdateContract)
   const [openDescriptionDialog] = useDialog(AutomationTriggerDescriptionDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
@@ -53,6 +54,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
       automateContracts,
       updatingTrigger: trigger,
       contracts,
+      descriptions,
     }).catch((error: Error) => console.error(error.message))
   }
 
@@ -92,7 +94,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
         }
       }
     }
-
   const handleAddAutomation = async () => {
     try {
       if (!dontShow) {
@@ -104,6 +105,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
       await openAutomationTrigger({
         automateContracts,
         contracts,
+        descriptions,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -175,6 +177,11 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
                 onActivate={handleActivate(trigger)}
                 deleting={trigger.deleting}
                 type={trigger.type}
+                actions={trigger.actions.list ?? []}
+                conditions={trigger.conditions.list ?? []}
+                descriptions={descriptions}
+                wallet={trigger.wallet.name || 'untitled'}
+                walletNetwork={trigger.wallet.network}
               />
             ))}
         </div>

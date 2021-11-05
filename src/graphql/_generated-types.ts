@@ -2979,7 +2979,13 @@ export type AutomationTriggerFragmentFragment = {
 > & {
     wallet: { __typename?: 'WalletType' } & Pick<
       WalletType,
-      'id' | 'blockchain' | 'network' | 'address' | 'publicKey' | 'createdAt'
+      | 'id'
+      | 'blockchain'
+      | 'network'
+      | 'address'
+      | 'publicKey'
+      | 'createdAt'
+      | 'name'
     >
     conditions: { __typename?: 'AutomateConditionListType' } & {
       list?: Maybe<
