@@ -54,7 +54,9 @@ export const AutomationTriggerDialog: React.VFC<AutomationTriggerDialogProps> =
     const [openConditionsDialog] = useDialog(AutomationConditionsDialog)
     const [openActionsDialog] = useDialog(AutomationActionsDialog)
 
-    useGate(model.AutomationUpdateGate)
+    const trigger = updatedTrigger ?? props.updatingTrigger ?? createdTrigger
+
+    useGate(model.AutomationUpdateGate, trigger)
     useGate(contactModel.SettingsContactsGate)
 
     const handleSetType = (type: Types | null) => () => {
@@ -64,8 +66,6 @@ export const AutomationTriggerDialog: React.VFC<AutomationTriggerDialogProps> =
     const handleChangeTab = (tab: Tabs) => () => {
       setTab(tab)
     }
-
-    const trigger = updatedTrigger ?? props.updatingTrigger ?? createdTrigger
 
     const defaultValues = useMemo(
       () =>

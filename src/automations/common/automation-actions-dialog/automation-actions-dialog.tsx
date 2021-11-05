@@ -18,6 +18,7 @@ import * as styles from './automation-actions-dialog.css'
 
 export type AutomationActionsDialogProps = {
   onCancel: () => void
+  onConfirm: () => void
   type?: string | null
   contracts: AutomationContractFragmentFragment[]
   contacts: UserContactFragmentFragment[]

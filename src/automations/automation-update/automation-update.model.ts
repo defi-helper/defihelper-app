@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 

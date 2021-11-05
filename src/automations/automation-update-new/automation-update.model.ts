@@ -1,4 +1,4 @@
-import { createDomain, sample, restore } from 'effector-logger/macro'
+import { createDomain, sample, restore, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
@@ -8,6 +8,8 @@ import {
   AutomateConditionUpdateInputType,
   AutomateTriggerUpdateInputType,
   AutomateTriggerCreateInputType,
+  AutomateActionType,
+  AutomateConditionType,
 } from '~/graphql/_generated-types'
 import { automationApi } from '~/automations/common/automation.api'
 import { Trigger, Protocol } from '../common/automation.types'
@@ -97,7 +99,7 @@ export const $protocols = automationUpdateDomain
   .createStore<Protocol[]>([])
   .on(fetchProtocolsFx.doneData, (_, payload) => payload)
 
-export const AutomationUpdateGate = createGate<Trigger>({
+export const AutomationUpdateGate = createGate<Trigger | null>({
   domain: automationUpdateDomain,
   name: 'AutomationUpdateGate',
 })
@@ -105,4 +107,45 @@ export const AutomationUpdateGate = createGate<Trigger>({
 sample({
   clock: AutomationUpdateGate.open,
   target: fetchProtocolsFx,
+})
+
+export const setExpressions = automationUpdateDomain.createEvent<{
+  conditions: AutomateConditionType[]
+  actions: AutomateActionType[]
+}>()
+
+export const $conditions = automationUpdateDomain
+  .createStore<AutomateConditionType[]>([])
+  .on(setExpressions, (_, payload) => payload.conditions)
+  .on(createConditionFx.doneData, (state, payload) => [...state, payload])
+  .on(updateConditionFx.doneData, (state, payload) =>
+    state.map((condition) =>
+      condition.id === payload.id ? payload : condition
+    )
+  )
+  .on(deleteConditonFx.done, (state, { params }) =>
+    state.filter((condition) => condition.id !== params)
+  )
+
+export const $actions = automationUpdateDomain
+  .createStore<AutomateActionType[]>([])
+  .on(setExpressions, (_, payload) => payload.actions)
+  .on(createActionFx.doneData, (state, payload) => [...state, payload])
+  .on(updateActionFx.doneData, (state, payload) =>
+    state.map((action) => (action.id === payload.id ? payload : action))
+  )
+  .on(deleteActionFx.done, (state, { params }) =>
+    state.filter((action) => action.id !== params)
+  )
+
+sample({
+  clock: guard({
+    clock: AutomationUpdateGate.open,
+    filter: (trigger): trigger is Trigger => Boolean(trigger),
+  }),
+  fn: (trigger: Trigger) => ({
+    actions: trigger.actions.list ?? [],
+    conditions: trigger.conditions.list ?? [],
+  }),
+  target: setExpressions,
 })

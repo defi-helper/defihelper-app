@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Event } from 'effector'
 import { useGate, useStore } from 'effector-react'
 import omit from 'lodash.omit'

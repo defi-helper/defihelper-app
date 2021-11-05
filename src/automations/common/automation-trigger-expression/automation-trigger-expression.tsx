@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { MenuItem, TextField } from '@material-ui/core'
 import { useState } from 'react'
 

@@ -19,6 +19,7 @@ import * as styles from './automation-conditions-dialog.css'
 
 export type AutomationConditionsDialogProps = {
   onCancel: () => void
+  onConfirm: () => void
   type?: string | null
   contracts: AutomationContractFragmentFragment[]
   wallets: Wallet[]
