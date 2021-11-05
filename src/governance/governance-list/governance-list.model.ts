@@ -120,3 +120,9 @@ sample({
   }),
   target: fetchGovernanceVotesFx,
 })
+
+sample({
+  clock: fetchGovernanceListFx.doneData,
+  fn: (clock) => clock.count,
+  target: GovernanceListPagination.totalElements,
+})

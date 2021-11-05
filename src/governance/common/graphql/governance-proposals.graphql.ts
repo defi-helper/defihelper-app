@@ -5,7 +5,7 @@ import { GOVERNANCE_PROPOSAL_FRAGMENT } from './governance-proposal.fragment.gra
 export const GOVERNANCE_PROPOSALS = gql`
   query GovernanceProposals(
     $filter: GovProposalListFilterInputType!
-    $sort: [GovProposalListSortInputType!]
+    $sort: [GovProposalListSortInputType!] = [{ column: id, order: asc }]
     $pagination: GovProposalListPaginationInputType
   ) {
     govProposals(filter: $filter, sort: $sort, pagination: $pagination) {
