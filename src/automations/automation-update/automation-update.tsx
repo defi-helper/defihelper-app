@@ -1,120 +1,221 @@
-import { Event } from 'effector'
+import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
+import { useEffect, useMemo, useState } from 'react'
 import omit from 'lodash.omit'
 
-import { userModel } from '~/users'
+import { AutomationDialog } from '~/automations/common/automation-dialog'
 import {
-  Action,
-  Condition,
-  isAction,
-  isCondition,
-  Trigger,
-} from '../common/automation.types'
-import { Dialog, useDialog } from '~/common/dialog'
+  AutomationSelectList,
+  AutomationSelectListItem,
+} from '~/automations/common/automation-select-list'
+import { Automates } from '~/automations/common/automation.types'
+import { ButtonBase } from '~/common/button-base'
+import { useDialog } from '~/common/dialog'
+import { Typography } from '~/common/typography'
 import {
-  AutomateActionCreateInputType,
-  AutomateActionUpdateInputType,
-  AutomateConditionCreateInputType,
-  AutomateTriggerCreateInputType,
+  AutomateActionType,
+  AutomateConditionType,
+  AutomateTriggerTypeEnum,
   AutomationContractFragmentFragment,
+  AutomationDescriptionQuery,
+  AutomationTriggerFragmentFragment,
 } from '~/graphql/_generated-types'
-import { Button } from '~/common/button'
-import { AutomationTriggerForm } from '~/automations/common/automation-trigger-form'
-import { AutomationTriggerExpression } from '../common/automation-trigger-expression'
-import { AutomationDeployContract } from '../automation-deploy-contract'
-import { Tab, TabPanel, Tabs } from '~/common/tabs'
+import { userModel } from '~/users'
+import { AutomationChooseButton } from '../common/automation-choose-button'
+import { AutomationConditionsDialog } from '../common/automation-conditions-dialog'
+import { AutomationActionsDialog } from '../common/automation-actions-dialog'
+import { AutomationTriggerForm } from '../common/automation-trigger-form'
+import { ConfirmDialog } from '~/common/confirm-dialog'
+import * as styles from './automation-update.css'
 import * as model from './automation-update.model'
 import * as contactModel from '~/settings/settings-contacts/settings-contact.model'
-import * as styles from './automation-update.css'
+import { safeJsonParse } from '../common/safe-json-parse'
 
 export type AutomationUpdateProps = {
-  onConfirm: () => void
-  onCancel: () => void
-  trigger: Trigger
+  automateContracts: Record<string, Automates>
+  updatingTrigger?: AutomationTriggerFragmentFragment
   contracts: AutomationContractFragmentFragment[]
-  onAddContract: Event<AutomationContractFragmentFragment>
+  descriptions?: AutomationDescriptionQuery['automateDescription'] | null
+}
+
+type Types = 'ByTime' | 'ByEvent'
+
+enum Tabs {
+  Trigger = 'trigger',
+  Conditions = 'conditions',
+  Actions = 'actions',
 }
 
 export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const wallets = useStore(userModel.$userWallets)
-  const loading = useStore(model.updateTriggerFx.pending)
+  const [currentType, setType] = useState<Types | null>(null)
+  const [currentTab, setTab] = useState<Tabs>(Tabs.Trigger)
+  const protocols = useStore(model.$protocols)
+  const creating = useStore(model.createTriggerFx.pending)
+  const createdTrigger = useStore(model.$createdTrigger)
+  const updatedTrigger = useStore(model.$updatedTrigger)
+  const contacts = useStore(contactModel.$userContactList)
   const actions = useStore(model.$actions)
   const conditions = useStore(model.$conditions)
+  const conditionsPriority = useStore(model.$conditionsPriority)
+  const actionsPriority = useStore(model.$actionsPriority)
 
-  const conditionsCount = useStore(model.$conditionsCount)
-  const actionsCount = useStore(model.$actionsCount)
+  const [openConditionsDialog] = useDialog(AutomationConditionsDialog)
+  const [openActionsDialog] = useDialog(AutomationActionsDialog)
+  const [openConfirmDialog] = useDialog(ConfirmDialog)
 
-  const contacts = useStore(contactModel.$userContactList)
+  const trigger = updatedTrigger ?? props.updatingTrigger ?? createdTrigger
 
-  const [openDeploy] = useDialog(AutomationDeployContract)
-
-  useGate(model.AutomationUpdateGate, props.trigger)
+  useGate(model.AutomationUpdateGate, trigger)
   useGate(contactModel.SettingsContactsGate)
 
-  const defaultValues = {
-    wallet: props.trigger.wallet.id,
-    type: props.trigger.type,
-    name: props.trigger.name,
-    active: props.trigger.active,
-    params: props.trigger.params,
+  const handleSetType = (type: Types | null) => () => {
+    setType(type)
   }
 
-  const handleSubmit = (formValues: AutomateTriggerCreateInputType) => {
-    const { name, active } = formValues
-
-    model.updateTriggerFx({
-      id: props.trigger.id,
-      name,
-      active,
-    })
+  const handleChangeTab = (tab: Tabs) => () => {
+    setTab(tab)
   }
 
-  const handleAddAction = () => {
-    model.setAction(actionsCount.length + 1)
-  }
-  const handleAddCondition = () => {
-    model.setCondition(conditionsCount.length + 1)
-  }
+  const defaultValues = useMemo(
+    () =>
+      trigger
+        ? {
+            id: trigger.id,
+            wallet: trigger.wallet.id,
+            type: trigger.type,
+            name: trigger.name,
+            active: trigger.active,
+            params: trigger.params,
+          }
+        : undefined,
+    [trigger]
+  )
 
-  const handleDeleteExpression = (expression?: Condition | Action) => () => {
-    if (isAction(expression)) {
-      model.deleteActionFx(expression.id)
-    }
+  const automation = props.updatingTrigger
+    ? [
+        AutomateTriggerTypeEnum.EveryDay,
+        AutomateTriggerTypeEnum.EveryHour,
+        AutomateTriggerTypeEnum.EveryMonth,
+        AutomateTriggerTypeEnum.EveryWeek,
+      ].includes(props.updatingTrigger.type)
+    : undefined
 
-    if (isCondition(expression)) {
-      model.deleteConditonFx(expression.id)
-    }
-  }
+  useEffect(() => {
+    if (automation === undefined) return
 
-  const handleSubmitAction =
-    (id?: string) =>
-    (action: AutomateActionCreateInputType | AutomateActionUpdateInputType) => {
-      if (id) {
-        model.updateActionFx({ ...omit(action, ['trigger', 'type']), id })
-      } else {
-        model.createActionFx(action as AutomateActionCreateInputType)
-      }
-    }
+    setType(automation ? 'ByTime' : 'ByEvent')
+  }, [automation])
 
-  const handleSubmitConditon =
-    (id?: string) =>
-    (
-      condition:
-        | AutomateConditionCreateInputType
-        | AutomateActionUpdateInputType
-    ) => {
-      if (id) {
-        model.updateConditionFx({ ...omit(condition, ['trigger', 'type']), id })
-      } else {
-        model.createConditionFx(condition as AutomateConditionCreateInputType)
-      }
-    }
+  const handleAddCondition = async () => {
+    if (!props.descriptions) return
 
-  const handleOpenDeploy = async () => {
     try {
-      const result = await openDeploy()
+      const result = await openConditionsDialog({
+        contracts: props.contracts,
+        wallets,
+        triggerId: trigger?.id,
+        descriptions: props.descriptions,
+        priority: conditionsPriority + 1,
+      })
 
-      props.onAddContract(result)
+      model.createConditionFx(result)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+  const handleAddAction = async () => {
+    if (!props.descriptions) return
+
+    try {
+      const result = await openActionsDialog({
+        contracts: props.contracts,
+        contacts,
+        onDeploy: () => {},
+        triggerId: trigger?.id,
+        descriptions: props.descriptions,
+        priority: actionsPriority + 1,
+      })
+
+      model.createActionFx(result)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const handleDeleteConditon = (conditionId: string) => async () => {
+    try {
+      await openConfirmDialog()
+
+      model.deleteConditonFx(conditionId)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const handleDeleteAction = (actionId: string) => async () => {
+    try {
+      await openConfirmDialog()
+
+      model.deleteActionFx(actionId)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const handleUpdateCondition =
+    (condition: AutomateConditionType) => async () => {
+      if (!props.descriptions) return
+
+      try {
+        const result = await openConditionsDialog({
+          contracts: props.contracts,
+          wallets,
+          triggerId: trigger?.id,
+          type: condition.type,
+          params: condition.params,
+          descriptions: props.descriptions,
+          priority: condition.priority,
+        })
+
+        model.updateConditionFx({
+          ...omit(result, ['type', 'trigger']),
+          id: condition.id,
+        })
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
+
+  const handleUpdateAction = (action: AutomateActionType) => async () => {
+    if (!props.descriptions) return
+
+    try {
+      const result = await openActionsDialog({
+        contracts: props.contracts,
+        contacts,
+        onDeploy: () => {},
+        triggerId: trigger?.id,
+        type: action.type,
+        params: action.params,
+        descriptions: props.descriptions,
+        priority: action.priority,
+      })
+
+      model.updateActionFx({
+        ...omit(result, ['type', 'trigger']),
+        id: action.id,
+      })
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -123,77 +224,120 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   }
 
   return (
-    <Dialog>
-      <div className={styles.root}>
-        <Tabs>
-          <Tab>Trigger</Tab>
-          <Tab>Actions</Tab>
-          <Tab>Conditions</Tab>
-          <TabPanel>
+    <AutomationDialog
+      title={
+        !currentType ? (
+          'Choose type'
+        ) : (
+          <div className={styles.tabs}>
+            <ButtonBase
+              className={clsx(styles.tab, {
+                [styles.activeTab]: currentTab === Tabs.Trigger,
+                [styles.disableTab]: !trigger,
+              })}
+              onClick={handleChangeTab(Tabs.Trigger)}
+            >
+              Trigger
+            </ButtonBase>
+            <ButtonBase
+              className={clsx(styles.tab, {
+                [styles.activeTab]: currentTab === Tabs.Conditions,
+                [styles.disableTab]: !trigger,
+              })}
+              onClick={handleChangeTab(Tabs.Conditions)}
+            >
+              Conditions
+            </ButtonBase>
+            <ButtonBase
+              className={clsx(styles.tab, {
+                [styles.activeTab]: currentTab === Tabs.Actions,
+                [styles.disableTab]: !trigger,
+              })}
+              onClick={handleChangeTab(Tabs.Actions)}
+            >
+              Actions
+            </ButtonBase>
+          </div>
+        )
+      }
+    >
+      {!currentType ? (
+        <AutomationSelectList>
+          <AutomationSelectListItem onClick={handleSetType('ByTime')}>
+            By time
+          </AutomationSelectListItem>
+          <AutomationSelectListItem onClick={handleSetType('ByEvent')}>
+            By event
+          </AutomationSelectListItem>
+        </AutomationSelectList>
+      ) : (
+        <>
+          {currentTab === Tabs.Trigger && (
             <AutomationTriggerForm
               wallets={wallets}
-              onSubmit={handleSubmit}
+              automateContracts={props.automateContracts}
+              type={currentType}
+              protocols={protocols}
+              onCreate={model.createTriggerFx}
+              onUpdate={model.updateTriggerFx}
               defaultValues={defaultValues}
-              loading={loading}
+              loading={creating}
             />
-          </TabPanel>
-          <TabPanel>
-            {actionsCount.map((priority) => {
-              const action = actions[priority]
-
-              return (
-                <div key={String(priority)}>
-                  <AutomationTriggerExpression
-                    onSubmitAction={handleSubmitAction(action?.id)}
-                    type="action"
-                    expression={action}
-                    priority={Number(priority)}
-                    trigger={props.trigger.id}
-                    contracts={props.contracts}
-                    onDeploy={handleOpenDeploy}
-                    contacts={contacts}
-                  />
-                  <Button onClick={handleDeleteExpression(action)} size="small">
-                    Delete
-                  </Button>
-                </div>
-              )
-            })}
-            <Button onClick={handleAddAction} size="small">
-              +
-            </Button>
-          </TabPanel>
-          <TabPanel>
-            {conditionsCount.map((priority) => {
-              const condition = conditions[priority]
-
-              return (
-                <div key={String(priority)}>
-                  <AutomationTriggerExpression
-                    onSubmitCondition={handleSubmitConditon(condition?.id)}
-                    type="condition"
-                    expression={condition}
-                    priority={Number(priority)}
-                    trigger={props.trigger.id}
-                    contracts={props.contracts}
-                    onDeploy={handleOpenDeploy}
-                    contacts={contacts}
-                  />
-                  <Button
-                    onClick={handleDeleteExpression(condition)}
-                    size="small"
-                  >
-                    Delete
-                  </Button>
-                </div>
-              )
-            })}
-            <Button onClick={handleAddCondition} size="small">
-              +
-            </Button>
-          </TabPanel>
-        </Tabs>
-      </div>
-    </Dialog>
+          )}
+          {currentTab === Tabs.Conditions && (
+            <>
+              {conditions.map((condition, index) => (
+                <AutomationChooseButton
+                  label={`condition ${index + 1}`}
+                  className={styles.item}
+                  onDelete={handleDeleteConditon(condition.id)}
+                  onClick={handleUpdateCondition(condition)}
+                  key={condition.id}
+                >
+                  <Typography className={styles.itemTitle}>
+                    {props.descriptions?.conditions[condition.type]?.name}
+                  </Typography>
+                  <Typography variant="body3" className={styles.itemSubtitle}>
+                    {safeJsonParse(condition.params).value}
+                  </Typography>
+                </AutomationChooseButton>
+              ))}
+              <ButtonBase
+                className={styles.addButton}
+                onClick={handleAddCondition}
+              >
+                + add condition
+              </ButtonBase>
+            </>
+          )}
+          {currentTab === Tabs.Actions && (
+            <>
+              {actions.map((action, index) => (
+                <AutomationChooseButton
+                  label={`action ${index + 1}`}
+                  className={styles.item}
+                  onDelete={handleDeleteAction(action.id)}
+                  onClick={handleUpdateAction(action)}
+                  key={action.id}
+                >
+                  <Typography className={styles.itemTitle}>
+                    {props.descriptions?.actions[action.type]?.name}
+                  </Typography>
+                  <Typography variant="body3" className={styles.itemSubtitle}>
+                    {safeJsonParse(action.params).value}
+                  </Typography>
+                </AutomationChooseButton>
+              ))}
+              <ButtonBase
+                className={styles.addButton}
+                onClick={handleAddAction}
+              >
+                + add action
+              </ButtonBase>
+            </>
+          )}
+        </>
+      )}
+    </AutomationDialog>
   )
 }

@@ -11,6 +11,7 @@ export const AUTOMATION_TRIGGER_FRAGMENT = gql`
       address
       publicKey
       createdAt
+      name
     }
     params
     name

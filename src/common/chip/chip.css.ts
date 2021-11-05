@@ -41,8 +41,12 @@ export const outlinedColors = styleVariants({
     color: theme.colors.common.green,
   },
 
+  lightGreen: {
+    color: theme.colors.common.green1,
+  },
+
   pink: {
-    color: theme.colors.common.pink1,
+    color: theme.colors.common.pink3,
   },
 
   purple: {
@@ -91,10 +95,16 @@ export const containedColors = styleVariants({
     borderColor: theme.colors.common.green,
   },
 
-  pink: {
-    backgroundColor: theme.colors.common.pink1,
+  lightGreen: {
+    backgroundColor: theme.colors.common.green1,
     color: 'inherit',
-    borderColor: theme.colors.common.pink1,
+    borderColor: theme.colors.common.green1,
+  },
+
+  pink: {
+    backgroundColor: theme.colors.common.pink3,
+    color: 'inherit',
+    borderColor: theme.colors.common.pink3,
   },
 
   purple: {

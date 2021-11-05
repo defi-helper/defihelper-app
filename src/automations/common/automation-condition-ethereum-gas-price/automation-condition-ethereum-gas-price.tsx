@@ -1,9 +1,13 @@
-import { MenuItem, TextField } from '@material-ui/core'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '~/common/button'
+import { useDialog } from '~/common/dialog'
+import { Icon } from '~/common/icon'
 import { NumericalInput } from '~/common/numerical-input'
-import { Networks } from '../constants'
+import { AutomationChooseButton } from '../automation-choose-button'
+import { AutomationForm } from '../automation-form'
+import { AutomationNetworksDialog } from '../automation-networks-dialog'
+import { NETWORKS } from '../constants'
 import * as styles from './automation-condition-ethereum-gas-price.css'
 
 type FormValues = {
@@ -18,48 +22,63 @@ export type AutomationConditionEthereumGasPriceProps = {
 
 export const AutomationConditionEthereumGasPrice: React.VFC<AutomationConditionEthereumGasPriceProps> =
   (props) => {
-    const { handleSubmit, formState, register, control } = useForm<FormValues>({
-      defaultValues: props.defaultValues,
-    })
+    const [openNetworksDialog] = useDialog(AutomationNetworksDialog)
+
+    const { handleSubmit, formState, register, control, setValue } =
+      useForm<FormValues>({
+        defaultValues: props.defaultValues,
+      })
+
+    const handleChooseNetwork = async () => {
+      try {
+        const result = await openNetworksDialog()
+
+        setValue('network', result)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
 
     return (
-      <form
-        noValidate
-        autoComplete="off"
-        className={styles.root}
+      <AutomationForm
         onSubmit={handleSubmit((formValues) =>
           props.onSubmit(JSON.stringify(formValues))
         )}
       >
         <Controller
           render={({ field }) => (
-            <TextField
-              label="Network"
-              {...field}
-              select
-              helperText={formState.errors.network?.message}
-              error={Boolean(formState.errors.network?.message)}
-              defaultValue={props.defaultValues?.network}
-              value={field.value || ''}
+            <AutomationChooseButton
+              label="network"
+              onClick={handleChooseNetwork}
+              className={styles.input}
+              disabled={Boolean(props.defaultValues)}
             >
-              {Object.entries(Networks).map(([key, networkId]) => (
-                <MenuItem key={key} value={networkId}>
-                  {key}
-                </MenuItem>
-              ))}
-            </TextField>
+              {(field.value && (
+                <>
+                  <Icon
+                    icon={NETWORKS[field.value].icon}
+                    width="28"
+                    height="28"
+                  />{' '}
+                  {NETWORKS[field.value].title}
+                </>
+              )) ||
+                'Choose network'}
+            </AutomationChooseButton>
           )}
           name="network"
           control={control}
         />
         <NumericalInput
           {...register('tolerance')}
-          placeholder="Tolerance"
+          label="Tolerance"
           helperText={formState.errors.tolerance?.message}
           error={Boolean(formState.errors.tolerance?.message)}
-          defaultValue={props.defaultValues?.tolerance}
+          className={styles.input}
         />
         <Button type="submit">Submit</Button>
-      </form>
+      </AutomationForm>
     )
   }

@@ -28,10 +28,6 @@ export const paths = {
       `/settings/confirm-email/${code}` as const,
   },
 
-  userEventSubscriptions: {
-    list: '/user-event-subscriptions',
-  },
-
   governance: {
     list: '/governance',
     detail: (governanceId = ':governanceId') =>
@@ -41,7 +37,6 @@ export const paths = {
 
   automations: {
     list: '/automations',
-    create: '/automations/create',
     update: (automationId = ':automationId') =>
       `/automations/update/${automationId}` as const,
     history: (automationId = ':automationId') =>

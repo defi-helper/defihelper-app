@@ -11,6 +11,7 @@ export type ChipProps = {
     | 'red'
     | 'orange'
     | 'green'
+    | 'lightGreen'
     | 'beige'
     | 'pink'
     | 'purple'

@@ -33,6 +33,9 @@ import {
   AutomationTriggerUpdateMutationVariables,
   AutomationContractUpdateMutation,
   AutomationContractUpdateMutationVariables,
+  AutomationProtocolsQueryVariables,
+  AutomationProtocolsQuery,
+  AutomationDescriptionQuery,
 } from '~/graphql/_generated-types'
 import { Automates } from './automation.types'
 import {
@@ -52,6 +55,8 @@ import {
   AUTOMATION_TRIGGER_CREATE,
   AUTOMATION_TRIGGER_DELETE,
   AUTOMATION_TRIGGER_UPDATE,
+  AUTOMATION_PROTOCOLS,
+  AUTOMATION_DESCRIPTION,
 } from './graphql'
 
 export const automationApi = {
@@ -196,10 +201,10 @@ export const automationApi = {
       .toPromise()
       .then(({ data }) => data?.automateActionDelete),
 
-  getAutomationsContracts: (): Promise<
-    Omit<Automates, 'contractInterface'>[]
-  > =>
-    fetch(`${config.ADAPTERS_HOST}/automates/ethereum`).then((res) =>
+  getAutomationsContracts: (
+    network = 'ethereum'
+  ): Promise<Omit<Automates, 'contractInterface'>[]> =>
+    fetch(`${config.ADAPTERS_HOST}/automates/${network}`).then((res) =>
       res.json()
     ),
 
@@ -228,4 +233,21 @@ export const automationApi = {
         list: data?.automateTrigger?.callHistory.list ?? [],
         count: data?.automateTrigger?.callHistory.pagination.count ?? 0,
       })),
+
+  getProtocols: (variables: AutomationProtocolsQueryVariables) =>
+    getAPIClient()
+      .query<AutomationProtocolsQuery, AutomationProtocolsQueryVariables>(
+        AUTOMATION_PROTOCOLS,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.protocols.list ?? []),
+
+  getDescription: () =>
+    getAPIClient()
+      .query<AutomationDescriptionQuery, AutomationDescriptionQuery>(
+        AUTOMATION_DESCRIPTION
+      )
+      .toPromise()
+      .then(({ data }) => data?.automateDescription),
 }

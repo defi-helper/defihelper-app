@@ -1,4 +1,4 @@
-import { createDomain, sample } from 'effector-logger/macro'
+import { createDomain, sample, restore, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
@@ -7,12 +7,24 @@ import {
   AutomateConditionCreateInputType,
   AutomateConditionUpdateInputType,
   AutomateTriggerUpdateInputType,
+  AutomateTriggerCreateInputType,
+  AutomateActionType,
+  AutomateConditionType,
 } from '~/graphql/_generated-types'
 import { automationApi } from '~/automations/common/automation.api'
-import { Trigger, Action, Condition } from '../common/automation.types'
-import { AutomationTriggerExpressions } from '../common/automation-trigger-expression'
+import { Trigger, Protocol } from '../common/automation.types'
 
 export const automationUpdateDomain = createDomain()
+
+export const createTriggerFx = automationUpdateDomain.createEffect(
+  async (input: AutomateTriggerCreateInputType) => {
+    const data = await automationApi.createTrigger({ input })
+
+    if (!data) throw new Error('not created')
+
+    return data
+  }
+)
 
 export const updateTriggerFx = automationUpdateDomain.createEffect(
   async (input: AutomateTriggerUpdateInputType) => {
@@ -23,6 +35,9 @@ export const updateTriggerFx = automationUpdateDomain.createEffect(
     return data
   }
 )
+
+export const $createdTrigger = restore(createTriggerFx.doneData, null)
+export const $updatedTrigger = restore(updateTriggerFx.doneData, null)
 
 export const createActionFx = automationUpdateDomain.createEffect(
   async (input: AutomateActionCreateInputType) => {
@@ -76,79 +91,83 @@ export const updateConditionFx = automationUpdateDomain.createEffect(
   }
 )
 
-export const setExpressions = automationUpdateDomain.createEvent<{
-  conditions: Condition[] | undefined
-  actions: Action[] | undefined
-}>()
+export const fetchProtocolsFx = automationUpdateDomain.createEffect(() =>
+  automationApi.getProtocols({})
+)
 
-export const $actions = automationUpdateDomain
-  .createStore<Action[]>([])
-  .on(setExpressions, (_, payload) => payload.actions)
-  .on(createActionFx.doneData, (state, payload) => [
-    ...state,
-    { ...payload, kind: 'action' },
-  ])
-  .on(updateActionFx.doneData, (state, payload) =>
-    state.map((action) =>
-      action.id === payload.id ? { ...payload, kind: 'action' } : action
-    )
-  )
-  .on(deleteActionFx.done, (state, { params }) =>
-    state.filter((action) => action.id !== params)
-  )
+export const $protocols = automationUpdateDomain
+  .createStore<Protocol[]>([])
+  .on(fetchProtocolsFx.doneData, (_, payload) => payload)
 
-const createNumberArray = (num: number) =>
-  Array.from(Array(num), (_, index) => index)
-
-export const setAction = automationUpdateDomain.createEvent<number>()
-
-export const $actionsCount = $actions
-  .map((actions) => createNumberArray(actions.length))
-  .on(setAction, (_, payload) => createNumberArray(payload))
-
-export const $conditions = automationUpdateDomain
-  .createStore<Condition[]>([])
-  .on(setExpressions, (_, payload) => payload.conditions)
-  .on(createConditionFx.doneData, (state, payload) => [
-    ...state,
-    { ...payload, kind: 'condition' },
-  ])
-  .on(updateConditionFx.doneData, (state, payload) =>
-    state.map((condition) =>
-      condition.id === payload.id
-        ? { ...payload, kind: 'condition' }
-        : condition
-    )
-  )
-  .on(deleteConditonFx.done, (state, { params }) =>
-    state.filter((condition) => condition.id !== params)
-  )
-
-export const setCondition = automationUpdateDomain.createEvent<number>()
-
-export const $conditionsCount = $conditions
-  .map((conditions) => createNumberArray(conditions.length))
-  .on(setCondition, (_, payload) => createNumberArray(payload))
-
-export const AutomationUpdateGate = createGate<Trigger>({
+export const AutomationUpdateGate = createGate<Trigger | null>({
   domain: automationUpdateDomain,
   name: 'AutomationUpdateGate',
 })
 
 sample({
   clock: AutomationUpdateGate.open,
+  target: fetchProtocolsFx,
+})
+
+export const setExpressions = automationUpdateDomain.createEvent<{
+  conditions: AutomateConditionType[]
+  actions: AutomateActionType[]
+}>()
+
+export const $conditions = automationUpdateDomain
+  .createStore<AutomateConditionType[]>([])
+  .on(setExpressions, (_, payload) => payload.conditions)
+  .on(createConditionFx.doneData, (state, payload) => [...state, payload])
+  .on(updateConditionFx.doneData, (state, payload) =>
+    state.map((condition) =>
+      condition.id === payload.id ? payload : condition
+    )
+  )
+  .on(deleteConditonFx.done, (state, { params }) =>
+    state.filter((condition) => condition.id !== params)
+  )
+
+export const $actions = automationUpdateDomain
+  .createStore<AutomateActionType[]>([])
+  .on(setExpressions, (_, payload) => payload.actions)
+  .on(createActionFx.doneData, (state, payload) => [...state, payload])
+  .on(updateActionFx.doneData, (state, payload) =>
+    state.map((action) => (action.id === payload.id ? payload : action))
+  )
+  .on(deleteActionFx.done, (state, { params }) =>
+    state.filter((action) => action.id !== params)
+  )
+
+sample({
+  clock: guard({
+    clock: AutomationUpdateGate.open,
+    filter: (trigger): trigger is Trigger => Boolean(trigger),
+  }),
   fn: (trigger: Trigger) => ({
-    actions: trigger.actions.list?.map((action) => ({
-      ...action,
-      kind: AutomationTriggerExpressions.action as 'action',
-    })),
-    conditions: trigger.conditions.list?.map((condition) => ({
-      ...condition,
-      kind: AutomationTriggerExpressions.condition as 'condition',
-    })),
+    actions: trigger.actions.list ?? [],
+    conditions: trigger.conditions.list ?? [],
   }),
   target: setExpressions,
 })
 
-$conditions.reset(AutomationUpdateGate.close)
-$actions.reset(AutomationUpdateGate.close)
+export const $actionsPriority = restore(
+  sample({
+    clock: $actions.updates,
+    fn: (actions) =>
+      actions.sort((actionA, actionB) => actionA.priority - actionB.priority)[
+        actions.length - 1
+      ]?.priority,
+  }),
+  0
+)
+
+export const $conditionsPriority = restore(
+  sample({
+    clock: $conditions.updates,
+    fn: (conditions) =>
+      conditions.sort(
+        (conditionA, conditionB) => conditionA.priority - conditionB.priority
+      )[conditions.length - 1]?.priority,
+  }),
+  0
+)

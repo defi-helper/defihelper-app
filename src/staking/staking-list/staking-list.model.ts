@@ -25,12 +25,6 @@ type ConnectParams = {
   wallet: string
 }
 
-interface ContractEvent {
-  protocolId: string
-  contractId: string
-  events: string[]
-}
-
 type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
 }
@@ -217,35 +211,3 @@ sample({
   fn: (clock) => clock.pagination,
   target: StakingListPagination.totalElements,
 })
-
-export const fetchContractEventsFx = contractsEventListDomain.createEffect(
-  async (input: { protocolId: string; contractId: string }) => {
-    return stakingApi.contractsEventsList({
-      filter: {
-        id: input.protocolId,
-      },
-      contractFilter: {
-        id: input.contractId,
-      },
-    })
-  }
-)
-
-export const $contractsEventsList = contractsEventListDomain
-  .createStore<Record<string, ContractEvent>>({})
-  .on(fetchContractEventsFx.done, (state, payload) => {
-    const events = (payload.result || []).reduce((res, c) => {
-      res[c.id] = res[c.id] || {
-        protocolId: c.protocolId,
-        contractId: c.id,
-        events: [],
-      }
-
-      res[c.id].events.push(...c.events)
-      return res
-    }, {} as Record<string, ContractEvent>)
-    return {
-      ...state,
-      ...events,
-    }
-  })

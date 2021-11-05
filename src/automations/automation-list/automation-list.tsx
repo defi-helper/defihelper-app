@@ -1,17 +1,23 @@
+import { useLocalStorage } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
-import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { AppLayout } from '~/layouts/app-layout'
 import { Typography } from '~/common/typography'
 import { Button } from '~/common/button'
-import { paths } from '~/paths'
 import { useDialog } from '~/common/dialog'
-import { AutomationUpdate } from '~/automations/automation-update'
 import { AutomationUpdateContract } from '~/automations/automation-update-contract'
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
 import { Trigger } from '~/automations/common/automation.types'
 import { Head } from '~/common/head'
+import { Paper } from '~/common/paper'
+import { AutomationCard } from '~/automations/common/automation-card'
+import { Input } from '~/common/input'
+import { ButtonBase } from '~/common/button-base'
+import { AutomationTriggerDescriptionDialog } from '~/automations/common/automation-trigger-description-dialog'
+import { Icon } from '~/common/icon'
+import { AutomationUpdate } from '~/automations/automation-update'
+import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
 
@@ -22,25 +28,53 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const loading = useStore(model.fetchTriggersFx.pending)
   const contracts = useStore(model.$contracts)
   const automateContracts = useStore(model.$automateContracts)
+  const descriptions = useStore(model.$descriptions)
 
-  const [openAutomationUpdate] = useDialog(AutomationUpdate)
+  const [dontShow, setDontShow] = useLocalStorage('dontShow', false)
+
+  const [openAutomationTrigger] = useDialog(AutomationUpdate)
   const [openAutomationUpdateContract] = useDialog(AutomationUpdateContract)
+  const [openDescriptionDialog] = useDialog(AutomationTriggerDescriptionDialog)
+  const [openConfirmDialog] = useDialog(ConfirmDialog)
 
-  const handleDeleteTrigger = (triggerId: string) => () =>
-    model.deleteTriggerFx(triggerId)
+  const handleDeleteTrigger = (triggerId: string) => async () => {
+    try {
+      await openConfirmDialog()
+
+      model.deleteTriggerFx(triggerId)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
 
   const handleEditTrigger = (trigger: Trigger) => async () => {
-    await openAutomationUpdate({
-      trigger,
+    await openAutomationTrigger({
+      automateContracts,
+      updatingTrigger: trigger,
       contracts,
-      onAddContract: model.setNewContract,
+      descriptions,
     }).catch((error: Error) => console.error(error.message))
   }
 
-  useGate(model.AutomationListGate)
+  const handleAutomationDeleteContract = (contractId: string) => async () => {
+    try {
+      await openConfirmDialog()
 
-  const handleAutomationDeleteContract = (contractId: string) => () => {
-    model.deleteContractFx(contractId)
+      model.deleteContractFx(contractId)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const handleActivate = (trigger: Trigger) => () => {
+    model.toggleTriggerFx({
+      triggerId: trigger.id,
+      active: !trigger.active,
+    })
   }
 
   const handleAutomationUpdateContract =
@@ -60,42 +94,97 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
         }
       }
     }
+  const handleAddAutomation = async () => {
+    try {
+      if (!dontShow) {
+        const result = await openDescriptionDialog()
+
+        setDontShow(result)
+      }
+
+      await openAutomationTrigger({
+        automateContracts,
+        contracts,
+        descriptions,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  useGate(model.AutomationListGate)
 
   return (
-    <AppLayout>
+    <AppLayout
+      title="Automations"
+      action={
+        <div className={styles.action}>
+          <Paper radius={8} className={styles.countMobile}>
+            <Icon icon="automation" width="16" height="16" />
+            <Typography variant="body3" className={styles.countTitle}>
+              32
+            </Typography>
+          </Paper>
+          <ButtonBase className={styles.searchButton}>
+            <Icon icon="search" width="16" height="16" />
+          </ButtonBase>
+          <Button
+            color="blue"
+            className={styles.addAutomations}
+            onClick={handleAddAutomation}
+          >
+            +
+          </Button>
+        </div>
+      }
+    >
       <Head title="Automations" />
       <div className={styles.root}>
-        <Button as={ReactRouterLink} to={paths.automations.create}>
-          Create automation
-        </Button>
-        {loading && <Typography>loading...</Typography>}
-        {!loading && isEmpty(triggers) && <Typography>empty</Typography>}
-        {!loading &&
-          !isEmpty(triggers) &&
-          triggers.map((trigger) => (
-            <div key={trigger.id}>
-              <Typography>{trigger.name}</Typography>
-              <Typography>
-                last call at:{' '}
-                {trigger.lastCallAt ? trigger.lastCallAt : 'never'}
+        <div className={styles.header}>
+          <Typography variant="h3" family="square" className={styles.title}>
+            Automations
+          </Typography>
+          <Paper radius={8} className={styles.countDesktop}>
+            <Typography variant="body2">
+              32 Automations
+              <Typography variant="inherit" className={styles.left}>
+                left
               </Typography>
-              <Typography>active: {String(trigger.active)}</Typography>
-              <Typography>type: {trigger.type}</Typography>
-              <Button onClick={handleEditTrigger(trigger)}>Edit</Button>
-              <Button
-                onClick={handleDeleteTrigger(trigger.id)}
-                loading={trigger.deleting}
-              >
-                Delete
-              </Button>
-              <Button
-                as={ReactRouterLink}
-                to={paths.automations.history(trigger.id)}
-              >
-                History
-              </Button>
-            </div>
-          ))}
+            </Typography>
+          </Paper>
+          <Input placeholder="Search" className={styles.searchDesktop} />
+          <Button color="blue" onClick={handleAddAutomation}>
+            +
+            <Typography variant="inherit" className={styles.left}>
+              new automation
+            </Typography>
+          </Button>
+        </div>
+        <div className={styles.grid}>
+          {loading && <Paper radius={8}>loading...</Paper>}
+          {!loading && isEmpty(triggers) && <Paper radius={8}>empty</Paper>}
+          {!loading &&
+            !isEmpty(triggers) &&
+            triggers.map((trigger) => (
+              <AutomationCard
+                key={trigger.id}
+                id={trigger.id}
+                onEdit={handleEditTrigger(trigger)}
+                onDelete={handleDeleteTrigger(trigger.id)}
+                active={trigger.active}
+                onActivate={handleActivate(trigger)}
+                deleting={trigger.deleting}
+                type={trigger.type}
+                actions={trigger.actions.list ?? []}
+                conditions={trigger.conditions.list ?? []}
+                descriptions={descriptions}
+                wallet={trigger.wallet.name || 'untitled'}
+                walletNetwork={trigger.wallet.network}
+              />
+            ))}
+        </div>
         {contracts.map((contract) => (
           <div key={contract.id}>
             <Typography>{contract.adapter}</Typography>

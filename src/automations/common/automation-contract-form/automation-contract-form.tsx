@@ -5,6 +5,7 @@ import { Input } from '~/common/input'
 import { Button } from '~/common/button'
 import { isEthAddress } from '~/common/is-eth-address'
 import { Automates } from '../automation.types'
+import { AutomationForm } from '../automation-form'
 import * as styles from './automation-contract-form.css'
 
 export type FormValues = {
@@ -26,12 +27,7 @@ export const AutomationContractForm: React.VFC<AutomationContractFormProps> = (
   })
 
   return (
-    <form
-      noValidate
-      autoComplete="off"
-      className={styles.root}
-      onSubmit={handleSubmit(props.onSubmit)}
-    >
+    <AutomationForm onSubmit={handleSubmit(props.onSubmit)}>
       {props.contract &&
         new ethers.utils.Interface(props.contract.contractInterface)
           .getFunction('init')
@@ -40,7 +36,7 @@ export const AutomationContractForm: React.VFC<AutomationContractFormProps> = (
               key={name}
               type="text"
               className={styles.input}
-              placeholder={`${type} ${name}`}
+              label={`${type} ${name}`}
               {...register(`inputs.${i}`, {
                 required: true,
                 pattern: type === 'address' ? isEthAddress.regex : undefined,
@@ -53,6 +49,6 @@ export const AutomationContractForm: React.VFC<AutomationContractFormProps> = (
       <Button type="submit" loading={props.loading}>
         Submit
       </Button>
-    </form>
+    </AutomationForm>
   )
 }

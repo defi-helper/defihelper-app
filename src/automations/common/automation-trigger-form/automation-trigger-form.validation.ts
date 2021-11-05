@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { AutomateTriggerTypeEnum } from '~/graphql/_generated-types'
 
 export const automationTriggerFormSchema = yup.object().shape({
-  wallet: yup.string().required(),
+  wallet: yup.object().required(),
   type: yup.string().oneOf(Object.values(AutomateTriggerTypeEnum)).required(),
   name: yup.string().required(),
   network: yup.string().required(),

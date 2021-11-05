@@ -130,6 +130,12 @@ export type AutomateActionUpdateInputType = {
   priority?: Maybe<Scalars['Int']>
 }
 
+export type AutomateActionsDescriptionType = {
+  __typename?: 'AutomateActionsDescriptionType'
+  notification: AutomateDescriptionType
+  ethereumAutomateRun: AutomateDescriptionType
+}
+
 export type AutomateConditionCreateInputType = {
   /** Trigger */
   trigger: Scalars['UuidType']
@@ -197,6 +203,14 @@ export type AutomateConditionUpdateInputType = {
   params?: Maybe<Scalars['String']>
   /** Execution priority (ascending) */
   priority?: Maybe<Scalars['Int']>
+}
+
+export type AutomateConditionsDescriptionType = {
+  __typename?: 'AutomateConditionsDescriptionType'
+  schedule: AutomateDescriptionType
+  ethereumAvgGasPrice: AutomateDescriptionType
+  ethereumBalance: AutomateDescriptionType
+  ethereumOptimalAutomateRun: AutomateDescriptionType
 }
 
 export type AutomateContractCreateInputType = {
@@ -272,6 +286,12 @@ export enum AutomateContractVerificationStatusEnum {
   Pending = 'pending',
   Confirmed = 'confirmed',
   Rejected = 'rejected',
+}
+
+export type AutomateDescriptionType = {
+  __typename?: 'AutomateDescriptionType'
+  name: Scalars['String']
+  description: Scalars['String']
 }
 
 export type AutomateTriggerCallHistoryListFilterInputType = {
@@ -418,6 +438,22 @@ export type AutomateTriggerUpdateInputType = {
   active?: Maybe<Scalars['Boolean']>
 }
 
+export type AutomateTriggersDescriptionType = {
+  __typename?: 'AutomateTriggersDescriptionType'
+  everyMonth: AutomateDescriptionType
+  everyWeek: AutomateDescriptionType
+  everyDay: AutomateDescriptionType
+  everyHour: AutomateDescriptionType
+  contractEvent: AutomateDescriptionType
+}
+
+export type AutomatesDescriptionType = {
+  __typename?: 'AutomatesDescriptionType'
+  triggers: AutomateTriggersDescriptionType
+  conditions: AutomateConditionsDescriptionType
+  actions: AutomateActionsDescriptionType
+}
+
 export type BillingBalanceType = {
   __typename?: 'BillingBalanceType'
   balance: Scalars['Float']
@@ -509,6 +545,8 @@ export type ContractCreateInputType = {
   deployBlockNumber?: Maybe<Scalars['String']>
   /** Layout name */
   layout: Scalars['String']
+  /** Usable automates */
+  automates?: Maybe<Array<Scalars['String']>>
   /** Name */
   name: Scalars['String']
   /** Description */
@@ -595,6 +633,8 @@ export type ContractType = {
   address: Scalars['String']
   /** Contract deployment block number */
   deployBlockNumber?: Maybe<Scalars['String']>
+  /** Usable automates */
+  automates: Array<Scalars['String']>
   /** Name */
   name: Scalars['String']
   /** Description */
@@ -630,6 +670,8 @@ export type ContractUpdateInputType = {
   adapter?: Maybe<Scalars['String']>
   /** Layout name */
   layout?: Maybe<Scalars['String']>
+  /** Usable automates */
+  automates?: Maybe<Array<Scalars['String']>>
   /** Name */
   name?: Maybe<Scalars['String']>
   /** Description */
@@ -1137,6 +1179,8 @@ export type ProtocolCreateInputType = {
   icon?: Maybe<Scalars['String']>
   /** Website URL */
   link?: Maybe<Scalars['String']>
+  /** Links */
+  links?: Maybe<ProtocolLinkMapInputType>
   /** Is hidden */
   hidden?: Maybe<Scalars['Boolean']>
 }
@@ -1144,6 +1188,40 @@ export type ProtocolCreateInputType = {
 export type ProtocolFilterInputType = {
   id?: Maybe<Scalars['UuidType']>
   adapter?: Maybe<Scalars['String']>
+}
+
+export type ProtocolLinkInputType = {
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Name */
+  name: Scalars['String']
+  /** Value */
+  value: Scalars['String']
+}
+
+export type ProtocolLinkMapInputType = {
+  social?: Maybe<Array<ProtocolLinkInputType>>
+  listing?: Maybe<Array<ProtocolLinkInputType>>
+  audit?: Maybe<Array<ProtocolLinkInputType>>
+  other?: Maybe<Array<ProtocolLinkInputType>>
+}
+
+export type ProtocolLinkMapType = {
+  __typename?: 'ProtocolLinkMapType'
+  social: Array<ProtocolLinkType>
+  listing: Array<ProtocolLinkType>
+  audit: Array<ProtocolLinkType>
+  other: Array<ProtocolLinkType>
+}
+
+export type ProtocolLinkType = {
+  __typename?: 'ProtocolLinkType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Name */
+  name: Scalars['String']
+  /** Value */
+  value: Scalars['String']
 }
 
 export type ProtocolListFilterInputType = {
@@ -1180,8 +1258,32 @@ export enum ProtocolListSortInputTypeColumnEnum {
   CreatedAt = 'createdAt',
 }
 
-export type ProtocolMetricChartFilterInputType = {
+export type ProtocolMetricChartContractsFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
+  /** Created at equals or greater */
+  dateAfter?: Maybe<Scalars['DateTimeType']>
+  /** Created at less */
+  dateBefore?: Maybe<Scalars['DateTimeType']>
+}
+
+export type ProtocolMetricChartContractsPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type ProtocolMetricChartContractsSortInputType = {
+  column: ProtocolMetricChartContractsSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum ProtocolMetricChartContractsSortInputTypeColumnEnum {
+  Date = 'date',
+  Value = 'value',
+}
+
+export type ProtocolMetricChartFilterInputType = {
   /** Created at equals or greater */
   dateAfter?: Maybe<Scalars['DateTimeType']>
   /** Created at less */
@@ -1205,6 +1307,56 @@ export enum ProtocolMetricChartSortInputTypeColumnEnum {
   Value = 'value',
 }
 
+export type ProtocolSocialPostListFilterInputType = {
+  provider?: Maybe<ProtocolSocialPostProviderEnum>
+}
+
+export type ProtocolSocialPostListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type ProtocolSocialPostListSortInputType = {
+  column: ProtocolSocialPostListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum ProtocolSocialPostListSortInputTypeColumnEnum {
+  Id = 'id',
+  Title = 'title',
+  CreatedAt = 'createdAt',
+}
+
+export type ProtocolSocialPostListType = {
+  __typename?: 'ProtocolSocialPostListType'
+  /** Elements */
+  list?: Maybe<Array<ProtocolSocialPostType>>
+  pagination: Pagination
+}
+
+export enum ProtocolSocialPostProviderEnum {
+  Medium = 'medium',
+  Twitter = 'twitter',
+}
+
+export type ProtocolSocialPostType = {
+  __typename?: 'ProtocolSocialPostType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Provider */
+  provider: ProtocolSocialPostProviderEnum
+  /** Title */
+  title: Scalars['String']
+  /** Content (maybe HTML) */
+  content: Scalars['String']
+  /** URL */
+  link: Scalars['String']
+  /** Date of created */
+  createdAt: Scalars['DateTimeType']
+}
+
 export type ProtocolType = {
   __typename?: 'ProtocolType'
   /** Identificator */
@@ -1219,11 +1371,15 @@ export type ProtocolType = {
   icon?: Maybe<Scalars['String']>
   /** Website URL */
   link?: Maybe<Scalars['String']>
+  /** Links */
+  links: ProtocolLinkMapType
   /** Is hidden */
   hidden: Scalars['Boolean']
   contracts: ContractListType
   metricChart: Array<MetricChartType>
-  /** Date of created account */
+  metricChartContracts: Array<MetricChartType>
+  socialPosts: ProtocolSocialPostListType
+  /** Date of created */
   createdAt: Scalars['DateTimeType']
 }
 
@@ -1241,6 +1397,20 @@ export type ProtocolTypeMetricChartArgs = {
   pagination?: Maybe<ProtocolMetricChartPaginationInputType>
 }
 
+export type ProtocolTypeMetricChartContractsArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<ProtocolMetricChartContractsFilterInputType>
+  sort?: Maybe<Array<ProtocolMetricChartContractsSortInputType>>
+  pagination?: Maybe<ProtocolMetricChartContractsPaginationInputType>
+}
+
+export type ProtocolTypeSocialPostsArgs = {
+  filter?: Maybe<ProtocolSocialPostListFilterInputType>
+  sort?: Maybe<Array<ProtocolSocialPostListSortInputType>>
+  pagination?: Maybe<ProtocolSocialPostListPaginationInputType>
+}
+
 export type ProtocolUpdateInputType = {
   /** Adapter name */
   adapter?: Maybe<Scalars['String']>
@@ -1252,6 +1422,8 @@ export type ProtocolUpdateInputType = {
   icon?: Maybe<Scalars['String']>
   /** Website URL */
   link?: Maybe<Scalars['String']>
+  /** Links */
+  links?: Maybe<ProtocolLinkMapInputType>
   /** Is hidden */
   hidden?: Maybe<Scalars['Boolean']>
 }
@@ -1276,6 +1448,7 @@ export type Query = {
   govProposals: GovProposalListQuery
   govReceipt?: Maybe<GovReceiptType>
   govVotes: GovVoteType
+  automateDescription: AutomatesDescriptionType
   automateTrigger?: Maybe<AutomateTriggerType>
   automateTriggers: AutomateTriggerListQuery
   automateContracts: AutomateContractListQuery
@@ -1894,8 +2067,6 @@ export type UserContactListQuery = {
 }
 
 export type UserContactListQueryFilterInputType = {
-  /** User ID */
-  user?: Maybe<Scalars['UuidType']>
   /** Type */
   broker?: Maybe<UserContactBrokerEnum>
   /** Status */
@@ -2636,6 +2807,58 @@ export type AutomationContractsQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type AutomationDescriptionFragmentFragment = {
+  __typename?: 'AutomateDescriptionType'
+} & Pick<AutomateDescriptionType, 'name' | 'description'>
+
+export type AutomationDescriptionQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type AutomationDescriptionQuery = { __typename?: 'Query' } & {
+  automateDescription: { __typename?: 'AutomatesDescriptionType' } & {
+    triggers: { __typename?: 'AutomateTriggersDescriptionType' } & {
+      everyMonth: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      everyWeek: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      everyDay: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      everyHour: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      contractEvent: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+    }
+    conditions: { __typename?: 'AutomateConditionsDescriptionType' } & {
+      schedule: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      ethereumAvgGasPrice: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      ethereumBalance: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      ethereumOptimalAutomateRun: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+    }
+    actions: { __typename?: 'AutomateActionsDescriptionType' } & {
+      notification: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      ethereumAutomateRun: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+    }
+  }
+}
+
 export type AutomationHistoryQueryVariables = Exact<{
   filter: AutomateTriggerFilterInputType
   callHistoryFilter?: Maybe<AutomateTriggerCallHistoryListFilterInputType>
@@ -2662,6 +2885,40 @@ export type AutomationHistoryQuery = { __typename?: 'Query' } & {
       }
     }
   >
+}
+
+export type AutomationProtocolsQueryVariables = Exact<{
+  pagination?: Maybe<ProtocolListPaginationInputType>
+  contractPagination?: Maybe<ContractListPaginationInputType>
+}>
+
+export type AutomationProtocolsQuery = { __typename?: 'Query' } & {
+  protocols: { __typename?: 'ProtocolListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'ProtocolType' } & Pick<
+          ProtocolType,
+          'name' | 'id' | 'icon'
+        > & {
+            contracts: { __typename?: 'ContractListType' } & {
+              list?: Maybe<
+                Array<
+                  { __typename?: 'ContractType' } & Pick<
+                    ContractType,
+                    | 'id'
+                    | 'blockchain'
+                    | 'network'
+                    | 'address'
+                    | 'name'
+                    | 'events'
+                  >
+                >
+              >
+            }
+          }
+      >
+    >
+  }
 }
 
 export type AutomationTriggerCreateMutationVariables = Exact<{
@@ -2722,7 +2979,13 @@ export type AutomationTriggerFragmentFragment = {
 > & {
     wallet: { __typename?: 'WalletType' } & Pick<
       WalletType,
-      'id' | 'blockchain' | 'network' | 'address' | 'publicKey' | 'createdAt'
+      | 'id'
+      | 'blockchain'
+      | 'network'
+      | 'address'
+      | 'publicKey'
+      | 'createdAt'
+      | 'name'
     >
     conditions: { __typename?: 'AutomateConditionListType' } & {
       list?: Maybe<
@@ -3612,61 +3875,6 @@ export type StakingTokensQuery = { __typename?: 'Query' } & {
         >
       >
     >
-  }
-}
-
-export type UserEventSubscriptionCreateMutationVariables = Exact<{
-  input: UserEventSubscriptionCreateInputType
-}>
-
-export type UserEventSubscriptionCreateMutation = {
-  __typename?: 'Mutation'
-} & {
-  userEventSubscriptionCreate: {
-    __typename?: 'UserEventSubscriptionType'
-  } & UserEventSubscriptionFragmentFragment
-}
-
-export type UserEventSubscriptionDeleteMutationVariables = Exact<{
-  id: Scalars['UuidType']
-}>
-
-export type UserEventSubscriptionDeleteMutation = {
-  __typename?: 'Mutation'
-} & Pick<Mutation, 'userEventSubscriptionDelete'>
-
-export type UserEventSubscriptionFragmentFragment = {
-  __typename?: 'UserEventSubscriptionType'
-} & Pick<UserEventSubscriptionType, 'id' | 'event'> & {
-    contact: { __typename?: 'UserContactType' } & Pick<
-      UserContactType,
-      'address' | 'broker'
-    >
-    contract: { __typename?: 'ContractType' } & Pick<
-      ContractType,
-      'id' | 'name' | 'blockchain' | 'network'
-    >
-  }
-
-export type UserEventSubscriptionsQueryVariables = Exact<{
-  userEventSubscriptionFilter?: Maybe<UserEventSubscriptionListQueryFilterInputType>
-  userEventSubscriptionSort?: Maybe<
-    | Array<UserEventSubscriptionListSortInputType>
-    | UserEventSubscriptionListSortInputType
-  >
-  userEventSubscriptionPagination?: Maybe<UserEventSubscriptionListPaginationInputType>
-}>
-
-export type UserEventSubscriptionsQuery = { __typename?: 'Query' } & {
-  userEventSubscriptions: { __typename?: 'UserEventSubscriptionListQuery' } & {
-    list?: Maybe<
-      Array<
-        {
-          __typename?: 'UserEventSubscriptionType'
-        } & UserEventSubscriptionFragmentFragment
-      >
-    >
-    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
 }
 
