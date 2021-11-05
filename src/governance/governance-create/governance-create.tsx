@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import { ethers } from 'ethers'
+import networks from '@defihelper/networks/contracts.json'
 
 import { AppLayout } from '~/layouts'
 import { ButtonBase } from '~/common/button-base'
@@ -16,7 +17,6 @@ import {
   GovernanceAction,
   GovernanceActionArguments,
 } from '../common/governance.types'
-import { isEthAddress } from '~/common/is-eth-address'
 import { cutAccount } from '~/common/cut-account'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Paper } from '~/common/paper'
@@ -36,9 +36,10 @@ export type GovernanceCreateProps = unknown
 const joinArguments = (args: GovernanceActionArguments) => {
   return Object.entries(args)
     .map(([param, paramValue]) => {
-      const value = isEthAddress(paramValue.value)
-        ? cutAccount(paramValue.value)
-        : paramValue.value
+      const value =
+        paramValue.type === 'address'
+          ? cutAccount(paramValue.value)
+          : paramValue.value
 
       return [param, value].join(': ')
     })
@@ -49,6 +50,14 @@ type FormValues = {
   name: string
   description: string
 }
+
+const contracts: Record<
+  string,
+  {
+    address: string
+    deployBlockNumber: number
+  }
+> = networks[3]
 
 export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
   const [openGovernanceActionsDialog] = useDialog(GovernanceActionsDialog)
@@ -134,12 +143,8 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
     )
 
     const addresses = actions
-      .flatMap((action) => {
-        return Object.values(action.arguments).filter(
-          (argument) => argument.type === 'address'
-        )
-      }, [])
-      .map(({ value }) => value)
+      .map((action) => contracts[action.contract]?.address)
+      .filter(Boolean)
 
     try {
       const wallet = await openWalletList()
@@ -186,9 +191,20 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
           <Paper radius={8} className={clsx(styles.actions, styles.input)}>
             {actions.map((action, index) => (
               <div key={String(index)} className={styles.action}>
-                <Typography variant="h5" className={styles.actionTitle}>
-                  {index + 1}: {action.contract}.{action.method}(
-                  {joinArguments(action.arguments)})
+                <Typography
+                  variant="h5"
+                  className={styles.actionTitle}
+                  as="div"
+                >
+                  {index + 1}:{' '}
+                  {contracts[action.contract] ? (
+                    cutAccount(contracts[action.contract].address)
+                  ) : (
+                    <span className={styles.unsupportedContract}>
+                      Unsupported contract
+                    </span>
+                  )}
+                  .{action.method}({joinArguments(action.arguments)})
                 </Typography>
                 <ButtonBase
                   className={styles.actionButton}

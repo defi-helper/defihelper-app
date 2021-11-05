@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import networks from '@defihelper/networks/contracts.json'
 
 import { abi, AbiKeys, isContract } from '~/abi'
 import { GovernanceActionsManuallyParams } from '../governance-actions-manually-params'
@@ -16,7 +17,17 @@ export type GovernanceActionsManuallyProps = {
   initialAction?: GovernanceAction
 }
 
-const contractNames = Object.keys(abi) as AbiKeys[]
+const contractAddresses: Record<
+  string,
+  {
+    address: string
+    deployBlockNumber: number
+  }
+> = networks[3]
+
+const contractNames = Object.keys(abi).filter(
+  (key) => key in contractAddresses
+) as AbiKeys[]
 
 export const GovernanceActionsManually: React.VFC<GovernanceActionsManuallyProps> =
   (props) => {

@@ -49,3 +49,7 @@ export const error = style({
 export const submit = style({
   margin: '0 auto',
 })
+
+export const unsupportedContract = style({
+  color: theme.colors.common.red1,
+})
