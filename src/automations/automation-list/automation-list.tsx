@@ -17,7 +17,7 @@ import { ButtonBase } from '~/common/button-base'
 import { AutomationTriggerDescriptionDialog } from '~/automations/common/automation-trigger-description-dialog'
 import { Icon } from '~/common/icon'
 import { AutomationTriggerDialog } from '~/automations/automation-update-new'
-import { AutomationUpdate } from '../automation-update'
+import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
 
@@ -31,24 +31,41 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
 
   const [dontShow, setDontShow] = useLocalStorage('dontShow', false)
 
-  const [openAutomationUpdate] = useDialog(AutomationUpdate)
   const [openAutomationTrigger] = useDialog(AutomationTriggerDialog)
   const [openAutomationUpdateContract] = useDialog(AutomationUpdateContract)
   const [openDescriptionDialog] = useDialog(AutomationTriggerDescriptionDialog)
+  const [openConfirmDialog] = useDialog(ConfirmDialog)
 
-  const handleDeleteTrigger = (triggerId: string) => () =>
-    model.deleteTriggerFx(triggerId)
+  const handleDeleteTrigger = (triggerId: string) => async () => {
+    try {
+      await openConfirmDialog()
+
+      model.deleteTriggerFx(triggerId)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
 
   const handleEditTrigger = (trigger: Trigger) => async () => {
-    await openAutomationUpdate({
-      trigger,
+    await openAutomationTrigger({
+      automateContracts,
+      updatingTrigger: trigger,
       contracts,
-      onAddContract: model.setNewContract,
     }).catch((error: Error) => console.error(error.message))
   }
 
-  const handleAutomationDeleteContract = (contractId: string) => () => {
-    model.deleteContractFx(contractId)
+  const handleAutomationDeleteContract = (contractId: string) => async () => {
+    try {
+      await openConfirmDialog()
+
+      model.deleteContractFx(contractId)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
   }
 
   const handleActivate = (trigger: Trigger) => () => {
@@ -86,6 +103,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
 
       await openAutomationTrigger({
         automateContracts,
+        contracts,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -155,6 +173,8 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
                 onDelete={handleDeleteTrigger(trigger.id)}
                 active={trigger.active}
                 onActivate={handleActivate(trigger)}
+                deleting={trigger.deleting}
+                type={trigger.type}
               />
             ))}
         </div>

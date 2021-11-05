@@ -1,4 +1,4 @@
-import { Automates } from '~/automations/common/automation.types'
+import { Contract } from '~/automations/common/automation.types'
 import { AutomationDialog } from '../automation-dialog'
 import {
   AutomationSelectList,
@@ -6,26 +6,26 @@ import {
 } from '../automation-select-list'
 
 export type AutomationContractDialogProps = {
-  onConfirm: (automateContract: Automates) => void
+  onConfirm: (contract: Contract) => void
   onCancel: () => void
-  automateContracts: Record<string, Automates>
+  contracts: Contract[]
 }
 
 export const AutomationContractDialog: React.VFC<AutomationContractDialogProps> =
   (props) => {
-    const handleOnChange = (contract: Automates) => () => {
+    const handleOnChange = (contract: Contract) => () => {
       props.onConfirm(contract)
     }
 
     return (
       <AutomationDialog title="Choose contract" onBack={props.onCancel}>
         <AutomationSelectList>
-          {Object.values(props.automateContracts).map((contract) => (
+          {props.contracts.map((contract) => (
             <AutomationSelectListItem
-              key={contract.protocol}
+              key={contract.id}
               onClick={handleOnChange(contract)}
             >
-              {contract.contract}
+              {contract.name}
             </AutomationSelectListItem>
           ))}
         </AutomationSelectList>

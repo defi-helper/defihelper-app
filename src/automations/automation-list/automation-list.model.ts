@@ -3,12 +3,11 @@ import { createGate } from 'effector-react'
 import { config } from '~/config'
 
 import {
-  AutomateTriggerCreateInputType,
   AutomationContractFragmentFragment,
   UserType,
 } from '~/graphql/_generated-types'
 import { userModel } from '~/users'
-import { automationUpdateModel } from '../automation-update'
+import * as automationUpdateModel from '~/automations/automation-update-new/automation-update.model'
 import { automationApi } from '../common/automation.api'
 import { Automates, Trigger } from '../common/automation.types'
 
@@ -21,12 +20,6 @@ export const fetchTriggersFx = automationListDomain.createEffect(async () => {
 export const deleteTriggerFx = automationListDomain.createEffect(
   async (id: string) => {
     return automationApi.deleteTrigger({ id })
-  }
-)
-
-export const createTriggerFx = automationListDomain.createEffect(
-  (input: AutomateTriggerCreateInputType) => {
-    return automationApi.createTrigger({ input })
   }
 )
 
@@ -50,9 +43,10 @@ export const $triggers = automationListDomain
       trigger.id === triggerId ? { ...trigger, deleting: true } : trigger
     )
   )
-  .on(createTriggerFx.doneData, (state, payload) =>
-    payload ? [...state, payload] : state
-  )
+  .on(automationUpdateModel.createTriggerFx.doneData, (state, payload) => [
+    ...state,
+    payload,
+  ])
   .on(toggleTriggerFx.doneData, (state, payload) =>
     state.map((trigger) => (trigger.id === payload.id ? payload : trigger))
   )

@@ -1,34 +1,53 @@
 import { useForm, Controller } from 'react-hook-form'
+import { useEffect, useMemo } from 'react'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import clsx from 'clsx'
+import isEmpty from 'lodash.isempty'
 
-import { Automates, Wallet } from '~/automations/common/automation.types'
+import {
+  Automates,
+  Protocol,
+  Wallet,
+  Contract,
+} from '~/automations/common/automation.types'
 import { Button } from '~/common/button'
 import { cutAccount } from '~/common/cut-account'
 import { useDialog } from '~/common/dialog'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
 import { Typography } from '~/common/typography'
-import { AutomateTriggerCreateInputType } from '~/graphql/_generated-types'
+import {
+  AutomateTriggerCreateInputType,
+  AutomateTriggerTypeEnum,
+  AutomateTriggerUpdateInputType,
+} from '~/graphql/_generated-types'
 import { AutomationChooseButton } from '../automation-choose-button/automation-choose-button'
 import { AutomationContractDialog } from '../automation-contract-dialog'
 import { AutomationNetworksDialog } from '../automation-networks-dialog'
 import { AutomationProtocolDialog } from '../automation-protocol-dialog'
 import { AutomationWalletsDialog } from '../automation-wallets-dialog'
 import { NETWORKS } from '../constants'
+import { AutomationEventsDialog } from '../automation-events-dialog'
+import { safeJsonParse } from '../safe-json-parse'
+import { AutomationForm } from '../automation-form'
 import * as styles from './automation-trigger-form.css'
 
 export type AutomationTriggerFormProps = {
   automateContracts: Record<string, Automates>
   type: 'ByTime' | 'ByEvent'
   wallets: Wallet[]
+  protocols: Protocol[]
+  onCreate: (formValues: AutomateTriggerCreateInputType) => void
+  onUpdate: (formValues: AutomateTriggerUpdateInputType) => void
+  defaultValues?: AutomateTriggerCreateInputType & { id: string }
+  loading: boolean
 }
 
 type Params = {
   network: string
   event: string
-  protocol: string
-  contract: string
+  protocol: Protocol
+  contract: Contract
   wallet: Wallet
 }
 
@@ -42,8 +61,34 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
   const [openProtocolDialog] = useDialog(AutomationProtocolDialog)
   const [openContractDialog] = useDialog(AutomationContractDialog)
   const [openWalletsDialog] = useDialog(AutomationWalletsDialog)
+  const [openEventsDialog] = useDialog(AutomationEventsDialog)
 
-  const { handleSubmit, register, control, setValue } = useForm<FormValues>()
+  const defaultValues = useMemo((): FormValues => {
+    const { params, wallet, ...restOfDefaultValues } = props.defaultValues ?? {}
+
+    const { address, ...parsedParams } = safeJsonParse(params)
+
+    const findedProtocol = props.protocols.find((protocol) =>
+      protocol.contracts.list?.some((contract) => contract.address === address)
+    )
+
+    const findedWallet = props.wallets.find(
+      (walletItem) => walletItem.id === wallet
+    )
+
+    return {
+      ...restOfDefaultValues,
+      ...parsedParams,
+      protocol: findedProtocol,
+      contract: findedProtocol?.contracts.list?.find(
+        (contract) => contract.address === address
+      ),
+      wallet: findedWallet,
+    }
+  }, [props.defaultValues, props.protocols, props.wallets])
+
+  const { handleSubmit, register, control, setValue, getValues, reset } =
+    useForm<FormValues>()
 
   const handleChooseNetwork = async () => {
     try {
@@ -58,12 +103,14 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
   }
 
   const handleChooseProtocol = async () => {
+    if (isEmpty(props.protocols)) return
+
     try {
       const result = await openProtocolDialog({
-        automateContracts: props.automateContracts,
+        protocols: props.protocols,
       })
 
-      setValue('protocol', result.protocol)
+      setValue('protocol', result)
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -71,12 +118,16 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
     }
   }
   const handleChooseContract = async () => {
+    const contracts = getValues('protocol')?.contracts?.list ?? []
+
+    if (isEmpty(contracts)) return
+
     try {
       const result = await openContractDialog({
-        automateContracts: props.automateContracts,
+        contracts,
       })
 
-      setValue('contract', result.contract)
+      setValue('contract', result)
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -97,13 +148,61 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
     }
   }
 
+  const handleChooseEvent = async () => {
+    const { events = [] } = getValues('contract') ?? {}
+
+    if (isEmpty(events)) return
+
+    try {
+      const result = await openEventsDialog({ events })
+
+      setValue('event', result)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
   const handleOnSubmit = handleSubmit((formValues) => {
-    // eslint-disable-next-line no-console
-    console.log(formValues)
+    const { event, network, contract, protocol, wallet, ...restofValues } =
+      formValues
+
+    if (props.defaultValues)
+      props.onUpdate({
+        name: formValues.name,
+        id: props.defaultValues.id,
+      })
+
+    if (!props.defaultValues)
+      props.onCreate({
+        ...restofValues,
+        wallet: wallet.id,
+        type:
+          props.type === 'ByTime'
+            ? AutomateTriggerTypeEnum.EveryDay
+            : AutomateTriggerTypeEnum.ContractEvent,
+        params:
+          props.type === 'ByEvent'
+            ? JSON.stringify({
+                event,
+                network,
+                address: contract.address,
+              })
+            : '{}',
+      })
   })
 
+  useEffect(() => {
+    if (props.defaultValues) {
+      reset(defaultValues)
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValues, props.defaultValues])
+
   return (
-    <form onSubmit={handleOnSubmit} className={styles.root}>
+    <AutomationForm onSubmit={handleOnSubmit}>
       <Input label="Name" className={styles.input} {...register('name')} />
       <Controller
         control={control}
@@ -113,6 +212,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
             label="wallet"
             onClick={handleChooseWallet}
             className={clsx(styles.wallet, styles.input)}
+            disabled={Boolean(props.defaultValues) || props.loading}
           >
             {(field.value && (
               <>
@@ -149,6 +249,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
                 label="network"
                 onClick={handleChooseNetwork}
                 className={styles.input}
+                disabled={Boolean(props.defaultValues) || props.loading}
               >
                 {(field.value && (
                   <>
@@ -172,8 +273,22 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
                 label="protocol"
                 onClick={handleChooseProtocol}
                 className={styles.input}
+                disabled={Boolean(props.defaultValues) || props.loading}
               >
-                {field.value || 'Choose protocol'}
+                {(field.value && (
+                  <>
+                    {field.value.icon && (
+                      <img
+                        src={field.value.icon}
+                        width="28"
+                        height="28"
+                        alt=""
+                      />
+                    )}
+                    {field.value.name}
+                  </>
+                )) ||
+                  'Choose protocol'}
               </AutomationChooseButton>
             )}
           />
@@ -185,8 +300,9 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
                 label="contract"
                 onClick={handleChooseContract}
                 className={styles.input}
+                disabled={Boolean(props.defaultValues) || props.loading}
               >
-                {field.value || 'Choose contract'}
+                {field.value?.name || 'Choose contract'}
               </AutomationChooseButton>
             )}
           />
@@ -194,16 +310,21 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
             control={control}
             name="event"
             render={({ field }) => (
-              <AutomationChooseButton label="event" className={styles.input}>
+              <AutomationChooseButton
+                label="event"
+                className={styles.input}
+                onClick={handleChooseEvent}
+                disabled={Boolean(props.defaultValues) || props.loading}
+              >
                 {field.value || 'Choose event'}
               </AutomationChooseButton>
             )}
           />
         </>
       )}
-      <Button className={styles.submit} type="submit">
+      <Button className={styles.submit} loading={props.loading} type="submit">
         Setup
       </Button>
-    </form>
+    </AutomationForm>
   )
 }

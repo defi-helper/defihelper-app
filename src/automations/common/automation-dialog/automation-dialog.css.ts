@@ -5,8 +5,6 @@ import { theme } from '~/common/theme'
 export const root = style({
   width: 360,
   height: 568,
-  display: 'flex',
-  flexDirection: 'column',
   padding: '24px 32px',
 })
 

@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Event } from 'effector'
 import { useGate, useStore } from 'effector-react'
 import omit from 'lodash.omit'
 
-import { userModel } from '~/users'
 import {
   Action,
   Condition,
@@ -16,11 +14,9 @@ import {
   AutomateActionCreateInputType,
   AutomateActionUpdateInputType,
   AutomateConditionCreateInputType,
-  AutomateTriggerCreateInputType,
   AutomationContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { Button } from '~/common/button'
-import { AutomationTriggerForm } from '~/automations/common/automation-trigger-form'
 import { AutomationTriggerExpression } from '../common/automation-trigger-expression'
 import { AutomationDeployContract } from '../automation-deploy-contract'
 import { Tab, TabPanel, Tabs } from '~/common/tabs'
@@ -37,8 +33,6 @@ export type AutomationUpdateProps = {
 }
 
 export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
-  const wallets = useStore(userModel.$userWallets)
-  const loading = useStore(model.updateTriggerFx.pending)
   const actions = useStore(model.$actions)
   const conditions = useStore(model.$conditions)
 
@@ -51,27 +45,6 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
 
   useGate(model.AutomationUpdateGate, props.trigger)
   useGate(contactModel.SettingsContactsGate)
-
-  const defaultValues = props.trigger
-    ? {
-        wallet: props.trigger.wallet.id,
-        type: props.trigger.type,
-        name: props.trigger.name,
-        active: props.trigger.active,
-        params: props.trigger.params,
-      }
-    : undefined
-
-  const handleSubmit = (formValues: AutomateTriggerCreateInputType) => {
-    const { name, active } = formValues
-
-    model.updateTriggerFx({
-      // @ts-ignore
-      id: props.trigger?.id,
-      name,
-      active,
-    })
-  }
 
   const handleAddAction = () => {
     model.setAction(actionsCount.length + 1)
@@ -133,15 +106,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
           <Tab>Trigger</Tab>
           <Tab>Actions</Tab>
           <Tab>Conditions</Tab>
-          <TabPanel>
-            <AutomationTriggerForm
-              wallets={wallets}
-              // @ts-ignore
-              onSubmit={handleSubmit}
-              defaultValues={defaultValues}
-              loading={loading}
-            />
-          </TabPanel>
+          <TabPanel>form</TabPanel>
           <TabPanel>
             {actionsCount.map((priority) => {
               const action = actions[priority]

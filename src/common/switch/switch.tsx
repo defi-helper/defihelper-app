@@ -5,6 +5,7 @@ import { Icon } from '../icon'
 import * as styles from './switch.css'
 
 type Components = {
+  input: React.ReactElement
   thumb: React.ReactElement
   track: React.ReactElement
 }
@@ -18,6 +19,7 @@ export type SwitchProps = Omit<
 }
 
 const defaultComponents: Components = {
+  input: <input />,
   thumb: <span />,
   track: <span />,
 }
@@ -26,26 +28,23 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
   props,
   ref
 ) {
-  const {
-    components = defaultComponents,
-    className,
-    error,
-    ...restOfProps
-  } = props
+  const { components, className, error, ...restOfProps } = props
 
   const currentComponents = {
-    ...defaultComponents,
-    ...components,
+    input: components?.input ?? defaultComponents.input,
+    thumb: components?.thumb ?? defaultComponents.thumb,
+    track: components?.track ?? defaultComponents.track,
   }
 
   return (
     <span className={clsx(styles.root, className)}>
-      <input
-        ref={ref}
-        {...restOfProps}
-        type="checkbox"
-        className={styles.input}
-      />
+      {cloneElement(currentComponents.input, {
+        ...currentComponents.input.props,
+        ...restOfProps,
+        type: 'checkbox',
+        className: clsx(styles.input, currentComponents.input.props.className),
+        ref,
+      })}
       {cloneElement(currentComponents.track, {
         ...currentComponents.track.props,
         className: clsx(

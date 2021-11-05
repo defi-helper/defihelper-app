@@ -8,13 +8,14 @@ import * as styles from './automation-choose-button.css'
 
 export type AutomationChooseButtonProps = {
   label: string
+  onDelete?: () => void
 } & ButtonBaseProps
 
 export const AutomationChooseButton = forwardRef<
   HTMLButtonElement,
   AutomationChooseButtonProps
 >(function AutomationChooseButton(props, ref) {
-  const { label, className, children, ...restOfProps } = props
+  const { label, className, children, onDelete, ...restOfProps } = props
 
   return (
     <div className={clsx(styles.root, className)}>
@@ -25,6 +26,11 @@ export const AutomationChooseButton = forwardRef<
         className={styles.label}
       >
         {props.label}
+        {props.onDelete && (
+          <ButtonBase onClick={props.onDelete}>
+            <Icon icon="close" width="30" height="30" />
+          </ButtonBase>
+        )}
       </Typography>
       <ButtonBase {...restOfProps} ref={ref} className={styles.button}>
         {children}{' '}

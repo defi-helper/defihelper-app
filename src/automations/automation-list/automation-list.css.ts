@@ -23,6 +23,7 @@ export const title = style({
 
 export const grid = style({
   display: 'grid',
+  gap: 24,
 
   '@media': {
     [theme.mediaQueries.md()]: {

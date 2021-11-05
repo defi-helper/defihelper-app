@@ -6,6 +6,10 @@ export const list = style({
   padding: 0,
   margin: 0,
   listStyle: 'none',
+  display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  minHeight: 'calc(100% - 40px)',
 })
 
 export const listItem = style({

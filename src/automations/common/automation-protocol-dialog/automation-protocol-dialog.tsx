@@ -1,4 +1,4 @@
-import { Automates } from '~/automations/common/automation.types'
+import { Protocol } from '~/automations/common/automation.types'
 import { AutomationDialog } from '../automation-dialog'
 import {
   AutomationSelectList,
@@ -6,26 +6,34 @@ import {
 } from '../automation-select-list'
 
 export type AutomationProtocolDialogProps = {
-  onConfirm: (automateContract: Automates) => void
+  onConfirm: (protocol: Protocol) => void
   onCancel: () => void
-  automateContracts: Record<string, Automates>
+  protocols: Protocol[]
 }
 
 export const AutomationProtocolDialog: React.VFC<AutomationProtocolDialogProps> =
   (props) => {
-    const handleOnChange = (contract: Automates) => () => {
-      props.onConfirm(contract)
+    const handleOnChange = (protocol: Protocol) => () => {
+      props.onConfirm(protocol)
     }
 
     return (
       <AutomationDialog title="Choose protocol" onBack={props.onCancel}>
         <AutomationSelectList>
-          {Object.values(props.automateContracts).map((contract) => (
+          {props.protocols.map((protocol) => (
             <AutomationSelectListItem
-              key={contract.protocol}
-              onClick={handleOnChange(contract)}
+              key={protocol.id}
+              onClick={handleOnChange(protocol)}
+              icon={
+                <img
+                  src={protocol.icon ?? undefined}
+                  width="28"
+                  height="28"
+                  alt=""
+                />
+              }
             >
-              {contract.protocol}
+              {protocol.name}
             </AutomationSelectListItem>
           ))}
         </AutomationSelectList>

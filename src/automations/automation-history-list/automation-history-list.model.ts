@@ -1,8 +1,8 @@
-import { createDomain, sample } from 'effector-logger/macro'
+import { createDomain, sample, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { automationApi } from '~/automations/common/automation.api'
-import { createPagination, PaginationState } from '~/common/create-pagination'
+import { PaginationState } from '~/common/create-pagination'
 import { AutomateTriggerCallHistoryType } from '~/graphql/_generated-types'
 
 export const automationHistoryListDomain = createDomain()
@@ -17,28 +17,25 @@ export const fetchHistoryFx = automationHistoryListDomain.createEffect(
     })
 )
 
+export const $count = restore(
+  fetchHistoryFx.doneData.map(({ count }) => count),
+  0
+)
+
 export const $history = automationHistoryListDomain
   .createStore<AutomateTriggerCallHistoryType[]>([])
   .on(fetchHistoryFx.doneData, (_, { list }) => list)
 
-export const AutomationHistoryPagination = createPagination({
-  domain: automationHistoryListDomain,
-})
-
-export const AutomationHistoryListGate = createGate<string>({
+export const AutomationHistoryListGate = createGate<{
+  automationId: string
+  pagination: PaginationState
+}>({
   domain: automationHistoryListDomain,
   name: 'AutomationHistoryListGate',
 })
 
 sample({
-  source: [AutomationHistoryPagination.state, AutomationHistoryListGate.state],
-  clock: [AutomationHistoryListGate.open, AutomationHistoryPagination.updates],
-  fn: ([pagination, automationId]) => ({ pagination, automationId }),
+  source: AutomationHistoryListGate.state,
+  clock: [AutomationHistoryListGate.open],
   target: fetchHistoryFx,
-})
-
-sample({
-  clock: fetchHistoryFx.doneData,
-  fn: (clock) => clock.count,
-  target: AutomationHistoryPagination.totalElements,
 })

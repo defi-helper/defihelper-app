@@ -9,6 +9,7 @@ import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Switch } from '~/common/switch'
 import { Typography } from '~/common/typography'
+import { AutomateTriggerTypeEnum } from '~/graphql/_generated-types'
 import { paths } from '~/paths'
 import * as styles from './automation-card.css'
 
@@ -21,16 +22,54 @@ export type AutomationCardProps = {
   editing?: boolean
   id: string
   className?: string
+  type: AutomateTriggerTypeEnum
+}
+
+type LabelProps = {
+  title?: React.ReactNode
+  value?: React.ReactNode
+  subtitle?: React.ReactNode
+  automation: boolean
+}
+
+const Label: React.VFC<LabelProps> = (props) => {
+  return (
+    <div>
+      <Typography
+        variant="body3"
+        family="mono"
+        transform="uppercase"
+        className={props.automation ? styles.titleGreen : styles.titlePink}
+      >
+        {props.title}
+      </Typography>
+      <Typography>{props.value}</Typography>
+      <Typography variant="body3" className={styles.subtitle}>
+        {props.subtitle}
+      </Typography>
+    </div>
+  )
 }
 
 export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
   const pending = props.deleting || props.editing
 
+  const automation = [
+    AutomateTriggerTypeEnum.EveryDay,
+    AutomateTriggerTypeEnum.EveryHour,
+    AutomateTriggerTypeEnum.EveryMonth,
+    AutomateTriggerTypeEnum.EveryWeek,
+  ].includes(props.type)
+
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <div>
-        <Chip color="lightGreen" variant="contained" className={styles.type}>
-          Automation
+        <Chip
+          color={automation ? 'lightGreen' : 'pink'}
+          variant="contained"
+          className={styles.type}
+        >
+          {automation ? 'Automation' : 'Event'}
         </Chip>
         <Dropdown
           control={(active) => (
@@ -75,48 +114,24 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
           </ButtonBase>
         </Dropdown>
       </div>
-      <div>
-        <Typography
-          variant="body3"
-          family="mono"
-          transform="uppercase"
-          className={styles.title}
-        >
-          Action
-        </Typography>
-        <Typography>Claim, Exchange, Transfer</Typography>
-        <Typography variant="body3" className={styles.subtitle}>
-          from BAG+USDC, to USDT, to 0x684...
-        </Typography>
-      </div>
-      <div>
-        <Typography
-          variant="body3"
-          family="mono"
-          transform="uppercase"
-          className={styles.title}
-        >
-          Condition
-        </Typography>
-        <Typography>4 Triggers</Typography>
-        <Typography variant="body3" className={styles.subtitle}>
-          BondAppetit, Etherium
-        </Typography>
-      </div>
-      <div>
-        <Typography
-          variant="body3"
-          family="mono"
-          transform="uppercase"
-          className={styles.title}
-        >
-          Wallet
-        </Typography>
-        <Typography>wallet main eth</Typography>
-        <Typography variant="body3" className={styles.subtitle}>
-          Fee Funds: 2.015 ETH
-        </Typography>
-      </div>
+      <Label
+        title="Condition"
+        value="4 Triggers"
+        subtitle="BondAppetit, Etherium"
+        automation={automation}
+      />
+      <Label
+        title="Action"
+        value="Claim, Exchange, Transfer"
+        subtitle="from BAG+USDC, to USDT, to 0x684..."
+        automation={automation}
+      />
+      <Label
+        title="Wallet"
+        value="wallet main eth"
+        subtitle="Fee Funds: 2.015 ETH"
+        automation={automation}
+      />
       <Switch checked={props.active} onChange={props.onActivate} />
     </Paper>
   )

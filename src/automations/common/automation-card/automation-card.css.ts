@@ -79,8 +79,12 @@ export const red = style({
   color: theme.colors.common.red1,
 })
 
-export const title = style({
+export const titleGreen = style({
   color: theme.colors.textColorGreen,
+})
+
+export const titlePink = style({
+  color: theme.colors.common.pink3,
 })
 
 export const subtitle = style({

@@ -1,12 +1,14 @@
-import { MenuItem, TextField } from '@material-ui/core'
-import clsx from 'clsx'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '~/common/button'
+import { Select, SelectOption } from '~/common/select'
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
+import { AutomationForm } from '../automation-form'
 import * as styles from './automation-action-ethereum-run.css'
 
-type FormValues = { id: string }
+type FormValues = {
+  id: string
+}
 
 export type AutomationActionEthereumRunProps = {
   className?: string
@@ -31,38 +33,33 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
     }
 
     return (
-      <form
-        noValidate
-        autoComplete="off"
-        className={clsx(styles.root, props.className)}
-        onSubmit={reactHookSubmit(handleSubmit)}
-      >
+      <AutomationForm onSubmit={reactHookSubmit(handleSubmit)}>
         <Controller
           render={({ field }) => (
-            <TextField
+            <Select
               label="Contract"
               {...field}
-              select
               helperText={formState.errors.id?.message}
               error={Boolean(formState.errors.id?.message)}
               defaultValue={props.defaultValues?.id}
               value={field.value || ''}
+              className={styles.input}
             >
               {props.contracts.map((contract) => (
-                <MenuItem key={contract.id} value={contract.id}>
+                <SelectOption key={contract.id} value={contract.id}>
                   {contract.adapter}({contract.protocol.name})
                   {contract.wallet.address}
-                </MenuItem>
+                </SelectOption>
               ))}
-            </TextField>
+            </Select>
           )}
           name="id"
           control={control}
         />
-        <Button onClick={props.onDeploy}>Deploy new</Button>
-        <Button type="submit" size="small">
-          Save
+        <Button onClick={props.onDeploy} className={styles.input}>
+          Deploy new
         </Button>
-      </form>
+        <Button type="submit">Save</Button>
+      </AutomationForm>
     )
   }

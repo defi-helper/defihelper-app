@@ -5,6 +5,7 @@ import {
   AutomateConditionType,
   AutomateActionType,
   WalletType,
+  AutomationProtocolsQuery,
 } from '~/graphql/_generated-types'
 
 export type Trigger = AutomationTriggerFragmentFragment & { deleting?: boolean }
@@ -55,3 +56,19 @@ export type Wallet = Pick<
   | 'publicKey'
   | 'name'
 >
+
+export type Protocol = Exclude<
+  AutomationProtocolsQuery['protocols']['list'],
+  null | undefined
+>[number]
+
+export type Contract = Exclude<
+  Protocol['contracts']['list'],
+  null | undefined
+>[number]
+
+export type FormItem = {
+  title: string
+  description: string
+  component: JSX.Element
+}

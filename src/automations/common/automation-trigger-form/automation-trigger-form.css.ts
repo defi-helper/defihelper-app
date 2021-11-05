@@ -2,12 +2,6 @@ import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
-export const root = style({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-})
-
 export const input = style({
   selectors: {
     '&:not(:last-child)': {

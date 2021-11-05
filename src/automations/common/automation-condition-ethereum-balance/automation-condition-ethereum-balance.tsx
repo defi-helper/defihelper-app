@@ -1,26 +1,35 @@
-import clsx from 'clsx'
-import { MenuItem, TextField } from '@material-ui/core'
 import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
+import clsx from 'clsx'
 
-import { Input } from '~/common/input'
+import { cutAccount } from '~/common/cut-account'
 import { Button } from '~/common/button'
 import { automationConditionEthereumSchema } from './automation-condition-ethereum.validation'
 import { NumericalInput } from '~/common/numerical-input'
-import { Networks } from '../constants'
+import { NETWORKS } from '../constants'
+import { Select, SelectOption } from '~/common/select'
+import { AutomationForm } from '../automation-form'
+import { AutomationChooseButton } from '../automation-choose-button'
+import { Icon } from '~/common/icon'
+import { AutomationNetworksDialog } from '../automation-networks-dialog'
+import { useDialog } from '~/common/dialog'
+import { Wallet } from '../automation.types'
+import { AutomationWalletsDialog } from '../automation-wallets-dialog'
 import * as styles from './automation-condition-ethereum-balance.css'
+import { Typography } from '~/common/typography'
 
 type FormValues = {
-  wallet: string
+  wallet: Wallet
   value: string
   op: string
   network: string
 }
 
 export type AutomationConditionEthereumBalanceProps = {
-  className?: string
   onSubmit: (formValues: string) => void
-  defaultValues?: FormValues
+  wallets: Wallet[]
+  defaultValues?: Omit<FormValues, 'wallet'> & { wallet: string }
 }
 
 enum ConditionTypes {
@@ -34,79 +43,135 @@ enum ConditionTypes {
 
 export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEthereumBalanceProps> =
   (props) => {
-    const { register, handleSubmit, formState, control } = useForm<FormValues>({
-      resolver: yupResolver(automationConditionEthereumSchema),
-      defaultValues: props.defaultValues,
-    })
+    const [openNetworksDialog] = useDialog(AutomationNetworksDialog)
+    const [openWalletsDialog] = useDialog(AutomationWalletsDialog)
+
+    const { register, handleSubmit, formState, control, setValue } =
+      useForm<FormValues>({
+        resolver: yupResolver(automationConditionEthereumSchema),
+      })
+
+    const handleChooseNetwork = async () => {
+      try {
+        const result = await openNetworksDialog()
+
+        setValue('network', result)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
+
+    const handleChooseWallet = async () => {
+      try {
+        const result = await openWalletsDialog({ wallets: props.wallets })
+
+        setValue('wallet', result)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
 
     return (
-      <form
-        noValidate
-        autoComplete="off"
-        className={clsx(styles.root, props.className)}
-        onSubmit={handleSubmit((formValues) =>
-          props.onSubmit(JSON.stringify(formValues))
+      <AutomationForm
+        onSubmit={handleSubmit(({ wallet, ...formValues }) =>
+          props.onSubmit(JSON.stringify({ ...formValues, wallet: wallet.id }))
         )}
       >
         <Controller
           render={({ field }) => (
-            <TextField
-              label="Network"
-              {...field}
-              select
-              helperText={formState.errors.network?.message}
-              error={Boolean(formState.errors.network?.message)}
-              defaultValue={props.defaultValues?.network}
-              value={field.value || ''}
+            <AutomationChooseButton
+              label="network"
+              onClick={handleChooseNetwork}
+              className={styles.input}
+              disabled={Boolean(props.defaultValues)}
             >
-              {Object.entries(Networks).map(([key, networkId]) => (
-                <MenuItem key={key} value={networkId}>
-                  {key}
-                </MenuItem>
-              ))}
-            </TextField>
+              {(field.value && (
+                <>
+                  <Icon
+                    icon={NETWORKS[field.value].icon}
+                    width="28"
+                    height="28"
+                  />{' '}
+                  {NETWORKS[field.value].title}
+                </>
+              )) ||
+                'Choose network'}
+            </AutomationChooseButton>
           )}
           name="network"
           control={control}
         />
-        <Input
-          placeholder="wallet"
-          {...register('wallet')}
-          helperText={formState.errors.wallet?.message}
-          error={Boolean(formState.errors.wallet?.message)}
-          defaultValue={props.defaultValues?.wallet}
+        <Controller
+          control={control}
+          name="wallet"
+          render={({ field }) => (
+            <AutomationChooseButton
+              label="wallet"
+              onClick={handleChooseWallet}
+              className={clsx(styles.wallet, styles.input)}
+              disabled={Boolean(props.defaultValues)}
+            >
+              {(field.value && (
+                <>
+                  <div className={styles.walletTitle}>
+                    <Jazzicon
+                      diameter={20}
+                      seed={jsNumberForAddress(field.value.address)}
+                      paperStyles={{
+                        verticalAlign: 'middle',
+                        marginRight: 8,
+                      }}
+                    />
+                    {field.value.name || 'untitled'}
+                  </div>
+                  <Typography variant="body3" className={styles.walletSubtitle}>
+                    {NETWORKS[field.value.network]?.title && (
+                      <>{NETWORKS[field.value.network]?.title}, </>
+                    )}
+                    {cutAccount(field.value.address)}
+                  </Typography>
+                </>
+              )) ||
+                'Choose wallet'}
+            </AutomationChooseButton>
+          )}
         />
         <Controller
           render={({ field }) => (
-            <TextField
+            <Select
               {...field}
               label="Condition"
-              select
               helperText={formState.errors.op?.message}
               error={Boolean(formState.errors.op?.message)}
               defaultValue={props.defaultValues?.op}
               value={field.value || ''}
+              className={styles.input}
             >
               {Object.entries(ConditionTypes).map(([key, value]) => (
-                <MenuItem key={key} value={value}>
+                <SelectOption key={key} value={value}>
                   {value}
-                </MenuItem>
+                </SelectOption>
               ))}
-            </TextField>
+            </Select>
           )}
           name="op"
           control={control}
         />
         <NumericalInput
-          placeholder="value"
+          label="value"
           {...register('value')}
           helperText={formState.errors.value?.message}
           error={Boolean(formState.errors.value?.message)}
           defaultValue={props.defaultValues?.value}
+          className={styles.input}
         />
         <Button type="submit" size="small">
           Save
         </Button>
-      </form>
+      </AutomationForm>
     )
   }
