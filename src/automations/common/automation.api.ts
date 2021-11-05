@@ -35,6 +35,7 @@ import {
   AutomationContractUpdateMutationVariables,
   AutomationProtocolsQueryVariables,
   AutomationProtocolsQuery,
+  AutomationDescriptionQuery,
 } from '~/graphql/_generated-types'
 import { Automates } from './automation.types'
 import {
@@ -55,6 +56,7 @@ import {
   AUTOMATION_TRIGGER_DELETE,
   AUTOMATION_TRIGGER_UPDATE,
   AUTOMATION_PROTOCOLS,
+  AUTOMATION_DESCRIPTION,
 } from './graphql'
 
 export const automationApi = {
@@ -240,4 +242,12 @@ export const automationApi = {
       )
       .toPromise()
       .then(({ data }) => data?.protocols.list ?? []),
+
+  getDescription: () =>
+    getAPIClient()
+      .query<AutomationDescriptionQuery, AutomationDescriptionQuery>(
+        AUTOMATION_DESCRIPTION
+      )
+      .toPromise()
+      .then(({ data }) => data?.automateDescription),
 }

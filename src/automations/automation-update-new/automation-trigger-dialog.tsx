@@ -1,7 +1,7 @@
-/* eslint-disable no-unused-vars */
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useEffect, useMemo, useState } from 'react'
+import omit from 'lodash.omit'
 
 import { AutomationDialog } from '~/automations/common/automation-dialog'
 import {
@@ -13,6 +13,8 @@ import { ButtonBase } from '~/common/button-base'
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
 import {
+  AutomateActionType,
+  AutomateConditionType,
   AutomateTriggerTypeEnum,
   AutomationContractFragmentFragment,
   AutomationTriggerFragmentFragment,
@@ -22,9 +24,11 @@ import { AutomationChooseButton } from '../common/automation-choose-button'
 import { AutomationConditionsDialog } from '../common/automation-conditions-dialog'
 import { AutomationActionsDialog } from '../common/automation-actions-dialog'
 import { AutomationTriggerForm } from '../common/automation-trigger-form'
+import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './automation-trigger-dialog.css'
 import * as model from './automation-update.model'
 import * as contactModel from '~/settings/settings-contacts/settings-contact.model'
+import { safeJsonParse } from '../common/safe-json-parse'
 
 export type AutomationTriggerDialogProps = {
   automateContracts: Record<string, Automates>
@@ -50,9 +54,15 @@ export const AutomationTriggerDialog: React.VFC<AutomationTriggerDialogProps> =
     const createdTrigger = useStore(model.$createdTrigger)
     const updatedTrigger = useStore(model.$updatedTrigger)
     const contacts = useStore(contactModel.$userContactList)
+    const actions = useStore(model.$actions)
+    const conditions = useStore(model.$conditions)
+    const descriptions = useStore(model.$descriptions)
+    const conditionsPriority = useStore(model.$conditionsPriority)
+    const actionsPriority = useStore(model.$actionsPriority)
 
     const [openConditionsDialog] = useDialog(AutomationConditionsDialog)
     const [openActionsDialog] = useDialog(AutomationActionsDialog)
+    const [openConfirmDialog] = useDialog(ConfirmDialog)
 
     const trigger = updatedTrigger ?? props.updatingTrigger ?? createdTrigger
 
@@ -98,11 +108,18 @@ export const AutomationTriggerDialog: React.VFC<AutomationTriggerDialogProps> =
     }, [automation])
 
     const handleAddCondition = async () => {
+      if (!descriptions) return
+
       try {
-        await openConditionsDialog({
+        const result = await openConditionsDialog({
           contracts: props.contracts,
           wallets,
+          triggerId: trigger?.id,
+          descriptions,
+          priority: conditionsPriority + 1,
         })
+
+        model.createConditionFx(result)
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
@@ -110,11 +127,94 @@ export const AutomationTriggerDialog: React.VFC<AutomationTriggerDialogProps> =
       }
     }
     const handleAddAction = async () => {
+      if (!descriptions) return
+
       try {
-        await openActionsDialog({
+        const result = await openActionsDialog({
           contracts: props.contracts,
           contacts,
           onDeploy: () => {},
+          triggerId: trigger?.id,
+          descriptions,
+          priority: actionsPriority + 1,
+        })
+
+        model.createActionFx(result)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
+
+    const handleDeleteConditon = (conditionId: string) => async () => {
+      try {
+        await openConfirmDialog()
+
+        model.deleteConditonFx(conditionId)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
+
+    const handleDeleteAction = (actionId: string) => async () => {
+      try {
+        await openConfirmDialog()
+
+        model.deleteActionFx(actionId)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
+
+    const handleUpdateCondition =
+      (condition: AutomateConditionType) => async () => {
+        if (!descriptions) return
+
+        try {
+          const result = await openConditionsDialog({
+            contracts: props.contracts,
+            wallets,
+            triggerId: trigger?.id,
+            type: condition.type,
+            params: condition.params,
+            descriptions,
+            priority: condition.priority,
+          })
+
+          model.updateConditionFx({
+            ...omit(result, ['type', 'trigger']),
+            id: condition.id,
+          })
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(error.message)
+          }
+        }
+      }
+
+    const handleUpdateAction = (action: AutomateActionType) => async () => {
+      if (!descriptions) return
+
+      try {
+        const result = await openActionsDialog({
+          contracts: props.contracts,
+          contacts,
+          onDeploy: () => {},
+          triggerId: trigger?.id,
+          type: action.type,
+          params: action.params,
+          descriptions,
+          priority: action.priority,
+        })
+
+        model.updateActionFx({
+          ...omit(result, ['type', 'trigger']),
+          id: action.id,
         })
       } catch (error) {
         if (error instanceof Error) {
@@ -186,18 +286,22 @@ export const AutomationTriggerDialog: React.VFC<AutomationTriggerDialogProps> =
             )}
             {currentTab === Tabs.Conditions && (
               <>
-                <AutomationChooseButton
-                  label="condition 1"
-                  className={styles.item}
-                  onDelete={() => {}}
-                >
-                  <Typography className={styles.itemTitle}>
-                    GAS Lower Than
-                  </Typography>
-                  <Typography variant="body3" className={styles.itemSubtitle}>
-                    40
-                  </Typography>
-                </AutomationChooseButton>
+                {conditions.map((condition, index) => (
+                  <AutomationChooseButton
+                    label={`condition ${index + 1}`}
+                    className={styles.item}
+                    onDelete={handleDeleteConditon(condition.id)}
+                    onClick={handleUpdateCondition(condition)}
+                    key={condition.id}
+                  >
+                    <Typography className={styles.itemTitle}>
+                      {descriptions?.conditions[condition.type]?.name}
+                    </Typography>
+                    <Typography variant="body3" className={styles.itemSubtitle}>
+                      {safeJsonParse(condition.params).value}
+                    </Typography>
+                  </AutomationChooseButton>
+                ))}
                 <ButtonBase
                   className={styles.addButton}
                   onClick={handleAddCondition}
@@ -208,6 +312,22 @@ export const AutomationTriggerDialog: React.VFC<AutomationTriggerDialogProps> =
             )}
             {currentTab === Tabs.Actions && (
               <>
+                {actions.map((action, index) => (
+                  <AutomationChooseButton
+                    label={`action ${index + 1}`}
+                    className={styles.item}
+                    onDelete={handleDeleteAction(action.id)}
+                    onClick={handleUpdateAction(action)}
+                    key={action.id}
+                  >
+                    <Typography className={styles.itemTitle}>
+                      {descriptions?.actions[action.type]?.name}
+                    </Typography>
+                    <Typography variant="body3" className={styles.itemSubtitle}>
+                      {safeJsonParse(action.params).value}
+                    </Typography>
+                  </AutomationChooseButton>
+                ))}
                 <ButtonBase
                   className={styles.addButton}
                   onClick={handleAddAction}

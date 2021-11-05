@@ -1307,6 +1307,56 @@ export enum ProtocolMetricChartSortInputTypeColumnEnum {
   Value = 'value',
 }
 
+export type ProtocolSocialPostListFilterInputType = {
+  provider?: Maybe<ProtocolSocialPostProviderEnum>
+}
+
+export type ProtocolSocialPostListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type ProtocolSocialPostListSortInputType = {
+  column: ProtocolSocialPostListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum ProtocolSocialPostListSortInputTypeColumnEnum {
+  Id = 'id',
+  Title = 'title',
+  CreatedAt = 'createdAt',
+}
+
+export type ProtocolSocialPostListType = {
+  __typename?: 'ProtocolSocialPostListType'
+  /** Elements */
+  list?: Maybe<Array<ProtocolSocialPostType>>
+  pagination: Pagination
+}
+
+export enum ProtocolSocialPostProviderEnum {
+  Medium = 'medium',
+  Twitter = 'twitter',
+}
+
+export type ProtocolSocialPostType = {
+  __typename?: 'ProtocolSocialPostType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Provider */
+  provider: ProtocolSocialPostProviderEnum
+  /** Title */
+  title: Scalars['String']
+  /** Content (maybe HTML) */
+  content: Scalars['String']
+  /** URL */
+  link: Scalars['String']
+  /** Date of created */
+  createdAt: Scalars['DateTimeType']
+}
+
 export type ProtocolType = {
   __typename?: 'ProtocolType'
   /** Identificator */
@@ -1328,7 +1378,8 @@ export type ProtocolType = {
   contracts: ContractListType
   metricChart: Array<MetricChartType>
   metricChartContracts: Array<MetricChartType>
-  /** Date of created account */
+  socialPosts: ProtocolSocialPostListType
+  /** Date of created */
   createdAt: Scalars['DateTimeType']
 }
 
@@ -1352,6 +1403,12 @@ export type ProtocolTypeMetricChartContractsArgs = {
   filter?: Maybe<ProtocolMetricChartContractsFilterInputType>
   sort?: Maybe<Array<ProtocolMetricChartContractsSortInputType>>
   pagination?: Maybe<ProtocolMetricChartContractsPaginationInputType>
+}
+
+export type ProtocolTypeSocialPostsArgs = {
+  filter?: Maybe<ProtocolSocialPostListFilterInputType>
+  sort?: Maybe<Array<ProtocolSocialPostListSortInputType>>
+  pagination?: Maybe<ProtocolSocialPostListPaginationInputType>
 }
 
 export type ProtocolUpdateInputType = {
@@ -2747,6 +2804,58 @@ export type AutomationContractsQuery = { __typename?: 'Query' } & {
       >
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type AutomationDescriptionFragmentFragment = {
+  __typename?: 'AutomateDescriptionType'
+} & Pick<AutomateDescriptionType, 'name' | 'description'>
+
+export type AutomationDescriptionQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type AutomationDescriptionQuery = { __typename?: 'Query' } & {
+  automateDescription: { __typename?: 'AutomatesDescriptionType' } & {
+    triggers: { __typename?: 'AutomateTriggersDescriptionType' } & {
+      everyMonth: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      everyWeek: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      everyDay: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      everyHour: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      contractEvent: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+    }
+    conditions: { __typename?: 'AutomateConditionsDescriptionType' } & {
+      schedule: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      ethereumAvgGasPrice: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      ethereumBalance: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      ethereumOptimalAutomateRun: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+    }
+    actions: { __typename?: 'AutomateActionsDescriptionType' } & {
+      notification: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+      ethereumAutomateRun: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
+    }
   }
 }
 

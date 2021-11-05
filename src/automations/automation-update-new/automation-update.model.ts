@@ -149,3 +149,36 @@ sample({
   }),
   target: setExpressions,
 })
+
+const fetchDescriptionFx = automationUpdateDomain.createEffect(() =>
+  automationApi.getDescription()
+)
+
+export const $descriptions = restore(fetchDescriptionFx.doneData, null)
+
+sample({
+  clock: AutomationUpdateGate.open,
+  target: fetchDescriptionFx,
+})
+
+export const $actionsPriority = restore(
+  sample({
+    clock: $actions.updates,
+    fn: (actions) =>
+      actions.sort((actionA, actionB) => actionA.priority - actionB.priority)[
+        actions.length - 1
+      ]?.priority,
+  }),
+  0
+)
+
+export const $conditionsPriority = restore(
+  sample({
+    clock: $conditions.updates,
+    fn: (conditions) =>
+      conditions.sort(
+        (conditionA, conditionB) => conditionA.priority - conditionB.priority
+      )[conditions.length - 1]?.priority,
+  }),
+  0
+)

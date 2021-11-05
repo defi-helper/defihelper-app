@@ -35,8 +35,7 @@ export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEt
               {...field}
               helperText={formState.errors.id?.message}
               error={Boolean(formState.errors.id?.message)}
-              defaultValue={props.defaultValues?.id}
-              value={field.value || ''}
+              value={field.value || props.defaultValues?.id || ''}
               className={styles.input}
             >
               {props.contracts.map((contract) => (

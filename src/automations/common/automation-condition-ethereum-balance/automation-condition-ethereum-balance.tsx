@@ -2,6 +2,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import clsx from 'clsx'
+import { useEffect } from 'react'
 
 import { cutAccount } from '~/common/cut-account'
 import { Button } from '~/common/button'
@@ -16,8 +17,8 @@ import { AutomationNetworksDialog } from '../automation-networks-dialog'
 import { useDialog } from '~/common/dialog'
 import { Wallet } from '../automation.types'
 import { AutomationWalletsDialog } from '../automation-wallets-dialog'
-import * as styles from './automation-condition-ethereum-balance.css'
 import { Typography } from '~/common/typography'
+import * as styles from './automation-condition-ethereum-balance.css'
 
 type FormValues = {
   wallet: Wallet
@@ -46,7 +47,7 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
     const [openNetworksDialog] = useDialog(AutomationNetworksDialog)
     const [openWalletsDialog] = useDialog(AutomationWalletsDialog)
 
-    const { register, handleSubmit, formState, control, setValue } =
+    const { register, handleSubmit, formState, control, setValue, reset } =
       useForm<FormValues>({
         resolver: yupResolver(automationConditionEthereumSchema),
       })
@@ -74,6 +75,19 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
         }
       }
     }
+
+    useEffect(() => {
+      if (props.defaultValues) {
+        const wallet = props.wallets.find(
+          ({ id }) => id === props.defaultValues?.wallet
+        )
+
+        reset({
+          ...props.defaultValues,
+          wallet,
+        })
+      }
+    }, [props.defaultValues, props.wallets, reset])
 
     return (
       <AutomationForm
@@ -147,8 +161,7 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
               label="Condition"
               helperText={formState.errors.op?.message}
               error={Boolean(formState.errors.op?.message)}
-              defaultValue={props.defaultValues?.op}
-              value={field.value || ''}
+              value={field.value || props.defaultValues?.op || ''}
               className={styles.input}
             >
               {Object.entries(ConditionTypes).map(([key, value]) => (
@@ -166,7 +179,7 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
           {...register('value')}
           helperText={formState.errors.value?.message}
           error={Boolean(formState.errors.value?.message)}
-          defaultValue={props.defaultValues?.value}
+          value={props.defaultValues?.value || props.defaultValues?.value}
           className={styles.input}
         />
         <Button type="submit" size="small">

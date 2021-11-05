@@ -2,8 +2,10 @@ import { useState } from 'react'
 
 import { Typography } from '~/common/typography'
 import {
+  AutomateConditionCreateInputType,
   AutomateConditionTypeEnum,
   AutomationContractFragmentFragment,
+  AutomationDescriptionQuery,
 } from '~/graphql/_generated-types'
 import { AutomationConditionEthereumBalance } from '../automation-condition-ethereum-balance'
 import { AutomationConditionEthereumGasPrice } from '../automation-condition-ethereum-gas-price'
@@ -15,14 +17,22 @@ import {
   AutomationSelectListItem,
 } from '../automation-select-list'
 import { FormItem, Wallet } from '../automation.types'
+import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-conditions-dialog.css'
 
 export type AutomationConditionsDialogProps = {
   onCancel: () => void
-  onConfirm: () => void
+  onConfirm: (formValues: AutomateConditionCreateInputType) => void
   type?: string | null
   contracts: AutomationContractFragmentFragment[]
   wallets: Wallet[]
+  triggerId?: string
+  params?: string
+  descriptions: Exclude<
+    AutomationDescriptionQuery['automateDescription'],
+    null | undefined
+  >
+  priority: number
 }
 
 export const AutomationConditionsDialog: React.VFC<AutomationConditionsDialogProps> =
@@ -35,51 +45,74 @@ export const AutomationConditionsDialog: React.VFC<AutomationConditionsDialogPro
       setCurrentForm(formType)
     }
 
-    const handleSubmit = (formValues: unknown) => {
-      console.log(formValues)
+    const handleSubmit = (params: string) => {
+      if (!props.triggerId) throw new Error('triggerid is undefined')
+
+      props.onConfirm({
+        trigger: props.triggerId,
+        params,
+        type: currentForm as AutomateConditionTypeEnum,
+        priority: props.priority,
+      })
     }
+
+    const params = props.params ? safeJsonParse(props.params) : undefined
 
     const Forms: Record<string, FormItem> = {
       [AutomateConditionTypeEnum.EthereumBalance]: {
-        title: 'Ethereum balance',
-        description: 'some description',
+        title: props.descriptions.conditions.ethereumBalance.name,
+        description: props.descriptions.conditions.ethereumBalance.description,
         component: (
           <AutomationConditionEthereumBalance
             wallets={props.wallets}
             onSubmit={handleSubmit}
+            defaultValues={params}
           />
         ),
       },
       [AutomateConditionTypeEnum.EthereumOptimalAutomateRun]: {
-        title: 'Ethereum optimal automate Run',
-        description: 'some description',
+        title: props.descriptions.conditions.ethereumOptimalAutomateRun.name,
+        description:
+          props.descriptions.conditions.ethereumOptimalAutomateRun.description,
         component: (
           <AutomationConditionEthereumOptimal
             onSubmit={handleSubmit}
             contracts={props.contracts}
+            defaultValues={params}
           />
         ),
       },
       [AutomateConditionTypeEnum.EthereumAvgGasPrice]: {
-        title: 'Ethereum avg gas price',
-        description: 'some description',
+        title: props.descriptions.conditions.ethereumAvgGasPrice.name,
+        description:
+          props.descriptions.conditions.ethereumAvgGasPrice.description,
         component: (
-          <AutomationConditionEthereumGasPrice onSubmit={handleSubmit} />
+          <AutomationConditionEthereumGasPrice
+            onSubmit={handleSubmit}
+            defaultValues={params}
+          />
         ),
       },
       [AutomateConditionTypeEnum.Schedule]: {
-        title: 'Schedule',
-        description: 'some description',
-        component: <AutomationConditionSchedule onSubmit={handleSubmit} />,
+        title: props.descriptions.conditions.schedule.name,
+        description: props.descriptions.conditions.schedule.description,
+        component: (
+          <AutomationConditionSchedule
+            onSubmit={handleSubmit}
+            defaultValues={params}
+          />
+        ),
       },
     }
 
     const currentFormObj = currentForm ? Forms[currentForm] : undefined
 
+    const onBack = currentFormObj ? handleSetForm(null) : props.onCancel
+
     return (
       <AutomationDialog
         title={currentFormObj ? currentFormObj.title : 'Choose condition'}
-        onBack={currentFormObj ? handleSetForm(null) : props.onCancel}
+        onBack={!props.type ? onBack : undefined}
       >
         {currentFormObj ? (
           currentFormObj.component

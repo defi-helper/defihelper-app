@@ -76,7 +76,6 @@ export const AutomationConditionEthereumGasPrice: React.VFC<AutomationConditionE
           label="Tolerance"
           helperText={formState.errors.tolerance?.message}
           error={Boolean(formState.errors.tolerance?.message)}
-          defaultValue={props.defaultValues?.tolerance}
           className={styles.input}
         />
         <Button type="submit">Submit</Button>
