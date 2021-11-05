@@ -15,21 +15,17 @@ export const governanceListDomain = createDomain('governanceListDomain')
 const GOVERNOR_TOKEN = contracts[3].GovernanceToken.address
 const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
 
-export const fetchGovernanceListFx = governanceListDomain.createEffect({
-  name: 'fetchGovernanceListFx',
-  handler: ({
-    network,
-    ...pagination
-  }: PaginationState & { network: string }) =>
+export const fetchGovernanceListFx = governanceListDomain.createEffect(
+  ({ network, ...pagination }: PaginationState & { network: string }) =>
     governanceApi.list({
       pagination,
       filter: {
         network,
         contract: GOVERNOR_BRAVO,
-        cache: false,
+        cache: true,
       },
-    }),
-})
+    })
+)
 
 export const $governanceList = restore(
   fetchGovernanceListFx.doneData.map(({ list }) =>
@@ -41,13 +37,12 @@ export const $governanceList = restore(
   []
 )
 
-export const fetchGovernanceVotesFx = governanceListDomain.createEffect({
-  name: 'fetchGovernanceVotesFx',
-  handler: (filter: GovVotesFilterInputType) =>
+export const fetchGovernanceVotesFx = governanceListDomain.createEffect(
+  (filter: GovVotesFilterInputType) =>
     governanceApi.votes({
       filter,
-    }),
-})
+    })
+)
 
 export const $governanceVotes = restore(fetchGovernanceVotesFx.doneData, null)
 

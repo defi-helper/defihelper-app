@@ -17,16 +17,15 @@ const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
 
 export const governanceDetailDomain = createDomain('governanceDetailDomain')
 
-export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect({
-  name: 'fetchGovernanceProposalFx',
-  handler: (proposalId: number) =>
+export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect(
+  (proposalId: number) =>
     governanceApi
       .detail({
         filter: {
           proposalId,
           network: config.IS_DEV ? '3' : '1',
           contract: GOVERNOR_BRAVO,
-          cache: false,
+          cache: true,
         },
       })
       .then((governanceProposal) =>
@@ -41,8 +40,8 @@ export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect({
               ),
             }
           : null
-      ),
-})
+      )
+)
 
 const createContract = (provider: unknown, chainId: string) => {
   const networkProvider = walletNetworkModel.getNetwork(provider, chainId)
@@ -76,7 +75,7 @@ type CastVoteWithReason = {
 export const castVoteFx = governanceDetailDomain.createEffect(
   async ({ reason = '', ...restOfParams }: CastVoteWithReason) => {
     const governorBravo = createContract(
-      restOfParams.proposalId,
+      restOfParams.provider,
       restOfParams.chainId
     )
 
