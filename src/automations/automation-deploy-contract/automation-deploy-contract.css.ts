@@ -1,11 +1,18 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
-export const root = style({
-  width: 500,
-  height: 500,
-  padding: 20,
-})
+import { theme } from '~/common/theme'
 
 export const input = style({
+  marginBottom: 16,
+})
+
+export const contractButton = style({})
+
+globalStyle(`${contractButton} button`, {
+  gap: 'unset',
+})
+
+export const protocol = style({
+  color: theme.colors.textColorGrey,
   width: '100%',
 })

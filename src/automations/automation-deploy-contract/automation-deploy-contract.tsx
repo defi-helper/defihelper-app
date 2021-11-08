@@ -1,83 +1,135 @@
+import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
-import { MenuItem, TextField } from '@material-ui/core'
 import { useState } from 'react'
 
-import { Dialog } from '~/common/dialog'
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
 import {
   AutomationContractForm,
   FormValues,
 } from '../common/automation-contract-form'
 import { useWalletList } from '~/wallets/wallet-list'
+import { AutomationDialog } from '../common/automation-dialog'
+import { AutomationChooseButton } from '../common/automation-choose-button'
+import { NETWORKS } from '../common/constants'
+import { Icon } from '~/common/icon'
+import { useDialog } from '~/common/dialog'
+import { AutomationNetworksDialog } from '../common/automation-networks-dialog'
+import { Automates } from '../common/automation.types'
+import { AutomationDeployContractDialog } from '../common/automation-deploy-contract-dialog'
+import { Typography } from '~/common/typography'
 import * as model from './automation-deploy-contract.model'
 import * as styles from './automation-deploy-contract.css'
 
 export type AutomationDeployContractProps = {
   onConfirm: (contract: AutomationContractFragmentFragment) => void
-  onCancel: (error: unknown) => void
+  onCancel: (error?: unknown) => void
 }
 
 export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> =
   (props) => {
-    const [contract, setContract] = useState('')
+    const [currentNetwork, setNetwork] = useState('')
+    const [currentAutomationContract, setAutomationContract] =
+      useState<Automates | null>(null)
 
     const automationContracts = useStore(model.$automateContracts)
     const loading = useStore(model.deployFx.pending)
+
     const [openWalletList] = useWalletList()
+    const [openNetworksDialog] = useDialog(AutomationNetworksDialog)
+    const [openContractDialog] = useDialog(AutomationDeployContractDialog)
 
-    useGate(model.AutomationDeployContractGate)
+    const handleChooseNetwork = async () => {
+      try {
+        const result = await openNetworksDialog()
 
-    const currentContract = automationContracts.find(
-      (automationContract) => contract === automationContract.contract
-    )
+        setNetwork(result)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
+    const handleChooseContract = async () => {
+      try {
+        const result = await openContractDialog({
+          contracts: automationContracts,
+        })
+
+        setAutomationContract(result)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
 
     const handleSubmit = async (formValues: FormValues) => {
-      if (!currentContract || !currentContract.address) return
+      if (!currentAutomationContract || !currentAutomationContract.address)
+        return
 
       try {
         const wallet = await openWalletList()
 
         if (!wallet.account) return
 
-        const result = await model.deployFx({
-          address: currentContract.address,
+        await model.deployFx({
+          address: currentAutomationContract.address,
           inputs: formValues.inputs,
-          automate: currentContract,
+          automate: currentAutomationContract,
           account: wallet.account,
           chainId: String(wallet.chainId),
           provider: wallet.provider,
         })
-
-        props.onConfirm(result)
       } catch (error) {
         props.onCancel(error)
       }
     }
 
+    useGate(model.AutomationDeployContractGate, currentNetwork)
+
     return (
-      <Dialog className={styles.root}>
-        <TextField
-          label="Contract"
-          select
-          value={contract}
+      <AutomationDialog title="Deploy contract" onBack={props.onCancel}>
+        <AutomationChooseButton
+          label="network"
+          onClick={handleChooseNetwork}
           className={styles.input}
-          onChange={(event) => setContract(event.target.value)}
         >
-          {automationContracts.map(({ contract: contractName, protocol }) => (
-            <MenuItem key={contractName} value={contractName}>
-              protocol: {protocol}
-              <br />
-              contract: {contractName}
-            </MenuItem>
-          ))}
-        </TextField>
-        {currentContract && (
+          {(NETWORKS[currentNetwork] && (
+            <>
+              <Icon
+                icon={NETWORKS[currentNetwork].icon}
+                width="28"
+                height="28"
+              />{' '}
+              {NETWORKS[currentNetwork].title}
+            </>
+          )) ||
+            'Choose network'}
+        </AutomationChooseButton>
+        <AutomationChooseButton
+          label="contract"
+          onClick={handleChooseContract}
+          className={clsx(styles.input, styles.contractButton)}
+        >
+          {(currentAutomationContract && (
+            <>
+              <Typography variant="body2" as="div">
+                {currentAutomationContract.contract}
+              </Typography>
+              <Typography variant="body3" as="div" className={styles.protocol}>
+                {currentAutomationContract.protocol}
+              </Typography>
+            </>
+          )) ||
+            'Choose contract'}
+        </AutomationChooseButton>
+        {currentAutomationContract && (
           <AutomationContractForm
             loading={loading}
-            contract={currentContract}
+            contract={currentAutomationContract}
             onSubmit={handleSubmit}
           />
         )}
-      </Dialog>
+      </AutomationDialog>
     )
   }

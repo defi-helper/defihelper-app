@@ -51,7 +51,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
 
   const handleEditTrigger = (trigger: Trigger) => async () => {
     await openAutomationTrigger({
-      automateContracts,
       updatingTrigger: trigger,
       contracts,
       descriptions,
@@ -103,7 +102,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
       }
 
       await openAutomationTrigger({
-        automateContracts,
         contracts,
         descriptions,
       })

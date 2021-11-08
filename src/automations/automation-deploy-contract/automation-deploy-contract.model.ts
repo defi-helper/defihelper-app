@@ -107,24 +107,15 @@ export const deployFx = automationDeployContractDomain.createEffect(
   }
 )
 
-export const AutomationDeployContractGate = createGate({
+export const AutomationDeployContractGate = createGate<string>({
   domain: automationDeployContractDomain,
   name: 'AutomationDeployContractGate',
 })
 
 sample({
   clock: guard({
-    source: [AutomationDeployContractGate.status, walletNetworkModel.$wallet],
-    clock: [
-      AutomationDeployContractGate.open,
-      walletNetworkModel.$wallet.updates,
-    ],
-    filter: (source): source is [boolean, { chainId: string | number }] => {
-      const [status, wallet] = source
-
-      return status && Boolean(wallet.chainId)
-    },
+    clock: AutomationDeployContractGate.open,
+    filter: (chaiId): chaiId is string => Boolean(chaiId),
   }),
-  fn: ([, wallet]) => wallet.chainId,
   target: fetchAutomationContractsFx,
 })

@@ -9,6 +9,7 @@ import {
 } from '~/graphql/_generated-types'
 import { userModel } from '~/users'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
+import * as automationDeployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import { automationApi } from '../common/automation.api'
 import { Automates, Trigger } from '../common/automation.types'
 
@@ -178,9 +179,6 @@ export const deleteContractFx = automationListDomain.createEffect(
   }
 )
 
-export const setNewContract =
-  automationListDomain.createEvent<AutomationContractFragmentFragment>()
-
 export const setUpdateContract =
   automationListDomain.createEvent<AutomationContractFragmentFragment>()
 
@@ -189,7 +187,10 @@ export const $contracts = automationListDomain
     []
   )
   .on(fetchContractsFx.doneData, (_, { list }) => list)
-  .on(setNewContract, (state, payload) => [...state, payload])
+  .on(automationDeployModel.deployFx.doneData, (state, payload) => [
+    ...state,
+    payload,
+  ])
   .on(setUpdateContract, (state, payload) =>
     state.map((contract) => (contract.id === payload.id ? payload : contract))
   )
