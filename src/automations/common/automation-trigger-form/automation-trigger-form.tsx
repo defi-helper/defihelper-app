@@ -5,7 +5,6 @@ import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 
 import {
-  Automates,
   Protocol,
   Wallet,
   Contract,
@@ -33,7 +32,6 @@ import { AutomationForm } from '../automation-form'
 import * as styles from './automation-trigger-form.css'
 
 export type AutomationTriggerFormProps = {
-  automateContracts: Record<string, Automates>
   type: 'ByTime' | 'ByEvent'
   wallets: Wallet[]
   protocols: Protocol[]
@@ -251,7 +249,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
                 className={styles.input}
                 disabled={Boolean(props.defaultValues) || props.loading}
               >
-                {(field.value && (
+                {(NETWORKS[field.value] && (
                   <>
                     <Icon
                       icon={NETWORKS[field.value].icon}

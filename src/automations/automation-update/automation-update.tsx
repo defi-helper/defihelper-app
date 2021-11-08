@@ -8,7 +8,6 @@ import {
   AutomationSelectList,
   AutomationSelectListItem,
 } from '~/automations/common/automation-select-list'
-import { Automates } from '~/automations/common/automation.types'
 import { ButtonBase } from '~/common/button-base'
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
@@ -26,13 +25,13 @@ import { AutomationConditionsDialog } from '../common/automation-conditions-dial
 import { AutomationActionsDialog } from '../common/automation-actions-dialog'
 import { AutomationTriggerForm } from '../common/automation-trigger-form'
 import { ConfirmDialog } from '~/common/confirm-dialog'
+import { safeJsonParse } from '../common/safe-json-parse'
+import { AutomationDeployContract } from '../automation-deploy-contract'
 import * as styles from './automation-update.css'
 import * as model from './automation-update.model'
 import * as contactModel from '~/settings/settings-contacts/settings-contact.model'
-import { safeJsonParse } from '../common/safe-json-parse'
 
 export type AutomationUpdateProps = {
-  automateContracts: Record<string, Automates>
   updatingTrigger?: AutomationTriggerFragmentFragment
   contracts: AutomationContractFragmentFragment[]
   descriptions?: AutomationDescriptionQuery['automateDescription'] | null
@@ -63,6 +62,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const [openConditionsDialog] = useDialog(AutomationConditionsDialog)
   const [openActionsDialog] = useDialog(AutomationActionsDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
+  const [openDeployContract] = useDialog(AutomationDeployContract)
 
   const trigger = updatedTrigger ?? props.updatingTrigger ?? createdTrigger
 
@@ -126,6 +126,17 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
       }
     }
   }
+
+  const handleDeploy = async () => {
+    try {
+      await openDeployContract()
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
   const handleAddAction = async () => {
     if (!props.descriptions) return
 
@@ -133,7 +144,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
       const result = await openActionsDialog({
         contracts: props.contracts,
         contacts,
-        onDeploy: () => {},
+        onDeploy: handleDeploy,
         triggerId: trigger?.id,
         descriptions: props.descriptions,
         priority: actionsPriority + 1,
@@ -204,7 +215,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
       const result = await openActionsDialog({
         contracts: props.contracts,
         contacts,
-        onDeploy: () => {},
+        onDeploy: handleDeploy,
         triggerId: trigger?.id,
         type: action.type,
         params: action.params,
@@ -275,7 +286,6 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
           {currentTab === Tabs.Trigger && (
             <AutomationTriggerForm
               wallets={wallets}
-              automateContracts={props.automateContracts}
               type={currentType}
               protocols={protocols}
               onCreate={model.createTriggerFx}
