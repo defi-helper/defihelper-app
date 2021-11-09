@@ -20,12 +20,14 @@ import { AutomationUpdate } from '~/automations/automation-update'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
+import { Dropdown } from '~/common/dropdown'
 
 export type AutomationListProps = unknown
 
 export const AutomationList: React.VFC<AutomationListProps> = () => {
   const triggers = useStore(model.$triggers)
   const loading = useStore(model.fetchTriggersFx.pending)
+  const loadingContracts = useStore(model.fetchContractsFx.pending)
   const contracts = useStore(model.$contracts)
   const automateContracts = useStore(model.$automateContracts)
   const descriptions = useStore(model.$descriptions)
@@ -183,26 +185,77 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
               />
             ))}
         </div>
-        {contracts.map((contract) => (
-          <div key={contract.id}>
-            <Typography>{contract.adapter}</Typography>
-            <Typography>{contract.rejectReason}</Typography>
-            <Typography>{contract.verification}</Typography>
-            <Typography>{contract.address}</Typography>
-            <Button
-              onClick={handleAutomationUpdateContract(contract)}
-              loading={contract.deleting}
-            >
-              Edit
-            </Button>
-            <Button
-              onClick={handleAutomationDeleteContract(contract.id)}
-              loading={contract.deleting}
-            >
-              Delete
-            </Button>
+        <div>
+          <Typography variant="h3" className={styles.contractTitle}>
+            Contracts
+          </Typography>
+          <div className={styles.table}>
+            <Paper radius={8} className={styles.tableInner}>
+              <div className={styles.tableheader}>
+                <Typography variant="body2" as="div">
+                  Adapter
+                </Typography>
+                <Typography variant="body2" as="div">
+                  Reject reason
+                </Typography>
+                <Typography variant="body2" as="div">
+                  Verification
+                </Typography>
+                <Typography variant="body2" as="div">
+                  Address
+                </Typography>
+              </div>
+              <div className={styles.label}>
+                {loading && (
+                  <Typography variant="body2" as="div">
+                    loading...
+                  </Typography>
+                )}
+                {!loading && isEmpty(contracts) && (
+                  <Typography variant="body2" as="div">
+                    empty
+                  </Typography>
+                )}
+              </div>
+              {!loadingContracts &&
+                !isEmpty(contracts) &&
+                contracts.map((contract) => (
+                  <div className={styles.row}>
+                    <Typography variant="body2" as="div">
+                      {contract.adapter}
+                    </Typography>
+                    <Typography variant="body2" as="div">
+                      {contract.rejectReason}
+                    </Typography>
+                    <Typography variant="body2" as="div">
+                      {contract.verification}
+                    </Typography>
+                    <Typography variant="body2" as="div">
+                      {contract.address}
+                    </Typography>
+                    <Dropdown
+                      control={
+                        <ButtonBase className={styles.manageButton}>
+                          <Icon icon="dots" />
+                        </ButtonBase>
+                      }
+                    >
+                      <ButtonBase
+                        onClick={handleAutomationUpdateContract(contract)}
+                      >
+                        Edit
+                      </ButtonBase>
+                      <ButtonBase
+                        onClick={handleAutomationDeleteContract(contract.id)}
+                      >
+                        Delete
+                      </ButtonBase>
+                    </Dropdown>
+                  </div>
+                ))}
+            </Paper>
           </div>
-        ))}
+        </div>
       </div>
     </AppLayout>
   )

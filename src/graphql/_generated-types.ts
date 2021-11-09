@@ -108,8 +108,10 @@ export type AutomateActionType = {
   id: Scalars['UuidType']
   /** Type */
   type: AutomateActionTypeEnum
-  /** Condition parameters */
+  /** Action parameters */
   params: Scalars['String']
+  /** Stringify parameters */
+  paramsDescription: Scalars['String']
   /** Execution priority (ascending) */
   priority: Scalars['Int']
   /** Created at date */
@@ -183,6 +185,8 @@ export type AutomateConditionType = {
   type: AutomateConditionTypeEnum
   /** Condition parameters */
   params: Scalars['String']
+  /** Stringify parameters */
+  paramsDescription: Scalars['String']
   /** Execution priority (ascending) */
   priority: Scalars['Int']
   /** Created at date */
@@ -616,6 +620,14 @@ export enum ContractMetricChartSortInputTypeColumnEnum {
   Value = 'value',
 }
 
+export type ContractMetricType = {
+  __typename?: 'ContractMetricType'
+  tvl: Scalars['String']
+  aprYear: Scalars['String']
+  myStaked: Scalars['String']
+  myEarned: Scalars['String']
+}
+
 export type ContractType = {
   __typename?: 'ContractType'
   /** Identificator */
@@ -644,6 +656,7 @@ export type ContractType = {
   /** Is hidden */
   hidden: Scalars['Boolean']
   metricChart: Array<MetricChartType>
+  metric: ContractMetricType
   events: Array<Scalars['String']>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
@@ -869,11 +882,16 @@ export type Mutation = {
   protocolCreate: ProtocolType
   protocolUpdate: ProtocolType
   protocolDelete: Scalars['Boolean']
+  protocolFavorite: Scalars['Boolean']
   contractCreate: ContractType
   contractUpdate: ContractType
   contractDelete: Scalars['Boolean']
   contractWalletLink: Scalars['Boolean']
   contractWalletUnlink: Scalars['Boolean']
+  tokenUpdate: TokenType
+  tokenAliasCreate: TokenAlias
+  tokenAliasUpdate: TokenAlias
+  tokenAliasDelete: Scalars['Boolean']
   proposalCreate: ProposalType
   proposalUpdate: ProposalType
   proposalDelete: Scalars['Boolean']
@@ -936,6 +954,10 @@ export type MutationProtocolDeleteArgs = {
   id: Scalars['UuidType']
 }
 
+export type MutationProtocolFavoriteArgs = {
+  input: ProtocolFavoriteInputType
+}
+
 export type MutationContractCreateArgs = {
   protocol: Scalars['UuidType']
   input: ContractCreateInputType
@@ -958,6 +980,24 @@ export type MutationContractWalletLinkArgs = {
 export type MutationContractWalletUnlinkArgs = {
   contract: Scalars['UuidType']
   wallet: Scalars['UuidType']
+}
+
+export type MutationTokenUpdateArgs = {
+  id: Scalars['UuidType']
+  input: TokenUpdateInputType
+}
+
+export type MutationTokenAliasCreateArgs = {
+  input: TokenAliasCreateInputType
+}
+
+export type MutationTokenAliasUpdateArgs = {
+  id: Scalars['UuidType']
+  input: TokenAliasUpdateInputType
+}
+
+export type MutationTokenAliasDeleteArgs = {
+  id: Scalars['UuidType']
 }
 
 export type MutationProposalCreateArgs = {
@@ -1185,6 +1225,13 @@ export type ProtocolCreateInputType = {
   hidden?: Maybe<Scalars['Boolean']>
 }
 
+export type ProtocolFavoriteInputType = {
+  /** Target protocol */
+  protocol: Scalars['UuidType']
+  /** Is favorite */
+  favorite: Scalars['Boolean']
+}
+
 export type ProtocolFilterInputType = {
   id?: Maybe<Scalars['UuidType']>
   adapter?: Maybe<Scalars['String']>
@@ -1228,6 +1275,8 @@ export type ProtocolListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   /** Target user ID */
   linked?: Maybe<Scalars['UuidType']>
+  /** Is favorite */
+  favorite?: Maybe<Scalars['Boolean']>
   hidden?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
@@ -1307,6 +1356,41 @@ export enum ProtocolMetricChartSortInputTypeColumnEnum {
   Value = 'value',
 }
 
+export type ProtocolMetricChartUsersFilterInputType = {
+  /** Target users id */
+  user: Array<Maybe<Scalars['UuidType']>>
+  blockchain?: Maybe<BlockchainFilterInputType>
+  /** Created at equals or greater */
+  dateAfter?: Maybe<Scalars['DateTimeType']>
+  /** Created at less */
+  dateBefore?: Maybe<Scalars['DateTimeType']>
+}
+
+export type ProtocolMetricChartUsersPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type ProtocolMetricChartUsersSortInputType = {
+  column: ProtocolMetricChartUsersSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum ProtocolMetricChartUsersSortInputTypeColumnEnum {
+  Date = 'date',
+  Value = 'value',
+}
+
+export type ProtocolMetricType = {
+  __typename?: 'ProtocolMetricType'
+  tvl: Scalars['String']
+  myAPY: Scalars['String']
+  myStaked: Scalars['String']
+  myEarned: Scalars['String']
+}
+
 export type ProtocolSocialPostListFilterInputType = {
   provider?: Maybe<ProtocolSocialPostProviderEnum>
 }
@@ -1375,9 +1459,12 @@ export type ProtocolType = {
   links: ProtocolLinkMapType
   /** Is hidden */
   hidden: Scalars['Boolean']
+  favorite: Scalars['Boolean']
   contracts: ContractListType
   metricChart: Array<MetricChartType>
   metricChartContracts: Array<MetricChartType>
+  metricChartUsers: Array<MetricChartType>
+  metric: ProtocolMetricType
   socialPosts: ProtocolSocialPostListType
   /** Date of created */
   createdAt: Scalars['DateTimeType']
@@ -1403,6 +1490,14 @@ export type ProtocolTypeMetricChartContractsArgs = {
   filter?: Maybe<ProtocolMetricChartContractsFilterInputType>
   sort?: Maybe<Array<ProtocolMetricChartContractsSortInputType>>
   pagination?: Maybe<ProtocolMetricChartContractsPaginationInputType>
+}
+
+export type ProtocolTypeMetricChartUsersArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<ProtocolMetricChartUsersFilterInputType>
+  sort?: Maybe<Array<ProtocolMetricChartUsersSortInputType>>
+  pagination?: Maybe<ProtocolMetricChartUsersPaginationInputType>
 }
 
 export type ProtocolTypeSocialPostsArgs = {
@@ -1741,6 +1836,15 @@ export type TokenAliasTokensArgs = {
   pagination?: Maybe<TokenListPaginationInputType>
 }
 
+export type TokenAliasCreateInputType = {
+  /** Name */
+  name?: Maybe<Scalars['String']>
+  /** Symbol */
+  symbol?: Maybe<Scalars['String']>
+  /** Is stable coin */
+  stable?: Maybe<Scalars['Boolean']>
+}
+
 export type TokenAliasFilterInputType = {
   id: Scalars['String']
 }
@@ -1776,6 +1880,15 @@ export enum TokenAliasListSortInputTypeColumnEnum {
   Name = 'name',
   Symbol = 'symbol',
   CreatedAt = 'createdAt',
+}
+
+export type TokenAliasUpdateInputType = {
+  /** Name */
+  name?: Maybe<Scalars['String']>
+  /** Symbol */
+  symbol?: Maybe<Scalars['String']>
+  /** Is stable coin */
+  stable?: Maybe<Scalars['Boolean']>
 }
 
 export type TokenListFilterInputType = {
@@ -1861,6 +1974,17 @@ export type TokenType = {
   symbol: Scalars['String']
   /** Decimals */
   decimals: Scalars['Int']
+}
+
+export type TokenUpdateInputType = {
+  /** Token alias ID */
+  alias?: Maybe<Scalars['UuidType']>
+  /** Name */
+  name?: Maybe<Scalars['String']>
+  /** Symbol */
+  symbol?: Maybe<Scalars['String']>
+  /** Decimals */
+  decimals?: Maybe<Scalars['Int']>
 }
 
 export type TreasuryType = {
@@ -2067,6 +2191,7 @@ export type UserContactListQuery = {
 }
 
 export type UserContactListQueryFilterInputType = {
+  user?: Maybe<Scalars['UuidType']>
   /** Type */
   broker?: Maybe<UserContactBrokerEnum>
   /** Status */
@@ -2697,7 +2822,7 @@ export type AutomationActionFragmentFragment = {
   __typename?: 'AutomateActionType'
 } & Pick<
   AutomateActionType,
-  'id' | 'type' | 'params' | 'priority' | 'createdAt'
+  'id' | 'type' | 'params' | 'paramsDescription' | 'priority' | 'createdAt'
 >
 
 export type AutomationConditionCreateMutationVariables = Exact<{
@@ -2732,7 +2857,7 @@ export type AutomationConditionFragmentFragment = {
   __typename?: 'AutomateConditionType'
 } & Pick<
   AutomateConditionType,
-  'id' | 'type' | 'params' | 'priority' | 'createdAt'
+  'id' | 'type' | 'params' | 'paramsDescription' | 'priority' | 'createdAt'
 >
 
 export type AutomationContractCreateMutationVariables = Exact<{
@@ -2990,10 +3115,9 @@ export type AutomationTriggerFragmentFragment = {
     conditions: { __typename?: 'AutomateConditionListType' } & {
       list?: Maybe<
         Array<
-          { __typename?: 'AutomateConditionType' } & Pick<
-            AutomateConditionType,
-            'id' | 'type' | 'params' | 'priority' | 'createdAt'
-          >
+          {
+            __typename?: 'AutomateConditionType'
+          } & AutomationConditionFragmentFragment
         >
       >
       pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
@@ -3001,10 +3125,9 @@ export type AutomationTriggerFragmentFragment = {
     actions: { __typename?: 'AutomateActionListType' } & {
       list?: Maybe<
         Array<
-          { __typename?: 'AutomateActionType' } & Pick<
-            AutomateActionType,
-            'id' | 'type' | 'params' | 'priority' | 'createdAt'
-          >
+          {
+            __typename?: 'AutomateActionType'
+          } & AutomationActionFragmentFragment
         >
       >
       pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
@@ -3274,17 +3397,18 @@ export type ProtocolMetricQueryVariables = Exact<{
   filter: ProtocolFilterInputType
   metric: Scalars['MetricColumnType']
   metricGroup: MetricGroupEnum
-  metricFilter?: Maybe<ProtocolMetricChartFilterInputType>
+  metricFilter?: Maybe<ProtocolMetricChartContractsFilterInputType>
   metricSort?: Maybe<
-    Array<ProtocolMetricChartSortInputType> | ProtocolMetricChartSortInputType
+    | Array<ProtocolMetricChartContractsSortInputType>
+    | ProtocolMetricChartContractsSortInputType
   >
-  metricPagination?: Maybe<ProtocolMetricChartPaginationInputType>
+  metricPagination?: Maybe<ProtocolMetricChartContractsPaginationInputType>
 }>
 
 export type ProtocolMetricQuery = { __typename?: 'Query' } & {
   protocol?: Maybe<
     { __typename?: 'ProtocolType' } & {
-      metricChart: Array<
+      metricChartContracts: Array<
         { __typename?: 'MetricChartType' } & ProtocolMetricChartFragment
       >
     }
@@ -3352,7 +3476,34 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'link'
   | 'hidden'
   | 'createdAt'
->
+> & {
+    links: { __typename?: 'ProtocolLinkMapType' } & {
+      social: Array<
+        { __typename?: 'ProtocolLinkType' } & Pick<
+          ProtocolLinkType,
+          'id' | 'name' | 'value'
+        >
+      >
+      listing: Array<
+        { __typename?: 'ProtocolLinkType' } & Pick<
+          ProtocolLinkType,
+          'id' | 'name' | 'value'
+        >
+      >
+      audit: Array<
+        { __typename?: 'ProtocolLinkType' } & Pick<
+          ProtocolLinkType,
+          'id' | 'name' | 'value'
+        >
+      >
+      other: Array<
+        { __typename?: 'ProtocolLinkType' } & Pick<
+          ProtocolLinkType,
+          'id' | 'name' | 'value'
+        >
+      >
+    }
+  }
 
 export type ProposalCreateMutationVariables = Exact<{
   input: ProposalCreateInputType

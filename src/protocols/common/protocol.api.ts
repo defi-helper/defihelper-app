@@ -45,7 +45,7 @@ export const protocolsApi = {
         variables
       )
       .toPromise()
-      .then(({ data }) => data?.protocol?.metricChart ?? []),
+      .then(({ data }) => data?.protocol?.metricChartContracts ?? []),
 
   protocolCreate: (variables: ProtocolCreateMutationVariables) =>
     getAPIClient()

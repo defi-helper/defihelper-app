@@ -114,7 +114,11 @@ export const AutomationDeployContractGate = createGate<string>({
 
 sample({
   clock: guard({
-    clock: AutomationDeployContractGate.open,
+    source: AutomationDeployContractGate.state,
+    clock: [
+      AutomationDeployContractGate.open,
+      AutomationDeployContractGate.state.updates,
+    ],
     filter: (chaiId): chaiId is string => Boolean(chaiId),
   }),
   target: fetchAutomationContractsFx,

@@ -1,5 +1,8 @@
 import { gql } from '@urql/core'
 
+import { AUTOMATION_CONDITION_FRAGMENT } from './automation-condition.fragment.graphql'
+import { AUTOMATION_ACTION_FRAGMENT } from './automation-action.fragment.graphql'
+
 export const AUTOMATION_TRIGGER_FRAGMENT = gql`
   fragment automationTriggerFragment on AutomateTriggerType {
     id
@@ -24,11 +27,7 @@ export const AUTOMATION_TRIGGER_FRAGMENT = gql`
       pagination: $conditionsPagination
     ) {
       list {
-        id
-        type
-        params
-        priority
-        createdAt
+        ...automationConditionFragment
       }
       pagination {
         count
@@ -40,15 +39,13 @@ export const AUTOMATION_TRIGGER_FRAGMENT = gql`
       pagination: $actionsPagination
     ) {
       list {
-        id
-        type
-        params
-        priority
-        createdAt
+        ...automationActionFragment
       }
       pagination {
         count
       }
     }
   }
+  ${AUTOMATION_CONDITION_FRAGMENT}
+  ${AUTOMATION_ACTION_FRAGMENT}
 `

@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid'
+import { v4 as uuidv4 } from 'uuid'
 
 export const parseActions = (
   targets: string[],
@@ -9,7 +9,7 @@ export const parseActions = (
     const signature = signatures[index]
 
     return {
-      id: nanoid(),
+      id: uuidv4(),
       target,
       signature: signature.replace(/\((.*?)\)/g, ''),
       callDatas: callDatas[index],

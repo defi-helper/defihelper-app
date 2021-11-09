@@ -91,7 +91,7 @@ export const AutomationActionsDialog: React.VFC<AutomationActionsDialogProps> =
     return (
       <AutomationDialog
         title={currentFormObj ? currentFormObj.title : 'Choose action'}
-        onBack={!props.type ? onBack : undefined}
+        onBack={!props.type ? onBack : props.onCancel}
       >
         {currentFormObj ? (
           currentFormObj.component
