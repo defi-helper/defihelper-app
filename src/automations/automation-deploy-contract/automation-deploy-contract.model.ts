@@ -9,6 +9,7 @@ import { Automates } from '../common/automation.types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { protocolsApi } from '~/protocols/common'
 import { userModel } from '~/users'
+import { toastsService } from '~/toasts'
 
 export const automationDeployContractDomain = createDomain()
 
@@ -17,19 +18,29 @@ export const fetchAutomationContractsFx =
     async (chainId: string | number) => {
       const data = await automationApi.getAutomationsContracts()
 
-      const contracts: Automates[] = await Promise.all(
-        data.map(async (contract) => {
-          const contractData = await automationApi.getContractInterface({
-            ...contract,
-            chainId,
-          })
+      const contracts = await data.reduce<Promise<Automates[]>>(
+        async (acc, contract) => {
+          const previousAcc = await acc
 
-          return {
-            ...contract,
-            contractInterface: contractData.abi,
-            address: contractData.address,
-          }
-        })
+          const contractData = await automationApi
+            .getContractInterface({
+              ...contract,
+              chainId,
+            })
+            .catch(console.error)
+
+          if (!contractData) return previousAcc
+
+          return [
+            ...previousAcc,
+            {
+              ...contract,
+              contractInterface: contractData.abi,
+              address: contractData.address,
+            },
+          ]
+        },
+        Promise.resolve([])
       )
 
       return contracts
@@ -55,7 +66,7 @@ export const deployFx = automationDeployContractDomain.createEffect(
     )
     const wallets = userModel.$userWallets.getState()
 
-    if (!params.automate) throw new Error('error')
+    if (!params.automate) throw new Error('something went wrong')
 
     const network = networks[params.chainId as '3']
 
@@ -123,3 +134,8 @@ sample({
   }),
   target: fetchAutomationContractsFx,
 })
+
+toastsService.forwardErrors(
+  fetchAutomationContractsFx.failData,
+  deployFx.failData
+)

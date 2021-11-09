@@ -2,7 +2,6 @@ import { createDomain, sample, guard, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { config } from '~/config'
-
 import {
   AutomationContractFragmentFragment,
   UserType,
