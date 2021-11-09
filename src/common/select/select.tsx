@@ -4,6 +4,7 @@ import {
   isValidElement,
   cloneElement,
   useState,
+  useEffect,
 } from 'react'
 import clsx from 'clsx'
 
@@ -60,6 +61,12 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(
     )
 
     const renderValue = valueMap.get(localValue)
+
+    useEffect(() => {
+      if (value) {
+        setLocalValue(value)
+      }
+    }, [value])
 
     return (
       <div className={clsx(styles.root, className)}>

@@ -1,12 +1,19 @@
+/* eslint-disable no-unused-vars */
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import TextField from '@material-ui/core/TextField'
-import Checkbox from '@material-ui/core/Checkbox'
-import Button from '@material-ui/core/Button'
-import { FormLabel, makeStyles, MenuItem } from '@material-ui/core'
+import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { v4 as uuidv4 } from 'uuid'
 
+import { Checkbox } from '~/common/checkbox'
+import { Input } from '~/common/input'
+import { Button } from '~/common/button'
+import { Select, SelectOption } from '~/common/select'
+import { ProtocolLinkInputType } from '~/graphql/_generated-types'
+import { Typography } from '~/common/typography'
+import { ButtonBase } from '~/common/button-base'
+import * as styles from './protocol-form.css'
 import { protocolFormSchema } from './protocol-form.validation'
+import { Icon } from '~/common/icon'
 
 type FormValues = {
   name: string
@@ -15,6 +22,12 @@ type FormValues = {
   link?: string
   hidden?: boolean
   adapter: string
+  links: {
+    social: ProtocolLinkInputType[]
+    listing: ProtocolLinkInputType[]
+    audit: ProtocolLinkInputType[]
+    other: ProtocolLinkInputType[]
+  }
 }
 
 export type ProtocolFormProps = {
@@ -24,24 +37,30 @@ export type ProtocolFormProps = {
   adapters: string[]
 }
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-
-    '& > *': {
-      margin: theme.spacing(2),
-    },
-  },
-}))
+type LinkEnum = 'social' | 'audit' | 'other' | 'listing'
 
 export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
-  const { register, handleSubmit, setValue, reset, formState } =
+  const { register, handleSubmit, setValue, reset, formState, control } =
     useForm<FormValues>({
       resolver: yupResolver(protocolFormSchema),
     })
 
-  const classes = useStyles()
+  const social = useFieldArray({
+    control,
+    name: 'links.social',
+  })
+  const audit = useFieldArray({
+    control,
+    name: 'links.audit',
+  })
+  const other = useFieldArray({
+    control,
+    name: 'links.other',
+  })
+  const listing = useFieldArray({
+    control,
+    name: 'links.listing',
+  })
 
   useEffect(() => {
     reset(props.defaultValues)
@@ -49,70 +68,145 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
 
   const hidden = register('hidden')
 
+  const fieldArrays = {
+    social,
+    audit,
+    other,
+    listing,
+  }
+
+  const handleAddLink = (type: LinkEnum) => () => {
+    fieldArrays[type].append({
+      id: uuidv4(),
+      name: '',
+      value: '',
+    })
+  }
+
+  const handleRemoveLink = (type: LinkEnum, index: number) => () => {
+    fieldArrays[type].remove(index)
+  }
+
+  const renderLinksSection = (type: LinkEnum) => {
+    return (
+      <div className={styles.input}>
+        <Typography variant="body2" className={styles.title}>
+          {type}
+        </Typography>
+        {fieldArrays[type].fields.map((socialItem, index) => (
+          <div key={socialItem.id} className={styles.links}>
+            <Input
+              label="Title"
+              {...register(`links.social.${index}.name`)}
+              helperText={
+                formState.errors.links?.[type]?.[index]?.name?.message
+              }
+              error={Boolean(
+                formState.errors.links?.[type]?.[index]?.name?.message
+              )}
+            />
+            <Input
+              label="Link"
+              {...register(`links.social.${index}.value`)}
+              helperText={
+                formState.errors.links?.[type]?.[index]?.value?.message
+              }
+              error={Boolean(
+                formState.errors.links?.[type]?.[index]?.value?.message
+              )}
+            />
+            <ButtonBase
+              className={styles.linksRemove}
+              onClick={handleRemoveLink(type, index)}
+            >
+              <Icon icon="close" width="24" height="24" />
+            </ButtonBase>
+          </div>
+        ))}
+        <ButtonBase onClick={handleAddLink(type)} className={styles.linksAdd}>
+          <Icon icon="plus" width="11" height="11" />
+        </ButtonBase>
+      </div>
+    )
+  }
+
   return (
     <form
-      className={classes.root}
+      className={styles.root}
       onSubmit={handleSubmit(props.onSubmit)}
       noValidate
       autoComplete="off"
     >
-      <TextField
+      <Input
         type="text"
         label="Name"
-        inputProps={register('name')}
+        {...register('name')}
         disabled={props.loading}
         error={Boolean(formState.errors.name)}
         helperText={formState.errors.name?.message}
+        className={styles.input}
       />
-      <TextField
+      <Input
         type="text"
         label="Description"
-        inputProps={register('description')}
+        {...register('description')}
         disabled={props.loading}
-        multiline
         error={Boolean(formState.errors.description)}
         helperText={formState.errors.description?.message}
+        className={styles.input}
       />
-      <TextField
+      <Input
         type="text"
         label="Icon"
-        inputProps={register('icon')}
+        {...register('icon')}
         disabled={props.loading}
         error={Boolean(formState.errors.icon)}
         helperText={formState.errors.icon?.message}
+        className={styles.input}
       />
-      <TextField
-        type="text"
-        label="Adapter"
-        inputProps={register('adapter')}
-        disabled={props.loading}
-        error={Boolean(formState.errors.adapter)}
-        helperText={formState.errors.adapter?.message}
-        select
-      >
-        {props.adapters.map((adapter) => (
-          <MenuItem key={adapter} value={adapter}>
-            {adapter}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
+      <Controller
+        control={control}
+        name="adapter"
+        render={({ field }) => (
+          <Select
+            type="text"
+            label="Adapter"
+            disabled={props.loading}
+            error={Boolean(formState.errors.adapter)}
+            helperText={formState.errors.adapter?.message}
+            className={styles.input}
+            {...field}
+          >
+            {props.adapters.map((adapter) => (
+              <SelectOption key={adapter} value={adapter}>
+                {adapter}
+              </SelectOption>
+            ))}
+          </Select>
+        )}
+      />
+      <Input
         type="text"
         label="Link"
-        inputProps={register('link')}
+        {...register('link')}
         disabled={props.loading}
         error={Boolean(formState.errors.link)}
         helperText={formState.errors.link?.message}
+        className={styles.input}
       />
-      <FormLabel>
-        Hidden
+      {renderLinksSection('social')}
+      {renderLinksSection('listing')}
+      {renderLinksSection('audit')}
+      {renderLinksSection('other')}
+      <Typography variant="body2" as="label" className={styles.input}>
+        Hidden{' '}
         <Checkbox
-          inputRef={hidden.ref}
+          ref={hidden.ref}
           defaultChecked={props.defaultValues?.hidden}
-          onChange={(_, checked) => setValue('hidden', checked)}
+          onChange={({ target }) => setValue('hidden', target.checked)}
           disabled={props.loading}
         />
-      </FormLabel>
+      </Typography>
       <Button
         variant="contained"
         color="primary"

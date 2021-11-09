@@ -5,7 +5,7 @@ import {
   forward,
   Event,
 } from 'effector-logger/macro'
-import { nanoid } from 'nanoid'
+import { v4 as uuidv4 } from 'uuid'
 
 type Variants = 'default' | 'success' | 'info' | 'warning' | 'error'
 
@@ -20,16 +20,14 @@ type Toast = {
   key: string
 } & Options
 
-export const $toasts = createStore<Toast[]>([], {
-  name: '$toasts',
-})
+export const $toasts = createStore<Toast[]>([])
 
 const createToast =
   (variant: Variants) => (state: Toast[], notification: string | Options) => {
     const defaultOptions = (message: string) => ({
       message,
       variant,
-      key: nanoid(),
+      key: uuidv4(),
     })
 
     return [

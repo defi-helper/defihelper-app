@@ -71,6 +71,7 @@ module.exports = {
     'import/extensions': 0,
     'no-unused-vars': 'error',
     trailingComma: 'off',
+    'react/jsx-fragments': 0,
     'comma-dangle': [
       'error',
       {

@@ -10,5 +10,27 @@ export const PROTOCOL_FRAGMENT = gql`
     link
     hidden
     createdAt
+    links {
+      social {
+        id
+        name
+        value
+      }
+      listing {
+        id
+        name
+        value
+      }
+      audit {
+        id
+        name
+        value
+      }
+      other {
+        id
+        name
+        value
+      }
+    }
   }
 `

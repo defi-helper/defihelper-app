@@ -5,6 +5,7 @@ export const AUTOMATION_ACTION_FRAGMENT = gql`
     id
     type
     params
+    paramsDescription
     priority
     createdAt
   }

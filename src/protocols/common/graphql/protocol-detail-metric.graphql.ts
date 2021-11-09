@@ -7,12 +7,12 @@ export const PROTOCOL_DETAIL_METRIC = gql`
     $filter: ProtocolFilterInputType!
     $metric: MetricColumnType!
     $metricGroup: MetricGroupEnum!
-    $metricFilter: ProtocolMetricChartFilterInputType
-    $metricSort: [ProtocolMetricChartSortInputType!]
-    $metricPagination: ProtocolMetricChartPaginationInputType
+    $metricFilter: ProtocolMetricChartContractsFilterInputType
+    $metricSort: [ProtocolMetricChartContractsSortInputType!]
+    $metricPagination: ProtocolMetricChartContractsPaginationInputType
   ) {
     protocol(filter: $filter) {
-      metricChart(
+      metricChartContracts(
         metric: $metric
         group: $metricGroup
         filter: $metricFilter

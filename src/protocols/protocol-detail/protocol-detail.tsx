@@ -141,6 +141,7 @@ export const ProtocolDetail: React.FC = () => {
               <ProtocolOverview
                 className={clsx(styles.card, styles.mb120)}
                 text={protocol.description}
+                links={protocol.links}
               />
               <ProtocolMetricOverview className={styles.mb120} />
               <ProtocolMediaActivity className={styles.mb120} />

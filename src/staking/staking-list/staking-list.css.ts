@@ -109,14 +109,7 @@ export const table = style({
 })
 
 export const tableInner = style({
-  padding: 16,
   minWidth: 900,
-
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      padding: '24px 26px',
-    },
-  },
 })
 
 export const red = style({

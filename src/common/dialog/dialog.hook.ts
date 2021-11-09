@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { nanoid } from 'nanoid'
+import { v4 as uuidv4 } from 'uuid'
 import { useKey } from 'react-use'
 
 import { useDialogContext } from './dialog.context'
@@ -12,7 +12,7 @@ export const useDialog = <T extends React.ElementType>(
 ) => {
   const { onOpen, onClose, closeOnOverlay } = useDialogContext()
 
-  const id = useRef(nanoid())
+  const id = useRef(uuidv4())
 
   type Props = T extends React.ElementType<infer Y>
     ? Omit<Y, 'onCancel' | 'onConfirm'>

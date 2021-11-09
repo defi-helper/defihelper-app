@@ -1,6 +1,7 @@
 import { useGate, useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
+import omit from 'lodash.omit'
 
 import { Head } from '~/common/head'
 import { AppLayout } from '~/layouts'
@@ -29,6 +30,16 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
       icon: protocol?.icon ?? undefined,
       link: protocol?.link ?? undefined,
       adapter: protocol?.adapter ?? '',
+      links: {
+        social:
+          protocol?.links.social.map((link) => omit(link, '__typename')) ?? [],
+        listing:
+          protocol?.links.listing.map((link) => omit(link, '__typename')) ?? [],
+        audit:
+          protocol?.links.audit.map((link) => omit(link, '__typename')) ?? [],
+        other:
+          protocol?.links.other.map((link) => omit(link, '__typename')) ?? [],
+      },
     }),
     [protocol]
   )
