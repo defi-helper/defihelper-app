@@ -10,6 +10,7 @@ export const PROTOCOL_FRAGMENT = gql`
     link
     hidden
     createdAt
+    favorite
     links {
       social {
         id

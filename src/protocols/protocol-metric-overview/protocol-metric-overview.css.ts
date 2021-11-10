@@ -23,22 +23,6 @@ export const charts = style({
   },
 })
 
-export const chart = style({
-  padding: 16,
-
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      padding: '24px 32px',
-    },
-  },
-})
-
-export const header = style({
-  display: 'flex',
-  justifyContent: 'space-between',
-  marginBottom: 32,
-})
-
 export const select = style({
   padding: '8px 16px',
   background: theme.colors.paper,
@@ -50,4 +34,8 @@ export const selectArrow = style({
   width: 16,
   height: 16,
   marginLeft: 4,
+})
+
+export const selectButton = style({
+  textTransform: 'capitalize',
 })

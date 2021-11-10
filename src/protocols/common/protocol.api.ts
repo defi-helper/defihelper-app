@@ -12,6 +12,12 @@ import {
   ProtocolUpdateMutationVariables,
   ProtocolMetricQuery,
   ProtocolMetricQueryVariables,
+  ProtocolFavoriteMutation,
+  ProtocolFavoriteMutationVariables,
+  ProtocolOverviewMetricQuery,
+  ProtocolOverviewMetricQueryVariables,
+  ProtocolEstimatedQuery,
+  ProtocolEstimatedQueryVariables,
 } from '~/graphql/_generated-types'
 import {
   PROTOCOLS,
@@ -19,17 +25,24 @@ import {
   PROTOCOL_DELETE,
   PROTOCOL_DETAIL,
   PROTOCOL_DETAIL_METRIC,
+  PROTOCOL_ESTIMATED,
+  PROTOCOL_FAVORITE,
+  PROTOCOL_OVERVIEW_METRIC,
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 
 export const protocolsApi = {
   protocolList: (variables: ProtocolsQueryVariables) =>
     getAPIClient()
-      .query<ProtocolsQuery, ProtocolsQueryVariables>(PROTOCOLS, variables)
+      .query<ProtocolsQuery, ProtocolsQueryVariables>(PROTOCOLS, variables, {
+        requestPolicy: 'cache-and-network',
+      })
       .toPromise()
       .then(({ data }) => ({
         list: data?.protocols.list ?? [],
         count: data?.protocols.pagination.count ?? 0,
+        favorites: data?.favorites.pagination.count ?? 0,
+        all: data?.all.pagination.count ?? 0,
       })),
 
   protocolDetail: (variables: ProtocolQueryVariables) =>
@@ -46,6 +59,18 @@ export const protocolsApi = {
       )
       .toPromise()
       .then(({ data }) => data?.protocol?.metricChartContracts ?? []),
+
+  protocolOverviewMetric: (variables: ProtocolOverviewMetricQueryVariables) =>
+    getAPIClient()
+      .query<ProtocolOverviewMetricQuery, ProtocolOverviewMetricQueryVariables>(
+        PROTOCOL_OVERVIEW_METRIC,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => ({
+        tvl: data?.protocol?.tvl ?? [],
+        uniqueWalletsCount: data?.protocol?.uniqueWalletsCount ?? [],
+      })),
 
   protocolCreate: (variables: ProtocolCreateMutationVariables) =>
     getAPIClient()
@@ -73,4 +98,22 @@ export const protocolsApi = {
       )
       .toPromise()
       .then(({ data }) => data?.protocolDelete),
+
+  protocolFavorite: (variables: ProtocolFavoriteMutationVariables) =>
+    getAPIClient()
+      .mutation<ProtocolFavoriteMutation, ProtocolFavoriteMutationVariables>(
+        PROTOCOL_FAVORITE,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.protocolFavorite),
+
+  protocolEstimated: (variables: ProtocolEstimatedQueryVariables) =>
+    getAPIClient()
+      .query<ProtocolEstimatedQuery, ProtocolEstimatedQueryVariables>(
+        PROTOCOL_ESTIMATED,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.restakeStrategy),
 }

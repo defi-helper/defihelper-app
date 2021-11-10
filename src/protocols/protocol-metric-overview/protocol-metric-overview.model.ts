@@ -1,5 +1,4 @@
 import { createDomain } from 'effector-logger/macro'
-import { bignumberUtils } from '~/common/bignumber-utils'
 
 import { dateUtils } from '~/common/date-utils'
 import { Unwrap } from '~/common/types'
@@ -9,7 +8,12 @@ import { protocolsApi } from '~/protocols/common'
 type State = Record<
   Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
   {
-    data: Unwrap<ReturnType<typeof protocolsApi.protocolDetailMetric>>
+    data: {
+      tvl: Unwrap<ReturnType<typeof protocolsApi.protocolDetailMetric>>
+      uniqueWalletsCount: Unwrap<
+        ReturnType<typeof protocolsApi.protocolDetailMetric>
+      >
+    }
     value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
     loading: boolean
   }
@@ -24,11 +28,10 @@ export const fetchMetricFx = protocolMetricOverviewDomain.createEffect(
     protocolId: string
     group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
   }) => {
-    const data = await protocolsApi.protocolDetailMetric({
+    const data = await protocolsApi.protocolOverviewMetric({
       filter: {
         id: params.protocolId,
       },
-      metric: 'tvl',
       metricGroup: params.group,
       metricFilter: {
         dateBefore: dateUtils.now(),
@@ -41,10 +44,7 @@ export const fetchMetricFx = protocolMetricOverviewDomain.createEffect(
 
     return {
       group: params.group,
-      data: data.map((dataItem) => ({
-        ...dataItem,
-        sum: bignumberUtils.format(dataItem.sum),
-      })),
+      data,
     }
   }
 )
@@ -54,7 +54,10 @@ const initialState = Object.values(MetricGroupEnum).reduce<State>(
     if (metricGroup === MetricGroupEnum.Hour) return acc
 
     acc[metricGroup] = {
-      data: [],
+      data: {
+        tvl: [],
+        uniqueWalletsCount: [],
+      },
       value: metricGroup,
       loading: false,
     }

@@ -1,5 +1,11 @@
 import BigNumber from 'bignumber.js'
 
+const formatDecimals = (result: string) => {
+  const [integerValue, floatValue] = result.split('.')
+
+  return new BigNumber(floatValue).isZero() ? integerValue : result
+}
+
 export const bignumberUtils = {
   fromCall: (amount: string | number, decimals: number) =>
     new BigNumber(amount || 0)
@@ -11,16 +17,24 @@ export const bignumberUtils = {
       .multipliedBy(new BigNumber(10).pow(decimals))
       .toString(10),
 
-  format: (amount?: string | number | null) => {
-    const result = new BigNumber(amount || 0).toFormat(2)
+  format: (amount?: string | number | null, decimal = 2) => {
+    const result = new BigNumber(amount || 0)
 
-    const [integerValue, floatValue] = result.split('.')
+    if (result.isInteger()) return result.toFormat(0)
 
-    return new BigNumber(floatValue).isZero() ? integerValue : result
+    if (result.lt(10)) return formatDecimals(result.toFormat(decimal))
+
+    if (result.lt(10000)) return formatDecimals(result.toFormat(decimal))
+
+    if (result.lt(100000)) return formatDecimals(result.toFormat(decimal))
+
+    if (result.lt(1000000)) return formatDecimals(result.toFormat(decimal))
+
+    if (result.isGreaterThanOrEqualTo(1000000000))
+      return `${formatDecimals(result.div(1000000000).toFormat(decimal))}B`
+
+    return `${formatDecimals(result.div(1000000).toFormat(decimal))}M`
   },
-
-  formatSpecific: (num?: string | null) =>
-    new BigNumber(num?.replace(/,/g, '') || 0).toString(10),
 
   getPercentage: (
     count?: string | number | null,

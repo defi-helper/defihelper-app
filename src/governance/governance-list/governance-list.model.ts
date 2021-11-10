@@ -1,4 +1,4 @@
-import { createDomain, guard, restore, sample } from 'effector-logger/macro'
+import { createDomain, restore, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { ethers } from 'ethers'
 import contracts from '@defihelper/networks/contracts.json'
@@ -12,8 +12,8 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export const governanceListDomain = createDomain('governanceListDomain')
 
-const GOVERNOR_TOKEN = contracts[3].GovernanceToken.address
-const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
+export const GOVERNOR_TOKEN = contracts[3].GovernanceToken.address
+export const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
 
 export const fetchGovernanceListFx = governanceListDomain.createEffect(
   ({ network, ...pagination }: PaginationState & { network: string }) =>
@@ -84,41 +84,13 @@ export const GovernanceListGate = createGate({
 })
 
 sample({
-  source: GovernanceListPagination.state,
+  source: [GovernanceListPagination.state, GovernanceListGate.state],
   clock: [GovernanceListGate.open, GovernanceListPagination.updates],
-  fn: (pagination) => ({
+  fn: ([pagination]) => ({
     ...pagination,
     network: config.IS_DEV ? '3' : '1',
   }),
   target: fetchGovernanceListFx,
-})
-
-sample({
-  clock: guard({
-    source: [walletNetworkModel.$wallet, GovernanceListGate.status],
-    clock: [
-      GovernanceListGate.open,
-      walletNetworkModel.$wallet.updates,
-      delegateVotesFx.done,
-    ],
-    filter: (
-      source
-    ): source is [{ account: string; chainId: number }, boolean] => {
-      const [wallet, gateIsOpened] = source
-
-      return (
-        Boolean(wallet.account) &&
-        typeof wallet.chainId === 'number' &&
-        gateIsOpened
-      )
-    },
-  }),
-  fn: ([{ chainId, account }]) => ({
-    network: chainId,
-    wallet: account,
-    contract: GOVERNOR_TOKEN,
-  }),
-  target: fetchGovernanceVotesFx,
 })
 
 sample({

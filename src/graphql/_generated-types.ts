@@ -1386,6 +1386,7 @@ export enum ProtocolMetricChartUsersSortInputTypeColumnEnum {
 export type ProtocolMetricType = {
   __typename?: 'ProtocolMetricType'
   tvl: Scalars['String']
+  uniqueWalletsCount: Scalars['String']
   myAPY: Scalars['String']
   myStaked: Scalars['String']
   myEarned: Scalars['String']
@@ -2334,6 +2335,14 @@ export enum UserMetricChartSortInputTypeColumnEnum {
   Value = 'value',
 }
 
+export type UserMetricType = {
+  __typename?: 'UserMetricType'
+  stakedUSD: Scalars['String']
+  earnedUSD: Scalars['String']
+  worth: Scalars['String']
+  apy: Scalars['String']
+}
+
 export type UserMetricsTokenAliasFilterInputType = {
   id?: Maybe<Array<Scalars['UuidType']>>
   /** Is stable token */
@@ -2475,6 +2484,7 @@ export type UserType = {
   blockchains: Array<UserBlockchainType>
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
+  metric: UserMetricType
   billing: UserBillingType
   store: UserStoreType
   /** Date of created account */
@@ -3423,6 +3433,43 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
   protocol?: Maybe<{ __typename?: 'ProtocolType' } & ProtocolFragmentFragment>
 }
 
+export type ProtocolEstimatedQueryVariables = Exact<{
+  balance: Scalars['Float']
+  apy: Scalars['Float']
+}>
+
+export type ProtocolEstimatedQuery = { __typename?: 'Query' } & {
+  restakeStrategy: { __typename?: 'RestakeStrategyType' } & {
+    hold: Array<
+      { __typename?: 'RestakeStrategyPointType' } & Pick<
+        RestakeStrategyPointType,
+        'v' | 't'
+      >
+    >
+    everyDay: Array<
+      { __typename?: 'RestakeStrategyPointType' } & Pick<
+        RestakeStrategyPointType,
+        'v' | 't'
+      >
+    >
+    optimal: Array<
+      { __typename?: 'RestakeStrategyPointType' } & Pick<
+        RestakeStrategyPointType,
+        'v' | 't'
+      >
+    >
+  }
+}
+
+export type ProtocolFavoriteMutationVariables = Exact<{
+  input: ProtocolFavoriteInputType
+}>
+
+export type ProtocolFavoriteMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'protocolFavorite'
+>
+
 export type ProtocolsQueryVariables = Exact<{
   protocolFilter?: Maybe<ProtocolListFilterInputType>
   protocolSort?: Maybe<
@@ -3451,11 +3498,41 @@ export type ProtocolsQuery = { __typename?: 'Query' } & {
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
+  favorites: { __typename?: 'ProtocolListQuery' } & {
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+  all: { __typename?: 'ProtocolListQuery' } & {
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
 }
 
 export type ProtocolMetricChartFragment = {
   __typename?: 'MetricChartType'
 } & Pick<MetricChartType, 'date' | 'min' | 'max' | 'avg' | 'sum' | 'count'>
+
+export type ProtocolOverviewMetricQueryVariables = Exact<{
+  filter: ProtocolFilterInputType
+  metricGroup: MetricGroupEnum
+  metricFilter?: Maybe<ProtocolMetricChartContractsFilterInputType>
+  metricSort?: Maybe<
+    | Array<ProtocolMetricChartContractsSortInputType>
+    | ProtocolMetricChartContractsSortInputType
+  >
+  metricPagination?: Maybe<ProtocolMetricChartContractsPaginationInputType>
+}>
+
+export type ProtocolOverviewMetricQuery = { __typename?: 'Query' } & {
+  protocol?: Maybe<
+    { __typename?: 'ProtocolType' } & {
+      tvl: Array<
+        { __typename?: 'MetricChartType' } & ProtocolMetricChartFragment
+      >
+      uniqueWalletsCount: Array<
+        { __typename?: 'MetricChartType' } & ProtocolMetricChartFragment
+      >
+    }
+  >
+}
 
 export type ProtocolUpdateMutationVariables = Exact<{
   id: Scalars['UuidType']
@@ -3476,6 +3553,7 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'link'
   | 'hidden'
   | 'createdAt'
+  | 'favorite'
 > & {
     links: { __typename?: 'ProtocolLinkMapType' } & {
       social: Array<

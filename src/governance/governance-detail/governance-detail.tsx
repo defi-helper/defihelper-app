@@ -10,7 +10,10 @@ import { cutAccount } from '~/common/cut-account'
 import { Link } from '~/common/link'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { config } from '~/config'
-import { GovProposalStateEnum } from '~/graphql/_generated-types'
+import {
+  GovProposalStateEnum,
+  GovReceiptSupportEnum,
+} from '~/graphql/_generated-types'
 import { dateUtils } from '~/common/date-utils'
 import {
   GovernanceReasonDialog,
@@ -40,6 +43,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
 
   const loading = useStore(model.fetchGovernanceProposalFx.pending)
   const governanceDetail = useStore(model.$governanceDetail)
+  const receipt = useStore(model.$receipt)
 
   useGate(model.GovernanceDetailGate, params.governanceId)
 
@@ -128,7 +132,9 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   }
   const handleVoteAgainst = async () => {
     try {
-      const wallet = await openWalletList()
+      const wallet = await openWalletList({
+        blockchain: 'ethereum',
+      })
 
       if (!wallet.account) return
 
@@ -175,7 +181,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             <div className={clsx(styles.voteInfo, styles.mb32)}>
               <GovernanceVoteInfo
                 variant="for"
-                active={false}
+                active={receipt?.support === GovReceiptSupportEnum.For}
                 total={bignumberUtils.total(
                   governanceDetail.abstainVotes,
                   governanceDetail.againstVotes,
@@ -185,7 +191,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               />
               <GovernanceVoteInfo
                 variant="abstain"
-                active={false}
+                active={receipt?.support === GovReceiptSupportEnum.Abstain}
                 total={bignumberUtils.total(
                   governanceDetail.abstainVotes,
                   governanceDetail.againstVotes,
@@ -195,7 +201,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               />
               <GovernanceVoteInfo
                 variant="against"
-                active={false}
+                active={receipt?.support === GovReceiptSupportEnum.Against}
                 total={bignumberUtils.total(
                   governanceDetail.abstainVotes,
                   governanceDetail.againstVotes,
@@ -215,12 +221,13 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               In order to be applied, the quorum of 4% must be reached
             </Typography>
           )}
-          {governanceDetail.state === GovProposalStateEnum.Active && (
+          {governanceDetail.state === GovProposalStateEnum.Active && !receipt && (
             <div className={clsx(styles.voteButtons, styles.mb32)}>
               <Button
                 className={styles.voteButton}
                 onClick={handleVoteFor}
                 loading={loadingCastVote}
+                color="green"
               >
                 Vote for
               </Button>
@@ -235,6 +242,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                 className={styles.voteButton}
                 onClick={handleVoteAgainst}
                 loading={loadingCastVote}
+                color="red"
               >
                 Vote against
               </Button>
@@ -280,11 +288,11 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
           <Paper className={clsx(styles.actions, styles.mb32)}>
             {governanceDetail.actions.map(
               ({ target, callDatas, signature, id }) => (
-                <Typography key={id} className={styles.action}>
+                <Typography key={id} className={styles.action} as="div">
                   <Link
                     href={buildExplorerUrl({
                       network: config.IS_DEV ? '3' : '1',
-                      address: governanceDetail.proposer,
+                      address: target,
                     })}
                     target="_blank"
                   >

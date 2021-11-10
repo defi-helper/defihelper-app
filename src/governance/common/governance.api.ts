@@ -21,7 +21,10 @@ export const governanceApi = {
     getAPIClient()
       .query<GovernanceProposalsQuery, GovernanceProposalsQueryVariables>(
         GOVERNANCE_PROPOSALS,
-        variables
+        variables,
+        {
+          requestPolicy: 'network-only',
+        }
       )
       .toPromise()
       .then(({ data }) => ({
@@ -33,7 +36,10 @@ export const governanceApi = {
     getAPIClient()
       .query<GovernanceProposalQuery, GovernanceProposalQueryVariables>(
         GOVERNANCE_PROPOSAL,
-        variables
+        variables,
+        {
+          requestPolicy: 'network-only',
+        }
       )
       .toPromise()
       .then(({ data }) => data?.govProposal),
@@ -42,7 +48,10 @@ export const governanceApi = {
     getAPIClient()
       .query<GovernanceReceiptQuery, GovernanceReceiptQueryVariables>(
         GOVERNANCE_RECEIPT,
-        variables
+        variables,
+        {
+          requestPolicy: 'network-only',
+        }
       )
       .toPromise()
       .then(({ data }) => data?.govReceipt),

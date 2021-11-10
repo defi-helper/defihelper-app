@@ -32,7 +32,7 @@ export const input = style({
 export const label = style({
   fontFamily: theme.fonts.mono,
   textTransform: 'uppercase',
-  color: theme.colors.common.brown2,
+  color: theme.colors.textColorGrey,
   marginBottom: 4,
 })
 

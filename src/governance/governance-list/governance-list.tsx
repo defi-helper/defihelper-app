@@ -52,9 +52,19 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
 
   const handleopenDelegate = async () => {
     try {
-      const wallet = await openWalletList()
+      const wallet = await openWalletList({
+        blockchain: 'ethereum',
+      })
 
       if (!wallet.account) return
+
+      const votes = await model.fetchGovernanceVotesFx({
+        network: Number(wallet.chainId),
+        wallet: wallet.account,
+        contract: model.GOVERNOR_TOKEN,
+      })
+
+      if (bignumberUtils.eq(votes?.votes, 0)) return
 
       const result = await openDelegate({
         votes: governanceVotes?.votes,

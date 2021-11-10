@@ -36,6 +36,16 @@ export const PROTOCOLS = gql`
         count
       }
     }
+    favorites: protocols(filter: { favorite: true }) {
+      pagination {
+        count
+      }
+    }
+    all: protocols {
+      pagination {
+        count
+      }
+    }
   }
   ${PROTOCOL_FRAGMENT}
 `

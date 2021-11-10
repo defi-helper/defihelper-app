@@ -38,11 +38,11 @@ export const tabs = composeStyles(
 export const select = composeStyles(
   hide,
   style({
+    marginLeft: 'auto',
     padding: '8px 16px',
     fontSize: 16,
     lineHeight: '24px',
     color: theme.colors.textColorGrey,
-    marginLeft: 16,
   })
 )
 

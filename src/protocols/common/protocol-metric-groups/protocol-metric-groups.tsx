@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { ButtonBase } from '~/common/button-base'
 import { CircularProgress } from '~/common/circular-progress'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
+import { isMetricGroup, MetricGroups } from '../protocol.types'
 import * as styles from './protocol-metric-groups.css'
 
 export type ProtocolMetricGroupsProps = {
@@ -10,24 +11,6 @@ export type ProtocolMetricGroupsProps = {
   children: { value: string; loading: boolean }[]
   onChange: (value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>) => void
   value: string
-}
-
-const MetricGroups: Record<string, string> = {
-  [MetricGroupEnum.Day]: 'daily',
-  [MetricGroupEnum.Week]: 'weekly',
-  [MetricGroupEnum.Year]: 'yearly',
-}
-
-const isMetricGroup = (
-  group: string
-): group is Exclude<MetricGroupEnum, MetricGroupEnum.Hour> => {
-  const arr: string[] = [
-    MetricGroupEnum.Day,
-    MetricGroupEnum.Week,
-    MetricGroupEnum.Year,
-  ]
-
-  return arr.includes(group)
 }
 
 export const ProtocolMetricGroups: React.VFC<ProtocolMetricGroupsProps> = (
