@@ -12,7 +12,7 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
-import { ProtocolCard, ProtocolTabs } from '../common'
+import { Protocol, ProtocolCard, ProtocolTabs, Tabs } from '../common'
 import { Paper } from '~/common/paper'
 import { ButtonBase } from '~/common/button-base'
 import * as model from './protocol-list.model'
@@ -22,6 +22,7 @@ export type ProtocolListProps = unknown
 
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const [search, setSearch] = useState('')
+  const [currentTab, setCurrentTab] = useState(Tabs.All)
 
   const ability = useAbility()
 
@@ -29,6 +30,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
 
   const loading = useStore(model.fetchProtocolListFx.pending)
   const protocolList = useStore(model.$protocolList)
+  const tabsCount = useStore(model.$tabsCount)
 
   const handleOpenConfirm = (protocolId: string) => async () => {
     try {
@@ -47,12 +49,17 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     [protocolList, ability]
   )
 
-  useGate(model.ProtocolListGate, search)
+  useGate(model.ProtocolListGate, {
+    favorite:
+      currentTab === Tabs.All ? undefined : currentTab === Tabs.Favourite,
+    search,
+  })
 
-  const [favourites, setFavourite] = useState<Record<string, boolean>>({})
-
-  const handleFavourite = (protocolId: string) => () => {
-    setFavourite({ ...favourites, [protocolId]: !favourites[protocolId] })
+  const handleFavorite = (protocol: Protocol) => () => {
+    model.protocolFavoriteFx({
+      protocol: protocol.id,
+      favorite: !protocol.favorite,
+    })
   }
 
   const handleSearch = (event: React.FormEvent<HTMLInputElement>) => {
@@ -90,7 +97,13 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           <Typography variant="h3" family="square">
             Protocols
           </Typography>
-          <ProtocolTabs className={styles.tabs} />
+          <ProtocolTabs
+            className={styles.tabs}
+            all={tabsCount.all}
+            favorites={tabsCount.favorites}
+            onChange={setCurrentTab}
+            value={currentTab}
+          />
           <Input
             placeholder="Search"
             className={styles.search}
@@ -140,9 +153,8 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
               <li key={protocol.id} className={styles.item}>
                 <ProtocolCard
                   protocol={protocol}
-                  onFavourite={handleFavourite(protocol.id)}
+                  onFavorite={handleFavorite(protocol)}
                   onDelete={handleOpenConfirm(protocol.id)}
-                  favourites={favourites}
                 />
               </li>
             ))}

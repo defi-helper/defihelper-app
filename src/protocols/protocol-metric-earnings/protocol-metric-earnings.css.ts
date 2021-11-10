@@ -22,22 +22,6 @@ export const charts = style({
   },
 })
 
-export const chart = style({
-  padding: 16,
-
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      padding: '24px 32px',
-    },
-  },
-})
-
-export const header = style({
-  display: 'flex',
-  justifyContent: 'space-between',
-  marginBottom: 32,
-})
-
 export const total = style({
   display: 'grid',
   gap: 16,

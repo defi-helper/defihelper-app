@@ -7,8 +7,11 @@ import { Chart } from '~/common/chart'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
-import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { ProtocolChartWrap } from '../common'
+import { Dropdown } from '~/common/dropdown'
+import { MetricGroups, isMetricGroup } from '~/protocols/common'
 import * as model from './protocol-metric-overview.model'
 import * as styles from './protocol-metric-overview.css'
 
@@ -33,7 +36,7 @@ const WALLET_FIELDS = [
 export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
   props
 ) => {
-  const [currentGroup] = useState<
+  const [currentGroup, setCurrentGroup] = useState<
     Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
   >(MetricGroupEnum.Day)
 
@@ -48,39 +51,97 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
     })
   }, [currentGroup, params.protocolId])
 
+  const tvlSum = metric[currentGroup]?.data.tvl?.reduce(
+    (acc, { sum }) => bignumberUtils.plus(acc, sum),
+    '0'
+  )
+
+  const data = metric[currentGroup]?.data.tvl?.map((metricItem) => {
+    return {
+      ...metricItem,
+      sum: bignumberUtils.format(metricItem.sum),
+    }
+  })
+
+  const uniqueWalletsSum = metric[
+    currentGroup
+  ]?.data.uniqueWalletsCount?.reduce(
+    (acc, { sum }) => bignumberUtils.plus(acc, sum),
+    '0'
+  )
+
+  const handleChangeGroup = (group: string) => () => {
+    if (!isMetricGroup(group)) return
+
+    setCurrentGroup(group)
+  }
+
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.title}>
         <Typography variant="h3">Statistics</Typography>
-        <ButtonBase className={styles.select}>
-          Daily <Icon icon="arrowDown" className={styles.selectArrow} />
-        </ButtonBase>
+        <Dropdown
+          placement="bottom-end"
+          offset={[0, 8]}
+          sameWidth
+          control={(active) => (
+            <ButtonBase className={clsx(styles.select, styles.selectButton)}>
+              {MetricGroups[currentGroup]}{' '}
+              <Icon
+                icon={active ? 'arrowTop' : 'arrowDown'}
+                className={styles.selectArrow}
+              />
+            </ButtonBase>
+          )}
+        >
+          {Object.values(MetricGroupEnum).map((value) => (
+            <ButtonBase
+              key={value}
+              onClick={handleChangeGroup(value)}
+              className={styles.selectButton}
+            >
+              {MetricGroups[value]}
+            </ButtonBase>
+          ))}
+        </Dropdown>
       </div>
       <div className={styles.charts}>
-        <Paper radius={8} className={styles.chart}>
-          <div className={styles.header}>
-            <Typography>Total Value Locked</Typography>
-          </div>
+        <ProtocolChartWrap
+          header={
+            <>
+              <Typography>Total Value Locked</Typography>
+              <Typography family="mono">
+                ${bignumberUtils.format(tvlSum)}
+              </Typography>
+            </>
+          }
+        >
           <Chart
             dataFields={TVL_FIELDS}
-            data={metric[currentGroup]?.data}
+            data={data}
             tooltipText={['$', '{sum}'].join('')}
             id="tvl"
             names={TVL_FIELDS.map(({ name }) => name)}
           />
-        </Paper>
-        <Paper radius={8} className={styles.chart}>
-          <div className={styles.header}>
-            <Typography>Unique Wallets</Typography>
-          </div>
+        </ProtocolChartWrap>
+        <ProtocolChartWrap
+          header={
+            <>
+              <Typography>Unique Wallets</Typography>
+              <Typography family="mono">
+                {bignumberUtils.format(uniqueWalletsSum)}
+              </Typography>
+            </>
+          }
+        >
           <Chart
             dataFields={WALLET_FIELDS}
-            data={metric[currentGroup]?.data}
-            tooltipText={['$', '{sum}'].join('')}
+            data={metric[currentGroup]?.data?.uniqueWalletsCount}
+            tooltipText="{sum}"
             id="unique_wallets"
             names={WALLET_FIELDS.map(({ name }) => name)}
           />
-        </Paper>
+        </ProtocolChartWrap>
       </div>
     </div>
   )

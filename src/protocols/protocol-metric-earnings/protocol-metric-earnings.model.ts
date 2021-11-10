@@ -1,15 +1,19 @@
 import { createDomain } from 'effector-logger/macro'
-import { bignumberUtils } from '~/common/bignumber-utils'
 
-import { dateUtils } from '~/common/date-utils'
-import { Unwrap } from '~/common/types'
+import { bignumberUtils } from '~/common/bignumber-utils'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
+
+type ChartData = {
+  hold: string
+  autostaking: string
+  date: number
+}
 
 type State = Record<
   Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
   {
-    data: Unwrap<ReturnType<typeof protocolsApi.protocolDetailMetric>>
+    data: ChartData[]
     value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
     loading: boolean
   }
@@ -17,34 +21,31 @@ type State = Record<
 
 const protocolMetricEarningsDomain = createDomain()
 
-const DAYS_LIMIT = 180
-
 export const fetchMetricFx = protocolMetricEarningsDomain.createEffect(
   async (params: {
-    protocolId: string
+    balance: number
+    apy: number
     group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
   }) => {
-    const data = await protocolsApi.protocolDetailMetric({
-      filter: {
-        id: params.protocolId,
-      },
-      metric: 'tvl',
-      metricGroup: params.group,
-      metricFilter: {
-        dateBefore: dateUtils.now(),
-        dateAfter: dateUtils.after180Days(),
-      },
-      metricPagination: {
-        limit: DAYS_LIMIT,
-      },
+    const data = await protocolsApi.protocolEstimated({
+      balance: params.balance,
+      apy: params.apy,
     })
+
+    if (!data) throw new Error('something went wrong')
 
     return {
       group: params.group,
-      data: data.map((dataItem) => ({
-        ...dataItem,
-        sum: bignumberUtils.format(dataItem.sum),
-      })),
+      data: data.everyDay.reduce<ChartData[]>((acc, everyDayItem, index) => {
+        return [
+          ...acc,
+          {
+            hold: bignumberUtils.format(data?.hold[index]?.v ?? 0),
+            autostaking: bignumberUtils.format(data?.optimal[index]?.v ?? 0),
+            date: everyDayItem.t,
+          },
+        ]
+      }, []),
     }
   }
 )

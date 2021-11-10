@@ -12,10 +12,26 @@ import {
   parseActions,
 } from '~/governance/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { GovReceiptFilterInputType } from '~/graphql/_generated-types'
 
 const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
 
-export const governanceDetailDomain = createDomain('governanceDetailDomain')
+export enum CastVotes {
+  against,
+  for,
+  abstain,
+}
+
+type CastVoteWithReason = {
+  proposalId: number
+  support: CastVotes
+  reason?: string
+  account: string
+  chainId: string
+  provider: unknown
+}
+
+export const governanceDetailDomain = createDomain()
 
 export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect(
   (proposalId: number) =>
@@ -43,6 +59,18 @@ export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect(
       )
 )
 
+export const fetchReceiptFx = governanceDetailDomain.createEffect(
+  async (params: Omit<GovReceiptFilterInputType, 'cache'>) =>
+    governanceApi.receipt({
+      filter: {
+        ...params,
+        cache: true,
+      },
+    })
+)
+
+export const $receipt = restore(fetchReceiptFx.doneData, null)
+
 const createContract = (provider: unknown, chainId: string) => {
   const networkProvider = walletNetworkModel.getNetwork(provider, chainId)
 
@@ -55,21 +83,6 @@ const createContract = (provider: unknown, chainId: string) => {
     abi.GovernorBravo.abi,
     networkProvider.getSigner()
   )
-}
-
-export enum CastVotes {
-  against,
-  for,
-  abstain,
-}
-
-type CastVoteWithReason = {
-  proposalId: number
-  support: CastVotes
-  reason?: string
-  account: string
-  chainId: string
-  provider: unknown
 }
 
 export const castVoteFx = governanceDetailDomain.createEffect(
@@ -142,4 +155,16 @@ sample({
   clock: GovernanceDetailGate.open,
   fn: (clock) => Number(clock),
   target: fetchGovernanceProposalFx,
+})
+
+sample({
+  source: GovernanceDetailGate.state,
+  clock: [queueFx.done, executeFx.done, castVoteFx.done],
+  fn: (proposalId, { params }) => ({
+    network: Number(params.chainId),
+    contract: GOVERNOR_BRAVO,
+    proposalId: Number(proposalId),
+    wallet: params.account,
+  }),
+  target: fetchReceiptFx,
 })

@@ -147,7 +147,9 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
       .filter(Boolean)
 
     try {
-      const wallet = await openWalletList()
+      const wallet = await openWalletList({
+        blockchain: 'ethereum',
+      })
 
       if (!wallet.account) return
 

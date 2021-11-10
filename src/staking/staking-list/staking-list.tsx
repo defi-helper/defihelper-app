@@ -72,7 +72,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         <Typography variant="h3" className={styles.title}>
           Staking contracts
         </Typography>
-        <StakingTabs className={styles.tabs} />
+        {false && <StakingTabs className={styles.tabs} />}
         <Paper radius={8} className={styles.select}>
           Daily
           <Icon icon="arrowTop" className={styles.selectArrow} />

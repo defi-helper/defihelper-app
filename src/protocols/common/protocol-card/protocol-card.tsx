@@ -13,10 +13,9 @@ import { paths } from '~/paths'
 import * as styles from './protocol-card.css'
 
 export type ProtocolCardProps = {
-  onFavourite: () => void
+  onFavorite: () => void
   onDelete: () => void
   protocol: Protocol
-  favourites: Record<string, boolean>
 }
 
 export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
@@ -24,18 +23,15 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
 
   return (
     <Paper className={clsx(styles.card)} radius={8}>
-      <div className={styles.favorite}>-</div>
-      {false && (
-        <ButtonBase
-          className={clsx(
-            styles.favorite,
-            props.favourites[protocol.id] && styles.favoriteActive
-          )}
-          onClick={props.onFavourite}
-        >
-          <Icon icon="star" />
-        </ButtonBase>
-      )}
+      <ButtonBase
+        className={clsx(
+          styles.favorite,
+          protocol.favorite && styles.favoriteActive
+        )}
+        onClick={props.onFavorite}
+      >
+        <Icon icon="star" />
+      </ButtonBase>
       <Typography
         as={ReactRouterLink}
         to={paths.protocols.detail(protocol.id)}

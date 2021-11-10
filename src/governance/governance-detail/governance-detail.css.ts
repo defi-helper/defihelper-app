@@ -16,12 +16,16 @@ export const voteInfo = style({
 })
 
 export const voteButtons = style({
-  margin: '0 auto',
-  display: 'flex',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+  gap: 32,
 })
 
 export const voteButton = style({
-  margin: '0 16px',
+  fontSize: 32,
+  lineHeight: '40px',
+  height: 116,
+  width: '100%',
 })
 
 export const actions = style({
