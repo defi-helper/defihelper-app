@@ -11,8 +11,7 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { stakingApi } from '~/staking/common'
 import { createPagination, PaginationState } from '~/common/create-pagination'
 
-export const stakingListDomain = createDomain('stakingList')
-export const contractsEventListDomain = createDomain('contractsEventList')
+export const stakingListDomain = createDomain()
 
 type GateState = {
   protocolId: string
@@ -110,7 +109,7 @@ export const fetchContractMetricFx = stakingListDomain.createEffect(
     })
 )
 
-const $contractList = stakingListDomain
+export const $contractList = stakingListDomain
   .createStore<Contract[]>([])
   .on(fetchStakingListFx.doneData, (_, payload) =>
     payload.contracts.map((contract) => ({ ...contract, type: 'Contract' }))

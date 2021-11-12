@@ -1,22 +1,22 @@
 import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
-import { MetricChartType } from '~/graphql/_generated-types'
+import { MyMetricQuery } from '~/graphql/_generated-types'
 import { portfolioApi } from '~/portfolio/common'
 
-type TokenMetric = {
-  totalNetWorth: Array<Pick<MetricChartType, 'sum'>>
-  unclaimedReward: Array<Pick<MetricChartType, 'sum'>>
-}
+type MyMetric = Exclude<
+  Exclude<MyMetricQuery['me'], undefined | null>['metric'],
+  undefined
+>
 
 export const portfolioMetricCardsDomain = createDomain()
 
 export const fetchMetricCardsFx = portfolioMetricCardsDomain.createEffect(() =>
-  portfolioApi.getTokenMetric()
+  portfolioApi.myMetric()
 )
 
 export const $metric = portfolioMetricCardsDomain
-  .createStore<TokenMetric | null>(null)
+  .createStore<MyMetric | null>(null)
   .on(fetchMetricCardsFx.doneData, (_, payload) => payload)
 
 export const PortfolioMetricCardsGate = createGate({

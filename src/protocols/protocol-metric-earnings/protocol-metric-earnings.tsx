@@ -4,23 +4,22 @@ import clsx from 'clsx'
 
 import { Chart } from '~/common/chart'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
-import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { ProtocolChartWrap, ProtocolMetricGroups } from '../common'
+import * as stakingListModel from '~/staking/staking-list/staking-list.model'
 import * as model from './protocol-metric-earnings.model'
 import * as styles from './protocol-metric-earnings.css'
 
-const EARNINGS_FIELDS = [
+const STAKED_FIELDS = [
   {
-    valueY: 'sum',
-    name: 'Real Earnings',
+    valueY: 'altCoin',
+    name: 'Alt coins',
     dateX: 'date',
     color: '#E9CC67',
   },
   {
-    valueY: 'avg',
-    name: 'Historicaly Estimated Earnings',
+    valueY: 'stableCoin',
+    name: 'Stable coins',
     dateX: 'date',
     color: '#4463EE',
   },
@@ -44,29 +43,47 @@ const ESTIMATED_FIELDS = [
 const SUM = 10000
 const APY = 90 / 100
 
-export const ProtocolMetricEarnings: React.VFC<{ className?: string }> = (
+export const ProtocolMetricEarnings: React.FC<{ className?: string }> = (
   props
 ) => {
-  const [currentGroup, setCurrentGroup] = useState<
+  const [currentEarningsGroup, setCurrentEarningsGroup] = useState<
+    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+  >(MetricGroupEnum.Day)
+  const [currentStakedGroup, setCurrentStakedGroup] = useState<
     Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
   >(MetricGroupEnum.Day)
 
-  const metric = useStore(model.$metric)
+  const earningsMetric = useStore(model.$earningsMetric)
+  const contracts = useStore(stakingListModel.$contractList)
+  const stakedMetric = useStore(model.$stakedMetric)
 
   useEffect(() => {
-    model.fetchMetricFx({
-      group: currentGroup,
+    model.fetchEarningMetricFx({
+      group: currentEarningsGroup,
       balance: SUM,
       apy: APY,
     })
-  }, [currentGroup])
+  }, [currentEarningsGroup])
 
-  const totalStakePrice = '0'
+  useEffect(() => {
+    if (!contracts.length) return
 
-  const handleChangeMetric = (
+    model.fetchStakedMetricFx({
+      group: currentStakedGroup,
+      contracts: contracts.map(({ id }) => id),
+    })
+  }, [currentStakedGroup, contracts])
+
+  const handleChangeEarningsMetric = (
     group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
   ) => {
-    setCurrentGroup(group)
+    setCurrentEarningsGroup(group)
+  }
+
+  const handleChangeStakedMetric = (
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+  ) => {
+    setCurrentStakedGroup(group)
   }
 
   return (
@@ -78,22 +95,23 @@ export const ProtocolMetricEarnings: React.VFC<{ className?: string }> = (
         <ProtocolChartWrap
           header={
             <>
-              <Typography>Earnings History</Typography>
+              <Typography>Staked Balance</Typography>
               <ProtocolMetricGroups
-                value={currentGroup}
-                onChange={handleChangeMetric}
+                value={currentStakedGroup}
+                onChange={handleChangeStakedMetric}
               >
-                {Object.values(metric)}
+                {Object.values(stakedMetric)}
               </ProtocolMetricGroups>
             </>
           }
         >
           <Chart
-            dataFields={EARNINGS_FIELDS}
-            data={metric[currentGroup]?.data}
-            tooltipText={['$', '{sum}'].join('')}
-            id="earnings"
-            names={EARNINGS_FIELDS.map(({ name }) => name)}
+            dataFields={STAKED_FIELDS}
+            data={stakedMetric[currentStakedGroup]?.data}
+            // eslint-disable-next-line no-template-curly-in-string
+            tooltipText="{name}: ${valueY}"
+            id="staked"
+            names={STAKED_FIELDS.map(({ name }) => name)}
           />
         </ProtocolChartWrap>
         <ProtocolChartWrap
@@ -101,17 +119,17 @@ export const ProtocolMetricEarnings: React.VFC<{ className?: string }> = (
             <>
               <Typography>Estimated Earnings</Typography>
               <ProtocolMetricGroups
-                value={currentGroup}
-                onChange={handleChangeMetric}
+                value={currentEarningsGroup}
+                onChange={handleChangeEarningsMetric}
               >
-                {Object.values(metric)}
+                {Object.values(earningsMetric)}
               </ProtocolMetricGroups>
             </>
           }
         >
           <Chart
             dataFields={ESTIMATED_FIELDS}
-            data={metric[currentGroup]?.data}
+            data={earningsMetric[currentEarningsGroup]?.data}
             // eslint-disable-next-line no-template-curly-in-string
             tooltipText="{name}: ${valueY}"
             id="estimated"
@@ -119,28 +137,7 @@ export const ProtocolMetricEarnings: React.VFC<{ className?: string }> = (
           />
         </ProtocolChartWrap>
       </div>
-      <div className={styles.total}>
-        <Paper radius={8} className={styles.totalItem}>
-          <Typography variant="body2" className={styles.totalTitle}>
-            Total Staked
-          </Typography>
-          <Typography variant="h4">
-            ${bignumberUtils.format(totalStakePrice)}
-          </Typography>
-        </Paper>
-        <Paper radius={8} className={styles.totalItem}>
-          <Typography variant="body2" className={styles.totalTitle}>
-            Total Unclaimed
-          </Typography>
-          <Typography variant="h4">-</Typography>
-        </Paper>
-        <Paper radius={8} className={styles.totalItem}>
-          <Typography variant="body2" className={styles.totalTitle}>
-            APY Boost
-          </Typography>
-          <Typography variant="h4">-</Typography>
-        </Paper>
-      </div>
+      {props.children}
     </div>
   )
 }

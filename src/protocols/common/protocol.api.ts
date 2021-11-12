@@ -18,6 +18,8 @@ import {
   ProtocolOverviewMetricQueryVariables,
   ProtocolEstimatedQuery,
   ProtocolEstimatedQueryVariables,
+  ProtocolStakedBalanceQuery,
+  ProtocolStakedBalanceQueryVariables,
 } from '~/graphql/_generated-types'
 import {
   PROTOCOLS,
@@ -28,6 +30,7 @@ import {
   PROTOCOL_ESTIMATED,
   PROTOCOL_FAVORITE,
   PROTOCOL_OVERVIEW_METRIC,
+  PROTOCOL_STAKED_BALANCE,
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 
@@ -116,4 +119,16 @@ export const protocolsApi = {
       )
       .toPromise()
       .then(({ data }) => data?.restakeStrategy),
+
+  protocolStaked: (variables: ProtocolStakedBalanceQueryVariables) =>
+    getAPIClient()
+      .query<ProtocolStakedBalanceQuery, ProtocolStakedBalanceQueryVariables>(
+        PROTOCOL_STAKED_BALANCE,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => ({
+        altCoins: data?.me?.altCoins ?? [],
+        stableCoins: data?.me?.stableCoins ?? [],
+      })),
 }

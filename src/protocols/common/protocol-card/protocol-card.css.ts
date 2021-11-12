@@ -92,7 +92,6 @@ globalStyle(`${favorite}:not(${favoriteActive}):hover`, {
 export const profit = style({
   display: 'none',
   alignItems: 'center',
-  color: theme.colors.common.green2,
 
   '@media': {
     [theme.mediaQueries.md()]: {
@@ -117,8 +116,4 @@ export const manageDropdown = style({
 
 export const manageDropdownItem = style({
   justifyContent: 'flex-start',
-})
-
-export const today = style({
-  color: theme.colors.common.blue1,
 })

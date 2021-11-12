@@ -50,7 +50,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         {protocol.name}
       </Typography>
       <Typography variant="body2" as="span" className={styles.label}>
-        My position
+        Protocol TVL
       </Typography>
       <Typography
         variant="body2"
@@ -58,21 +58,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         family="mono"
         className={styles.value}
       >
-        ${bignumberUtils.format(protocol.metricChart?.[0]?.avg)}
-      </Typography>
-      <Typography variant="body2" as="span" className={styles.label}>
-        My profit{' '}
-        <Typography variant="inherit" className={styles.today}>
-          today
-        </Typography>
-      </Typography>
-      <Typography
-        variant="body2"
-        as="span"
-        family="mono"
-        className={styles.value}
-      >
-        -
+        ${bignumberUtils.format(protocol.metric.tvl)}
       </Typography>
       <Typography variant="body2" as="span" className={styles.label}>
         My APY
@@ -83,7 +69,18 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         family="mono"
         className={styles.value}
       >
-        -
+        {bignumberUtils.format(protocol.metric.myAPY)}%
+      </Typography>
+      <Typography variant="body2" as="span" className={styles.label}>
+        My position
+      </Typography>
+      <Typography
+        variant="body2"
+        as="span"
+        family="mono"
+        className={styles.value}
+      >
+        ${bignumberUtils.format(protocol.metric.myStaked)}
       </Typography>
       <Typography
         variant="body2"
@@ -91,7 +88,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         className={styles.profit}
         family="mono"
       >
-        -
+        ${bignumberUtils.format(protocol.metric.myEarned)}
         <Can I="update" a="Protocol">
           <Dropdown
             control={

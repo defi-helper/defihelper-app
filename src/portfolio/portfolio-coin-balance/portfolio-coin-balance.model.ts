@@ -10,7 +10,7 @@ import {
 } from '~/graphql/_generated-types'
 import { bignumberUtils } from '~/common/bignumber-utils'
 
-const portfolioChartOfAllTokens = createDomain()
+const portfolioCoinBalance = createDomain()
 
 const DAYS_LIMIT = 180
 
@@ -37,50 +37,27 @@ const defaultVariables = {
 }
 
 type Gate = {
-  tokens: string[]
   group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
 }
 
-const fetchChartDataFx = portfolioChartOfAllTokens.createEffect(
+const fetchChartDataFx = portfolioCoinBalance.createEffect(
   async (params: Gate) => {
-    const result = params.tokens.map(async (param) => {
-      const data = await portfolioApi.getTokenMetricChart({
-        group: params.group,
-        ...defaultVariables,
-        ...(param === 'stable' || param === 'shit'
-          ? {
-              filter: {
-                tokenAlias: {
-                  stable: param === 'stable',
-                },
-                dateBefore: dateUtils.now(),
-                dateAfter: dateUtils.after180Days(),
-              },
-            }
-          : {}),
-      })
-
-      return { name: param, data }
+    const data = await portfolioApi.getTokenMetricChart({
+      group: params.group,
+      ...defaultVariables,
+      dateBefore: dateUtils.now(),
+      dateAfter: dateUtils.after180Days(),
     })
 
-    const sortedData = (await Promise.all(result)).sort(
-      (a, b) => a.data.length - b.data.length
-    )
-
-    const lastItem = sortedData[sortedData.length - 1]
-    const secondItem = sortedData[sortedData.length - 2]
-    const firstItem = sortedData[0]
-
-    return lastItem.data.map((dataItem, index) => ({
-      [lastItem.name]: bignumberUtils.format(dataItem.sum),
-      [firstItem.name]: bignumberUtils.format(firstItem.data[index]?.sum),
-      [secondItem.name]: bignumberUtils.format(secondItem.data[index]?.sum),
-      date: dataItem.date,
+    return data?.altCoins?.map((altCoin, index) => ({
+      altCoin: bignumberUtils.format(altCoin.sum),
+      date: altCoin.date,
+      stableCoin: bignumberUtils.format(data?.stableCoins?.[index]?.sum),
     }))
   }
 )
 
-export const $portfolioChartOfAllTokens = portfolioChartOfAllTokens
+export const $portfolioCoinBalance = portfolioCoinBalance
   .createStore(
     Object.values(MetricGroupEnum).reduce<State>((acc, metricGroup) => {
       if (metricGroup === MetricGroupEnum.Hour) return acc
@@ -114,12 +91,15 @@ export const $portfolioChartOfAllTokens = portfolioChartOfAllTokens
     }
   })
 
-export const PortfolioChartOfAllTokensGate = createGate<Gate>({
-  name: 'PortfolioChartOfAllTokensGate',
-  domain: portfolioChartOfAllTokens,
+export const PortfolioCoinBalanceGate = createGate<Gate>({
+  name: 'PortfolioCoinBalanceGate',
+  domain: portfolioCoinBalance,
 })
 
 sample({
-  clock: PortfolioChartOfAllTokensGate.open,
+  clock: [
+    PortfolioCoinBalanceGate.open,
+    PortfolioCoinBalanceGate.state.updates,
+  ],
   target: fetchChartDataFx,
 })

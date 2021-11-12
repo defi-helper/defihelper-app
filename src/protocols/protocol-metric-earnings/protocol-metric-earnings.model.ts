@@ -1,27 +1,20 @@
 import { createDomain } from 'effector-logger/macro'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { dateUtils } from '~/common/date-utils'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
-import { protocolsApi } from '~/protocols/common'
+import {
+  EastimatedEarnings,
+  protocolsApi,
+  StakedBalance,
+  State,
+} from '~/protocols/common'
 
-type ChartData = {
-  hold: string
-  autostaking: string
-  date: number
-}
-
-type State = Record<
-  Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
-  {
-    data: ChartData[]
-    value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-    loading: boolean
-  }
->
+const DAYS_LIMIT = 180
 
 const protocolMetricEarningsDomain = createDomain()
 
-export const fetchMetricFx = protocolMetricEarningsDomain.createEffect(
+export const fetchEarningMetricFx = protocolMetricEarningsDomain.createEffect(
   async (params: {
     balance: number
     apy: number
@@ -36,45 +29,109 @@ export const fetchMetricFx = protocolMetricEarningsDomain.createEffect(
 
     return {
       group: params.group,
-      data: data.everyDay.reduce<ChartData[]>((acc, everyDayItem, index) => {
-        return [
-          ...acc,
-          {
-            hold: bignumberUtils.format(data?.hold[index]?.v ?? 0),
-            autostaking: bignumberUtils.format(data?.optimal[index]?.v ?? 0),
-            date: everyDayItem.t,
-          },
-        ]
-      }, []),
+      data: data.everyDay.reduce<EastimatedEarnings[]>(
+        (acc, everyDayItem, index) => {
+          return [
+            ...acc,
+            {
+              hold: bignumberUtils.format(data?.hold[index]?.v ?? 0),
+              autostaking: bignumberUtils.format(data?.optimal[index]?.v ?? 0),
+              date: everyDayItem.t,
+            },
+          ]
+        },
+        []
+      ),
     }
   }
 )
 
-const initialState = Object.values(MetricGroupEnum).reduce<State>(
-  (acc, metricGroup) => {
-    if (metricGroup === MetricGroupEnum.Hour) return acc
+export const $earningsMetric = protocolMetricEarningsDomain
+  .createStore(
+    Object.values(MetricGroupEnum).reduce<State<EastimatedEarnings[]>>(
+      (acc, metricGroup) => {
+        if (metricGroup === MetricGroupEnum.Hour) return acc
 
-    acc[metricGroup] = {
-      data: [],
-      value: metricGroup,
-      loading: false,
-    }
+        acc[metricGroup] = {
+          data: [],
+          value: metricGroup,
+          loading: false,
+        }
 
-    return acc
-  },
-  {} as State
-)
-
-export const $metric = protocolMetricEarningsDomain
-  .createStore(initialState)
-  .on(fetchMetricFx, (state, payload) => ({
+        return acc
+      },
+      {} as State<EastimatedEarnings[]>
+    )
+  )
+  .on(fetchEarningMetricFx, (state, payload) => ({
     ...state,
     [payload.group]: {
       ...state[payload.group],
       loading: true,
     },
   }))
-  .on(fetchMetricFx.doneData, (state, payload) => ({
+  .on(fetchEarningMetricFx.doneData, (state, payload) => ({
+    ...state,
+    [payload.group]: {
+      ...state[payload.group],
+      data: payload.data,
+      loading: false,
+    },
+  }))
+
+export const fetchStakedMetricFx = protocolMetricEarningsDomain.createEffect(
+  async (params: {
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    contracts: string[]
+  }) => {
+    const data = await protocolsApi.protocolStaked({
+      contract: params.contracts,
+      group: params.group,
+      dateBefore: dateUtils.now(),
+      dateAfter: dateUtils.after180Days(),
+      pagination: {
+        limit: DAYS_LIMIT,
+      },
+    })
+
+    if (!data) throw new Error('something went wrong')
+
+    return {
+      group: params.group,
+      data: data.altCoins?.map((altCoin, index) => ({
+        altCoin: bignumberUtils.format(altCoin.sum),
+        date: altCoin.date,
+        stableCoin: bignumberUtils.format(data.stableCoins?.[index]?.sum),
+      })),
+    }
+  }
+)
+
+export const $stakedMetric = protocolMetricEarningsDomain
+  .createStore(
+    Object.values(MetricGroupEnum).reduce<State<StakedBalance[]>>(
+      (acc, metricGroup) => {
+        if (metricGroup === MetricGroupEnum.Hour) return acc
+
+        acc[metricGroup] = {
+          data: [],
+          value: metricGroup,
+          loading: false,
+        }
+
+        return acc
+      },
+      {} as State<StakedBalance[]>
+    )
+  )
+  .on(fetchStakedMetricFx, (state, payload) => ({
+    ...state,
+    [payload.group]: {
+      ...state[payload.group],
+      loading: true,
+    },
+  }))
+  .on(fetchStakedMetricFx.doneData, (state, payload) => ({
     ...state,
     [payload.group]: {
       ...state[payload.group],

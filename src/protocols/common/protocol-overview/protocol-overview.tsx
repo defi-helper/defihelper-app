@@ -1,11 +1,12 @@
 import clsx from 'clsx'
+import isEmpty from 'lodash.isempty'
 
 import { ButtonBase } from '~/common/button-base'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
-import * as styles from './protocol-overview.css'
 import { ProtocolLinkType } from '~/graphql/_generated-types'
+import * as styles from './protocol-overview.css'
 
 export type ProtocolOverviewProps = {
   className?: string
@@ -48,10 +49,18 @@ export const ProtocolOverview: React.VFC<ProtocolOverviewProps> = (props) => {
         <ButtonBase className={styles.grey}>Show more</ButtonBase>
       </div>
       <div>
-        <LinkSection title="Links" links={props.links?.other} />
-        <LinkSection title="Socials" links={props.links?.social} />
-        <LinkSection title="Listings" links={props.links?.listing} />
-        <LinkSection title="Audits" links={props.links?.audit} />
+        {!isEmpty(props.links?.other) && (
+          <LinkSection title="Links" links={props.links?.other} />
+        )}
+        {!isEmpty(props.links?.social) && (
+          <LinkSection title="Socials" links={props.links?.social} />
+        )}
+        {!isEmpty(props.links?.listing) && (
+          <LinkSection title="Listings" links={props.links?.listing} />
+        )}
+        {!isEmpty(props.links?.audit) && (
+          <LinkSection title="Audits" links={props.links?.audit} />
+        )}
       </div>
     </Paper>
   )

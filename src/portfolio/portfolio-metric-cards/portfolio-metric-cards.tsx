@@ -23,18 +23,14 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
       <PortfolioMetricCard
         title="Total Net Worth"
         value={
-          loading ? (
-            'loading...'
-          ) : (
-            <>${bignumberUtils.format(metric?.totalNetWorth?.[0].sum)}</>
-          )
+          loading ? 'loading...' : <>${bignumberUtils.format(metric?.worth)}</>
         }
-        growthValue={loading ? 'loading...' : <>-</>}
       />
       <PortfolioMetricCard
         title="Avg. APY total"
-        value={loading ? 'loading...' : <>-</>}
-        growthValue={loading ? 'loading...' : <>-</>}
+        value={
+          loading ? 'loading...' : <>{bignumberUtils.format(metric?.apy)}%</>
+        }
       />
       <PortfolioMetricCard
         title="Unclaimed reward"
@@ -42,10 +38,9 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
           loading ? (
             'loading...'
           ) : (
-            <>${bignumberUtils.format(metric?.unclaimedReward?.[0]?.sum)}</>
+            <>${bignumberUtils.format(metric?.earnedUSD)}</>
           )
         }
-        growthValue={loading ? 'loading...' : <>-</>}
       />
     </div>
   )
