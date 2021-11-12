@@ -4,22 +4,19 @@ import { createGate } from 'effector-react'
 import { ProtocolQuery } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 
-export const protocolDetailDomain = createDomain('protocolList')
+export const protocolDetailDomain = createDomain()
 
-export const fetchProtocolFx = protocolDetailDomain.createEffect({
-  name: 'fetchProtocolFx',
-  handler: async (params: { protocolId: string }) =>
+export const fetchProtocolFx = protocolDetailDomain.createEffect(
+  async (params: { protocolId: string }) =>
     protocolsApi.protocolDetail({
       filter: {
         id: params.protocolId,
       },
-    }),
-})
+    })
+)
 
 export const $protocol = protocolDetailDomain
-  .createStore<ProtocolQuery['protocol'] | null>(null, {
-    name: 'protocol',
-  })
+  .createStore<ProtocolQuery['protocol'] | null>(null)
   .on(fetchProtocolFx.doneData, (_, payload) => payload)
 
 export const ProtocolDetailGate = createGate<{ protocolId: string }>({

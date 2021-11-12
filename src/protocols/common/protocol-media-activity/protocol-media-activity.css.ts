@@ -25,6 +25,7 @@ export const card = style({
   wordBreak: 'break-word',
   display: 'flex',
   flexDirection: 'column',
+  color: 'inherit',
 })
 
 export const cardUsername = style({
@@ -38,4 +39,9 @@ export const cardText = style({
 export const cardDate = style({
   color: theme.colors.textColorGrey,
   marginTop: 'auto',
+})
+
+export const twitterIcon = style({
+  color: '#1DA1F2',
+  verticalAlign: 'middle',
 })

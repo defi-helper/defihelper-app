@@ -7,10 +7,20 @@ import {
   TokenMetricChartQuery,
   TokenMetricChartQueryVariables,
   TokenMetricQuery,
+  MyMetricQuery,
+  MyMetricQueryVariables,
   TokenMetricQueryVariables,
+  PortfolioEstimatedQuery,
+  PortfolioEstimatedQueryVariables,
 } from '~/graphql/_generated-types'
-import { ADD_WALLET, BLOCKCHAINS, TOKEN_METRIC } from './graphql'
-import { TOKEN_METRIC_CHART } from './graphql/token-metrick-chart.graphql'
+import {
+  ADD_WALLET,
+  BLOCKCHAINS,
+  MY_METRIC,
+  PORTFOLIO_ESTIMATED,
+  TOKEN_METRIC,
+  TOKEN_METRIC_CHART,
+} from './graphql'
 
 export const portfolioApi = {
   getTokenMetricChart: (variables: TokenMetricChartQueryVariables) =>
@@ -20,7 +30,7 @@ export const portfolioApi = {
         variables
       )
       .toPromise()
-      .then(({ data }) => data?.me?.tokenMetricChart ?? []),
+      .then(({ data }) => data?.me),
 
   getBlockchains: (variables: BlockChainsQueryVariables) =>
     getAPIClient()
@@ -48,4 +58,19 @@ export const portfolioApi = {
       )
       .toPromise()
       .then(({ data }) => data?.me),
+
+  myMetric: (variables?: MyMetricQueryVariables) =>
+    getAPIClient()
+      .query<MyMetricQuery, MyMetricQueryVariables>(MY_METRIC, variables)
+      .toPromise()
+      .then(({ data }) => data?.me?.metric),
+
+  earnings: (variables: PortfolioEstimatedQueryVariables) =>
+    getAPIClient()
+      .query<PortfolioEstimatedQuery, PortfolioEstimatedQueryVariables>(
+        PORTFOLIO_ESTIMATED,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.restakeStrategy),
 }

@@ -1,40 +1,20 @@
 import clsx from 'clsx'
-import { dateUtils } from '~/common/date-utils'
+import isEmpty from 'lodash.isempty'
 
+import { Icon } from '~/common/icon'
+import { dateUtils } from '~/common/date-utils'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
+import { ProtocolQuery } from '~/graphql/_generated-types'
 import * as styles from './protocol-media-activity.css'
 
 export type ProtocolMediaActivityProps = {
   className?: string
+  mediaActity: Exclude<
+    Exclude<ProtocolQuery['protocol'], null | undefined>['socialPosts']['list'],
+    null | undefined
+  >
 }
-
-const MEDIA_ACTIVITY = [
-  {
-    username: '@DeFiBonds',
-    text: (
-      <>
-        Proposal for a new smart contract that will be buying back USDap from
-        the market and burning them:
-        https://bondappetit.io/governance/proposals/25
-        <br />
-        <br />
-        The contract will serve as a price stabilization mechanism.
-      </>
-    ),
-    date: '2021-09-27T11:05:49.927Z',
-  },
-  {
-    username: '@BondAppetit',
-    text: 'The First Batch of Bonds Has Been Acquired. Phase 2 Is Now Here',
-    date: '2021-09-27T11:05:49.927Z',
-  },
-  {
-    username: '@DeFiBonds',
-    text: 'The First Batch of Bonds Has Been Acquired. Phase 2 Is Now Here',
-    date: '2021-09-27T11:05:49.927Z',
-  },
-]
 
 export const ProtocolMediaActivity: React.VFC<ProtocolMediaActivityProps> = (
   props
@@ -44,19 +24,41 @@ export const ProtocolMediaActivity: React.VFC<ProtocolMediaActivityProps> = (
       <Typography variant="h3" className={styles.title}>
         Recent Media Activity
       </Typography>
-      <div className={styles.grid}>
-        {MEDIA_ACTIVITY.map((activity, index) => (
-          <Paper radius={8} key={String(index)} className={styles.card}>
-            <Typography variant="body2" className={styles.cardUsername}>
-              {activity.username}
-            </Typography>
-            <Typography className={styles.cardText}>{activity.text}</Typography>
-            <Typography variant="body2" className={styles.cardDate}>
-              {dateUtils.format(activity.date, 'DD MMM YY')}
-            </Typography>
-          </Paper>
-        ))}
-      </div>
+      {isEmpty(props.mediaActity) && <Typography>Empty</Typography>}
+      {!isEmpty(props.mediaActity) && (
+        <div className={styles.grid}>
+          {props.mediaActity.map((activity) => (
+            <Paper
+              radius={8}
+              key={activity.id}
+              className={styles.card}
+              as="a"
+              href={activity.link}
+              target="_blank"
+            >
+              <Typography variant="body2" className={styles.cardUsername}>
+                <Icon
+                  icon={activity.provider}
+                  height="24"
+                  width="24"
+                  className={
+                    activity.provider === 'twitter'
+                      ? styles.twitterIcon
+                      : undefined
+                  }
+                />{' '}
+                {activity.title}
+              </Typography>
+              <Typography className={styles.cardText}>
+                {activity.content}
+              </Typography>
+              <Typography variant="body2" className={styles.cardDate}>
+                {dateUtils.format(activity.createdAt, 'DD MMM YY')}
+              </Typography>
+            </Paper>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

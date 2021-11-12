@@ -69,10 +69,6 @@ export const item = style({
   },
 })
 
-export const today = style({
-  color: theme.colors.common.blue1,
-})
-
 export const action = style({
   display: 'flex',
   gap: 8,

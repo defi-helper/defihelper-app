@@ -2,8 +2,6 @@ import { gql } from '@urql/core'
 
 export const TOKEN_METRIC = gql`
   query TokenMetric(
-    $totalNetWorth: MetricColumnType! = stakingUSD
-    $unclaimedReward: MetricColumnType! = earnedUSD
     $group: MetricGroupEnum! = day
     $filter: UserMetricChartFilterInputType = {}
     $sort: [UserMetricChartSortInputType!] = [{ column: date, order: asc }]
@@ -11,21 +9,23 @@ export const TOKEN_METRIC = gql`
   ) {
     me {
       totalNetWorth: metricChart(
-        metric: $totalNetWorth
+        metric: stakingUSD
         group: $group
         filter: $filter
         pagination: $pagination
         sort: $sort
       ) {
+        date
         sum
       }
-      unclaimedReward: metricChart(
-        metric: $unclaimedReward
+      onWallets: metricChart(
+        metric: earnedUSD
         group: $group
         filter: $filter
         pagination: $pagination
         sort: $sort
       ) {
+        date
         sum
       }
     }

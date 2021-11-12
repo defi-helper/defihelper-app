@@ -8,14 +8,7 @@ export const root = style({
 })
 
 export const tableInner = style({
-  padding: 16,
   minWidth: 900,
-
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      padding: '24px 26px',
-    },
-  },
 })
 
 export const title = style({
@@ -24,7 +17,7 @@ export const title = style({
 
 export const row = style({
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr 1fr 122px',
+  gridTemplateColumns: '1fr 1fr 122px',
   padding: '16px 24px',
 
   selectors: {
@@ -53,4 +46,8 @@ export const green = style({
 
 export const red = style({
   color: theme.colors.common.red1,
+})
+
+export const empty = style({
+  padding: '16px 24px',
 })

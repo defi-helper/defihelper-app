@@ -7,7 +7,6 @@ import * as styles from './portfolio-metric-card.css'
 export type PortfolioMetricCardProps = {
   title: React.ReactNode
   value: React.ReactNode
-  growthValue: React.ReactNode
   positive?: boolean
   className?: string
 }
@@ -22,20 +21,6 @@ export const PortfolioMetricCard: React.VFC<PortfolioMetricCardProps> = (
       </Typography>
       <Typography variant="h3" family="mono">
         {props.value}
-      </Typography>
-      <Typography variant="body2">
-        <Typography
-          variant="inherit"
-          className={clsx(
-            props.positive && styles.variant.positive,
-            props.positive === false && styles.variant.negative
-          )}
-        >
-          {props.growthValue}
-        </Typography>{' '}
-        <Typography variant="inherit" className={styles.time}>
-          today
-        </Typography>
       </Typography>
     </Paper>
   )

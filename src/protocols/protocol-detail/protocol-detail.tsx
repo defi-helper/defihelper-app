@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useMedia } from 'react-use'
 import { useParams } from 'react-router-dom'
 import { useGate, useStore } from 'effector-react'
@@ -18,6 +17,7 @@ import {
   ProtocolDemandMetrics,
   ProtocolMediaActivity,
   ProtocolOverview,
+  ProtocolTotal,
 } from '~/protocols/common'
 import { Head } from '~/common/head'
 import { Icon } from '~/common/icon'
@@ -120,21 +120,25 @@ export const ProtocolDetail: React.FC = () => {
             <Tab>Earnings</Tab>
             <Tab>Overview</Tab>
             <TabPanel>
-              <Grid>
-                {EARNINGS.map((earn, index) => (
-                  <Paper
-                    radius={8}
-                    key={String(index)}
-                    className={clsx(styles.card, styles.flex)}
-                  >
-                    <Typography className={styles.grey}>{earn}</Typography>
-                    {index === 1 && (
-                      <Button variant="outlined">Create notification</Button>
-                    )}
-                  </Paper>
-                ))}
-              </Grid>
-              <ProtocolMetricEarnings className={styles.mb120} />
+              {false && (
+                <Grid>
+                  {EARNINGS.map((earn, index) => (
+                    <Paper
+                      radius={8}
+                      key={String(index)}
+                      className={clsx(styles.card, styles.flex)}
+                    >
+                      <Typography className={styles.grey}>{earn}</Typography>
+                      {index === 1 && (
+                        <Button variant="outlined">Create notification</Button>
+                      )}
+                    </Paper>
+                  ))}
+                </Grid>
+              )}
+              <ProtocolMetricEarnings className={styles.mb120}>
+                <ProtocolTotal {...protocol.metric} />
+              </ProtocolMetricEarnings>
               <StakingList protocolId={params.protocolId} />
             </TabPanel>
             <TabPanel>
@@ -144,8 +148,15 @@ export const ProtocolDetail: React.FC = () => {
                 links={protocol.links}
               />
               <ProtocolMetricOverview className={styles.mb120} />
-              <ProtocolMediaActivity className={styles.mb120} />
-              <ProtocolDemandMetrics />
+              <ProtocolMediaActivity
+                className={styles.mb120}
+                mediaActity={protocol.socialPosts.list ?? []}
+              />
+              <ProtocolDemandMetrics
+                telegram={protocol.telegram}
+                coingecko={protocol.coingecko}
+                coinmarketcap={protocol.coinmarketcap}
+              />
             </TabPanel>
           </Tabs>
         </>

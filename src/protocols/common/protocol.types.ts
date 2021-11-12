@@ -32,3 +32,24 @@ export const isMetricGroup = (
 
   return arr.includes(group)
 }
+
+export type StakedBalance = {
+  date: string
+  altCoin: string
+  stableCoin: string
+}
+
+export type EastimatedEarnings = {
+  hold: string
+  autostaking: string
+  date: number
+}
+
+export type State<T> = Record<
+  Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
+  {
+    data: T
+    value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    loading: boolean
+  }
+>
