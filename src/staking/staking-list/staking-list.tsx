@@ -17,6 +17,7 @@ import { Icon } from '~/common/icon'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
 import { Dropdown } from '~/common/dropdown'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type StakingListProps = {
   protocolId: string
@@ -128,26 +129,14 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       </div>
                       <div>
                         <Typography variant="body2" as="div">
-                          -
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          className={styles.red}
-                        >
-                          -
+                          {bignumberUtils.format(stakingListItem.metric.tvl)}
                         </Typography>
                       </div>
                       <div>
                         <Typography variant="body2" as="div">
-                          -
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          className={styles.red}
-                        >
-                          -
+                          {bignumberUtils.format(
+                            stakingListItem.metric.aprYear
+                          )}
                         </Typography>
                       </div>
                       <div>
