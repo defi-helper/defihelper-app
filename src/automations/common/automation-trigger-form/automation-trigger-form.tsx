@@ -178,7 +178,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
         wallet: wallet.id,
         type:
           props.type === 'ByTime'
-            ? AutomateTriggerTypeEnum.EveryDay
+            ? AutomateTriggerTypeEnum.EveryHour
             : AutomateTriggerTypeEnum.ContractEvent,
         params:
           props.type === 'ByEvent'

@@ -13,6 +13,7 @@ import {
 } from '~/graphql/_generated-types'
 import { automationApi } from '~/automations/common/automation.api'
 import { Trigger, Protocol } from '../common/automation.types'
+import { toastsService } from '~/toasts'
 
 export const automationUpdateDomain = createDomain()
 
@@ -170,4 +171,16 @@ export const $conditionsPriority = restore(
       )[conditions.length - 1]?.priority,
   }),
   0
+)
+
+toastsService.forwardErrors(
+  createActionFx.failData,
+  updateActionFx.failData,
+  deleteActionFx.failData,
+  createConditionFx.failData,
+  updateConditionFx.failData,
+  deleteConditonFx.failData,
+  fetchProtocolsFx.failData,
+  createTriggerFx.failData,
+  updateTriggerFx.failData
 )
