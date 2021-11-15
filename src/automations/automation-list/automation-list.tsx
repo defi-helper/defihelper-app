@@ -18,9 +18,9 @@ import { AutomationTriggerDescriptionDialog } from '~/automations/common/automat
 import { Icon } from '~/common/icon'
 import { AutomationUpdate } from '~/automations/automation-update'
 import { ConfirmDialog } from '~/common/confirm-dialog'
+import { Dropdown } from '~/common/dropdown'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
-import { Dropdown } from '~/common/dropdown'
 
 export type AutomationListProps = unknown
 

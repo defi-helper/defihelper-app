@@ -69,7 +69,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         family="mono"
         className={styles.value}
       >
-        {bignumberUtils.format(protocol.metric.myAPY)}%
+        {bignumberUtils.format(bignumberUtils.mul(protocol.metric.myAPY, 100))}%
       </Typography>
       <Typography variant="body2" as="span" className={styles.label}>
         My position

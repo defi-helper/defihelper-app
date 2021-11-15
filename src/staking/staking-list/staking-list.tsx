@@ -1,9 +1,9 @@
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 
-import { Can, useAbility } from '~/users'
+import { Can, useAbility, userModel } from '~/users'
 import { paths } from '~/paths'
 import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
@@ -14,10 +14,11 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import { StakingAdapters } from '~/staking/staking-adapters'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
-import * as model from './staking-list.model'
-import * as styles from './staking-list.css'
 import { Dropdown } from '~/common/dropdown'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { useWalletList } from '~/wallets/wallet-list'
+import * as model from './staking-list.model'
+import * as styles from './staking-list.css'
 
 export type StakingListProps = {
   protocolId: string
@@ -26,13 +27,17 @@ export type StakingListProps = {
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const ability = useAbility()
 
-  const stakingList = useStore(model.$contracts)
+  const [openedContract, setOpenedContract] = useState<string | null>(null)
+
+  const stakingList = useStore(model.$contractList)
+  const connectedContracts = useStore(model.$connectedContracts)
   const loading = useStore(model.fetchStakingListFx.pending)
 
   const protocolAdapter = useStore(model.$protocolAdapter)
-  const openedContract = useStore(model.$openedContract)
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
+  const [openWalletList] = useWalletList()
+  const wallets = useStore(userModel.$userWallets)
 
   useGate(model.StakingListGate, props)
 
@@ -48,15 +53,51 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     }
   }
 
-  const handleConnect =
-    (connectParams: { walletId?: string; contractId?: string }) => () => {
-      if (!connectParams.walletId || !connectParams.contractId) return
+  const handleConnect = (contractId: string) => async () => {
+    try {
+      const walletData = await openWalletList()
+
+      const findedWallet = wallets.find(
+        (wallet) =>
+          wallet.address.toLowerCase() === walletData.account?.toLowerCase() &&
+          String(walletData.chainId) === wallet.network
+      )
+
+      if (!findedWallet) return
 
       model.connectWalletFx({
-        wallet: connectParams.walletId,
-        contract: connectParams.contractId,
+        wallet: findedWallet.id,
+        contract: contractId,
       })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
     }
+  }
+
+  const handleDisconnect = (contractId: string) => async () => {
+    try {
+      const walletData = await openWalletList()
+
+      const findedWallet = wallets.find(
+        (wallet) =>
+          wallet.address.toLowerCase() === walletData.account?.toLowerCase() &&
+          String(walletData.chainId) === wallet.network
+      )
+
+      if (!findedWallet) return
+
+      model.disconnectWalletFx({
+        wallet: findedWallet.id,
+        contract: contractId,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
 
   const staking = useMemo(
     () => stakingList.filter((stakingItem) => ability.can('read', stakingItem)),
@@ -64,7 +105,11 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   )
 
   const handleOpenContract = (contractAddress: string) => () => {
-    model.openContract(contractAddress)
+    if (openedContract === contractAddress) {
+      setOpenedContract(null)
+    } else {
+      setOpenedContract(contractAddress)
+    }
   }
 
   return (
@@ -109,79 +154,74 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             {!loading &&
               staking.map((stakingListItem) => {
                 const opened = stakingListItem.address === openedContract
+                const connected = Boolean(
+                  connectedContracts[stakingListItem.id]
+                )
 
                 return (
                   <li key={stakingListItem.id} className={styles.listItem}>
                     <div className={clsx(styles.card, styles.row)}>
                       <div className={styles.tableCol}>
-                        <div className={styles.coinIcons}>
-                          -
-                          {false && (
-                            <>
-                              <Icon icon="BAG" className={styles.coinIcon} />
-                              <Icon icon="BNB" className={styles.coinIcon} />
-                            </>
-                          )}
-                        </div>
+                        {false && (
+                          <div className={styles.coinIcons}>
+                            <Icon icon="BAG" className={styles.coinIcon} />
+                            <Icon icon="BNB" className={styles.coinIcon} />
+                          </div>
+                        )}
+
                         <Typography variant="body2" as="div">
                           {stakingListItem.name}
                         </Typography>
                       </div>
                       <div>
                         <Typography variant="body2" as="div">
-                          {bignumberUtils.format(stakingListItem.metric.tvl)}
+                          ${bignumberUtils.format(stakingListItem.metric.tvl)}
                         </Typography>
                       </div>
                       <div>
                         <Typography variant="body2" as="div">
                           {bignumberUtils.format(
-                            stakingListItem.metric.aprYear
+                            bignumberUtils.mul(
+                              stakingListItem.metric.aprYear,
+                              100
+                            )
+                          )}
+                          %
+                        </Typography>
+                      </div>
+                      <div>
+                        <Typography variant="body2" as="div">
+                          {bignumberUtils.format(stakingListItem.autostaking)}%
+                        </Typography>
+                      </div>
+                      <div>
+                        <Typography variant="body2" as="div">
+                          $
+                          {bignumberUtils.format(
+                            stakingListItem.metric.myStaked
                           )}
                         </Typography>
                       </div>
                       <div>
                         <Typography variant="body2" as="div">
-                          -
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          className={styles.lightGreen}
-                        >
-                          -
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography variant="body2" as="div">
-                          -
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          className={styles.red}
-                        >
-                          -
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography variant="body2" as="div">
-                          -
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          className={styles.red}
-                        >
-                          -
+                          {bignumberUtils.format(
+                            bignumberUtils.mul(
+                              bignumberUtils.div(
+                                stakingListItem.metric.myStaked,
+                                stakingListItem.metric.tvl
+                              ),
+                              100
+                            )
+                          )}
                         </Typography>
                       </div>
                       <div className={styles.tableCol}>
                         <div>
                           <Typography variant="body2" as="div">
-                            -
-                          </Typography>
-                          <Typography variant="body2" as="div">
-                            -
+                            $
+                            {bignumberUtils.format(
+                              stakingListItem.metric.myEarned
+                            )}
                           </Typography>
                         </div>
                         <ButtonBase
@@ -228,15 +268,16 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     </div>
                     {protocolAdapter && opened && (
                       <StakingAdapters
+                        poolName={stakingListItem.name}
                         protocolAdapter={protocolAdapter}
                         contractAdapter={stakingListItem.adapter}
                         contractAddress={stakingListItem.address}
                         contractLayout={stakingListItem.layout}
                         blockchain={stakingListItem.blockchain}
-                        onTurnOn={handleConnect({
-                          walletId: stakingListItem.wallet?.id,
-                          contractId: stakingListItem.id,
-                        })}
+                        network={stakingListItem.network}
+                        onTurnOn={handleConnect(stakingListItem.id)}
+                        onTurnOff={handleDisconnect(stakingListItem.id)}
+                        connected={connected}
                       />
                     )}
                   </li>

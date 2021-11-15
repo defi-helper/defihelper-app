@@ -16,7 +16,7 @@ export const StakingUpdate: React.VFC<unknown> = () => {
   const queryParams = useQueryParams()
 
   const staking = useStoreMap({
-    store: stakingListModel.$contracts,
+    store: stakingListModel.$contractList,
     keys: [params.stakingId],
     fn: (contracts, [stakingId]) =>
       contracts.find(({ id }) => id === stakingId) ?? null,
