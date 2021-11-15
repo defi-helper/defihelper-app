@@ -234,6 +234,10 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     }
   }
 
+  useEffect(() => {
+    setTab(Tabs.Conditions)
+  }, [createdTrigger])
+
   return (
     <AutomationDialog
       title={
