@@ -8,6 +8,7 @@ import { WalletFragmentFragment } from '~/graphql/_generated-types'
 import { settingsApi } from '~/settings/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { toastsService } from '~/toasts'
 
 type ChainIdEnum = keyof typeof contracts
 
@@ -196,3 +197,10 @@ sample({
   clock: SettingsWalletGate.open,
   target: fetchWalletListFx,
 })
+
+toastsService.forwardErrors(
+  depositFx.failData,
+  fetchWalletListFx.failData,
+  refundFx.failData,
+  updateWalletFx.failData
+)

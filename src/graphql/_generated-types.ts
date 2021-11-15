@@ -4216,7 +4216,12 @@ export type StakingContractFragmentFragment = {
   | 'adapter'
   | 'protocolId'
   | 'layout'
->
+> & {
+    metric: { __typename?: 'ContractMetricType' } & Pick<
+      ContractMetricType,
+      'tvl' | 'aprYear' | 'myStaked' | 'myEarned'
+    >
+  }
 
 export type StakingDisconnectWalletMutationVariables = Exact<{
   contract: Scalars['UuidType']
