@@ -20,6 +20,8 @@ export const bignumberUtils = {
   format: (amount?: string | number | null, decimal = 2) => {
     const result = new BigNumber(amount || 0)
 
+    if (result.isNaN()) return '0'
+
     if (result.isInteger()) return result.toFormat(0)
 
     if (result.lt(10)) return formatDecimals(result.toFormat(decimal))
@@ -73,4 +75,13 @@ export const bignumberUtils = {
 
   plus: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).plus(new BigNumber(num2 || 0)).toString(10),
+
+  minus: (num1?: string | number | null, num2?: string | number | null) =>
+    new BigNumber(num1 || 0).minus(new BigNumber(num2 || 0)).toString(10),
+
+  mul: (num1?: string | number | null, num2?: string | number | null) =>
+    new BigNumber(num1 || 0).multipliedBy(num2 || 0).toString(10),
+
+  div: (num1?: string | number | null, num2?: string | number | null) =>
+    new BigNumber(num1 || 0).div(num2 || 1).toString(10),
 }

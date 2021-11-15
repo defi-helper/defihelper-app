@@ -1,4 +1,4 @@
-import { combine, createDomain, guard, sample } from 'effector-logger/macro'
+import { createDomain, guard, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
@@ -6,10 +6,11 @@ import {
   MetricChartType,
   StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
-import { userModel } from '~/users'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { stakingApi } from '~/staking/common'
 import { createPagination, PaginationState } from '~/common/create-pagination'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { protocolsApi } from '~/protocols/common'
+import { toastsService } from '~/toasts'
 
 export const stakingListDomain = createDomain()
 
@@ -26,6 +27,7 @@ type ConnectParams = {
 
 type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
+  autostaking: string
 }
 
 export type ContractMetric = {
@@ -40,8 +42,8 @@ const NOT_CONNECTED = 'Not connected'
 const NOT_DISCONNECTED = 'Not disconnected'
 
 export const fetchStakingListFx = stakingListDomain.createEffect(
-  (params: GateState & PaginationState) =>
-    stakingApi.contractList({
+  async (params: GateState & PaginationState) => {
+    const data = await stakingApi.contractList({
       filter: {
         id: params.protocolId,
       },
@@ -58,10 +60,44 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
           }
         : {}),
       contractPagination: {
-        offset: params?.offset,
-        limit: params?.limit,
+        offset: params.offset,
+        limit: params.limit,
       },
     })
+
+    const stakingListWithAutostaking = data.contracts.map(async (contract) => {
+      const result = await protocolsApi.protocolEstimated({
+        balance: Number(contract.metric.myStaked),
+        apy: Number(contract.metric.aprYear),
+      })
+
+      const [lastAutostakingValue] = result?.optimal.slice(-1) ?? []
+
+      const autostakingApy = bignumberUtils.mul(
+        bignumberUtils.div(
+          bignumberUtils.minus(
+            lastAutostakingValue?.v,
+            contract.metric.myStaked
+          ),
+          contract.metric.myStaked
+        ),
+        100
+      )
+
+      return {
+        ...contract,
+        autostaking: bignumberUtils.minus(
+          autostakingApy,
+          contract.metric.aprYear
+        ),
+      }
+    })
+
+    return {
+      ...data,
+      contracts: await Promise.all(stakingListWithAutostaking),
+    }
+  }
 )
 
 export const deleteStakingFx = stakingListDomain.createEffect(
@@ -100,15 +136,6 @@ export const fetchConnectedContractsFx = stakingListDomain.createEffect(
   (params: GateState) => stakingApi.connectedContracts(params.protocolId)
 )
 
-export const fetchContractMetricFx = stakingListDomain.createEffect(
-  (contractIds: string[]) =>
-    stakingApi.contractMetric({
-      metricFilter: {
-        contract: contractIds,
-      },
-    })
-)
-
 export const $contractList = stakingListDomain
   .createStore<Contract[]>([])
   .on(fetchStakingListFx.doneData, (_, payload) =>
@@ -118,17 +145,11 @@ export const $contractList = stakingListDomain
     return state.filter(({ id }) => id !== payload)
   })
 
-export const openContract = stakingListDomain.createEvent<string>()
-
-export const $openedContract = stakingListDomain
-  .createStore<string | null>(null)
-  .on(openContract, (_, payload) => payload)
-
 export const $protocolAdapter = stakingListDomain
   .createStore<string | null>(null)
   .on(fetchStakingListFx.doneData, (_, { adapter }) => adapter)
 
-const $connectedContracts = stakingListDomain
+export const $connectedContracts = stakingListDomain
   .createStore<Record<string, boolean>>({})
   .on(fetchConnectedContractsFx.doneData, (_, payload) => {
     return payload?.reduce<Record<string, boolean>>((acc, contract) => {
@@ -143,35 +164,10 @@ const $connectedContracts = stakingListDomain
     ...state,
     [params.contract]: true,
   }))
-
-const $wallets = userModel.$userWallets.map(
-  (wallets) =>
-    wallets.reduce<
-      Record<string, { id: string; blockchain: string; network: string }>
-    >((acc, { address, id, blockchain, network }) => {
-      acc[address.toLowerCase()] = {
-        id,
-        blockchain,
-        network,
-      }
-
-      return acc
-    }, {}) ?? {}
-)
-
-export const $contracts = combine(
-  $contractList,
-  $connectedContracts,
-  $wallets,
-  walletNetworkModel.$wallet,
-  (contractList, connectedContracts, wallets, wallet) => {
-    return contractList.map((contract) => ({
-      ...contract,
-      connected: Boolean(connectedContracts[contract.id]),
-      wallet: wallet.account ? wallets[wallet.account.toLowerCase()] : null,
-    }))
-  }
-)
+  .on(disconnectWalletFx.done, (state, { params }) => ({
+    ...state,
+    [params.contract]: false,
+  }))
 
 export const StakingListGate = createGate<GateState>({
   name: 'StakingListGate',
@@ -183,26 +179,18 @@ export const StakingListPagination = createPagination({
 })
 
 const fetchStakingList = sample({
-  source: StakingListPagination.state,
+  source: [StakingListPagination.state, StakingListGate.state],
   clock: [StakingListGate.open, StakingListPagination.updates],
-  fn: (pagination) => ({
+  fn: ([pagination, gate]) => ({
     ...pagination,
-    ...StakingListGate.state.getState(),
+    ...gate,
   }),
 })
 
 guard({
   clock: fetchStakingList,
   filter: ({ protocolId }) => Boolean(protocolId),
-  target: fetchStakingListFx,
-  greedy: true,
-})
-
-sample({
-  clock: fetchStakingListFx.done,
-  fn: ({ params }) => params,
-  target: fetchConnectedContractsFx,
-  greedy: true,
+  target: [fetchStakingListFx, fetchConnectedContractsFx],
 })
 
 sample({
@@ -210,3 +198,11 @@ sample({
   fn: (clock) => clock.pagination,
   target: StakingListPagination.totalElements,
 })
+
+toastsService.forwardErrors(
+  fetchStakingListFx.failData,
+  fetchConnectedContractsFx.failData,
+  disconnectWalletFx.failData,
+  connectWalletFx.failData,
+  deleteStakingFx.failData
+)

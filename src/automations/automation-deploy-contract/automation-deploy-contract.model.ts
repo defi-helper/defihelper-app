@@ -96,8 +96,10 @@ export const deployFx = automationDeployContractDomain.createEffect(
       },
     })
 
-    const currentWallet = wallets.find(
-      (wallet) => wallet.address === params.account.toLowerCase()
+    const currentWallet = wallets.find((wallet) =>
+      wallet.network === 'W'
+        ? wallet.address === params.account
+        : wallet.address === params.account.toLowerCase()
     )
 
     if (!protocol || !currentWallet) throw new Error('something went wrong')
