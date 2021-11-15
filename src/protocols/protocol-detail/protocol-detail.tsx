@@ -156,6 +156,7 @@ export const ProtocolDetail: React.FC = () => {
                 telegram={protocol.telegram}
                 coingecko={protocol.coingecko}
                 coinmarketcap={protocol.coinmarketcap}
+                links={protocol.links}
               />
             </TabPanel>
           </Tabs>

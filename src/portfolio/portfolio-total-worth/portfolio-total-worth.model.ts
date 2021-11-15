@@ -1,5 +1,5 @@
-import { createDomain, sample } from 'effector-logger/macro'
-import { createGate } from 'effector-react'
+import { createDomain } from 'effector-logger/macro'
+
 import { bignumberUtils } from '~/common/bignumber-utils'
 
 import {
@@ -38,7 +38,7 @@ type Gate = {
   group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
 }
 
-const fetchChartDataFx = portfolioTotalWorth.createEffect(
+export const fetchChartDataFx = portfolioTotalWorth.createEffect(
   async (params: Gate) => {
     const data = await portfolioApi.getTokenMetric({
       ...defaultVariables,
@@ -94,13 +94,3 @@ export const $portfolioTotalWorth = portfolioTotalWorth
       },
     }
   })
-
-export const PortfolioTotalWorthGate = createGate<Gate>({
-  name: 'PortfolioTotalWorthGate',
-  domain: portfolioTotalWorth,
-})
-
-sample({
-  clock: [PortfolioTotalWorthGate.open, PortfolioTotalWorthGate.state.updates],
-  target: fetchChartDataFx,
-})

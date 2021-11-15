@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
+import { useState } from 'react'
 
 import { ButtonBase } from '~/common/button-base'
 import { Typography } from '~/common/typography'
@@ -41,12 +42,26 @@ const LinkSection: React.VFC<{ title: string; links?: ProtocolLinkType[] }> = (
   )
 }
 
+const MAX_CHARS = 596
+
 export const ProtocolOverview: React.VFC<ProtocolOverviewProps> = (props) => {
+  const [more, setMore] = useState(false)
+
+  const handleSetMore = () => {
+    setMore(!more)
+  }
+
   return (
     <Paper radius={8} className={clsx(styles.overview, props.className)}>
       <div>
-        <Typography variant="body2">{props.text}</Typography>
-        <ButtonBase className={styles.grey}>Show more</ButtonBase>
+        <Typography variant="body2">
+          {!more ? props.text?.substring(0, MAX_CHARS) : props.text}
+        </Typography>
+        {Number(props.text?.length) > MAX_CHARS && (
+          <ButtonBase className={styles.grey} onClick={handleSetMore}>
+            {!more ? 'Show more' : 'Show less'}
+          </ButtonBase>
+        )}
       </div>
       <div>
         {!isEmpty(props.links?.other) && (

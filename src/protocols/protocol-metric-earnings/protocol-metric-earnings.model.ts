@@ -31,12 +31,14 @@ export const fetchEarningMetricFx = protocolMetricEarningsDomain.createEffect(
       group: params.group,
       data: data.everyDay.reduce<EastimatedEarnings[]>(
         (acc, everyDayItem, index) => {
+          const date = new Date()
+
           return [
             ...acc,
             {
               hold: bignumberUtils.format(data?.hold[index]?.v ?? 0),
               autostaking: bignumberUtils.format(data?.optimal[index]?.v ?? 0),
-              date: everyDayItem.t,
+              date: date.setDate(date.getDate() + everyDayItem.t),
             },
           ]
         },

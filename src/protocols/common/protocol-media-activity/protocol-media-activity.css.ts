@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -36,6 +36,14 @@ export const cardText = style({
   marginBottom: 28,
 })
 
+globalStyle(`${cardText} img`, {
+  maxWidth: '100%',
+})
+
+globalStyle(`${cardText} a`, {
+  color: 'inherit',
+})
+
 export const cardDate = style({
   color: theme.colors.textColorGrey,
   marginTop: 'auto',
@@ -43,5 +51,8 @@ export const cardDate = style({
 
 export const twitterIcon = style({
   color: '#1DA1F2',
+})
+
+export const icon = style({
   verticalAlign: 'middle',
 })

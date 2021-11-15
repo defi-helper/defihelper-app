@@ -51,10 +51,7 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
     })
   }, [currentGroup, params.protocolId])
 
-  const tvlSum = metric[currentGroup]?.data.tvl?.reduce(
-    (acc, { sum }) => bignumberUtils.plus(acc, sum),
-    '0'
-  )
+  const [tvlSum = undefined] = metric[currentGroup]?.data.tvl?.slice(-1)
 
   const data = metric[currentGroup]?.data.tvl?.map((metricItem) => {
     return {
@@ -63,12 +60,8 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
     }
   })
 
-  const uniqueWalletsSum = metric[
-    currentGroup
-  ]?.data.uniqueWalletsCount?.reduce(
-    (acc, { sum }) => bignumberUtils.plus(acc, sum),
-    '0'
-  )
+  const [uniqueWalletsSum = undefined] =
+    metric[currentGroup]?.data.uniqueWalletsCount?.slice(-1)
 
   const handleChangeGroup = (group: string) => () => {
     if (!isMetricGroup(group)) return
@@ -111,7 +104,7 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
             <>
               <Typography>Total Value Locked</Typography>
               <Typography family="mono">
-                ${bignumberUtils.format(tvlSum)}
+                ${bignumberUtils.format(tvlSum?.sum)}
               </Typography>
             </>
           }
@@ -129,7 +122,7 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
             <>
               <Typography>Unique Wallets</Typography>
               <Typography family="mono">
-                {bignumberUtils.format(uniqueWalletsSum)}
+                {bignumberUtils.format(uniqueWalletsSum?.sum)}
               </Typography>
             </>
           }

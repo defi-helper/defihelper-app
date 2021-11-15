@@ -1,5 +1,4 @@
-import { createDomain, sample } from 'effector-logger/macro'
-import { createGate } from 'effector-react'
+import { createDomain } from 'effector-logger/macro'
 
 import { dateUtils } from '~/common/date-utils'
 import { portfolioApi } from '~/portfolio/common'
@@ -40,7 +39,7 @@ type Gate = {
   group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
 }
 
-const fetchChartDataFx = portfolioCoinBalance.createEffect(
+export const fetchChartDataFx = portfolioCoinBalance.createEffect(
   async (params: Gate) => {
     const data = await portfolioApi.getTokenMetricChart({
       group: params.group,
@@ -90,16 +89,3 @@ export const $portfolioCoinBalance = portfolioCoinBalance
       },
     }
   })
-
-export const PortfolioCoinBalanceGate = createGate<Gate>({
-  name: 'PortfolioCoinBalanceGate',
-  domain: portfolioCoinBalance,
-})
-
-sample({
-  clock: [
-    PortfolioCoinBalanceGate.open,
-    PortfolioCoinBalanceGate.state.updates,
-  ],
-  target: fetchChartDataFx,
-})
