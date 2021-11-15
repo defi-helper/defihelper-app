@@ -4,8 +4,9 @@ import isEmpty from 'lodash.isempty'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
+import { Link } from '~/common/link'
 import { ProtocolQuery } from '~/graphql/_generated-types'
-import { ProtocolLastMonthChart } from '../protocol-last-month-chart/protocol-last-month-chart'
+import { ProtocolLastMonthChart } from '../protocol-last-month-chart'
 import * as styles from './protocol-demand-metrics.css'
 
 export type ProtocolDemandMetricsProps = {
@@ -16,6 +17,7 @@ export type ProtocolDemandMetricsProps = {
     ProtocolQuery['protocol'],
     undefined | null
   >['coinmarketcap']
+  links: Exclude<ProtocolQuery['protocol'], undefined | null>['links']
 }
 
 const STAKED_FIELDS = [
@@ -40,6 +42,16 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
     ...props.coinmarketcap,
   ]
 
+  const telegramLink = props.links.social.find(
+    ({ name }) => name.toLowerCase() === 'telegram'
+  )
+  const coingeckoLink = props.links.listing.find(
+    ({ name }) => name.toLowerCase() === 'coingecko'
+  )
+  const coinmarketcapLink = props.links.listing.find(
+    ({ name }) => name.toLowerCase() === 'coinmarketcap'
+  )
+
   return (
     <div className={clsx(styles.root, props.className)}>
       <Typography variant="h3" className={styles.title}>
@@ -58,7 +70,14 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
         )}
         {!isEmpty(props.telegram) && (
           <div className={clsx(styles.row)}>
-            <Typography variant="body2">Telegram</Typography>
+            <Typography
+              variant="body2"
+              as={Link}
+              href={telegramLink?.value}
+              target="_blank"
+            >
+              Telegram
+            </Typography>
             <Typography variant="body2" family="mono">
               {bignumberUtils.format(telegramUserCount?.sum)}
             </Typography>
@@ -73,7 +92,14 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
         )}
         {!isEmpty(props.coingecko) && (
           <div className={clsx(styles.row)}>
-            <Typography variant="body2">Coingecko</Typography>
+            <Typography
+              variant="body2"
+              as={Link}
+              href={coingeckoLink?.value}
+              target="_blank"
+            >
+              Coingecko
+            </Typography>
             <Typography variant="body2" family="mono">
               {bignumberUtils.format(coingeckoCount?.sum)}
             </Typography>
@@ -88,7 +114,14 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
         )}
         {!isEmpty(props.coinmarketcap) && (
           <div className={clsx(styles.row)}>
-            <Typography variant="body2">Coinmarketcap</Typography>
+            <Typography
+              variant="body2"
+              as={Link}
+              href={coinmarketcapLink?.value}
+              target="_blank"
+            >
+              Coinmarketcap
+            </Typography>
             <Typography variant="body2" family="mono">
               {bignumberUtils.format(coinmarketcapCount?.sum)}
             </Typography>

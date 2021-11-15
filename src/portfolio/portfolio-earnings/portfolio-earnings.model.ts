@@ -1,5 +1,4 @@
-import { createDomain, sample } from 'effector-logger/macro'
-import { createGate } from 'effector-react'
+import { createDomain } from 'effector-logger/macro'
 import { bignumberUtils } from '~/common/bignumber-utils'
 
 import { MetricGroupEnum } from '~/graphql/_generated-types'
@@ -28,7 +27,7 @@ type EastimatedEarnings = {
   date: number
 }
 
-const fetchChartDataFx = portfolioEarnings.createEffect(
+export const fetchChartDataFx = portfolioEarnings.createEffect(
   async (params: Gate) => {
     const data = await portfolioApi.earnings({
       balance: params.balance,
@@ -39,12 +38,14 @@ const fetchChartDataFx = portfolioEarnings.createEffect(
 
     return data.everyDay.reduce<EastimatedEarnings[]>(
       (acc, everyDayItem, index) => {
+        const date = new Date()
+
         return [
           ...acc,
           {
             hold: bignumberUtils.format(data?.hold[index]?.v ?? 0),
             autostaking: bignumberUtils.format(data?.optimal[index]?.v ?? 0),
-            date: everyDayItem.t,
+            date: date.setDate(date.getDate() + everyDayItem.t),
           },
         ]
       },
@@ -86,13 +87,3 @@ export const $portfolioEarnings = portfolioEarnings
       },
     }
   })
-
-export const PortfolioEarningsGate = createGate<Gate>({
-  name: 'PortfolioEarningsGate',
-  domain: portfolioEarnings,
-})
-
-sample({
-  clock: [PortfolioEarningsGate.open, PortfolioEarningsGate.state.updates],
-  target: fetchChartDataFx,
-})

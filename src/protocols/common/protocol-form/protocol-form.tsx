@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useEffect } from 'react'
 import { useForm, Controller, useFieldArray } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -97,7 +96,7 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
           <div key={socialItem.id} className={styles.links}>
             <Input
               label="Title"
-              {...register(`links.social.${index}.name`)}
+              {...register(`links.${type}.${index}.name`)}
               helperText={
                 formState.errors.links?.[type]?.[index]?.name?.message
               }
@@ -107,7 +106,7 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
             />
             <Input
               label="Link"
-              {...register(`links.social.${index}.value`)}
+              {...register(`links.${type}.${index}.value`)}
               helperText={
                 formState.errors.links?.[type]?.[index]?.value?.message
               }

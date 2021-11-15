@@ -17,7 +17,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
           Total Staked
         </Typography>
         <Typography variant="h4">
-          ${bignumberUtils.format(props.tvl)}
+          ${bignumberUtils.format(props.myStaked)}
         </Typography>
       </Paper>
       <Paper radius={8} className={styles.totalItem}>
