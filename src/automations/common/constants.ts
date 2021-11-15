@@ -39,4 +39,8 @@ export const NETWORKS: Record<string, AutomationNetwork> = {
     title: 'Waves',
     icon: 'wavesRegular',
   },
+  [Networks.avalanche]: {
+    title: 'Avalanche',
+    icon: 'ethereumRegular',
+  },
 }
