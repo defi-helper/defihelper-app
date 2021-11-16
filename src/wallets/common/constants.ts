@@ -137,7 +137,7 @@ export const NETWORKS: Network[] = [
     blockchainIcon: 'ethereum',
   },
   {
-    title: 'Avlanch',
+    title: 'Avalanche',
     blockchain: BlockchainEnum.Ethereum,
     network: config.CHAIN_AVALANCHE_IDS[0],
     onClick: 'activateAvalanch' as const,

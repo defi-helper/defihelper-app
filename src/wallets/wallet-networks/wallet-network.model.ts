@@ -23,6 +23,7 @@ const networks = new Map<string, typeof createEthereumProvider>(
     ...config.CHAIN_BINANCE_IDS,
     ...config.CHAIN_ETHEREUM_IDS,
     ...config.CHAIN_POLYGON_IDS,
+    ...config.CHAIN_AVALANCHE_IDS
   ].map((num) => [String(num), createEthereumProvider])
 )
 
