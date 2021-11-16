@@ -1,3 +1,4 @@
+import isEmpty from 'lodash.isempty'
 import { useMedia } from 'react-use'
 import { useParams } from 'react-router-dom'
 import { useGate, useStore } from 'effector-react'
@@ -148,10 +149,12 @@ export const ProtocolDetail: React.FC = () => {
                 links={protocol.links}
               />
               <ProtocolMetricOverview className={styles.mb120} />
-              <ProtocolMediaActivity
-                className={styles.mb120}
-                mediaActity={protocol.socialPosts.list ?? []}
-              />
+              {!isEmpty(protocol.socialPosts.list) && (
+                <ProtocolMediaActivity
+                  className={styles.mb120}
+                  mediaActity={protocol.socialPosts.list ?? []}
+                />
+              )}
               <ProtocolDemandMetrics
                 telegram={protocol.telegram}
                 coingecko={protocol.coingecko}

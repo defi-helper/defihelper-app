@@ -1,8 +1,12 @@
+import clsx from 'clsx'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '~/common/button'
-import { Select, SelectOption } from '~/common/select'
+import { useDialog } from '~/common/dialog'
+import { Typography } from '~/common/typography'
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
+import { AutomationChooseButton } from '../automation-choose-button'
+import { AutomationConditionContractsDialog } from '../automation-condition-contracts-dialog'
 import { AutomationForm } from '../automation-form'
 import * as styles from './automation-condition-ethereum-optimal.css'
 
@@ -18,9 +22,25 @@ export type AutomationConditionEthereumOptimalProps = {
 
 export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEthereumOptimalProps> =
   (props) => {
-    const { handleSubmit, formState, control } = useForm<FormValues>({
+    const { handleSubmit, setValue, control } = useForm<FormValues>({
       defaultValues: props.defaultValues,
     })
+
+    const [openContractDialog] = useDialog(AutomationConditionContractsDialog)
+
+    const handleChooseContract = async () => {
+      try {
+        const result = await openContractDialog({
+          contracts: props.contracts,
+        })
+
+        setValue('id', result.id)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
 
     return (
       <AutomationForm
@@ -29,23 +49,35 @@ export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEt
         )}
       >
         <Controller
-          render={({ field }) => (
-            <Select
-              label="Contract"
-              {...field}
-              helperText={formState.errors.id?.message}
-              error={Boolean(formState.errors.id?.message)}
-              value={field.value || props.defaultValues?.id || ''}
-              className={styles.input}
-            >
-              {props.contracts.map((contract) => (
-                <SelectOption key={contract.id} value={contract.id}>
-                  {contract.adapter}({contract.protocol.name})
-                  {contract.wallet.address}
-                </SelectOption>
-              ))}
-            </Select>
-          )}
+          render={({ field }) => {
+            const currentContract = props.contracts.find(
+              (contract) => contract.id === field.value
+            )
+
+            return (
+              <AutomationChooseButton
+                label="contract"
+                onClick={handleChooseContract}
+                className={clsx(styles.input, styles.contractButton)}
+              >
+                {(field.value && currentContract && (
+                  <>
+                    <Typography variant="body2" as="div">
+                      {currentContract.adapter}
+                    </Typography>
+                    <Typography
+                      variant="body3"
+                      as="div"
+                      className={styles.protocol}
+                    >
+                      {currentContract.protocol.name}
+                    </Typography>
+                  </>
+                )) ||
+                  'Choose contract'}
+              </AutomationChooseButton>
+            )
+          }}
           name="id"
           control={control}
         />

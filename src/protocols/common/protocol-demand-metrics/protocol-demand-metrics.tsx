@@ -52,6 +52,8 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
     ({ name }) => name.toLowerCase() === 'coinmarketcap'
   )
 
+  if (isEmpty(metric)) return <></>
+
   return (
     <div className={clsx(styles.root, props.className)}>
       <Typography variant="h3" className={styles.title}>
@@ -63,11 +65,6 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
           <Typography variant="body2">Users</Typography>
           <Typography variant="body2">Last Month</Typography>
         </div>
-        {isEmpty(metric) && (
-          <Typography align="center" variant="body2" className={styles.empty}>
-            Empty
-          </Typography>
-        )}
         {!isEmpty(props.telegram) && (
           <div className={clsx(styles.row)}>
             <Typography

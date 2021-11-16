@@ -28,7 +28,6 @@ export const ProtocolMediaActivity: React.VFC<ProtocolMediaActivityProps> = (
       <Typography variant="h3" className={styles.title}>
         Recent Media Activity
       </Typography>
-      {isEmpty(props.mediaActity) && <Typography>Empty</Typography>}
       {!isEmpty(props.mediaActity) && (
         <div className={styles.grid}>
           {props.mediaActity.map((activity) => (
@@ -36,9 +35,9 @@ export const ProtocolMediaActivity: React.VFC<ProtocolMediaActivityProps> = (
               radius={8}
               key={activity.id}
               className={styles.card}
-              // as="a"
-              // href={activity.link}
-              // target="_blank"
+              as="a"
+              href={activity.link}
+              target="_blank"
             >
               <Typography variant="body2" className={styles.cardUsername}>
                 <Icon

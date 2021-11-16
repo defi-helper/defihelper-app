@@ -115,13 +115,6 @@ export const tableInner = style({
   minWidth: 900,
 })
 
-export const label = style({
-  padding: '0 32px 16px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-})
-
 export const row = style({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr 1fr 1fr',
