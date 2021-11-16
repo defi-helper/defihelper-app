@@ -85,12 +85,13 @@ export const createIcon = style({
 
 export const tableHeader = style({
   color: theme.colors.textColorGrey,
+  borderBottom: `1px solid ${theme.colors.border}`,
 })
 
 export const listItem = style({
   selectors: {
     '&:not(:last-child)': {
-      borderBottom: `1px solid ${theme.colors.common.white2}`,
+      borderBottom: `1px solid ${theme.colors.border}`,
     },
   },
 })

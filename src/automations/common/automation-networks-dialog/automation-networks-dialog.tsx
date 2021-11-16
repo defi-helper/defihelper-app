@@ -1,10 +1,10 @@
 import { Icon } from '~/common/icon'
+import { networksConfig } from '~/networks-config'
 import { AutomationDialog } from '../automation-dialog'
 import {
   AutomationSelectList,
   AutomationSelectListItem,
 } from '../automation-select-list'
-import { NETWORKS } from '../constants'
 
 export type AutomationNetworksDialogProps = {
   onConfirm: (networkId: string) => void
@@ -20,7 +20,7 @@ export const AutomationNetworksDialog: React.VFC<AutomationNetworksDialogProps> 
     return (
       <AutomationDialog title="Choose network" onBack={props.onCancel}>
         <AutomationSelectList>
-          {Object.entries(NETWORKS).map(([networkId, network]) => (
+          {Object.entries(networksConfig).map(([networkId, network]) => (
             <AutomationSelectListItem
               key={networkId}
               onClick={handleOnChange(networkId)}

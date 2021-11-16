@@ -25,11 +25,11 @@ import { AutomationContractDialog } from '../automation-contract-dialog'
 import { AutomationNetworksDialog } from '../automation-networks-dialog'
 import { AutomationProtocolDialog } from '../automation-protocol-dialog'
 import { AutomationWalletsDialog } from '../automation-wallets-dialog'
-import { NETWORKS } from '../constants'
 import { AutomationEventsDialog } from '../automation-events-dialog'
 import { safeJsonParse } from '../safe-json-parse'
 import { AutomationForm } from '../automation-form'
 import * as styles from './automation-trigger-form.css'
+import { networksConfig } from '~/networks-config'
 
 export type AutomationTriggerFormProps = {
   type: 'ByTime' | 'ByEvent'
@@ -226,8 +226,8 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
                   {field.value.name || 'untitled'}
                 </div>
                 <Typography variant="body3" className={styles.walletSubtitle}>
-                  {NETWORKS[field.value.network]?.title && (
-                    <>{NETWORKS[field.value.network]?.title}, </>
+                  {networksConfig[field.value.network]?.title && (
+                    <>{networksConfig[field.value.network]?.title}, </>
                   )}
                   {cutAccount(field.value.address)}
                 </Typography>
@@ -249,14 +249,14 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
                 className={styles.input}
                 disabled={Boolean(props.defaultValues) || props.loading}
               >
-                {(NETWORKS[field.value] && (
+                {(networksConfig[field.value] && (
                   <>
                     <Icon
-                      icon={NETWORKS[field.value].icon}
+                      icon={networksConfig[field.value].icon}
                       width="28"
                       height="28"
                     />{' '}
-                    {NETWORKS[field.value].title}
+                    {networksConfig[field.value].title}
                   </>
                 )) ||
                   'Choose network'}

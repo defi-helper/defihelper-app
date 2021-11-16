@@ -10,8 +10,6 @@ import { ReactComponent as BinanceIcon } from '~/assets/icons/wallets/binance-wa
 import { ReactComponent as WavesKeeperIcon } from '~/assets/icons/wallets/waves-keeper-wallet.svg'
 import { ReactComponent as WavesExchangeIcon } from '~/assets/icons/wallets/waves-exchange-wallet.svg'
 import * as connectors from './connectors'
-import { config } from '~/config'
-import { BlockchainEnum } from '~/graphql/_generated-types'
 
 export enum ConnectorNames {
   MetaMask = 'MetaMask',
@@ -84,74 +82,6 @@ export const connectorsByName = {
     logo: WavesExchangeIcon,
   },
 } as const
-
-export type Network = {
-  title: string
-  blockchain?: BlockchainEnum
-  network?: number | string
-  onClick?:
-    | 'activateEthereum'
-    | 'activateBinance'
-    | 'activatePolygon'
-    | 'activateAvalanch'
-    | 'activateWaves'
-  type: 'Networks' | 'AllNetworks'
-  blockchainIcon?: 'ethereum' | 'binance' | 'waves'
-}
-
-export const NETWORKS: Network[] = [
-  {
-    title: 'All',
-    type: 'AllNetworks' as const,
-  },
-  {
-    title: 'Ethereum',
-    blockchain: BlockchainEnum.Ethereum,
-    network: config.CHAIN_ETHEREUM_IDS[0],
-    onClick: 'activateEthereum' as const,
-    type: 'Networks' as const,
-    blockchainIcon: 'ethereum',
-  },
-  {
-    title: 'Ropsten',
-    blockchain: BlockchainEnum.Ethereum,
-    network: config.CHAIN_ETHEREUM_IDS[1],
-    onClick: 'activateEthereum' as const,
-    type: 'Networks' as const,
-    blockchainIcon: 'ethereum',
-  },
-  {
-    title: 'Binance',
-    blockchain: BlockchainEnum.Ethereum,
-    network: config.CHAIN_BINANCE_IDS[0],
-    onClick: 'activateBinance' as const,
-    type: 'Networks' as const,
-    blockchainIcon: 'binance',
-  },
-  {
-    title: 'Polygon',
-    blockchain: BlockchainEnum.Ethereum,
-    network: config.CHAIN_POLYGON_IDS[0],
-    onClick: 'activatePolygon' as const,
-    type: 'Networks' as const,
-    blockchainIcon: 'ethereum',
-  },
-  {
-    title: 'Avalanche',
-    blockchain: BlockchainEnum.Ethereum,
-    network: config.CHAIN_AVALANCHE_IDS[0],
-    onClick: 'activateAvalanch' as const,
-    type: 'Networks' as const,
-  },
-  {
-    title: 'Waves',
-    blockchain: BlockchainEnum.Waves,
-    network: config.CHAIN_WAVES_ID[0],
-    onClick: 'activateWaves' as const,
-    type: 'Networks' as const,
-    blockchainIcon: 'waves',
-  },
-]
 
 export const SIGN_MESSAGE =
   'By clicking "SIGN" you acknowledge and agree that you understand all ' +
