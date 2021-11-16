@@ -10,13 +10,13 @@ import {
 import { useWalletList } from '~/wallets/wallet-list'
 import { AutomationDialog } from '../common/automation-dialog'
 import { AutomationChooseButton } from '../common/automation-choose-button'
-import { NETWORKS } from '../common/constants'
 import { Icon } from '~/common/icon'
 import { useDialog } from '~/common/dialog'
 import { AutomationNetworksDialog } from '../common/automation-networks-dialog'
 import { Automates } from '../common/automation.types'
 import { AutomationDeployContractDialog } from '../common/automation-deploy-contract-dialog'
 import { Typography } from '~/common/typography'
+import { networksConfig } from '~/networks-config'
 import * as model from './automation-deploy-contract.model'
 import * as styles from './automation-deploy-contract.css'
 
@@ -94,14 +94,14 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
           onClick={handleChooseNetwork}
           className={styles.input}
         >
-          {(NETWORKS[currentNetwork] && (
+          {(networksConfig[currentNetwork] && (
             <>
               <Icon
-                icon={NETWORKS[currentNetwork].icon}
+                icon={networksConfig[currentNetwork].icon}
                 width="28"
                 height="28"
               />{' '}
-              {NETWORKS[currentNetwork].title}
+              {networksConfig[currentNetwork].title}
             </>
           )) ||
             'Choose network'}

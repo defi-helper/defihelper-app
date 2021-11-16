@@ -14,12 +14,12 @@ import {
   BillingBillStatusEnum,
   WalletFragmentFragment,
 } from '~/graphql/_generated-types'
-import * as styles from './settings-transaction-history.css'
-import * as model from './settings-transaction-history.model'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
-import { BLOCKCHAIN_COINS } from '../common/constants'
+import { networksConfig } from '~/networks-config'
+import * as styles from './settings-transaction-history.css'
+import * as model from './settings-transaction-history.model'
 
 export type SettingsTransactionHistoryProps = {
   className?: string
@@ -202,7 +202,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                     </Typography>
                     <Typography variant="body2" as="div">
                       {bignumberUtils.format(historyItem.amount)}{' '}
-                      {BLOCKCHAIN_COINS[historyItem.network]}
+                      {networksConfig[historyItem.network].coin}
                     </Typography>
                     <Typography variant="body2" as="div">
                       {dateUtils.format(historyItem.createdAt)}

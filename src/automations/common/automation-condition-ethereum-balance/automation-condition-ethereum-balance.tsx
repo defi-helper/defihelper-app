@@ -8,7 +8,6 @@ import { cutAccount } from '~/common/cut-account'
 import { Button } from '~/common/button'
 import { automationConditionEthereumSchema } from './automation-condition-ethereum.validation'
 import { NumericalInput } from '~/common/numerical-input'
-import { NETWORKS } from '../constants'
 import { Select, SelectOption } from '~/common/select'
 import { AutomationForm } from '../automation-form'
 import { AutomationChooseButton } from '../automation-choose-button'
@@ -19,6 +18,7 @@ import { Wallet } from '../automation.types'
 import { AutomationWalletsDialog } from '../automation-wallets-dialog'
 import { Typography } from '~/common/typography'
 import * as styles from './automation-condition-ethereum-balance.css'
+import { networksConfig } from '~/networks-config'
 
 type FormValues = {
   wallet: Wallet
@@ -106,11 +106,11 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
               {(field.value && (
                 <>
                   <Icon
-                    icon={NETWORKS[field.value].icon}
+                    icon={networksConfig[field.value].icon}
                     width="28"
                     height="28"
                   />{' '}
-                  {NETWORKS[field.value].title}
+                  {networksConfig[field.value].title}
                 </>
               )) ||
                 'Choose network'}
@@ -143,8 +143,8 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
                     {field.value.name || 'untitled'}
                   </div>
                   <Typography variant="body3" className={styles.walletSubtitle}>
-                    {NETWORKS[field.value.network]?.title && (
-                      <>{NETWORKS[field.value.network]?.title}, </>
+                    {networksConfig[field.value.network]?.title && (
+                      <>{networksConfig[field.value.network]?.title}, </>
                     )}
                     {cutAccount(field.value.address)}
                   </Typography>

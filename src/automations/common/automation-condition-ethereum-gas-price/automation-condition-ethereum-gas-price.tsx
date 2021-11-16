@@ -7,7 +7,7 @@ import { NumericalInput } from '~/common/numerical-input'
 import { AutomationChooseButton } from '../automation-choose-button'
 import { AutomationForm } from '../automation-form'
 import { AutomationNetworksDialog } from '../automation-networks-dialog'
-import { NETWORKS } from '../constants'
+import { networksConfig } from '~/networks-config'
 import * as styles from './automation-condition-ethereum-gas-price.css'
 
 type FormValues = {
@@ -58,11 +58,11 @@ export const AutomationConditionEthereumGasPrice: React.VFC<AutomationConditionE
               {(field.value && (
                 <>
                   <Icon
-                    icon={NETWORKS[field.value].icon}
+                    icon={networksConfig[field.value].icon}
                     width="28"
                     height="28"
                   />{' '}
-                  {NETWORKS[field.value].title}
+                  {networksConfig[field.value].title}
                 </>
               )) ||
                 'Choose network'}

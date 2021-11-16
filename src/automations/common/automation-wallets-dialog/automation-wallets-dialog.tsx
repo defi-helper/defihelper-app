@@ -2,13 +2,13 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 
 import { cutAccount } from '~/common/cut-account'
 import { Typography } from '~/common/typography'
+import { networksConfig } from '~/networks-config'
 import { AutomationDialog } from '../automation-dialog'
 import {
   AutomationSelectList,
   AutomationSelectListItem,
 } from '../automation-select-list'
 import { Wallet } from '../automation.types'
-import { NETWORKS } from '../constants'
 import * as styles from './automation-wallets-dialog.css'
 
 export type AutomationWalletsDialogProps = {
@@ -43,8 +43,8 @@ export const AutomationWalletsDialog: React.VFC<AutomationWalletsDialogProps> =
                 {wallet.name || 'untitled'}
               </div>
               <Typography variant="body3" className={styles.walletSubtitle}>
-                {NETWORKS[wallet.network]?.title && (
-                  <>{NETWORKS[wallet.network]?.title}, </>
+                {networksConfig[wallet.network]?.title && (
+                  <>{networksConfig[wallet.network]?.title}, </>
                 )}
                 {cutAccount(wallet.address)}
               </Typography>

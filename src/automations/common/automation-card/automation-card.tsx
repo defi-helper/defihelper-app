@@ -15,8 +15,8 @@ import {
   AutomateTriggerTypeEnum,
   AutomationDescriptionQuery,
 } from '~/graphql/_generated-types'
+import { networksConfig } from '~/networks-config'
 import { paths } from '~/paths'
-import { NETWORKS } from '../constants'
 import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-card.css'
 
@@ -74,7 +74,7 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
   ].includes(props.type)
 
   const networks = props.conditions
-    .map(({ params }) => NETWORKS[safeJsonParse(params).network]?.title)
+    .map(({ params }) => networksConfig[safeJsonParse(params).network]?.title)
     .filter(Boolean)
     .join(', ')
 
@@ -148,7 +148,7 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
       <Label
         title="Wallet"
         value={props.wallet}
-        subtitle={NETWORKS[props.walletNetwork]?.title}
+        subtitle={networksConfig[props.walletNetwork]?.title}
         automation={automation}
       />
       <Switch checked={props.active} onChange={props.onActivate} />

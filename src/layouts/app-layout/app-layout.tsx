@@ -8,8 +8,8 @@ import { LayoutSidebar, LayoutContainer } from '../common'
 import { userModel } from '~/users'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
-import * as styles from './app-layout.css'
 import { useBodyScrollLock } from '~/common/hooks'
+import * as styles from './app-layout.css'
 
 export type AppLayoutProps = {
   title?: React.ReactNode

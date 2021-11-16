@@ -11,8 +11,8 @@ import { Button } from '~/common/button'
 import { Link } from '~/common/link'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { CircularProgress } from '~/common/circular-progress'
-import { BLOCKCHAINS, BLOCKCHAIN_COINS } from '~/settings/common/constants'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { networksConfig } from '~/networks-config'
 import * as styles from './settings-wallet-card.css'
 
 export type SettingsWalletCardProps = {
@@ -121,7 +121,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             Network
           </Typography>
           <Typography variant="body2" as="span">
-            {BLOCKCHAINS[props.network]}
+            {networksConfig[props.network].title}
           </Typography>
         </div>
         <div className={styles.row}>
@@ -164,7 +164,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           </Typography>
           <Typography variant="body2" as="span">
             {bignumberUtils.format(props.feeFunds)}{' '}
-            {BLOCKCHAIN_COINS[props.network]}
+            {networksConfig[props.network].coin}
           </Typography>
         </div>
         <div className={styles.row}>
@@ -193,7 +193,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           </Typography>
           <Typography variant="body2" as="span">
             {bignumberUtils.format(props.locked)}{' '}
-            {BLOCKCHAIN_COINS[props.network]}
+            {networksConfig[props.network].coin}
           </Typography>
         </div>
         <div className={styles.buttons}>

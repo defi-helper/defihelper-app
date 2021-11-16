@@ -1,10 +1,10 @@
 import { useStore } from 'effector-react'
-import Snackbar from '@material-ui/core/Snackbar'
-import Alert from '@material-ui/lab/Alert'
-import { makeStyles, Theme } from '@material-ui/core/styles'
+import { animated, useTransition } from '@react-spring/web'
 
 import { Portal } from '~/common/portal'
+import { ToastItem } from '~/toasts/common/toast-item'
 import * as model from './toast.model'
+import * as styles from './toast.css'
 
 export type ToastProviderProps = {
   maxItems?: number
@@ -12,72 +12,70 @@ export type ToastProviderProps = {
 
 const DURATION = 6000
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    position: 'fixed',
-    right: 10,
-    top: 10,
-    zIndex: 10000,
-
-    '& > * + *': {
-      marginTop: theme.spacing(2),
-    },
-  },
-
-  toast: {
-    position: 'static',
-    left: 'auto',
-    transform: 'none',
-    justifyContent: 'flex-end',
-  },
-}))
+const AnimatedToastItem = animated(ToastItem)
 
 export const ToastProvider: React.FC<ToastProviderProps> = (props) => {
   const toasts = useStore(model.$toasts)
-
-  const classes = useStyles()
 
   const handleClose = (key: string) => () => {
     model.removeToast(key)
   }
 
+  const transitions = useTransition(toasts.slice(0, props.maxItems), {
+    keys: (item) => item.key,
+    from: {
+      transform: 500,
+      maxHeight: 0,
+      overflow: 0,
+    },
+    enter: () => async (next) => {
+      await next({
+        maxHeight: 40,
+        overflow: 1,
+      })
+
+      await next({
+        transform: 0,
+      })
+    },
+    leave: () => async (next) => {
+      await next({
+        transform: 500,
+      })
+
+      await next({
+        maxHeight: 0,
+        overflow: 0,
+      })
+    },
+    config: {
+      duration: 250,
+      tension: 300,
+      friction: 10,
+    },
+  })
+
   return (
     <>
-      {Boolean(toasts.length) && (
-        <Portal>
-          <div className={classes.root}>
-            {toasts.slice(0, props.maxItems).map((toast) => {
-              const isDefault = toast.variant === 'default'
-
-              return (
-                <Snackbar
-                  open
-                  autoHideDuration={DURATION}
-                  key={toast.key}
-                  message={isDefault ? toast.message : undefined}
-                  className={classes.toast}
-                  ClickAwayListenerProps={{ onClickAway: () => {} }}
-                  onClick={handleClose(toast.key)}
-                  onClose={handleClose(toast.key)}
-                >
-                  {!isDefault ? (
-                    <Alert
-                      onClose={handleClose(toast.key)}
-                      variant="filled"
-                      severity={
-                        toast.variant === 'default' ? undefined : toast.variant
-                      }
-                      elevation={6}
-                    >
-                      {toast.message}
-                    </Alert>
-                  ) : undefined}
-                </Snackbar>
-              )
-            })}
-          </div>
-        </Portal>
-      )}
+      <Portal>
+        <div className={styles.root}>
+          {transitions(({ transform, maxHeight, overflow }, toast) => (
+            <AnimatedToastItem
+              autoHideDuration={DURATION}
+              key={toast.key}
+              onClose={handleClose(toast.key)}
+              variant={toast.variant}
+              style={{
+                transform: transform.to((num) => `translateX(${num}px)`),
+                maxHeight: maxHeight.to((num) => `${num}px`),
+                overflow: overflow.to((num) => (num ? 'visible' : 'hidden')),
+              }}
+            >
+              {toast.message}
+            </AnimatedToastItem>
+          ))}
+        </div>
+      </Portal>
       {props.children}
     </>
   )

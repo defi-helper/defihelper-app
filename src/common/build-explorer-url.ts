@@ -1,21 +1,16 @@
-const explorers: Record<string | number, string> = {
-  1: 'https://etherscan.io/address',
-  3: 'https://ropsten.etherscan.io/address',
-  1666600000: 'https://explorer.harmony.one/address',
-  42: 'https://kovan.etherscan.io/address',
-  4: 'https://rinkeby.etherscan.io/address',
-  5: 'https://goerli.etherscan.io/address',
-  56: 'https://bscscan.com/address',
-  97: 'https://testnet.bscscan.com/address',
-  137: 'https://polygonscan.com/address',
-  43114: 'https://explorer.avax.network/address',
-  waves: 'https://wavesexplorer.com/address',
-  main: 'https://wavesexplorer.com/address',
-  W: 'https://wavesexplorer.com/address',
-}
+import { networksConfig } from '~/networks-config'
+
+const explorers = Object.entries(networksConfig).reduce<Record<string, string>>(
+  (acc, [key, { explorerUrl }]) => {
+    acc[key] = explorerUrl
+
+    return acc
+  },
+  {}
+)
 
 type Options = {
-  network: string | number
+  network: string
   address: string
 }
 

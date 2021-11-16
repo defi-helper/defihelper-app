@@ -1,15 +1,16 @@
-import TextField from '@material-ui/core/TextField'
-import Checkbox from '@material-ui/core/Checkbox'
-import Button from '@material-ui/core/Button'
-import { FormLabel, makeStyles } from '@material-ui/core'
-import { useForm } from 'react-hook-form'
-import MenuItem from '@material-ui/core/MenuItem'
+import { useForm, Controller } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 
-import { NETWORKS_CHAIN_IDS } from '~/common/constants'
 import { BlockchainEnum } from '~/graphql/_generated-types'
+import { Button } from '~/common/button'
 import { stakingContractFormSchema } from './staking-contract-form.validation'
+import { networksConfig } from '~/networks-config'
+import { Input } from '~/common/input'
+import { Select, SelectOption } from '~/common/select'
+import { Typography } from '~/common/typography'
+import { Checkbox } from '~/common/checkbox'
+import * as styles from './staking-contract-form.css'
 
 export type FormValues = {
   blockchain: BlockchainEnum
@@ -31,31 +32,13 @@ export type StakingContractFormProps = {
   adapterKeys?: string[]
 }
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-
-    '& > *': {
-      margin: theme.spacing(2),
-    },
-  },
-}))
-
 export const StakingContractForm: React.VFC<StakingContractFormProps> = (
   props
 ) => {
-  const classes = useStyles()
-
-  const { register, setValue, handleSubmit, reset, formState, watch } =
+  const { register, setValue, handleSubmit, reset, formState, watch, control } =
     useForm<FormValues>({
       resolver: yupResolver(stakingContractFormSchema),
     })
-
-  const hidden = register('hidden')
-  const blockChain = register('blockchain')
-  const layout = register('layout')
-  const adapter = register('adapter')
 
   const [subscribeToEventsFromList, setSubscribeToEventsFromList] =
     useState(false)
@@ -74,16 +57,20 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
     }
   }, [subscribeToEventsFromList, setValue])
 
-  const currentBlockChain = watch('blockchain')
+  const currentBlockchain = watch('blockchain')
+
+  const networks = Object.entries(networksConfig)
+    .filter(([, { blockchain }]) => blockchain === currentBlockchain)
+    .map(([key, { title }]) => [title, key])
 
   return (
     <form
       noValidate
       autoComplete="off"
-      className={classes.root}
+      className={styles.root}
       onSubmit={handleSubmit(props.onSubmit)}
     >
-      <TextField
+      <Input
         type="text"
         label="Name"
         defaultValue={props.defaultValues?.name}
@@ -92,34 +79,37 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
         error={Boolean(formState.errors.name)}
         helperText={formState.errors.name?.message}
       />
-      <TextField
+      <Input
         type="text"
         label="Description"
-        defaultValue={props.defaultValues?.description}
+        defaultValue={props.defaultValues?.description ?? ''}
         {...register('description')}
         disabled={props.loading}
-        multiline
         error={Boolean(formState.errors.description)}
         helperText={formState.errors.description?.message}
       />
-      <TextField
-        type="text"
-        label="Adapter"
-        defaultValue={props.defaultValues?.adapter}
-        inputRef={adapter.ref}
-        {...adapter}
-        disabled={props.loading}
-        error={Boolean(formState.errors.adapter)}
-        helperText={formState.errors.adapter?.message}
-        select
-      >
-        {props.adapterKeys?.map((key) => (
-          <MenuItem key={key} value={key}>
-            {key}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
+      <Controller
+        control={control}
+        name="adapter"
+        render={({ field }) => (
+          <Select
+            type="text"
+            label="Adapter"
+            defaultValue={props.defaultValues?.adapter}
+            {...field}
+            disabled={props.loading}
+            error={Boolean(formState.errors.adapter)}
+            helperText={formState.errors.adapter?.message}
+          >
+            {props.adapterKeys?.map((key) => (
+              <SelectOption key={key} value={key}>
+                {key}
+              </SelectOption>
+            ))}
+          </Select>
+        )}
+      />
+      <Input
         type="text"
         label="Address"
         defaultValue={props.defaultValues?.address}
@@ -128,19 +118,17 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
         error={Boolean(formState.errors.address)}
         helperText={formState.errors.address?.message}
       />
-      <FormLabel>
-        Subscribe on events from list
+      <Typography as="label" variant="body2">
+        Subscribe on events from list{' '}
         <Checkbox
-          value={subscribeToEventsFromList}
-          defaultChecked={props.defaultValues?.hidden ?? undefined}
-          onChange={(_, checked) => {
-            setSubscribeToEventsFromList(checked)
+          onChange={(event) => {
+            setSubscribeToEventsFromList(event.target.checked)
           }}
           disabled={props.loading}
         />
-      </FormLabel>
-      {subscribeToEventsFromList ? (
-        <TextField
+      </Typography>
+      {subscribeToEventsFromList && (
+        <Input
           type="text"
           label="Events to subscribe"
           onChange={(changeEvent) =>
@@ -156,75 +144,85 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
           disabled={props.loading}
           error={Boolean(formState.errors.eventsToSubscribe)}
         />
-      ) : null}
-      <TextField
-        type="text"
-        label="Network"
-        defaultValue={props.defaultValues?.network}
-        {...register('network')}
-        disabled={props.loading}
-        error={Boolean(formState.errors.network)}
-        helperText={formState.errors.network?.message}
-        select
-      >
-        {Object.entries(NETWORKS_CHAIN_IDS.get(currentBlockChain) ?? {}).map(
-          ([label, value]) => (
-            <MenuItem key={label} value={value}>
-              {label}
-            </MenuItem>
-          )
+      )}
+      <Controller
+        control={control}
+        name="network"
+        render={({ field }) => (
+          <Select
+            type="text"
+            label="Network"
+            defaultValue={props.defaultValues?.network}
+            {...field}
+            disabled={props.loading}
+            error={Boolean(formState.errors.network)}
+            helperText={formState.errors.network?.message}
+          >
+            {networks.map(([label, value]) => (
+              <SelectOption key={value} value={value}>
+                {label}
+              </SelectOption>
+            ))}
+          </Select>
         )}
-      </TextField>
-      <TextField
-        type="text"
-        label="Blockchain"
-        defaultValue={
-          props.defaultValues?.blockchain ?? BlockchainEnum.Ethereum
-        }
-        select
-        disabled={props.loading}
-        inputRef={blockChain.ref}
-        {...blockChain}
-        error={Boolean(formState.errors.blockchain)}
-        helperText={formState.errors.blockchain?.message}
-      >
-        {Object.entries(BlockchainEnum).map(([label, value]) => (
-          <MenuItem key={label} value={value}>
-            {label}
-          </MenuItem>
-        ))}
-      </TextField>
-      <TextField
+      />
+      <Controller
+        control={control}
+        name="blockchain"
+        render={({ field }) => (
+          <Select
+            type="text"
+            label="Blockchain"
+            defaultValue={
+              props.defaultValues?.blockchain ?? BlockchainEnum.Ethereum
+            }
+            disabled={props.loading}
+            {...field}
+            error={Boolean(formState.errors.blockchain)}
+            helperText={formState.errors.blockchain?.message}
+          >
+            {Object.entries(BlockchainEnum).map(([label, value]) => (
+              <SelectOption key={label} value={value}>
+                {label}
+              </SelectOption>
+            ))}
+          </Select>
+        )}
+      />
+      <Input
         type="text"
         label="Link"
-        defaultValue={props.defaultValues?.link}
+        defaultValue={props.defaultValues?.link ?? ''}
         {...register('link')}
         disabled={props.loading}
         error={Boolean(formState.errors.link)}
         helperText={formState.errors.link?.message}
       />
-      <TextField
-        type="text"
-        label="Layout"
-        defaultValue={props.defaultValues?.layout}
-        inputRef={layout.ref}
-        {...layout}
-        disabled={props.loading}
-        error={Boolean(formState.errors.layout)}
-        helperText={formState.errors.layout?.message}
-        select
-      >
-        <MenuItem value="staking">staking</MenuItem>
-      </TextField>
-      <FormLabel>
-        Hidden
+      <Controller
+        name="layout"
+        control={control}
+        render={({ field }) => (
+          <Select
+            type="text"
+            label="Layout"
+            defaultValue={props.defaultValues?.layout}
+            {...field}
+            disabled={props.loading}
+            error={Boolean(formState.errors.layout)}
+            helperText={formState.errors.layout?.message}
+          >
+            <SelectOption value="staking">staking</SelectOption>
+          </Select>
+        )}
+      />
+      <Typography as="label" variant="body2">
+        Hidden{' '}
         <Checkbox
-          inputRef={hidden.ref}
           defaultChecked={props.defaultValues?.hidden ?? undefined}
-          onChange={(_, checked) => setValue('hidden', checked)}
+          onChange={(event) => setValue('hidden', event.target.checked)}
           disabled={props.loading}
         />
-      </FormLabel>
+      </Typography>
       <Button
         color="primary"
         variant="contained"
