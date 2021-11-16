@@ -78,8 +78,8 @@ export const setupPolygon = async () => {
   return request(params)
 }
 
-export const setupAvalanch = async () => {
-  const [chainId] = config.CHAIN_AVALANCH_IDS
+export const setupAvalanche = async () => {
+  const [chainId] = config.CHAIN_AVALANCHE_IDS
 
   const params = {
     chainId: `0x${chainId.toString(16)}`,

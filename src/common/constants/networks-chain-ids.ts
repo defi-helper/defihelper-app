@@ -20,7 +20,7 @@ export const NETWORKS_CHAIN_IDS = new Map<
       bsc: 56,
       'bsc-testnet': 97,
       polygon: 137,
-      avalanch: 43114,
+      avalanche: 43114,
     },
   ],
 ])
