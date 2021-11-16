@@ -14,6 +14,7 @@ import { Typography } from '~/common/typography'
 import {
   AutomateActionType,
   AutomateConditionType,
+  AutomateTriggerCreateInputType,
   AutomateTriggerTypeEnum,
   AutomationContractFragmentFragment,
   AutomationDescriptionQuery,
@@ -234,9 +235,19 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     }
   }
 
-  useEffect(() => {
-    setTab(Tabs.Conditions)
-  }, [createdTrigger])
+  const handleCreateTrigger = async (
+    formValues: AutomateTriggerCreateInputType
+  ) => {
+    try {
+      await model.createTriggerFx(formValues)
+
+      setTab(Tabs.Conditions)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
 
   return (
     <AutomationDialog
@@ -292,7 +303,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
               wallets={wallets}
               type={currentType}
               protocols={protocols}
-              onCreate={model.createTriggerFx}
+              onCreate={handleCreateTrigger}
               onUpdate={model.updateTriggerFx}
               defaultValues={defaultValues}
               loading={creating}

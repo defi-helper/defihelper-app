@@ -14,38 +14,36 @@ import { toastsService } from '~/toasts'
 export const automationDeployContractDomain = createDomain()
 
 export const fetchAutomationContractsFx =
-  automationDeployContractDomain.createEffect(
-    async (chainId: string | number) => {
-      const data = await automationApi.getAutomationsContracts()
+  automationDeployContractDomain.createEffect(async (chainId: string) => {
+    const data = await automationApi.getAutomationsContracts()
 
-      const contracts = await data.reduce<Promise<Automates[]>>(
-        async (acc, contract) => {
-          const previousAcc = await acc
+    const contracts = await data.reduce<Promise<Automates[]>>(
+      async (acc, contract) => {
+        const previousAcc = await acc
 
-          const contractData = await automationApi
-            .getContractInterface({
-              ...contract,
-              chainId,
-            })
-            .catch(console.error)
+        const contractData = await automationApi
+          .getContractInterface({
+            ...contract,
+            chainId,
+          })
+          .catch(console.error)
 
-          if (!contractData) return previousAcc
+        if (!contractData) return previousAcc
 
-          return [
-            ...previousAcc,
-            {
-              ...contract,
-              contractInterface: contractData.abi,
-              address: contractData.address,
-            },
-          ]
-        },
-        Promise.resolve([])
-      )
+        return [
+          ...previousAcc,
+          {
+            ...contract,
+            contractInterface: contractData.abi,
+            address: contractData.address,
+          },
+        ]
+      },
+      Promise.resolve([])
+    )
 
-      return contracts
-    }
-  )
+    return contracts
+  })
 
 export const $automateContracts = automationDeployContractDomain
   .createStore<Automates[]>([])
@@ -96,10 +94,12 @@ export const deployFx = automationDeployContractDomain.createEffect(
       },
     })
 
-    const currentWallet = wallets.find((wallet) =>
-      wallet.network === 'W'
-        ? wallet.address === params.account
-        : wallet.address === params.account.toLowerCase()
+    const currentWallet = wallets.find(
+      (wallet) =>
+        (wallet.network === 'W'
+          ? wallet.address === params.account
+          : wallet.address === params.account.toLowerCase()) &&
+        wallet.network === params.chainId
     )
 
     if (!protocol || !currentWallet) throw new Error('something went wrong')
@@ -132,7 +132,7 @@ sample({
       AutomationDeployContractGate.open,
       AutomationDeployContractGate.state.updates,
     ],
-    filter: (chaiId): chaiId is string => Boolean(chaiId),
+    filter: (chaiId) => typeof chaiId === 'string' && Boolean(chaiId.length),
   }),
   target: fetchAutomationContractsFx,
 })
