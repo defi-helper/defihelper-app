@@ -80,12 +80,10 @@ export const red = style({
 
 export const card = style({
   padding: 16,
-  minHeight: 280,
 
   '@media': {
     [theme.mediaQueries.md()]: {
       padding: '24px 32px',
-      minHeight: 400,
     },
   },
 })

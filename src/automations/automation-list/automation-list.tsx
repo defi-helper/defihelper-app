@@ -185,41 +185,28 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
               />
             ))}
         </div>
-        <div>
-          <Typography variant="h3" className={styles.contractTitle}>
-            Contracts
-          </Typography>
-          <div className={styles.table}>
-            <Paper radius={8} className={styles.tableInner}>
-              <div className={styles.tableheader}>
-                <Typography variant="body2" as="div">
-                  Adapter
-                </Typography>
-                <Typography variant="body2" as="div">
-                  Reject reason
-                </Typography>
-                <Typography variant="body2" as="div">
-                  Verification
-                </Typography>
-                <Typography variant="body2" as="div">
-                  Address
-                </Typography>
-              </div>
-              <div className={styles.label}>
-                {loading && (
+        {!isEmpty(loadingContracts) && (
+          <div>
+            <Typography variant="h3" className={styles.contractTitle}>
+              Contracts
+            </Typography>
+            <div className={styles.table}>
+              <Paper radius={8} className={styles.tableInner}>
+                <div className={styles.tableheader}>
                   <Typography variant="body2" as="div">
-                    loading...
+                    Adapter
                   </Typography>
-                )}
-                {!loading && isEmpty(contracts) && (
                   <Typography variant="body2" as="div">
-                    empty
+                    Reject reason
                   </Typography>
-                )}
-              </div>
-              {!loadingContracts &&
-                !isEmpty(contracts) &&
-                contracts.map((contract) => (
+                  <Typography variant="body2" as="div">
+                    Verification
+                  </Typography>
+                  <Typography variant="body2" as="div">
+                    Address
+                  </Typography>
+                </div>
+                {contracts.map((contract) => (
                   <div className={styles.row}>
                     <Typography variant="body2" as="div">
                       {contract.adapter}
@@ -253,9 +240,10 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
                     </Dropdown>
                   </div>
                 ))}
-            </Paper>
+              </Paper>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </AppLayout>
   )
