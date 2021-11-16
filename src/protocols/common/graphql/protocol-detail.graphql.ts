@@ -19,15 +19,15 @@ export const PROTOCOL_DETAIL = gql`
           createdAt
         }
       }
-      telegram: metricChart(metric: telegramFollowers, group: day) {
+      telegram: metricChart(metric: telegramFollowers, group: month) {
         date
         sum
       }
-      coingecko: metricChart(metric: coingeckoWatchers, group: day) {
+      coingecko: metricChart(metric: coingeckoWatchers, group: month) {
         date
         sum
       }
-      coinmarketcap: metricChart(metric: coinmarketcapWatchers, group: day) {
+      coinmarketcap: metricChart(metric: coinmarketcapWatchers, group: month) {
         date
         sum
       }

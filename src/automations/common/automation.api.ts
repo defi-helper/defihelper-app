@@ -210,7 +210,7 @@ export const automationApi = {
 
   getContractInterface: (
     variables: Omit<Automates, 'contractInterface'> & {
-      chainId: string | number
+      chainId: string
     }
   ) =>
     fetch(

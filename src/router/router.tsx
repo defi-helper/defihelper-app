@@ -34,7 +34,7 @@ export const Router: React.VFC<RouterProps> = () => {
   return (
     <BrowserRouter history={history}>
       <Switch>
-        <Redirect from={paths.main} to={paths.protocols.list} exact />
+        <Redirect from={paths.main} to={paths.portfolio} exact />
         <CanRoute
           action="create"
           subject="Protocol"
