@@ -83,7 +83,7 @@ export const setupAvalanche = async () => {
 
   const params = {
     chainId: `0x${chainId.toString(16)}`,
-    chainName: 'Avalanch Mainnet',
+    chainName: 'Avalanche Mainnet',
     nativeCurrency: {
       name: 'AVAX',
       symbol: 'AVAX',
@@ -93,7 +93,7 @@ export const setupAvalanche = async () => {
       'https://api.avax.network/ext/bc/C/rpc',
       'https://api.avax.network/ext/bc/C/rpc',
     ],
-    blockExplorerUrls: ['https://cchain.explorer.avax.network/'],
+    blockExplorerUrls: ['https://snowtrace.io/'],
   }
 
   return request(params)
