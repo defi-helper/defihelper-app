@@ -27,7 +27,6 @@ export type AutomationListProps = unknown
 export const AutomationList: React.VFC<AutomationListProps> = () => {
   const triggers = useStore(model.$triggers)
   const loading = useStore(model.fetchTriggersFx.pending)
-  const loadingContracts = useStore(model.fetchContractsFx.pending)
   const contracts = useStore(model.$contracts)
   const automateContracts = useStore(model.$automateContracts)
   const descriptions = useStore(model.$descriptions)
@@ -185,7 +184,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
               />
             ))}
         </div>
-        {!isEmpty(loadingContracts) && (
+        {!isEmpty(contracts) && (
           <div>
             <Typography variant="h3" className={styles.contractTitle}>
               Contracts

@@ -128,14 +128,8 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     }
   }
 
-  const handleDeploy = async () => {
-    try {
-      await openDeployContract()
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
+  const handleDeploy = () => {
+    return openDeployContract()
   }
 
   const handleAddAction = async () => {
