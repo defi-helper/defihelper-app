@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 import { Button } from '~/common/button'
@@ -17,7 +18,7 @@ type FormValues = {
 export type AutomationActionEthereumRunProps = {
   className?: string
   onSubmit: (formValues: string) => void
-  onDeploy: () => void
+  onDeploy: () => Promise<AutomationContractFragmentFragment>
   contracts: AutomationContractFragmentFragment[]
   defaultValues?: FormValues
 }
@@ -32,6 +33,8 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
       defaultValues: props.defaultValues,
     })
 
+    const [contracts, setContracts] = useState(props.contracts)
+
     const [openContractDialog] = useDialog(AutomationDeployContractDialog)
 
     const handleSubmit = (formValues: FormValues) => {
@@ -39,15 +42,13 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
     }
 
     const handleChooseContract = async () => {
-      const contracts = props.contracts.map(({ protocol, adapter, id }) => ({
-        contract: adapter,
-        protocol: protocol.name,
-        contractInterface: id,
-      }))
-
       try {
         const result = await openContractDialog({
-          contracts,
+          contracts: contracts.map(({ protocol, adapter, id }) => ({
+            contract: adapter,
+            protocol: protocol.name,
+            contractInterface: id,
+          })),
         })
 
         if (typeof result.contractInterface !== 'string') return
@@ -60,11 +61,24 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
       }
     }
 
+    const handleDeploy = async () => {
+      try {
+        const contract = await props.onDeploy()
+
+        setValue('id', contract.id)
+        setContracts([...contracts, contract])
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
+
     return (
       <AutomationForm onSubmit={reactHookSubmit(handleSubmit)}>
         <Controller
           render={({ field }) => {
-            const currentContract = props.contracts.find(
+            const currentContract = contracts.find(
               (contract) => contract.id === field.value
             )
 
@@ -95,7 +109,7 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
           name="id"
           control={control}
         />
-        <Button onClick={props.onDeploy} className={styles.input}>
+        <Button onClick={handleDeploy} className={styles.input}>
           Deploy new
         </Button>
         <Button type="submit">Save</Button>

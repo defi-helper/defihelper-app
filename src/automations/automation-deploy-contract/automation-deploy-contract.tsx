@@ -72,7 +72,7 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
 
         if (!wallet.account) return
 
-        await model.deployFx({
+        const result = await model.deployFx({
           address: currentAutomationContract.address,
           inputs: formValues.inputs,
           automate: currentAutomationContract,
@@ -80,6 +80,8 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
           chainId: String(wallet.chainId),
           provider: wallet.provider,
         })
+
+        props.onConfirm(result)
       } catch (error) {
         props.onCancel(error)
       }

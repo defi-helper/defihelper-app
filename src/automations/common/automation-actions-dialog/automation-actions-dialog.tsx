@@ -25,7 +25,7 @@ export type AutomationActionsDialogProps = {
   type?: string | null
   contracts: AutomationContractFragmentFragment[]
   contacts: UserContactFragmentFragment[]
-  onDeploy: () => void
+  onDeploy: () => Promise<AutomationContractFragmentFragment>
   triggerId?: string
   params?: string
   descriptions: Exclude<
