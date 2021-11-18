@@ -5,7 +5,9 @@ import { AUTOMATION_CONTRACT_FRAGMENT } from './automation-contract.fragment.gra
 export const AUTOMATION_CONTRACTS = gql`
   query AutomationContracts(
     $filter: AutomateContractListFilterInputType
-    $sort: [AutomateContractListSortInputType!]
+    $sort: [AutomateContractListSortInputType!] = [
+      { column: createdAt, order: desc }
+    ]
     $pagination: AutomateContractListPaginationInputType
   ) {
     automateContracts(filter: $filter, sort: $sort, pagination: $pagination) {

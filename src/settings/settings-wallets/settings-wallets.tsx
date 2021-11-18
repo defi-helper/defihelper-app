@@ -165,26 +165,27 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
             </Button>
           </SettingsInitialCard>
         )}
-        {wallets.map((wallet) => (
-          <SettingsWalletCard
-            key={wallet.id}
-            title={wallet.name}
-            address={wallet.address}
-            network={wallet.network}
-            blockchain={wallet.blockchain}
-            automations="0"
-            onDeposit={handleDeposit(wallet)}
-            onRefund={handleRefund(wallet)}
-            onRename={handleRename(wallet)}
-            onDelete={handleDelete(wallet)}
-            feeFunds={wallet.billing?.balance?.netBalance}
-            locked={wallet.billing?.balance?.claim}
-            editing={wallet.editing}
-            deleting={wallet.deleting}
-            depositing={wallet.depositing}
-            refunding={wallet.refunding}
-          />
-        ))}
+        {!loading &&
+          wallets.map((wallet) => (
+            <SettingsWalletCard
+              key={wallet.id}
+              title={wallet.name}
+              address={wallet.address}
+              network={wallet.network}
+              blockchain={wallet.blockchain}
+              automations="0"
+              onDeposit={handleDeposit(wallet)}
+              onRefund={handleRefund(wallet)}
+              onRename={handleRename(wallet)}
+              onDelete={handleDelete(wallet)}
+              feeFunds={wallet.billing?.balance?.netBalance}
+              locked={wallet.billing?.balance?.claim}
+              editing={wallet.editing}
+              deleting={wallet.deleting}
+              depositing={wallet.depositing}
+              refunding={wallet.refunding}
+            />
+          ))}
         {!loading &&
           paperCount > 0 &&
           Array.from(Array(paperCount)).map((_, index) => (

@@ -4,6 +4,7 @@ import {
   unuseAllThemes,
   addLicense,
   color,
+  percent,
 } from '@amcharts/amcharts4/core'
 import {
   DateAxis,
@@ -45,6 +46,9 @@ export const ProtocolLastMonthChart: React.VFC<ProtocolLastMonthChartProps> = (
 
     chartRef.current = create(id, XYChart)
 
+    chartRef.current.width = percent(100)
+    chartRef.current.height = percent(40)
+
     if (themeMode === 'dark') {
       amchartsUseTheme(amchartsdark)
     } else {
@@ -56,8 +60,6 @@ export const ProtocolLastMonthChart: React.VFC<ProtocolLastMonthChartProps> = (
 
     dateAxis.renderer.baseGrid.disabled = false
     dateAxis.renderer.grid.template.disabled = true
-
-    chartRef.current.leftAxesContainer.width = 0
 
     dateAxis.fontSize = 12
     dateAxis.renderer.labels.template.durationFormatter.outputFormat = 'MM-yyyy'

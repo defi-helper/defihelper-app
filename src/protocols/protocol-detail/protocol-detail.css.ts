@@ -107,3 +107,10 @@ export const tabs = style({
     },
   },
 })
+
+export const loader = style({
+  padding: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+})

@@ -53,12 +53,19 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
 
   const [tvlSum = undefined] = metric[currentGroup]?.data.tvl?.slice(-1)
 
-  const data = metric[currentGroup]?.data.tvl?.map((metricItem) => {
+  const tvlData = metric[currentGroup]?.data.tvl?.map((metricItem) => {
     return {
       ...metricItem,
       sum: bignumberUtils.format(metricItem.sum),
     }
   })
+
+  const walletData = metric[currentGroup]?.data?.uniqueWalletsCount.map(
+    (wallet) => ({
+      ...wallet,
+      sum: bignumberUtils.format(wallet.sum),
+    })
+  )
 
   const [uniqueWalletsSum = undefined] =
     metric[currentGroup]?.data.uniqueWalletsCount?.slice(-1)
@@ -111,7 +118,7 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
         >
           <Chart
             dataFields={TVL_FIELDS}
-            data={data}
+            data={tvlData}
             tooltipText={['$', '{sum}'].join('')}
             id="tvl"
             names={TVL_FIELDS.map(({ name }) => name)}
@@ -129,7 +136,7 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
         >
           <Chart
             dataFields={WALLET_FIELDS}
-            data={metric[currentGroup]?.data?.uniqueWalletsCount}
+            data={walletData}
             tooltipText="{sum}"
             id="unique_wallets"
             names={WALLET_FIELDS.map(({ name }) => name)}

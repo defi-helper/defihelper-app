@@ -20,6 +20,7 @@ import { Icon } from '~/common/icon'
 import { networksConfig } from '~/networks-config'
 import * as styles from './settings-transaction-history.css'
 import * as model from './settings-transaction-history.model'
+import { Loader } from '~/common/loader'
 
 export type SettingsTransactionHistoryProps = {
   className?: string
@@ -92,7 +93,11 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
           Transaction History
         </Typography>
         <Paper radius={8}>
-          {loading && 'loading...'}
+          {loading && (
+            <div className={styles.loader}>
+              <Loader height="36" />
+            </div>
+          )}
           {!loading && isEmpty(history) && (
             <Typography variant="body2" align="center" className={styles.empty}>
               Your transaction history of all automated actions and

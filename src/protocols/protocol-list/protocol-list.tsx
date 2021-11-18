@@ -15,6 +15,7 @@ import { Input } from '~/common/input'
 import { Protocol, ProtocolCard, ProtocolTabs, Tabs } from '../common'
 import { Paper } from '~/common/paper'
 import { ButtonBase } from '~/common/button-base'
+import { Loader } from '~/common/loader'
 import * as model from './protocol-list.model'
 import * as styles from './protocol-list.css'
 
@@ -134,7 +135,9 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
         <ul className={styles.protocols}>
           {loading && (
             <li>
-              <Paper radius={8}>loading...</Paper>
+              <div className={styles.loader}>
+                <Loader height="36" />
+              </div>
             </li>
           )}
           {!loading && !protocols?.length && (

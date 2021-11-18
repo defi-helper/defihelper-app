@@ -27,10 +27,6 @@ export const row = style({
   },
 })
 
-export const chart = style({
-  maxWidth: 122,
-})
-
 export const grey = style({
   color: theme.colors.textColorGrey,
   marginBottom: 'auto',
@@ -50,4 +46,8 @@ export const red = style({
 
 export const empty = style({
   padding: '16px 24px',
+})
+
+export const chart = style({
+  position: 'relative',
 })
