@@ -48,7 +48,9 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           <div className={styles.icon}>
             <Jazzicon diameter={28} seed={jsNumberForAddress(props.address)} />
           </div>
-          <Typography as="span">{props.title}</Typography>
+          <Typography as="span">
+            {props.title || cutAccount(props.address)}
+          </Typography>
           <Dropdown
             control={(active) => (
               <ButtonBase

@@ -13,6 +13,8 @@ import {
   SettingsConfirmDialog,
   SettingsBillingFormDialog,
   SettingsWalletLoading,
+  SettingsSuccessDialog,
+  TransactionEnum,
 } from '~/settings/common'
 import { cutAccount } from '~/common/cut-account'
 import { useWalletList } from '~/wallets/wallet-list'
@@ -31,6 +33,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   const [openRenameWallet] = useDialog(SettingsRenameWalletDialog)
   const [openConfirm] = useDialog(SettingsConfirmDialog)
   const [openBillingForm] = useDialog(SettingsBillingFormDialog)
+  const [openSuccess] = useDialog(SettingsSuccessDialog)
 
   const [openWalletList] = useWalletList()
 
@@ -42,11 +45,15 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
 
       const result = await openBillingForm()
 
-      model.depositFx({
+      await model.depositFx({
         amount: result.amount,
         walletAddress: walletData.account,
         chainId: String(walletData.chainId),
         provider: walletData.provider,
+      })
+
+      await openSuccess({
+        type: TransactionEnum.deposit,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -62,11 +69,15 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
 
       const result = await openBillingForm()
 
-      model.refundFx({
+      await model.refundFx({
         amount: result.amount,
         walletAddress: walletData.account,
         chainId: String(walletData.chainId),
         provider: walletData.provider,
+      })
+
+      await openSuccess({
+        type: TransactionEnum.refund,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -157,7 +168,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
         {wallets.map((wallet) => (
           <SettingsWalletCard
             key={wallet.id}
-            title={wallet.name || 'untitled'}
+            title={wallet.name}
             address={wallet.address}
             network={wallet.network}
             blockchain={wallet.blockchain}

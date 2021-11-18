@@ -11,7 +11,7 @@ import {
   SettingsPaper,
   SettingsInitialCard,
   SettingsConfirmDialog,
-  SettingsContactSuccessDialog,
+  SettingsSuccessDialog,
 } from '~/settings/common'
 import { useDialog } from '~/common/dialog'
 import { userModel } from '~/users'
@@ -35,7 +35,7 @@ const Grid: React.FC = (props) => {
 export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const [openContactForm] = useDialog(SettingsContactFormDialog)
   const [openConfirm] = useDialog(SettingsConfirmDialog)
-  const [openSuccess] = useDialog(SettingsContactSuccessDialog)
+  const [openSuccess] = useDialog(SettingsSuccessDialog)
 
   const user = useStore(userModel.$user)
 

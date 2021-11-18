@@ -9,6 +9,7 @@ import { settingsApi } from '~/settings/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { toastsService } from '~/toasts'
+import { parseError } from '~/common/parse-error'
 
 type ChainIdEnum = keyof typeof contracts
 
@@ -99,11 +100,15 @@ export const depositFx = walletListDomain.createEffect(
       throw new Error('not enough money')
     }
 
-    const transactionReceipt = await balanceContract.deposit(account, {
-      value: amountNormalized,
-    })
+    try {
+      const transactionReceipt = await balanceContract.deposit(account, {
+        value: amountNormalized,
+      })
 
-    await transactionReceipt.wait()
+      await transactionReceipt.wait()
+    } catch (error) {
+      throw parseError(error)
+    }
   }
 )
 
@@ -123,9 +128,13 @@ export const refundFx = walletListDomain.createEffect(
       throw new Error('not enough money')
     }
 
-    const transactionReceipt = await balanceContract.refund(amountNormalized)
+    try {
+      const transactionReceipt = await balanceContract.refund(amountNormalized)
 
-    await transactionReceipt.wait()
+      await transactionReceipt.wait()
+    } catch (error) {
+      throw parseError(error)
+    }
   }
 )
 

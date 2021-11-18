@@ -1,5 +1,4 @@
 import { style } from '@vanilla-extract/css'
-import { theme } from '~/common/theme'
 
 export const root = style({
   display: 'flex',
@@ -10,6 +9,5 @@ export const root = style({
 export const icon = style({
   width: 94,
   height: 52,
-  color: theme.colors.common.pink4,
   margin: 'auto',
 })

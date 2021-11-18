@@ -35,6 +35,7 @@ export type AutomationCardProps = {
   descriptions?: AutomationDescriptionQuery['automateDescription'] | null
   wallet: string
   walletNetwork: string
+  name: string
 }
 
 type LabelProps = {
@@ -136,6 +137,9 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
           </ButtonBase>
         </Dropdown>
       </div>
+      <Typography family="mono" transform="uppercase">
+        {props.name}
+      </Typography>
       <Label
         title="Condition"
         value={`${props.conditions.length} Conditions`}

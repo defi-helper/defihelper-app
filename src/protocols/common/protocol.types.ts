@@ -1,5 +1,4 @@
 import {
-  MetricChartType,
   MetricGroupEnum,
   ProtocolFragmentFragment,
 } from '~/graphql/_generated-types'
@@ -7,7 +6,6 @@ import {
 export type Protocol = ProtocolFragmentFragment & {
   deleting: boolean
   type: 'Protocol'
-  metricChart: Pick<MetricChartType, 'avg'>[]
 }
 
 export enum Tabs {
