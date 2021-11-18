@@ -19,6 +19,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { useWalletList } from '~/wallets/wallet-list'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
+import { Loader } from '~/common/loader'
 
 export type StakingListProps = {
   protocolId: string
@@ -149,7 +150,11 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             <Typography variant="body2">Rewards</Typography>
           </div>
           <ul className={styles.list}>
-            {loading && <Paper>Loading...</Paper>}
+            {loading && (
+              <div className={styles.loader}>
+                <Loader height="24" />
+              </div>
+            )}
             {!loading && !staking.length && <Paper>no contracts found</Paper>}
             {!loading &&
               staking.map((stakingListItem) => {

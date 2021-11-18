@@ -20,7 +20,7 @@ export const bignumberUtils = {
   format: (amount?: string | number | null, decimal = 2) => {
     const result = new BigNumber(amount || 0)
 
-    if (result.isNaN()) return '0'
+    if (result.isNaN() || result.isLessThan(0)) return '0'
 
     if (result.isInteger()) return result.toFormat(0)
 

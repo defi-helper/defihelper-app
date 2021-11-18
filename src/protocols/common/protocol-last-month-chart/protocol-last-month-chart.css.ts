@@ -4,7 +4,9 @@ import { theme } from '~/common/theme'
 
 export const root = style({
   width: '100%',
-  height: 32,
+  position: 'absolute',
+  top: '-16px',
+  left: 0,
 })
 
 export const flex = style({
