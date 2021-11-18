@@ -3,7 +3,9 @@ import { gql } from '@urql/core'
 export const BILLING_HISTORY = gql`
   query BillingHistory(
     $filter: UserBillingTransferListFilterInputType
-    $sort: [UserBillingTransferListSortInputType!]
+    $sort: [UserBillingTransferListSortInputType!] = [
+      { column: createdAt, order: desc }
+    ]
     $pagination: UserBillingTransferListPaginationInputType
   ) {
     me {

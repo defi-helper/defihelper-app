@@ -22,6 +22,7 @@ import GovernorBravo from '@defihelper/networks/abi/GovernorBravo.json'
 import Timelock from '@defihelper/networks/abi/Timelock.json'
 import TimelockInterface from '@defihelper/networks/abi/TimelockInterface.json'
 import Treasury from '@defihelper/networks/abi/Treasury.json'
+import Store from '@defihelper/networks/abi/Store.json'
 
 export const abi = {
   AggregatorV3Interface,
@@ -48,6 +49,7 @@ export const abi = {
   Timelock,
   TimelockInterface,
   Treasury,
+  Store,
 } as const
 
 export type AbiKeys = keyof typeof abi

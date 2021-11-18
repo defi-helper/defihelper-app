@@ -222,13 +222,19 @@ sample({
   target: fetchAutomationContractsFx,
 })
 
-const fetchDescriptionFx = automationListDomain.createEffect(() =>
-  automationApi.getDescription()
+const fetchDescriptionFx = automationListDomain.createEffect(
+  automationApi.getDescription
 )
 
 export const $descriptions = restore(fetchDescriptionFx.doneData, null)
 
+export const fetchBalanceFx = automationListDomain.createEffect(
+  automationApi.getBalance
+)
+
+export const $balance = restore(fetchBalanceFx.doneData, 0)
+
 sample({
   clock: AutomationListGate.open,
-  target: fetchDescriptionFx,
+  target: [fetchDescriptionFx, fetchBalanceFx],
 })

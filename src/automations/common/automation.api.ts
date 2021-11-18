@@ -36,6 +36,10 @@ import {
   AutomationProtocolsQueryVariables,
   AutomationProtocolsQuery,
   AutomationDescriptionQuery,
+  AutomationProductsQuery,
+  AutomationProductsQueryVariables,
+  AutomationProductsBalanceQuery,
+  AutomationProductsBalanceQueryVariables,
 } from '~/graphql/_generated-types'
 import { Automates } from './automation.types'
 import {
@@ -57,6 +61,8 @@ import {
   AUTOMATION_TRIGGER_UPDATE,
   AUTOMATION_PROTOCOLS,
   AUTOMATION_DESCRIPTION,
+  AUTOMATION_PRODUCTS,
+  AUTOMATION_PRODUCTS_BALANCE,
 } from './graphql'
 
 export const automationApi = {
@@ -250,4 +256,24 @@ export const automationApi = {
       )
       .toPromise()
       .then(({ data }) => data?.automateDescription),
+
+  getProducts: (variables?: AutomationProductsQueryVariables) =>
+    getAPIClient()
+      .query<AutomationProductsQuery, AutomationProductsQueryVariables>(
+        AUTOMATION_PRODUCTS,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => ({
+        list: data?.products.list ?? [],
+      })),
+
+  getBalance: (variables?: AutomationProductsBalanceQueryVariables) =>
+    getAPIClient()
+      .query<
+        AutomationProductsBalanceQuery,
+        AutomationProductsBalanceQueryVariables
+      >(AUTOMATION_PRODUCTS_BALANCE, variables)
+      .toPromise()
+      .then(({ data }) => data?.me?.store.balance.notifications ?? 0),
 }

@@ -24,11 +24,16 @@ export const title = style({
 export const grid = style({
   display: 'grid',
   gap: 24,
-  marginBottom: 120,
 
   '@media': {
     [theme.mediaQueries.md()]: {
       gridTemplateColumns: 'repeat(auto-fill, minmax(352px, 1fr))',
+    },
+  },
+
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 120,
     },
   },
 })

@@ -2,7 +2,7 @@ import clsx from 'clsx'
 
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { ReactComponent as LoaderIcon } from '~/assets/icons/loader.svg'
+import { Loader } from '~/common/loader'
 import * as styles from './settings-wallet-loading.css'
 
 export type SettingsWalletLoadingProps = {
@@ -15,7 +15,7 @@ export const SettingsWalletLoading: React.FC<SettingsWalletLoadingProps> = (
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <Typography variant="body2">Loading your wallet...</Typography>
-      <LoaderIcon className={styles.icon} />
+      <Loader className={styles.icon} />
     </Paper>
   )
 }

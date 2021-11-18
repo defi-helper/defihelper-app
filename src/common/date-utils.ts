@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import dayjs, { OpUnitType } from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
@@ -33,7 +33,8 @@ export const dateUtils = {
   isBeforeNow: (date: number | string) => dayjs(date).isBefore(dayjs()),
   isAfterNow: (date: number | string) => dayjs(date).isAfter(dayjs()),
 
-  addSeconds: (seconds: number) => dayjs().add(seconds, 'second'),
+  addTimestamp: (value: number, unit?: OpUnitType) =>
+    dayjs().add(value, unit).unix(),
 
   after: (from: string | number | Date, to: string | number | Date) =>
     dayjs(from).isAfter(to),

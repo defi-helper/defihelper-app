@@ -3022,6 +3022,53 @@ export type AutomationHistoryQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type AutomationProductsBalanceQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type AutomationProductsBalanceQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      store: { __typename?: 'UserStoreType' } & {
+        balance: { __typename?: 'UserStoreBalanceType' } & Pick<
+          UserStoreBalanceType,
+          'notifications'
+        >
+      }
+    }
+  >
+}
+
+export type AutomationProductsQueryVariables = Exact<{
+  filter?: Maybe<StoreProductListQueryFilterInputType>
+  sort?: Maybe<
+    | Array<StoreProductListQuerySortInputType>
+    | StoreProductListQuerySortInputType
+  >
+  pagination?: Maybe<StoreProductListQueryPaginationInputType>
+}>
+
+export type AutomationProductsQuery = { __typename?: 'Query' } & {
+  products: { __typename?: 'StoreProductListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'StoreProductType' } & Pick<
+          StoreProductType,
+          | 'id'
+          | 'number'
+          | 'code'
+          | 'name'
+          | 'description'
+          | 'priceUSD'
+          | 'amount'
+          | 'updatedAt'
+          | 'createdAt'
+        >
+      >
+    >
+  }
+}
+
 export type AutomationProtocolsQueryVariables = Exact<{
   pagination?: Maybe<ProtocolListPaginationInputType>
   contractPagination?: Maybe<ContractListPaginationInputType>
@@ -3586,25 +3633,12 @@ export type ProtocolsQueryVariables = Exact<{
     Array<ProtocolListSortInputType> | ProtocolListSortInputType
   >
   protocolPagination?: Maybe<ProtocolListPaginationInputType>
-  metric?: Scalars['MetricColumnType']
-  metricGroup?: MetricGroupEnum
-  metricFilter?: Maybe<ProtocolMetricChartFilterInputType>
-  metricSort?: Maybe<
-    Array<ProtocolMetricChartSortInputType> | ProtocolMetricChartSortInputType
-  >
-  metricPagination?: Maybe<ProtocolMetricChartPaginationInputType>
 }>
 
 export type ProtocolsQuery = { __typename?: 'Query' } & {
   protocols: { __typename?: 'ProtocolListQuery' } & {
     list?: Maybe<
-      Array<
-        { __typename?: 'ProtocolType' } & {
-          metricChart: Array<
-            { __typename?: 'MetricChartType' } & Pick<MetricChartType, 'avg'>
-          >
-        } & ProtocolFragmentFragment
-      >
+      Array<{ __typename?: 'ProtocolType' } & ProtocolFragmentFragment>
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }

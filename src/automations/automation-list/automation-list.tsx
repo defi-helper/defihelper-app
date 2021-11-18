@@ -19,8 +19,10 @@ import { Icon } from '~/common/icon'
 import { AutomationUpdate } from '~/automations/automation-update'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { Dropdown } from '~/common/dropdown'
+import { AutomationProducts } from '../automation-products'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
+import { useWalletList } from '~/wallets/wallet-list'
 
 export type AutomationListProps = unknown
 
@@ -30,6 +32,8 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const contracts = useStore(model.$contracts)
   const automateContracts = useStore(model.$automateContracts)
   const descriptions = useStore(model.$descriptions)
+  const balanceLoading = useStore(model.fetchBalanceFx.pending)
+  const balance = useStore(model.$balance)
 
   const [dontShow, setDontShow] = useLocalStorage('dontShow', false)
 
@@ -37,6 +41,8 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const [openAutomationUpdateContract] = useDialog(AutomationUpdateContract)
   const [openDescriptionDialog] = useDialog(AutomationTriggerDescriptionDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
+  const [openAutomationProducts] = useDialog(AutomationProducts)
+  const [openWalletList] = useWalletList()
 
   const handleDeleteTrigger = (triggerId: string) => async () => {
     try {
@@ -113,6 +119,25 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
     }
   }
 
+  const handleBuyProducts = async () => {
+    try {
+      const wallet = await openWalletList()
+
+      if (!wallet.account) return
+
+      await openAutomationProducts({
+        balance,
+        account: wallet.account,
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
   useGate(model.AutomationListGate)
 
   return (
@@ -123,7 +148,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           <Paper radius={8} className={styles.countMobile}>
             <Icon icon="automation" width="16" height="16" />
             <Typography variant="body3" className={styles.countTitle}>
-              32
+              {balanceLoading ? '...' : balance}
             </Typography>
           </Paper>
           <ButtonBase className={styles.searchButton}>
@@ -147,12 +172,13 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           </Typography>
           <Paper radius={8} className={styles.countDesktop}>
             <Typography variant="body2">
-              32 Automations
+              {balanceLoading ? '...' : balance} Notifications
               <Typography variant="inherit" className={styles.left}>
                 left
               </Typography>
             </Typography>
           </Paper>
+          <Button onClick={handleBuyProducts}>Buy</Button>
           <Input placeholder="Search" className={styles.searchDesktop} />
           <Button color="blue" onClick={handleAddAutomation}>
             +
@@ -170,6 +196,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
               <AutomationCard
                 key={trigger.id}
                 id={trigger.id}
+                name={trigger.name}
                 onEdit={handleEditTrigger(trigger)}
                 onDelete={handleDeleteTrigger(trigger.id)}
                 active={trigger.active}

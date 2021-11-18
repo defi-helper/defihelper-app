@@ -1,6 +1,5 @@
 import { createDomain, guard, sample, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
-import { debounce } from 'patronum/debounce'
 
 import { createPagination } from '~/common/create-pagination'
 import {
@@ -101,17 +100,17 @@ export const ProtocolListGate = createGate<{
   name: 'ProtocolListGate',
 })
 
-const gateUpdated = debounce({
-  source: ProtocolListGate.state.updates,
-  timeout: 500,
-})
-
 sample({
   source: [ProtocolListPagination.state, ProtocolListGate.state],
   clock: guard({
-    source: ProtocolListGate.status,
-    clock: [ProtocolListGate.open, ProtocolListPagination.updates, gateUpdated],
-    filter: (gateIsOpened) => gateIsOpened,
+    source: [ProtocolListGate.status, ProtocolListGate.state],
+    clock: [
+      ProtocolListGate.open,
+      ProtocolListPagination.updates,
+      ProtocolListGate.state.updates,
+    ],
+    filter: ([isOpen, { favorite, search }]) =>
+      isOpen || Boolean(favorite) || Boolean(search),
   }),
   fn: ([{ offset, limit }, clock]) => ({
     offset,

@@ -11,7 +11,6 @@ export type UserProviderProps = unknown
 
 export const UserProvider: React.FC<UserProviderProps> = (props) => {
   const user = useStore(model.$user)
-  const loading = useStore(model.fetchUserFx.pending)
 
   const ability = useMemo(() => buildAbilityFor(user?.role), [user])
 
@@ -19,14 +18,12 @@ export const UserProvider: React.FC<UserProviderProps> = (props) => {
 
   return (
     <AbilityContext.Provider value={ability}>
-      {loading && !user && 'loading...'}
-      {!loading &&
-        config.BETA &&
-        (user?.role === UserRoleEnum.Candidate || !user) && <BetaAccess />}
-      {!loading &&
-        ((user?.role &&
-          [UserRoleEnum.User, UserRoleEnum.Admin].includes(user.role)) ||
-          !config.BETA) &&
+      {config.BETA && (user?.role === UserRoleEnum.Candidate || !user) && (
+        <BetaAccess />
+      )}
+      {((user?.role &&
+        [UserRoleEnum.User, UserRoleEnum.Admin].includes(user.role)) ||
+        !config.BETA) &&
         props.children}
     </AbilityContext.Provider>
   )

@@ -36,6 +36,21 @@ export const listItemButton = style({
   },
 })
 
+export const listItemButtonLoading = style({
+  opacity: 0,
+})
+
+export const listItemButtonLoadingProgress = style({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  margin: 'auto',
+  height: '1em',
+  width: '1em',
+})
+
 globalStyle(`${listItemButton}:hover:before`, {
   '@media': {
     [theme.mediaQueries.hover()]: {
