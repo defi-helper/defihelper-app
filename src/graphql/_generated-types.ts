@@ -2805,8 +2805,8 @@ export type WalletTypeTokenMetricChartArgs = {
 }
 
 export enum WalletTypeEnum {
-  Wallet = 'Wallet',
-  Contract = 'Contract',
+  Wallet = 'wallet',
+  Contract = 'contract',
 }
 
 export type WalletUpdateInputType = {
