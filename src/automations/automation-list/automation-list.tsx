@@ -20,9 +20,10 @@ import { AutomationUpdate } from '~/automations/automation-update'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { Dropdown } from '~/common/dropdown'
 import { AutomationProducts } from '../automation-products'
+import { useWalletList } from '~/wallets/wallet-list'
+import { Loader } from '~/common/loader'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
-import { useWalletList } from '~/wallets/wallet-list'
 
 export type AutomationListProps = unknown
 
@@ -188,7 +189,14 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           </Button>
         </div>
         <div className={styles.grid}>
-          {loading && <Paper radius={8}>loading...</Paper>}
+          {loading && (
+            <Paper radius={8} className={styles.loader}>
+              <Typography variant="body2">
+                Loading your automations...
+              </Typography>
+              <Loader className={styles.loaderIcon} />
+            </Paper>
+          )}
           {!loading && isEmpty(triggers) && <Paper radius={8}>empty</Paper>}
           {!loading &&
             !isEmpty(triggers) &&

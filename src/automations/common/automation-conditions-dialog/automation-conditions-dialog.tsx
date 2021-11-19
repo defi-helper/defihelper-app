@@ -2,9 +2,9 @@ import { useState } from 'react'
 
 import { Typography } from '~/common/typography'
 import {
+  AutomateActionType,
   AutomateConditionCreateInputType,
   AutomateConditionTypeEnum,
-  AutomationContractFragmentFragment,
   AutomationDescriptionQuery,
 } from '~/graphql/_generated-types'
 import { AutomationConditionEthereumBalance } from '../automation-condition-ethereum-balance'
@@ -24,7 +24,7 @@ export type AutomationConditionsDialogProps = {
   onCancel: () => void
   onConfirm: (formValues: AutomateConditionCreateInputType) => void
   type?: string | null
-  contracts: AutomationContractFragmentFragment[]
+  actions: AutomateActionType[]
   wallets: Wallet[]
   triggerId?: string
   params?: string
@@ -77,7 +77,7 @@ export const AutomationConditionsDialog: React.VFC<AutomationConditionsDialogPro
         component: (
           <AutomationConditionEthereumOptimal
             onSubmit={handleSubmit}
-            contracts={props.contracts}
+            actions={props.actions}
             defaultValues={params}
           />
         ),

@@ -18,26 +18,10 @@ import { Typography } from '~/common/typography'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import * as model from './portfolio-wallets.model'
 import * as styles from './portfolio-wallets.css'
+import { networksConfig } from '~/networks-config'
 
 export type PortfolioWalletsProps = {
   className?: string
-}
-
-const BLOCKCHAIN_ICONS: Record<
-  string,
-  'wavesRegular' | 'ethereumRegular' | 'bnbRegular'
-> = {
-  1: 'ethereumRegular',
-  3: 'ethereumRegular',
-  1666600000: 'ethereumRegular',
-  42: 'ethereumRegular',
-  4: 'ethereumRegular',
-  5: 'ethereumRegular',
-  56: 'bnbRegular',
-  97: 'bnbRegular',
-  waves: 'wavesRegular',
-  main: 'wavesRegular',
-  W: 'wavesRegular',
 }
 
 export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
@@ -110,14 +94,10 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
           <div className={clsx(styles.tableRow, styles.tableHeader)}>
             <Typography variant="body3">Wallet</Typography>
             <Typography variant="body3">Address</Typography>
-            <Typography variant="body3">Portfolio %</Typography>
             <Typography variant="body3">
               <Icon icon="automation" width="20" height="20" />
             </Typography>
-            <Typography variant="body3">Assets</Typography>
             <Typography variant="body3">Value</Typography>
-            <Typography variant="body3">Value 24h</Typography>
-            <Typography variant="body3">Value 7d</Typography>
           </div>
           <div className={styles.tableBody}>
             {wallets.map((wallet) => (
@@ -131,9 +111,9 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                   {wallet.name || 'untitled'}
                 </Typography>
                 <Typography variant="body2" as="div">
-                  {BLOCKCHAIN_ICONS[wallet.network] && (
+                  {networksConfig[wallet.network] && (
                     <Icon
-                      icon={BLOCKCHAIN_ICONS[wallet.network]}
+                      icon={networksConfig[wallet.network].icon}
                       className={styles.blockchainIcon}
                     />
                   )}{' '}
@@ -148,30 +128,16 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                   </Link>
                 </Typography>
                 <Typography variant="body2" as="div">
-                  12%
-                </Typography>
-                <Typography variant="body2" as="div">
                   4
                 </Typography>
                 <Typography variant="body2" as="div">
-                  12
-                </Typography>
-                <Typography variant="body2" as="div">
-                  ${bignumberUtils.format('720864')}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  as="div"
-                  className={styles.positive}
-                >
-                  {bignumberUtils.format('0.2')}%
-                </Typography>
-                <Typography
-                  variant="body2"
-                  as="div"
-                  className={styles.negative}
-                >
-                  {bignumberUtils.format('-0.2')}%
+                  $
+                  {bignumberUtils.format(
+                    bignumberUtils.plus(
+                      wallet.metric.stakedUSD,
+                      wallet.metric.earnedUSD
+                    )
+                  )}
                 </Typography>
               </div>
             ))}

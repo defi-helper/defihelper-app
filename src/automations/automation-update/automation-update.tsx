@@ -13,6 +13,7 @@ import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
 import {
   AutomateActionType,
+  AutomateActionTypeEnum,
   AutomateConditionType,
   AutomateTriggerCreateInputType,
   AutomateTriggerTypeEnum,
@@ -26,7 +27,6 @@ import { AutomationConditionsDialog } from '../common/automation-conditions-dial
 import { AutomationActionsDialog } from '../common/automation-actions-dialog'
 import { AutomationTriggerForm } from '../common/automation-trigger-form'
 import { ConfirmDialog } from '~/common/confirm-dialog'
-import { safeJsonParse } from '../common/safe-json-parse'
 import { AutomationDeployContract } from '../automation-deploy-contract'
 import * as styles from './automation-update.css'
 import * as model from './automation-update.model'
@@ -113,7 +113,9 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
 
     try {
       const result = await openConditionsDialog({
-        contracts: props.contracts,
+        actions: actions.filter(
+          (action) => action.type === AutomateActionTypeEnum.EthereumAutomateRun
+        ),
         wallets,
         triggerId: trigger?.id,
         descriptions: props.descriptions,
@@ -183,7 +185,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
 
       try {
         const result = await openConditionsDialog({
-          contracts: props.contracts,
+          actions,
           wallets,
           triggerId: trigger?.id,
           type: condition.type,
@@ -317,7 +319,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
                     {props.descriptions?.conditions[condition.type]?.name}
                   </Typography>
                   <Typography variant="body3" className={styles.itemSubtitle}>
-                    {safeJsonParse(condition.params).value}
+                    {condition.paramsDescription}
                   </Typography>
                 </AutomationChooseButton>
               ))}
@@ -343,7 +345,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
                     {props.descriptions?.actions[action.type]?.name}
                   </Typography>
                   <Typography variant="body3" className={styles.itemSubtitle}>
-                    {safeJsonParse(action.params).value}
+                    {action.paramsDescription}
                   </Typography>
                 </AutomationChooseButton>
               ))}

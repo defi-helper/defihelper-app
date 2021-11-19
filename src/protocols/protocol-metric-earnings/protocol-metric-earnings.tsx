@@ -43,12 +43,11 @@ const ESTIMATED_FIELDS = [
 const SUM = 10000
 const APY = 90 / 100
 
+const currentEarningsGroup = MetricGroupEnum.Day
+
 export const ProtocolMetricEarnings: React.FC<{ className?: string }> = (
   props
 ) => {
-  const [currentEarningsGroup, setCurrentEarningsGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  >(MetricGroupEnum.Day)
   const [currentStakedGroup, setCurrentStakedGroup] = useState<
     Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
   >(MetricGroupEnum.Day)
@@ -63,7 +62,7 @@ export const ProtocolMetricEarnings: React.FC<{ className?: string }> = (
       balance: SUM,
       apy: APY,
     })
-  }, [currentEarningsGroup])
+  }, [])
 
   useEffect(() => {
     if (!contracts.length) return
@@ -73,12 +72,6 @@ export const ProtocolMetricEarnings: React.FC<{ className?: string }> = (
       contracts: contracts.map(({ id }) => id),
     })
   }, [currentStakedGroup, contracts])
-
-  const handleChangeEarningsMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  ) => {
-    setCurrentEarningsGroup(group)
-  }
 
   const handleChangeStakedMetric = (
     group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
@@ -118,12 +111,6 @@ export const ProtocolMetricEarnings: React.FC<{ className?: string }> = (
           header={
             <>
               <Typography>Estimated Earnings</Typography>
-              <ProtocolMetricGroups
-                value={currentEarningsGroup}
-                onChange={handleChangeEarningsMetric}
-              >
-                {Object.values(earningsMetric)}
-              </ProtocolMetricGroups>
             </>
           }
         >

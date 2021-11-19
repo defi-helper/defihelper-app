@@ -60,7 +60,7 @@ export const table = style({
 
 export const tableRow = style({
   display: 'grid',
-  gridTemplateColumns: '19% 19% 11% 6% 9% 13% 10% 12%',
+  gridTemplateColumns: '28% 40% 6% 26%',
 
   selectors: {
     '&:not(:last-child)': {
