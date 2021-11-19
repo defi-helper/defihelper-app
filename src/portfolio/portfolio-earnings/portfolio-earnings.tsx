@@ -29,8 +29,6 @@ const ESTIMATED_FIELDS = [
   },
 ]
 
-const APY = 90 / 100
-
 const currentGroup = MetricGroupEnum.Day
 
 export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
@@ -43,7 +41,7 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
     model.fetchChartDataFx({
       group: currentGroup,
       balance: Number(metric?.stakedUSD ?? 0),
-      apy: APY,
+      apy: Number(metric.apy ?? 0),
     })
   }, [metric])
 
