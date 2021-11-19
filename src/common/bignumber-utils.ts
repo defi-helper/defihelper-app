@@ -17,7 +17,7 @@ export const bignumberUtils = {
       .multipliedBy(new BigNumber(10).pow(decimals))
       .toString(10),
 
-  format: (amount?: string | number | null, decimal = 2) => {
+  format: (amount?: string | number | null, decimal = 4) => {
     const result = new BigNumber(amount || 0)
 
     if (result.isNaN() || result.isLessThan(0)) return '0'
