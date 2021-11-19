@@ -74,7 +74,7 @@ export const networksConfig: Record<string, Network> = {
   },
   43114: {
     title: 'Avalanche',
-    explorerUrl: 'https://explorer.avax.network/address',
+    explorerUrl: 'https://snowtrace.io/address',
     coin: 'AVAX',
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
