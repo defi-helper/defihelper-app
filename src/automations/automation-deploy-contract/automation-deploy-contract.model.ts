@@ -8,7 +8,7 @@ import { automationApi } from '~/automations/common/automation.api'
 import { Automates } from '../common/automation.types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { protocolsApi } from '~/protocols/common'
-import { userModel } from '~/users'
+import { authModel } from '~/auth'
 import { toastsService } from '~/toasts'
 
 export const automationDeployContractDomain = createDomain()
@@ -62,7 +62,7 @@ export const deployFx = automationDeployContractDomain.createEffect(
       params.provider,
       params.chainId
     )
-    const wallets = userModel.$userWallets.getState()
+    const wallets = authModel.$userWallets.getState()
 
     if (!params.automate) throw new Error('something went wrong')
 

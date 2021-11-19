@@ -14,7 +14,7 @@ import {
   SettingsSuccessDialog,
 } from '~/settings/common'
 import { useDialog } from '~/common/dialog'
-import { userModel } from '~/users'
+import { authModel } from '~/auth'
 import { Loader } from '~/common/loader'
 import * as model from './settings-contact.model'
 import * as styles from './settings-contacts.css'
@@ -39,7 +39,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const [openConfirm] = useDialog(SettingsConfirmDialog)
   const [openSuccess] = useDialog(SettingsSuccessDialog)
 
-  const user = useStore(userModel.$user)
+  const user = useStore(authModel.$user)
 
   const loading = useStore(model.fetchUserContactListFx.pending)
   const contactList = useStore(model.$userContactList)

@@ -12,7 +12,7 @@ import { WalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { config } from '~/config'
 import { Paper } from '~/common/paper'
-import { userModel } from '~/users'
+import { authModel } from '~/auth'
 import { BetaAccessSuccess } from './common/wallet-success'
 import { UserRoleEnum } from '~/graphql/_generated-types'
 import { Head } from '~/common/head'
@@ -23,7 +23,7 @@ import * as model from './beta-access.model'
 export type BetaAccessProps = unknown
 
 export const BetaAccess: React.VFC<BetaAccessProps> = () => {
-  const user = useStore(userModel.$user)
+  const user = useStore(authModel.$user)
   const userContact = useStore(model.$userContact)
   const userContacts = useStore(contactListModel.$userContactList)
 

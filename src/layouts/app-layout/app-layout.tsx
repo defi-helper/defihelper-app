@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 import { paths } from '~/paths'
 import { LayoutSidebar, LayoutContainer } from '../common'
-import { userModel } from '~/users'
+import { authModel } from '~/auth'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { useBodyScrollLock } from '~/common/hooks'
@@ -45,7 +45,7 @@ const MENU = [
 ]
 
 export const AppLayout: React.FC<AppLayoutProps> = (props) => {
-  const user = useStore(userModel.$user)
+  const user = useStore(authModel.$user)
 
   const [hidden, setHide] = useLocalStorage('dfh:sidebar', false)
 
@@ -57,7 +57,7 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
   }
 
   const handleLogout = () => {
-    userModel.logoutFx()
+    authModel.logoutFx()
   }
 
   const handleToggleSidebar = () => {

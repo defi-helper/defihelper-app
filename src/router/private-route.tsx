@@ -1,6 +1,6 @@
 import { Route, RouteProps, Redirect } from 'react-router-dom'
 
-import * as users from '~/users'
+import * as users from '~/auth'
 import { paths } from '~/paths'
 
 export const PrivateRoute: React.FC<RouteProps> = (props) => {

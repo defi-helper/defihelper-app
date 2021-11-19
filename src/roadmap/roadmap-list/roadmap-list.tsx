@@ -2,7 +2,7 @@ import { useGate, useStore } from 'effector-react'
 import omit from 'lodash.omit'
 
 import { AppLayout } from '~/layouts'
-import { userModel } from '~/users'
+import { authModel } from '~/auth'
 import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
 import {
@@ -33,7 +33,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
   const createLoading = useStore(model.createProposalFx.pending)
   const searchParams = useQueryParams()
 
-  const user = useStore(userModel.$user)
+  const user = useStore(authModel.$user)
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openRoadmapForm] = useDialog(RoadmapForm)
