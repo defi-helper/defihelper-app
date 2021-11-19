@@ -142,7 +142,10 @@ export const ProtocolDetail: React.FC = () => {
                   ))}
                 </Grid>
               )}
-              <ProtocolMetricEarnings className={styles.mb120}>
+              <ProtocolMetricEarnings
+                className={styles.mb120}
+                metric={protocol.metric}
+              >
                 <ProtocolTotal {...protocol.metric} />
               </ProtocolMetricEarnings>
               <StakingList protocolId={params.protocolId} />
