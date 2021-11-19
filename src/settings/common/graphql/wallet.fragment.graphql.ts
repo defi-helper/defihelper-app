@@ -9,6 +9,10 @@ export const WALLET_FRAGMENT = gql`
     publicKey
     name
     createdAt
+    metric {
+      stakedUSD
+      earnedUSD
+    }
     billing {
       balance {
         balance

@@ -1,14 +1,14 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { Chart } from '~/common/chart'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { PortfolioChartGroups } from '~/portfolio/common'
+import * as portfolioMetricCardModel from '~/portfolio/portfolio-metric-cards/portfolio-metric-cards.model'
+import { MetricGroupEnum } from '~/graphql/_generated-types'
 import * as model from './portfolio-earnings.model'
 import * as styles from './portfolio-earnings.css'
-import { MetricGroupEnum } from '~/graphql/_generated-types'
 
 export type PortfolioEarningsProps = {
   className?: string
@@ -29,39 +29,28 @@ const ESTIMATED_FIELDS = [
   },
 ]
 
-const SUM = 10000
 const APY = 90 / 100
 
+const currentGroup = MetricGroupEnum.Day
+
 export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
-  const [currentGroup, setCurrentGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  >(MetricGroupEnum.Day)
   const portfolioEarnings = useStore(model.$portfolioEarnings)
+  const metric = useStore(portfolioMetricCardModel.$metric)
 
   useEffect(() => {
+    if (!metric?.earnedUSD) return
+
     model.fetchChartDataFx({
       group: currentGroup,
-      balance: SUM,
+      balance: Number(metric?.earnedUSD ?? 0),
       apy: APY,
     })
-  }, [currentGroup])
-
-  const handleChangeMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  ) => {
-    setCurrentGroup(group)
-  }
+  }, [metric])
 
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
         <Typography>Estimated Earnings</Typography>
-        <PortfolioChartGroups
-          onChange={handleChangeMetric}
-          value={currentGroup}
-        >
-          {Object.values(portfolioEarnings)}
-        </PortfolioChartGroups>
       </div>
       <Chart
         dataFields={ESTIMATED_FIELDS}

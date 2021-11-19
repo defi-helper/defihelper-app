@@ -48,9 +48,7 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
     if (!data) throw new Error('something went wrong')
 
     return data.totalNetWorth.map((totalNetWorth, index) => ({
-      totalNetWorth: bignumberUtils.format(totalNetWorth.sum),
-      onWallets: bignumberUtils.format(data.onWallets[index]?.sum ?? '0'),
-      farming: bignumberUtils.format(
+      totalNetWorth: bignumberUtils.format(
         bignumberUtils.plus(
           totalNetWorth.sum,
           data.onWallets[index]?.sum ?? '0'

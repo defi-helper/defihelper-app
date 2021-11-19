@@ -2,7 +2,7 @@ import { useGate, useStore } from 'effector-react'
 import omit from 'lodash.omit'
 
 import { AppLayout } from '~/layouts'
-import { Can, userModel } from '~/users'
+import { userModel } from '~/users'
 import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
 import {
@@ -108,17 +108,15 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           <ButtonBase className={styles.searchButton}>
             <Icon icon="search" width="16" height="16" />
           </ButtonBase>
-          <Can I="create" a="Proposal">
-            <Button
-              variant="contained"
-              color="blue"
-              onClick={handleAdd}
-              loading={createLoading}
-              className={styles.createMobile}
-            >
-              +
-            </Button>
-          </Can>
+          <Button
+            variant="contained"
+            color="blue"
+            onClick={handleAdd}
+            loading={createLoading}
+            className={styles.createMobile}
+          >
+            +
+          </Button>
         </div>
       }
     >
@@ -126,17 +124,15 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
       <div className={styles.header}>
         <Typography variant="h3">Roadmap</Typography>
         <Input placeholder="Search" className={styles.input} />
-        <Can I="create" a="Proposal">
-          <Button
-            variant="contained"
-            color="blue"
-            className={styles.addButton}
-            onClick={handleAdd}
-            loading={createLoading}
-          >
-            + New Proposal
-          </Button>
-        </Can>
+        <Button
+          variant="contained"
+          color="blue"
+          className={styles.addButton}
+          onClick={handleAdd}
+          loading={createLoading}
+        >
+          + New Proposal
+        </Button>
       </div>
       {loading && <Paper radius={8}>loading...</Paper>}
       {!loading && hasGroupedProposals && !status && (
