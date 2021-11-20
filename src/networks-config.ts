@@ -72,16 +72,16 @@ export const networksConfig: Record<string, Network> = {
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
   },
-  43113: {
+  43114: {
     title: 'Avalanche',
-    explorerUrl: 'https://testnet.snowtrace.io/address',
+    explorerUrl: 'https://snowtrace.io/address',
     coin: 'AVAX',
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
   },
-  43114: {
-    title: 'Avalanche',
-    explorerUrl: 'https://snowtrace.io/address',
+  43113: {
+    title: 'Avalanche (testnet)',
+    explorerUrl: 'https://testnet.snowtrace.io/address',
     coin: 'AVAX',
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
