@@ -25,6 +25,7 @@ import { Icon } from '~/common/icon'
 import { Carousel } from '~/common/carousel'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
+import { Loader } from '~/common/loader'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -97,7 +98,11 @@ export const ProtocolDetail: React.FC = () => {
       }
     >
       <Head title={loading ? 'loading...' : protocol?.name} />
-      {loading && !protocol && 'loading...'}
+      {loading && !protocol && (
+        <div className={styles.loader}>
+          <Loader height="36" />
+        </div>
+      )}
       {!loading && protocol && (
         <>
           <div className={styles.header}>
@@ -137,7 +142,10 @@ export const ProtocolDetail: React.FC = () => {
                   ))}
                 </Grid>
               )}
-              <ProtocolMetricEarnings className={styles.mb120}>
+              <ProtocolMetricEarnings
+                className={styles.mb120}
+                metric={protocol.metric}
+              >
                 <ProtocolTotal {...protocol.metric} />
               </ProtocolMetricEarnings>
               <StakingList protocolId={params.protocolId} />

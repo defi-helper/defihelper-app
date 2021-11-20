@@ -3,7 +3,7 @@ import { useStore } from 'effector-react'
 import clsx from 'clsx'
 
 import { Chart } from '~/common/chart'
-import { MetricGroupEnum } from '~/graphql/_generated-types'
+import { MetricGroupEnum, ProtocolQuery } from '~/graphql/_generated-types'
 import { Typography } from '~/common/typography'
 import { ProtocolChartWrap, ProtocolMetricGroups } from '../common'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
@@ -40,15 +40,16 @@ const ESTIMATED_FIELDS = [
   },
 ]
 
-const SUM = 10000
-const APY = 90 / 100
+const currentEarningsGroup = MetricGroupEnum.Day
 
-export const ProtocolMetricEarnings: React.FC<{ className?: string }> = (
+export type ProtocolMetricEarningsProps = {
+  className?: string
+  metric: Exclude<ProtocolQuery['protocol'], null | undefined>['metric']
+}
+
+export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   props
 ) => {
-  const [currentEarningsGroup, setCurrentEarningsGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  >(MetricGroupEnum.Day)
   const [currentStakedGroup, setCurrentStakedGroup] = useState<
     Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
   >(MetricGroupEnum.Day)
@@ -60,10 +61,10 @@ export const ProtocolMetricEarnings: React.FC<{ className?: string }> = (
   useEffect(() => {
     model.fetchEarningMetricFx({
       group: currentEarningsGroup,
-      balance: SUM,
-      apy: APY,
+      balance: Number(props.metric.myStaked ?? 0),
+      apy: Number(props.metric.myAPY ?? 0),
     })
-  }, [currentEarningsGroup])
+  }, [props.metric.myStaked, props.metric.myAPY])
 
   useEffect(() => {
     if (!contracts.length) return
@@ -73,12 +74,6 @@ export const ProtocolMetricEarnings: React.FC<{ className?: string }> = (
       contracts: contracts.map(({ id }) => id),
     })
   }, [currentStakedGroup, contracts])
-
-  const handleChangeEarningsMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  ) => {
-    setCurrentEarningsGroup(group)
-  }
 
   const handleChangeStakedMetric = (
     group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
@@ -118,12 +113,6 @@ export const ProtocolMetricEarnings: React.FC<{ className?: string }> = (
           header={
             <>
               <Typography>Estimated Earnings</Typography>
-              <ProtocolMetricGroups
-                value={currentEarningsGroup}
-                onChange={handleChangeEarningsMetric}
-              >
-                {Object.values(earningsMetric)}
-              </ProtocolMetricGroups>
             </>
           }
         >

@@ -15,8 +15,10 @@ import {
 } from '~/settings/common'
 import { useDialog } from '~/common/dialog'
 import { userModel } from '~/users'
+import { Loader } from '~/common/loader'
 import * as model from './settings-contact.model'
 import * as styles from './settings-contacts.css'
+import { Paper } from '~/common/paper'
 
 export type SettingsContactsProps = {
   className?: string
@@ -118,7 +120,11 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
         </Button>
       </SettingsHeader>
       <Grid>
-        {loading && <>loading...</>}
+        {loading && (
+          <Paper radius={8} className={styles.loader}>
+            <Loader height="36" />
+          </Paper>
+        )}
         {!loading && !contactList.length && (
           <SettingsInitialCard>
             <Typography variant="body2">

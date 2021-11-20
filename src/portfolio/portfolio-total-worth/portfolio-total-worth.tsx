@@ -6,9 +6,9 @@ import { Chart } from '~/common/chart'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { PortfolioChartGroups } from '~/portfolio/common'
+import { MetricGroupEnum } from '~/graphql/_generated-types'
 import * as model from './portfolio-total-worth.model'
 import * as styles from './portfolio-total-worth.css'
-import { MetricGroupEnum } from '~/graphql/_generated-types'
 
 export type PortfolioTotalWorthProps = {
   className?: string
@@ -20,18 +20,6 @@ const TOTAL_NET_WORTH = [
     name: 'Total Net Worth',
     dateX: 'date',
     color: '#39C077',
-  },
-  {
-    valueY: 'onWallets',
-    name: 'On Wallets',
-    dateX: 'date',
-    color: '#4463EE',
-  },
-  {
-    valueY: 'farming',
-    name: 'Yield Farming',
-    dateX: 'date',
-    color: '#E9CC67',
   },
 ]
 

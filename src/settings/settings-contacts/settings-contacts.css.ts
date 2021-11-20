@@ -44,3 +44,9 @@ export const addButtonTitle = style({
     },
   },
 })
+
+export const loader = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+})

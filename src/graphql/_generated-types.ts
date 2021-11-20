@@ -2666,6 +2666,7 @@ export type WalletContractListType = {
 
 export type WalletListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
+  type?: Maybe<WalletTypeEnum>
   search?: Maybe<Scalars['String']>
 }
 
@@ -2720,6 +2721,12 @@ export enum WalletMetricChartSortInputTypeColumnEnum {
   Value = 'value',
 }
 
+export type WalletMetricType = {
+  __typename?: 'WalletMetricType'
+  stakedUSD: Scalars['String']
+  earnedUSD: Scalars['String']
+}
+
 export type WalletTokenMetricChartFilterInputType = {
   /** Target token alias */
   tokenAlias?: Maybe<UserMetricsTokenAliasFilterInputType>
@@ -2758,6 +2765,8 @@ export type WalletType = {
   blockchain: BlockchainEnum
   /** Blockchain network id */
   network: Scalars['String']
+  /** Type */
+  type: WalletTypeEnum
   /** Address */
   address: Scalars['String']
   /** Public key */
@@ -2767,6 +2776,7 @@ export type WalletType = {
   contracts: WalletContractListType
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
+  metric: WalletMetricType
   billing: WalletBillingType
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
@@ -2792,6 +2802,11 @@ export type WalletTypeTokenMetricChartArgs = {
   filter?: Maybe<WalletTokenMetricChartFilterInputType>
   sort?: Maybe<Array<WalletTokenMetricChartSortInputType>>
   pagination?: Maybe<WalletTokenMetricChartPaginationInputType>
+}
+
+export enum WalletTypeEnum {
+  Wallet = 'wallet',
+  Contract = 'contract',
 }
 
 export type WalletUpdateInputType = {
@@ -4074,6 +4089,10 @@ export type WalletFragmentFragment = { __typename?: 'WalletType' } & Pick<
   | 'name'
   | 'createdAt'
 > & {
+    metric: { __typename?: 'WalletMetricType' } & Pick<
+      WalletMetricType,
+      'stakedUSD' | 'earnedUSD'
+    >
     billing: { __typename?: 'WalletBillingType' } & {
       balance: { __typename?: 'BillingBalanceType' } & Pick<
         BillingBalanceType,

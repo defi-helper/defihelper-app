@@ -162,3 +162,10 @@ export const manageButton = style({
   padding: 6,
   marginLeft: 'auto',
 })
+
+export const loader = style({
+  padding: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+})

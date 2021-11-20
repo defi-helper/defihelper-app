@@ -78,7 +78,7 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
             <Typography variant="body2" family="mono">
               {bignumberUtils.format(telegramUserCount?.sum)}
             </Typography>
-            <div>
+            <div className={styles.chart}>
               <ProtocolLastMonthChart
                 dataFields={STAKED_FIELDS}
                 data={props.telegram}
@@ -100,7 +100,7 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
             <Typography variant="body2" family="mono">
               {bignumberUtils.format(coingeckoCount?.sum)}
             </Typography>
-            <div>
+            <div className={styles.chart}>
               <ProtocolLastMonthChart
                 dataFields={STAKED_FIELDS}
                 data={props.coingecko}
@@ -122,7 +122,7 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
             <Typography variant="body2" family="mono">
               {bignumberUtils.format(coinmarketcapCount?.sum)}
             </Typography>
-            <div>
+            <div className={styles.chart}>
               <ProtocolLastMonthChart
                 id="coinmarketcap"
                 dataFields={STAKED_FIELDS}

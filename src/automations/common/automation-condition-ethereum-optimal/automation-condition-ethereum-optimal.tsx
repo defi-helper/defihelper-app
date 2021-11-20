@@ -4,9 +4,9 @@ import { Controller, useForm } from 'react-hook-form'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
-import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
+import { AutomateActionType } from '~/graphql/_generated-types'
 import { AutomationChooseButton } from '../automation-choose-button'
-import { AutomationConditionContractsDialog } from '../automation-condition-contracts-dialog'
+import { AutomationConditionActionsDialog } from '../automation-condition-actions-dialog'
 import { AutomationForm } from '../automation-form'
 import * as styles from './automation-condition-ethereum-optimal.css'
 
@@ -17,7 +17,7 @@ type FormValues = {
 export type AutomationConditionEthereumOptimalProps = {
   onSubmit: (formValues: string) => void
   defaultValues?: FormValues
-  contracts: AutomationContractFragmentFragment[]
+  actions: AutomateActionType[]
 }
 
 export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEthereumOptimalProps> =
@@ -26,12 +26,12 @@ export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEt
       defaultValues: props.defaultValues,
     })
 
-    const [openContractDialog] = useDialog(AutomationConditionContractsDialog)
+    const [openContractDialog] = useDialog(AutomationConditionActionsDialog)
 
     const handleChooseContract = async () => {
       try {
         const result = await openContractDialog({
-          contracts: props.contracts,
+          actions: props.actions,
         })
 
         setValue('id', result.id)
@@ -50,31 +50,31 @@ export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEt
       >
         <Controller
           render={({ field }) => {
-            const currentContract = props.contracts.find(
-              (contract) => contract.id === field.value
+            const currentAction = props.actions.find(
+              (action) => action.id === field.value
             )
 
             return (
               <AutomationChooseButton
-                label="contract"
+                label="action"
                 onClick={handleChooseContract}
                 className={clsx(styles.input, styles.contractButton)}
               >
-                {(field.value && currentContract && (
+                {(field.value && currentAction && (
                   <>
                     <Typography variant="body2" as="div">
-                      {currentContract.adapter}
+                      {currentAction.paramsDescription}
                     </Typography>
                     <Typography
                       variant="body3"
                       as="div"
                       className={styles.protocol}
                     >
-                      {currentContract.protocol.name}
+                      {currentAction.type}
                     </Typography>
                   </>
                 )) ||
-                  'Choose contract'}
+                  'Choose action'}
               </AutomationChooseButton>
             )
           }}

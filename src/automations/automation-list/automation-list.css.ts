@@ -137,3 +137,16 @@ export const tableheader = composeStyles(
     position: 'relative',
   })
 )
+
+export const loader = style({
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '24px 32px',
+  minHeight: 420,
+})
+
+export const loaderIcon = style({
+  width: 94,
+  height: 52,
+  margin: 'auto',
+})

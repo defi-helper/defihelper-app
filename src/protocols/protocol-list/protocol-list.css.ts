@@ -94,3 +94,10 @@ export const createMobile = style({
   padding: 6,
   borderRadius: 6,
 })
+
+export const loader = style({
+  padding: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+})

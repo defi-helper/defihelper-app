@@ -29,7 +29,11 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
       <PortfolioMetricCard
         title="Avg. APY total"
         value={
-          loading ? 'loading...' : <>{bignumberUtils.format(metric?.apy)}%</>
+          loading ? (
+            'loading...'
+          ) : (
+            <>{bignumberUtils.format(bignumberUtils.mul(metric?.apy, 100))}%</>
+          )
         }
       />
       <PortfolioMetricCard
