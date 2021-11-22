@@ -16,21 +16,14 @@ type Options = {
 const DEFAULT_LIMIT = 10
 
 export const createPagination = (options: Options) => {
-  const $limit = options.domain.createStore(options.limit ?? DEFAULT_LIMIT, {
-    name: '$limit',
-  })
-  const $offset = options.domain.createStore(0, {
-    name: '$offset',
-  })
+  const $limit = options.domain.createStore(options.limit ?? DEFAULT_LIMIT)
+  const $offset = options.domain.createStore(0)
+  const $pages = options.domain.createStore<number | null>(null)
 
-  const $pages = options.domain.createStore<number | null>(null, {
-    name: '$pages',
-  })
-
-  const changePage = options.domain.createEvent<number>('changePage')
-  const changeOffset = options.domain.createEvent<number>('changeOffset')
-  const totalPages = options.domain.createEvent<number>('totalPages')
-  const totalElements = options.domain.createEvent<number>('totalElements')
+  const changePage = options.domain.createEvent<number>()
+  const changeOffset = options.domain.createEvent<number>()
+  const totalPages = options.domain.createEvent<number>()
+  const totalElements = options.domain.createEvent<number>()
 
   sample({
     source: $limit,
@@ -58,11 +51,10 @@ export const createPagination = (options: Options) => {
   Component.state = combine(
     $limit,
     $offset,
-    (limit, offset) =>
-      ({
-        limit,
-        offset,
-      } as PaginationState)
+    (limit, offset): PaginationState => ({
+      limit,
+      offset,
+    })
   )
   Component.totalElements = totalElements
   Component.updates = Component.state.updates

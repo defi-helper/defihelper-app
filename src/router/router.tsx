@@ -19,6 +19,7 @@ import { RoadmapList } from '~/roadmap/roadmap-list'
 import { RoadmapDetail } from '~/roadmap/roadmap-detail'
 import { SettingsConfirmEmail } from '~/settings/settings-confirm-email'
 import { NotFound } from '~/not-found'
+import { Users } from '~/users'
 import {
   GovernanceCreate,
   GovernanceDetail,
@@ -99,6 +100,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.settings.list}>
           <Settings />
         </Route>
+        <CanRoute action="read" subject="User" path={paths.users}>
+          <Users />
+        </CanRoute>
         <Route>
           <NotFound />
         </Route>

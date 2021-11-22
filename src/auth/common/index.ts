@@ -1,3 +1,3 @@
 export * from './graphql'
-export * from './user.api'
+export * from './auth.api'
 export * from './sid-utils'
