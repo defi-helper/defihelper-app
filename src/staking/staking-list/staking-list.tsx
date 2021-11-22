@@ -3,7 +3,7 @@ import { Link as ReactRouterLink } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 
-import { Can, useAbility, userModel } from '~/users'
+import { Can, useAbility, authModel } from '~/auth'
 import { paths } from '~/paths'
 import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
@@ -38,7 +38,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openWalletList] = useWalletList()
-  const wallets = useStore(userModel.$userWallets)
+  const wallets = useStore(authModel.$userWallets)
 
   useGate(model.StakingListGate, props)
 

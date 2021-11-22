@@ -4,7 +4,7 @@ import { Router } from './router'
 import { DialogProvider } from './common/dialog'
 import { ThemeProvider } from './common/theme'
 import { ToastProvider } from './toasts'
-import { UserProvider } from './users'
+import { AuthProvider } from './auth'
 import './app.css'
 import './assets/fonts/Basier-Circle-regular-webfont/stylesheet.css'
 import './assets/fonts/Basier-Square-Mono-Regular-Webfont/stylesheet.css'
@@ -16,9 +16,9 @@ export const App: React.VFC = () => {
       <ThemeProvider>
         <DialogProvider>
           <ToastProvider maxItems={6}>
-            <UserProvider>
+            <AuthProvider>
               <Router />
-            </UserProvider>
+            </AuthProvider>
           </ToastProvider>
         </DialogProvider>
       </ThemeProvider>

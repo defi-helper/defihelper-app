@@ -4,15 +4,15 @@ import { createGate } from 'effector-react'
 import { MeQuery } from '~/graphql/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
-import { sidUtils, userApi } from './common'
+import { sidUtils, authApi } from './common'
 
-export const userDomain = createDomain()
+export const authDomain = createDomain()
 
-export const fetchUserFx = userDomain.createEffect(userApi.me)
+export const fetchUserFx = authDomain.createEffect(authApi.me)
 
-export const logoutFx = userDomain.createEffect(sidUtils.remove)
+export const logoutFx = authDomain.createEffect(sidUtils.remove)
 
-export const $user = userDomain
+export const $user = authDomain
   .createStore<MeQuery['me'] | null>(null)
   .on(fetchUserFx.doneData, (_, payload) => payload)
   .on(walletNetworkModel.saveUserFx.doneData, (_, payload) => payload)
@@ -22,7 +22,7 @@ export const $userWallets = settingsWalletModel.$wallets
 
 export const UserGate = createGate({
   name: 'UserGate',
-  domain: userDomain,
+  domain: authDomain,
 })
 
 sample({

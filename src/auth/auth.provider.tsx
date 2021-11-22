@@ -4,12 +4,12 @@ import { useMemo } from 'react'
 import { BetaAccess } from '~/beta-access'
 import { config } from '~/config'
 import { UserRoleEnum } from '~/graphql/_generated-types'
-import { AbilityContext, buildAbilityFor } from './user.ability'
-import * as model from './user.model'
+import { AbilityContext, buildAbilityFor } from './auth.ability'
+import * as model from './auth.model'
 
-export type UserProviderProps = unknown
+export type AuthProviderProps = unknown
 
-export const UserProvider: React.FC<UserProviderProps> = (props) => {
+export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
   const user = useStore(model.$user)
 
   const ability = useMemo(() => buildAbilityFor(user?.role), [user])

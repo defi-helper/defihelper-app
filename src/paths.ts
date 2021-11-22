@@ -42,4 +42,6 @@ export const paths = {
     history: (automationId = ':automationId') =>
       `/automations/history/${automationId}` as const,
   },
+
+  users: '/users',
 } as const

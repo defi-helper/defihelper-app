@@ -14,7 +14,7 @@ import {
   SIGN_MESSAGE,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
-import { sidUtils } from '~/users/common'
+import { sidUtils } from '~/auth/common'
 import { config } from '~/config'
 import { UserType } from '~/graphql/_generated-types'
 

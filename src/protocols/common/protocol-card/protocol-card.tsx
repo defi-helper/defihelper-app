@@ -3,7 +3,7 @@ import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { Typography } from '~/common/typography'
 import { ButtonBase } from '~/common/button-base'
-import { Can } from '~/users'
+import { Can } from '~/auth'
 import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Dropdown } from '~/common/dropdown'

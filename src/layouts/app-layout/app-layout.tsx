@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 import { paths } from '~/paths'
 import { LayoutSidebar, LayoutContainer } from '../common'
-import { userModel } from '~/users'
+import { authModel, useAbility } from '~/auth'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { useBodyScrollLock } from '~/common/hooks'
@@ -16,36 +16,53 @@ export type AppLayoutProps = {
   action?: React.ReactNode
 }
 
-const MENU = [
+type MenuItem = {
+  title: string
+  path: string
+  icon: 'home' | 'grid' | 'energy' | 'check' | 'settings'
+  subject?: 'User'
+  can?: 'read'
+}
+
+const MENU: MenuItem[] = [
   {
     title: 'Portfolio',
-    path: paths.portfolio as string,
-    icon: 'home' as const,
+    path: paths.portfolio,
+    icon: 'home',
   },
   {
     title: 'Protocols',
-    path: paths.protocols.list as string,
-    icon: 'grid' as const,
+    path: paths.protocols.list,
+    icon: 'grid',
   },
   {
     title: 'Automations',
     path: paths.automations.list,
-    icon: 'energy' as const,
+    icon: 'energy',
   },
   {
     title: 'Roadmap',
-    path: paths.roadmap.list as string,
-    icon: 'check' as const,
+    path: paths.roadmap.list,
+    icon: 'check',
   },
   {
     title: 'Settings',
     path: paths.settings.list,
-    icon: 'settings' as const,
+    icon: 'settings',
+  },
+  {
+    title: 'Users',
+    path: paths.users,
+    icon: 'settings',
+    subject: 'User',
+    can: 'read',
   },
 ]
 
 export const AppLayout: React.FC<AppLayoutProps> = (props) => {
-  const user = useStore(userModel.$user)
+  const user = useStore(authModel.$user)
+
+  const ability = useAbility()
 
   const [hidden, setHide] = useLocalStorage('dfh:sidebar', false)
 
@@ -57,7 +74,7 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
   }
 
   const handleLogout = () => {
-    userModel.logoutFx()
+    authModel.logoutFx()
   }
 
   const handleToggleSidebar = () => {
@@ -66,11 +83,17 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
 
   useBodyScrollLock(sidebar)
 
+  const menu = MENU.filter((menuItem) => {
+    return menuItem.subject && menuItem.can
+      ? ability.can(menuItem.can, menuItem.subject)
+      : true
+  })
+
   return (
     <div className={styles.root}>
       <div className={styles.sidebarDesktop}>
         <LayoutSidebar
-          menu={MENU}
+          menu={menu}
           onLogout={user ? handleLogout : undefined}
           hidden={hidden}
         />
@@ -101,7 +124,7 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
             <Icon icon="close" width="24" height="24" />
           </ButtonBase>
           <LayoutSidebar
-            menu={MENU}
+            menu={menu}
             onLogout={user ? handleLogout : undefined}
             hidden={false}
             className={styles.sidebarMobileInner}

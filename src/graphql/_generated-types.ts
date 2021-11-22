@@ -879,6 +879,7 @@ export type Mutation = {
   addWallet?: Maybe<AuthType>
   walletUpdate: WalletType
   walletDelete: Scalars['Boolean']
+  userUpdate: UserType
   protocolCreate: ProtocolType
   protocolUpdate: ProtocolType
   protocolDelete: Scalars['Boolean']
@@ -939,6 +940,11 @@ export type MutationWalletUpdateArgs = {
 
 export type MutationWalletDeleteArgs = {
   id: Scalars['UuidType']
+}
+
+export type MutationUserUpdateArgs = {
+  id: Scalars['UuidType']
+  input: UserUpdateInputType
 }
 
 export type MutationProtocolCreateArgs = {
@@ -1528,6 +1534,7 @@ export type Query = {
   __typename?: 'Query'
   ping: Scalars['String']
   me?: Maybe<UserType>
+  users: UserListQuery
   protocol?: Maybe<ProtocolType>
   protocols: ProtocolListQuery
   proposal?: Maybe<ProposalType>
@@ -1551,6 +1558,12 @@ export type Query = {
   govToken: GovTokenType
   restakeStrategy: RestakeStrategyType
   treasury: TreasuryType
+}
+
+export type QueryUsersArgs = {
+  filter?: Maybe<UserListFilterInputType>
+  sort?: Maybe<Array<UserListSortInputType>>
+  pagination?: Maybe<UserListPaginationInputType>
 }
 
 export type QueryProtocolArgs = {
@@ -2306,6 +2319,34 @@ export type UserEventSubscriptionType = {
   createdAt: Scalars['DateTimeType']
 }
 
+export type UserListFilterInputType = {
+  role?: Maybe<UserRoleEnum>
+}
+
+export type UserListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserListQuery = {
+  __typename?: 'UserListQuery'
+  /** Elements */
+  list?: Maybe<Array<UserType>>
+  pagination: Pagination
+}
+
+export type UserListSortInputType = {
+  column: UserListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserListSortInputTypeColumnEnum {
+  Id = 'id',
+  CreatedAt = 'createdAt',
+}
+
 export type UserMetricChartFilterInputType = {
   /** Target contracts */
   contract?: Maybe<Array<Scalars['UuidType']>>
@@ -2511,6 +2552,11 @@ export type UserTypeTokenMetricChartArgs = {
   filter?: Maybe<UserTokenMetricChartFilterInputType>
   sort?: Maybe<Array<UserTokenMetricChartSortInputType>>
   pagination?: Maybe<UserTokenMetricChartPaginationInputType>
+}
+
+export type UserUpdateInputType = {
+  role?: Maybe<UserRoleEnum>
+  locale?: Maybe<LocaleEnum>
 }
 
 export type VoteListFilterInputType = {
@@ -2774,6 +2820,7 @@ export type WalletType = {
   /** Name */
   name: Scalars['String']
   contracts: WalletContractListType
+  triggersCount: Scalars['Int']
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
   metric: WalletMetricType
@@ -2812,6 +2859,14 @@ export enum WalletTypeEnum {
 export type WalletUpdateInputType = {
   /** Name */
   name?: Maybe<Scalars['String']>
+}
+
+export type MeQueryVariables = Exact<{ [key: string]: never }>
+
+export type MeQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & Pick<UserType, 'id' | 'role' | 'createdAt'>
+  >
 }
 
 export type AutomationActionCreateMutationVariables = Exact<{
@@ -4309,13 +4364,46 @@ export type StakingTokensQuery = { __typename?: 'Query' } & {
   }
 }
 
-export type MeQueryVariables = Exact<{ [key: string]: never }>
+export type UsersQueryVariables = Exact<{
+  filter?: Maybe<WalletListFilterInputType>
+  sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
+  pagination?: Maybe<WalletListPaginationInputType>
+}>
 
-export type MeQuery = { __typename?: 'Query' } & {
-  me?: Maybe<
-    { __typename?: 'UserType' } & Pick<UserType, 'id' | 'role' | 'createdAt'>
+export type UsersQuery = { __typename?: 'Query' } & {
+  users: { __typename?: 'UserListQuery' } & {
+    list?: Maybe<Array<{ __typename?: 'UserType' } & UserFragment>>
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type UserUpdateMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: UserUpdateInputType
+}>
+
+export type UserUpdateMutation = { __typename?: 'Mutation' } & {
+  userUpdate: { __typename?: 'UserType' } & Pick<
+    UserType,
+    'id' | 'role' | 'createdAt'
   >
 }
+
+export type UserFragment = { __typename?: 'UserType' } & Pick<
+  UserType,
+  'id' | 'role' | 'createdAt'
+> & {
+    wallets: { __typename?: 'WalletListType' } & {
+      list?: Maybe<
+        Array<
+          { __typename?: 'WalletType' } & Pick<
+            WalletType,
+            'id' | 'blockchain' | 'network' | 'address'
+          >
+        >
+      >
+    }
+  }
 
 export type AuthEthMutationVariables = Exact<{
   input: AuthEthereumInputType

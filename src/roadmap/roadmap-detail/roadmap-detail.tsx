@@ -5,7 +5,7 @@ import { AppLayout } from '~/layouts'
 import { Typography } from '~/common/typography'
 import { cutAccount } from '~/common/cut-account'
 import { MarkdownRender } from '~/common/markdown-render'
-import { userModel } from '~/users'
+import { authModel } from '~/auth'
 import { RoadmapVote } from '~/roadmap/common'
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
@@ -22,7 +22,7 @@ export const RoadmapDetail: React.VFC<RoadmapDetailProps> = () => {
 
   const proposal = useStore(model.$proposalDetail)
   const loading = useStore(model.fetchProposalFx.pending)
-  const user = useStore(userModel.$user)
+  const user = useStore(authModel.$user)
 
   const voted = proposal?.votes.list?.some(
     (votes) => votes.user.id === user?.id

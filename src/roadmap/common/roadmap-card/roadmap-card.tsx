@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 
 import { paths } from '~/paths'
-import { Can } from '~/users'
+import { Can } from '~/auth'
 import { Paper } from '~/common/paper'
 import { Proposal } from '~/roadmap/common/roadmap.types'
 import { RoadmapVote } from '~/roadmap/common/roadmap-vote'

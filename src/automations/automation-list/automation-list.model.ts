@@ -6,7 +6,7 @@ import {
   AutomationContractFragmentFragment,
   UserType,
 } from '~/graphql/_generated-types'
-import { userModel } from '~/users'
+import { authModel } from '~/auth'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as automationDeployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import { automationApi } from '../common/automation.api'
@@ -204,8 +204,8 @@ export const $contracts = automationListDomain
 
 sample({
   clock: guard({
-    source: [userModel.$user, AutomationListGate.status],
-    clock: [userModel.$user.updates, AutomationListGate.open],
+    source: [authModel.$user, AutomationListGate.status],
+    clock: [authModel.$user.updates, AutomationListGate.open],
     filter: (source): source is [UserType, boolean] => {
       const [user, status] = source
 
