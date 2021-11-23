@@ -37,14 +37,17 @@ export const fetchChartDataFx = portfolioEarnings.createEffect(
     if (!data) throw new Error('something went wrong')
 
     return data.everyDay
-      .reduce<EastimatedEarnings[]>((acc, everyDayItem, index) => {
+      .reduce<EastimatedEarnings[]>((acc, everyDayItem) => {
         const date = new Date()
+
+        const hold = data.hold.find(({ t }) => everyDayItem.t === t)
+        const optimal = data.optimal.find(({ t }) => everyDayItem.t === t)
 
         return [
           ...acc,
           {
-            hold: bignumberUtils.format(data?.hold[index]?.v ?? 0),
-            autostaking: bignumberUtils.format(data?.optimal[index]?.v ?? 0),
+            hold: bignumberUtils.format(hold?.v ?? 0),
+            autostaking: bignumberUtils.format(optimal?.v ?? 0),
             date: date.setDate(date.getDate() + everyDayItem.t),
           },
         ]
