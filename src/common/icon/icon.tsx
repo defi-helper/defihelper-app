@@ -44,14 +44,16 @@ import { ReactComponent as ArrowLeftIcon } from '~/assets/icons/arrow-left.svg'
 import { ReactComponent as ArrowRightIcon } from '~/assets/icons/arrow-right.svg'
 import { ReactComponent as UpvoteIcon } from '~/assets/icons/upvote.svg'
 import { ReactComponent as AutomationIcon } from '~/assets/icons/automation.svg'
-import { ReactComponent as BnbRegularIcon } from '~/assets/icons/bnb-regular.svg'
-import { ReactComponent as EthereumRegularIcon } from '~/assets/icons/ethereum-regular.svg'
-import { ReactComponent as WavesRegularIcon } from '~/assets/icons/waves-regular.svg'
+import { ReactComponent as BnbRegularIcon } from '~/assets/icons/blockchains/bnb-regular.svg'
+import { ReactComponent as EthereumRegularIcon } from '~/assets/icons/blockchains/ethereum-regular.svg'
+import { ReactComponent as WavesRegularIcon } from '~/assets/icons/blockchains/waves-regular.svg'
 import { ReactComponent as BurgerIcon } from '~/assets/icons/burger.svg'
 import { ReactComponent as CloseIcon } from '~/assets/icons/close.svg'
 import { ReactComponent as LinkIcon } from '~/assets/icons/link.svg'
 import { ReactComponent as SearchIcon } from '~/assets/icons/search.svg'
 import { ReactComponent as ExclamationIcon } from '~/assets/icons/exclamation.svg'
+import { ReactComponent as AvalancheIcon } from '~/assets/icons/blockchains/avalanche.svg'
+import { ReactComponent as PolygonIcon } from '~/assets/icons/blockchains/polygon.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -110,6 +112,8 @@ const ICONS = {
   link: LinkIcon,
   search: SearchIcon,
   exclamation: ExclamationIcon,
+  avalanche: AvalancheIcon,
+  polygon: PolygonIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

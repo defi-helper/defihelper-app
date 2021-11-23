@@ -22,3 +22,7 @@ export const totalTitle = style({
 export const totalItem = style({
   padding: '24px 32px 32px',
 })
+
+export const link = style({
+  color: theme.colors.common.blue1,
+})

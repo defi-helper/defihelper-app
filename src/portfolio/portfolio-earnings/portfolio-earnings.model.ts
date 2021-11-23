@@ -36,8 +36,8 @@ export const fetchChartDataFx = portfolioEarnings.createEffect(
 
     if (!data) throw new Error('something went wrong')
 
-    return data.everyDay.reduce<EastimatedEarnings[]>(
-      (acc, everyDayItem, index) => {
+    return data.everyDay
+      .reduce<EastimatedEarnings[]>((acc, everyDayItem, index) => {
         const date = new Date()
 
         return [
@@ -48,9 +48,8 @@ export const fetchChartDataFx = portfolioEarnings.createEffect(
             date: date.setDate(date.getDate() + everyDayItem.t),
           },
         ]
-      },
-      []
-    )
+      }, [])
+      .slice(0, 3)
   }
 )
 

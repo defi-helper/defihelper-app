@@ -112,7 +112,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
         <ProtocolChartWrap
           header={
             <>
-              <Typography>Estimated Earnings</Typography>
+              <Typography>Estimated Earnings (in 3 month)</Typography>
             </>
           }
         >

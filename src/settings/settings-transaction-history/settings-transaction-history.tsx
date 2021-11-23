@@ -206,7 +206,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                       </Link>
                     </Typography>
                     <Typography variant="body2" as="div">
-                      {bignumberUtils.format(historyItem.amount)}{' '}
+                      {bignumberUtils.format(historyItem.amount, 6)}{' '}
                       {networksConfig[historyItem.network].coin}
                     </Typography>
                     <Typography variant="body2" as="div">
@@ -218,14 +218,14 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                       className={
                         styles.statuses[
                           historyItem.bill?.status ||
-                            BillingBillStatusEnum.Pending
+                            BillingBillStatusEnum.Accepted
                         ]
                       }
                     >
                       {
                         STATUSES[
                           historyItem.bill?.status ||
-                            BillingBillStatusEnum.Pending
+                            BillingBillStatusEnum.Accepted
                         ]
                       }
                     </Typography>

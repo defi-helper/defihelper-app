@@ -1,3 +1,4 @@
+import { config } from './config'
 import { BlockchainEnum } from './graphql/_generated-types'
 
 type Network = {
@@ -5,20 +6,19 @@ type Network = {
   explorerUrl: string
   coin: string
   blockchain: BlockchainEnum
-  icon: 'ethereumRegular' | 'bnbRegular' | 'wavesRegular'
+  icon:
+    | 'ethereumRegular'
+    | 'bnbRegular'
+    | 'wavesRegular'
+    | 'avalanche'
+    | 'solana'
+    | 'polygon'
 }
 
-export const networksConfig: Record<string, Network> = {
+const prodNetworks: Record<string, Network> = {
   1: {
     title: 'Ethereum',
     explorerUrl: 'https://etherscan.io/address',
-    coin: 'ETH',
-    blockchain: BlockchainEnum.Ethereum,
-    icon: 'ethereumRegular',
-  },
-  3: {
-    title: 'Ropsten',
-    explorerUrl: 'https://ropsten.etherscan.io/address',
     coin: 'ETH',
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
@@ -27,6 +27,58 @@ export const networksConfig: Record<string, Network> = {
     title: 'Harmony',
     explorerUrl: 'https://explorer.harmony.one/address',
     coin: 'ONE',
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'ethereumRegular',
+  },
+  56: {
+    title: 'Binance Smart Chain',
+    explorerUrl: 'https://bscscan.com/address',
+    coin: 'BNB',
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'bnbRegular',
+  },
+  137: {
+    title: 'Polygon',
+    explorerUrl: 'https://polygonscan.com/address',
+    coin: 'MATIC',
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'polygon',
+  },
+  43114: {
+    title: 'Avalanche',
+    explorerUrl: 'https://snowtrace.io/address',
+    coin: 'AVAX',
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'avalanche',
+  },
+  waves: {
+    title: 'Waves',
+    explorerUrl: 'https://wavesexplorer.com/address',
+    coin: 'WAVES',
+    blockchain: BlockchainEnum.Waves,
+    icon: 'wavesRegular',
+  },
+  main: {
+    title: 'Waves',
+    explorerUrl: 'https://wavesexplorer.com/address',
+    coin: 'WAVES',
+    blockchain: BlockchainEnum.Waves,
+    icon: 'wavesRegular',
+  },
+  W: {
+    title: 'Waves',
+    explorerUrl: 'https://wavesexplorer.com/address',
+    coin: 'WAVES',
+    blockchain: BlockchainEnum.Waves,
+    icon: 'wavesRegular',
+  },
+}
+
+const devNetworks: Record<string, Network> = {
+  3: {
+    title: 'Ropsten',
+    explorerUrl: 'https://ropsten.etherscan.io/address',
+    coin: 'ETH',
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
   },
@@ -51,13 +103,6 @@ export const networksConfig: Record<string, Network> = {
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
   },
-  56: {
-    title: 'Binance Smart Chain',
-    explorerUrl: 'https://bscscan.com/address',
-    coin: 'BNB',
-    blockchain: BlockchainEnum.Ethereum,
-    icon: 'bnbRegular',
-  },
   97: {
     title: 'Binance Smart Chain Testnet',
     explorerUrl: 'https://testnet.bscscan.com/address',
@@ -65,46 +110,16 @@ export const networksConfig: Record<string, Network> = {
     blockchain: BlockchainEnum.Ethereum,
     icon: 'bnbRegular',
   },
-  137: {
-    title: 'Polygon',
-    explorerUrl: 'https://polygonscan.com/address',
-    coin: 'MATIC',
-    blockchain: BlockchainEnum.Ethereum,
-    icon: 'ethereumRegular',
-  },
-  43114: {
-    title: 'Avalanche',
-    explorerUrl: 'https://snowtrace.io/address',
-    coin: 'AVAX',
-    blockchain: BlockchainEnum.Ethereum,
-    icon: 'ethereumRegular',
-  },
   43113: {
     title: 'Avalanche (testnet)',
     explorerUrl: 'https://testnet.snowtrace.io/address',
     coin: 'AVAX',
     blockchain: BlockchainEnum.Ethereum,
-    icon: 'ethereumRegular',
+    icon: 'avalanche',
   },
-  waves: {
-    title: 'Waves',
-    explorerUrl: 'https://wavesexplorer.com/address',
-    coin: 'WAVES',
-    blockchain: BlockchainEnum.Waves,
-    icon: 'wavesRegular',
-  },
-  main: {
-    title: 'Waves',
-    explorerUrl: 'https://wavesexplorer.com/address',
-    coin: 'WAVES',
-    blockchain: BlockchainEnum.Waves,
-    icon: 'wavesRegular',
-  },
-  W: {
-    title: 'Waves',
-    explorerUrl: 'https://wavesexplorer.com/address',
-    coin: 'WAVES',
-    blockchain: BlockchainEnum.Waves,
-    icon: 'wavesRegular',
-  },
+}
+
+export const networksConfig: Record<string, Network> = {
+  ...prodNetworks,
+  ...(config.IS_DEV ? devNetworks : {}),
 }

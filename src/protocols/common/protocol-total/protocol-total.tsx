@@ -1,4 +1,5 @@
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { ProtocolQuery } from '~/graphql/_generated-types'
@@ -9,7 +10,11 @@ export type ProtocolTotalProps = Exclude<
   null | undefined
 >['metric']
 
+const MEDIUM_LINK = `https://defihelper.medium.com/introducing-defihelper-the-most-advanced-non-custodial-defi-investment-tool-on-the-market-aa7e591a8f7f`
+
 export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
+  const apyBoost = bignumberUtils.mul(props.myAPY, 100)
+
   return (
     <div className={styles.total}>
       <Paper radius={8} className={styles.totalItem}>
@@ -33,7 +38,16 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
           APY Boost
         </Typography>
         <Typography variant="h4">
-          {bignumberUtils.format(props.myAPY)}%
+          {bignumberUtils.formatApy(apyBoost)}%
+        </Typography>
+        <Typography
+          variant="body3"
+          as={Link}
+          href={MEDIUM_LINK}
+          target="_blank"
+          className={styles.link}
+        >
+          How autostaking works?
         </Typography>
       </Paper>
     </div>
