@@ -78,3 +78,8 @@ export const connected = style({
   borderRadius: 8,
   marginRight: 8,
 })
+
+export const wallets = style({
+  color: theme.colors.textColorGrey,
+  marginTop: 20,
+})

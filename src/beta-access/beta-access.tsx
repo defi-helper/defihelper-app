@@ -151,14 +151,16 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                       Change
                     </Button>
                   )}
-                  {wallets.map((wallet) => (
-                    <div key={wallet.id}>
-                      {cutAccount(wallet.address)}{' '}
-                      {networksConfig[wallet.network] && (
-                        <>({networksConfig[wallet.network].title})</>
-                      )}
-                    </div>
-                  ))}
+                  <div className={styles.wallets}>
+                    {wallets.map((wallet) => (
+                      <Typography variant="body3" key={wallet.id}>
+                        {cutAccount(wallet.address)}{' '}
+                        {networksConfig[wallet.network] && (
+                          <>({networksConfig[wallet.network].title})</>
+                        )}
+                      </Typography>
+                    ))}
+                  </div>
                 </div>
               </Paper>
             </div>
