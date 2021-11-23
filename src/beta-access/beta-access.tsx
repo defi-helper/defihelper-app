@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { BrowserRouter as Router } from 'react-router-dom'
 
-import { AppLayout } from '~/layouts'
+import { BetaLayout } from '~/layouts'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { Grid } from '~/common/grid'
@@ -62,7 +62,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
 
   return (
     <Router>
-      <AppLayout>
+      <BetaLayout>
         <Head title="Beta access" />
         <Grid.Container variant="md" className={styles.root}>
           <Typography
@@ -156,7 +156,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
             </div>
           </Grid.Row>
         </Grid.Container>
-      </AppLayout>
+      </BetaLayout>
     </Router>
   )
 }
