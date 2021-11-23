@@ -2,15 +2,7 @@ import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
-export const root = style({
-  paddingTop: 40,
-
-  '@media': {
-    [theme.mediaQueries.lg()]: {
-      paddingTop: 64,
-    },
-  },
-})
+export const root = style({})
 
 export const title = style({
   marginBottom: 16,
