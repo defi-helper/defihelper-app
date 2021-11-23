@@ -58,7 +58,7 @@ export const ProtocolLastMonthChart: React.VFC<ProtocolLastMonthChartProps> = (
     const dateAxis = chartRef.current.xAxes.push(new DateAxis())
     dateAxis.renderer.disabled = true
 
-    dateAxis.renderer.baseGrid.disabled = false
+    dateAxis.renderer.baseGrid.disabled = true
     dateAxis.renderer.grid.template.disabled = true
 
     dateAxis.fontSize = 12
