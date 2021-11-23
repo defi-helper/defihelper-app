@@ -1,11 +1,5 @@
 import BigNumber from 'bignumber.js'
 
-const formatDecimals = (result: string) => {
-  const [integerValue, floatValue] = result.split('.')
-
-  return new BigNumber(floatValue).isZero() ? integerValue : result
-}
-
 const MAX_APY = 10000
 
 export const bignumberUtils = {
@@ -26,18 +20,18 @@ export const bignumberUtils = {
 
     if (result.isInteger()) return result.toFormat(0)
 
-    if (result.lt('10')) return formatDecimals(result.toFormat(decimal))
+    if (result.lt('10')) return result.toFormat(decimal)
 
-    if (result.lt('10000')) return formatDecimals(result.toFormat(decimal))
+    if (result.lt('10000')) return result.toFormat(decimal)
 
-    if (result.lt('100000')) return formatDecimals(result.toFormat(decimal))
+    if (result.lt('100000')) return result.toFormat(decimal)
 
-    if (result.lt('1000000')) return formatDecimals(result.toFormat(decimal))
+    if (result.lt('1000000')) return result.toFormat(decimal)
 
     if (result.isGreaterThanOrEqualTo('1000000000'))
-      return `${formatDecimals(result.div('1000000000').toFormat(decimal))}B`
+      return `${result.div('1000000000').toFormat(decimal)}B`
 
-    return `${formatDecimals(result.div('1000000').toFormat(decimal))}M`
+    return `${result.div('1000000').toFormat(decimal)}M`
   },
 
   formatApy: (amount?: string | number | null) => {
