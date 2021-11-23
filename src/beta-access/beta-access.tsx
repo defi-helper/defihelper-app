@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { BrowserRouter as Router } from 'react-router-dom'
@@ -14,8 +14,15 @@ import { config } from '~/config'
 import { Paper } from '~/common/paper'
 import { authModel } from '~/auth'
 import { BetaAccessSuccess } from './common/wallet-success'
-import { UserRoleEnum } from '~/graphql/_generated-types'
+import {
+  UserContactBrokerEnum,
+  UserContactStatusEnum,
+  UserRoleEnum,
+} from '~/graphql/_generated-types'
 import { Head } from '~/common/head'
+import { cutAccount } from '~/common/cut-account'
+import { networksConfig } from '~/networks-config'
+import { SubscribeAttention } from './common/subscribe-attention'
 import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './beta-access.css'
 import * as model from './beta-access.model'
@@ -26,9 +33,11 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
   const user = useStore(authModel.$user)
   const userContact = useStore(model.$userContact)
   const userContacts = useStore(contactListModel.$userContactList)
+  const wallet = useStore(walletNetworkModel.$wallet)
 
   const [openWalletList] = useDialog(WalletList)
   const [openSuccess] = useDialog(BetaAccessSuccess)
+  const [openSubscribe] = useDialog(SubscribeAttention)
 
   const handleOpenWalletList = async () => {
     try {
@@ -48,17 +57,45 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
 
   useGate(contactListModel.SettingsContactsGate)
 
+  const contacts = useMemo(
+    () => (userContact ? [...userContacts, userContact] : userContacts),
+    [userContact, userContacts]
+  )
+
   useEffect(() => {
+    const telegram = contacts.find(
+      (contact) => contact.broker === UserContactBrokerEnum.Telegram
+    )
+
+    if (telegram?.status === UserContactStatusEnum.Inactive) {
+      openSubscribe()
+        .then(() => {
+          model.openTelegramFx(telegram)
+        })
+        .catch((error) => console.error(error.message))
+    }
+
+    if (user && !contacts.length) {
+      openSubscribe()
+        .then(() => {
+          model.openTelegram()
+        })
+        .catch((error) => console.error(error.message))
+    }
+
     if (
-      (userContact || userContacts.length) &&
+      telegram?.status === UserContactStatusEnum.Active &&
       user &&
       config.BETA &&
       user.role === UserRoleEnum.Candidate
     ) {
       openSuccess().catch((error) => console.error(error.message))
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, userContact, userContacts])
+  }, [contacts, wallet, user])
+
+  const currentNetwork = networksConfig[String(wallet.chainId)]
 
   return (
     <Router>
@@ -95,25 +132,35 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                 >
                   Connect your wallet and be among the first users of DFH
                 </Typography>
-                {Boolean(user) && (
-                  <Typography
-                    variant="body2"
-                    transform="uppercase"
-                    family="mono"
-                    className={styles.connected}
-                  >
-                    Connected
-                  </Typography>
-                )}
-                {!user ? (
-                  <Button variant="outlined" onClick={handleOpenWalletList}>
-                    Connect wallet
-                  </Button>
-                ) : (
-                  <Button variant="outlined" onClick={handleOpenWalletList}>
-                    Change
-                  </Button>
-                )}
+                <div>
+                  {Boolean(user) && (
+                    <Typography
+                      variant="body2"
+                      transform="uppercase"
+                      family="mono"
+                      className={styles.connected}
+                    >
+                      Connected
+                    </Typography>
+                  )}
+                  {!user ? (
+                    <Button variant="outlined" onClick={handleOpenWalletList}>
+                      Connect wallet
+                    </Button>
+                  ) : (
+                    <Button variant="outlined" onClick={handleOpenWalletList}>
+                      Change
+                    </Button>
+                  )}
+                  {wallet.account && (
+                    <div>
+                      {cutAccount(wallet.account)}{' '}
+                      {wallet.chainId && currentNetwork && (
+                        <>({currentNetwork.title})</>
+                      )}
+                    </div>
+                  )}
+                </div>
               </Paper>
             </div>
             <div className={styles.col}>

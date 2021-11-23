@@ -12,7 +12,9 @@ export const BetaAccessSuccess: React.VFC<{ onCancel: () => void }> = (
         Your wallet is now connected. Stay tuned for the beta launch
         announcement!
       </Typography>
-      <Button onClick={props.onCancel}>Ok</Button>
+      <Button onClick={props.onCancel} className={styles.button} size="small">
+        Ok
+      </Button>
     </Dialog>
   )
 }
