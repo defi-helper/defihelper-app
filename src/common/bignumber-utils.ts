@@ -6,6 +6,8 @@ const formatDecimals = (result: string) => {
   return new BigNumber(floatValue).isZero() ? integerValue : result
 }
 
+const MAX_APY = 10000
+
 export const bignumberUtils = {
   fromCall: (amount: string | number, decimals: number) =>
     new BigNumber(amount || 0)
@@ -24,18 +26,24 @@ export const bignumberUtils = {
 
     if (result.isInteger()) return result.toFormat(0)
 
-    if (result.lt(10)) return formatDecimals(result.toFormat(decimal))
+    if (result.lt('10')) return formatDecimals(result.toFormat(decimal))
 
-    if (result.lt(10000)) return formatDecimals(result.toFormat(decimal))
+    if (result.lt('10000')) return formatDecimals(result.toFormat(decimal))
 
-    if (result.lt(100000)) return formatDecimals(result.toFormat(decimal))
+    if (result.lt('100000')) return formatDecimals(result.toFormat(decimal))
 
-    if (result.lt(1000000)) return formatDecimals(result.toFormat(decimal))
+    if (result.lt('1000000')) return formatDecimals(result.toFormat(decimal))
 
-    if (result.isGreaterThanOrEqualTo(1000000000))
-      return `${formatDecimals(result.div(1000000000).toFormat(decimal))}B`
+    if (result.isGreaterThanOrEqualTo('1000000000'))
+      return `${formatDecimals(result.div('1000000000').toFormat(decimal))}B`
 
-    return `${formatDecimals(result.div(1000000).toFormat(decimal))}M`
+    return `${formatDecimals(result.div('1000000').toFormat(decimal))}M`
+  },
+
+  formatApy: (amount?: string | number | null) => {
+    return bignumberUtils.gt(amount, MAX_APY)
+      ? `${bignumberUtils.format(MAX_APY)}+`
+      : bignumberUtils.format(amount)
   },
 
   getPercentage: (

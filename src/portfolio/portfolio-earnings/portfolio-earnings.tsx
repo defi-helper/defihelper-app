@@ -48,7 +48,7 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
-        <Typography>Estimated Earnings</Typography>
+        <Typography>Estimated Earnings (in 3 month)</Typography>
       </div>
       <Chart
         dataFields={ESTIMATED_FIELDS}

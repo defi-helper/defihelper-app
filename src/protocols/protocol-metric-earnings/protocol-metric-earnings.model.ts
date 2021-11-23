@@ -29,8 +29,8 @@ export const fetchEarningMetricFx = protocolMetricEarningsDomain.createEffect(
 
     return {
       group: params.group,
-      data: data.everyDay.reduce<EastimatedEarnings[]>(
-        (acc, everyDayItem, index) => {
+      data: data.everyDay
+        .reduce<EastimatedEarnings[]>((acc, everyDayItem, index) => {
           const date = new Date()
 
           return [
@@ -41,9 +41,8 @@ export const fetchEarningMetricFx = protocolMetricEarningsDomain.createEffect(
               date: date.setDate(date.getDate() + everyDayItem.t),
             },
           ]
-        },
-        []
-      ),
+        }, [])
+        .slice(0, 3),
     }
   }
 )

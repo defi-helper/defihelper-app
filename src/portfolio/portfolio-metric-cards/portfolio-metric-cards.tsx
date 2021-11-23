@@ -32,7 +32,9 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
           loading ? (
             'loading...'
           ) : (
-            <>{bignumberUtils.format(bignumberUtils.mul(metric?.apy, 100))}%</>
+            <>
+              {bignumberUtils.formatApy(bignumberUtils.mul(metric?.apy, 100))}%
+            </>
           )
         }
       />

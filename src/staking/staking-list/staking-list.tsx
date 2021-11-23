@@ -196,7 +196,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       </div>
                       <div>
                         <Typography variant="body2" as="div">
-                          {bignumberUtils.format(stakingListItem.autostaking)}%
+                          {bignumberUtils.formatApy(
+                            stakingListItem.autostaking
+                          )}
+                          %
                         </Typography>
                       </div>
                       <div>
@@ -218,6 +221,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                               100
                             )
                           )}
+                          %
                         </Typography>
                       </div>
                       <div className={styles.tableCol}>

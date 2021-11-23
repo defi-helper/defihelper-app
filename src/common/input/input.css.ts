@@ -47,6 +47,10 @@ export const input = style({
   },
 })
 
+export const textarea = style({
+  resize: 'none',
+})
+
 export const error = style({})
 
 globalStyle(`${error} ${input}`, {

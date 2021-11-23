@@ -146,7 +146,7 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
         className={styles.input}
       />
       <Input
-        type="text"
+        type="textarea"
         label="Description"
         {...register('description')}
         disabled={props.loading}

@@ -80,7 +80,7 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
         helperText={formState.errors.name?.message}
       />
       <Input
-        type="text"
+        type="textarea"
         label="Description"
         defaultValue={props.defaultValues?.description ?? ''}
         {...register('description')}

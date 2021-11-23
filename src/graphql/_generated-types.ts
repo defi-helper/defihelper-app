@@ -4143,6 +4143,7 @@ export type WalletFragmentFragment = { __typename?: 'WalletType' } & Pick<
   | 'publicKey'
   | 'name'
   | 'createdAt'
+  | 'triggersCount'
 > & {
     metric: { __typename?: 'WalletMetricType' } & Pick<
       WalletMetricType,

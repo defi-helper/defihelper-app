@@ -1,20 +1,43 @@
+import { useForkRef } from '@material-ui/core'
 import clsx from 'clsx'
-import { forwardRef } from 'react'
+import { cloneElement, forwardRef, useEffect, useRef } from 'react'
+import autosize from 'autosize'
 
 import { Typography } from '~/common/typography'
 import * as styles from './input.css'
 
-export type InputProps = React.ComponentProps<'input'> & {
+export type InputProps = Omit<React.ComponentProps<'input'>, 'type'> & {
   label?: string
   helperText?: React.ReactNode
   error?: boolean
+  type?: React.ComponentProps<'input'>['type'] | 'textarea'
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   props,
   ref
 ) {
-  const { className, label, error, helperText, ...restOfProps } = props
+  const { className, label, type, error, helperText, ...restOfProps } = props
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  const localRef = useForkRef<HTMLTextAreaElement>(
+    ref as React.ForwardedRef<HTMLTextAreaElement>,
+    textareaRef
+  )
+
+  const component =
+    type === 'textarea' ? (
+      <textarea className={styles.textarea} ref={localRef} />
+    ) : (
+      <input ref={ref} />
+    )
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      autosize(textareaRef.current)
+    }
+  }, [])
 
   return (
     <div
@@ -37,7 +60,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           {label}
         </Typography>
       )}
-      <input {...restOfProps} className={styles.input} ref={ref} />
+      {cloneElement(component, {
+        ...component.props,
+        ...restOfProps,
+        className: clsx(styles.input, component.props.className),
+      })}
       {helperText && (
         <Typography
           variant="body2"
