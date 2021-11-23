@@ -24,6 +24,7 @@ import { cutAccount } from '~/common/cut-account'
 import { networksConfig } from '~/networks-config'
 import { SubscribeAttention } from './common/subscribe-attention'
 import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
+import * as walletListModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as styles from './beta-access.css'
 import * as model from './beta-access.model'
 
@@ -33,7 +34,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
   const user = useStore(authModel.$user)
   const userContact = useStore(model.$userContact)
   const userContacts = useStore(contactListModel.$userContactList)
-  const wallet = useStore(walletNetworkModel.$wallet)
+  const wallets = useStore(walletListModel.$wallets)
 
   const [openWalletList] = useDialog(WalletList)
   const [openSuccess] = useDialog(BetaAccessSuccess)
@@ -93,9 +94,7 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contacts, wallet, user])
-
-  const currentNetwork = networksConfig[String(wallet.chainId)]
+  }, [contacts, user])
 
   return (
     <Router>
@@ -152,14 +151,14 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                       Change
                     </Button>
                   )}
-                  {wallet.account && (
-                    <div>
-                      {cutAccount(wallet.account)}{' '}
-                      {wallet.chainId && currentNetwork && (
-                        <>({currentNetwork.title})</>
+                  {wallets.map((wallet) => (
+                    <div key={wallet.id}>
+                      {cutAccount(wallet.address)}{' '}
+                      {networksConfig[wallet.network] && (
+                        <>({networksConfig[wallet.network].title})</>
                       )}
                     </div>
-                  )}
+                  ))}
                 </div>
               </Paper>
             </div>
