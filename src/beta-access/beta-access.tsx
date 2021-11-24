@@ -68,7 +68,12 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
       (contact) => contact.broker === UserContactBrokerEnum.Telegram
     )
 
-    if (telegram?.status === UserContactStatusEnum.Inactive) {
+    if (
+      telegram?.status === UserContactStatusEnum.Inactive &&
+      user &&
+      config.BETA &&
+      user.role === UserRoleEnum.Candidate
+    ) {
       openSubscribe()
         .then(() => {
           model.openTelegramFx(telegram)
@@ -76,7 +81,12 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
         .catch((error) => console.error(error.message))
     }
 
-    if (user && !contacts.length) {
+    if (
+      user &&
+      !contacts.length &&
+      config.BETA &&
+      user.role === UserRoleEnum.Candidate
+    ) {
       openSubscribe()
         .then(() => {
           model.openTelegram()
