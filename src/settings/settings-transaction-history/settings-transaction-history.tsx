@@ -207,7 +207,8 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                     </Typography>
                     <Typography variant="body2" as="div">
                       {bignumberUtils.format(historyItem.amount, 6)}{' '}
-                      {networksConfig[historyItem.network].coin}
+                      {networksConfig[historyItem.network] &&
+                        networksConfig[historyItem.network].coin}
                     </Typography>
                     <Typography variant="body2" as="div">
                       {dateUtils.format(historyItem.createdAt)}
