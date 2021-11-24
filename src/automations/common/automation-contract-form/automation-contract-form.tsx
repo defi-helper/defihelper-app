@@ -16,7 +16,7 @@ export type FormValues = {
 export type AutomationContractFormProps = {
   loading?: boolean
   onSubmit: (formValues: FormValues) => void
-  contract: Automates
+  adapter: Automates
   defaultValues?: FormValues
 }
 
@@ -29,8 +29,8 @@ export const AutomationContractForm: React.VFC<AutomationContractFormProps> = (
 
   return (
     <AutomationForm onSubmit={handleSubmit(props.onSubmit)}>
-      {props.contract &&
-        new ethers.utils.Interface(props.contract.contractInterface)
+      {props.adapter &&
+        new ethers.utils.Interface(props.adapter.contractInterface)
           .getFunction('init')
           .inputs.map(({ name, type }, i) => {
             const Component = type === 'address' ? Input : NumericalInput

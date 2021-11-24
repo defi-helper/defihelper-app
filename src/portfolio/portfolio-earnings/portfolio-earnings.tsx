@@ -36,11 +36,11 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
   const metric = useStore(portfolioMetricCardModel.$metric)
 
   useEffect(() => {
-    if (!metric?.stakedUSD) return
+    if (!metric?.worth) return
 
     model.fetchChartDataFx({
       group: currentGroup,
-      balance: Number(metric?.stakedUSD ?? 0),
+      balance: Number(metric?.worth ?? 0),
       apy: Number(metric.apy ?? 0),
     })
   }, [metric])

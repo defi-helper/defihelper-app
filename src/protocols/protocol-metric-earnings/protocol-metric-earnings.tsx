@@ -9,6 +9,7 @@ import { ProtocolChartWrap, ProtocolMetricGroups } from '../common'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
 import * as model from './protocol-metric-earnings.model'
 import * as styles from './protocol-metric-earnings.css'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 const STAKED_FIELDS = [
   {
@@ -61,10 +62,12 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   useEffect(() => {
     model.fetchEarningMetricFx({
       group: currentEarningsGroup,
-      balance: Number(props.metric.myStaked ?? 0),
+      balance: Number(
+        bignumberUtils.plus(props.metric.myEarned, props.metric.myStaked)
+      ),
       apy: Number(props.metric.myAPY ?? 0),
     })
-  }, [props.metric.myStaked, props.metric.myAPY])
+  }, [props.metric.myStaked, props.metric.myEarned, props.metric.myAPY])
 
   useEffect(() => {
     if (!contracts.length) return

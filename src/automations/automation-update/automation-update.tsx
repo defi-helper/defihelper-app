@@ -131,7 +131,9 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   }
 
   const handleDeploy = () => {
-    return openDeployContract()
+    return openDeployContract({
+      protocols,
+    })
   }
 
   const handleAddAction = async () => {
