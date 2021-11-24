@@ -123,7 +123,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             Network
           </Typography>
           <Typography variant="body2" as="span">
-            {networksConfig[props.network].title}
+            {networksConfig[props.network]?.title}
           </Typography>
         </div>
         <div className={styles.row}>
@@ -166,8 +166,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           </Typography>
           <Typography variant="body2" as="span">
             {bignumberUtils.format(props.feeFunds)}{' '}
-            {networksConfig[props.network] &&
-              networksConfig[props.network].coin}
+            {networksConfig[props.network]?.coin}
           </Typography>
         </div>
         <div className={styles.row}>
@@ -196,8 +195,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           </Typography>
           <Typography variant="body2" as="span">
             {bignumberUtils.format(props.locked)}{' '}
-            {networksConfig[props.network] &&
-              networksConfig[props.network].coin}
+            {networksConfig[props.network]?.coin}
           </Typography>
         </div>
         <div className={styles.buttons}>
