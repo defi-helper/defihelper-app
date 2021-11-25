@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { BrowserRouter as Router } from 'react-router-dom'
+import isEmpty from 'lodash.isempty'
 
 import { BetaLayout } from '~/layouts'
 import { Button } from '~/common/button'
@@ -161,16 +162,18 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
                       Change
                     </Button>
                   )}
-                  <div className={styles.wallets}>
-                    {wallets.map((wallet) => (
-                      <Typography variant="body3" key={wallet.id}>
-                        {cutAccount(wallet.address)}{' '}
-                        {networksConfig[wallet.network] && (
-                          <>({networksConfig[wallet.network].title})</>
-                        )}
-                      </Typography>
-                    ))}
-                  </div>
+                  {!isEmpty(wallets) && (
+                    <div className={styles.wallets}>
+                      {wallets.map((wallet) => (
+                        <Typography variant="body3" key={wallet.id}>
+                          {cutAccount(wallet.address)}{' '}
+                          {networksConfig[wallet.network] && (
+                            <>({networksConfig[wallet.network].title})</>
+                          )}
+                        </Typography>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </Paper>
             </div>

@@ -18,7 +18,7 @@ export const $user = authDomain
   .on(walletNetworkModel.saveUserFx.doneData, (_, payload) => payload)
   .reset(logoutFx.done)
 
-export const $userWallets = settingsWalletModel.$wallets
+export const $userWallets = settingsWalletModel.$wallets.reset(logoutFx.done)
 
 export const UserGate = createGate({
   name: 'UserGate',
@@ -30,8 +30,9 @@ sample({
   target: fetchUserFx,
 })
 
-sample({
+guard({
   clock: $user.updates,
+  filter: (user) => Boolean(user),
   target: settingsWalletModel.fetchWalletListFx,
 })
 

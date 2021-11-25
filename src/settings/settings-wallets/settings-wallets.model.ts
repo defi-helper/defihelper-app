@@ -16,6 +16,13 @@ import { parseError } from '~/common/parse-error'
 
 type ChainIdEnum = keyof typeof contracts
 
+type Params = {
+  amount: string
+  walletAddress: string
+  chainId: string
+  provider: unknown
+}
+
 export const walletListDomain = createDomain()
 
 export const fetchWalletListFx = walletListDomain.createEffect(async () => {
@@ -82,13 +89,6 @@ const createContract = (
     account,
     balanceContract,
   }
-}
-
-type Params = {
-  amount: string
-  walletAddress: string
-  chainId: string
-  provider: unknown
 }
 
 export const depositFx = walletListDomain.createEffect(

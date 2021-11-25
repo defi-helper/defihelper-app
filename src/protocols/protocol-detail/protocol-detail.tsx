@@ -146,7 +146,10 @@ export const ProtocolDetail: React.FC = () => {
                 className={styles.mb120}
                 metric={protocol.metric}
               >
-                <ProtocolTotal {...protocol.metric} />
+                <ProtocolTotal
+                  {...protocol.metric}
+                  hasAutostaking={protocol.hasAutostaking}
+                />
               </ProtocolMetricEarnings>
               <StakingList protocolId={params.protocolId} />
             </TabPanel>

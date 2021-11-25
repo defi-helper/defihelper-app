@@ -24,5 +24,5 @@ export const totalItem = style({
 })
 
 export const link = style({
-  color: theme.colors.common.blue1,
+  color: theme.colors.textColorGreen,
 })

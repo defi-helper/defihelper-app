@@ -3,6 +3,7 @@ import { sample, createDomain, attach, restore } from 'effector-logger/macro'
 import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
 import { UserContactBrokerEnum } from '~/graphql/_generated-types'
 import { config } from '~/config'
+import * as authModel from '~/auth/auth.model'
 
 const betaAccessDomain = createDomain()
 
@@ -21,7 +22,9 @@ export const openTelegramFx = betaAccessDomain.createEffect(
   }
 )
 
-export const $userContact = restore(createUserContactFx.doneData, null)
+export const $userContact = restore(createUserContactFx.doneData, null).reset(
+  authModel.logoutFx.done
+)
 
 sample({
   clock: openTelegram,

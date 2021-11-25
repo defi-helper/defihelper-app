@@ -10,10 +10,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
 import { cutAccount } from '~/common/cut-account'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
-import {
-  BillingBillStatusEnum,
-  WalletFragmentFragment,
-} from '~/graphql/_generated-types'
+import { BillingBillStatusEnum } from '~/graphql/_generated-types'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
@@ -63,9 +60,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
       setWallet(wallet)
     }
 
-    const wallets = history
-      .map((historyItem) => historyItem.wallet)
-      .filter((wallet): wallet is WalletFragmentFragment => Boolean(wallet))
+    const wallets = useStore(model.$wallets)
 
     const handlePrev = () => {
       setPages(page - 1)

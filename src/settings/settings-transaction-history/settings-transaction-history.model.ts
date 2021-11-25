@@ -1,6 +1,9 @@
 import { createDomain, restore, combine } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
-import { BillingHistoryQueryVariables } from '~/graphql/_generated-types'
+import {
+  BillingHistoryQueryVariables,
+  WalletFragmentFragment,
+} from '~/graphql/_generated-types'
 
 import { settingsApi } from '~/settings/common'
 import * as settingsWalletsModel from '~/settings/settings-wallets/settings-wallets.model'
@@ -41,6 +44,19 @@ export const $history = combine(
     })
   }
 )
+
+export const $wallets = $history.map((history) => {
+  const wallets = history
+    .map((historyItem) => historyItem.wallet)
+    .filter((wallet): wallet is WalletFragmentFragment => Boolean(wallet))
+    .reduce<Record<string, WalletFragmentFragment>>((acc, wallet) => {
+      acc[wallet.id] = wallet
+
+      return acc
+    }, {})
+
+  return Object.values(wallets)
+})
 
 export const BillingHistoryGate = createGate({
   name: 'BillingHistoryGate',

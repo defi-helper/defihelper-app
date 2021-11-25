@@ -2997,6 +2997,7 @@ export type AutomationContractFragmentFragment = {
       | 'hidden'
       | 'createdAt'
     >
+    contract?: Maybe<{ __typename?: 'ContractType' } & Pick<ContractType, 'id'>>
   }
 
 export type AutomationContractsQueryVariables = Exact<{
