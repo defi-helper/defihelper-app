@@ -6,6 +6,7 @@ import {
   UserContactCreateMutationVariables,
   UserContactFragmentFragment,
 } from '~/graphql/_generated-types'
+import { authModel } from '~/auth'
 
 export const settingsContactsDomain = createDomain()
 
@@ -103,6 +104,7 @@ export const $userContactList = settingsContactsDomain
         : contact
     )
   )
+  .reset(authModel.logoutFx.done)
 
 export const SettingsContactsGate = createGate({
   domain: settingsContactsDomain,

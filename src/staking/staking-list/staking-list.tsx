@@ -196,8 +196,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       </div>
                       <div>
                         <Typography variant="body2" as="div">
-                          {bignumberUtils.formatApy(
-                            stakingListItem.autostaking
+                          {bignumberUtils.formatMax(
+                            stakingListItem.autostaking,
+                            10000
                           )}
                           %
                         </Typography>

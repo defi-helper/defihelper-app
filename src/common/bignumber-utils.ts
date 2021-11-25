@@ -1,7 +1,5 @@
 import BigNumber from 'bignumber.js'
 
-const MAX_APY = 10000
-
 export const bignumberUtils = {
   fromCall: (amount: string | number, decimals: number) =>
     new BigNumber(amount || 0)
@@ -16,27 +14,28 @@ export const bignumberUtils = {
   format: (amount?: string | number | null, decimal = 4, negative = true) => {
     const result = new BigNumber(amount || 0)
 
+    const localDecimal = result.isInteger() ? 0 : decimal
+
     if (result.isNaN() || (negative && result.isLessThan(0))) return '0'
 
-    if (result.isInteger()) return result.toFormat(0)
+    if (result.lt('10')) return result.toFormat(localDecimal)
 
-    if (result.lt('10')) return result.toFormat(decimal)
+    if (result.lt('10000')) return result.toFormat(localDecimal)
 
-    if (result.lt('10000')) return result.toFormat(decimal)
+    if (result.lt('100000')) return result.toFormat(localDecimal)
 
-    if (result.lt('100000')) return result.toFormat(decimal)
+    if (result.lt('1000000')) return result.toFormat(localDecimal)
 
-    if (result.lt('1000000')) return result.toFormat(decimal)
+    if (result.isGreaterThanOrEqualTo('1000000000')) {
+      return `${result.div('1000000000').toFormat(localDecimal)}B`
+    }
 
-    if (result.isGreaterThanOrEqualTo('1000000000'))
-      return `${result.div('1000000000').toFormat(decimal)}B`
-
-    return `${result.div('1000000').toFormat(decimal)}M`
+    return `${result.div('1000000').toFormat(localDecimal)}M`
   },
 
-  formatApy: (amount?: string | number | null) => {
-    return bignumberUtils.gt(amount, MAX_APY)
-      ? `${bignumberUtils.format(MAX_APY)}+`
+  formatMax: (amount: string | number | null | undefined, max: number) => {
+    return bignumberUtils.gt(amount, max)
+      ? `${bignumberUtils.format(max)}+`
       : bignumberUtils.format(amount)
   },
 

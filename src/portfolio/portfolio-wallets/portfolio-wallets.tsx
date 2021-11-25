@@ -128,7 +128,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                   </Link>
                 </Typography>
                 <Typography variant="body2" as="div">
-                  4
+                  {wallet.triggersCount}
                 </Typography>
                 <Typography variant="body2" as="div">
                   $

@@ -69,8 +69,9 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         family="mono"
         className={styles.value}
       >
-        {bignumberUtils.formatApy(
-          bignumberUtils.mul(protocol.metric.myAPY, 100)
+        {bignumberUtils.formatMax(
+          bignumberUtils.mul(protocol.metric.myAPY, 100),
+          10000
         )}
         %
       </Typography>

@@ -8,7 +8,9 @@ import * as styles from './protocol-total.css'
 export type ProtocolTotalProps = Exclude<
   ProtocolQuery['protocol'],
   null | undefined
->['metric']
+>['metric'] & {
+  hasAutostaking: boolean
+}
 
 const MEDIUM_LINK = `https://defihelper.medium.com/introducing-defihelper-the-most-advanced-non-custodial-defi-investment-tool-on-the-market-aa7e591a8f7f`
 
@@ -38,17 +40,20 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
           APY Boost
         </Typography>
         <Typography variant="h4">
-          {bignumberUtils.formatApy(apyBoost)}%
+          {props.hasAutostaking ? bignumberUtils.formatMax(apyBoost, 10000) : 0}
+          %
         </Typography>
-        <Typography
-          variant="body3"
-          as={Link}
-          href={MEDIUM_LINK}
-          target="_blank"
-          className={styles.link}
-        >
-          How autostaking works?
-        </Typography>
+        {!props.hasAutostaking && (
+          <Typography
+            variant="body3"
+            as={Link}
+            href={MEDIUM_LINK}
+            target="_blank"
+            className={styles.link}
+          >
+            you can earn up to 1900%
+          </Typography>
+        )}
       </Paper>
     </div>
   )

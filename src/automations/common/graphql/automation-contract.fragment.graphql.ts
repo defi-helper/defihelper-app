@@ -21,6 +21,9 @@ export const AUTOMATION_CONTRACT_FRAGMENT = gql`
       hidden
       createdAt
     }
+    contract {
+      id
+    }
     address
     adapter
     initParams
