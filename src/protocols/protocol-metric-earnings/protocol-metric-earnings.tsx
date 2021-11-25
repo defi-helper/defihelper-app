@@ -29,13 +29,13 @@ const STAKED_FIELDS = [
 const ESTIMATED_FIELDS = [
   {
     valueY: 'hold',
-    name: 'Estimated Value',
+    name: 'Estimated value',
     dateX: 'date',
     color: '#F08BA9',
   },
   {
     valueY: 'autostaking',
-    name: 'Value with Autostacking Automation',
+    name: 'Value with autostacking boost',
     dateX: 'date',
     color: '#CCFF3C',
   },
