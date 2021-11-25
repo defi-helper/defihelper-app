@@ -206,11 +206,14 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                       </Link>
                     </Typography>
                     <Typography variant="body2" as="div">
-                      {bignumberUtils.format(historyItem.amount, 6)}{' '}
+                      {bignumberUtils.format(historyItem.amount, 6, false)}{' '}
                       {networksConfig[historyItem.network]?.coin}
                     </Typography>
                     <Typography variant="body2" as="div">
-                      {dateUtils.format(historyItem.createdAt)}
+                      {dateUtils.format(
+                        historyItem.createdAt,
+                        'DD MMM YYYY h:mm:ss A'
+                      )}
                     </Typography>
                     <Typography
                       variant="body2"

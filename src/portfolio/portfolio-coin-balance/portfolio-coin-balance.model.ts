@@ -41,17 +41,28 @@ type Gate = {
 
 export const fetchChartDataFx = portfolioCoinBalance.createEffect(
   async (params: Gate) => {
-    const data = await portfolioApi.getTokenMetricChart({
+    const result = await portfolioApi.getTokenMetricChart({
       group: params.group,
       ...defaultVariables,
       dateBefore: dateUtils.now(),
       dateAfter: dateUtils.after180Days(),
     })
 
-    return data?.altCoins?.map((altCoin, index) => ({
+    const stableCoins = result?.stableCoins ?? []
+    const altCoins = result?.altCoins ?? []
+
+    if (stableCoins.length > altCoins.length) {
+      return stableCoins.map((stableCoin, index) => ({
+        stableCoin: bignumberUtils.format(stableCoin.sum),
+        date: stableCoin.date,
+        altCoin: bignumberUtils.format(altCoins?.[index]?.sum),
+      }))
+    }
+
+    return altCoins?.map((altCoin, index) => ({
       altCoin: bignumberUtils.format(altCoin.sum),
       date: altCoin.date,
-      stableCoin: bignumberUtils.format(data?.stableCoins?.[index]?.sum),
+      stableCoin: bignumberUtils.format(stableCoins?.[index]?.sum),
     }))
   }
 )

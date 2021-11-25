@@ -11,6 +11,7 @@ export type AutomationDeployContractDialogProps = {
   onConfirm: (contract: Automates) => void
   onCancel: () => void
   contracts: Automates[]
+  title?: string
 }
 
 export const AutomationDeployContractDialog: React.VFC<AutomationDeployContractDialogProps> =
@@ -20,7 +21,10 @@ export const AutomationDeployContractDialog: React.VFC<AutomationDeployContractD
     }
 
     return (
-      <AutomationDialog title="Choose contract" onBack={props.onCancel}>
+      <AutomationDialog
+        title={props.title || 'Choose contract'}
+        onBack={props.onCancel}
+      >
         <AutomationSelectList>
           {props.contracts.map((contract) => (
             <AutomationSelectListItem

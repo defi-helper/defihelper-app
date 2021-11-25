@@ -222,6 +222,8 @@ export type AutomateContractCreateInputType = {
   wallet: Scalars['UuidType']
   /** Protocol */
   protocol: Scalars['UuidType']
+  /** Protocol contract */
+  contract?: Maybe<Scalars['UuidType']>
   /** Address */
   address: Scalars['String']
   /** Adapter name */
@@ -232,8 +234,10 @@ export type AutomateContractCreateInputType = {
 
 export type AutomateContractListFilterInputType = {
   user?: Maybe<Scalars['UuidType']>
+  /** Owner wallet */
   wallet?: Maybe<Scalars['UuidType']>
   protocol?: Maybe<Scalars['UuidType']>
+  contract?: Maybe<Array<Scalars['UuidType']>>
   address?: Maybe<Array<Scalars['String']>>
 }
 
@@ -268,8 +272,12 @@ export type AutomateContractType = {
   wallet: WalletType
   /** Protocol */
   protocol: ProtocolType
+  /** Protocol contract */
+  contract?: Maybe<ContractType>
   /** Address in blockchain */
   address: Scalars['String']
+  /** Automate contract wallet */
+  contractWallet?: Maybe<WalletType>
   /** Adapter name */
   adapter: Scalars['String']
   /** Init method parameters */

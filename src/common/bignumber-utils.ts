@@ -13,10 +13,10 @@ export const bignumberUtils = {
       .multipliedBy(new BigNumber(10).pow(decimals))
       .toString(10),
 
-  format: (amount?: string | number | null, decimal = 4) => {
+  format: (amount?: string | number | null, decimal = 4, negative = true) => {
     const result = new BigNumber(amount || 0)
 
-    if (result.isNaN() || result.isLessThan(0)) return '0'
+    if (result.isNaN() || (negative && result.isLessThan(0))) return '0'
 
     if (result.isInteger()) return result.toFormat(0)
 

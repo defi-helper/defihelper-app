@@ -50,7 +50,7 @@ export const AutomationUpdateContract: React.VFC<AutomationUpdateContractProps> 
     return (
       <Dialog className={styles.root}>
         <AutomationContractForm
-          contract={props.automateContract}
+          adapter={props.automateContract}
           defaultValues={safeJsonParse(props.contract.initParams)}
           onSubmit={handleSubmit}
           loading={loading}

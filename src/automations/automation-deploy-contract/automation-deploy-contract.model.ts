@@ -7,9 +7,20 @@ import networks from '@defihelper/networks/contracts.json'
 import { automationApi } from '~/automations/common/automation.api'
 import { Automates } from '../common/automation.types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { protocolsApi } from '~/protocols/common'
 import { authModel } from '~/auth'
 import { toastsService } from '~/toasts'
+
+type DeployParams = {
+  inputs: string[]
+  address?: string
+  contractInterface: Automates['contractInterface']
+  contract: string
+  adapter: string
+  protocol: string
+  account: string
+  chainId: string
+  provider: unknown
+}
 
 export const automationDeployContractDomain = createDomain()
 
@@ -50,21 +61,12 @@ export const $automateContracts = automationDeployContractDomain
   .on(fetchAutomationContractsFx.doneData, (_, payload) => payload)
 
 export const deployFx = automationDeployContractDomain.createEffect(
-  async (params: {
-    inputs: string[]
-    address?: string
-    automate?: Automates
-    account: string
-    chainId: string
-    provider: unknown
-  }) => {
+  async (params: DeployParams) => {
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,
       params.chainId
     )
     const wallets = authModel.$userWallets.getState()
-
-    if (!params.automate) throw new Error('something went wrong')
 
     const network = networks[params.chainId as '3']
 
@@ -76,9 +78,10 @@ export const deployFx = automationDeployContractDomain.createEffect(
 
     const tx = await proxyFactory.create(
       params.address,
-      new ethers.utils.Interface(
-        params.automate.contractInterface
-      ).encodeFunctionData('init', params.inputs)
+      new ethers.utils.Interface(params.contractInterface).encodeFunctionData(
+        'init',
+        params.inputs
+      )
     )
 
     const receipt = await tx.wait()
@@ -87,12 +90,6 @@ export const deployFx = automationDeployContractDomain.createEffect(
       ['address'],
       receipt.logs[0].topics[2]
     )[0]
-
-    const protocol = await protocolsApi.protocolDetail({
-      filter: {
-        adapter: params.automate.protocol,
-      },
-    })
 
     const currentWallet = wallets.find((wallet) => {
       return (
@@ -103,14 +100,15 @@ export const deployFx = automationDeployContractDomain.createEffect(
       )
     })
 
-    if (!protocol || !currentWallet) throw new Error('something went wrong')
+    if (!currentWallet) throw new Error('something went wrong')
 
     const createdContract = await automationApi.createContract({
       input: {
         wallet: currentWallet.id,
         address: proxyAddress,
-        adapter: params.automate.contract,
-        protocol: protocol.id,
+        adapter: params.adapter,
+        protocol: params.protocol,
+        contract: params.contract,
         initParams: JSON.stringify({ inputs: params.inputs }),
       },
     })
