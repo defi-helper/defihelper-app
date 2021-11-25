@@ -20,7 +20,7 @@ const STAKED_FIELDS = [
   },
   {
     valueY: 'stableCoin',
-    name: 'Stable coins',
+    name: 'Native coins',
     dateX: 'date',
     color: '#4463EE',
   },
