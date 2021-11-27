@@ -17,15 +17,15 @@ export type PortfolioCoinBalanceProps = {
 const BALANCE = [
   {
     valueY: 'stableCoin',
-    name: 'Stablecoins',
+    name: 'Native coins',
     dateX: 'date',
-    color: '#F08BA9',
+    color: '#4463EE',
   },
   {
-    valueY: 'allTokens',
-    name: 'altCoin',
+    valueY: 'altCoin',
+    name: 'Alt coints',
     dateX: 'date',
-    color: '#CCFF3C',
+    color: '#E9CC67',
   },
 ]
 
@@ -64,7 +64,7 @@ export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
         dataFields={BALANCE}
         id="coin_balance"
         data={portfolioCoinBalance[currentGroup].data}
-        names={['Stable', 'Altcoins']}
+        names={BALANCE.map(({ name }) => name)}
         // eslint-disable-next-line no-template-curly-in-string
         tooltipText="{name}: [bold]${valueY}[/]"
       />

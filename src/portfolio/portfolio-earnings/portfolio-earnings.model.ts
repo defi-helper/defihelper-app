@@ -1,5 +1,5 @@
 import { createDomain } from 'effector-logger/macro'
-import { bignumberUtils } from '~/common/bignumber-utils'
+import { BigNumber } from 'bignumber.js'
 
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { portfolioApi } from '../common'
@@ -43,16 +43,20 @@ export const fetchChartDataFx = portfolioEarnings.createEffect(
         const hold = data.hold.find(({ t }) => everyDayItem.t === t)
         const optimal = data.optimal.find(({ t }) => everyDayItem.t === t)
 
+        if (optimal && optimal.v > 10000000) {
+          optimal.v = 10000000
+        }
+
         return [
           ...acc,
           {
-            hold: bignumberUtils.format(hold?.v ?? 0),
-            autostaking: bignumberUtils.format(optimal?.v ?? 0),
+            hold: new BigNumber(hold?.v ?? 0).toFixed(0),
+            autostaking: new BigNumber(optimal?.v ?? 0).toFixed(0),
             date: date.setDate(date.getDate() + everyDayItem.t),
           },
         ]
       }, [])
-      .slice(0, 3)
+      .slice(0, 4)
   }
 )
 

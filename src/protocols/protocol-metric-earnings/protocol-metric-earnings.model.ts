@@ -1,6 +1,6 @@
 import { createDomain } from 'effector-logger/macro'
 
-import { bignumberUtils } from '~/common/bignumber-utils'
+import { BigNumber } from 'bignumber.js'
 import { dateUtils } from '~/common/date-utils'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import {
@@ -36,11 +36,15 @@ export const fetchEarningMetricFx = protocolMetricEarningsDomain.createEffect(
           const hold = data.hold.find(({ t }) => everyDayItem.t === t)
           const optimal = data.optimal.find(({ t }) => everyDayItem.t === t)
 
+          if (optimal && optimal.v > 10000000) {
+            optimal.v = 10000000
+          }
+
           return [
             ...acc,
             {
-              hold: bignumberUtils.format(hold?.v ?? 0),
-              autostaking: bignumberUtils.format(optimal?.v ?? 0),
+              hold: new BigNumber(hold?.v ?? 0).toFixed(0),
+              autostaking: new BigNumber(optimal?.v ?? 0).toFixed(0),
               date: date.setDate(date.getDate() + everyDayItem.t),
             },
           ]
@@ -103,9 +107,9 @@ export const fetchStakedMetricFx = protocolMetricEarningsDomain.createEffect(
     return {
       group: params.group,
       data: data.altCoins?.map((altCoin, index) => ({
-        altCoin: bignumberUtils.format(altCoin.sum),
+        altCoin: new BigNumber(altCoin.sum).toFixed(0),
         date: altCoin.date,
-        stableCoin: bignumberUtils.format(data.stableCoins?.[index]?.sum),
+        stableCoin: new BigNumber(data.stableCoins?.[index]?.sum).toFixed(0),
       })),
     }
   }

@@ -40,8 +40,8 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
 
     model.fetchChartDataFx({
       group: currentGroup,
-      balance: 200,
-      apy: 10,
+      balance: Number(metric.worth),
+      apy: Number(metric.apy ?? 0),
     })
   }, [metric])
 
