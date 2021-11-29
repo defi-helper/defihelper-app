@@ -20,7 +20,7 @@ export const disableUserNotificationFx =
       const isDisabled = await settingsApi.userNotificationDisable({ type })
 
       if (isDisabled) {
-        return true
+        return
       }
 
       throw new Error('Not disabled')
@@ -33,7 +33,7 @@ export const enableUserNotificationFx =
       const isEnabled = await settingsApi.userNotificationEnable({ type })
 
       if (isEnabled) {
-        return true
+        return
       }
 
       throw new Error('Not enabled')
