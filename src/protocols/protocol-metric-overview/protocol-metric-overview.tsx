@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 
+import { BigNumber } from 'bignumber.js'
 import { Chart } from '~/common/chart'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { ButtonBase } from '~/common/button-base'
@@ -56,14 +57,14 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
   const tvlData = metric[currentGroup]?.data.tvl?.map((metricItem) => {
     return {
       ...metricItem,
-      sum: bignumberUtils.format(metricItem.sum),
+      sum: new BigNumber(metricItem.sum).toFormat(0),
     }
   })
 
   const walletData = metric[currentGroup]?.data?.uniqueWalletsCount.map(
     (wallet) => ({
       ...wallet,
-      sum: bignumberUtils.format(wallet.sum),
+      sum: new BigNumber(wallet.sum).toFormat(0),
     })
   )
 
@@ -129,7 +130,7 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
             <>
               <Typography>Unique Wallets</Typography>
               <Typography family="mono">
-                {bignumberUtils.format(uniqueWalletsSum?.sum)}
+                {bignumberUtils.format(uniqueWalletsSum?.sum, 0)}
               </Typography>
             </>
           }
