@@ -18,6 +18,12 @@ import {
   WalletListQueryVariables,
   WalletUpdateMutation,
   WalletUpdateMutationVariables,
+  UserNotificationsEnabledQuery,
+  UserNotificationsEnabledQueryVariables,
+  UserNotificationEnableMutationVariables,
+  UserNotificationEnableMutation,
+  UserNotificationDisableMutation,
+  UserNotificationDisableMutationVariables,
 } from '~/graphql/_generated-types'
 import {
   USER_CONTACTS,
@@ -29,9 +35,43 @@ import {
   WALLET_UPDATE,
   WALLET_DELETE,
   BILLING_HISTORY,
+  USER_ENABLED_NOTIFICATIONS,
+  USER_NOTIFICATION_ENABLE,
+  USER_NOTIFICATION_DISABLE,
 } from './graphql'
 
 export const settingsApi = {
+  userEnabledNotificationsList: () =>
+    getAPIClient()
+      .query<
+        UserNotificationsEnabledQuery,
+        UserNotificationsEnabledQueryVariables
+      >(USER_ENABLED_NOTIFICATIONS)
+      .toPromise()
+      .then(({ data }) => data?.userNotificationsEnabled ?? []),
+
+  userNotificationEnable: (
+    variables: UserNotificationEnableMutationVariables
+  ) =>
+    getAPIClient()
+      .mutation<
+        UserNotificationEnableMutation,
+        UserNotificationEnableMutationVariables
+      >(USER_NOTIFICATION_ENABLE, variables)
+      .toPromise()
+      .then(({ data }) => data?.userNotificationEnable),
+
+  userNotificationDisable: (
+    variables: UserNotificationDisableMutationVariables
+  ) =>
+    getAPIClient()
+      .mutation<
+        UserNotificationDisableMutation,
+        UserNotificationDisableMutationVariables
+      >(USER_NOTIFICATION_DISABLE, variables)
+      .toPromise()
+      .then(({ data }) => data?.userNotificationDisable),
+
   userContactList: (variables: UserContactsQueryVariables) =>
     getAPIClient()
       .query<UserContactsQuery, UserContactsQueryVariables>(

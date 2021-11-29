@@ -895,6 +895,8 @@ export type Mutation = {
   contractCreate: ContractType
   contractUpdate: ContractType
   contractDelete: Scalars['Boolean']
+  userNotificationEnable: Scalars['Boolean']
+  userNotificationDisable: Scalars['Boolean']
   contractWalletLink: Scalars['Boolean']
   contractWalletUnlink: Scalars['Boolean']
   tokenUpdate: TokenType
@@ -984,6 +986,14 @@ export type MutationContractUpdateArgs = {
 
 export type MutationContractDeleteArgs = {
   id: Scalars['UuidType']
+}
+
+export type MutationUserNotificationEnableArgs = {
+  type: UserNotificationTypeEnum
+}
+
+export type MutationUserNotificationDisableArgs = {
+  type: UserNotificationTypeEnum
 }
 
 export type MutationContractWalletLinkArgs = {
@@ -1549,6 +1559,7 @@ export type Query = {
   proposals: ProposalListQuery
   userContact?: Maybe<UserContactType>
   userContacts: UserContactListQuery
+  userNotificationsEnabled: Array<UserNotificationType>
   userEventSubscription?: Maybe<UserEventSubscriptionType>
   userEventSubscriptions: UserEventSubscriptionListQuery
   tokens: TokenListQuery
@@ -2396,6 +2407,16 @@ export type UserMetricsTokenAliasFilterInputType = {
   id?: Maybe<Array<Scalars['UuidType']>>
   /** Is stable token */
   stable?: Maybe<Scalars['Boolean']>
+}
+
+export type UserNotificationType = {
+  __typename?: 'UserNotificationType'
+  /** Type */
+  type: UserNotificationTypeEnum
+}
+
+export enum UserNotificationTypeEnum {
+  PortfolioMetrics = 'PortfolioMetrics',
 }
 
 export enum UserRoleEnum {
@@ -4037,6 +4058,10 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type UserEnabledNotificationTypeFragment = {
+  __typename?: 'UserNotificationType'
+} & Pick<UserNotificationType, 'type'>
+
 export type UserContactEmailConfirmMutationVariables = Exact<{
   input: UserContactConfirmEmailInputType
 }>
@@ -4104,6 +4129,35 @@ export type UserContactFragmentFragment = {
   | 'confirmationCode'
   | 'createdAt'
   | 'activatedAt'
+>
+
+export type UserNotificationsEnabledQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type UserNotificationsEnabledQuery = { __typename?: 'Query' } & {
+  userNotificationsEnabled: Array<
+    {
+      __typename?: 'UserNotificationType'
+    } & UserEnabledNotificationTypeFragment
+  >
+}
+
+export type UserNotificationDisableMutationVariables = Exact<{
+  type: UserNotificationTypeEnum
+}>
+
+export type UserNotificationDisableMutation = {
+  __typename?: 'Mutation'
+} & Pick<Mutation, 'userNotificationDisable'>
+
+export type UserNotificationEnableMutationVariables = Exact<{
+  type: UserNotificationTypeEnum
+}>
+
+export type UserNotificationEnableMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'userNotificationEnable'
 >
 
 export type WalletDeleteMutationVariables = Exact<{
