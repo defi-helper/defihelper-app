@@ -18,12 +18,10 @@ import {
   WalletListQueryVariables,
   WalletUpdateMutation,
   WalletUpdateMutationVariables,
-  UserNotificationsEnabledQuery,
-  UserNotificationsEnabledQueryVariables,
-  UserNotificationEnableMutationVariables,
-  UserNotificationEnableMutation,
-  UserNotificationDisableMutation,
-  UserNotificationDisableMutationVariables,
+  UserNotificationsListQuery,
+  UserNotificationsListQueryVariables,
+  UserNotificationToggleMutationVariables,
+  UserNotificationToggleMutation,
 } from '~/graphql/_generated-types'
 import {
   USER_CONTACTS,
@@ -35,42 +33,29 @@ import {
   WALLET_UPDATE,
   WALLET_DELETE,
   BILLING_HISTORY,
-  USER_ENABLED_NOTIFICATIONS,
-  USER_NOTIFICATION_ENABLE,
-  USER_NOTIFICATION_DISABLE,
+  USER_NOTIFICATION_LIST,
+  USER_NOTIFICATION_TOGGLE,
 } from './graphql'
 
 export const settingsApi = {
-  userEnabledNotificationsList: () =>
+  userNotificationsList: () =>
     getAPIClient()
-      .query<
-        UserNotificationsEnabledQuery,
-        UserNotificationsEnabledQueryVariables
-      >(USER_ENABLED_NOTIFICATIONS)
+      .query<UserNotificationsListQuery, UserNotificationsListQueryVariables>(
+        USER_NOTIFICATION_LIST
+      )
       .toPromise()
-      .then(({ data }) => data?.userNotificationsEnabled ?? []),
+      .then(({ data }) => data?.userNotifications ?? []),
 
-  userNotificationEnable: (
-    variables: UserNotificationEnableMutationVariables
+  userNotificationToggle: (
+    variables: UserNotificationToggleMutationVariables
   ) =>
     getAPIClient()
       .mutation<
-        UserNotificationEnableMutation,
-        UserNotificationEnableMutationVariables
-      >(USER_NOTIFICATION_ENABLE, variables)
+        UserNotificationToggleMutation,
+        UserNotificationToggleMutationVariables
+      >(USER_NOTIFICATION_TOGGLE, variables)
       .toPromise()
-      .then(({ data }) => data?.userNotificationEnable),
-
-  userNotificationDisable: (
-    variables: UserNotificationDisableMutationVariables
-  ) =>
-    getAPIClient()
-      .mutation<
-        UserNotificationDisableMutation,
-        UserNotificationDisableMutationVariables
-      >(USER_NOTIFICATION_DISABLE, variables)
-      .toPromise()
-      .then(({ data }) => data?.userNotificationDisable),
+      .then(({ data }) => data?.userNotificationToggle),
 
   userContactList: (variables: UserContactsQueryVariables) =>
     getAPIClient()

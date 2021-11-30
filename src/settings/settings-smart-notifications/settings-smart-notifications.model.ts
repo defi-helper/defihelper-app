@@ -2,7 +2,7 @@ import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { settingsApi } from '~/settings/common'
 import {
-  UserEnabledNotificationTypeFragment,
+  UserNotificationTypeFragment,
   UserNotificationTypeEnum,
 } from '~/graphql/_generated-types'
 import { authModel } from '~/auth'
@@ -11,37 +11,27 @@ export const settingsNotificationsDomain = createDomain()
 
 export const fetchUserNotificationsListFx =
   settingsNotificationsDomain.createEffect(() =>
-    settingsApi.userEnabledNotificationsList()
+    settingsApi.userNotificationsList()
   )
 
-export const disableUserNotificationFx =
+export const toggleUserNotificationFx =
   settingsNotificationsDomain.createEffect(
-    async (type: UserNotificationTypeEnum) => {
-      const isDisabled = await settingsApi.userNotificationDisable({ type })
+    async (params: { type: UserNotificationTypeEnum; state: boolean }) => {
+      const isDone = await settingsApi.userNotificationToggle({
+        type: params.type,
+        state: params.state,
+      })
 
-      if (isDisabled) {
+      if (isDone) {
         return
       }
 
-      throw new Error('Not disabled')
-    }
-  )
-
-export const enableUserNotificationFx =
-  settingsNotificationsDomain.createEffect(
-    async (type: UserNotificationTypeEnum) => {
-      const isEnabled = await settingsApi.userNotificationEnable({ type })
-
-      if (isEnabled) {
-        return
-      }
-
-      throw new Error('Not enabled')
+      throw new Error('Unable to toggle')
     }
   )
 
 export const $userNotificationsList = settingsNotificationsDomain
-  .createStore<UserEnabledNotificationTypeFragment[]>([])
+  .createStore<UserNotificationTypeFragment[]>([])
   .on(fetchUserNotificationsListFx.doneData, (_, payload) => payload)
   .reset(authModel.logoutFx.done)
 

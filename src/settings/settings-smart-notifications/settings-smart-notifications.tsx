@@ -34,14 +34,9 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
   useGate(model.SettingsNotificationsGate)
 
   const handleSwitchNotification =
-    (type: UserNotificationTypeEnum, newState: boolean) => async () => {
+    (type: UserNotificationTypeEnum, state: boolean) => async () => {
       try {
-        if (newState) {
-          await model.enableUserNotificationFx(type)
-          return
-        }
-
-        await model.disableUserNotificationFx(type)
+        await model.toggleUserNotificationFx({ type, state })
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
