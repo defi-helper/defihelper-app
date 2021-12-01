@@ -18,6 +18,10 @@ import {
   WalletListQueryVariables,
   WalletUpdateMutation,
   WalletUpdateMutationVariables,
+  UserNotificationsListQuery,
+  UserNotificationsListQueryVariables,
+  UserNotificationToggleMutationVariables,
+  UserNotificationToggleMutation,
 } from '~/graphql/_generated-types'
 import {
   USER_CONTACTS,
@@ -29,9 +33,30 @@ import {
   WALLET_UPDATE,
   WALLET_DELETE,
   BILLING_HISTORY,
+  USER_NOTIFICATION_LIST,
+  USER_NOTIFICATION_TOGGLE,
 } from './graphql'
 
 export const settingsApi = {
+  userNotificationsList: () =>
+    getAPIClient()
+      .query<UserNotificationsListQuery, UserNotificationsListQueryVariables>(
+        USER_NOTIFICATION_LIST
+      )
+      .toPromise()
+      .then(({ data }) => data?.userNotifications ?? []),
+
+  userNotificationToggle: (
+    variables: UserNotificationToggleMutationVariables
+  ) =>
+    getAPIClient()
+      .mutation<
+        UserNotificationToggleMutation,
+        UserNotificationToggleMutationVariables
+      >(USER_NOTIFICATION_TOGGLE, variables)
+      .toPromise()
+      .then(({ data }) => data?.userNotificationToggle),
+
   userContactList: (variables: UserContactsQueryVariables) =>
     getAPIClient()
       .query<UserContactsQuery, UserContactsQueryVariables>(

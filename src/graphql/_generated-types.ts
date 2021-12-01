@@ -895,6 +895,7 @@ export type Mutation = {
   contractCreate: ContractType
   contractUpdate: ContractType
   contractDelete: Scalars['Boolean']
+  userNotificationToggle: Scalars['Boolean']
   contractWalletLink: Scalars['Boolean']
   contractWalletUnlink: Scalars['Boolean']
   tokenUpdate: TokenType
@@ -984,6 +985,11 @@ export type MutationContractUpdateArgs = {
 
 export type MutationContractDeleteArgs = {
   id: Scalars['UuidType']
+}
+
+export type MutationUserNotificationToggleArgs = {
+  type: UserNotificationTypeEnum
+  state: Scalars['Boolean']
 }
 
 export type MutationContractWalletLinkArgs = {
@@ -1549,6 +1555,7 @@ export type Query = {
   proposals: ProposalListQuery
   userContact?: Maybe<UserContactType>
   userContacts: UserContactListQuery
+  userNotifications: Array<UserNotificationType>
   userEventSubscription?: Maybe<UserEventSubscriptionType>
   userEventSubscriptions: UserEventSubscriptionListQuery
   tokens: TokenListQuery
@@ -2396,6 +2403,16 @@ export type UserMetricsTokenAliasFilterInputType = {
   id?: Maybe<Array<Scalars['UuidType']>>
   /** Is stable token */
   stable?: Maybe<Scalars['Boolean']>
+}
+
+export type UserNotificationType = {
+  __typename?: 'UserNotificationType'
+  /** Type */
+  type: UserNotificationTypeEnum
+}
+
+export enum UserNotificationTypeEnum {
+  PortfolioMetrics = 'portfolioMetrics',
 }
 
 export enum UserRoleEnum {
@@ -4105,6 +4122,30 @@ export type UserContactFragmentFragment = {
   | 'createdAt'
   | 'activatedAt'
 >
+
+export type UserNotificationsListQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type UserNotificationsListQuery = { __typename?: 'Query' } & {
+  userNotifications: Array<
+    { __typename?: 'UserNotificationType' } & UserNotificationTypeFragment
+  >
+}
+
+export type UserNotificationToggleMutationVariables = Exact<{
+  type: UserNotificationTypeEnum
+  state: Scalars['Boolean']
+}>
+
+export type UserNotificationToggleMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'userNotificationToggle'
+>
+
+export type UserNotificationTypeFragment = {
+  __typename?: 'UserNotificationType'
+} & Pick<UserNotificationType, 'type'>
 
 export type WalletDeleteMutationVariables = Exact<{
   id: Scalars['UuidType']

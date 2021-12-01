@@ -1,3 +1,6 @@
+export * from './user-notification.fragment.graphql'
+export * from './user-notification-list.graphql'
+export * from './user-notification-toggle.graphql'
 export * from './user-contact-list.graphql'
 export * from './user-contact-create.graphql'
 export * from './user-contact-delete.graphql'
