@@ -6,7 +6,7 @@ import isEmpty from 'lodash.isempty'
 
 import { BetaLayout } from '~/layouts'
 import { Button } from '~/common/button'
-import { useDialog } from '~/common/dialog'
+import { useDialog, UserRejectionError } from '~/common/dialog'
 import { Grid } from '~/common/grid'
 import { Typography } from '~/common/typography'
 import { WalletList } from '~/wallets/wallet-list'
@@ -28,6 +28,7 @@ import * as contactListModel from '~/settings/settings-contacts/settings-contact
 import * as walletListModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as styles from './beta-access.css'
 import * as model from './beta-access.model'
+import { toastsService } from '~/toasts'
 
 export type BetaAccessProps = unknown
 
@@ -49,8 +50,14 @@ export const BetaAccess: React.VFC<BetaAccessProps> = () => {
         connector: data.connector,
       })
     } catch (error) {
-      if (error instanceof Error) {
+      if (error instanceof UserRejectionError) {
         console.error(error.message)
+
+        return
+      }
+
+      if (error instanceof Error) {
+        toastsService.error(error.message)
       }
     }
   }
