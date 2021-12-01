@@ -20,11 +20,16 @@ export const DialogProvider: React.FC = (props) => {
   const rejectRef = useRef<Record<string, Fn>>({})
 
   const handleClose = useCallback(
-    (id: string) => () => {
+    (id: string) => (args: unknown) => {
       if (!closeOnOverlayClick) return
 
       setDialogs((previousDialogs) => omit(previousDialogs, id))
-      rejectRef.current[id]?.(new UserRejectionError())
+      if (args instanceof Error) {
+        rejectRef.current[id]?.(args)
+      } else {
+        rejectRef.current[id]?.(new UserRejectionError())
+      }
+
       rejectRef.current = omit(rejectRef.current, id)
     },
     [closeOnOverlayClick]

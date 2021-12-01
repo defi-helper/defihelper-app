@@ -16,7 +16,7 @@ export const DialogContext = createContext<{
     resolve: (value: T) => void,
     reject: (value: Y) => void
   ) => void
-  onClose: (id: string) => () => void
+  onClose: (id: string) => (...args: unknown[]) => void
   closeOnOverlay: (value: boolean) => void
 } | null>(null)
 
