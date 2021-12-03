@@ -4,12 +4,11 @@ import { WALLET_FRAGMENT } from './wallet.fragment.graphql'
 
 export const WALLET_LIST = gql`
   query WalletList(
-    $filter: WalletListFilterInputType
     $sort: [WalletListSortInputType!]
     $pagination: WalletListPaginationInputType
   ) {
     me {
-      wallets(filter: $filter, sort: $sort, pagination: $pagination) {
+      wallets(filter: { type: wallet }, sort: $sort, pagination: $pagination) {
         list {
           ...walletFragment
         }

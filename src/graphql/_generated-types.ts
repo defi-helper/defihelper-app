@@ -4116,7 +4116,6 @@ export type WalletDeleteMutation = { __typename?: 'Mutation' } & Pick<
 >
 
 export type WalletListQueryVariables = Exact<{
-  filter?: Maybe<WalletListFilterInputType>
   sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
   pagination?: Maybe<WalletListPaginationInputType>
 }>
@@ -4165,6 +4164,65 @@ export type WalletFragmentFragment = { __typename?: 'WalletType' } & Pick<
       >
     }
   }
+
+export type StakingAutomatesContractsQueryVariables = Exact<{
+  sort?: Maybe<
+    Array<AutomateContractListSortInputType> | AutomateContractListSortInputType
+  >
+  pagination?: Maybe<AutomateContractListPaginationInputType>
+}>
+
+export type StakingAutomatesContractsQuery = { __typename?: 'Query' } & {
+  automateContracts: { __typename?: 'AutomateContractListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'AutomateContractType' } & Pick<
+          AutomateContractType,
+          | 'id'
+          | 'address'
+          | 'adapter'
+          | 'initParams'
+          | 'verification'
+          | 'rejectReason'
+        > & {
+            protocol: { __typename?: 'ProtocolType' } & Pick<
+              ProtocolType,
+              'adapter'
+            >
+            contract?: Maybe<
+              { __typename?: 'ContractType' } & Pick<
+                ContractType,
+                | 'id'
+                | 'protocolId'
+                | 'adapter'
+                | 'layout'
+                | 'blockchain'
+                | 'network'
+                | 'address'
+                | 'deployBlockNumber'
+                | 'automates'
+                | 'name'
+                | 'description'
+                | 'link'
+                | 'hidden'
+                | 'events'
+                | 'createdAt'
+              > & {
+                  metric: { __typename?: 'ContractMetricType' } & Pick<
+                    ContractMetricType,
+                    'tvl' | 'aprYear' | 'myStaked' | 'myEarned'
+                  >
+                }
+            >
+            contractWallet?: Maybe<
+              { __typename?: 'WalletType' } & Pick<WalletType, 'id'>
+            >
+          }
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
 
 export type StakingConnectWalletMutationVariables = Exact<{
   contract: Scalars['UuidType']

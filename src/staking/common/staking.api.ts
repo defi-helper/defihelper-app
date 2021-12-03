@@ -20,6 +20,8 @@ import {
   StakingContractEventsQueryVariables,
   StakingContractMetricQueryVariables,
   StakingContractMetricQuery,
+  StakingAutomatesContractsQueryVariables,
+  StakingAutomatesContractsQuery,
 } from '~/graphql/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -30,6 +32,7 @@ import {
   STAKING_DISCONNECT_WALLET,
   STAKING_TOKENS,
   STAKING_CONTRACT_METRIC,
+  STAKING_AUTOMATES_CONTRACTS,
 } from './graphql'
 import { STAKING_CONNECTED_CONTRACTS } from './graphql/staking-connected-contracts.graphql'
 import { STAKING_CONTRACTS_EVENTS } from '~/staking/common/graphql/staking-contract-events.graphql'
@@ -134,4 +137,18 @@ export const stakingApi = {
       )
       .toPromise()
       .then(({ data }) => data?.me),
+
+  automatesContractList: (
+    variables?: StakingAutomatesContractsQueryVariables
+  ) =>
+    getAPIClient()
+      .query<
+        StakingAutomatesContractsQuery,
+        StakingAutomatesContractsQueryVariables
+      >(STAKING_AUTOMATES_CONTRACTS, variables)
+      .toPromise()
+      .then(({ data }) => ({
+        list: data?.automateContracts.list ?? [],
+        count: data?.automateContracts.pagination.count ?? 0,
+      })),
 }

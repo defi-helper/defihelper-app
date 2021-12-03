@@ -23,9 +23,10 @@ import {
 import { Head } from '~/common/head'
 import { Icon } from '~/common/icon'
 import { Carousel } from '~/common/carousel'
+import { StakingAutomates } from '~/staking/staking-automates'
+import { Loader } from '~/common/loader'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
-import { Loader } from '~/common/loader'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -151,6 +152,7 @@ export const ProtocolDetail: React.FC = () => {
                   hasAutostaking={protocol.hasAutostaking}
                 />
               </ProtocolMetricEarnings>
+              <StakingAutomates className={styles.automates} />
               <StakingList protocolId={params.protocolId} />
             </TabPanel>
             <TabPanel>

@@ -68,10 +68,37 @@ export type AdapterFn = (
   options?: unknown
 ) => Promise<Adapter>
 
-export const loadAdapter = (
-  url: string,
-  adapter?: string
-): Promise<AdapterFn> => {
+export type AutomatesStepInfo = {
+  description: string
+  inputs?: { placeholder: string; value: string }[]
+}
+
+export type AutomatesStep = {
+  can: (...args: unknown[]) => Promise<boolean>
+  info: () => Promise<AutomatesStepInfo>
+  name: string
+  send: (
+    ...args: unknown[]
+  ) => Promise<{ tx: { wait: () => Promise<unknown> } }>
+}
+
+export type AutomatesType = {
+  contract: string
+  deposit: AutomatesStep[]
+  refund: AutomatesStep[]
+  migrate: AutomatesStep[]
+}
+
+export type Adapters = {
+  staking: AdapterFn
+  swopfiStaking: AdapterFn
+  automates: Record<
+    string,
+    (signer: unknown, contractAddress: unknown) => Promise<AutomatesType>
+  >
+}
+
+export function loadAdapter(url: string): Promise<Adapters> {
   return new Promise((resolve, reject) => {
     // @ts-ignore
     window.module = moduleExports
@@ -81,23 +108,16 @@ export const loadAdapter = (
     script.src = url
 
     const handler = () => {
-      if (!adapter && !(window.module.exports instanceof Error)) {
-        return resolve(window.module.exports)
-      }
-
-      if (!adapter) return reject(moduleExports.exports)
-
-      const currentAdapter = window.module.exports[adapter]
-
-      if (!currentAdapter) reject(moduleExports.exports)
-      else {
+      if (!(window.module.exports instanceof Error)) {
         script.removeEventListener('load', handler)
         script.remove()
 
         // @ts-ignore
         window.module = moduleExports
 
-        resolve(currentAdapter)
+        resolve(window.module.exports)
+      } else {
+        reject(window.module.exports)
       }
     }
 

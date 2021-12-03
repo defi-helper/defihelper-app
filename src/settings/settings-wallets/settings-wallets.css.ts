@@ -18,11 +18,11 @@ export const list = style({
   display: 'grid',
   gap: 24,
   minHeight: 314,
-  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
 
   '@media': {
     [theme.mediaQueries.sm()]: {
-      gridTemplateColumns: 'repeat(auto-fit, minmax(351px, 1fr))',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(351px, 1fr))',
     },
   },
 })

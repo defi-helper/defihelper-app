@@ -114,3 +114,7 @@ export const loader = style({
   alignItems: 'center',
   justifyContent: 'center',
 })
+
+export const automates = style({
+  marginBottom: 53,
+})

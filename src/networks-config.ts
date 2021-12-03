@@ -51,20 +51,6 @@ const prodNetworks: Record<string, Network> = {
     blockchain: BlockchainEnum.Ethereum,
     icon: 'avalanche',
   },
-  waves: {
-    title: 'Waves',
-    explorerUrl: 'https://wavesexplorer.com/address',
-    coin: 'WAVES',
-    blockchain: BlockchainEnum.Waves,
-    icon: 'wavesRegular',
-  },
-  main: {
-    title: 'Waves',
-    explorerUrl: 'https://wavesexplorer.com/address',
-    coin: 'WAVES',
-    blockchain: BlockchainEnum.Waves,
-    icon: 'wavesRegular',
-  },
   W: {
     title: 'Waves',
     explorerUrl: 'https://wavesexplorer.com/address',
