@@ -10,24 +10,20 @@ import { loadAdapter } from '~/common/load-adapter'
 
 const stakingCreateDomain = createDomain('stakingCreate')
 
-export const stakingCreateFx = stakingCreateDomain.createEffect({
-  name: 'stakingCreateFx',
-  handler: (input: StakingContractCreateMutationVariables) =>
-    stakingApi.contractCreate(input),
-})
+export const stakingCreateFx = stakingCreateDomain.createEffect(
+  (input: StakingContractCreateMutationVariables) =>
+    stakingApi.contractCreate(input)
+)
 
-const fetchAdapterKeysFx = stakingCreateDomain.createEffect({
-  name: 'fetchAdapterKeysFx',
-  handler: (protocolAdapter: string) =>
+const fetchAdapterKeysFx = stakingCreateDomain.createEffect(
+  (protocolAdapter: string) =>
     loadAdapter(buildAdaptersUrl(protocolAdapter)).then((staking) =>
       Object.keys(staking)
-    ),
-})
+    )
+)
 
 export const $adapterKeys = stakingCreateDomain
-  .createStore<string[]>([], {
-    name: '$adapterKeys',
-  })
+  .createStore<string[]>([])
   .on(fetchAdapterKeysFx.doneData, (_, payload) => payload)
 
 export const StakingCreateGate = createGate<string | null>({

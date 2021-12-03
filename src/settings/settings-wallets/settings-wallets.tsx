@@ -8,13 +8,13 @@ import {
   SettingsHeader,
   SettingsInitialCard,
   SettingsPaper,
-  SettingsWalletCard,
   SettingsRenameWalletDialog,
   SettingsConfirmDialog,
   SettingsBillingFormDialog,
   SettingsWalletLoading,
   SettingsSuccessDialog,
   TransactionEnum,
+  SettingsWalletCard,
 } from '~/settings/common'
 import { cutAccount } from '~/common/cut-account'
 import { useWalletList } from '~/wallets/wallet-list'

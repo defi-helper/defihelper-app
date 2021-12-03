@@ -51,6 +51,10 @@ export type ContractAction = {
 
 export const stakingAdaptersDomain = createDomain()
 
+const isStaking = (str: string): str is 'staking' | 'swopfiStaking' => {
+  return ['staking', 'swopfiStaking'].includes(str)
+}
+
 export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
   async (params: Params) => {
     const networkProvider = walletNetworkModel.getNetwork(
@@ -60,10 +64,15 @@ export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
 
     const { contract } = params
 
-    const adapterContract = await loadAdapter(
-      buildAdaptersUrl(params.protocolAdapter),
-      contract.adapter
+    if (!isStaking(contract.adapter)) {
+      throw new Error('something went wrong')
+    }
+
+    const adapterObj = await loadAdapter(
+      buildAdaptersUrl(params.protocolAdapter)
     )
+
+    const adapterContract = adapterObj[contract.adapter]
 
     const adapter = await adapterContract(networkProvider, contract.address, {
       blockNumber: 'latest',

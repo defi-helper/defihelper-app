@@ -4,10 +4,7 @@ import contracts from '@defihelper/networks/contracts.json'
 import { ethers } from 'ethers'
 import Balance from '@defihelper/networks/abi/Balance.json'
 
-import {
-  WalletFragmentFragment,
-  WalletTypeEnum,
-} from '~/graphql/_generated-types'
+import { WalletFragmentFragment } from '~/graphql/_generated-types'
 import { settingsApi } from '~/settings/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -26,11 +23,7 @@ type Params = {
 export const walletListDomain = createDomain()
 
 export const fetchWalletListFx = walletListDomain.createEffect(async () => {
-  return settingsApi.walletList({
-    filter: {
-      type: WalletTypeEnum.Wallet,
-    },
-  })
+  return settingsApi.walletList()
 })
 
 export const updateWalletFx = walletListDomain.createEffect(

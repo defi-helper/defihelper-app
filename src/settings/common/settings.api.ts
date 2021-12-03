@@ -104,7 +104,7 @@ export const settingsApi = {
       .toPromise()
       .then(({ data }) => data?.userContactUpdate),
 
-  walletList: (variables: WalletListQueryVariables) =>
+  walletList: (variables?: WalletListQueryVariables) =>
     getAPIClient()
       .query<WalletListQuery, WalletListQueryVariables>(WALLET_LIST, variables)
       .toPromise()
