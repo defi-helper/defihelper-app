@@ -4123,6 +4123,30 @@ export type UserContactFragmentFragment = {
   | 'activatedAt'
 >
 
+export type UserNotificationsListQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type UserNotificationsListQuery = { __typename?: 'Query' } & {
+  userNotifications: Array<
+    { __typename?: 'UserNotificationType' } & UserNotificationTypeFragment
+  >
+}
+
+export type UserNotificationToggleMutationVariables = Exact<{
+  type: UserNotificationTypeEnum
+  state: Scalars['Boolean']
+}>
+
+export type UserNotificationToggleMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'userNotificationToggle'
+>
+
+export type UserNotificationTypeFragment = {
+  __typename?: 'UserNotificationType'
+} & Pick<UserNotificationType, 'type'>
+
 export type WalletDeleteMutationVariables = Exact<{
   id: Scalars['UuidType']
 }>
