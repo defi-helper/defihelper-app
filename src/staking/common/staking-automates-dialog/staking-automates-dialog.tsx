@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAsyncFn, useAsyncRetry } from 'react-use'
+import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 import { useForm } from 'react-hook-form'
 
 import { ButtonBase } from '~/common/button-base'
@@ -24,17 +24,28 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
 
   const steps = useAsyncRetry(async () => {
     const res = await Promise.all(
-      props.steps.map(async (step) => ({ ...step, info: await step.info() }))
+      props.steps.map(async (step) => ({
+        ...step,
+        info: await step.info(),
+      }))
     )
 
     return res
   }, [props.steps])
 
+  const currentStep = steps.value?.[currentStepNumber]
+
+  const errorValue = useAsync(async () => {
+    if (!currentStep) return
+
+    const can = await currentStep.can()
+
+    if (can instanceof Error) throw can
+  }, [currentStep])
+
   const handleSetStep = (stepIndex: number) => () => {
     setCurrentStepNumber(stepIndex)
   }
-
-  const currentStep = steps.value?.[currentStepNumber]
 
   const handleOnSubmit = handleSubmit(async (formValues) => {
     if (!currentStep) return
@@ -44,11 +55,15 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
     try {
       const can = await currentStep.can(...values)
 
-      if (!can) return
+      if (can instanceof Error) return
 
       const { tx } = await currentStep.send(...values)
 
       await tx.wait()
+
+      if (steps.value && currentStepNumber < steps.value.length) {
+        setCurrentStepNumber(currentStepNumber + 1)
+      }
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -61,12 +76,16 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
 
     const can = await currentStep.can()
 
-    if (!can) return
+    if (can instanceof Error) return
 
     const { tx } = await currentStep.send()
 
     await tx.wait()
-  }, [currentStep])
+
+    if (steps.value && currentStepNumber < steps.value.length) {
+      setCurrentStepNumber(currentStepNumber + 1)
+    }
+  }, [currentStep, currentStepNumber, steps.value])
 
   return (
     <Dialog className={styles.root}>
@@ -113,9 +132,10 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
               <Button
                 type="submit"
                 loading={formState.isSubmitting}
+                disabled={Boolean(errorValue.error?.message)}
                 className={styles.button}
               >
-                {currentStep.name}
+                {errorValue.error?.message ?? currentStep.name}
               </Button>
             </form>
           )}
@@ -123,9 +143,10 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
             <Button
               loading={sendState.loading}
               onClick={handleSend}
+              disabled={Boolean(errorValue.error?.message)}
               className={styles.button}
             >
-              {currentStep?.name}
+              {errorValue.error?.message ?? currentStep?.name}
             </Button>
           )}
         </>

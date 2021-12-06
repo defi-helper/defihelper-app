@@ -20,17 +20,15 @@ export type StakingContractCardProps = {
   address: string
   network: string
   blockchain: string
-  value: string
+  balance: string
   onDeposit: () => void
   onRefund: () => void
-  onRename: () => void
   onDelete: () => void
   onMigrate: () => void
   error?: boolean
   apy?: string
-  apyBoost: number
+  apyBoost: string
   deleting?: boolean
-  editing?: boolean
   depositing?: boolean
   refunding?: boolean
   migrating?: boolean
@@ -40,11 +38,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
   props
 ) => {
   const pending =
-    props.deleting ||
-    props.editing ||
-    props.depositing ||
-    props.refunding ||
-    props.migrating
+    props.deleting || props.depositing || props.refunding || props.migrating
 
   return (
     <Paper className={clsx(styles.root, props.className)} radius={8}>
@@ -62,15 +56,14 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
                   pending && styles.manageLoading
                 )}
               >
-                {(props.deleting || props.editing) && (
+                {props.deleting && (
                   <CircularProgress className={styles.circularProgress} />
                 )}
                 <Icon
                   icon="dots"
                   className={clsx(
                     styles.manageIcon,
-                    (props.deleting || props.editing) &&
-                      styles.manageIconloading
+                    props.deleting && styles.manageIconloading
                   )}
                 />
               </ButtonBase>
@@ -79,12 +72,6 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             placement="left-start"
             offset={[0, 4]}
           >
-            <ButtonBase
-              className={styles.dropdownItem}
-              onClick={props.onRename}
-            >
-              Rename
-            </ButtonBase>
             <ButtonBase
               className={styles.dropdownItem}
               as="a"
@@ -134,10 +121,10 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             as="span"
             className={clsx(styles.infoTitle, styles.opacity)}
           >
-            Value
+            Balance
           </Typography>
           <Typography variant="body2" as="span">
-            ${bignumberUtils.format(props.value)}
+            ${bignumberUtils.format(props.balance)}
           </Typography>
         </div>
       </div>
@@ -167,7 +154,11 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             </Dropdown>
           </Typography>
           <Typography variant="body2" as="span">
-            {bignumberUtils.format(bignumberUtils.mul(props.apy, 100))}%
+            {bignumberUtils.formatMax(
+              bignumberUtils.mul(props.apy, 100),
+              10000
+            )}
+            %
           </Typography>
         </div>
         <div className={styles.row}>
@@ -195,7 +186,11 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             </Dropdown>
           </Typography>
           <Typography variant="body2" as="span">
-            {bignumberUtils.format(bignumberUtils.mul(props.apyBoost, 100))}%
+            {bignumberUtils.formatMax(
+              bignumberUtils.mul(props.apyBoost, 100),
+              10000
+            )}
+            %
           </Typography>
         </div>
         <div className={styles.buttons}>
@@ -204,12 +199,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             className={styles.deposit}
             onClick={props.onDeposit}
             loading={props.depositing}
-            disabled={
-              props.editing ||
-              props.deleting ||
-              props.refunding ||
-              props.migrating
-            }
+            disabled={props.deleting || props.refunding || props.migrating}
           >
             Deposit
           </Button>
@@ -219,12 +209,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             className={styles.refund}
             onClick={props.onMigrate}
             loading={props.migrating}
-            disabled={
-              props.editing ||
-              props.deleting ||
-              props.depositing ||
-              props.refunding
-            }
+            disabled={props.deleting || props.depositing || props.refunding}
           >
             Migrate
           </Button>
@@ -234,12 +219,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             className={styles.refund}
             onClick={props.onRefund}
             loading={props.refunding}
-            disabled={
-              props.editing ||
-              props.deleting ||
-              props.depositing ||
-              props.migrating
-            }
+            disabled={props.deleting || props.depositing || props.migrating}
           >
             Refund
           </Button>

@@ -12,4 +12,5 @@ export type StakingAutomatesContract = Exclude<
   refunding?: boolean
   deleting?: boolean
   editing?: boolean
+  autostaking: string
 }

@@ -895,6 +895,7 @@ export type Mutation = {
   contractCreate: ContractType
   contractUpdate: ContractType
   contractDelete: Scalars['Boolean']
+  userNotificationToggle: Scalars['Boolean']
   contractWalletLink: Scalars['Boolean']
   contractWalletUnlink: Scalars['Boolean']
   tokenUpdate: TokenType
@@ -984,6 +985,11 @@ export type MutationContractUpdateArgs = {
 
 export type MutationContractDeleteArgs = {
   id: Scalars['UuidType']
+}
+
+export type MutationUserNotificationToggleArgs = {
+  type: UserNotificationTypeEnum
+  state: Scalars['Boolean']
 }
 
 export type MutationContractWalletLinkArgs = {
@@ -1549,6 +1555,7 @@ export type Query = {
   proposals: ProposalListQuery
   userContact?: Maybe<UserContactType>
   userContacts: UserContactListQuery
+  userNotifications: Array<UserNotificationType>
   userEventSubscription?: Maybe<UserEventSubscriptionType>
   userEventSubscriptions: UserEventSubscriptionListQuery
   tokens: TokenListQuery
@@ -2396,6 +2403,16 @@ export type UserMetricsTokenAliasFilterInputType = {
   id?: Maybe<Array<Scalars['UuidType']>>
   /** Is stable token */
   stable?: Maybe<Scalars['Boolean']>
+}
+
+export type UserNotificationType = {
+  __typename?: 'UserNotificationType'
+  /** Type */
+  type: UserNotificationTypeEnum
+}
+
+export enum UserNotificationTypeEnum {
+  PortfolioMetrics = 'portfolioMetrics',
 }
 
 export enum UserRoleEnum {
@@ -4215,7 +4232,19 @@ export type StakingAutomatesContractsQuery = { __typename?: 'Query' } & {
                 }
             >
             contractWallet?: Maybe<
-              { __typename?: 'WalletType' } & Pick<WalletType, 'id'>
+              { __typename?: 'WalletType' } & Pick<
+                WalletType,
+                'id' | 'network' | 'address'
+              > & {
+                  metric: { __typename?: 'WalletMetricType' } & Pick<
+                    WalletMetricType,
+                    'stakedUSD'
+                  >
+                }
+            >
+            wallet: { __typename?: 'WalletType' } & Pick<
+              WalletType,
+              'id' | 'network' | 'address'
             >
           }
       >

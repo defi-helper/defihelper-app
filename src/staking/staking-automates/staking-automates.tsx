@@ -5,7 +5,11 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
-import { StakingContractCard, StakingAutomatesDialog } from '~/staking/common'
+import {
+  StakingContractCard,
+  StakingAutomatesDialog,
+  StakingErrorDialog,
+} from '~/staking/common'
 import { useWalletList } from '~/wallets/wallet-list'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
@@ -17,6 +21,7 @@ export type StakingAutomatesProps = {
 export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [openAutomates] = useDialog(StakingAutomatesDialog)
   const [openWalletList] = useWalletList()
+  const [openErrorDialog] = useDialog(StakingErrorDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   const automatesContracts = useStore(model.$automatesContracts)
@@ -31,6 +36,19 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
         const wallet = await openWalletList()
 
         if (!wallet.account) return
+
+        const addresses =
+          String(wallet.chainId) === 'W'
+            ? wallet.account !== contract.wallet.address
+            : wallet.account.toLowerCase() !== contract.wallet.address
+
+        if (addresses || String(wallet.chainId) !== contract.wallet.network) {
+          await openErrorDialog({
+            contractName: contract.contract?.name ?? '',
+            address: contract.wallet.address,
+            network: contract.wallet.network,
+          })
+        }
 
         model.fetchAdapter({
           protocolAdapter: contract.protocol.adapter,
@@ -60,10 +78,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     }
   }
 
-  const handleRename = () => () => {
-    model.renameContractFx()
-  }
-
   useGate(model.StakingAutomatesGate)
 
   useEffect(() => {
@@ -90,11 +104,10 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             address={automatesContract.address}
             network={automatesContract.contract?.network ?? ''}
             blockchain={automatesContract.contract?.blockchain ?? ''}
-            value="10"
+            balance={automatesContract.contractWallet?.metric.stakedUSD ?? ''}
             apy={automatesContract.contract?.metric.aprYear}
-            apyBoost={10}
+            apyBoost={automatesContract.autostaking}
             onDelete={handleDelete(automatesContract.id)}
-            onRename={handleRename()}
             onMigrate={handleAction(automatesContract, 'migrate')}
             onDeposit={handleAction(automatesContract, 'deposit')}
             onRefund={handleAction(automatesContract, 'refund')}
@@ -102,7 +115,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             migrating={automatesContract.migrating}
             depositing={automatesContract.depositing}
             deleting={automatesContract.deleting}
-            editing={automatesContract.editing}
           />
         ))}
       </div>

@@ -74,7 +74,7 @@ export type AutomatesStepInfo = {
 }
 
 export type AutomatesStep = {
-  can: (...args: unknown[]) => Promise<boolean>
+  can: (...args: unknown[]) => Promise<boolean | Error>
   info: () => Promise<AutomatesStepInfo>
   name: string
   send: (
@@ -98,8 +98,14 @@ export type Adapters = {
   >
 }
 
+const cache: Record<string, Adapters> = {}
+
 export function loadAdapter(url: string): Promise<Adapters> {
   return new Promise((resolve, reject) => {
+    if (cache[url]) {
+      return resolve(cache[url])
+    }
+
     // @ts-ignore
     window.module = moduleExports
 
@@ -114,6 +120,8 @@ export function loadAdapter(url: string): Promise<Adapters> {
 
         // @ts-ignore
         window.module = moduleExports
+
+        cache[url] = window.module.exports
 
         resolve(window.module.exports)
       } else {

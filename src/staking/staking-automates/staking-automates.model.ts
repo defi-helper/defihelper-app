@@ -1,8 +1,10 @@
 import { createDomain, sample, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import omit from 'lodash.omit'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 import { loadAdapter } from '~/common/load-adapter'
+import { protocolsApi } from '~/protocols/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { automationApi } from '../../automations/common/automation.api'
 import {
@@ -33,7 +35,42 @@ const LOAD_TYPES: Record<ActionType, 'migrating' | 'depositing' | 'refunding'> =
 export const stakingAutomatesDomain = createDomain()
 
 export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
-  stakingApi.automatesContractList
+  async () => {
+    const data = await stakingApi.automatesContractList()
+
+    const automatesWithAutostaking = data.list.map(async (automateContract) => {
+      const result = await protocolsApi.protocolEstimated({
+        balance: Number(automateContract.contractWallet?.metric.stakedUSD),
+        apy: Number(automateContract.contract?.metric.aprYear),
+      })
+
+      const [lastAutostakingValue] = result?.optimal.slice(-1) ?? []
+
+      const autostakingApy = bignumberUtils.mul(
+        bignumberUtils.div(
+          bignumberUtils.minus(
+            lastAutostakingValue?.v,
+            automateContract.contract?.metric.myStaked
+          ),
+          automateContract.contract?.metric.myStaked
+        ),
+        100
+      )
+
+      return {
+        ...automateContract,
+        autostaking: bignumberUtils.minus(
+          autostakingApy,
+          automateContract.contract?.metric.aprYear
+        ),
+      }
+    })
+
+    return {
+      ...data,
+      list: await Promise.all(automatesWithAutostaking),
+    }
+  }
 )
 
 export const fetchAdapter = stakingAutomatesDomain.createEffect(
@@ -57,8 +94,6 @@ export const fetchAdapter = stakingAutomatesDomain.createEffect(
 export const deleteContractFx = stakingAutomatesDomain.createEffect(
   (contractId: string) => automationApi.deleteContract({ id: contractId })
 )
-
-export const renameContractFx = stakingAutomatesDomain.createEffect(() => {})
 
 export const reset = stakingAutomatesDomain.createEvent()
 
