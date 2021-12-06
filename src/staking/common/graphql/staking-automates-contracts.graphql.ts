@@ -37,6 +37,16 @@ export const STAKING_AUTOMATES_CONTRACTS = gql`
         address
         contractWallet {
           id
+          network
+          address
+          metric {
+            stakedUSD
+          }
+        }
+        wallet {
+          id
+          network
+          address
         }
         adapter
         initParams

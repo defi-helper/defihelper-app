@@ -4256,7 +4256,19 @@ export type StakingAutomatesContractsQuery = { __typename?: 'Query' } & {
                 }
             >
             contractWallet?: Maybe<
-              { __typename?: 'WalletType' } & Pick<WalletType, 'id'>
+              { __typename?: 'WalletType' } & Pick<
+                WalletType,
+                'id' | 'network' | 'address'
+              > & {
+                  metric: { __typename?: 'WalletMetricType' } & Pick<
+                    WalletMetricType,
+                    'stakedUSD'
+                  >
+                }
+            >
+            wallet: { __typename?: 'WalletType' } & Pick<
+              WalletType,
+              'id' | 'network' | 'address'
             >
           }
       >
