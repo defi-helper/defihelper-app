@@ -7,7 +7,7 @@ export const USER_FRAGMENT = gql`
     id
     role
     createdAt
-    wallets(filter: $filter, sort: $sort, pagination: $pagination) {
+    wallets {
       list {
         id
         blockchain
