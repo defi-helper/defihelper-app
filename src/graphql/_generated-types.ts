@@ -4207,6 +4207,7 @@ export type WalletFragmentFragment = { __typename?: 'WalletType' } & Pick<
   }
 
 export type StakingAutomatesContractsQueryVariables = Exact<{
+  filter?: Maybe<AutomateContractListFilterInputType>
   sort?: Maybe<
     Array<AutomateContractListSortInputType> | AutomateContractListSortInputType
   >

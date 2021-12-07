@@ -1,9 +1,11 @@
-import { createDomain, sample, restore } from 'effector-logger/macro'
+import { createDomain, sample, restore, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import omit from 'lodash.omit'
+import { authModel } from '~/auth'
 import { bignumberUtils } from '~/common/bignumber-utils'
 
 import { loadAdapter } from '~/common/load-adapter'
+import { UserType } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { automationApi } from '../../automations/common/automation.api'
@@ -35,8 +37,12 @@ const LOAD_TYPES: Record<ActionType, 'migrating' | 'depositing' | 'refunding'> =
 export const stakingAutomatesDomain = createDomain()
 
 export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
-  async () => {
-    const data = await stakingApi.automatesContractList()
+  async (userId: string) => {
+    const data = await stakingApi.automatesContractList({
+      filter: {
+        user: userId,
+      },
+    })
 
     const automatesWithAutostaking = data.list.map(async (automateContract) => {
       const result = await protocolsApi.protocolEstimated({
@@ -135,7 +141,16 @@ export const StakingAutomatesGate = createGate({
 })
 
 sample({
-  clock: StakingAutomatesGate.open,
+  clock: guard({
+    source: [authModel.$user, StakingAutomatesGate.status],
+    clock: [authModel.$user.updates, StakingAutomatesGate.open],
+    filter: (source): source is [UserType, boolean] => {
+      const [user, status] = source
+
+      return Boolean(user?.id) && status
+    },
+  }),
+  fn: ([user]) => user.id,
   target: fetchAutomatesContractsFx,
 })
 
