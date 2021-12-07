@@ -51,8 +51,10 @@ export type ContractAction = {
 
 export const stakingAdaptersDomain = createDomain()
 
-const isStaking = (str: string): str is 'staking' | 'swopfiStaking' => {
-  return ['staking', 'swopfiStaking'].includes(str)
+const isStaking = (
+  str: string
+): str is 'staking' | 'swopfiStaking' | 'masterChef' => {
+  return ['staking', 'swopfiStaking', 'masterChef'].includes(str)
 }
 
 export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(

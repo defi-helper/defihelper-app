@@ -92,6 +92,7 @@ export type AutomatesType = {
 export type Adapters = {
   staking: AdapterFn
   swopfiStaking: AdapterFn
+  masterChef: AdapterFn
   automates: Record<
     string,
     (signer: unknown, contractAddress: unknown) => Promise<AutomatesType>

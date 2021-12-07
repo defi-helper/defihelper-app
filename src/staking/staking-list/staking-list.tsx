@@ -54,21 +54,26 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     }
   }
 
-  const handleConnect = (contractId: string) => async () => {
+  const handleConnect = (contract: typeof stakingList[number]) => async () => {
     try {
-      const walletData = await openWalletList()
+      const walletData = await openWalletList({
+        blockchain: contract.blockchain,
+      })
 
-      const findedWallet = wallets.find(
-        (wallet) =>
-          wallet.address.toLowerCase() === walletData.account?.toLowerCase() &&
-          String(walletData.chainId) === wallet.network
-      )
+      const findedWallet = wallets.find((wallet) => {
+        const sameAddreses =
+          String(walletData.chainId) === 'W'
+            ? walletData.account === wallet.address
+            : walletData.account?.toLowerCase() === wallet.address
+
+        return sameAddreses && String(walletData.chainId) === wallet.network
+      })
 
       if (!findedWallet) return
 
       model.connectWalletFx({
         wallet: findedWallet.id,
-        contract: contractId,
+        contract: contract.id,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -285,7 +290,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         contractLayout={stakingListItem.layout}
                         blockchain={stakingListItem.blockchain}
                         network={stakingListItem.network}
-                        onTurnOn={handleConnect(stakingListItem.id)}
+                        onTurnOn={handleConnect(stakingListItem)}
                         onTurnOff={handleDisconnect(stakingListItem.id)}
                         connected={connected}
                       />
