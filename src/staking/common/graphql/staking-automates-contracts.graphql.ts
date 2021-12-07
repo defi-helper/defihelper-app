@@ -2,6 +2,7 @@ import { gql } from '@urql/core'
 
 export const STAKING_AUTOMATES_CONTRACTS = gql`
   query StakingAutomatesContracts(
+    $filter: AutomateContractListFilterInputType
     $sort: [AutomateContractListSortInputType!]
     $pagination: AutomateContractListPaginationInputType
   ) {
