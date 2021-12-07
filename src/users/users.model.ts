@@ -1,7 +1,8 @@
-import { createDomain, guard } from 'effector-logger/macro'
+import { createDomain, guard, restore, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'
+import { PaginationState } from '~/common/create-pagination'
 import { UsersQuery } from '~/graphql/_generated-types'
 import { usersApi } from './common/users.api'
 
@@ -9,7 +10,9 @@ type User = Exclude<UsersQuery['users']['list'], null | undefined>[number]
 
 export const usersDomain = createDomain()
 
-export const fetchUsersFx = usersDomain.createEffect(usersApi.getUsers)
+export const fetchUsersFx = usersDomain.createEffect(
+  (pagination: PaginationState) => usersApi.getUsers({ pagination })
+)
 
 export const updateUserFx = usersDomain.createEffect((user: User) => {
   return usersApi.updateUser({
@@ -27,14 +30,22 @@ export const $users = usersDomain
     state.map((user) => (user.id === params.id ? params : user))
   )
 
-export const UsersGate = createGate({
+export const $count = restore(
+  fetchUsersFx.doneData.map(({ count }) => count),
+  0
+)
+
+export const UsersGate = createGate<PaginationState>({
   name: 'UsersGate',
   domain: usersDomain,
 })
 
-guard({
-  source: authModel.$user,
-  clock: [UsersGate.open, authModel.$user.updates],
-  filter: (user) => Boolean(user),
+sample({
+  clock: guard({
+    source: [authModel.$user, UsersGate.state],
+    clock: [UsersGate.open, authModel.$user.updates, UsersGate.state.updates],
+    filter: ([user]) => Boolean(user),
+  }),
+  fn: ([, pagination]) => pagination,
   target: fetchUsersFx,
 })

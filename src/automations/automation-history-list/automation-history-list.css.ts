@@ -28,32 +28,9 @@ export const header = composeStyles(
 )
 
 export const pagination = style({
-  display: 'flex',
-  alignItems: 'center',
   position: 'absolute',
   top: 16,
   right: 32,
-})
-
-export const paginationCount = style({
-  fontSize: '14px',
-  lineHeight: '20px',
-  marginRight: 16,
-  opacity: 0.64,
-})
-
-export const paginationButton = style({
-  opacity: 0.16,
-  width: 24,
-  height: 24,
-  border: '1px solid currentColor',
-  borderRadius: 4,
-
-  selectors: {
-    '&:not(:last-child)': {
-      marginRight: 8,
-    },
-  },
 })
 
 export const label = composeStyles(

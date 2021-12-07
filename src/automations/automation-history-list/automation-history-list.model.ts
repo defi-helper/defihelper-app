@@ -36,6 +36,9 @@ export const AutomationHistoryListGate = createGate<{
 
 sample({
   source: AutomationHistoryListGate.state,
-  clock: [AutomationHistoryListGate.open],
+  clock: [
+    AutomationHistoryListGate.open,
+    AutomationHistoryListGate.state.updates,
+  ],
   target: fetchHistoryFx,
 })

@@ -241,7 +241,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
                   </Typography>
                 </div>
                 {contracts.map((contract) => (
-                  <div className={styles.row}>
+                  <div className={styles.row} key={contract.id}>
                     <Typography variant="body2" as="div">
                       {contract.adapter}
                     </Typography>

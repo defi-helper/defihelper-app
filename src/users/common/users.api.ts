@@ -8,9 +8,9 @@ import {
 import { USERS, USER_UPDATE } from './graphql'
 
 export const usersApi = {
-  getUsers: () =>
+  getUsers: (variables: UsersQueryVariables) =>
     getAPIClient()
-      .query<UsersQuery, UsersQueryVariables>(USERS)
+      .query<UsersQuery, UsersQueryVariables>(USERS, variables)
       .toPromise()
       .then(({ data }) => ({
         list: data?.users.list ?? [],
