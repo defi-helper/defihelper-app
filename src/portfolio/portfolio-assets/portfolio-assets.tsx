@@ -11,7 +11,45 @@ export type PortfolioAssetsProps = {
   className?: string
 }
 
-const DATA = [['-', '-', '-', '-', '-', '-', '-', '-', '-']]
+const DATA = [
+  [
+    '48%',
+    'BAG',
+    'BondAppetit',
+    'Etherium',
+    '$0.22',
+    '2240.86',
+    '$720,864.5',
+    '-6.4%',
+    '-12.8%',
+  ],
+  [
+    '24%',
+    'SUSHI',
+    'SushiSwap',
+    'Etherium',
+    '$10.12',
+    '124,998',
+    '$240,864.5',
+    '+2.4%',
+    '-0.6%',
+  ],
+  [
+    '16%',
+    'UNI',
+    'Uniswap',
+    'Etherium',
+    '$22.6',
+    '560',
+    '$120,864.5',
+    '+12.2%',
+    '+4.8%',
+  ],
+]
+
+const isIcon = (str: string): str is 'UNI' | 'BAG' | 'SUSHI' => {
+  return ['UNI', 'BAG', 'SUSHI'].includes(str)
+}
 
 export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   return (
@@ -94,9 +132,9 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                       [styles.positive]: col.includes('+'),
                     })}
                   >
-                    {col === 'BAG' && (
+                    {isIcon(col) && (
                       <>
-                        <Icon icon="BAG" className={styles.assetIcon} />{' '}
+                        <Icon icon={col} className={styles.assetIcon} />{' '}
                       </>
                     )}
                     {col}

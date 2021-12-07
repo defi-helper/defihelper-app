@@ -54,6 +54,8 @@ import { ReactComponent as SearchIcon } from '~/assets/icons/search.svg'
 import { ReactComponent as ExclamationIcon } from '~/assets/icons/exclamation.svg'
 import { ReactComponent as AvalancheIcon } from '~/assets/icons/blockchains/avalanche.svg'
 import { ReactComponent as PolygonIcon } from '~/assets/icons/blockchains/polygon.svg'
+import { ReactComponent as SushiIcon } from '~/assets/icons/coins/sushi.svg'
+import { ReactComponent as UniIcon } from '~/assets/icons/coins/uni.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -68,6 +70,8 @@ const ICONS = {
   USDC: USDCicon,
   USDN: USDNIcon,
   PAX: PAXIcon,
+  SUSHI: SushiIcon,
+  UNI: UniIcon,
   selectArrow: SelectArrowIcon,
   home: HomeIcon,
   settings: SettingsIcon,
