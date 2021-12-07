@@ -6,28 +6,12 @@ import isEmpty from 'lodash.isempty'
 import { AppLayout } from '~/layouts'
 import { dateUtils } from '~/common/date-utils'
 import { Paper } from '~/common/paper'
+import { Typography } from '~/common/typography'
+import { TablePagination } from '~/common/table-pagination'
 import * as styles from './automation-history-list.css'
 import * as model from './automation-history-list.model'
-import { Typography } from '~/common/typography'
-import { ButtonBase } from '~/common/button-base'
-import { Icon } from '~/common/icon'
 
 export type AutomationHistoryListProps = unknown
-
-const defaultLabelDisplayedRows = (from: number, to: number, count: number) => {
-  return `${from}-${to} of ${count !== -1 ? count : `more than ${to}`}`
-}
-
-const getLabelDisplayedRowsTo = (
-  count: number,
-  page: number,
-  rowsPerPage: number
-) => {
-  if (count === -1) {
-    return (page + 1) * rowsPerPage
-  }
-  return rowsPerPage === -1 ? count : Math.min(count, (page + 1) * rowsPerPage)
-}
 
 const ROWS_PER_PAGE = 10
 
@@ -49,14 +33,6 @@ export const AutomationHistoryList: React.VFC<AutomationHistoryListProps> =
       },
     })
 
-    const handlePrev = () => {
-      setPages(page - 1)
-    }
-
-    const handleNext = () => {
-      setPages(page + 1)
-    }
-
     return (
       <AppLayout>
         <Typography variant="h3" className={styles.title}>
@@ -70,33 +46,13 @@ export const AutomationHistoryList: React.VFC<AutomationHistoryListProps> =
             <Typography variant="body2" as="div">
               Error
             </Typography>
-            <div className={styles.pagination}>
-              <Typography
-                variant="body2"
-                as="span"
-                className={styles.paginationCount}
-              >
-                {defaultLabelDisplayedRows(
-                  count === 0 ? 0 : page * ROWS_PER_PAGE + 1,
-                  getLabelDisplayedRowsTo(count, page, ROWS_PER_PAGE),
-                  count === -1 ? -1 : count
-                )}
-              </Typography>
-              <ButtonBase
-                className={styles.paginationButton}
-                onClick={handlePrev}
-                disabled={count < ROWS_PER_PAGE}
-              >
-                <Icon icon="arrowLeft" width="16" />
-              </ButtonBase>
-              <ButtonBase
-                className={styles.paginationButton}
-                onClick={handleNext}
-                disabled={count < ROWS_PER_PAGE}
-              >
-                <Icon icon="arrowRight" width="16" />
-              </ButtonBase>
-            </div>
+            <TablePagination
+              rowsPerPage={ROWS_PER_PAGE}
+              count={count}
+              className={styles.pagination}
+              onChange={setPages}
+              value={page}
+            />
           </div>
           {loading && <div className={styles.label}>loading...</div>}
           {!loading && isEmpty(history) && (

@@ -20,7 +20,7 @@ export const table = style({
 
 export const tableRow = style({
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
+  gridTemplateColumns: '1fr 1fr 1fr',
 
   selectors: {
     '&:not(:last-child)': {
@@ -33,9 +33,16 @@ export const tableHeader = composeStyles(
   tableRow,
   style({
     color: theme.colors.textColorGrey,
+    position: 'relative',
   })
 )
 
 export const tableBody = style({})
 
 export const tableCol = style({})
+
+export const pagination = style({
+  position: 'absolute',
+  top: 0,
+  right: 0,
+})
