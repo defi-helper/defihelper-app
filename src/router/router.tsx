@@ -28,6 +28,7 @@ import {
 import { AutomationList } from '~/automations/automation-list'
 import { Settings } from '~/settings'
 import { AutomationHistoryList } from '~/automations/automation-history-list'
+import { PrivateRoute } from './private-route'
 
 export type RouterProps = unknown
 
@@ -70,9 +71,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.protocols.list}>
           <ProtocolList />
         </Route>
-        <Route path={paths.portfolio}>
+        <PrivateRoute path={paths.portfolio}>
           <Portfolio />
-        </Route>
+        </PrivateRoute>
         <Route path={paths.roadmap.detail()}>
           <RoadmapDetail />
         </Route>
@@ -88,18 +89,18 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.governance.list}>
           <GovernanceList />
         </Route>
-        <Route path={paths.automations.history()}>
+        <PrivateRoute path={paths.automations.history()}>
           <AutomationHistoryList />
-        </Route>
-        <Route path={paths.automations.list}>
+        </PrivateRoute>
+        <PrivateRoute path={paths.automations.list}>
           <AutomationList />
-        </Route>
-        <Route path={paths.settings.confirmEmail()}>
+        </PrivateRoute>
+        <PrivateRoute path={paths.settings.confirmEmail()}>
           <SettingsConfirmEmail />
-        </Route>
-        <Route path={paths.settings.list}>
+        </PrivateRoute>
+        <PrivateRoute path={paths.settings.list}>
           <Settings />
-        </Route>
+        </PrivateRoute>
         <CanRoute action="read" subject="User" path={paths.users}>
           <Users />
         </CanRoute>
