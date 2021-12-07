@@ -8,6 +8,7 @@ import { Head } from '~/common/head'
 import { Typography } from '~/common/typography'
 import { PortfolioMetricCards } from './portfolio-metric-cards'
 import { PortfolioWallets } from './portfolio-wallets/portfolio-wallets'
+import { PortfolioAssets } from './portfolio-assets'
 import * as styles from './portfolio.css'
 
 export type PortfolioProps = unknown
@@ -25,6 +26,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
         <PortfolioEarnings />
         <PortfolioCoinBalance />
       </div>
+      <PortfolioAssets className={styles.section} />
       <PortfolioWallets />
     </AppLayout>
   )
