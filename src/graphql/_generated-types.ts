@@ -4486,9 +4486,9 @@ export type StakingTokensQuery = { __typename?: 'Query' } & {
 }
 
 export type UsersQueryVariables = Exact<{
-  filter?: Maybe<WalletListFilterInputType>
-  sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
-  pagination?: Maybe<WalletListPaginationInputType>
+  filter?: Maybe<UserListFilterInputType>
+  sort?: Maybe<Array<UserListSortInputType> | UserListSortInputType>
+  pagination?: Maybe<UserListPaginationInputType>
 }>
 
 export type UsersQuery = { __typename?: 'Query' } & {
