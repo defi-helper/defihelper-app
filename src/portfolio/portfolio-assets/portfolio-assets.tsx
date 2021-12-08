@@ -101,7 +101,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                   {bignumberUtils.format(row.metric.myBalance)}
                 </Typography>
                 <Typography variant="body2">
-                  ${bignumberUtils.format(row.metric.myValue)}
+                  ${bignumberUtils.format(row.metric.myUSD)}
                 </Typography>
               </div>
             ))}
