@@ -22,8 +22,8 @@ export const SettingsNotificationsCard: React.VFC<SettingsContactCardProps> = (
       </div>
       <div className={styles.subtitle}>
         <Typography variant="body2" as="span">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident,
-          temporibus?
+          We will send you your portfolio value and how much you have earned
+          every day
         </Typography>
       </div>
       <Grid container justifyContent="flex-end" className={styles.buttons}>

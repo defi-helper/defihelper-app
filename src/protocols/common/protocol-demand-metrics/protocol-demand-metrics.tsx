@@ -57,7 +57,7 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
   return (
     <div className={clsx(styles.root, props.className)}>
       <Typography variant="h3" className={styles.title}>
-        Statistics
+        Social Media Engagement
       </Typography>
       <Paper radius={8} className={styles.tableInner}>
         <div className={clsx(styles.row, styles.grey)}>

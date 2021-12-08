@@ -148,11 +148,11 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           <div className={clsx(styles.tableHeader, styles.row)}>
             <Typography variant="body2">Pool</Typography>
             <Typography variant="body2">TVL</Typography>
-            <Typography variant="body2">APR</Typography>
-            <Typography variant="body2">+Autostaking</Typography>
+            <Typography variant="body2">APY</Typography>
+            <Typography variant="body2">Autostaking boost</Typography>
             <Typography variant="body2">Position</Typography>
             <Typography variant="body2">Pool share</Typography>
-            <Typography variant="body2">Rewards</Typography>
+            <Typography variant="body2">Unclaimed rewards</Typography>
           </div>
           <ul className={styles.list}>
             {loading && (

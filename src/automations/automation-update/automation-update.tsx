@@ -291,7 +291,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
             By time
           </AutomationSelectListItem>
           <AutomationSelectListItem onClick={handleSetType('ByEvent')}>
-            By event
+            By blockchain event
           </AutomationSelectListItem>
         </AutomationSelectList>
       ) : (

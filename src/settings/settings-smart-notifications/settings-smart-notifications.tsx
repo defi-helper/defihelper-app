@@ -47,7 +47,7 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
   return (
     <div className={props.className}>
       <SettingsHeader className={styles.header}>
-        <Typography variant="h3">Smart notifications</Typography>
+        <Typography variant="h3">Smart Notifications</Typography>
       </SettingsHeader>
       <Grid>
         {loading && (
