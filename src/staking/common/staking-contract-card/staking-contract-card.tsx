@@ -221,7 +221,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             loading={props.refunding}
             disabled={props.deleting || props.depositing || props.migrating}
           >
-            Refund
+            Unstake
           </Button>
           {props.error && (
             <Dropdown
