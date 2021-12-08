@@ -8,7 +8,7 @@ const INPUT_REGEX = RegExp(`^\\d*(?:\\\\[.])?\\d*$`) // match escaped "." charac
 export const NumericalInput = forwardRef<
   HTMLInputElement,
   React.ComponentProps<typeof Input>
->((props, ref) => {
+>(function NumericalInput(props, ref) {
   const [value, setValue] = useState(props.value as string)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

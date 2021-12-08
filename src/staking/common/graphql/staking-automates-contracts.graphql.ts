@@ -6,7 +6,7 @@ export const STAKING_AUTOMATES_CONTRACTS = gql`
     $sort: [AutomateContractListSortInputType!]
     $pagination: AutomateContractListPaginationInputType
   ) {
-    automateContracts(sort: $sort, pagination: $pagination) {
+    automateContracts(filter: $filter, sort: $sort, pagination: $pagination) {
       list {
         id
         protocol {

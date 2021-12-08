@@ -124,8 +124,9 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
                 <NumericalInput
                   key={input.placeholder}
                   label={input.placeholder}
-                  value={input.value}
+                  defaultValue={input.value}
                   disabled={formState.isSubmitting}
+                  className={styles.input}
                   {...register(`${currentStep?.name}.${index}`)}
                 />
               ))}

@@ -224,7 +224,6 @@ export const automationApi = {
     )
       .then((res) => res.json())
       .then((res) => ({
-        abi: res.abi as Automates['contractInterface'],
         address: res.address as string | undefined,
       })),
 

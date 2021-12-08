@@ -1,25 +1,24 @@
-import { createDomain, sample, guard } from 'effector-logger/macro'
+import { createDomain, sample, guard, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
-import ProxyFactory from '@defihelper/networks/abi/ProxyFactory.json'
-import { ethers } from 'ethers'
 import networks from '@defihelper/networks/contracts.json'
 
 import { automationApi } from '~/automations/common/automation.api'
 import { Automates } from '../common/automation.types'
+import { toastsService } from '~/toasts'
+import { loadAdapter } from '~/common/load-adapter'
+import { buildAdaptersUrl } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { authModel } from '~/auth'
-import { toastsService } from '~/toasts'
 
 type DeployParams = {
   inputs: string[]
-  address?: string
-  contractInterface: Automates['contractInterface']
   contract: string
   adapter: string
   protocol: string
   account: string
   chainId: string
   provider: unknown
+  proxyAddress: string
 }
 
 export const automationDeployContractDomain = createDomain()
@@ -45,7 +44,6 @@ export const fetchAutomationContractsFx =
           ...previousAcc,
           {
             ...contract,
-            contractInterface: contractData.abi,
             address: contractData.address,
           },
         ]
@@ -56,40 +54,43 @@ export const fetchAutomationContractsFx =
     return contracts
   })
 
-export const $automateContracts = automationDeployContractDomain
-  .createStore<Automates[]>([])
-  .on(fetchAutomationContractsFx.doneData, (_, payload) => payload)
+export const fetchDeployAdapterFx = automationDeployContractDomain.createEffect(
+  async (
+    params: Required<Omit<Automates, 'id'>> & {
+      chainId: string
+      provider: unknown
+    }
+  ) => {
+    const adapterObj = await loadAdapter(buildAdaptersUrl(params.protocol))
 
-export const deployFx = automationDeployContractDomain.createEffect(
-  async (params: DeployParams) => {
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,
       params.chainId
     )
-    const wallets = authModel.$userWallets.getState()
+
+    const adapterContract = adapterObj.automates.deploy[params.contract]
 
     const network = networks[params.chainId as '3']
 
-    const proxyFactory = new ethers.Contract(
+    const adapter = await adapterContract(
+      networkProvider?.getSigner(),
       network.ProxyFactory.address,
-      ProxyFactory.abi,
-      networkProvider?.getSigner()
+      params.address
     )
 
-    const tx = await proxyFactory.create(
-      params.address,
-      new ethers.utils.Interface(params.contractInterface).encodeFunctionData(
-        'init',
-        params.inputs
-      )
-    )
+    return adapter
+  }
+)
 
-    const receipt = await tx.wait()
+export const $automateContracts = automationDeployContractDomain
+  .createStore<Automates[]>([])
+  .on(fetchAutomationContractsFx.doneData, (_, payload) => payload)
 
-    const proxyAddress: string = ethers.utils.defaultAbiCoder.decode(
-      ['address'],
-      receipt.logs[0].topics[2]
-    )[0]
+export const $deployAdapter = restore(fetchDeployAdapterFx.doneData, null)
+
+export const deployFx = automationDeployContractDomain.createEffect(
+  async (params: DeployParams) => {
+    const wallets = authModel.$userWallets.getState()
 
     const currentWallet = wallets.find((wallet) => {
       return (
@@ -105,11 +106,13 @@ export const deployFx = automationDeployContractDomain.createEffect(
     const createdContract = await automationApi.createContract({
       input: {
         wallet: currentWallet.id,
-        address: proxyAddress,
+        address: params.proxyAddress,
         adapter: params.adapter,
         protocol: params.protocol,
         contract: params.contract,
-        initParams: JSON.stringify({ inputs: params.inputs }),
+        initParams: JSON.stringify({
+          inputs: params.inputs,
+        }),
       },
     })
 

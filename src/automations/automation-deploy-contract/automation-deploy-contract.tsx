@@ -1,13 +1,9 @@
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
-import {
-  AutomationContractForm,
-  FormValues,
-} from '../common/automation-contract-form'
-import { useWalletList } from '~/wallets/wallet-list'
+import { useWalletList, WalletListPayload } from '~/wallets/wallet-list'
 import { AutomationDialog } from '../common/automation-dialog'
 import { AutomationChooseButton } from '../common/automation-choose-button'
 import { Icon } from '~/common/icon'
@@ -19,6 +15,7 @@ import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { AutomationContractDialog } from '../common/automation-contract-dialog'
 import { AutomationProtocolDialog } from '../common/automation-protocol-dialog'
+import { AutomationDeployStepsDialog } from '../common/automation-deploy-steps-dialog'
 import * as model from './automation-deploy-contract.model'
 import * as styles from './automation-deploy-contract.css'
 
@@ -34,15 +31,17 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
     const [currentAdapter, setAdapter] = useState<Automates | null>(null)
     const [currentContract, setContract] = useState<Contract | null>(null)
     const [currentProtocol, setProtocol] = useState<Protocol | null>(null)
+    const [wallet, setWallet] = useState<WalletListPayload | null>(null)
 
     const adapters = useStore(model.$automateContracts)
-    const loading = useStore(model.deployFx.pending)
+    const deployAdapter = useStore(model.$deployAdapter)
 
     const [openWalletList] = useWalletList()
     const [openNetworksDialog] = useDialog(AutomationNetworksDialog)
     const [openAdapterDialog] = useDialog(AutomationDeployContractDialog)
     const [openContractDialog] = useDialog(AutomationContractDialog)
     const [openProtocolDialog] = useDialog(AutomationProtocolDialog)
+    const [openDeployStepsDialog] = useDialog(AutomationDeployStepsDialog)
 
     const handleChooseNetwork = async () => {
       try {
@@ -100,39 +99,70 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
       }
     }
 
-    const handleSubmit = async (formValues: FormValues) => {
+    useGate(model.AutomationDeployContractGate, currentNetwork)
+
+    useEffect(() => {
+      openWalletList().then(setWallet).catch(props.onCancel)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    useEffect(() => {
       if (
         !currentAdapter ||
         !currentAdapter.address ||
-        !currentContract ||
-        !currentProtocol
+        !wallet ||
+        !wallet.account
       )
         return
 
-      try {
-        const wallet = await openWalletList()
+      model.fetchDeployAdapterFx({
+        address: currentAdapter.address,
+        protocol: currentAdapter.protocol,
+        contract: currentAdapter.contract,
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
+      })
+    }, [currentAdapter, wallet])
 
-        if (!wallet.account) return
+    useEffect(() => {
+      if (!deployAdapter) return
 
-        const result = await model.deployFx({
-          address: currentAdapter.address,
-          inputs: formValues.inputs,
-          protocol: currentProtocol.id,
-          adapter: currentAdapter.contract,
-          contract: currentContract.id,
-          account: wallet.account,
-          chainId: String(wallet.chainId),
-          provider: wallet.provider,
-          contractInterface: currentAdapter.contractInterface,
-        })
+      const handler = async () => {
+        try {
+          const result = await openDeployStepsDialog({
+            steps: deployAdapter.deploy,
+          })
 
-        props.onConfirm(result)
-      } catch (error) {
-        props.onCancel(error)
+          if (
+            !wallet?.account ||
+            !currentProtocol ||
+            !currentAdapter ||
+            !currentContract
+          )
+            return
+
+          const contract = await model.deployFx({
+            proxyAddress: result.address,
+            inputs: result.inputs,
+            protocol: currentProtocol.id,
+            adapter: currentAdapter.contract,
+            contract: currentContract.id,
+            account: wallet.account,
+            chainId: String(wallet.chainId),
+            provider: wallet.provider,
+          })
+
+          props.onConfirm(contract)
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(error.message)
+          }
+        }
       }
-    }
 
-    useGate(model.AutomationDeployContractGate, currentNetwork)
+      handler()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [deployAdapter])
 
     return (
       <AutomationDialog title="Deploy contract" onBack={props.onCancel}>
@@ -202,13 +232,6 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
           )) ||
             'Choose adapter'}
         </AutomationChooseButton>
-        {currentAdapter && (
-          <AutomationContractForm
-            loading={loading}
-            adapter={currentAdapter}
-            onSubmit={handleSubmit}
-          />
-        )}
       </AutomationDialog>
     )
   }
