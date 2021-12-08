@@ -7,7 +7,7 @@ import { PortfolioAssetFragment } from '~/graphql/_generated-types'
 
 export const portfolioAssetsDomain = createDomain()
 
-export const fetchWalletListFx = portfolioAssetsDomain.createEffect(
+export const fetchAssetsListFx = portfolioAssetsDomain.createEffect(
   async () => {
     return portfolioApi.getAssetsList({})
   }
@@ -15,7 +15,7 @@ export const fetchWalletListFx = portfolioAssetsDomain.createEffect(
 
 export const $assets = portfolioAssetsDomain
   .createStore<PortfolioAssetFragment[]>([])
-  .on(fetchWalletListFx.doneData, (_, list) => {
+  .on(fetchAssetsListFx.doneData, (_, list) => {
     const totalValue = list.reduce(
       (prev, v) => prev.plus(new BN(v.metric.myUSD)),
       new BN(0)
@@ -43,5 +43,5 @@ export const PortfolioAssetsGate = createGate({
 
 sample({
   clock: PortfolioAssetsGate.open,
-  target: fetchWalletListFx,
+  target: fetchAssetsListFx,
 })
