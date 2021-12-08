@@ -1,64 +1,40 @@
 import clsx from 'clsx'
 
+import { useGate, useStore } from 'effector-react'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as styles from './portfolio-assets.css'
+import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type PortfolioAssetsProps = {
   className?: string
 }
-
-const DATA = [
-  [
-    '48%',
-    'BAG',
-    'BondAppetit',
-    'Etherium',
-    '$0.22',
-    '2240.86',
-    '$720,864.5',
-    '-6.4%',
-    '-12.8%',
-  ],
-  [
-    '24%',
-    'SUSHI',
-    'SushiSwap',
-    'Etherium',
-    '$10.12',
-    '124,998',
-    '$240,864.5',
-    '+2.4%',
-    '-0.6%',
-  ],
-  [
-    '16%',
-    'UNI',
-    'Uniswap',
-    'Etherium',
-    '$22.6',
-    '560',
-    '$120,864.5',
-    '+12.2%',
-    '+4.8%',
-  ],
-]
 
 const isIcon = (str: string): str is 'UNI' | 'BAG' | 'SUSHI' => {
   return ['UNI', 'BAG', 'SUSHI'].includes(str)
 }
 
 export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
+  const assets = useStore(portfolioAssetsModel.$assets)
+  useGate(portfolioAssetsModel.PortfolioAssetsGate)
+
+  // todo introduce pagination and server-side asset percentage calculation
+
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
         <Typography variant="h3" className={styles.title}>
-          Assets 32
+          Assets {assets.length}
         </Typography>
-        <Typography variant="h3" className={clsx(styles.title, styles.grey)}>
+        <Typography
+          variant="h3"
+          className={clsx(styles.title, styles.grey)}
+          style={{ display: 'none' }}
+        >
           Platforms 5
         </Typography>
       </div>
@@ -70,15 +46,6 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
             </Typography>
             <Typography variant="body3" className={styles.tableCol}>
               Asset
-            </Typography>
-            <Typography variant="body3" className={styles.tableCol}>
-              Platform
-            </Typography>
-            <Typography variant="body3" className={styles.tableCol}>
-              Chain
-            </Typography>
-            <Typography variant="body3" className={styles.tableCol}>
-              Price
             </Typography>
             <Typography variant="body3" className={styles.tableCol}>
               Balance
@@ -113,33 +80,29 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                 </Typography>
               </Dropdown>
             </Typography>
-            <Typography variant="body3" className={styles.tableCol}>
-              Value 24h
-            </Typography>
-            <Typography variant="body3" className={styles.tableCol}>
-              Value 7d
-            </Typography>
           </div>
           <div className={styles.tableBody}>
-            {DATA.map((row, rowIndex) => (
+            {assets.map((row, rowIndex) => (
               <div key={String(rowIndex)} className={styles.tableRow}>
-                {row.map((col, colIndex) => (
-                  <Typography
-                    variant="body2"
-                    key={String(colIndex)}
-                    className={clsx({
-                      [styles.negative]: col.includes('-'),
-                      [styles.positive]: col.includes('+'),
-                    })}
-                  >
-                    {isIcon(col) && (
-                      <>
-                        <Icon icon={col} className={styles.assetIcon} />{' '}
-                      </>
-                    )}
-                    {col}
-                  </Typography>
-                ))}
+                <Typography variant="body2">
+                  {bignumberUtils.format(row.metric.myPortfolioPercent, 2)}%
+                </Typography>
+
+                <Typography variant="body2">
+                  {isIcon(row.symbol) && (
+                    <>
+                      <Icon icon={row.symbol} className={styles.assetIcon} />{' '}
+                    </>
+                  )}
+                  {row.name}
+                </Typography>
+
+                <Typography variant="body2">
+                  {bignumberUtils.format(row.metric.myBalance)}
+                </Typography>
+                <Typography variant="body2">
+                  ${bignumberUtils.format(row.metric.myValue)}
+                </Typography>
               </div>
             ))}
           </div>
