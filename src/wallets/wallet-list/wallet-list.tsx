@@ -6,14 +6,16 @@ import { Typography } from '~/common/typography'
 import { augmentConnectorUpdate, connectorsByName } from '~/wallets/common'
 import * as styles from './wallet-list.css'
 
+export type WalletListPayload = {
+  connector: AbstractConnector
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  provider: any
+  chainId: string | number
+  account: string | null
+}
+
 export type WalletListProps = {
-  onConfirm: (data: {
-    connector: AbstractConnector
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    provider: any
-    chainId: string | number
-    account: string | null
-  }) => void
+  onConfirm: (data: WalletListPayload) => void
   onCancel: (value: unknown) => void
   blockchain?: string
 }

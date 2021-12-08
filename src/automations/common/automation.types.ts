@@ -1,5 +1,3 @@
-import type { Fragment, JsonFragment } from '@ethersproject/abi'
-
 import {
   AutomationTriggerFragmentFragment,
   WalletType,
@@ -11,8 +9,8 @@ export type Trigger = AutomationTriggerFragmentFragment & { deleting?: boolean }
 export type Automates = {
   protocol: string
   contract: string
-  contractInterface: string | ReadonlyArray<Fragment | JsonFragment | string>
   address?: string
+  id?: string
 }
 
 export type AutomationNetwork = {
