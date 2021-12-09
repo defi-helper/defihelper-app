@@ -14,10 +14,6 @@ export type PortfolioAssetsProps = {
   className?: string
 }
 
-const isIcon = (str: string): str is 'UNI' | 'BAG' | 'SUSHI' => {
-  return ['UNI', 'BAG', 'SUSHI'].includes(str)
-}
-
 export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   const assets = useStore(portfolioAssetsModel.$assets)
   useGate(portfolioAssetsModel.PortfolioAssetsGate)
@@ -88,11 +84,15 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                   {bignumberUtils.format(row.metric.myPortfolioPercent, 2)}%
                 </Typography>
 
-                <Typography variant="body2">
-                  {isIcon(row.symbol) && (
-                    <>
-                      <Icon icon={row.symbol} className={styles.assetIcon} />{' '}
-                    </>
+                <Typography variant="body2" className={styles.assetName}>
+                  {row.logoUrl ? (
+                    <img
+                      src={row.logoUrl}
+                      className={styles.assetLogo}
+                      alt={`${row.name} logo`}
+                    />
+                  ) : (
+                    <div className={styles.assetLogoPlaceholder} />
                   )}
                   {row.name}
                 </Typography>

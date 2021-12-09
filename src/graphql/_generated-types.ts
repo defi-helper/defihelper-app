@@ -1861,6 +1861,8 @@ export type TokenAlias = {
   name: Scalars['String']
   /** Symbol */
   symbol: Scalars['String']
+  /** Logo url */
+  logoUrl?: Maybe<Scalars['String']>
   /** Is stable price */
   stable: Scalars['Boolean']
   metric: TokenAliasMetricType
@@ -3538,7 +3540,7 @@ export type MyMetricQuery = { __typename?: 'Query' } & {
 
 export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
   TokenAlias,
-  'symbol' | 'name'
+  'symbol' | 'name' | 'logoUrl'
 > & {
     metric: { __typename?: 'TokenAliasMetricType' } & Pick<
       TokenAliasMetricType,
