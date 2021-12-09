@@ -81,8 +81,20 @@ export const negative = style({
   color: theme.colors.common.red1,
 })
 
-export const assetIcon = style({
+export const assetName = style({
+  display: 'grid',
+  gridTemplateColumns: '24px auto',
+  gridGap: 10,
+})
+
+export const assetLogoPlaceholder = style({
   width: 24,
   height: 24,
-  verticalAlign: 'middle',
+  background: '#3a3a3a',
+  borderRadius: 16,
+})
+
+export const assetLogo = style({
+  width: 24,
+  height: 24,
 })
