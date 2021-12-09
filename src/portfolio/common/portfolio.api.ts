@@ -12,6 +12,8 @@ import {
   TokenMetricQueryVariables,
   PortfolioEstimatedQuery,
   PortfolioEstimatedQueryVariables,
+  AssetListQueryVariables,
+  AssetListQuery,
 } from '~/graphql/_generated-types'
 import {
   ADD_WALLET,
@@ -21,6 +23,7 @@ import {
   TOKEN_METRIC,
   TOKEN_METRIC_CHART,
 } from './graphql'
+import { ASSETS_LIST } from '~/portfolio/common/graphql/assets-list.graphql'
 
 export const portfolioApi = {
   getTokenMetricChart: (variables: TokenMetricChartQueryVariables) =>
@@ -40,6 +43,12 @@ export const portfolioApi = {
       )
       .toPromise()
       .then(({ data }) => data?.me?.blockchains ?? []),
+
+  getAssetsList: (variables: AssetListQueryVariables) =>
+    getAPIClient()
+      .query<AssetListQuery, AssetListQueryVariables>(ASSETS_LIST, variables)
+      .toPromise()
+      .then(({ data }) => data?.me?.tokenAliases.list ?? []),
 
   addWallet: (variables: AddWalletMutationVariables) =>
     getAPIClient()

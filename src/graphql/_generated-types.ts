@@ -31,6 +31,13 @@ export type AddWalletInputType = {
   address: Scalars['String']
 }
 
+export type AliasListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
 export type AuthEthereumInputType = {
   /** Blockchain network id */
   network: Scalars['String']
@@ -1856,6 +1863,7 @@ export type TokenAlias = {
   symbol: Scalars['String']
   /** Is stable price */
   stable: Scalars['Boolean']
+  metric: TokenAliasMetricType
   tokens: TokenListType
 }
 
@@ -1909,6 +1917,20 @@ export enum TokenAliasListSortInputTypeColumnEnum {
   Name = 'name',
   Symbol = 'symbol',
   CreatedAt = 'createdAt',
+}
+
+export type TokenAliasListType = {
+  __typename?: 'TokenAliasListType'
+  /** Elements */
+  list?: Maybe<Array<TokenAlias>>
+  pagination: Pagination
+}
+
+export type TokenAliasMetricType = {
+  __typename?: 'TokenAliasMetricType'
+  myBalance: Scalars['String']
+  myUSD: Scalars['String']
+  myPortfolioPercent: Scalars['String']
 }
 
 export type TokenAliasUpdateInputType = {
@@ -2546,6 +2568,7 @@ export type UserType = {
   role: UserRoleEnum
   /** Current user locale */
   locale: LocaleEnum
+  tokenAliases: TokenAliasListType
   wallets: WalletListType
   blockchains: Array<UserBlockchainType>
   metricChart: Array<MetricChartType>
@@ -2555,6 +2578,10 @@ export type UserType = {
   store: UserStoreType
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
+}
+
+export type UserTypeTokenAliasesArgs = {
+  pagination?: Maybe<AliasListPaginationInputType>
 }
 
 export type UserTypeWalletsArgs = {
@@ -3428,6 +3455,20 @@ export type AddWalletMutation = { __typename?: 'Mutation' } & {
   >
 }
 
+export type AssetListQueryVariables = Exact<{ [key: string]: never }>
+
+export type AssetListQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      tokenAliases: { __typename?: 'TokenAliasListType' } & {
+        list?: Maybe<
+          Array<{ __typename?: 'TokenAlias' } & PortfolioAssetFragment>
+        >
+      }
+    }
+  >
+}
+
 export type BlockChainsQueryVariables = Exact<{
   blockchainMetric: Scalars['MetricColumnType']
   blockchainGroup: MetricGroupEnum
@@ -3494,6 +3535,16 @@ export type MyMetricQuery = { __typename?: 'Query' } & {
     }
   >
 }
+
+export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
+  TokenAlias,
+  'symbol' | 'name'
+> & {
+    metric: { __typename?: 'TokenAliasMetricType' } & Pick<
+      TokenAliasMetricType,
+      'myPortfolioPercent' | 'myUSD' | 'myBalance'
+    >
+  }
 
 export type PortfolioEstimatedQueryVariables = Exact<{
   balance: Scalars['Float']
