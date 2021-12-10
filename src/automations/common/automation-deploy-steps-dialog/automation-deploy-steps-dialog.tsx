@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAsync, useAsyncRetry } from 'react-use'
 import { useForm, Controller } from 'react-hook-form'
 
@@ -19,7 +19,7 @@ export type AutomationDeployStepsDialogProps = {
 
 export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogProps> =
   (props) => {
-    const { handleSubmit, formState, control } = useForm()
+    const { handleSubmit, formState, control, reset } = useForm()
     const [currentStepNumber, setCurrentStepNumber] = useState(0)
 
     const steps = useAsyncRetry(async () => {
@@ -71,6 +71,14 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
         }
       }
     })
+
+    useEffect(() => {
+      if (!currentStep?.info.inputs) return
+
+      reset({
+        [currentStep.name]: currentStep.info.inputs.map(({ value }) => value),
+      })
+    }, [reset, props.steps, currentStep])
 
     return (
       <Dialog className={styles.root}>

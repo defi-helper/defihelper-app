@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useLocalStorage } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
