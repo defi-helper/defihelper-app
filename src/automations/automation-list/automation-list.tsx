@@ -33,7 +33,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const balanceLoading = useStore(model.fetchBalanceFx.pending)
   const balance = useStore(model.$balance)
 
-  const [dontShow, setDontShow] = useLocalStorage('dontShow', false)
+  const [dontShow, setDontShow] = useLocalStorage('dontShowAutomation', false)
 
   const [openAutomationTrigger] = useDialog(AutomationUpdate)
   const [openDescriptionDialog] = useDialog(AutomationTriggerDescriptionDialog)

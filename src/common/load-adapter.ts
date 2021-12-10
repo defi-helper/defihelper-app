@@ -116,7 +116,8 @@ export type Adapters = {
       (
         signer: unknown,
         factoryAddress: unknown,
-        prototypeAddress: unknown
+        prototypeAddress: unknown,
+        contractAddress?: unknown
       ) => Promise<DeployType>
     >
   }

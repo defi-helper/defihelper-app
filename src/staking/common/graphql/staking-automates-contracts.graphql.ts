@@ -21,7 +21,10 @@ export const STAKING_AUTOMATES_CONTRACTS = gql`
           network
           address
           deployBlockNumber
-          automates
+          automate {
+            adapters
+            autorestake
+          }
           name
           description
           link

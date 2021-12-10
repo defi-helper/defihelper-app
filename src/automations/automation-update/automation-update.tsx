@@ -28,6 +28,7 @@ import { AutomationActionsDialog } from '../common/automation-actions-dialog'
 import { AutomationTriggerForm } from '../common/automation-trigger-form'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { AutomationDeployContract } from '../automation-deploy-contract'
+import { useWalletList } from '~/wallets/wallet-list'
 import * as styles from './automation-update.css'
 import * as model from './automation-update.model'
 import * as contactModel from '~/settings/settings-contacts/settings-contact.model'
@@ -64,6 +65,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const [openActionsDialog] = useDialog(AutomationActionsDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openDeployContract] = useDialog(AutomationDeployContract)
+  const [openWalletList] = useWalletList()
 
   const trigger = updatedTrigger ?? props.updatingTrigger ?? createdTrigger
 
@@ -130,10 +132,17 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     }
   }
 
-  const handleDeploy = () => {
-    return openDeployContract({
-      protocols,
-    })
+  const handleDeploy = async () => {
+    try {
+      const wallet = await openWalletList()
+
+      return await openDeployContract({
+        protocols,
+        wallet,
+      })
+    } catch (error) {
+      return Promise.reject(error)
+    }
   }
 
   const handleAddAction = async () => {

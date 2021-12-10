@@ -7,7 +7,7 @@ import {
 } from '~/graphql/_generated-types'
 import { authModel } from '~/auth'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
-// import * as automationDeployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
+import * as automationDeployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import { automationApi } from '../common/automation.api'
 import { Trigger } from '../common/automation.types'
 
@@ -149,10 +149,10 @@ export const $contracts = automationListDomain
     []
   )
   .on(fetchContractsFx.doneData, (_, { list }) => list)
-  // .on(automationDeployModel.deployFx.doneData, (state, payload) => [
-  //   ...state,
-  //   payload,
-  // ])
+  .on(automationDeployModel.deployFx.doneData, (state, payload) => [
+    ...state,
+    payload,
+  ])
   .on(setUpdateContract, (state, payload) =>
     state.map((contract) => (contract.id === payload.id ? payload : contract))
   )

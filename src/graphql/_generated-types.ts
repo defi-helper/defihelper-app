@@ -551,6 +551,14 @@ export type BlockchainFilterInputType = {
   network?: Maybe<Scalars['String']>
 }
 
+export type ContractAutomatesType = {
+  __typename?: 'ContractAutomatesType'
+  /** Usable automate adapters */
+  adapters: Array<Scalars['String']>
+  /** Autorestake adapter name */
+  autorestake?: Maybe<Scalars['String']>
+}
+
 export type ContractCreateInputType = {
   /** Blockchain protocol */
   blockchain: BlockchainEnum
@@ -661,7 +669,7 @@ export type ContractType = {
   /** Contract deployment block number */
   deployBlockNumber?: Maybe<Scalars['String']>
   /** Usable automates */
-  automates: Array<Scalars['String']>
+  automate: ContractAutomatesType
   /** Name */
   name: Scalars['String']
   /** Description */
@@ -1861,6 +1869,8 @@ export type TokenAlias = {
   name: Scalars['String']
   /** Symbol */
   symbol: Scalars['String']
+  /** Logo url */
+  logoUrl?: Maybe<Scalars['String']>
   /** Is stable price */
   stable: Scalars['Boolean']
   metric: TokenAliasMetricType
@@ -4293,7 +4303,6 @@ export type StakingAutomatesContractsQuery = { __typename?: 'Query' } & {
                 | 'network'
                 | 'address'
                 | 'deployBlockNumber'
-                | 'automates'
                 | 'name'
                 | 'description'
                 | 'link'
@@ -4301,6 +4310,10 @@ export type StakingAutomatesContractsQuery = { __typename?: 'Query' } & {
                 | 'events'
                 | 'createdAt'
               > & {
+                  automate: { __typename?: 'ContractAutomatesType' } & Pick<
+                    ContractAutomatesType,
+                    'adapters' | 'autorestake'
+                  >
                   metric: { __typename?: 'ContractMetricType' } & Pick<
                     ContractMetricType,
                     'tvl' | 'aprYear' | 'myStaked' | 'myEarned'
@@ -4498,6 +4511,10 @@ export type StakingContractFragmentFragment = {
   | 'protocolId'
   | 'layout'
 > & {
+    automate: { __typename?: 'ContractAutomatesType' } & Pick<
+      ContractAutomatesType,
+      'adapters' | 'autorestake'
+    >
     metric: { __typename?: 'ContractMetricType' } & Pick<
       ContractMetricType,
       'tvl' | 'aprYear' | 'myStaked' | 'myEarned'
