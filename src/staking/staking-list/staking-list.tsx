@@ -1,13 +1,20 @@
+/* eslint-disable no-unused-vars */
+import { useLocalStorage } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 
-import { Can, useAbility, authModel } from '~/auth'
+import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
+import { authModel, Can, useAbility } from '~/auth'
 import { paths } from '~/paths'
 import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
-import { StakingTabs } from '../common'
+import {
+  StakingAutomatesDialog,
+  StakingDescriptionDialog,
+  StakingTabs,
+} from '../common'
 import { Paper } from '~/common/paper'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
@@ -16,29 +23,45 @@ import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
 import { Dropdown } from '~/common/dropdown'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { Loader } from '~/common/loader'
+import {
+  AutomateActionTypeEnum,
+  AutomateTriggerTypeEnum,
+} from '~/graphql/_generated-types'
 import { useWalletList } from '~/wallets/wallet-list'
+import { SettingsBillingFormDialog } from '~/settings/common'
+import { automationApi } from '~/automations/common/automation.api'
+import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
+import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
+import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
+import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
-import { Loader } from '~/common/loader'
 
 export type StakingListProps = {
   protocolId: string
+  protocolName: string
+  protocolAdapter: string
 }
 
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const ability = useAbility()
 
   const [openedContract, setOpenedContract] = useState<string | null>(null)
+  const [dontShow, setDontShow] = useLocalStorage('dontShowAutostaking', false)
 
   const stakingList = useStore(model.$contractList)
-  const connectedContracts = useStore(model.$connectedContracts)
+  const wallets = useStore(authModel.$userWallets)
   const loading = useStore(model.fetchStakingListFx.pending)
 
   const protocolAdapter = useStore(model.$protocolAdapter)
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
+  const [openDescriptionDialog] = useDialog(StakingDescriptionDialog)
   const [openWalletList] = useWalletList()
-  const wallets = useStore(authModel.$userWallets)
+  const [openBillingForm] = useDialog(SettingsBillingFormDialog)
+  const [openDeployStepsDialog] = useDialog(AutomationDeployStepsDialog)
+  const [openAutomates] = useDialog(StakingAutomatesDialog)
 
   useGate(model.StakingListGate, props)
 
@@ -47,57 +70,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       await openConfirmDialog()
 
       await model.deleteStakingFx(id)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
-  }
-
-  const handleConnect = (contract: typeof stakingList[number]) => async () => {
-    try {
-      const walletData = await openWalletList({
-        blockchain: contract.blockchain,
-      })
-
-      const findedWallet = wallets.find((wallet) => {
-        const sameAddreses =
-          String(walletData.chainId) === 'W'
-            ? walletData.account === wallet.address
-            : walletData.account?.toLowerCase() === wallet.address
-
-        return sameAddreses && String(walletData.chainId) === wallet.network
-      })
-
-      if (!findedWallet) return
-
-      model.connectWalletFx({
-        wallet: findedWallet.id,
-        contract: contract.id,
-      })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
-  }
-
-  const handleDisconnect = (contractId: string) => async () => {
-    try {
-      const walletData = await openWalletList()
-
-      const findedWallet = wallets.find(
-        (wallet) =>
-          wallet.address.toLowerCase() === walletData.account?.toLowerCase() &&
-          String(walletData.chainId) === wallet.network
-      )
-
-      if (!findedWallet) return
-
-      model.disconnectWalletFx({
-        wallet: findedWallet.id,
-        contract: contractId,
-      })
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -117,6 +89,113 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       setOpenedContract(contractAddress)
     }
   }
+
+  const handleAutostake =
+    (contract: typeof stakingList[number]) => async () => {
+      if (!contract.automate.autorestake) return
+
+      const { address } = await automationApi.getContractAddress({
+        protocol: props.protocolAdapter,
+        contract: contract.automate.autorestake,
+        chainId: contract.network,
+      })
+
+      try {
+        if (!dontShow) {
+          const result = await openDescriptionDialog()
+
+          setDontShow(result)
+        }
+
+        const walletData = await openWalletList({
+          blockchain: contract.blockchain,
+        })
+
+        const findedWallet = wallets.find((wallet) => {
+          const sameAddreses =
+            String(walletData.chainId) === 'W'
+              ? walletData.account === wallet.address
+              : walletData.account?.toLowerCase() === wallet.address
+
+          return sameAddreses && String(walletData.chainId) === wallet.network
+        })
+
+        if (!findedWallet) return
+
+        const result = await openBillingForm()
+
+        await walletsModel.depositFx({
+          amount: result.amount,
+          walletAddress: findedWallet.address,
+          chainId: String(walletData.chainId),
+          provider: walletData.provider,
+        })
+
+        if (!address) throw new Error('contract address is undefined')
+
+        const deployAdapter = await deployModel.fetchDeployAdapterFx({
+          address,
+          protocol: props.protocolAdapter,
+          contract: contract.automate.autorestake,
+          chainId: String(walletData.chainId),
+          provider: walletData.provider,
+          contractAddress: contract.address,
+        })
+
+        const stepsResult = await openDeployStepsDialog({
+          steps: deployAdapter.deploy,
+        })
+
+        const deployedContract = await deployModel.deployFx({
+          proxyAddress: stepsResult.address,
+          inputs: stepsResult.inputs,
+          protocol: props.protocolId,
+          adapter: contract.automate.autorestake,
+          contract: contract.id,
+          account: findedWallet.address,
+          chainId: String(walletData.chainId),
+          provider: walletData.provider,
+        })
+
+        const createdTrigger = await automationUpdateModel.createTriggerFx({
+          wallet: findedWallet.id,
+          params: JSON.stringify({}),
+          type: AutomateTriggerTypeEnum.EveryHour,
+          name: 'Autogenerated',
+          active: true,
+        })
+
+        await automationUpdateModel.createActionFx({
+          trigger: createdTrigger.id,
+          type: AutomateActionTypeEnum.EthereumAutomateRun,
+          params: JSON.stringify({
+            id: deployedContract.id,
+          }),
+          priority: 0,
+        })
+
+        const stakingAutomatesAdapter =
+          await stakingAutomatesModel.fetchAdapter({
+            protocolAdapter: props.protocolAdapter,
+            contractAdapter: contract.adapter,
+            contractId: contract.id,
+            contractAddress: contract.address,
+            provider: walletData.provider,
+            chainId: String(walletData.chainId),
+            action: 'migrate',
+          })
+
+        if (!stakingAutomatesAdapter) throw new Error('something went wrong')
+
+        await openAutomates({
+          steps: stakingAutomatesAdapter.migrate,
+        })
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
 
   return (
     <div className={styles.root}>
@@ -164,9 +243,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             {!loading &&
               staking.map((stakingListItem) => {
                 const opened = stakingListItem.address === openedContract
-                const connected = Boolean(
-                  connectedContracts[stakingListItem.id]
-                )
 
                 return (
                   <li key={stakingListItem.id} className={styles.listItem}>
@@ -288,11 +364,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         contractAdapter={stakingListItem.adapter}
                         contractAddress={stakingListItem.address}
                         contractLayout={stakingListItem.layout}
+                        contractId={stakingListItem.id}
                         blockchain={stakingListItem.blockchain}
                         network={stakingListItem.network}
-                        onTurnOn={handleConnect(stakingListItem)}
-                        onTurnOff={handleDisconnect(stakingListItem.id)}
-                        connected={connected}
+                        hasAutorestake={Boolean(
+                          stakingListItem.automate.autorestake
+                        )}
+                        onAutostake={handleAutostake(stakingListItem)}
                       />
                     )}
                   </li>

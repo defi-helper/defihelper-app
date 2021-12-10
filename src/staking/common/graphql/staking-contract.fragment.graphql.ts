@@ -14,6 +14,10 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
     adapter
     protocolId
     layout
+    automate {
+      adapters
+      autorestake
+    }
     metric {
       tvl
       aprYear

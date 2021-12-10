@@ -11,6 +11,9 @@ import { createPagination, PaginationState } from '~/common/create-pagination'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { protocolsApi } from '~/protocols/common'
 import { toastsService } from '~/toasts'
+import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
+import { authModel } from '~/auth'
+import { AdapterActions } from '~/common/load-adapter'
 
 export const stakingListDomain = createDomain()
 
@@ -168,6 +171,39 @@ export const $connectedContracts = stakingListDomain
     ...state,
     [params.contract]: false,
   }))
+
+guard({
+  clock: sample({
+    source: [authModel.$userWallets, $connectedContracts],
+    clock: stakingAdaptersModel.contractActionFx.done,
+    fn: ([wallets, connectedContracts], { params }) => {
+      const findedWallet = wallets.find((wallet) => {
+        const sameAddreses =
+          String(params.wallet.chainId) === 'W'
+            ? params.wallet.account === wallet.address
+            : params.wallet.account?.toLowerCase() === wallet.address
+
+        return sameAddreses && String(params.wallet.chainId) === wallet.network
+      })
+
+      return {
+        action: params.action,
+        contract: params.contractId,
+        wallet: findedWallet?.id,
+        connected: Boolean(connectedContracts[params.contractId]),
+      }
+    },
+  }),
+  filter: (
+    clock
+  ): clock is {
+    contract: string
+    wallet: string
+    action: keyof AdapterActions
+    connected: boolean
+  } => clock.action === 'stake' && Boolean(clock.wallet) && !clock.connected,
+  target: connectWalletFx,
+})
 
 export const StakingListGate = createGate<GateState>({
   name: 'StakingListGate',

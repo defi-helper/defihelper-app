@@ -214,7 +214,7 @@ export const automationApi = {
       res.json()
     ),
 
-  getContractInterface: (
+  getContractAddress: (
     variables: Omit<Automates, 'contractInterface'> & {
       chainId: string
     }

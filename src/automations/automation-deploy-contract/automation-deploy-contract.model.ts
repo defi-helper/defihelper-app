@@ -32,7 +32,7 @@ export const fetchAutomationContractsFx =
         const previousAcc = await acc
 
         const contractData = await automationApi
-          .getContractInterface({
+          .getContractAddress({
             ...contract,
             chainId,
           })
@@ -59,6 +59,7 @@ export const fetchDeployAdapterFx = automationDeployContractDomain.createEffect(
     params: Required<Omit<Automates, 'id'>> & {
       chainId: string
       provider: unknown
+      contractAddress?: unknown
     }
   ) => {
     const adapterObj = await loadAdapter(buildAdaptersUrl(params.protocol))
@@ -75,7 +76,8 @@ export const fetchDeployAdapterFx = automationDeployContractDomain.createEffect(
     const adapter = await adapterContract(
       networkProvider?.getSigner(),
       network.ProxyFactory.address,
-      params.address
+      params.address,
+      params.contractAddress
     )
 
     return adapter

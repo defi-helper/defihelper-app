@@ -3,7 +3,7 @@ import { useGate, useStore } from 'effector-react'
 import { useEffect, useState } from 'react'
 
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
-import { useWalletList, WalletListPayload } from '~/wallets/wallet-list'
+import { WalletListPayload } from '~/wallets/wallet-list'
 import { AutomationDialog } from '../common/automation-dialog'
 import { AutomationChooseButton } from '../common/automation-choose-button'
 import { Icon } from '~/common/icon'
@@ -23,6 +23,7 @@ export type AutomationDeployContractProps = {
   onConfirm: (contract: AutomationContractFragmentFragment) => void
   onCancel: (error?: unknown) => void
   protocols: Protocol[]
+  wallet: WalletListPayload
 }
 
 export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> =
@@ -31,12 +32,10 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
     const [currentAdapter, setAdapter] = useState<Automates | null>(null)
     const [currentContract, setContract] = useState<Contract | null>(null)
     const [currentProtocol, setProtocol] = useState<Protocol | null>(null)
-    const [wallet, setWallet] = useState<WalletListPayload | null>(null)
 
     const adapters = useStore(model.$automateContracts)
     const deployAdapter = useStore(model.$deployAdapter)
 
-    const [openWalletList] = useWalletList()
     const [openNetworksDialog] = useDialog(AutomationNetworksDialog)
     const [openAdapterDialog] = useDialog(AutomationDeployContractDialog)
     const [openContractDialog] = useDialog(AutomationContractDialog)
@@ -102,27 +101,17 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
     useGate(model.AutomationDeployContractGate, currentNetwork)
 
     useEffect(() => {
-      openWalletList().then(setWallet).catch(props.onCancel)
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    useEffect(() => {
-      if (
-        !currentAdapter ||
-        !currentAdapter.address ||
-        !wallet ||
-        !wallet.account
-      )
+      if (!currentAdapter || !currentAdapter.address || !props.wallet.account)
         return
 
       model.fetchDeployAdapterFx({
         address: currentAdapter.address,
         protocol: currentAdapter.protocol,
         contract: currentAdapter.contract,
-        chainId: String(wallet.chainId),
-        provider: wallet.provider,
+        chainId: String(props.wallet.chainId),
+        provider: props.wallet.provider,
       })
-    }, [currentAdapter, wallet])
+    }, [currentAdapter, props.wallet])
 
     useEffect(() => {
       if (!deployAdapter) return
@@ -134,7 +123,7 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
           })
 
           if (
-            !wallet?.account ||
+            !props.wallet.account ||
             !currentProtocol ||
             !currentAdapter ||
             !currentContract
@@ -147,9 +136,9 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
             protocol: currentProtocol.id,
             adapter: currentAdapter.contract,
             contract: currentContract.id,
-            account: wallet.account,
-            chainId: String(wallet.chainId),
-            provider: wallet.provider,
+            account: props.wallet.account,
+            chainId: String(props.wallet.chainId),
+            provider: props.wallet.provider,
           })
 
           props.onConfirm(contract)

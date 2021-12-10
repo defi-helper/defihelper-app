@@ -15,11 +15,11 @@ export type StakingAdaptersProps = {
   protocolAdapter: string
   poolName: string
   contractLayout: string
+  contractId: string
   blockchain: string
   network: string
-  onTurnOn: () => void
-  onTurnOff: () => void
-  connected: boolean
+  hasAutorestake: boolean
+  onAutostake: () => void
 }
 
 const FORM_LAYOUTS: Record<
@@ -36,8 +36,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const contractLoading = useStore(model.fetchContractAdapterFx.pending)
 
   const createAdapterAction =
-    (contractAddress: string, action?: model.ContractAction['action']) =>
-    async () => {
+    (action?: model.ContractAction['action']) => async () => {
       try {
         const wallet = await openWalletList({
           blockchain: props.blockchain,
@@ -83,9 +82,10 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         model.contractAction({
           action,
           amount,
-          contractAddress,
+          contractAddress: props.contractAddress,
           actions: contract?.actions ?? undefined,
           decimals: contract?.staking.decimals,
+          contractId: props.contractId,
           wallet: {
             ...wallet,
             account: wallet.account,
@@ -99,10 +99,10 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       }
     }
 
-  const handleClaim = createAdapterAction(props.contractAddress, 'claim')
-  const handleStake = createAdapterAction(props.contractAddress, 'stake')
-  const handleUnStake = createAdapterAction(props.contractAddress, 'unstake')
-  const handleExit = createAdapterAction(props.contractAddress, 'exit')
+  const handleClaim = createAdapterAction('claim')
+  const handleStake = createAdapterAction('stake')
+  const handleUnStake = createAdapterAction('unstake')
+  const handleExit = createAdapterAction('exit')
 
   const actions = useStore(model.$actions)
   const action = actions[props.contractAddress]
@@ -113,7 +113,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         <Button
           type="submit"
           onClick={handleStake}
-          disabled={action?.disabled || !props.connected}
+          disabled={action?.disabled}
           loading={action?.stake || contractLoading}
           size="small"
           variant="outlined"
@@ -123,19 +123,19 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       </div>
       <div className={styles.turnOn}>
         <Button
-          onClick={props.connected ? props.onTurnOff : props.onTurnOn}
-          disabled={action?.disabled}
+          disabled={action?.disabled || !props.hasAutorestake}
           size="small"
           variant="outlined"
+          onClick={props.onAutostake}
         >
-          {props.connected ? 'Turn off' : 'Turn on'}
+          Autostake
         </Button>
       </div>
       <div>
         <Button
           type="submit"
           onClick={handleUnStake}
-          disabled={action?.disabled || !props.connected}
+          disabled={action?.disabled}
           loading={action?.unstake || contractLoading}
           size="small"
           variant="outlined"
@@ -146,7 +146,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       <div className={styles.claim}>
         <Button
           onClick={handleClaim}
-          disabled={action?.disabled || !props.connected}
+          disabled={action?.disabled}
           loading={action?.claim || contractLoading}
           size="small"
           variant="outlined"
@@ -158,7 +158,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         <div>
           <Button
             onClick={handleExit}
-            disabled={action?.disabled || !props.connected}
+            disabled={action?.disabled}
             loading={action?.exit || contractLoading}
             size="small"
             variant="outlined"

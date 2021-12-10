@@ -42,9 +42,9 @@ export const UsersGate = createGate<PaginationState>({
 
 sample({
   clock: guard({
-    source: [authModel.$user, UsersGate.state],
+    source: [authModel.$user, UsersGate.state, UsersGate.status],
     clock: [UsersGate.open, authModel.$user.updates, UsersGate.state.updates],
-    filter: ([user]) => Boolean(user),
+    filter: ([user, , isOpen]) => Boolean(user) && isOpen,
   }),
   fn: ([, pagination]) => pagination,
   target: fetchUsersFx,

@@ -41,6 +41,7 @@ export type ContractAction = {
   decimals: number
   amount: string
   contractAddress: string
+  contractId: string
   wallet: {
     connector: AbstractConnector
     provider: unknown
@@ -102,7 +103,7 @@ export const $contract = stakingAdaptersDomain
   .createStore<StakingAdapter | null>(null)
   .on(fetchContractAdapterFx.doneData, (_, payload) => payload)
 
-const contractActionFx = stakingAdaptersDomain.createEffect(
+export const contractActionFx = stakingAdaptersDomain.createEffect(
   async (contractAction: ContractAction) => {
     const sendAmount = bignumberUtils.toSend(
       contractAction.amount,
