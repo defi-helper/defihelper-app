@@ -172,7 +172,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                     Wallet
                   </Typography>
                   <Typography variant="body2" as="div">
-                    Address
+                    Txn Hash
                   </Typography>
                   <Typography variant="body2" as="div">
                     Amount
@@ -193,11 +193,17 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                       <Link
                         href={buildExplorerUrl({
                           network: historyItem.network,
-                          address: historyItem.account,
+                          tx: historyItem.bill?.tx
+                            ? historyItem.bill?.tx
+                            : historyItem.tx,
                         })}
                         target="_blank"
                       >
-                        {cutAccount(historyItem.account)}
+                        {cutAccount(
+                          historyItem.bill?.tx
+                            ? historyItem.bill?.tx
+                            : historyItem.tx
+                        )}
                       </Link>
                     </Typography>
                     <Typography variant="body2" as="div">
