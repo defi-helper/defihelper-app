@@ -84,6 +84,7 @@ export const negative = style({
 export const assetName = style({
   display: 'grid',
   gridTemplateColumns: '24px auto',
+  lineHeight: '24px',
   gridGap: 10,
 })
 
