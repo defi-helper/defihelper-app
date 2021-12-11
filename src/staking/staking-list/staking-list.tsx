@@ -15,7 +15,7 @@ import {
   StakingTabs,
 } from '../common'
 import { Paper } from '~/common/paper'
-import { useDialog } from '~/common/dialog'
+import { useDialog, UserRejectionError } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { StakingAdapters } from '~/staking/staking-adapters'
 import { Typography } from '~/common/typography'
@@ -28,9 +28,10 @@ import {
   AutomateTriggerTypeEnum,
 } from '~/graphql/_generated-types'
 import { useWalletList } from '~/wallets/wallet-list'
-import { SettingsBillingFormDialog } from '~/settings/common'
+import { StakingBillingFormDialog } from '~/staking/common'
 import { automationApi } from '~/automations/common/automation.api'
 import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
+import { toastsService } from '~/toasts'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
@@ -58,7 +59,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openDescriptionDialog] = useDialog(StakingDescriptionDialog)
   const [openWalletList] = useWalletList()
-  const [openBillingForm] = useDialog(SettingsBillingFormDialog)
+  const [openBillingForm] = useDialog(StakingBillingFormDialog)
   const [openDeployStepsDialog] = useDialog(AutomationDeployStepsDialog)
   const [openAutomates] = useDialog(StakingAutomatesDialog)
 
@@ -93,13 +94,15 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     (contract: typeof stakingList[number]) => async () => {
       if (!contract.automate.autorestake) return
 
-      const { address } = await automationApi.getContractAddress({
-        protocol: props.protocolAdapter,
-        contract: contract.automate.autorestake,
-        chainId: contract.network,
-      })
-
       try {
+        const { address } = await automationApi.getContractAddress({
+          protocol: props.protocolAdapter,
+          contract: contract.automate.autorestake,
+          chainId: contract.network,
+        })
+
+        if (!address) throw new Error('contract address is undefined')
+
         if (!dontShow) {
           const result = await openDescriptionDialog()
 
@@ -119,18 +122,19 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           return sameAddreses && String(walletData.chainId) === wallet.network
         })
 
-        if (!findedWallet) return
+        if (!findedWallet) throw new Error('wallet is not connected')
 
-        const result = await openBillingForm()
-
-        await walletsModel.depositFx({
-          amount: result.amount,
-          walletAddress: findedWallet.address,
-          chainId: String(walletData.chainId),
-          provider: walletData.provider,
+        await openBillingForm({
+          balance: String(findedWallet.billing.balance.netBalance),
+          network: findedWallet.network,
+          onSubmit: (result) =>
+            walletsModel.depositFx({
+              amount: result.amount,
+              walletAddress: findedWallet.address,
+              chainId: String(walletData.chainId),
+              provider: walletData.provider,
+            }),
         })
-
-        if (!address) throw new Error('contract address is undefined')
 
         const deployAdapter = await deployModel.fetchDeployAdapterFx({
           address,
@@ -190,8 +194,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           steps: stakingAutomatesAdapter.migrate,
         })
       } catch (error) {
-        if (error instanceof Error) {
+        if (error instanceof UserRejectionError) {
           console.error(error.message)
+          return
+        }
+
+        if (error instanceof Error) {
+          toastsService.error(error.message)
         }
       }
     }
