@@ -73,7 +73,23 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
               }
             />
 
-            <SettingsPaper key={1} />
+            <SettingsNotificationsCard
+              title="Unable to execute automate"
+              onSwitch={(state) =>
+                handleSwitchNotification(
+                  UserNotificationTypeEnum.AutomateCallNotEnoughFunds,
+                  state
+                )()
+              }
+              enabled={
+                !!notificationsList.find(
+                  (n) =>
+                    n.type ===
+                    UserNotificationTypeEnum.AutomateCallNotEnoughFunds
+                )
+              }
+            />
+
             <SettingsPaper key={2} />
           </>
         )}

@@ -2437,6 +2437,7 @@ export type UserNotificationType = {
 
 export enum UserNotificationTypeEnum {
   PortfolioMetrics = 'portfolioMetrics',
+  AutomateCallNotEnoughFunds = 'automateCallNotEnoughFunds',
 }
 
 export enum UserRoleEnum {
