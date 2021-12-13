@@ -184,6 +184,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
               deleting={wallet.deleting}
               depositing={wallet.depositing}
               refunding={wallet.refunding}
+              error={wallet.billing?.balance?.lowFeeFunds}
             />
           ))}
         {!loading &&

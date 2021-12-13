@@ -229,7 +229,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
               placement="top-end"
               offset={[0, 8]}
             >
-              This wallet has 3 active automations which doesn&apos;t work now
+              This wallet has active automations which doesn&apos;t work now due
               due to low Fee Funds balance. Deposit Fee Funds to continue
               automations.
             </Dropdown>

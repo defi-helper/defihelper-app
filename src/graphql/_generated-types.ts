@@ -475,6 +475,7 @@ export type AutomatesDescriptionType = {
 
 export type BillingBalanceType = {
   __typename?: 'BillingBalanceType'
+  lowFeeFunds: Scalars['Boolean']
   balance: Scalars['Float']
   claim: Scalars['Float']
   netBalance: Scalars['Float']
@@ -2445,6 +2446,7 @@ export type UserNotificationType = {
 
 export enum UserNotificationTypeEnum {
   PortfolioMetrics = 'portfolioMetrics',
+  AutomateCallNotEnoughFunds = 'automateCallNotEnoughFunds',
 }
 
 export enum UserRoleEnum {
@@ -4262,7 +4264,7 @@ export type WalletFragmentFragment = { __typename?: 'WalletType' } & Pick<
     billing: { __typename?: 'WalletBillingType' } & {
       balance: { __typename?: 'BillingBalanceType' } & Pick<
         BillingBalanceType,
-        'balance' | 'netBalance' | 'claim'
+        'lowFeeFunds' | 'balance' | 'netBalance' | 'claim'
       >
     }
   }

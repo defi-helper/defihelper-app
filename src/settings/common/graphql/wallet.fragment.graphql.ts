@@ -16,6 +16,7 @@ export const WALLET_FRAGMENT = gql`
     }
     billing {
       balance {
+        lowFeeFunds
         balance
         netBalance
         claim
