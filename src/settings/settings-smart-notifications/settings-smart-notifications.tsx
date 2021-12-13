@@ -66,11 +66,9 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
                   state
                 )()
               }
-              enabled={
-                !!notificationsList.find(
-                  (n) => n.type === UserNotificationTypeEnum.PortfolioMetrics
-                )
-              }
+              enabled={notificationsList.some(
+                (n) => n.type === UserNotificationTypeEnum.PortfolioMetrics
+              )}
             />
 
             <SettingsNotificationsCard
@@ -81,13 +79,10 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
                   state
                 )()
               }
-              enabled={
-                !!notificationsList.find(
-                  (n) =>
-                    n.type ===
-                    UserNotificationTypeEnum.AutomateCallNotEnoughFunds
-                )
-              }
+              enabled={notificationsList.some(
+                (n) =>
+                  n.type === UserNotificationTypeEnum.AutomateCallNotEnoughFunds
+              )}
             />
 
             <SettingsPaper key={2} />
