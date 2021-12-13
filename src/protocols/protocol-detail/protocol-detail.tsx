@@ -152,10 +152,12 @@ export const ProtocolDetail: React.FC = () => {
                   hasAutostaking={protocol.hasAutostaking}
                 />
               </ProtocolMetricEarnings>
-              <StakingAutomates className={styles.automates} />
+              <StakingAutomates
+                className={styles.automates}
+                protocolId={params.protocolId}
+              />
               <StakingList
                 protocolId={params.protocolId}
-                protocolName={protocol.name}
                 protocolAdapter={protocol.adapter}
               />
             </TabPanel>

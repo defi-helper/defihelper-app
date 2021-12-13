@@ -17,7 +17,7 @@ export const PROTOCOL_STAKED_BALANCE = gql`
           contract: $contract
           dateAfter: $dateAfter
           dateBefore: $dateBefore
-          tokenAlias: { stable: false }
+          tokenAlias: { liquidity: unstable }
         }
         pagination: $pagination
         sort: $sort
@@ -32,7 +32,7 @@ export const PROTOCOL_STAKED_BALANCE = gql`
           contract: $contract
           dateAfter: $dateAfter
           dateBefore: $dateBefore
-          tokenAlias: { stable: true }
+          tokenAlias: { liquidity: stable }
         }
         pagination: $pagination
         sort: $sort

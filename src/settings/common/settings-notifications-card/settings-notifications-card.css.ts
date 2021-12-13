@@ -34,6 +34,7 @@ export const icon = style({
 
 export const buttons = style({
   display: 'flex',
+  justifyContent: 'flex-end',
   gap: 12,
   marginTop: 'auto',
 })

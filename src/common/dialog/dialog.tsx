@@ -5,6 +5,8 @@ import { animated } from '@react-spring/web'
 import { useBodyScrollLock } from '~/common/hooks'
 import { Paper } from '~/common/paper'
 import { useAnimatedContext } from './dialog.context'
+import { ButtonBase } from '../button-base'
+import { Icon } from '../icon'
 import * as styles from './dialog.css'
 
 export type DialogProps = {
@@ -27,16 +29,19 @@ export const Dialog: React.FC<DialogProps> = (props) => {
     setContentElement(instance)
   }
 
-  const animatedContext = useAnimatedContext()
+  const { animatedValue, onClose } = useAnimatedContext()
 
   return (
     <AnimatedPaper
-      {...animatedContext}
+      {...animatedValue}
       onMouseDown={handleOnClickContent}
       className={clsx(styles.content, props.className)}
       radius={8}
       ref={handleSetContent}
     >
+      <ButtonBase onClick={onClose} className={styles.closeButton}>
+        <Icon icon="close" width="24" height="24" />
+      </ButtonBase>
       {props.children}
     </AnimatedPaper>
   )

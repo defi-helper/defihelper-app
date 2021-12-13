@@ -93,15 +93,18 @@ export const DialogProvider: React.FC = (props) => {
           <div className={styles.root}>
             <AnimatedContext.Provider
               value={{
-                style: {
-                  transform: transform.to(
-                    (num) =>
-                      `translate3d(0, ${isDesktop ? -num : num * 2}${
-                        isDesktop ? 'px' : '%'
-                      }, 0)`
-                  ),
-                  opacity: isDesktop ? opacity : undefined,
+                animatedValue: {
+                  style: {
+                    transform: transform.to(
+                      (num) =>
+                        `translate3d(0, ${isDesktop ? -num : num * 2}${
+                          isDesktop ? 'px' : '%'
+                        }, 0)`
+                    ),
+                    opacity: isDesktop ? opacity : undefined,
+                  },
                 },
+                onClose: handleClose(node.id),
               }}
             >
               <node.Dialog

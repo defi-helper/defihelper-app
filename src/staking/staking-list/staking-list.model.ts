@@ -14,11 +14,13 @@ import { toastsService } from '~/toasts'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import { authModel } from '~/auth'
 import { AdapterActions } from '~/common/load-adapter'
+import { automationApi } from '~/automations/common/automation.api'
 
 export const stakingListDomain = createDomain()
 
 type GateState = {
   protocolId: string
+  protocolAdapter?: string | null
   blockchain?: BlockchainEnum
   network?: number | string
 }
@@ -31,6 +33,7 @@ type ConnectParams = {
 type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
   autostaking: string
+  prototypeAddress?: string
 }
 
 export type ContractMetric = {
@@ -87,8 +90,28 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
         100
       )
 
+      if (!params.protocolAdapter || !contract.automate.autorestake) {
+        return {
+          ...contract,
+          prototypeAddress: undefined,
+          autostaking: bignumberUtils.minus(
+            autostakingApy,
+            contract.metric.aprYear
+          ),
+        }
+      }
+
+      const contractAddress = await automationApi
+        .getContractAddress({
+          protocol: params.protocolAdapter,
+          contract: contract.automate.autorestake,
+          chainId: contract.network,
+        })
+        .catch(console.error)
+
       return {
         ...contract,
+        prototypeAddress: contractAddress?.address,
         autostaking: bignumberUtils.minus(
           autostakingApy,
           contract.metric.aprYear
@@ -147,10 +170,6 @@ export const $contractList = stakingListDomain
   .on(deleteStakingFx.doneData, (state, payload) => {
     return state.filter(({ id }) => id !== payload)
   })
-
-export const $protocolAdapter = stakingListDomain
-  .createStore<string | null>(null)
-  .on(fetchStakingListFx.doneData, (_, { adapter }) => adapter)
 
 export const $connectedContracts = stakingListDomain
   .createStore<Record<string, boolean>>({})
@@ -242,3 +261,6 @@ toastsService.forwardErrors(
   connectWalletFx.failData,
   deleteStakingFx.failData
 )
+
+$contractList.reset(StakingListGate.close)
+$connectedContracts.reset(StakingListGate.close)

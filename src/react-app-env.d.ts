@@ -143,3 +143,13 @@ declare module 'react-jazzicon' {
 
   export default Jazzicon
 }
+
+declare module '@bramus/pagination-sequence' {
+  export function generate(
+    curPage: number,
+    numPages: number,
+    numPagesAtEdges?: number,
+    numPagesAroundCurrent?: number,
+    glue?: string
+  ): Array<string | number>
+}

@@ -1,11 +1,9 @@
-import { Paper } from '@material-ui/core'
 import { useStore, useStoreMap } from 'effector-react'
-import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied'
-import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon'
 import { useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 
 import { AppLayout } from '~/layouts'
+import { Paper } from '~/common/paper'
 import * as model from './settings-confirm-email.model'
 import * as styles from './settings-confirm-email.css'
 
@@ -36,14 +34,10 @@ export const SettingsConfirmEmail: React.VFC<SettingsConfirmEmailProps> =
       <AppLayout>
         {loading && <Paper className={styles.card}>Confirming email...</Paper>}
         {!loading && confirmEmail && confirmEmail.status === true && (
-          <Paper className={styles.card}>
-            Email has been confirmed <InsertEmoticonIcon />
-          </Paper>
+          <Paper className={styles.card}>Email has been confirmed</Paper>
         )}
         {!loading && confirmEmail && !confirmEmail.status && (
-          <Paper className={styles.card}>
-            Email has not been confirmed <SentimentVeryDissatisfiedIcon />
-          </Paper>
+          <Paper className={styles.card}>Email has not been confirmed</Paper>
         )}
       </AppLayout>
     )

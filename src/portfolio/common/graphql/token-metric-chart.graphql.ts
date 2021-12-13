@@ -15,7 +15,7 @@ export const TOKEN_METRIC_CHART = gql`
         filter: {
           dateAfter: $dateAfter
           dateBefore: $dateBefore
-          tokenAlias: { stable: false }
+          tokenAlias: { liquidity: unstable }
         }
         pagination: $pagination
         sort: $sort
@@ -29,7 +29,7 @@ export const TOKEN_METRIC_CHART = gql`
         filter: {
           dateAfter: $dateAfter
           dateBefore: $dateBefore
-          tokenAlias: { stable: true }
+          tokenAlias: { liquidity: stable }
         }
         pagination: $pagination
         sort: $sort

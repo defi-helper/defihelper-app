@@ -37,9 +37,9 @@ guard({
 })
 
 fetchUserFx.doneData.watch((data) => {
-  if (data) return
-
-  sidUtils.remove()
+  if (data === null) {
+    sidUtils.remove()
+  }
 })
 
 split({
