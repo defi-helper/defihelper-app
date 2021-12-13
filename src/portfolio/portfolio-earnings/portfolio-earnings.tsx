@@ -17,13 +17,13 @@ export type PortfolioEarningsProps = {
 const ESTIMATED_FIELDS = [
   {
     valueY: 'hold',
-    name: 'Estimated Value',
+    name: 'Just holding',
     dateX: 'date',
     color: '#F08BA9',
   },
   {
     valueY: 'autostaking',
-    name: 'Value with Autostacking Automation',
+    name: 'Autostaking',
     dateX: 'date',
     color: '#CCFF3C',
   },
@@ -48,7 +48,7 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
-        <Typography>Estimated Earnings (in 3 month)</Typography>
+        <Typography>Estimated Earnings (in 3 months)</Typography>
       </div>
       <Chart
         dataFields={ESTIMATED_FIELDS}

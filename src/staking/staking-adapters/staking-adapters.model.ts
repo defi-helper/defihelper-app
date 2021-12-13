@@ -41,6 +41,7 @@ export type ContractAction = {
   decimals: number
   amount: string
   contractAddress: string
+  contractId: string
   wallet: {
     connector: AbstractConnector
     provider: unknown
@@ -51,8 +52,10 @@ export type ContractAction = {
 
 export const stakingAdaptersDomain = createDomain()
 
-const isStaking = (str: string): str is 'staking' | 'swopfiStaking' => {
-  return ['staking', 'swopfiStaking'].includes(str)
+const isStaking = (
+  str: string
+): str is 'staking' | 'swopfiStaking' | 'masterChef' => {
+  return ['staking', 'swopfiStaking', 'masterChef'].includes(str)
 }
 
 export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
@@ -100,7 +103,7 @@ export const $contract = stakingAdaptersDomain
   .createStore<StakingAdapter | null>(null)
   .on(fetchContractAdapterFx.doneData, (_, payload) => payload)
 
-const contractActionFx = stakingAdaptersDomain.createEffect(
+export const contractActionFx = stakingAdaptersDomain.createEffect(
   async (contractAction: ContractAction) => {
     const sendAmount = bignumberUtils.toSend(
       contractAction.amount,

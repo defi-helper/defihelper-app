@@ -1,8 +1,9 @@
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useEffect } from 'react'
-import { ConfirmDialog } from '~/common/confirm-dialog'
+import isEmpty from 'lodash.isempty'
 
+import { ConfirmDialog } from '~/common/confirm-dialog'
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
 import {
@@ -91,10 +92,12 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAction, adapter])
 
+  if (isEmpty(automatesContracts)) return <></>
+
   return (
     <div className={clsx(styles.root, props.className)}>
       <Typography variant="h3" className={styles.title}>
-        Deployed automates
+        Deployed automations
       </Typography>
       <div className={styles.list}>
         {automatesContracts.map((automatesContract) => (

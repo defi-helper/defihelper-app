@@ -89,13 +89,38 @@ export type AutomatesType = {
   migrate: AutomatesStep[]
 }
 
+export type DeployStep = {
+  can: (...args: unknown[]) => Promise<boolean | Error>
+  info: () => Promise<AutomatesStepInfo>
+  name: string
+  send: (...args: unknown[]) => Promise<{
+    tx: { wait: () => Promise<unknown> }
+    getAddress: () => Promise<string>
+  }>
+}
+
+export type DeployType = {
+  deploy: DeployStep[]
+}
+
 export type Adapters = {
   staking: AdapterFn
   swopfiStaking: AdapterFn
+  masterChef: AdapterFn
   automates: Record<
     string,
     (signer: unknown, contractAddress: unknown) => Promise<AutomatesType>
-  >
+  > & {
+    deploy: Record<
+      string,
+      (
+        signer: unknown,
+        factoryAddress: unknown,
+        prototypeAddress: unknown,
+        contractAddress?: unknown
+      ) => Promise<DeployType>
+    >
+  }
 }
 
 const cache: Record<string, Adapters> = {}

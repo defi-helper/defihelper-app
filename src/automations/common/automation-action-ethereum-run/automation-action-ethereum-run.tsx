@@ -47,13 +47,13 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
           contracts: contracts.map(({ protocol, adapter, id }) => ({
             contract: adapter,
             protocol: protocol.name,
-            contractInterface: id,
+            id,
           })),
         })
 
-        if (typeof result.contractInterface !== 'string') return
+        if (typeof result.id !== 'string') return
 
-        setValue('id', result.contractInterface)
+        setValue('id', result.id)
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)

@@ -2,10 +2,11 @@ import { gql } from '@urql/core'
 
 export const STAKING_AUTOMATES_CONTRACTS = gql`
   query StakingAutomatesContracts(
+    $filter: AutomateContractListFilterInputType
     $sort: [AutomateContractListSortInputType!]
     $pagination: AutomateContractListPaginationInputType
   ) {
-    automateContracts(sort: $sort, pagination: $pagination) {
+    automateContracts(filter: $filter, sort: $sort, pagination: $pagination) {
       list {
         id
         protocol {
@@ -20,7 +21,10 @@ export const STAKING_AUTOMATES_CONTRACTS = gql`
           network
           address
           deployBlockNumber
-          automates
+          automate {
+            adapters
+            autorestake
+          }
           name
           description
           link

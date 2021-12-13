@@ -17,13 +17,13 @@ export type PortfolioCoinBalanceProps = {
 const BALANCE = [
   {
     valueY: 'stableCoin',
-    name: 'Native coins',
+    name: 'Liquid coins',
     dateX: 'date',
     color: '#4463EE',
   },
   {
     valueY: 'altCoin',
-    name: 'Alt coints',
+    name: 'Low volume coins',
     dateX: 'date',
     color: '#E9CC67',
   },
@@ -52,7 +52,7 @@ export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
-        <Typography>Coin Balance</Typography>
+        <Typography>Overall Portfolio Balance</Typography>
         <PortfolioChartGroups
           onChange={handleChangeMetric}
           value={currentGroup}

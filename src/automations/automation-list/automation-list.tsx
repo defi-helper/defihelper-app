@@ -6,8 +6,6 @@ import { AppLayout } from '~/layouts/app-layout'
 import { Typography } from '~/common/typography'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
-import { AutomationUpdateContract } from '~/automations/automation-update-contract'
-import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
 import { Trigger } from '~/automations/common/automation.types'
 import { Head } from '~/common/head'
 import { Paper } from '~/common/paper'
@@ -31,15 +29,13 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const triggers = useStore(model.$triggers)
   const loading = useStore(model.fetchTriggersFx.pending)
   const contracts = useStore(model.$contracts)
-  const automateContracts = useStore(model.$automateContracts)
   const descriptions = useStore(model.$descriptions)
   const balanceLoading = useStore(model.fetchBalanceFx.pending)
   const balance = useStore(model.$balance)
 
-  const [dontShow, setDontShow] = useLocalStorage('dontShow', false)
+  const [dontShow, setDontShow] = useLocalStorage('dontShowAutomation', false)
 
   const [openAutomationTrigger] = useDialog(AutomationUpdate)
-  const [openAutomationUpdateContract] = useDialog(AutomationUpdateContract)
   const [openDescriptionDialog] = useDialog(AutomationTriggerDescriptionDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openAutomationProducts] = useDialog(AutomationProducts)
@@ -84,23 +80,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
     })
   }
 
-  const handleAutomationUpdateContract =
-    (contract: AutomationContractFragmentFragment) => async () => {
-      if (!automateContracts[contract.adapter]) return
-
-      try {
-        const result = await openAutomationUpdateContract({
-          contract,
-          automateContract: automateContracts[contract.adapter],
-        })
-
-        model.setUpdateContract(result)
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message)
-        }
-      }
-    }
   const handleAddAutomation = async () => {
     try {
       if (!dontShow) {
@@ -241,7 +220,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
                   </Typography>
                 </div>
                 {contracts.map((contract) => (
-                  <div className={styles.row}>
+                  <div className={styles.row} key={contract.id}>
                     <Typography variant="body2" as="div">
                       {contract.adapter}
                     </Typography>
@@ -261,11 +240,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
                         </ButtonBase>
                       }
                     >
-                      <ButtonBase
-                        onClick={handleAutomationUpdateContract(contract)}
-                      >
-                        Edit
-                      </ButtonBase>
+                      ы
                       <ButtonBase
                         onClick={handleAutomationDeleteContract(contract.id)}
                       >

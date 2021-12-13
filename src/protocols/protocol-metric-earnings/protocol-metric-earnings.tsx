@@ -14,13 +14,13 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 const STAKED_FIELDS = [
   {
     valueY: 'altCoin',
-    name: 'Alt coins',
+    name: 'Low volume coins',
     dateX: 'date',
     color: '#E9CC67',
   },
   {
     valueY: 'stableCoin',
-    name: 'Native coins',
+    name: 'Liquid coins',
     dateX: 'date',
     color: '#4463EE',
   },
@@ -29,13 +29,13 @@ const STAKED_FIELDS = [
 const ESTIMATED_FIELDS = [
   {
     valueY: 'hold',
-    name: 'Estimated value',
+    name: 'Just holding',
     dateX: 'date',
     color: '#F08BA9',
   },
   {
     valueY: 'autostaking',
-    name: 'Value with autostacking boost',
+    name: 'Autostaking',
     dateX: 'date',
     color: '#CCFF3C',
   },
@@ -93,7 +93,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
         <ProtocolChartWrap
           header={
             <>
-              <Typography>Staked Balance</Typography>
+              <Typography>Coin Balance</Typography>
               <ProtocolMetricGroups
                 value={currentStakedGroup}
                 onChange={handleChangeStakedMetric}
@@ -115,7 +115,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
         <ProtocolChartWrap
           header={
             <>
-              <Typography>Estimated Earnings (in 3 month)</Typography>
+              <Typography>Estimated Earnings (in 3 months)</Typography>
             </>
           }
         >

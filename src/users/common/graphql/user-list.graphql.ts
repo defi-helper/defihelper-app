@@ -4,11 +4,11 @@ import { USER_FRAGMENT } from './user.fragment.graphql'
 
 export const USERS = gql`
   query Users(
-    $filter: WalletListFilterInputType
-    $sort: [WalletListSortInputType!]
-    $pagination: WalletListPaginationInputType
+    $filter: UserListFilterInputType
+    $sort: [UserListSortInputType!]
+    $pagination: UserListPaginationInputType
   ) {
-    users {
+    users(filter: $filter, sort: $sort, pagination: $pagination) {
       list {
         ...user
       }

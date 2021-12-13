@@ -36,9 +36,11 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
   const currentStep = steps.value?.[currentStepNumber]
 
   const errorValue = useAsync(async () => {
-    if (!currentStep) return
+    if (!currentStep || !currentStep.info.inputs) return
 
-    const can = await currentStep.can()
+    const can = await currentStep.can(
+      ...currentStep.info.inputs.map(({ value }) => value)
+    )
 
     if (can instanceof Error) throw can
   }, [currentStep])
@@ -124,8 +126,9 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
                 <NumericalInput
                   key={input.placeholder}
                   label={input.placeholder}
-                  value={input.value}
+                  defaultValue={input.value}
                   disabled={formState.isSubmitting}
+                  className={styles.input}
                   {...register(`${currentStep?.name}.${index}`)}
                 />
               ))}

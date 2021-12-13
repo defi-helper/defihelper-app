@@ -11,8 +11,13 @@ const explorers = Object.entries(networksConfig).reduce<Record<string, string>>(
 
 type Options = {
   network: string
-  address: string
+  tx?: string
+  address?: string
 }
 
 export const buildExplorerUrl = (options: Options) =>
-  [explorers[options.network], options.address].join('/')
+  [
+    explorers[options.network],
+    options.address ? 'address' : 'tx',
+    options.address ? options.address : options.tx,
+  ].join('/')

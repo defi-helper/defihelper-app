@@ -214,7 +214,7 @@ export const automationApi = {
       res.json()
     ),
 
-  getContractInterface: (
+  getContractAddress: (
     variables: Omit<Automates, 'contractInterface'> & {
       chainId: string
     }
@@ -224,7 +224,6 @@ export const automationApi = {
     )
       .then((res) => res.json())
       .then((res) => ({
-        abi: res.abi as Automates['contractInterface'],
         address: res.address as string | undefined,
       })),
 

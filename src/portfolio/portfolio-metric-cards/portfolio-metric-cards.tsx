@@ -43,7 +43,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
         }
       />
       <PortfolioMetricCard
-        title="Unclaimed reward"
+        title="Total unclaimed"
         value={
           loading ? (
             'loading...'

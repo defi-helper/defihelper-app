@@ -1,7 +1,6 @@
 import { createDomain, sample, guard, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
-import { config } from '~/config'
 import {
   AutomationContractFragmentFragment,
   UserType,
@@ -10,7 +9,7 @@ import { authModel } from '~/auth'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as automationDeployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import { automationApi } from '../common/automation.api'
-import { Automates, Trigger } from '../common/automation.types'
+import { Trigger } from '../common/automation.types'
 
 export const automationListDomain = createDomain()
 
@@ -128,42 +127,6 @@ sample({
   target: fetchTriggersFx,
 })
 
-export const fetchAutomationContractsFx = automationListDomain.createEffect(
-  async (chainId: string) => {
-    const data = await automationApi.getAutomationsContracts()
-
-    const contracts: Automates[] = await Promise.all(
-      data.map(async (contract) => {
-        const contractData = await automationApi.getContractInterface({
-          ...contract,
-          chainId,
-        })
-
-        return {
-          ...contract,
-          contractInterface: contractData.abi,
-          address: contractData.address,
-        }
-      })
-    )
-
-    return contracts
-  }
-)
-
-export const $automateContracts = automationListDomain
-  .createStore<Record<string, Automates>>({})
-  .on(fetchAutomationContractsFx.doneData, (_, payload) =>
-    payload.reduce<Record<string, Automates>>((acc, automateContract) => {
-      if (!automateContract.address) return acc
-
-      return {
-        ...acc,
-        [automateContract.contract]: automateContract,
-      }
-    }, {})
-  )
-
 export const fetchContractsFx = automationListDomain.createEffect(
   async (userId: string) => {
     return automationApi.getContracts({ filter: { user: userId } })
@@ -214,12 +177,6 @@ sample({
   }),
   fn: ([user]) => user.id,
   target: fetchContractsFx,
-})
-
-sample({
-  clock: AutomationListGate.open,
-  fn: () => (config.IS_DEV ? '3' : '1'),
-  target: fetchAutomationContractsFx,
 })
 
 const fetchDescriptionFx = automationListDomain.createEffect(

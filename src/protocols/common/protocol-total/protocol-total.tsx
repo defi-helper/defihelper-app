@@ -21,7 +21,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
     <div className={styles.total}>
       <Paper radius={8} className={styles.totalItem}>
         <Typography variant="body2" className={styles.totalTitle}>
-          Total Staked
+          Staked
         </Typography>
         <Typography variant="h4">
           ${bignumberUtils.format(props.myStaked)}
@@ -29,7 +29,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
       </Paper>
       <Paper radius={8} className={styles.totalItem}>
         <Typography variant="body2" className={styles.totalTitle}>
-          Total Unclaimed
+          Unclaimed
         </Typography>
         <Typography variant="h4">
           ${bignumberUtils.format(props.myEarned)}
@@ -37,7 +37,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
       </Paper>
       <Paper radius={8} className={styles.totalItem}>
         <Typography variant="body2" className={styles.totalTitle}>
-          APY Boost
+          Autostaking Boost
         </Typography>
         <Typography variant="h4">
           {props.hasAutostaking ? bignumberUtils.formatMax(apyBoost, 10000) : 0}

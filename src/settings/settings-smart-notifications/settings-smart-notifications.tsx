@@ -49,7 +49,7 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
   return (
     <div className={props.className}>
       <SettingsHeader className={styles.header}>
-        <Typography variant="h3">Smart notifications</Typography>
+        <Typography variant="h3">Smart Notifications</Typography>
       </SettingsHeader>
       <Grid>
         {loading && (
@@ -80,7 +80,7 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
             />
 
             <SettingsNotificationsCard
-              title="Unable to execute automate"
+              title="Unable to execute automations"
               description={
                 <>
                   We will send you alert when you don’t have enough money to pay
