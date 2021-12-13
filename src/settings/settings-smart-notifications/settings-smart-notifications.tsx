@@ -33,16 +33,18 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
 
   useGate(model.SettingsNotificationsGate)
 
-  const handleSwitchNotification =
-    (type: UserNotificationTypeEnum, state: boolean) => async () => {
-      try {
-        await model.toggleUserNotificationFx({ type, state })
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message)
-        }
+  const handleSwitchNotification = async (
+    type: UserNotificationTypeEnum,
+    state: boolean
+  ) => {
+    try {
+      await model.toggleUserNotificationFx({ type, state })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
       }
     }
+  }
 
   return (
     <div className={props.className}>
@@ -64,7 +66,7 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
                 handleSwitchNotification(
                   UserNotificationTypeEnum.PortfolioMetrics,
                   state
-                )()
+                )
               }
               enabled={notificationsList.some(
                 (n) => n.type === UserNotificationTypeEnum.PortfolioMetrics
@@ -77,7 +79,7 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
                 handleSwitchNotification(
                   UserNotificationTypeEnum.AutomateCallNotEnoughFunds,
                   state
-                )()
+                )
               }
               enabled={notificationsList.some(
                 (n) =>
