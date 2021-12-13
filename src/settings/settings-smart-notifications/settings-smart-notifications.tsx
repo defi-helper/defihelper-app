@@ -62,6 +62,12 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
           <>
             <SettingsNotificationsCard
               title="Portfolio statistics"
+              description={
+                <>
+                  We will send you your portfolio value and how much you have
+                  earned every day
+                </>
+              }
               onSwitch={(state) =>
                 handleSwitchNotification(
                   UserNotificationTypeEnum.PortfolioMetrics,
@@ -75,6 +81,12 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
 
             <SettingsNotificationsCard
               title="Unable to execute automations"
+              description={
+                <>
+                  We will send you alert when you don’t have enough money to pay
+                  blockchain and service fee to complete the automation
+                </>
+              }
               onSwitch={(state) =>
                 handleSwitchNotification(
                   UserNotificationTypeEnum.AutomateCallNotEnoughFunds,

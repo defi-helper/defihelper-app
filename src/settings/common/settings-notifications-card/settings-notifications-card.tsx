@@ -9,6 +9,7 @@ import { Switch } from '~/common/switch'
 export type SettingsContactCardProps = {
   onSwitch: (v: boolean) => void
   title: string
+  description: JSX.Element
   enabled: boolean
 }
 
@@ -22,8 +23,7 @@ export const SettingsNotificationsCard: React.VFC<SettingsContactCardProps> = (
       </div>
       <div className={styles.subtitle}>
         <Typography variant="body2" as="span">
-          We will send you your portfolio value and how much you have earned
-          every day
+          {props.description}
         </Typography>
       </div>
       <Grid container justifyContent="flex-end" className={styles.buttons}>
