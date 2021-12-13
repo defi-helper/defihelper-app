@@ -1,4 +1,4 @@
-import { composeStyles, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -89,54 +89,6 @@ export const left = style({
     },
   },
 })
-
-export const contractTitle = style({
-  marginBottom: 24,
-})
-
-export const manageButton = style({
-  width: 24,
-  height: 24,
-  padding: 6,
-  position: 'absolute',
-  top: 0,
-  bottom: 0,
-  margin: 'auto',
-  right: 16,
-
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      right: 26,
-    },
-  },
-})
-
-export const table = style({
-  overflowX: 'auto',
-  overflowY: 'hidden',
-})
-
-export const tableInner = style({
-  minWidth: 900,
-})
-
-export const row = style({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr 1fr',
-  padding: '0 32px 8px',
-  position: 'relative',
-})
-
-export const tableheader = composeStyles(
-  row,
-  style({
-    padding: '16px 32px',
-    borderBottom: `1px solid ${theme.colors.border}`,
-    marginBottom: 16,
-    color: theme.colors.textColorGrey,
-    position: 'relative',
-  })
-)
 
 export const loader = style({
   display: 'flex',

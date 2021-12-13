@@ -16,7 +16,6 @@ import { AutomationTriggerDescriptionDialog } from '~/automations/common/automat
 import { Icon } from '~/common/icon'
 import { AutomationUpdate } from '~/automations/automation-update'
 import { ConfirmDialog } from '~/common/confirm-dialog'
-import { Dropdown } from '~/common/dropdown'
 import { AutomationProducts } from '../automation-products'
 import { useWalletList } from '~/wallets/wallet-list'
 import { Loader } from '~/common/loader'
@@ -59,18 +58,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
       contracts,
       descriptions,
     }).catch((error: Error) => console.error(error.message))
-  }
-
-  const handleAutomationDeleteContract = (contractId: string) => async () => {
-    try {
-      await openConfirmDialog()
-
-      model.deleteContractFx(contractId)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
   }
 
   const handleActivate = (trigger: Trigger) => () => {
@@ -198,61 +185,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
               />
             ))}
         </div>
-        {!isEmpty(contracts) && (
-          <div>
-            <Typography variant="h3" className={styles.contractTitle}>
-              Contracts
-            </Typography>
-            <div className={styles.table}>
-              <Paper radius={8} className={styles.tableInner}>
-                <div className={styles.tableheader}>
-                  <Typography variant="body2" as="div">
-                    Adapter
-                  </Typography>
-                  <Typography variant="body2" as="div">
-                    Reject reason
-                  </Typography>
-                  <Typography variant="body2" as="div">
-                    Verification
-                  </Typography>
-                  <Typography variant="body2" as="div">
-                    Address
-                  </Typography>
-                </div>
-                {contracts.map((contract) => (
-                  <div className={styles.row} key={contract.id}>
-                    <Typography variant="body2" as="div">
-                      {contract.adapter}
-                    </Typography>
-                    <Typography variant="body2" as="div">
-                      {contract.rejectReason}
-                    </Typography>
-                    <Typography variant="body2" as="div">
-                      {contract.verification}
-                    </Typography>
-                    <Typography variant="body2" as="div">
-                      {contract.address}
-                    </Typography>
-                    <Dropdown
-                      control={
-                        <ButtonBase className={styles.manageButton}>
-                          <Icon icon="dots" />
-                        </ButtonBase>
-                      }
-                    >
-                      ы
-                      <ButtonBase
-                        onClick={handleAutomationDeleteContract(contract.id)}
-                      >
-                        Delete
-                      </ButtonBase>
-                    </Dropdown>
-                  </div>
-                ))}
-              </Paper>
-            </div>
-          </div>
-        )}
       </div>
     </AppLayout>
   )

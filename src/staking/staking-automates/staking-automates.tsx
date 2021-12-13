@@ -17,6 +17,7 @@ import * as model from './staking-automates.model'
 
 export type StakingAutomatesProps = {
   className?: string
+  protocolId: string
 }
 
 export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
@@ -79,7 +80,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     }
   }
 
-  useGate(model.StakingAutomatesGate)
+  useGate(model.StakingAutomatesGate, props.protocolId)
 
   useEffect(() => {
     if (!currentAction || !adapter || !adapter[currentAction]) return

@@ -27,6 +27,11 @@ type FetchAdapterParams = {
   contractId: string
 }
 
+type FetchAutomatesParams = {
+  userId: string
+  protocolId: string
+}
+
 const LOAD_TYPES: Record<ActionType, 'migrating' | 'depositing' | 'refunding'> =
   {
     migrate: 'migrating',
@@ -37,10 +42,11 @@ const LOAD_TYPES: Record<ActionType, 'migrating' | 'depositing' | 'refunding'> =
 export const stakingAutomatesDomain = createDomain()
 
 export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
-  async (userId: string) => {
+  async (params: FetchAutomatesParams) => {
     const data = await stakingApi.automatesContractList({
       filter: {
-        user: userId,
+        user: params.userId,
+        protocol: params.protocolId,
       },
     })
 
@@ -135,22 +141,26 @@ export const $automatesContracts = stakingAutomatesDomain
     )
   )
 
-export const StakingAutomatesGate = createGate({
+export const StakingAutomatesGate = createGate<string>({
   name: 'StakingAutomatesGate',
   domain: stakingAutomatesDomain,
 })
 
 sample({
   clock: guard({
-    source: [authModel.$user, StakingAutomatesGate.status],
+    source: [
+      authModel.$user,
+      StakingAutomatesGate.status,
+      StakingAutomatesGate.state,
+    ],
     clock: [authModel.$user.updates, StakingAutomatesGate.open],
-    filter: (source): source is [UserType, boolean] => {
+    filter: (source): source is [UserType, boolean, string] => {
       const [user, status] = source
 
       return Boolean(user?.id) && status
     },
   }),
-  fn: ([user]) => user.id,
+  fn: ([user, , protocolId]) => ({ userId: user.id, protocolId }),
   target: fetchAutomatesContractsFx,
 })
 

@@ -1,9 +1,9 @@
-import { useForkRef } from '@material-ui/core'
 import clsx from 'clsx'
 import { cloneElement, forwardRef, useEffect, useRef } from 'react'
 import autosize from 'autosize'
 
 import { Typography } from '~/common/typography'
+import { useForkRef } from '~/common/hooks/use-fork-ref'
 import * as styles from './input.css'
 
 export type InputProps = Omit<React.ComponentProps<'input'>, 'type'> & {
@@ -21,8 +21,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
 
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const localRef = useForkRef<HTMLTextAreaElement>(
-    ref as React.ForwardedRef<HTMLTextAreaElement>,
+  const localRef = useForkRef(
+    ref as React.ForwardedRef<HTMLElement>,
     textareaRef
   )
 

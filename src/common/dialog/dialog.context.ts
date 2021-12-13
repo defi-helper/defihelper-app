@@ -30,9 +30,12 @@ export const useDialogContext = () => {
   return context
 }
 
-export const AnimatedContext = createContext<AnimatedProps<
-  React.ComponentProps<typeof animated.div>
-> | null>(null)
+type Animated = AnimatedProps<React.ComponentProps<typeof animated.div>>
+
+export const AnimatedContext = createContext<{
+  animatedValue: Animated
+  onClose: (args: unknown) => void
+} | null>(null)
 
 AnimatedContext.displayName = 'AnimatedContext'
 

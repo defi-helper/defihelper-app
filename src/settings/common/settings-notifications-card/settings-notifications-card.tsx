@@ -1,6 +1,5 @@
 import clsx from 'clsx'
 
-import { Grid } from '@material-ui/core'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as styles from './settings-notifications-card.css'
@@ -26,12 +25,12 @@ export const SettingsNotificationsCard: React.VFC<SettingsContactCardProps> = (
           {props.description}
         </Typography>
       </div>
-      <Grid container justifyContent="flex-end" className={styles.buttons}>
+      <div className={styles.buttons}>
         <Switch
           onChange={(e) => props.onSwitch(e.target.checked)}
           defaultChecked={props.enabled}
         />
-      </Grid>
+      </div>
     </Paper>
   )
 }

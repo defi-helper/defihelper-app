@@ -50,5 +50,6 @@ export const ProtocolDetailGate = createGate<{ protocolId: string }>({
 sample({
   clock: ProtocolDetailGate.open,
   target: fetchProtocolFx,
-  greedy: true,
 })
+
+$protocol.reset(ProtocolDetailGate.close)

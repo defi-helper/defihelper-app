@@ -25,11 +25,11 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { Loader } from '~/common/loader'
 import {
   AutomateActionTypeEnum,
+  AutomateConditionTypeEnum,
   AutomateTriggerTypeEnum,
 } from '~/graphql/_generated-types'
 import { useWalletList } from '~/wallets/wallet-list'
 import { StakingBillingFormDialog } from '~/staking/common'
-import { automationApi } from '~/automations/common/automation.api'
 import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
 import { toastsService } from '~/toasts'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
@@ -40,7 +40,6 @@ import * as styles from './staking-list.css'
 
 export type StakingListProps = {
   protocolId: string
-  protocolName: string
   protocolAdapter: string
 }
 
@@ -53,8 +52,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const stakingList = useStore(model.$contractList)
   const wallets = useStore(authModel.$userWallets)
   const loading = useStore(model.fetchStakingListFx.pending)
-
-  const protocolAdapter = useStore(model.$protocolAdapter)
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openDescriptionDialog] = useDialog(StakingDescriptionDialog)
@@ -92,17 +89,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
   const handleAutostake =
     (contract: typeof stakingList[number]) => async () => {
-      if (!contract.automate.autorestake) return
+      if (!contract.automate.autorestake || !contract.prototypeAddress) return
 
       try {
-        const { address } = await automationApi.getContractAddress({
-          protocol: props.protocolAdapter,
-          contract: contract.automate.autorestake,
-          chainId: contract.network,
-        })
-
-        if (!address) throw new Error('contract address is undefined')
-
         if (!dontShow) {
           const result = await openDescriptionDialog()
 
@@ -137,7 +126,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         })
 
         const deployAdapter = await deployModel.fetchDeployAdapterFx({
-          address,
+          address: contract.prototypeAddress,
           protocol: props.protocolAdapter,
           contract: contract.automate.autorestake,
           chainId: String(walletData.chainId),
@@ -168,11 +157,20 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           active: true,
         })
 
-        await automationUpdateModel.createActionFx({
+        const action = await automationUpdateModel.createActionFx({
           trigger: createdTrigger.id,
           type: AutomateActionTypeEnum.EthereumAutomateRun,
           params: JSON.stringify({
             id: deployedContract.id,
+          }),
+          priority: 0,
+        })
+
+        await automationUpdateModel.createConditionFx({
+          trigger: createdTrigger.id,
+          type: AutomateConditionTypeEnum.EthereumOptimalAutomateRun,
+          params: JSON.stringify({
+            id: action.id,
           }),
           priority: 0,
         })
@@ -221,9 +219,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             as={ReactRouterLink}
             variant="contained"
             color="blue"
-            to={`${paths.staking.create(
-              props.protocolId
-            )}?protocol-adapter=${protocolAdapter}`}
+            to={`${paths.staking.create(props.protocolId)}?protocol-adapter=${
+              props.protocolAdapter
+            }`}
             className={styles.create}
           >
             <Icon icon="plus" className={styles.createIcon} />
@@ -347,7 +345,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                                 to={`${paths.staking.update(
                                   props.protocolId,
                                   stakingListItem.id
-                                )}?protocol-adapter=${protocolAdapter}`}
+                                )}?protocol-adapter=${props.protocolAdapter}`}
                               >
                                 Edit
                               </ButtonBase>
@@ -365,10 +363,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         </Can>
                       </div>
                     </div>
-                    {protocolAdapter && opened && (
+                    {opened && (
                       <StakingAdapters
                         poolName={stakingListItem.name}
-                        protocolAdapter={protocolAdapter}
+                        protocolAdapter={props.protocolAdapter}
                         contractAdapter={stakingListItem.adapter}
                         contractAddress={stakingListItem.address}
                         contractLayout={stakingListItem.layout}
@@ -376,7 +374,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         blockchain={stakingListItem.blockchain}
                         network={stakingListItem.network}
                         hasAutorestake={Boolean(
-                          stakingListItem.automate.autorestake
+                          stakingListItem.automate.autorestake &&
+                            stakingListItem.prototypeAddress
                         )}
                         onAutostake={handleAutostake(stakingListItem)}
                       />
@@ -385,8 +384,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                 )
               })}
           </ul>
-          <model.StakingListPagination />
         </Paper>
+        <model.StakingListPagination />
       </div>
     </div>
   )

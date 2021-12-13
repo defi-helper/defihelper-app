@@ -47,3 +47,9 @@ export const content = style({
     },
   },
 })
+
+export const closeButton = style({
+  position: 'absolute',
+  top: 0,
+  right: 0,
+})

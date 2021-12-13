@@ -1,7 +1,7 @@
 import { combine, Domain, sample } from 'effector-logger/macro'
 import { createElement } from 'react'
 
-import { Pagination } from './component'
+import { Pagination } from './pagination'
 
 export type PaginationState = {
   limit: number
@@ -18,7 +18,7 @@ const DEFAULT_LIMIT = 10
 export const createPagination = (options: Options) => {
   const $limit = options.domain.createStore(options.limit ?? DEFAULT_LIMIT)
   const $offset = options.domain.createStore(0)
-  const $pages = options.domain.createStore<number | null>(null)
+  const $pages = options.domain.createStore<number>(0)
 
   const changePage = options.domain.createEvent<number>()
   const changeOffset = options.domain.createEvent<number>()
