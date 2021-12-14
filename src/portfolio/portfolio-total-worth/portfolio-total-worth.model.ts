@@ -49,10 +49,10 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
 
     return data.totalNetWorth.map((totalNetWorth, index) => ({
       totalNetWorth: bignumberUtils.format(
-        bignumberUtils.plus([
+        bignumberUtils.plus(
           totalNetWorth.sum,
-          data.onWallets[index]?.sum ?? '0',
-        ])
+          data.onWallets[index]?.sum ?? '0'
+        )
       ),
       date: totalNetWorth.date,
     }))

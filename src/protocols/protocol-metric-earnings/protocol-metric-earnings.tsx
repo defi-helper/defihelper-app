@@ -63,7 +63,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
     model.fetchEarningMetricFx({
       group: currentEarningsGroup,
       balance: Number(
-        bignumberUtils.plus([props.metric.myEarned, props.metric.myStaked])
+        bignumberUtils.plus(props.metric.myEarned, props.metric.myStaked)
       ),
       apy: Number(props.metric.myAPY ?? 0),
     })
