@@ -32,9 +32,13 @@ export const $history = combine(
     return billingHistory.map((billinghistoryItem) => {
       const wallet = wallets.find(
         (walletItem) =>
-          walletItem.blockchain === billinghistoryItem.bill?.blockchain &&
-          walletItem.network === billinghistoryItem.bill?.network &&
-          walletItem.address === billinghistoryItem.bill?.account
+          walletItem.blockchain ===
+            (billinghistoryItem.bill?.blockchain ||
+              billinghistoryItem.blockchain) &&
+          walletItem.network ===
+            (billinghistoryItem.bill?.network || billinghistoryItem.network) &&
+          walletItem.address ===
+            (billinghistoryItem.bill?.account || billinghistoryItem.account)
       )
 
       return {

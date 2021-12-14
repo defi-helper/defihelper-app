@@ -49,7 +49,9 @@ export const StakingAdapterForm: React.VFC<StakingAdapterFormProps> = (
           error={Boolean(formState.errors.amount?.message)}
           disabled={props.disabled}
           className={styles.input}
-          {...register('amount')}
+          {...register('amount', {
+            required: true,
+          })}
         />
         <Button type="submit" className={styles.button}>
           Stake

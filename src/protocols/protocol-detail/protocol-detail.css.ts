@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -29,16 +29,25 @@ export const icon = style({
   },
 })
 
-export const protocolLink = style({
+export const label = style({
   marginLeft: 'auto',
   color: theme.colors.textColorGrey,
+})
+
+export const protocolLink = style({
   padding: 4,
+  marginLeft: 'auto',
+  color: theme.colors.textColorGrey,
 
   '@media': {
     [theme.mediaQueries.md()]: {
       padding: '8px 16px',
     },
   },
+})
+
+globalStyle(`${label} + ${protocolLink}`, {
+  marginLeft: 15,
 })
 
 export const mb120 = style({

@@ -102,3 +102,8 @@ export const loaderIcon = style({
   height: 52,
   margin: 'auto',
 })
+
+export const empty = style({
+  width: '100%',
+  marginTop: 'auto',
+})

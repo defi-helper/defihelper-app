@@ -638,6 +638,10 @@ export enum ContractMetricChartSortInputTypeColumnEnum {
   Value = 'value',
 }
 
+export type ContractMetricFilterInputType = {
+  wallet?: Maybe<ContractMetricWalletFilterInputType>
+}
+
 export type ContractMetricType = {
   __typename?: 'ContractMetricType'
   tvl: Scalars['String']
@@ -645,6 +649,10 @@ export type ContractMetricType = {
   myStaked: Scalars['String']
   myEarned: Scalars['String']
   myLastUpdatedAt?: Maybe<Scalars['DateTimeType']>
+}
+
+export type ContractMetricWalletFilterInputType = {
+  type?: Maybe<Array<WalletTypeEnum>>
 }
 
 export type ContractType = {
@@ -687,6 +695,10 @@ export type ContractTypeMetricChartArgs = {
   filter?: Maybe<ContractMetricChartFilterInputType>
   sort?: Maybe<Array<ContractMetricChartSortInputType>>
   pagination?: Maybe<ContractMetricChartPaginationInputType>
+}
+
+export type ContractTypeMetricArgs = {
+  filter?: Maybe<ContractMetricFilterInputType>
 }
 
 export type ContractUpdateInputType = {
@@ -1421,6 +1433,7 @@ export type ProtocolMetricType = {
   myAPY: Scalars['String']
   myStaked: Scalars['String']
   myEarned: Scalars['String']
+  myMinUpdatedAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export type ProtocolSocialPostListFilterInputType = {
@@ -3915,7 +3928,7 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
 > & {
     metric: { __typename?: 'ProtocolMetricType' } & Pick<
       ProtocolMetricType,
-      'tvl' | 'myAPY' | 'myStaked' | 'myEarned'
+      'tvl' | 'myAPY' | 'myStaked' | 'myEarned' | 'myMinUpdatedAt'
     >
     links: { __typename?: 'ProtocolLinkMapType' } & {
       social: Array<

@@ -18,8 +18,6 @@ export type StakingAdaptersProps = {
   contractId: string
   blockchain: string
   network: string
-  hasAutorestake: boolean
-  onAutostake: () => void
 }
 
 const FORM_LAYOUTS: Record<
@@ -64,7 +62,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         })
 
         let amount = Object.values(contract.wallet?.earned ?? {}).reduce(
-          (acc, { balance }) => bignumberUtils.plus(balance),
+          (acc, { balance }) => bignumberUtils.plus(acc, balance),
           '0'
         )
 
@@ -121,17 +119,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           Stake
         </Button>
       </div>
-      <div className={styles.turnOn}>
-        <Button
-          disabled={action?.disabled || !props.hasAutorestake}
-          size="small"
-          variant="outlined"
-          onClick={props.onAutostake}
-        >
-          Autostake
-        </Button>
-      </div>
-      <div>
+      <div className={styles.unstake}>
         <Button
           type="submit"
           onClick={handleUnStake}

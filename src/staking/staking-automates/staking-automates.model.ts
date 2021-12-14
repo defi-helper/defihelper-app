@@ -9,6 +9,7 @@ import { UserType } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { automationApi } from '../../automations/common/automation.api'
+import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import {
   buildAdaptersUrl,
   stakingApi,
@@ -29,7 +30,7 @@ type FetchAdapterParams = {
 
 type FetchAutomatesParams = {
   userId: string
-  protocolId: string
+  protocolId?: string
 }
 
 const LOAD_TYPES: Record<ActionType, 'migrating' | 'depositing' | 'refunding'> =
@@ -46,7 +47,7 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
     const data = await stakingApi.automatesContractList({
       filter: {
         user: params.userId,
-        protocol: params.protocolId,
+        ...(params.protocolId ? { protocol: params.protocolId } : {}),
       },
     })
 
@@ -136,14 +137,13 @@ export const $automatesContracts = stakingAutomatesDomain
     )
   )
   .on(deleteContractFx.finally, (state, { params }) =>
-    state.map((contract) =>
-      contract.id === params ? { ...contract, deleting: false } : contract
-    )
+    state.filter((contract) => contract.id !== params)
   )
 
-export const StakingAutomatesGate = createGate<string>({
+export const StakingAutomatesGate = createGate<string | null>({
   name: 'StakingAutomatesGate',
   domain: stakingAutomatesDomain,
+  defaultState: null,
 })
 
 sample({
@@ -153,7 +153,11 @@ sample({
       StakingAutomatesGate.status,
       StakingAutomatesGate.state,
     ],
-    clock: [authModel.$user.updates, StakingAutomatesGate.open],
+    clock: [
+      authModel.$user.updates,
+      StakingAutomatesGate.open,
+      deployModel.deployFx.doneData,
+    ],
     filter: (source): source is [UserType, boolean, string] => {
       const [user, status] = source
 

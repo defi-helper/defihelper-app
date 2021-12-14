@@ -15,13 +15,14 @@ export type DropdownProps = {
   placement?: Placement
   offset?: number[]
   sameWidth?: boolean
+  trigger?: 'click' | 'hover'
 }
 
 export const Dropdown: React.FC<DropdownProps> = (props) => {
   if (!isValidElement(props.control) && typeof props.control !== 'function')
     throw new Error('control is not valid')
 
-  const { placement = 'auto' } = props
+  const { placement = 'auto', trigger = 'click' } = props
 
   const localRef = useRef(null)
 
@@ -42,7 +43,7 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
     modifiers: isEmpty(modifiers.current) ? undefined : modifiers.current,
   })
 
-  const handleOnClickControl = (event: Event | null) => {
+  const handleOnTrigger = (event: Event | null) => {
     const target = (event?.currentTarget as HTMLElement) ?? null
 
     if (target && referenceElement) {
@@ -52,9 +53,9 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
     }
   }
 
-  useClickAway(localRef, handleOnClickControl.bind(null, null))
+  useClickAway(localRef, handleOnTrigger.bind(null, null))
 
-  useKey('Escape', handleOnClickControl.bind(null, null))
+  useKey('Escape', handleOnTrigger.bind(null, null))
 
   const control =
     typeof props.control === 'function'
@@ -66,7 +67,9 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
       {cloneElement(control, {
         ...control.props,
         ref: localRef,
-        onClick: handleOnClickControl,
+        onClick: trigger === 'click' ? handleOnTrigger : undefined,
+        onMouseEnter: trigger === 'hover' ? handleOnTrigger : undefined,
+        onMouseLeave: trigger === 'hover' ? handleOnTrigger : undefined,
       })}
       {referenceElement && (
         <Portal>

@@ -12,6 +12,7 @@ import {
 import { toastsService } from '~/toasts'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { parseError } from '~/common/parse-error'
 
 export type StakingAdapter = {
   wallet: null | AdapterWallet
@@ -209,7 +210,7 @@ export const fetchTokensFx = stakingAdaptersDomain.createEffect(
 )
 
 toastsService.forwardErrors(
-  contractActionFx.failData,
+  contractActionFx.failData.map((error) => parseError(error)),
   fetchContractAdapterFx.failData,
   fetchTokensFx.failData
 )

@@ -23,6 +23,18 @@ export const hidden = style({
 
 export const logo = style({
   margin: '0 auto 32px',
+  position: 'relative',
+})
+
+export const betaIcon = style({
+  position: 'absolute',
+  top: -15,
+  right: -15,
+})
+
+export const dropdown = style({
+  width: 295,
+  padding: '24px 32px',
 })
 
 export const logoIcon = style({
