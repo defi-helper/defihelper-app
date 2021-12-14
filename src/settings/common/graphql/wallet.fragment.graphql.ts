@@ -10,9 +10,10 @@ export const WALLET_FRAGMENT = gql`
     name
     createdAt
     triggersCount
-    metric {
+    metric(filter: { tokenAlias: { liquidity: [stable, unstable] } }) {
       stakedUSD
       earnedUSD
+      usd
     }
     billing {
       balance {

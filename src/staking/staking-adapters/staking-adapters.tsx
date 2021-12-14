@@ -64,7 +64,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         })
 
         let amount = Object.values(contract.wallet?.earned ?? {}).reduce(
-          (acc, { balance }) => bignumberUtils.plus(balance),
+          (acc, { balance }) => bignumberUtils.plus([balance]),
           '0'
         )
 

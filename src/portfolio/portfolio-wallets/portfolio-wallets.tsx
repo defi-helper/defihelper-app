@@ -133,10 +133,11 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                 <Typography variant="body2" as="div">
                   $
                   {bignumberUtils.format(
-                    bignumberUtils.plus(
+                    bignumberUtils.plus([
                       wallet.metric.stakedUSD,
-                      wallet.metric.earnedUSD
-                    )
+                      wallet.metric.earnedUSD,
+                      wallet.metric.usd,
+                    ])
                   )}
                 </Typography>
               </div>

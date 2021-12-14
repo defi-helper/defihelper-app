@@ -74,9 +74,13 @@ export const bignumberUtils = {
   eq: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isEqualTo(num2 || 0),
 
-  plus: (num1?: string | number | null, num2?: string | number | null) =>
-    new BigNumber(num1 || 0).plus(new BigNumber(num2 || 0)).toString(10),
-
+  plus: (n: (string | number | null)[]) =>
+    n
+      .reduce(
+        (prev, cur) => prev.plus(new BigNumber(cur || 0)),
+        new BigNumber(0)
+      )
+      .toString(10),
   minus: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).minus(new BigNumber(num2 || 0)).toString(10),
 
