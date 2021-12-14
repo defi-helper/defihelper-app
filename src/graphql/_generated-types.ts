@@ -31,13 +31,6 @@ export type AddWalletInputType = {
   address: Scalars['String']
 }
 
-export type AliasListPaginationInputType = {
-  /** Limit */
-  limit?: Maybe<Scalars['Int']>
-  /** Offset */
-  offset?: Maybe<Scalars['Int']>
-}
-
 export type AuthEthereumInputType = {
   /** Blockchain network id */
   network: Scalars['String']
@@ -611,6 +604,7 @@ export enum ContractListSortInputTypeColumnEnum {
   Name = 'name',
   Address = 'address',
   CreatedAt = 'createdAt',
+  MyStaked = 'myStaked',
 }
 
 export type ContractListType = {
@@ -644,12 +638,20 @@ export enum ContractMetricChartSortInputTypeColumnEnum {
   Value = 'value',
 }
 
+export type ContractMetricFilterInputType = {
+  wallet?: Maybe<ContractMetricWalletFilterInputType>
+}
+
 export type ContractMetricType = {
   __typename?: 'ContractMetricType'
   tvl: Scalars['String']
   aprYear: Scalars['String']
   myStaked: Scalars['String']
   myEarned: Scalars['String']
+}
+
+export type ContractMetricWalletFilterInputType = {
+  type?: Maybe<Array<WalletTypeEnum>>
 }
 
 export type ContractType = {
@@ -692,6 +694,10 @@ export type ContractTypeMetricChartArgs = {
   filter?: Maybe<ContractMetricChartFilterInputType>
   sort?: Maybe<Array<ContractMetricChartSortInputType>>
   pagination?: Maybe<ContractMetricChartPaginationInputType>
+}
+
+export type ContractTypeMetricArgs = {
+  filter?: Maybe<ContractMetricFilterInputType>
 }
 
 export type ContractUpdateInputType = {
@@ -1426,6 +1432,7 @@ export type ProtocolMetricType = {
   myAPY: Scalars['String']
   myStaked: Scalars['String']
   myEarned: Scalars['String']
+  myMinUpdatedAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export type ProtocolSocialPostListFilterInputType = {
@@ -1872,8 +1879,8 @@ export type TokenAlias = {
   symbol: Scalars['String']
   /** Logo url */
   logoUrl?: Maybe<Scalars['String']>
-  /** Is stable price */
-  stable: Scalars['Boolean']
+  /** Token liquidity */
+  liquidity: TokenAliasLiquidityEnum
   metric: TokenAliasMetricType
   tokens: TokenListType
 }
@@ -1889,17 +1896,23 @@ export type TokenAliasCreateInputType = {
   name?: Maybe<Scalars['String']>
   /** Symbol */
   symbol?: Maybe<Scalars['String']>
-  /** Is stable coin */
-  stable?: Maybe<Scalars['Boolean']>
+  /** Token liquidity */
+  liquidity?: Maybe<TokenAliasLiquidityEnum>
 }
 
 export type TokenAliasFilterInputType = {
   id: Scalars['String']
 }
 
+export enum TokenAliasLiquidityEnum {
+  Stable = 'stable',
+  Unstable = 'unstable',
+  Trash = 'trash',
+}
+
 export type TokenAliasListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
-  stable?: Maybe<Scalars['Boolean']>
+  liquidity?: Maybe<TokenAliasLiquidityEnum>
   symbol?: Maybe<Scalars['String']>
   search?: Maybe<Scalars['String']>
 }
@@ -1930,13 +1943,6 @@ export enum TokenAliasListSortInputTypeColumnEnum {
   CreatedAt = 'createdAt',
 }
 
-export type TokenAliasListType = {
-  __typename?: 'TokenAliasListType'
-  /** Elements */
-  list?: Maybe<Array<TokenAlias>>
-  pagination: Pagination
-}
-
 export type TokenAliasMetricType = {
   __typename?: 'TokenAliasMetricType'
   myBalance: Scalars['String']
@@ -1949,8 +1955,8 @@ export type TokenAliasUpdateInputType = {
   name?: Maybe<Scalars['String']>
   /** Symbol */
   symbol?: Maybe<Scalars['String']>
-  /** Is stable coin */
-  stable?: Maybe<Scalars['Boolean']>
+  /** Token liquidity */
+  liquidity?: Maybe<TokenAliasLiquidityEnum>
 }
 
 export type TokenListFilterInputType = {
@@ -2434,8 +2440,8 @@ export type UserMetricType = {
 
 export type UserMetricsTokenAliasFilterInputType = {
   id?: Maybe<Array<Scalars['UuidType']>>
-  /** Is stable token */
-  stable?: Maybe<Scalars['Boolean']>
+  /** Liquidity token */
+  liquidity?: Maybe<Array<TokenAliasLiquidityEnum>>
 }
 
 export type UserNotificationType = {
@@ -2539,6 +2545,25 @@ export type UserStoreTypeProductsArgs = {
   pagination?: Maybe<UserStoreProductListPaginationInputType>
 }
 
+export type UserTokenAliasListFilterInputType = {
+  /** Liquidity token */
+  liquidity?: Maybe<Array<TokenAliasLiquidityEnum>>
+}
+
+export type UserTokenAliasListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserTokenAliasListType = {
+  __typename?: 'UserTokenAliasListType'
+  /** Elements */
+  list?: Maybe<Array<TokenAlias>>
+  pagination: Pagination
+}
+
 export type UserTokenMetricChartFilterInputType = {
   /** Target token alias */
   tokenAlias?: Maybe<UserMetricsTokenAliasFilterInputType>
@@ -2580,7 +2605,7 @@ export type UserType = {
   role: UserRoleEnum
   /** Current user locale */
   locale: LocaleEnum
-  tokenAliases: TokenAliasListType
+  tokenAliases: UserTokenAliasListType
   wallets: WalletListType
   blockchains: Array<UserBlockchainType>
   metricChart: Array<MetricChartType>
@@ -2593,7 +2618,8 @@ export type UserType = {
 }
 
 export type UserTypeTokenAliasesArgs = {
-  pagination?: Maybe<AliasListPaginationInputType>
+  filter?: Maybe<UserTokenAliasListFilterInputType>
+  pagination?: Maybe<UserTokenAliasListPaginationInputType>
 }
 
 export type UserTypeWalletsArgs = {
@@ -2831,10 +2857,17 @@ export enum WalletMetricChartSortInputTypeColumnEnum {
   Value = 'value',
 }
 
+export type WalletMetricFilterInputType = {
+  /** Target token alias */
+  tokenAlias?: Maybe<UserMetricsTokenAliasFilterInputType>
+}
+
 export type WalletMetricType = {
   __typename?: 'WalletMetricType'
   stakedUSD: Scalars['String']
   earnedUSD: Scalars['String']
+  balance: Scalars['String']
+  usd: Scalars['String']
 }
 
 export type WalletTokenMetricChartFilterInputType = {
@@ -2913,6 +2946,10 @@ export type WalletTypeTokenMetricChartArgs = {
   filter?: Maybe<WalletTokenMetricChartFilterInputType>
   sort?: Maybe<Array<WalletTokenMetricChartSortInputType>>
   pagination?: Maybe<WalletTokenMetricChartPaginationInputType>
+}
+
+export type WalletTypeMetricArgs = {
+  filter?: Maybe<WalletMetricFilterInputType>
 }
 
 export enum WalletTypeEnum {
@@ -3472,7 +3509,7 @@ export type AssetListQueryVariables = Exact<{ [key: string]: never }>
 export type AssetListQuery = { __typename?: 'Query' } & {
   me?: Maybe<
     { __typename?: 'UserType' } & {
-      tokenAliases: { __typename?: 'TokenAliasListType' } & {
+      tokenAliases: { __typename?: 'UserTokenAliasListType' } & {
         list?: Maybe<
           Array<{ __typename?: 'TokenAlias' } & PortfolioAssetFragment>
         >
@@ -3890,7 +3927,7 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
 > & {
     metric: { __typename?: 'ProtocolMetricType' } & Pick<
       ProtocolMetricType,
-      'tvl' | 'myAPY' | 'myStaked' | 'myEarned'
+      'tvl' | 'myAPY' | 'myStaked' | 'myEarned' | 'myMinUpdatedAt'
     >
     links: { __typename?: 'ProtocolLinkMapType' } & {
       social: Array<

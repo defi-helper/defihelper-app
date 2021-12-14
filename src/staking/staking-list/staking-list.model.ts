@@ -34,6 +34,7 @@ type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
   autostaking: string
   prototypeAddress?: string
+  autostakingLoading?: boolean
 }
 
 export type ContractMetric = {
@@ -162,6 +163,9 @@ export const fetchConnectedContractsFx = stakingListDomain.createEffect(
   (params: GateState) => stakingApi.connectedContracts(params.protocolId)
 )
 
+export const autostakingStart = stakingListDomain.createEvent<string>()
+export const autostakingEnd = stakingListDomain.createEvent<string>()
+
 export const $contractList = stakingListDomain
   .createStore<Contract[]>([])
   .on(fetchStakingListFx.doneData, (_, payload) =>
@@ -169,6 +173,20 @@ export const $contractList = stakingListDomain
   )
   .on(deleteStakingFx.doneData, (state, payload) => {
     return state.filter(({ id }) => id !== payload)
+  })
+  .on(autostakingStart, (state, payload) => {
+    return state.map((contract) =>
+      contract.id === payload
+        ? { ...contract, autostakingLoading: true }
+        : contract
+    )
+  })
+  .on(autostakingEnd, (state, payload) => {
+    return state.map((contract) =>
+      contract.id === payload
+        ? { ...contract, autostakingLoading: false }
+        : contract
+    )
   })
 
 export const $connectedContracts = stakingListDomain

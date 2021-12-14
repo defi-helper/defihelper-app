@@ -16,6 +16,7 @@ export const PROTOCOL_FRAGMENT = gql`
       myAPY
       myStaked
       myEarned
+      myMinUpdatedAt
     }
     links {
       social {

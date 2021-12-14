@@ -11,6 +11,7 @@ import { Icon } from '~/common/icon'
 import { SOCIAL_LINKS } from '../constants'
 import { LayoutCurrencySwitcher } from '../layout-currency-switcher'
 import * as styles from './layout-sidebar.css'
+import { Dropdown } from '~/common/dropdown'
 
 type MenuItem = {
   title: string
@@ -37,12 +38,30 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
         props.className
       )}
     >
-      <Link href={config.MAIN_URL || paths.main} className={styles.logo}>
-        <Icon
-          icon={props.hidden ? 'logoMini' : 'logo'}
-          className={styles.logoIcon}
-        />
-      </Link>
+      <div className={styles.logo}>
+        <Link href={config.MAIN_URL || paths.main}>
+          <Icon
+            icon={props.hidden ? 'logoMini' : 'logo'}
+            className={styles.logoIcon}
+          />
+        </Link>
+        {!props.hidden && (
+          <Dropdown
+            className={styles.dropdown}
+            placement="bottom-end"
+            offset={[0, 28]}
+            trigger="hover"
+            control={
+              <ButtonBase className={styles.betaIcon}>
+                <Icon icon="beta" />
+              </ButtonBase>
+            }
+          >
+            Please note, that we are currently in beta state. Some functionality
+            can work is not as expected.
+          </Dropdown>
+        )}
+      </div>
       <ul className={styles.menu}>
         {props.menu.map((menuItem) => (
           <li key={menuItem.title}>

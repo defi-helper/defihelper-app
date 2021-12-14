@@ -56,6 +56,7 @@ import { ReactComponent as AvalancheIcon } from '~/assets/icons/blockchains/aval
 import { ReactComponent as PolygonIcon } from '~/assets/icons/blockchains/polygon.svg'
 import { ReactComponent as SushiIcon } from '~/assets/icons/coins/sushi.svg'
 import { ReactComponent as UniIcon } from '~/assets/icons/coins/uni.svg'
+import { ReactComponent as BetaIcon } from '~/assets/icons/beta.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -118,6 +119,7 @@ const ICONS = {
   exclamation: ExclamationIcon,
   avalanche: AvalancheIcon,
   polygon: PolygonIcon,
+  beta: BetaIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

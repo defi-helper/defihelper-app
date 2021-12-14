@@ -98,8 +98,9 @@ export const listItem = style({
 
 export const row = style({
   display: 'grid',
-  gridTemplateColumns: '21% 15% 10% 14% 14% 12% 1fr',
-  padding: '16px 24px',
+  gridTemplateColumns: '15% 15% 10% 14% 14% 12% 1fr',
+  padding: '16px 0 16px 24px',
+  alignItems: 'center',
 })
 
 export const card = style({})
@@ -150,17 +151,20 @@ export const coinIcon = style({
   },
 })
 
-export const accorionButton = style({
+export const turnOn = style({
   marginLeft: 'auto',
-  marginRight: -12,
+})
+
+export const accorionButton = style({
   color: theme.colors.textColorGrey,
+  marginLeft: 'auto',
 })
 
 export const manageButton = style({
   width: 24,
   height: 24,
   padding: 6,
-  marginLeft: 'auto',
+  marginLeft: 5,
 })
 
 export const loader = style({
@@ -168,4 +172,17 @@ export const loader = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+})
+
+export const autostaking = style({
+  borderLeft: `1px solid ${theme.colors.border}`,
+  paddingLeft: 16,
+})
+
+export const negative = style({
+  color: theme.colors.common.red1,
+})
+
+export const positive = style({
+  color: theme.colors.textColorGreen,
 })

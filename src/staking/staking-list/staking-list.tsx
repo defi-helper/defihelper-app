@@ -61,6 +61,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openAutomates] = useDialog(StakingAutomatesDialog)
 
   useGate(model.StakingListGate, props)
+  useGate(authModel.UserGate)
 
   const handleOpenConfirmDialog = (id: string) => async () => {
     try {
@@ -92,6 +93,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       if (!contract.automate.autorestake || !contract.prototypeAddress) return
 
       try {
+        model.autostakingStart(contract.id)
+
         if (!dontShow) {
           const result = await openDescriptionDialog()
 
@@ -178,7 +181,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         const stakingAutomatesAdapter =
           await stakingAutomatesModel.fetchAdapter({
             protocolAdapter: props.protocolAdapter,
-            contractAdapter: contract.adapter,
+            contractAdapter: contract.automate.autorestake,
             contractId: contract.id,
             contractAddress: contract.address,
             provider: walletData.provider,
@@ -200,6 +203,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         if (error instanceof Error) {
           toastsService.error(error.message)
         }
+      } finally {
+        model.autostakingEnd(contract.id)
       }
     }
 
@@ -234,10 +239,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             <Typography variant="body2">Pool</Typography>
             <Typography variant="body2">TVL</Typography>
             <Typography variant="body2">APY</Typography>
-            <Typography variant="body2">Autostaking boost</Typography>
             <Typography variant="body2">Position</Typography>
             <Typography variant="body2">Pool share</Typography>
-            <Typography variant="body2">Unclaimed rewards</Typography>
+            <Typography variant="body2">Unclaimed</Typography>
+            <Typography variant="body2">+Autostaking</Typography>
           </div>
           <ul className={styles.list}>
             {loading && (
@@ -249,6 +254,16 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             {!loading &&
               staking.map((stakingListItem) => {
                 const opened = stakingListItem.address === openedContract
+
+                const apy = bignumberUtils.mul(
+                  stakingListItem.metric.aprYear,
+                  100
+                )
+
+                const percent = bignumberUtils.minus(
+                  stakingListItem.autostaking,
+                  apy
+                )
 
                 return (
                   <li key={stakingListItem.id} className={styles.listItem}>
@@ -266,40 +281,32 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         </Typography>
                       </div>
                       <div>
-                        <Typography variant="body2" as="div">
+                        <Typography
+                          variant="body2"
+                          as="div"
+                          family="mono"
+                          transform="uppercase"
+                        >
                           ${bignumberUtils.format(stakingListItem.metric.tvl)}
                         </Typography>
                       </div>
                       <div>
-                        <Typography variant="body2" as="div">
-                          {bignumberUtils.format(
-                            bignumberUtils.mul(
-                              stakingListItem.metric.aprYear,
-                              100
-                            )
-                          )}
-                          %
+                        <Typography
+                          variant="body2"
+                          as="div"
+                          family="mono"
+                          transform="uppercase"
+                        >
+                          {bignumberUtils.formatMax(apy, 10000)}%
                         </Typography>
                       </div>
                       <div>
-                        <Typography variant="body2" as="div">
-                          {bignumberUtils.formatMax(
-                            stakingListItem.autostaking,
-                            10000
-                          )}
-                          %
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography variant="body2" as="div">
-                          $
-                          {bignumberUtils.format(
-                            stakingListItem.metric.myStaked
-                          )}
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography variant="body2" as="div">
+                        <Typography
+                          variant="body2"
+                          as="div"
+                          family="mono"
+                          transform="uppercase"
+                        >
                           {bignumberUtils.format(
                             bignumberUtils.mul(
                               bignumberUtils.div(
@@ -312,15 +319,76 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           %
                         </Typography>
                       </div>
-                      <div className={styles.tableCol}>
+                      <div>
+                        <Typography
+                          variant="body2"
+                          as="div"
+                          family="mono"
+                          transform="uppercase"
+                        >
+                          $
+                          {bignumberUtils.format(
+                            stakingListItem.metric.myStaked
+                          )}
+                        </Typography>
+                      </div>
+                      <div>
+                        <Typography
+                          variant="body2"
+                          as="div"
+                          family="mono"
+                          transform="uppercase"
+                        >
+                          $
+                          {bignumberUtils.format(
+                            stakingListItem.metric.myEarned
+                          )}
+                        </Typography>
+                      </div>
+                      <div
+                        className={clsx(styles.tableCol, styles.autostaking)}
+                      >
                         <div>
-                          <Typography variant="body2" as="div">
-                            $
-                            {bignumberUtils.format(
-                              stakingListItem.metric.myEarned
+                          <Typography
+                            variant="body2"
+                            as="div"
+                            family="mono"
+                            transform="uppercase"
+                          >
+                            {bignumberUtils.formatMax(
+                              stakingListItem.autostaking,
+                              10000
                             )}
+                            %
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            as="div"
+                            family="mono"
+                            transform="uppercase"
+                            className={clsx({
+                              [styles.negative]: bignumberUtils.lt(percent, 0),
+                              [styles.positive]: bignumberUtils.gt(percent, 0),
+                            })}
+                          >
+                            {bignumberUtils.formatMax(percent, 10000)}%
                           </Typography>
                         </div>
+                        <Button
+                          disabled={
+                            !(
+                              stakingListItem.automate.autorestake &&
+                              stakingListItem.prototypeAddress
+                            )
+                          }
+                          size="small"
+                          variant="outlined"
+                          onClick={handleAutostake(stakingListItem)}
+                          className={styles.turnOn}
+                          loading={stakingListItem.autostakingLoading}
+                        >
+                          Turn on
+                        </Button>
                         <ButtonBase
                           className={styles.accorionButton}
                           onClick={handleOpenContract(stakingListItem.address)}
@@ -373,11 +441,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         contractId={stakingListItem.id}
                         blockchain={stakingListItem.blockchain}
                         network={stakingListItem.network}
-                        hasAutorestake={Boolean(
-                          stakingListItem.automate.autorestake &&
-                            stakingListItem.prototypeAddress
-                        )}
-                        onAutostake={handleAutostake(stakingListItem)}
                       />
                     )}
                   </li>

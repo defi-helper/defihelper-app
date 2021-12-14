@@ -6,7 +6,9 @@ export const STAKING_CONTRACT_LIST = gql`
   query StakingContractList(
     $filter: ProtocolFilterInputType!
     $contractFilter: ContractListFilterInputType
-    $contractSort: [ContractListSortInputType!]
+    $contractSort: [ContractListSortInputType!] = [
+      { column: myStaked, order: desc }
+    ]
     $contractPagination: ContractListPaginationInputType
   ) {
     protocol(filter: $filter) {

@@ -18,7 +18,7 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
       adapters
       autorestake
     }
-    metric {
+    metric(filter: { wallet: { type: [wallet] } }) {
       tvl
       aprYear
       myStaked

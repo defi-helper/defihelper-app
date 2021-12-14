@@ -4,6 +4,7 @@ import { SettingsSmartNotifications } from './settings-smart-notifications'
 import { SettingsWallets } from './settings-wallets'
 import { Head } from '~/common/head'
 import { SettingsTransactionHistory } from './settings-transaction-history'
+import { StakingAutomates } from '~/staking/staking-automates'
 import * as styles from './settings.css'
 
 export type SettingsProps = unknown
@@ -17,6 +18,7 @@ export const Settings: React.VFC<SettingsProps> = () => {
         <SettingsSmartNotifications className={styles.section} />
         <SettingsWallets className={styles.section} />
         <SettingsTransactionHistory className={styles.section} />
+        <StakingAutomates className={styles.section} />
       </div>
     </AppLayout>
   )
