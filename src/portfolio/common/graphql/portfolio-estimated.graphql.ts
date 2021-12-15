@@ -1,8 +1,18 @@
 import { gql } from '@urql/core'
 
 export const PORTFOLIO_ESTIMATED = gql`
-  query PortfolioEstimated($balance: Float!, $apy: Float!) {
-    restakeStrategy(balance: $balance, apy: $apy) {
+  query ProtocolEstimated(
+    $balance: Float!
+    $apy: Float!
+    $blockchain: BlockchainEnum = ethereum
+    $network: String = "1"
+  ) {
+    restakeStrategy(
+      balance: $balance
+      apy: $apy
+      blockchain: $blockchain
+      network: $network
+    ) {
       hold {
         v
         t

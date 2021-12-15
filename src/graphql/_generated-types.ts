@@ -568,6 +568,8 @@ export type ContractCreateInputType = {
   layout: Scalars['String']
   /** Usable automates */
   automates?: Maybe<Array<Scalars['String']>>
+  /** Usable autorestake contract adapter */
+  autorestakeAdapter?: Maybe<Scalars['String']>
   /** Name */
   name: Scalars['String']
   /** Description */
@@ -648,7 +650,6 @@ export type ContractMetricType = {
   aprYear: Scalars['String']
   myStaked: Scalars['String']
   myEarned: Scalars['String']
-  myLastUpdatedAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export type ContractMetricWalletFilterInputType = {
@@ -716,6 +717,8 @@ export type ContractUpdateInputType = {
   layout?: Maybe<Scalars['String']>
   /** Usable automates */
   automates?: Maybe<Array<Scalars['String']>>
+  /** Usable autorestake contract adapter */
+  autorestakeAdapter?: Maybe<Scalars['String']>
   /** Name */
   name?: Maybe<Scalars['String']>
   /** Description */
@@ -1706,6 +1709,8 @@ export type QueryGovTokenArgs = {
 }
 
 export type QueryRestakeStrategyArgs = {
+  blockchain?: Maybe<BlockchainEnum>
+  network?: Maybe<Scalars['String']>
   balance: Scalars['Float']
   apy: Scalars['Float']
 }
@@ -3790,6 +3795,8 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
 export type ProtocolEstimatedQueryVariables = Exact<{
   balance: Scalars['Float']
   apy: Scalars['Float']
+  blockchain?: Maybe<BlockchainEnum>
+  network?: Maybe<Scalars['String']>
 }>
 
 export type ProtocolEstimatedQuery = { __typename?: 'Query' } & {
