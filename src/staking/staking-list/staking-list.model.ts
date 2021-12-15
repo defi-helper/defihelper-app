@@ -15,6 +15,7 @@ import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapte
 import { authModel } from '~/auth'
 import { AdapterActions } from '~/common/load-adapter'
 import { automationApi } from '~/automations/common/automation.api'
+import { config } from '~/config'
 
 export const stakingListDomain = createDomain()
 
@@ -74,7 +75,7 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
 
     const stakingListWithAutostaking = data.contracts.map(async (contract) => {
       const result = await protocolsApi.protocolEstimated({
-        balance: Number(contract.metric.myStaked),
+        balance: Number(contract.metric.myStaked) || config.FIX_SUM,
         apy: Number(contract.metric.aprYear),
       })
 

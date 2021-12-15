@@ -4,9 +4,13 @@ import { theme } from '~/common/theme'
 
 export const root = style({})
 
-export const title = style({
+export const header = style({
+  display: 'flex',
+  alignItems: 'center',
   marginBottom: 24,
 })
+
+export const title = style({})
 
 export const charts = style({
   display: 'grid',
@@ -20,4 +24,9 @@ export const charts = style({
       marginBottom: 24,
     },
   },
+})
+
+export const label = style({
+  marginLeft: 'auto',
+  color: theme.colors.textColorGrey,
 })

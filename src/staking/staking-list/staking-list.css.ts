@@ -98,7 +98,7 @@ export const listItem = style({
 
 export const row = style({
   display: 'grid',
-  gridTemplateColumns: '15% 15% 10% 14% 14% 12% 1fr',
+  gridTemplateColumns: '15% 14% 10% 12% 12% 12% 1fr',
   padding: '16px 0 16px 24px',
   alignItems: 'center',
 })
@@ -157,7 +157,7 @@ export const turnOn = style({
 
 export const accorionButton = style({
   color: theme.colors.textColorGrey,
-  marginLeft: 'auto',
+  marginLeft: 10,
 })
 
 export const manageButton = style({

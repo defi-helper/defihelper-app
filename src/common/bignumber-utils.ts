@@ -88,4 +88,6 @@ export const bignumberUtils = {
 
   div: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).div(num2 || 1).toString(10),
+
+  isNaN: (num?: string | number | null) => new BigNumber(num || 0).isNaN(),
 }

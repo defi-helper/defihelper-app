@@ -126,38 +126,17 @@ export type Adapters = {
 const cache: Record<string, Adapters> = {}
 
 export function loadAdapter(url: string): Promise<Adapters> {
-  return new Promise((resolve, reject) => {
-    if (cache[url]) {
-      return resolve(cache[url])
-    }
+  if (cache[url]) return Promise.resolve(cache[url])
+
+  // @ts-ignore
+  window.module = moduleExports
+
+  return import(/* webpackIgnore: true */ url).then(() => {
+    cache[url] = window.module.exports
 
     // @ts-ignore
     window.module = moduleExports
 
-    const script = document.createElement('script')
-
-    script.src = url
-
-    const handler = () => {
-      if (!(window.module.exports instanceof Error)) {
-        script.removeEventListener('load', handler)
-        script.remove()
-
-        // @ts-ignore
-        window.module = moduleExports
-
-        cache[url] = window.module.exports
-
-        resolve(window.module.exports)
-      } else {
-        reject(window.module.exports)
-      }
-    }
-
-    script.addEventListener('load', handler)
-
-    script.addEventListener('error', handler)
-
-    document.body.appendChild(script)
+    return cache[url]
   })
 }

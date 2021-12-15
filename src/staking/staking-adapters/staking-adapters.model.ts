@@ -1,6 +1,7 @@
 import { guard, createDomain } from 'effector-logger/macro'
 import omit from 'lodash.omit'
 import type { AbstractConnector } from '@web3-react/abstract-connector'
+import { createGate } from 'effector-react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import {
@@ -209,8 +210,16 @@ export const fetchTokensFx = stakingAdaptersDomain.createEffect(
   }
 )
 
+export const StakingAdaptersGate = createGate({
+  name: 'StakingAdaptersGate',
+  domain: stakingAdaptersDomain,
+})
+
+$actions.reset(StakingAdaptersGate.close)
+$contract.reset(StakingAdaptersGate.close)
+
 toastsService.forwardErrors(
   contractActionFx.failData.map((error) => parseError(error)),
-  fetchContractAdapterFx.failData,
+  fetchContractAdapterFx.failData.map((error) => parseError(error)),
   fetchTokensFx.failData
 )

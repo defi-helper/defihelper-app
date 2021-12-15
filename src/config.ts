@@ -18,4 +18,5 @@ export const config = {
   BETA: process.env.REACT_APP_BETA === 'true',
   MAIN_URL: process.env.REACT_APP_MAIN_URL,
   AMCHARTS_LICENCE: process.env.REACT_APP_AMCHARTS_LICENCE,
+  FIX_SUM: 10000,
 } as const
