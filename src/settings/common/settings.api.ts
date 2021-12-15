@@ -41,7 +41,9 @@ export const settingsApi = {
   userNotificationsList: () =>
     getAPIClient()
       .query<UserNotificationsListQuery, UserNotificationsListQueryVariables>(
-        USER_NOTIFICATION_LIST
+        USER_NOTIFICATION_LIST,
+        {},
+        { requestPolicy: 'network-only' }
       )
       .toPromise()
       .then(({ data }) => data?.userNotifications ?? []),
