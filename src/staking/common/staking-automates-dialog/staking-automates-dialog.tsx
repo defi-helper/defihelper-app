@@ -14,6 +14,7 @@ import * as styles from './staking-automates-dialog.css'
 export type StakingAutomatesDialogProps = {
   onConfirm: () => void
   steps: AutomatesStep[]
+  onSuccess: (message: string) => void
 }
 
 export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
@@ -63,9 +64,7 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
 
       await tx.wait()
 
-      if (steps.value && currentStepNumber < steps.value.length) {
-        setCurrentStepNumber(currentStepNumber + 1)
-      }
+      props.onSuccess('success')
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -84,9 +83,7 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
 
     await tx.wait()
 
-    if (steps.value && currentStepNumber < steps.value.length) {
-      setCurrentStepNumber(currentStepNumber + 1)
-    }
+    props.onSuccess('success')
   }, [currentStep, currentStepNumber, steps.value])
 
   return (

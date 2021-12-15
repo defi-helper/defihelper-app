@@ -15,6 +15,7 @@ import * as styles from './automation-deploy-steps-dialog.css'
 export type AutomationDeployStepsDialogProps = {
   onConfirm: (formValues: { address: string; inputs: string[] }) => void
   steps: DeployStep[]
+  onSuccess: (message: string) => void
 }
 
 export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogProps> =
@@ -62,6 +63,8 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
         const { tx, getAddress } = await currentStep.send(...values)
 
         await tx.wait()
+
+        props.onSuccess('success')
 
         props.onConfirm({
           address: await getAddress(),

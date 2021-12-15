@@ -14,6 +14,7 @@ import {
 import { useWalletList } from '~/wallets/wallet-list'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
+import { toastsService } from '~/toasts'
 
 export type StakingAutomatesProps = {
   className?: string
@@ -87,6 +88,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
     openAutomates({
       steps: adapter[currentAction],
+      onSuccess: toastsService.success,
     })
       .then(() => model.reset())
       .catch(() => model.reset())
