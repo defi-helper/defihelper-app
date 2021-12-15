@@ -78,6 +78,27 @@ export const setupPolygon = async () => {
   return request(params)
 }
 
+export const setupMoonriver = async () => {
+  const [chainId] = config.CHAIN_MOONRIVER_IDS
+
+  const params = {
+    chainId: `0x${chainId.toString(16)}`,
+    chainName: 'Moonriver',
+    nativeCurrency: {
+      name: 'MOVR',
+      symbol: 'MOVR',
+      decimals: 18,
+    },
+    rpcUrls: [
+      'https://rpc.moonriver.moonbeam.network',
+      'https://rpc.moonriver.moonbeam.network',
+    ],
+    blockExplorerUrls: ['https://moonriver.moonscan.io/'],
+  }
+
+  return request(params)
+}
+
 export const setupAvalanche = async () => {
   const [chainId] = config.CHAIN_AVALANCHE_IDS
 

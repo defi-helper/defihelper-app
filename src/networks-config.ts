@@ -13,6 +13,7 @@ type Network = {
     | 'avalanche'
     | 'solana'
     | 'polygon'
+    | 'moonriver'
 }
 
 const prodNetworks: Record<string, Network> = {
@@ -43,6 +44,13 @@ const prodNetworks: Record<string, Network> = {
     coin: 'MATIC',
     blockchain: BlockchainEnum.Ethereum,
     icon: 'polygon',
+  },
+  1285: {
+    title: 'Moonriver',
+    explorerUrl: 'https://moonriver.moonscan.io',
+    coin: 'MOVR',
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'moonriver',
   },
   43114: {
     title: 'Avalanche',
@@ -95,6 +103,13 @@ const devNetworks: Record<string, Network> = {
     coin: 'BNB',
     blockchain: BlockchainEnum.Ethereum,
     icon: 'bnbRegular',
+  },
+  1287: {
+    title: 'Moonbase Alpha',
+    explorerUrl: 'https://moonbase.moonscan.io',
+    coin: 'DEV',
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'moonriver',
   },
   43113: {
     title: 'Avalanche (testnet)',

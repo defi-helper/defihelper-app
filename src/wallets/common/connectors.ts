@@ -16,6 +16,7 @@ export const injected = new InjectedConnector({
     ...config.CHAIN_ETHEREUM_IDS,
     ...config.CHAIN_BINANCE_IDS,
     ...config.CHAIN_POLYGON_IDS,
+    ...config.CHAIN_MOONRIVER_IDS,
     ...config.CHAIN_AVALANCHE_IDS,
   ],
 })
@@ -63,6 +64,7 @@ export const binance = new BscConnector({
     ...config.CHAIN_ETHEREUM_IDS,
     ...config.CHAIN_BINANCE_IDS,
     ...config.CHAIN_POLYGON_IDS,
+    ...config.CHAIN_MOONRIVER_IDS,
     ...config.CHAIN_AVALANCHE_IDS,
   ],
 })

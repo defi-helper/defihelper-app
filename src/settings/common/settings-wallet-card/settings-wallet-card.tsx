@@ -156,10 +156,14 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
               offset={[0, 8]}
             >
               <Typography variant="inherit">
-                In order to execute every automation action in blockchain, such
-                as auto-restaking, provide fee balance we can use.{' '}
-                <Link href="/" className={styles.howItWorks}>
-                  Learn more on How It Work
+                In order to execute every automated action in the blockchain,
+                such as Auto-staking, provide us with your Fee Balance.{' '}
+                <Link
+                  target="_blank"
+                  href="https://defihelper.medium.com/how-does-defihelper-work-a-detailed-explanation-5153dbcea2c7"
+                  className={styles.howItWorks}
+                >
+                  Learn more on How It Works
                 </Link>
               </Typography>
             </Dropdown>
@@ -185,10 +189,14 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
               offset={[0, 8]}
             >
               <Typography variant="inherit">
-                In order to execute every automation action in blockchain, such
-                as auto-restaking, provide fee balance we can use.{' '}
-                <Link href="/" className={styles.howItWorks}>
-                  Learn more on How It Work
+                We are currently clarifying your balance. You need to wait 3-5
+                minutes for balance update{' '}
+                <Link
+                  target="_blank"
+                  href="https://defihelper.medium.com/how-does-defihelper-work-a-detailed-explanation-5153dbcea2c7"
+                  className={styles.howItWorks}
+                >
+                  Learn more on How It Works
                 </Link>
               </Typography>
             </Dropdown>
@@ -229,9 +237,9 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
               placement="top-end"
               offset={[0, 8]}
             >
-              This wallet has active automations which doesn&apos;t work now due
-              due to low Fee Funds balance. Deposit Fee Funds to continue
-              automations.
+              This wallet has active automations which aren&apos;t currently
+              functioning due to a low Fee Funds balance. Please deposit funds
+              to enable automations.
             </Dropdown>
           )}
         </div>

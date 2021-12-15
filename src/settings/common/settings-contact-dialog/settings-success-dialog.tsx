@@ -22,7 +22,8 @@ const TITLES = {
     'Please confirm your email by clicking the link in the email',
   [UserContactBrokerEnum.Telegram]: 'Please click to the button and enable bot',
   [TransactionEnum.refund]: 'Refund successful',
-  [TransactionEnum.deposit]: 'Deposit successful',
+  [TransactionEnum.deposit]:
+    'Deposit successful. Please wait 3-5 minutes until the money appears on your balance',
 }
 
 export const SettingsSuccessDialog: React.VFC<SettingsSuccessDialogProps> = (

@@ -53,6 +53,7 @@ import { ReactComponent as LinkIcon } from '~/assets/icons/link.svg'
 import { ReactComponent as SearchIcon } from '~/assets/icons/search.svg'
 import { ReactComponent as ExclamationIcon } from '~/assets/icons/exclamation.svg'
 import { ReactComponent as AvalancheIcon } from '~/assets/icons/blockchains/avalanche.svg'
+import { ReactComponent as MoonriverIcon } from '~/assets/icons/blockchains/moonriver.svg'
 import { ReactComponent as PolygonIcon } from '~/assets/icons/blockchains/polygon.svg'
 import { ReactComponent as SushiIcon } from '~/assets/icons/coins/sushi.svg'
 import { ReactComponent as UniIcon } from '~/assets/icons/coins/uni.svg'
@@ -117,6 +118,8 @@ const ICONS = {
   link: LinkIcon,
   search: SearchIcon,
   exclamation: ExclamationIcon,
+  moonriver: MoonriverIcon,
+  moonbaseAlpha: MoonriverIcon,
   avalanche: AvalancheIcon,
   polygon: PolygonIcon,
   beta: BetaIcon,

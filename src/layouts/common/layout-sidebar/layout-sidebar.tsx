@@ -57,8 +57,8 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
               </ButtonBase>
             }
           >
-            Please note, that we are currently in beta state. Some functionality
-            can work is not as expected.
+            Please note, we are currently in our Beta state. Some
+            functionalities may not work as expected
           </Dropdown>
         )}
       </div>

@@ -3,6 +3,7 @@ export const config = {
   CHAIN_ETHEREUM_IDS: [1, 3, 4, 5, 42, 999] as number[],
   CHAIN_BINANCE_IDS: [56, 97] as number[],
   CHAIN_POLYGON_IDS: [137] as number[],
+  CHAIN_MOONRIVER_IDS: [1285, 1287] as number[],
   CHAIN_AVALANCHE_IDS: [43114, 43113] as number[],
   CHAIN_WAVES_ID: ['waves'] as string[],
   PORTIS_ID: process.env.REACT_APP_PORTIS_ID,
