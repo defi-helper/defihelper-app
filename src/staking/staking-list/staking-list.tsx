@@ -307,6 +307,19 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           family="mono"
                           transform="uppercase"
                         >
+                          $
+                          {bignumberUtils.format(
+                            stakingListItem.metric.myStaked
+                          )}
+                        </Typography>
+                      </div>
+                      <div>
+                        <Typography
+                          variant="body2"
+                          as="div"
+                          family="mono"
+                          transform="uppercase"
+                        >
                           {bignumberUtils.format(
                             bignumberUtils.mul(
                               bignumberUtils.div(
@@ -317,19 +330,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                             )
                           )}
                           %
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          family="mono"
-                          transform="uppercase"
-                        >
-                          $
-                          {bignumberUtils.format(
-                            stakingListItem.metric.myStaked
-                          )}
                         </Typography>
                       </div>
                       <div>
@@ -361,18 +361,27 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                             )}
                             %
                           </Typography>
-                          <Typography
-                            variant="body2"
-                            as="div"
-                            family="mono"
-                            transform="uppercase"
-                            className={clsx({
-                              [styles.negative]: bignumberUtils.lt(percent, 0),
-                              [styles.positive]: bignumberUtils.gt(percent, 0),
-                            })}
-                          >
-                            {bignumberUtils.formatMax(percent, 10000)}%
-                          </Typography>
+                          {!bignumberUtils.isNaN(percent) &&
+                            !bignumberUtils.eq(percent, 0) && (
+                              <Typography
+                                variant="body2"
+                                as="div"
+                                family="mono"
+                                transform="uppercase"
+                                className={clsx({
+                                  [styles.negative]: bignumberUtils.lt(
+                                    percent,
+                                    0
+                                  ),
+                                  [styles.positive]: bignumberUtils.gt(
+                                    percent,
+                                    0
+                                  ),
+                                })}
+                              >
+                                {bignumberUtils.formatMax(percent, 10000)}%
+                              </Typography>
+                            )}
                         </div>
                         <Button
                           disabled={

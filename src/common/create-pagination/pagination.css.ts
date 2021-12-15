@@ -12,4 +12,6 @@ export const item = style({
   margin: '0 3px',
   borderRadius: '50%',
   background: theme.colors.paper,
+  verticalAlign: 'middle',
+  textAlign: 'center',
 })

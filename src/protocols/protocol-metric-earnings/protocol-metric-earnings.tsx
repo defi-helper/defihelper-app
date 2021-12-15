@@ -10,6 +10,7 @@ import * as stakingListModel from '~/staking/staking-list/staking-list.model'
 import * as model from './protocol-metric-earnings.model'
 import * as styles from './protocol-metric-earnings.css'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { dateUtils } from '~/common/date-utils'
 
 const STAKED_FIELDS = [
   {
@@ -46,6 +47,7 @@ const currentEarningsGroup = MetricGroupEnum.Day
 export type ProtocolMetricEarningsProps = {
   className?: string
   metric: Exclude<ProtocolQuery['protocol'], null | undefined>['metric']
+  myMinUpdatedAt?: string | null
 }
 
 export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
@@ -86,9 +88,17 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
 
   return (
     <div className={clsx(styles.root, props.className)}>
-      <Typography variant="h3" className={styles.title}>
-        Statistics
-      </Typography>
+      <div className={styles.header}>
+        <Typography variant="h3" className={styles.title}>
+          Statistics
+        </Typography>
+        {props.myMinUpdatedAt && (
+          <Typography className={styles.label} variant="body2">
+            Last updated at:{' '}
+            {dateUtils.format(props.myMinUpdatedAt, 'DD MMMM YYYY HH:mm')}
+          </Typography>
+        )}
+      </div>
       <div className={styles.charts}>
         <ProtocolChartWrap
           header={

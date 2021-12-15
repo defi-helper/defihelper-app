@@ -25,7 +25,6 @@ import { Icon } from '~/common/icon'
 import { Carousel } from '~/common/carousel'
 import { StakingAutomates } from '~/staking/staking-automates'
 import { Loader } from '~/common/loader'
-import { dateUtils } from '~/common/date-utils'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
 
@@ -112,17 +111,6 @@ export const ProtocolDetail: React.FC = () => {
               <img src={protocol.icon} alt="" className={styles.icon} />
             )}
             <Typography variant="h4">{protocol.name}</Typography>
-            {protocol.metric.myMinUpdatedAt && (
-              <Typography className={styles.label} variant="body2">
-                Last updated at:{' '}
-                {protocol.metric.myMinUpdatedAt
-                  ? dateUtils.format(
-                      protocol.metric.myMinUpdatedAt,
-                      'DD MMM YY'
-                    )
-                  : 'not updated'}
-              </Typography>
-            )}
             {protocol.link && (
               <Paper
                 target="_blank"
@@ -158,6 +146,7 @@ export const ProtocolDetail: React.FC = () => {
               <ProtocolMetricEarnings
                 className={styles.mb120}
                 metric={protocol.metric}
+                myMinUpdatedAt={protocol.metric.myMinUpdatedAt}
               >
                 <ProtocolTotal
                   {...protocol.metric}

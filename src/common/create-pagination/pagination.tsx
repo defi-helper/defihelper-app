@@ -63,7 +63,7 @@ export const Pagination: React.VFC<PaginationProps> = (props) => {
           </span>
         ) : (
           <ButtonBase
-            key={item}
+            key={String(index)}
             onClick={handleChangePage(item)}
             className={styles.item}
             disabled={currentPage === item}

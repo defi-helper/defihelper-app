@@ -1,4 +1,4 @@
-import { useStore } from 'effector-react'
+import { useGate, useStore } from 'effector-react'
 
 import { StakingAdapterForm, StakingAdapterFormProps } from '~/staking/common'
 import { useWalletList } from '~/wallets/wallet-list'
@@ -104,6 +104,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
 
   const actions = useStore(model.$actions)
   const action = actions[props.contractAddress]
+
+  useGate(model.StakingAdaptersGate)
 
   return (
     <div className={styles.root}>
