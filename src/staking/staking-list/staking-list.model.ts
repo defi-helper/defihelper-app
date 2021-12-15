@@ -77,6 +77,8 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
       const result = await protocolsApi.protocolEstimated({
         balance: Number(contract.metric.myStaked) || config.FIX_SUM,
         apy: Number(contract.metric.aprYear),
+        network: contract.network,
+        blockchain: contract.blockchain,
       })
 
       const [lastAutostakingValue] = result?.optimal.slice(-1) ?? []
