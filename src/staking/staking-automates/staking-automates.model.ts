@@ -54,9 +54,9 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
     const automatesWithAutostaking = data.list.map(async (automateContract) => {
       const result = await protocolsApi.earnings({
         balance:
-          Number(automateContract.contractWallet?.metric.stakedUSD) ||
+          Number(automateContract.contractWallet?.metric.stakedUSD || 0) ||
           config.FIX_SUM,
-        apy: Number(automateContract.contract?.metric.aprYear),
+        apy: Number(automateContract.contract?.metric.aprYear || 0),
         network: automateContract.wallet.network,
         blockchain: automateContract.wallet.blockchain,
       })
@@ -67,9 +67,11 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
         bignumberUtils.div(
           bignumberUtils.minus(
             lastAutostakingValue?.v,
-            Number(automateContract.contract?.metric.myStaked) || config.FIX_SUM
+            Number(automateContract.contract?.metric.myStaked || 0) ||
+              config.FIX_SUM
           ),
-          Number(automateContract.contract?.metric.myStaked) || config.FIX_SUM
+          Number(automateContract.contract?.metric.myStaked || 0) ||
+            config.FIX_SUM
         ),
         100
       )

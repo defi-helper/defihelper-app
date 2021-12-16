@@ -381,6 +381,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                                   ),
                                 })}
                               >
+                                {bignumberUtils.gt(percent, 0) && '+'}
                                 {bignumberUtils.formatMax(percent, 10000)}%
                               </Typography>
                             )}
