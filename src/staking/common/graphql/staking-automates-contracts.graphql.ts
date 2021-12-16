@@ -51,6 +51,7 @@ export const STAKING_AUTOMATES_CONTRACTS = gql`
           id
           network
           address
+          blockchain
         }
         adapter
         initParams

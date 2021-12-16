@@ -2,7 +2,7 @@ import { createDomain } from 'effector-logger/macro'
 import { BigNumber } from 'bignumber.js'
 
 import { MetricGroupEnum } from '~/graphql/_generated-types'
-import { portfolioApi } from '../common'
+import { protocolsApi } from '~/protocols/common'
 
 const portfolioEarnings = createDomain()
 
@@ -29,7 +29,7 @@ type EastimatedEarnings = {
 
 export const fetchChartDataFx = portfolioEarnings.createEffect(
   async (params: Gate) => {
-    const data = await portfolioApi.earnings({
+    const data = await protocolsApi.earnings({
       balance: params.balance,
       apy: params.apy,
     })

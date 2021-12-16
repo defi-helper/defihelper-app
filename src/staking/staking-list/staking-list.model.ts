@@ -74,7 +74,7 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
     })
 
     const stakingListWithAutostaking = data.contracts.map(async (contract) => {
-      const result = await protocolsApi.protocolEstimated({
+      const result = await protocolsApi.earnings({
         balance: Number(contract.metric.myStaked) || config.FIX_SUM,
         apy: Number(contract.metric.aprYear),
         network: contract.network,
@@ -87,9 +87,9 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
         bignumberUtils.div(
           bignumberUtils.minus(
             lastAutostakingValue?.v,
-            contract.metric.myStaked
+            Number(contract.metric.myStaked) || config.FIX_SUM
           ),
-          contract.metric.myStaked
+          Number(contract.metric.myStaked) || config.FIX_SUM
         ),
         100
       )

@@ -3601,62 +3601,6 @@ export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
     >
   }
 
-export type PortfolioEstimatedQueryVariables = Exact<{
-  balance: Scalars['Float']
-  apy: Scalars['Float']
-}>
-
-export type PortfolioEstimatedQuery = { __typename?: 'Query' } & {
-  restakeStrategy: { __typename?: 'RestakeStrategyType' } & {
-    hold: Array<
-      { __typename?: 'RestakeStrategyPointType' } & Pick<
-        RestakeStrategyPointType,
-        'v' | 't'
-      >
-    >
-    everyDay: Array<
-      { __typename?: 'RestakeStrategyPointType' } & Pick<
-        RestakeStrategyPointType,
-        'v' | 't'
-      >
-    >
-    optimal: Array<
-      { __typename?: 'RestakeStrategyPointType' } & Pick<
-        RestakeStrategyPointType,
-        'v' | 't'
-      >
-    >
-  }
-}
-
-export type PortfolioWorthQueryVariables = Exact<{
-  balance: Scalars['Float']
-  apy: Scalars['Float']
-}>
-
-export type PortfolioWorthQuery = { __typename?: 'Query' } & {
-  restakeStrategy: { __typename?: 'RestakeStrategyType' } & {
-    hold: Array<
-      { __typename?: 'RestakeStrategyPointType' } & Pick<
-        RestakeStrategyPointType,
-        'v' | 't'
-      >
-    >
-    everyDay: Array<
-      { __typename?: 'RestakeStrategyPointType' } & Pick<
-        RestakeStrategyPointType,
-        'v' | 't'
-      >
-    >
-    optimal: Array<
-      { __typename?: 'RestakeStrategyPointType' } & Pick<
-        RestakeStrategyPointType,
-        'v' | 't'
-      >
-    >
-  }
-}
-
 export type TokenMetricChartQueryVariables = Exact<{
   group: MetricGroupEnum
   dateAfter?: Maybe<Scalars['DateTimeType']>
@@ -4380,7 +4324,7 @@ export type StakingAutomatesContractsQuery = { __typename?: 'Query' } & {
             >
             wallet: { __typename?: 'WalletType' } & Pick<
               WalletType,
-              'id' | 'network' | 'address'
+              'id' | 'network' | 'address' | 'blockchain'
             >
           }
       >

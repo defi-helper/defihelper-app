@@ -20,7 +20,7 @@ export const fetchEarningMetricFx = protocolMetricEarningsDomain.createEffect(
     apy: number
     group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
   }) => {
-    const data = await protocolsApi.protocolEstimated({
+    const data = await protocolsApi.earnings({
       balance: params.balance,
       apy: params.apy,
     })

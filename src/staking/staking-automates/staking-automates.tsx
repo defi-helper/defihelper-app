@@ -3,7 +3,6 @@ import { useGate, useStore } from 'effector-react'
 import { useEffect } from 'react'
 import isEmpty from 'lodash.isempty'
 
-import { ConfirmDialog } from '~/common/confirm-dialog'
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
 import {
@@ -25,7 +24,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [openAutomates] = useDialog(StakingAutomatesDialog)
   const [openWalletList] = useWalletList()
   const [openErrorDialog] = useDialog(StakingErrorDialog)
-  const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   const automatesContracts = useStore(model.$automatesContracts)
 
@@ -69,18 +67,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
       }
     }
 
-  const handleDelete = (contractId: string) => async () => {
-    try {
-      await openConfirmDialog()
-
-      model.deleteContractFx(contractId)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
-  }
-
   useGate(model.StakingAutomatesGate, props.protocolId ?? null)
 
   useEffect(() => {
@@ -113,7 +99,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             balance={automatesContract.contractWallet?.metric.stakedUSD ?? ''}
             apy={automatesContract.contract?.metric.aprYear}
             apyBoost={automatesContract.autostaking}
-            onDelete={handleDelete(automatesContract.id)}
             onMigrate={handleAction(automatesContract, 'migrate')}
             onDeposit={handleAction(automatesContract, 'deposit')}
             onRefund={handleAction(automatesContract, 'refund')}

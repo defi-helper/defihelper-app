@@ -8,13 +8,13 @@ import { loadAdapter } from '~/common/load-adapter'
 import { UserType } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { automationApi } from '../../automations/common/automation.api'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import {
   buildAdaptersUrl,
   stakingApi,
   StakingAutomatesContract,
 } from '../common'
+import { config } from '~/config'
 
 export type ActionType = 'deposit' | 'migrate' | 'refund'
 
@@ -52,9 +52,13 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
     })
 
     const automatesWithAutostaking = data.list.map(async (automateContract) => {
-      const result = await protocolsApi.protocolEstimated({
-        balance: Number(automateContract.contractWallet?.metric.stakedUSD),
+      const result = await protocolsApi.earnings({
+        balance:
+          Number(automateContract.contractWallet?.metric.stakedUSD) ||
+          config.FIX_SUM,
         apy: Number(automateContract.contract?.metric.aprYear),
+        network: automateContract.wallet.network,
+        blockchain: automateContract.wallet.blockchain,
       })
 
       const [lastAutostakingValue] = result?.optimal.slice(-1) ?? []
@@ -63,9 +67,9 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
         bignumberUtils.div(
           bignumberUtils.minus(
             lastAutostakingValue?.v,
-            automateContract.contract?.metric.myStaked
+            Number(automateContract.contract?.metric.myStaked) || config.FIX_SUM
           ),
-          automateContract.contract?.metric.myStaked
+          Number(automateContract.contract?.metric.myStaked) || config.FIX_SUM
         ),
         100
       )
@@ -104,10 +108,6 @@ export const fetchAdapter = stakingAutomatesDomain.createEffect(
   }
 )
 
-export const deleteContractFx = stakingAutomatesDomain.createEffect(
-  (contractId: string) => automationApi.deleteContract({ id: contractId })
-)
-
 export const reset = stakingAutomatesDomain.createEvent()
 
 export const $adapter = restore(fetchAdapter.doneData, null)
@@ -130,14 +130,6 @@ export const $automatesContracts = stakingAutomatesDomain
     state.map((contract) =>
       omit(contract, ['migrating', 'depositing', 'refunding'])
     )
-  )
-  .on(deleteContractFx, (state, payload) =>
-    state.map((contract) =>
-      contract.id === payload ? { ...contract, deleting: true } : contract
-    )
-  )
-  .on(deleteContractFx.finally, (state, { params }) =>
-    state.filter((contract) => contract.id !== params)
   )
 
 export const StakingAutomatesGate = createGate<string | null>({

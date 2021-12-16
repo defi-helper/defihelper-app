@@ -111,7 +111,7 @@ export const protocolsApi = {
       .toPromise()
       .then(({ data }) => data?.protocolFavorite),
 
-  protocolEstimated: (variables: ProtocolEstimatedQueryVariables) =>
+  earnings: (variables: ProtocolEstimatedQueryVariables) =>
     getAPIClient()
       .query<ProtocolEstimatedQuery, ProtocolEstimatedQueryVariables>(
         PROTOCOL_ESTIMATED,
