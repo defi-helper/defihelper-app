@@ -33,10 +33,14 @@ export const bignumberUtils = {
     return `${result.div('1000000').toFormat(localDecimal)}M`
   },
 
-  formatMax: (amount: string | number | null | undefined, max: number) => {
+  formatMax: (
+    amount: string | number | null | undefined,
+    max: number,
+    negative = false
+  ) => {
     return bignumberUtils.gt(amount, max)
       ? `${bignumberUtils.format(max)}+`
-      : bignumberUtils.format(amount)
+      : bignumberUtils.format(amount, 4, negative)
   },
 
   getPercentage: (

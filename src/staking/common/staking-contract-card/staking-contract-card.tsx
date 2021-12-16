@@ -23,7 +23,6 @@ export type StakingContractCardProps = {
   balance: string
   onDeposit: () => void
   onRefund: () => void
-  onDelete: () => void
   onMigrate: () => void
   error?: boolean
   apy?: string
@@ -82,12 +81,6 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
               target="_blank"
             >
               Explorer
-            </ButtonBase>
-            <ButtonBase
-              className={clsx(styles.dropdownItem, styles.deleteButton)}
-              onClick={props.onDelete}
-            >
-              Delete
             </ButtonBase>
           </Dropdown>
         </div>
