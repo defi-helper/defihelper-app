@@ -6,13 +6,12 @@ import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
 import { stakingApi } from '~/staking/common'
 
-const stakingUpdate = createDomain('stakingUpdate')
+const stakingUpdate = createDomain()
 
-export const stakingUpdateFx = stakingUpdate.createEffect({
-  name: 'stakingUpdateFx',
-  handler: (input: StakingContractUpdateMutationVariables) =>
-    stakingApi.contractUpdate(input),
-})
+export const stakingUpdateFx = stakingUpdate.createEffect(
+  (input: StakingContractUpdateMutationVariables) =>
+    stakingApi.contractUpdate(input)
+)
 
 stakingUpdateFx.doneData.watch((payload) => {
   if (!payload) return

@@ -18,7 +18,6 @@ import { AutomationProtocolDialog } from '../common/automation-protocol-dialog'
 import { AutomationDeployStepsDialog } from '../common/automation-deploy-steps-dialog'
 import * as model from './automation-deploy-contract.model'
 import * as styles from './automation-deploy-contract.css'
-import { toastsService } from '~/toasts'
 
 export type AutomationDeployContractProps = {
   onConfirm: (contract: AutomationContractFragmentFragment) => void
@@ -121,7 +120,6 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
         try {
           const result = await openDeployStepsDialog({
             steps: deployAdapter.deploy,
-            onSuccess: toastsService.success,
           })
 
           if (

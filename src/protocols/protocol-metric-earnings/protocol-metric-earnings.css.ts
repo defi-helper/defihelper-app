@@ -30,3 +30,7 @@ export const label = style({
   marginLeft: 'auto',
   color: theme.colors.textColorGrey,
 })
+
+export const link = style({
+  color: theme.colors.common.blue1,
+})

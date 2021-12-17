@@ -2,6 +2,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
+import { config } from '~/config'
 import { ProtocolQuery } from '~/graphql/_generated-types'
 import * as styles from './protocol-total.css'
 
@@ -12,8 +13,6 @@ export type ProtocolTotalProps = Exclude<
   hasAutostaking: boolean
   autostaking: string
 }
-
-const MEDIUM_LINK = `https://defihelper.medium.com/introducing-defihelper-the-most-advanced-non-custodial-defi-investment-tool-on-the-market-aa7e591a8f7f`
 
 export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
   return (
@@ -48,7 +47,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
           <Typography
             variant="body3"
             as={Link}
-            href={MEDIUM_LINK}
+            href={config.MEDIUM_LINK}
             target="_blank"
             className={styles.link}
           >

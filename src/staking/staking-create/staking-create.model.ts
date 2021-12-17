@@ -8,7 +8,7 @@ import { paths } from '~/paths'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import { loadAdapter } from '~/common/load-adapter'
 
-const stakingCreateDomain = createDomain('stakingCreate')
+const stakingCreateDomain = createDomain()
 
 export const stakingCreateFx = stakingCreateDomain.createEffect(
   (input: StakingContractCreateMutationVariables) =>
@@ -17,13 +17,19 @@ export const stakingCreateFx = stakingCreateDomain.createEffect(
 
 const fetchAdapterKeysFx = stakingCreateDomain.createEffect(
   (protocolAdapter: string) =>
-    loadAdapter(buildAdaptersUrl(protocolAdapter)).then((staking) =>
-      Object.keys(staking)
-    )
+    loadAdapter(buildAdaptersUrl(protocolAdapter)).then((result) => ({
+      layouts: Object.keys(result).filter((key) => key !== 'automates'),
+      automates: Object.keys(result.automates).filter(
+        (key) => key !== 'deploy'
+      ),
+    }))
 )
 
 export const $adapterKeys = stakingCreateDomain
-  .createStore<string[]>([])
+  .createStore<{ layouts: string[]; automates: string[] }>({
+    layouts: [],
+    automates: [],
+  })
   .on(fetchAdapterKeysFx.doneData, (_, payload) => payload)
 
 export const StakingCreateGate = createGate<string | null>({

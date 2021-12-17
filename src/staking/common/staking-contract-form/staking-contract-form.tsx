@@ -1,6 +1,7 @@
 import { useForm, Controller } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
+import ReactSelect from 'react-select'
 
 import { BlockchainEnum } from '~/graphql/_generated-types'
 import { Button } from '~/common/button'
@@ -23,13 +24,16 @@ export type FormValues = {
   hidden?: boolean | null
   layout: string
   eventsToSubscribe?: string[]
+  autorestakeAdapter?: string
+  automates: string[]
 }
 
 export type StakingContractFormProps = {
   loading: boolean
   onSubmit: (formValues: FormValues) => void
   defaultValues?: Omit<FormValues, 'layout'> & { layout?: string }
-  adapterKeys?: string[]
+  layouts?: string[]
+  automates?: string[]
 }
 
 export const StakingContractForm: React.VFC<StakingContractFormProps> = (
@@ -62,6 +66,9 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
   const networks = Object.entries(networksConfig)
     .filter(([, { blockchain }]) => blockchain === currentBlockchain)
     .map(([key, { title }]) => [title, key])
+
+  const automates =
+    props.automates?.map((key) => ({ value: key, label: key })) ?? []
 
   return (
     <form
@@ -101,9 +108,9 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
             error={Boolean(formState.errors.adapter)}
             helperText={formState.errors.adapter?.message}
           >
-            {props.adapterKeys?.map((key) => (
-              <SelectOption key={key} value={key}>
-                {key}
+            {props.layouts?.map((layout) => (
+              <SelectOption key={layout} value={layout}>
+                {layout}
               </SelectOption>
             ))}
           </Select>
@@ -213,6 +220,55 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
           >
             <SelectOption value="staking">staking</SelectOption>
           </Select>
+        )}
+      />
+      <Controller
+        control={control}
+        name="autorestakeAdapter"
+        render={({ field }) => (
+          <Select
+            type="text"
+            label="AutorestakeAdapter"
+            defaultValue={props.defaultValues?.autorestakeAdapter}
+            {...field}
+            disabled={props.loading}
+            error={Boolean(formState.errors.autorestakeAdapter)}
+            helperText={formState.errors.autorestakeAdapter?.message}
+          >
+            {props.automates?.map((layout) => (
+              <SelectOption key={layout} value={layout}>
+                {layout}
+              </SelectOption>
+            ))}
+          </Select>
+        )}
+      />
+      <Controller
+        control={control}
+        name="automates"
+        render={({ field }) => (
+          <ReactSelect
+            placeholder="Automates"
+            defaultValue={props.defaultValues?.automates?.map((option) => ({
+              label: option,
+              value: option,
+            }))}
+            {...field}
+            value={field.value?.map((option) => ({
+              label: option,
+              value: option,
+            }))}
+            onChange={(event) =>
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              field.onChange(event.map(({ value }) => value))
+            }
+            isDisabled={props.loading}
+            isMulti
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            options={automates}
+          />
         )}
       />
       <Typography as="label" variant="body2">

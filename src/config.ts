@@ -19,4 +19,5 @@ export const config = {
   MAIN_URL: process.env.REACT_APP_MAIN_URL,
   AMCHARTS_LICENCE: process.env.REACT_APP_AMCHARTS_LICENCE,
   FIX_SUM: 10000,
+  MEDIUM_LINK: `https://defihelper.medium.com/introducing-defihelper-the-most-advanced-non-custodial-defi-investment-tool-on-the-market-aa7e591a8f7f`,
 } as const

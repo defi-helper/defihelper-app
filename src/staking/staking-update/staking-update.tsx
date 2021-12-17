@@ -43,6 +43,8 @@ export const StakingUpdate: React.VFC<unknown> = () => {
         hidden: staking.hidden,
         adapter: staking.adapter,
         layout: staking.layout,
+        automates: staking.automate.adapters,
+        autorestakeAdapter: staking.automate.autorestake ?? undefined,
       }
     : undefined
 
@@ -55,7 +57,8 @@ export const StakingUpdate: React.VFC<unknown> = () => {
       <StakingContractForm
         loading={loading}
         defaultValues={defaultValues}
-        adapterKeys={adapterKeys}
+        layouts={adapterKeys.layouts}
+        automates={adapterKeys.automates}
         onSubmit={handleUpdate}
       />
     </AppLayout>

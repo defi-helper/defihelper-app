@@ -14,7 +14,8 @@ export const root = style({
 
 export const header = style({
   marginBottom: 36,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
+})
+
+export const link = style({
+  color: theme.colors.common.blue1,
 })

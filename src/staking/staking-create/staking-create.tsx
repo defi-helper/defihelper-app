@@ -32,7 +32,8 @@ export const StakingCreate: React.VFC<StakingCreateProps> = () => {
       <StakingContractForm
         loading={loading}
         onSubmit={handleCreate}
-        adapterKeys={adapterKeys}
+        layouts={adapterKeys.layouts}
+        automates={adapterKeys.automates}
       />
     </AppLayout>
   )
