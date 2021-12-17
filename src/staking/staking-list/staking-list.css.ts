@@ -123,6 +123,12 @@ export const table = style({
 
 export const tableInner = style({
   minWidth: 900,
+
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 10,
+    },
+  },
 })
 
 export const red = style({

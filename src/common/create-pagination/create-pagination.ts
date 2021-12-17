@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import { combine, Domain, sample } from 'effector-logger/macro'
 import { createElement } from 'react'
 
@@ -42,10 +43,11 @@ export const createPagination = (options: Options) => {
     target: totalPages,
   })
 
-  const Component = () =>
+  const Component = (props: { className?: string }) =>
     createElement(Pagination, {
       $pages,
       changePage,
+      className: props.className,
     })
 
   Component.state = combine(
