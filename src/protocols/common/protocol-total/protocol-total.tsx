@@ -51,7 +51,6 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
             target="_blank"
             className={styles.link}
           >
-            you can earn up to 1900%
           </Typography>
         )}
       </Paper>
