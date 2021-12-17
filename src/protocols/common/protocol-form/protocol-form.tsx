@@ -35,7 +35,11 @@ type FormValues = {
 export type ProtocolFormProps = {
   loading: boolean
   onSubmit: (formValues: FormValues) => void
-  onResolveContracts?: (blockchain: BlockchainEnum, network: string) => void
+  onResolveContracts?: (
+    blockchain: BlockchainEnum,
+    network: string,
+    events: string[]
+  ) => void
   defaultValues?: FormValues
   adapters: string[]
 }
@@ -96,12 +100,20 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
       'ethereum'
     ) as BlockchainEnum
     const network = prompt('network number, ex.: 1')
+    const events = prompt(
+      'events list comma separated, ex.: Deposit,Approval,Withdraw',
+      'Deposit'
+    )
 
-    if (!blockchain || !network || !props.onResolveContracts) {
+    if (!blockchain || !network || !events || !props.onResolveContracts) {
       return
     }
 
-    props.onResolveContracts(blockchain, network)
+    props.onResolveContracts(
+      blockchain,
+      network,
+      events.split(',').map((e) => e.trim())
+    )
   }
 
   const renderLinksSection = (type: LinkEnum) => {

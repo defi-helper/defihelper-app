@@ -1463,6 +1463,8 @@ export type ProtocolResolveContractsInputType = {
   blockchain: BlockchainEnum
   /** Blockchain network id */
   network: Scalars['String']
+  /** Blockchain network id */
+  events: Array<Scalars['String']>
 }
 
 export type ProtocolSocialPostListFilterInputType = {
