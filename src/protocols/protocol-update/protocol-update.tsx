@@ -55,10 +55,14 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
           onSubmit={(formValues) =>
             model.protocolUpdateFx({ id: params.protocolId, input: formValues })
           }
-          onResolveContracts={(blockchain: BlockchainEnum, network: string) =>
+          onResolveContracts={(
+            blockchain: BlockchainEnum,
+            network: string,
+            events: string[]
+          ) =>
             model.protocolResolveContractsFx({
               id: params.protocolId,
-              input: { blockchain, network },
+              input: { blockchain, network, events },
             })
           }
           adapters={adapters}
