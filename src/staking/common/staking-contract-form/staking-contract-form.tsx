@@ -64,7 +64,10 @@ export const StakingContractForm: React.VFC<StakingContractFormProps> = (
   const currentBlockchain = watch('blockchain')
 
   const networks = Object.entries(networksConfig)
-    .filter(([, { blockchain }]) => blockchain === currentBlockchain)
+    .filter(
+      ([, { blockchain }]) =>
+        blockchain === (currentBlockchain || BlockchainEnum.Ethereum)
+    )
     .map(([key, { title }]) => [title, key])
 
   const automates =

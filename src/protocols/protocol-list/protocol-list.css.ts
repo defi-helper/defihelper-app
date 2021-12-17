@@ -39,6 +39,12 @@ export const protocols = style({
   padding: 0,
   margin: 0,
   listStyle: 'none',
+
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 10,
+    },
+  },
 })
 
 export const proposalsHeader = style({

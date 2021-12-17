@@ -3,6 +3,7 @@ import { useStore } from 'effector-react'
 import { useEffect, useState } from 'react'
 import { useUpdateEffect } from 'react-use'
 import { generate } from '@bramus/pagination-sequence'
+import clsx from 'clsx'
 
 import { ButtonBase } from '../button-base'
 import { Icon } from '../icon'
@@ -11,6 +12,7 @@ import * as styles from './pagination.css'
 export type PaginationProps = {
   $pages: Store<number>
   changePage: Event<number>
+  className?: string
 }
 
 const DEFAULT_PAGE = 1
@@ -48,7 +50,7 @@ export const Pagination: React.VFC<PaginationProps> = (props) => {
   if (!pages || pages <= 1) return <></>
 
   return (
-    <div className={styles.root}>
+    <div className={clsx(styles.root, props.className)}>
       <ButtonBase
         onClick={handlePrev}
         disabled={currentPage === 1}

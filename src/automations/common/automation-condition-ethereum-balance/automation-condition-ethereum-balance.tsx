@@ -1,10 +1,6 @@
 import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
-import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
-import clsx from 'clsx'
-import { useEffect } from 'react'
 
-import { cutAccount } from '~/common/cut-account'
 import { Button } from '~/common/button'
 import { automationConditionEthereumSchema } from './automation-condition-ethereum.validation'
 import { NumericalInput } from '~/common/numerical-input'
@@ -15,13 +11,12 @@ import { Icon } from '~/common/icon'
 import { AutomationNetworksDialog } from '../automation-networks-dialog'
 import { useDialog } from '~/common/dialog'
 import { Wallet } from '../automation.types'
-import { AutomationWalletsDialog } from '../automation-wallets-dialog'
-import { Typography } from '~/common/typography'
 import * as styles from './automation-condition-ethereum-balance.css'
 import { networksConfig } from '~/networks-config'
+import { Input } from '~/common/input'
 
 type FormValues = {
-  wallet: Wallet
+  wallet: string
   value: string
   op: string
   network: string
@@ -45,11 +40,11 @@ enum ConditionTypes {
 export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEthereumBalanceProps> =
   (props) => {
     const [openNetworksDialog] = useDialog(AutomationNetworksDialog)
-    const [openWalletsDialog] = useDialog(AutomationWalletsDialog)
 
-    const { register, handleSubmit, formState, control, setValue, reset } =
+    const { register, handleSubmit, formState, control, setValue } =
       useForm<FormValues>({
         resolver: yupResolver(automationConditionEthereumSchema),
+        defaultValues: props.defaultValues,
       })
 
     const handleChooseNetwork = async () => {
@@ -64,35 +59,10 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
       }
     }
 
-    const handleChooseWallet = async () => {
-      try {
-        const result = await openWalletsDialog({ wallets: props.wallets })
-
-        setValue('wallet', result)
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message)
-        }
-      }
-    }
-
-    useEffect(() => {
-      if (props.defaultValues) {
-        const wallet = props.wallets.find(
-          ({ id }) => id === props.defaultValues?.wallet
-        )
-
-        reset({
-          ...props.defaultValues,
-          wallet,
-        })
-      }
-    }, [props.defaultValues, props.wallets, reset])
-
     return (
       <AutomationForm
-        onSubmit={handleSubmit(({ wallet, ...formValues }) =>
-          props.onSubmit(JSON.stringify({ ...formValues, wallet: wallet.id }))
+        onSubmit={handleSubmit((formValues) =>
+          props.onSubmit(JSON.stringify(formValues))
         )}
       >
         <Controller
@@ -119,40 +89,15 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
           name="network"
           control={control}
         />
-        <Controller
-          control={control}
-          name="wallet"
-          render={({ field }) => (
-            <AutomationChooseButton
-              label="wallet"
-              onClick={handleChooseWallet}
-              className={clsx(styles.wallet, styles.input)}
-              disabled={Boolean(props.defaultValues)}
-            >
-              {(field.value && (
-                <>
-                  <div className={styles.walletTitle}>
-                    <Jazzicon
-                      diameter={20}
-                      seed={jsNumberForAddress(field.value.address)}
-                      paperStyles={{
-                        verticalAlign: 'middle',
-                        marginRight: 8,
-                      }}
-                    />
-                    {field.value.name || 'untitled'}
-                  </div>
-                  <Typography variant="body3" className={styles.walletSubtitle}>
-                    {networksConfig[field.value.network]?.title && (
-                      <>{networksConfig[field.value.network]?.title}, </>
-                    )}
-                    {cutAccount(field.value.address)}
-                  </Typography>
-                </>
-              )) ||
-                'Choose wallet'}
-            </AutomationChooseButton>
-          )}
+        <Input
+          label="Wallet"
+          {...register('wallet', {
+            required: true,
+          })}
+          helperText={formState.errors.wallet?.message}
+          error={Boolean(formState.errors.wallet?.message)}
+          value={props.defaultValues?.wallet}
+          className={styles.input}
         />
         <Controller
           render={({ field }) => (
@@ -179,7 +124,7 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
           {...register('value')}
           helperText={formState.errors.value?.message}
           error={Boolean(formState.errors.value?.message)}
-          value={props.defaultValues?.value || props.defaultValues?.value}
+          value={props.defaultValues?.value}
           className={styles.input}
         />
         <Button type="submit" size="small">
