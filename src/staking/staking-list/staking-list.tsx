@@ -242,7 +242,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             <Typography variant="body2">Position</Typography>
             <Typography variant="body2">Pool share</Typography>
             <Typography variant="body2">Unclaimed</Typography>
-            <Typography variant="body2">+Autostaking</Typography>
+            <Typography variant="body2">Autostaking Boost</Typography>
           </div>
           <ul className={styles.list}>
             {loading && (
