@@ -26,7 +26,7 @@ export type StakingContractCardProps = {
   onMigrate: () => void
   error?: boolean
   apy?: string
-  apyBoost: string
+  apyBoost?: string
   deleting?: boolean
   depositing?: boolean
   refunding?: boolean
@@ -180,7 +180,11 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             </Dropdown>
           </Typography>
           <Typography variant="body2" as="span">
-            {bignumberUtils.formatMax(props.apyBoost, 10000)}%
+            {bignumberUtils.formatMax(
+              bignumberUtils.mul(props.apyBoost, 100),
+              10000
+            )}
+            %
           </Typography>
         </div>
         <div className={styles.buttons}>

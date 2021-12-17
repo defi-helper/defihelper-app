@@ -11,7 +11,6 @@ export type ProtocolTotalProps = Exclude<
   null | undefined
 >['metric'] & {
   hasAutostaking: boolean
-  autostaking: string
 }
 
 export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
@@ -39,7 +38,10 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
         </Typography>
         <Typography variant="h4">
           {props.hasAutostaking
-            ? bignumberUtils.formatMax(props.autostaking, 10000)
+            ? bignumberUtils.formatMax(
+                bignumberUtils.mul(props.myAPYBoost, 100),
+                10000
+              )
             : 0}
           %
         </Typography>

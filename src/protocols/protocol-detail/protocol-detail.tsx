@@ -151,7 +151,6 @@ export const ProtocolDetail: React.FC = () => {
                 <ProtocolTotal
                   {...protocol.metric}
                   hasAutostaking={protocol.hasAutostaking}
-                  autostaking={protocol.autostaking}
                 />
               </ProtocolMetricEarnings>
               <StakingAutomates

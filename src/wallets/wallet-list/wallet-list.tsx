@@ -12,6 +12,7 @@ export type WalletListPayload = {
   provider: any
   chainId: string | number
   account: string | null
+  blockchain: string
 }
 
 export type WalletListProps = {
@@ -21,18 +22,19 @@ export type WalletListProps = {
 }
 
 export const WalletList: React.VFC<WalletListProps> = (props) => {
-  const handleActivate = (connector: AbstractConnector) => async () => {
-    try {
-      const data = await augmentConnectorUpdate(
-        connector,
-        await connector.activate()
-      )
+  const handleActivate =
+    (connector: AbstractConnector, blockchain: string) => async () => {
+      try {
+        const data = await augmentConnectorUpdate(
+          connector,
+          await connector.activate()
+        )
 
-      props.onConfirm(data)
-    } catch (error) {
-      props.onCancel(error)
+        props.onConfirm({ ...data, blockchain })
+      } catch (error) {
+        props.onCancel(error)
+      }
     }
-  }
 
   return (
     <Dialog className={styles.root}>
@@ -45,7 +47,7 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
           .map(([walletName, wallet]) => (
             <li key={walletName}>
               <ButtonBase
-                onClick={handleActivate(wallet.connector)}
+                onClick={handleActivate(wallet.connector, wallet.blockchain)}
                 className={styles.wallet}
               >
                 <wallet.logo className={styles.icon} />

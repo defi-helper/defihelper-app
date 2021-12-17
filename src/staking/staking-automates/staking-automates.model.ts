@@ -1,12 +1,10 @@
 import { createDomain, sample, restore, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import omit from 'lodash.omit'
-import { authModel } from '~/auth'
-import { bignumberUtils } from '~/common/bignumber-utils'
 
+import { authModel } from '~/auth'
 import { loadAdapter } from '~/common/load-adapter'
 import { UserType } from '~/graphql/_generated-types'
-import { protocolsApi } from '~/protocols/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import {
@@ -14,7 +12,6 @@ import {
   stakingApi,
   StakingAutomatesContract,
 } from '../common'
-import { config } from '~/config'
 
 export type ActionType = 'deposit' | 'migrate' | 'refund'
 
@@ -51,44 +48,7 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
       },
     })
 
-    const automatesWithAutostaking = data.list.map(async (automateContract) => {
-      const result = await protocolsApi.earnings({
-        balance:
-          Number(automateContract.contractWallet?.metric.stakedUSD || 0) ||
-          config.FIX_SUM,
-        apy: Number(automateContract.contract?.metric.aprYear || 0),
-        network: automateContract.wallet.network,
-        blockchain: automateContract.wallet.blockchain,
-      })
-
-      const [lastAutostakingValue] = result?.optimal.slice(-1) ?? []
-
-      const autostakingApy = bignumberUtils.mul(
-        bignumberUtils.div(
-          bignumberUtils.minus(
-            lastAutostakingValue?.v,
-            Number(automateContract.contract?.metric.myStaked || 0) ||
-              config.FIX_SUM
-          ),
-          Number(automateContract.contract?.metric.myStaked || 0) ||
-            config.FIX_SUM
-        ),
-        100
-      )
-
-      return {
-        ...automateContract,
-        autostaking: bignumberUtils.minus(
-          autostakingApy,
-          automateContract.contract?.metric.aprYear
-        ),
-      }
-    })
-
-    return {
-      ...data,
-      list: await Promise.all(automatesWithAutostaking),
-    }
+    return data
   }
 )
 

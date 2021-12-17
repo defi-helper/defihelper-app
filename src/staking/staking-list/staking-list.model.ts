@@ -6,16 +6,15 @@ import {
   MetricChartType,
   StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
-import { stakingApi } from '~/staking/common'
+import { stakingApi, buildAdaptersUrl } from '~/staking/common'
 import { createPagination, PaginationState } from '~/common/create-pagination'
-import { bignumberUtils } from '~/common/bignumber-utils'
-import { protocolsApi } from '~/protocols/common'
 import { toastsService } from '~/toasts'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import { authModel } from '~/auth'
-import { AdapterActions } from '~/common/load-adapter'
+import { AdapterActions, loadAdapter, isStaking } from '~/common/load-adapter'
 import { automationApi } from '~/automations/common/automation.api'
-import { config } from '~/config'
+import { WalletListPayload } from '~/wallets/wallet-list'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export const stakingListDomain = createDomain()
 
@@ -33,7 +32,6 @@ type ConnectParams = {
 
 type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
-  autostaking: string
   prototypeAddress?: string
   autostakingLoading?: boolean
 }
@@ -43,6 +41,14 @@ export type ContractMetric = {
   apr: Array<Pick<MetricChartType, 'avg'>>
   stakingUSD: Array<Pick<MetricChartType, 'avg'>>
   earnedUSD: Array<Pick<MetricChartType, 'avg'>>
+}
+
+export type FreshMetrics = {
+  contractId: string
+  tvl: string
+  aprYear: string
+  myStaked: string
+  myEarned: string
 }
 
 const NOT_DELETED = 'Not deleted'
@@ -74,34 +80,10 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
     })
 
     const stakingListWithAutostaking = data.contracts.map(async (contract) => {
-      const result = await protocolsApi.earnings({
-        balance: Number(contract.metric.myStaked) || config.FIX_SUM,
-        apy: Number(contract.metric.aprYear),
-        network: contract.network,
-        blockchain: contract.blockchain,
-      })
-
-      const [lastAutostakingValue] = result?.optimal.slice(-1) ?? []
-
-      const autostakingApy = bignumberUtils.mul(
-        bignumberUtils.div(
-          bignumberUtils.minus(
-            lastAutostakingValue?.v,
-            Number(contract.metric.myStaked) || config.FIX_SUM
-          ),
-          Number(contract.metric.myStaked) || config.FIX_SUM
-        ),
-        100
-      )
-
       if (!params.protocolAdapter || !contract.automate.autorestake) {
         return {
           ...contract,
           prototypeAddress: undefined,
-          autostaking: bignumberUtils.minus(
-            autostakingApy,
-            contract.metric.aprYear
-          ),
         }
       }
 
@@ -116,10 +98,6 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
       return {
         ...contract,
         prototypeAddress: contractAddress?.address,
-        autostaking: bignumberUtils.minus(
-          autostakingApy,
-          contract.metric.aprYear
-        ),
       }
     })
 
@@ -254,17 +232,15 @@ export const StakingListPagination = createPagination({
   domain: stakingListDomain,
 })
 
-const fetchStakingList = sample({
-  source: [StakingListPagination.state, StakingListGate.state],
-  clock: [StakingListGate.open, StakingListPagination.updates],
-  fn: ([pagination, gate]) => ({
-    ...pagination,
-    ...gate,
-  }),
-})
-
 guard({
-  clock: fetchStakingList,
+  clock: sample({
+    source: [StakingListPagination.state, StakingListGate.state],
+    clock: [StakingListGate.open, StakingListPagination.updates],
+    fn: ([pagination, gate]) => ({
+      ...pagination,
+      ...gate,
+    }),
+  }),
   filter: ({ protocolId }) => Boolean(protocolId),
   target: [fetchStakingListFx, fetchConnectedContractsFx],
 })
@@ -273,6 +249,82 @@ sample({
   clock: fetchStakingListFx.doneData,
   fn: (clock) => clock.pagination,
   target: StakingListPagination.totalElements,
+})
+
+export const fetchMetrics = stakingListDomain.createEvent<{
+  wallet: WalletListPayload
+  protocolAdapter: string
+}>()
+
+export const fetchMetricsFx = stakingListDomain.createEffect(
+  async (params: {
+    contracts: Contract[]
+    wallet: WalletListPayload
+    protocolAdapter: string
+  }) => {
+    const networkProvider = walletNetworkModel.getNetwork(
+      params.wallet.provider,
+      String(params.wallet.chainId)
+    )
+
+    const contracts = params.contracts.map(async (contract) => {
+      const adapter = await loadAdapter(
+        buildAdaptersUrl(params.protocolAdapter)
+      )
+
+      if (
+        !isStaking(contract.adapter, Object.keys(adapter)) ||
+        !params.wallet.account
+      )
+        return null
+
+      const adapterObj = await adapter[contract.adapter](
+        networkProvider,
+        contract.address,
+        {
+          blockNumber: 'latest',
+          signer: networkProvider?.getSigner(),
+        }
+      )
+
+      const wallet = await adapterObj.wallet(params.wallet.account)
+
+      return {
+        contractId: contract.id,
+        tvl: adapterObj.metrics.tvl,
+        aprYear: adapterObj.metrics.aprYear,
+        myStaked: wallet.metrics.stakingUSD,
+        myEarned: wallet.metrics.earnedUSD,
+      }
+    })
+
+    return (await Promise.all(contracts))
+      .filter((contract): contract is FreshMetrics => Boolean(contract))
+      .reduce<Record<string, FreshMetrics>>((acc, contract) => {
+        acc[contract.contractId] = contract
+
+        return acc
+      }, {})
+  }
+)
+
+export const $freshMetrics = stakingListDomain
+  .createStore<Record<string, FreshMetrics>>({})
+  .on(fetchMetricsFx.doneData, (_, payload) => payload)
+
+sample({
+  source: $contractList,
+  clock: fetchMetrics,
+  fn: (contracts, { wallet, protocolAdapter }) => ({
+    contracts: contracts.filter(
+      (contract) =>
+        contract.network === String(wallet.chainId) &&
+        contract.blockchain === wallet.blockchain
+    ),
+    wallet,
+    protocolAdapter,
+  }),
+  target: fetchMetricsFx,
 })
 
 toastsService.forwardErrors(

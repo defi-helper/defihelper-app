@@ -96,7 +96,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             blockchain={automatesContract.contract?.blockchain ?? ''}
             balance={automatesContract.contractWallet?.metric.stakedUSD ?? ''}
             apy={automatesContract.contract?.metric.aprYear}
-            apyBoost={automatesContract.autostaking}
+            apyBoost={automatesContract.contract?.metric.myAPYBoost}
             onMigrate={handleAction(automatesContract, 'migrate')}
             onDeposit={handleAction(automatesContract, 'deposit')}
             onRefund={handleAction(automatesContract, 'refund')}

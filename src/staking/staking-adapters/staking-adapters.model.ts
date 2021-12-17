@@ -9,6 +9,7 @@ import {
   AdapterActions,
   Adapter,
   AdapterWallet,
+  isStaking,
 } from '~/common/load-adapter'
 import { toastsService } from '~/toasts'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
@@ -54,12 +55,6 @@ export type ContractAction = {
 
 export const stakingAdaptersDomain = createDomain()
 
-const isStaking = (
-  str: string
-): str is 'staking' | 'swopfiStaking' | 'masterChef' => {
-  return ['staking', 'swopfiStaking', 'masterChef'].includes(str)
-}
-
 export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
   async (params: Params) => {
     const networkProvider = walletNetworkModel.getNetwork(
@@ -69,13 +64,13 @@ export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
 
     const { contract } = params
 
-    if (!isStaking(contract.adapter)) {
-      throw new Error('something went wrong')
-    }
-
     const adapterObj = await loadAdapter(
       buildAdaptersUrl(params.protocolAdapter)
     )
+
+    if (!isStaking(contract.adapter, Object.keys(adapterObj))) {
+      throw new Error('something went wrong')
+    }
 
     const adapterContract = adapterObj[contract.adapter]
 
