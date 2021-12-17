@@ -301,9 +301,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
                 const apy = bignumberUtils.mul(metric.aprYear, 100)
 
-                const percent = bignumberUtils.minus(
-                  stakingListItem.metric.myAPYBoost,
-                  apy
+                const percent = bignumberUtils.mul(
+                  bignumberUtils.minus(
+                    stakingListItem.metric.myAPYBoost,
+                    metric.aprYear
+                  ),
+                  100
                 )
 
                 return (
