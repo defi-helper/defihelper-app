@@ -8,6 +8,7 @@ import { AppLayout } from '~/layouts'
 import { ProtocolForm } from '~/protocols/common'
 import { detailModel } from '~/protocols/protocol-detail'
 import * as model from './protocol-update.model'
+import { BlockchainEnum } from '~/graphql/_generated-types'
 
 export type ProtocolUpdateProps = unknown
 
@@ -53,6 +54,12 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
         <ProtocolForm
           onSubmit={(formValues) =>
             model.protocolUpdateFx({ id: params.protocolId, input: formValues })
+          }
+          onResolveContracts={(blockchain: BlockchainEnum, network: string) =>
+            model.protocolResolveContractsFx({
+              id: params.protocolId,
+              input: { blockchain, network },
+            })
           }
           adapters={adapters}
           loading={formLoading}

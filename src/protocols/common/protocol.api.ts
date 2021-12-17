@@ -20,6 +20,8 @@ import {
   ProtocolEstimatedQueryVariables,
   ProtocolStakedBalanceQuery,
   ProtocolStakedBalanceQueryVariables,
+  ProtocolResolveContractsMutationVariables,
+  ProtocolResolveContractsMutation,
 } from '~/graphql/_generated-types'
 import {
   PROTOCOLS,
@@ -33,6 +35,7 @@ import {
   PROTOCOL_STAKED_BALANCE,
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
+import { PROTOCOL_RESOLVE_CONTRACTS } from '~/protocols/common/graphql/protocol-resolve-contracts.graphql'
 
 export const protocolsApi = {
   protocolList: (variables: ProtocolsQueryVariables) =>
@@ -92,6 +95,17 @@ export const protocolsApi = {
       )
       .toPromise()
       .then(({ data }) => data?.protocolUpdate),
+
+  protocolResolveContracts: (
+    variables: ProtocolResolveContractsMutationVariables
+  ) =>
+    getAPIClient()
+      .mutation<
+        ProtocolResolveContractsMutation,
+        ProtocolResolveContractsMutationVariables
+      >(PROTOCOL_RESOLVE_CONTRACTS, variables)
+      .toPromise()
+      .then(({ data }) => data?.protocolResolveContracts),
 
   protocolDelete: (id: string) =>
     getAPIClient()

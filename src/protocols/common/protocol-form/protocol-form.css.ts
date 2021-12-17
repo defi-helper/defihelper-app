@@ -27,3 +27,8 @@ export const linksAdd = style({
   width: 24,
   height: 24,
 })
+
+export const actionButtons = style({
+  display: 'flex',
+  gridGap: 10,
+})
