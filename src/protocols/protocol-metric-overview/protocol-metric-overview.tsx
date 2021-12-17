@@ -27,7 +27,7 @@ const TVL_FIELDS = [
 
 const WALLET_FIELDS = [
   {
-    valueY: 'avg',
+    valueY: 'sum',
     name: 'Unique Wallets',
     dateX: 'date',
     color: '#CCFF3C',

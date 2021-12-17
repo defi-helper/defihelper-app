@@ -28,17 +28,28 @@ export const hide = style({
   },
 })
 
-export const tabs = composeStyles(
-  hide,
+export const ml = style({
+  marginLeft: 'auto',
+})
+
+export const checkbox = composeStyles(
+  ml,
   style({
-    marginLeft: 'auto',
+    display: 'flex',
+    alignItems: 'center',
   })
 )
+
+export const checkboxLabel = style({
+  marginLeft: 5,
+})
+
+export const tabs = composeStyles(hide, ml)
 
 export const select = composeStyles(
   hide,
   style({
-    marginLeft: 'auto',
+    marginLeft: 10,
     padding: '8px 16px',
     fontSize: 16,
     lineHeight: '24px',
@@ -140,15 +151,6 @@ export const coinIcons = style({
 export const coinIcon = style({
   width: 16,
   height: 16,
-
-  selectors: {
-    '&:first-child': {
-      marginRight: -1,
-    },
-    '&:last-child': {
-      marginLeft: -1,
-    },
-  },
 })
 
 export const turnOn = style({

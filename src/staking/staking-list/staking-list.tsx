@@ -1,4 +1,4 @@
-import { useLocalStorage } from 'react-use'
+import { useLocalStorage, useInterval } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useMemo, useState } from 'react'
@@ -28,10 +28,12 @@ import {
   AutomateConditionTypeEnum,
   AutomateTriggerTypeEnum,
 } from '~/graphql/_generated-types'
-import { useWalletList } from '~/wallets/wallet-list'
+import { useWalletList, WalletListPayload } from '~/wallets/wallet-list'
 import { StakingBillingFormDialog } from '~/staking/common'
 import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
+import { Checkbox } from '~/common/checkbox'
 import { toastsService } from '~/toasts'
+import { CircularProgress } from '~/common/circular-progress'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
@@ -49,7 +51,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openedContract, setOpenedContract] = useState<string | null>(null)
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutostaking', false)
 
+  const [currentWallet, setCurrentWallet] = useState<WalletListPayload | null>(
+    null
+  )
+
   const stakingList = useStore(model.$contractList)
+  const freshMetrics = useStore(model.$freshMetrics)
   const wallets = useStore(authModel.$userWallets)
   const loading = useStore(model.fetchStakingListFx.pending)
 
@@ -208,6 +215,30 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       }
     }
 
+  const handleUpdating = async () => {
+    try {
+      const wallet = await openWalletList()
+
+      setCurrentWallet(wallet)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  useInterval(
+    () => {
+      if (currentWallet) {
+        model.fetchMetrics({
+          wallet: currentWallet,
+          protocolAdapter: props.protocolAdapter,
+        })
+      }
+    },
+    currentWallet ? 15000 : null
+  )
+
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -215,6 +246,15 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           Staking contracts
         </Typography>
         {false && <StakingTabs className={styles.tabs} />}
+        <Typography as="label" variant="body2" className={styles.checkbox}>
+          <Checkbox
+            checked={Boolean(currentWallet)}
+            onChange={handleUpdating}
+          />
+          <Typography variant="inherit" className={styles.checkboxLabel}>
+            update online
+          </Typography>
+        </Typography>
         <Paper radius={8} className={styles.select}>
           Daily
           <Icon icon="arrowTop" className={styles.selectArrow} />
@@ -255,13 +295,14 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
               staking.map((stakingListItem) => {
                 const opened = stakingListItem.address === openedContract
 
-                const apy = bignumberUtils.mul(
-                  stakingListItem.metric.aprYear,
-                  100
-                )
+                const metric = freshMetrics[stakingListItem.id]
+                  ? freshMetrics[stakingListItem.id]
+                  : stakingListItem.metric
+
+                const apy = bignumberUtils.mul(metric.aprYear, 100)
 
                 const percent = bignumberUtils.minus(
-                  stakingListItem.autostaking,
+                  stakingListItem.metric.myAPYBoost,
                   apy
                 )
 
@@ -269,12 +310,15 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   <li key={stakingListItem.id} className={styles.listItem}>
                     <div className={clsx(styles.card, styles.row)}>
                       <div className={styles.tableCol}>
-                        {false && (
-                          <div className={styles.coinIcons}>
-                            <Icon icon="BAG" className={styles.coinIcon} />
-                            <Icon icon="BNB" className={styles.coinIcon} />
-                          </div>
-                        )}
+                        {currentWallet &&
+                          stakingListItem.blockchain ===
+                            currentWallet.blockchain &&
+                          stakingListItem.network ===
+                            String(currentWallet.chainId) && (
+                            <div className={styles.coinIcons}>
+                              <CircularProgress className={styles.coinIcon} />
+                            </div>
+                          )}
 
                         <Typography variant="body2" as="div">
                           {stakingListItem.name}
@@ -287,7 +331,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           family="mono"
                           transform="uppercase"
                         >
-                          ${bignumberUtils.format(stakingListItem.metric.tvl)}
+                          ${bignumberUtils.format(metric.tvl)}
                         </Typography>
                       </div>
                       <div>
@@ -307,10 +351,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           family="mono"
                           transform="uppercase"
                         >
-                          $
-                          {bignumberUtils.format(
-                            stakingListItem.metric.myStaked
-                          )}
+                          ${bignumberUtils.format(metric.myStaked)}
                         </Typography>
                       </div>
                       <div>
@@ -322,10 +363,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         >
                           {bignumberUtils.format(
                             bignumberUtils.mul(
-                              bignumberUtils.div(
-                                stakingListItem.metric.myStaked,
-                                stakingListItem.metric.tvl
-                              ),
+                              bignumberUtils.div(metric.myStaked, metric.tvl),
                               100
                             )
                           )}
@@ -339,10 +377,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           family="mono"
                           transform="uppercase"
                         >
-                          $
-                          {bignumberUtils.format(
-                            stakingListItem.metric.myEarned
-                          )}
+                          ${bignumberUtils.format(metric.myEarned)}
                         </Typography>
                       </div>
                       <div
@@ -356,7 +391,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                             transform="uppercase"
                           >
                             {bignumberUtils.formatMax(
-                              stakingListItem.autostaking,
+                              bignumberUtils.mul(
+                                stakingListItem.metric.myAPYBoost,
+                                100
+                              ),
                               10000
                             )}
                             %

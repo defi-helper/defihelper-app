@@ -23,6 +23,7 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
       aprYear
       myStaked
       myEarned
+      myAPYBoost
     }
   }
 `

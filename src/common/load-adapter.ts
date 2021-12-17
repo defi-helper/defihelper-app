@@ -140,3 +140,10 @@ export function loadAdapter(url: string): Promise<Adapters> {
     return cache[url]
   })
 }
+
+export const isStaking = (
+  str: string,
+  keys: string[]
+): str is 'staking' | 'swopfiStaking' | 'masterChef' => {
+  return keys.includes(str)
+}

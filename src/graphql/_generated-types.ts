@@ -239,6 +239,7 @@ export type AutomateContractListFilterInputType = {
   protocol?: Maybe<Scalars['UuidType']>
   contract?: Maybe<Array<Scalars['UuidType']>>
   address?: Maybe<Array<Scalars['String']>>
+  archived?: Maybe<Scalars['Boolean']>
 }
 
 export type AutomateContractListPaginationInputType = {
@@ -264,6 +265,13 @@ export enum AutomateContractListSortInputTypeColumnEnum {
   CreatedAt = 'createdAt',
 }
 
+export type AutomateContractMetricType = {
+  __typename?: 'AutomateContractMetricType'
+  staked: Scalars['String']
+  earned: Scalars['String']
+  apyBoost: Scalars['String']
+}
+
 export type AutomateContractType = {
   __typename?: 'AutomateContractType'
   /** Identificator */
@@ -285,6 +293,9 @@ export type AutomateContractType = {
   /** Verification status */
   verification: AutomateContractVerificationStatusEnum
   rejectReason: Scalars['String']
+  metric: AutomateContractMetricType
+  /** Date at archived contract */
+  archivedAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export type AutomateContractUpdateInputType = {
@@ -650,6 +661,7 @@ export type ContractMetricType = {
   aprYear: Scalars['String']
   myStaked: Scalars['String']
   myEarned: Scalars['String']
+  myAPYBoost: Scalars['String']
 }
 
 export type ContractMetricWalletFilterInputType = {
@@ -1436,6 +1448,7 @@ export type ProtocolMetricType = {
   myAPY: Scalars['String']
   myStaked: Scalars['String']
   myEarned: Scalars['String']
+  myAPYBoost: Scalars['String']
   myMinUpdatedAt?: Maybe<Scalars['DateTimeType']>
 }
 
@@ -3879,7 +3892,12 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
 > & {
     metric: { __typename?: 'ProtocolMetricType' } & Pick<
       ProtocolMetricType,
-      'tvl' | 'myAPY' | 'myStaked' | 'myEarned' | 'myMinUpdatedAt'
+      | 'tvl'
+      | 'myAPY'
+      | 'myStaked'
+      | 'myEarned'
+      | 'myMinUpdatedAt'
+      | 'myAPYBoost'
     >
     links: { __typename?: 'ProtocolLinkMapType' } & {
       social: Array<
@@ -4307,7 +4325,7 @@ export type StakingAutomatesContractsQuery = { __typename?: 'Query' } & {
                   >
                   metric: { __typename?: 'ContractMetricType' } & Pick<
                     ContractMetricType,
-                    'tvl' | 'aprYear' | 'myStaked' | 'myEarned'
+                    'tvl' | 'aprYear' | 'myStaked' | 'myEarned' | 'myAPYBoost'
                   >
                 }
             >
@@ -4508,7 +4526,7 @@ export type StakingContractFragmentFragment = {
     >
     metric: { __typename?: 'ContractMetricType' } & Pick<
       ContractMetricType,
-      'tvl' | 'aprYear' | 'myStaked' | 'myEarned'
+      'tvl' | 'aprYear' | 'myStaked' | 'myEarned' | 'myAPYBoost'
     >
   }
 

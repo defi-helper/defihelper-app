@@ -34,6 +34,7 @@ export const STAKING_AUTOMATES_CONTRACTS = gql`
             aprYear
             myStaked
             myEarned
+            myAPYBoost
           }
           events
           createdAt
