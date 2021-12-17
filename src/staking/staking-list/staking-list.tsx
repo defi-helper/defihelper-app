@@ -301,7 +301,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
                 const apy = bignumberUtils.mul(metric.aprYear, 100)
 
-                const percent = bignumberUtils.mul(
+                const apyboostDifference = bignumberUtils.mul(
                   bignumberUtils.minus(
                     stakingListItem.metric.myAPYBoost,
                     metric.aprYear
@@ -402,8 +402,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                             )}
                             %
                           </Typography>
-                          {!bignumberUtils.isNaN(percent) &&
-                            !bignumberUtils.eq(percent, 0) && (
+                          {!bignumberUtils.isNaN(apyboostDifference) &&
+                            !bignumberUtils.eq(apyboostDifference, 0) && (
                               <Typography
                                 variant="body2"
                                 as="div"
@@ -411,35 +411,59 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                                 transform="uppercase"
                                 className={clsx({
                                   [styles.negative]: bignumberUtils.lt(
-                                    percent,
+                                    apyboostDifference,
                                     0
                                   ),
                                   [styles.positive]: bignumberUtils.gt(
-                                    percent,
+                                    apyboostDifference,
                                     0
                                   ),
                                 })}
                               >
-                                {bignumberUtils.gt(percent, 0) && '+'}
-                                {bignumberUtils.formatMax(percent, 10000)}%
+                                {bignumberUtils.gt(apyboostDifference, 0) &&
+                                  '+'}
+                                {bignumberUtils.formatMax(
+                                  apyboostDifference,
+                                  10000
+                                )}
+                                %
                               </Typography>
                             )}
                         </div>
-                        <Button
-                          disabled={
-                            !(
-                              stakingListItem.automate.autorestake &&
-                              stakingListItem.prototypeAddress
-                            )
-                          }
-                          size="small"
-                          variant="outlined"
-                          onClick={handleAutostake(stakingListItem)}
-                          className={styles.turnOn}
-                          loading={stakingListItem.autostakingLoading}
-                        >
-                          Turn on
-                        </Button>
+                        {!(
+                          stakingListItem.automate.autorestake &&
+                          stakingListItem.prototypeAddress
+                        ) ? (
+                          <Dropdown
+                            trigger="hover"
+                            placement="top"
+                            offset={[0, 8]}
+                            className={styles.tooltip}
+                            control={
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                className={styles.turnOn}
+                                loading={stakingListItem.autostakingLoading}
+                              >
+                                Turn on
+                              </Button>
+                            }
+                          >
+                            You can&apos;t enable autostaking for this contract
+                            right now
+                          </Dropdown>
+                        ) : (
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            onClick={handleAutostake(stakingListItem)}
+                            className={styles.turnOn}
+                            loading={stakingListItem.autostakingLoading}
+                          >
+                            Turn on
+                          </Button>
+                        )}
                         <ButtonBase
                           className={styles.accorionButton}
                           onClick={handleOpenContract(stakingListItem.address)}
