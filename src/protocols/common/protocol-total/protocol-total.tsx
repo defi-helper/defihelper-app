@@ -50,8 +50,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
             href={config.MEDIUM_LINK}
             target="_blank"
             className={styles.link}
-          >
-          </Typography>
+          />
         )}
       </Paper>
     </div>
