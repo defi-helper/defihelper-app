@@ -928,6 +928,7 @@ export type Mutation = {
   userUpdate: UserType
   protocolCreate: ProtocolType
   protocolUpdate: ProtocolType
+  protocolResolveContracts: Scalars['Boolean']
   protocolDelete: Scalars['Boolean']
   protocolFavorite: Scalars['Boolean']
   contractCreate: ContractType
@@ -1001,6 +1002,11 @@ export type MutationProtocolCreateArgs = {
 export type MutationProtocolUpdateArgs = {
   id: Scalars['UuidType']
   input: ProtocolUpdateInputType
+}
+
+export type MutationProtocolResolveContractsArgs = {
+  id: Scalars['UuidType']
+  input: ProtocolResolveContractsInputType
 }
 
 export type MutationProtocolDeleteArgs = {
@@ -1450,6 +1456,13 @@ export type ProtocolMetricType = {
   myEarned: Scalars['String']
   myAPYBoost: Scalars['String']
   myMinUpdatedAt?: Maybe<Scalars['DateTimeType']>
+}
+
+export type ProtocolResolveContractsInputType = {
+  /** Blockchain type */
+  blockchain: BlockchainEnum
+  /** Blockchain network id */
+  network: Scalars['String']
 }
 
 export type ProtocolSocialPostListFilterInputType = {
@@ -3838,6 +3851,15 @@ export type ProtocolOverviewMetricQuery = { __typename?: 'Query' } & {
     }
   >
 }
+
+export type ProtocolResolveContractsMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: ProtocolResolveContractsInputType
+}>
+
+export type ProtocolResolveContractsMutation = {
+  __typename?: 'Mutation'
+} & Pick<Mutation, 'protocolResolveContracts'>
 
 export type ProtocolStakedBalanceQueryVariables = Exact<{
   group: MetricGroupEnum

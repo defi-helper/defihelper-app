@@ -7,7 +7,10 @@ import { Checkbox } from '~/common/checkbox'
 import { Input } from '~/common/input'
 import { Button } from '~/common/button'
 import { Select, SelectOption } from '~/common/select'
-import { ProtocolLinkInputType } from '~/graphql/_generated-types'
+import {
+  BlockchainEnum,
+  ProtocolLinkInputType,
+} from '~/graphql/_generated-types'
 import { Typography } from '~/common/typography'
 import { ButtonBase } from '~/common/button-base'
 import * as styles from './protocol-form.css'
@@ -32,6 +35,7 @@ type FormValues = {
 export type ProtocolFormProps = {
   loading: boolean
   onSubmit: (formValues: FormValues) => void
+  onResolveContracts?: (blockchain: BlockchainEnum, network: string) => void
   defaultValues?: FormValues
   adapters: string[]
 }
@@ -84,6 +88,20 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
 
   const handleRemoveLink = (type: LinkEnum, index: number) => () => {
     fieldArrays[type].remove(index)
+  }
+
+  const handleResolveContracts = () => {
+    const blockchain = prompt(
+      'blockchain: ethereum|waves',
+      'ethereum'
+    ) as BlockchainEnum
+    const network = prompt('network number, ex.: 1')
+
+    if (!blockchain || !network || !props.onResolveContracts) {
+      return
+    }
+
+    props.onResolveContracts(blockchain, network)
   }
 
   const renderLinksSection = (type: LinkEnum) => {
@@ -206,14 +224,25 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
           disabled={props.loading}
         />
       </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        type="submit"
-        disabled={props.loading}
-      >
-        Submit
-      </Button>
+
+      <div className={styles.actionButtons}>
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          disabled={props.loading}
+        >
+          Submit
+        </Button>
+
+        <Button
+          onClick={handleResolveContracts}
+          variant="contained"
+          color="primary"
+        >
+          Resolve contracts
+        </Button>
+      </div>
     </form>
   )
 }
