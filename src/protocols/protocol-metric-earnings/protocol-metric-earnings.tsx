@@ -7,10 +7,12 @@ import { MetricGroupEnum, ProtocolQuery } from '~/graphql/_generated-types'
 import { Typography } from '~/common/typography'
 import { ProtocolChartWrap, ProtocolMetricGroups } from '../common'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
-import * as model from './protocol-metric-earnings.model'
-import * as styles from './protocol-metric-earnings.css'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
+import { Link } from '~/common/link'
+import { config } from '~/config'
+import * as model from './protocol-metric-earnings.model'
+import * as styles from './protocol-metric-earnings.css'
 
 const STAKED_FIELDS = [
   {
@@ -124,9 +126,16 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
         </ProtocolChartWrap>
         <ProtocolChartWrap
           header={
-            <>
+            <div>
               <Typography>Estimated Earnings (in 3 months)</Typography>
-            </>
+              <Link
+                href={config.MEDIUM_LINK}
+                target="_blank"
+                className={styles.link}
+              >
+                How autostaking works
+              </Link>
+            </div>
           }
         >
           <Chart

@@ -7,6 +7,8 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as portfolioMetricCardModel from '~/portfolio/portfolio-metric-cards/portfolio-metric-cards.model'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
+import { Link } from '~/common/link'
+import { config } from '~/config'
 import * as model from './portfolio-earnings.model'
 import * as styles from './portfolio-earnings.css'
 
@@ -49,6 +51,9 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
         <Typography>Estimated Earnings (in 3 months)</Typography>
+        <Link href={config.MEDIUM_LINK} target="_blank" className={styles.link}>
+          How autostaking works
+        </Link>
       </div>
       <Chart
         dataFields={ESTIMATED_FIELDS}

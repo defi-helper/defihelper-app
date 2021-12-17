@@ -46,3 +46,17 @@ export const button = style({
 export const input = style({
   marginBottom: 16,
 })
+
+export const activeTab = style({
+  position: 'relative',
+
+  ':after': {
+    content: '""',
+    position: 'absolute',
+    bottom: -6,
+    left: -6,
+    right: -6,
+    height: 1,
+    background: 'currentcolor',
+  },
+})

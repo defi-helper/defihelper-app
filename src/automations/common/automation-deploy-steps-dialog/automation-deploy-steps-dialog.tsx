@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useAsync, useAsyncRetry } from 'react-use'
 import { useForm, Controller } from 'react-hook-form'
@@ -15,7 +16,6 @@ import * as styles from './automation-deploy-steps-dialog.css'
 export type AutomationDeployStepsDialogProps = {
   onConfirm: (formValues: { address: string; inputs: string[] }) => void
   steps: DeployStep[]
-  onSuccess: (message: string) => void
 }
 
 export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogProps> =
@@ -64,8 +64,6 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
 
         await tx.wait()
 
-        props.onSuccess('success')
-
         props.onConfirm({
           address: await getAddress(),
           inputs: values,
@@ -100,7 +98,9 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
                   transform="uppercase"
                   family="mono"
                   as={ButtonBase}
-                  className={styles.title}
+                  className={clsx(styles.title, {
+                    [styles.activeTab]: index === currentStepNumber,
+                  })}
                   onClick={handleSetStep(index)}
                   key={step.name}
                 >

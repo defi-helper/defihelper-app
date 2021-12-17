@@ -179,11 +179,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             </Dropdown>
           </Typography>
           <Typography variant="body2" as="span">
-            {bignumberUtils.formatMax(
-              bignumberUtils.mul(props.apyBoost, 100),
-              10000
-            )}
-            %
+            {bignumberUtils.formatMax(props.apyBoost, 10000)}%
           </Typography>
         </div>
         <div className={styles.buttons}>

@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
+import clsx from 'clsx'
 
 import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
@@ -9,18 +10,18 @@ import { AutomatesStep } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
 import { Typography } from '~/common/typography'
 import { Loader } from '~/common/loader'
+import { Input } from '~/common/input'
 import * as styles from './staking-automates-dialog.css'
 
 export type StakingAutomatesDialogProps = {
   onConfirm: () => void
   steps: AutomatesStep[]
-  onSuccess: (message: string) => void
 }
 
 export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
   props
 ) => {
-  const { register, handleSubmit, formState } = useForm()
+  const { control, handleSubmit, formState, reset } = useForm()
   const [currentStepNumber, setCurrentStepNumber] = useState(0)
 
   const steps = useAsyncRetry(async () => {
@@ -64,7 +65,11 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
 
       await tx.wait()
 
-      props.onSuccess('success')
+      if (steps.value && currentStepNumber < steps.value.length - 1) {
+        setCurrentStepNumber(currentStepNumber + 1)
+      } else {
+        props.onConfirm()
+      }
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -83,8 +88,20 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
 
     await tx.wait()
 
-    props.onSuccess('success')
+    if (steps.value && currentStepNumber < steps.value.length - 1) {
+      setCurrentStepNumber(currentStepNumber + 1)
+    } else {
+      props.onConfirm()
+    }
   }, [currentStep, currentStepNumber, steps.value])
+
+  useEffect(() => {
+    if (!currentStep?.info.inputs) return
+
+    reset({
+      [currentStep.name]: currentStep.info.inputs.map(({ value }) => value),
+    })
+  }, [reset, props.steps, currentStep])
 
   return (
     <Dialog className={styles.root}>
@@ -101,7 +118,9 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
                 transform="uppercase"
                 family="mono"
                 as={ButtonBase}
-                className={styles.title}
+                className={clsx(styles.title, {
+                  [styles.activeTab]: index === currentStepNumber,
+                })}
                 onClick={handleSetStep(index)}
                 key={step.name}
               >
@@ -119,16 +138,26 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
               onSubmit={handleOnSubmit}
               className={styles.form}
             >
-              {currentStep.info.inputs.map((input, index) => (
-                <NumericalInput
-                  key={input.placeholder}
-                  label={input.placeholder}
-                  defaultValue={input.value}
-                  disabled={formState.isSubmitting}
-                  className={styles.input}
-                  {...register(`${currentStep?.name}.${index}`)}
-                />
-              ))}
+              {currentStep.info.inputs.map((input, index) => {
+                const Component = !input.value ? Input : NumericalInput
+
+                return (
+                  <Controller
+                    control={control}
+                    key={input.placeholder}
+                    name={`${currentStep?.name}.${index}`}
+                    render={({ field }) => (
+                      <Component
+                        label={input.placeholder}
+                        disabled={formState.isSubmitting}
+                        className={styles.input}
+                        {...field}
+                        value={field.value || input.value}
+                      />
+                    )}
+                  />
+                )
+              })}
               <Button
                 type="submit"
                 loading={formState.isSubmitting}

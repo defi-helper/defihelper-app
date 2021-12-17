@@ -139,7 +139,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         const stepsResult = await openDeployStepsDialog({
           steps: deployAdapter.deploy,
-          onSuccess: toastsService.success,
         })
 
         const deployedContract = await deployModel.deployFx({
@@ -194,7 +193,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         await openAutomates({
           steps: stakingAutomatesAdapter.migrate,
-          onSuccess: toastsService.success,
         })
       } catch (error) {
         if (error instanceof UserRejectionError) {
@@ -381,6 +379,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                                   ),
                                 })}
                               >
+                                {bignumberUtils.gt(percent, 0) && '+'}
                                 {bignumberUtils.formatMax(percent, 10000)}%
                               </Typography>
                             )}
