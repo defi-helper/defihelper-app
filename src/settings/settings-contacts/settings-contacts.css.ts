@@ -12,18 +12,6 @@ export const header = style({
   },
 })
 
-export const list = style({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(351px, 1fr))',
-  gridGap: 24,
-  minHeight: 168,
-})
-
-export const carousel = style({
-  marginLeft: -16,
-  marginRight: -16,
-})
-
 export const addButton = style({
   '@media': {
     [theme.mediaQueries.down(959)]: {

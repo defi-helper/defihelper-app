@@ -1942,6 +1942,7 @@ export enum TokenAliasLiquidityEnum {
   Stable = 'stable',
   Unstable = 'unstable',
   Trash = 'trash',
+  Unknown = 'unknown',
 }
 
 export type TokenAliasListFilterInputType = {
@@ -2092,6 +2093,9 @@ export type TokenUpdateInputType = {
 export type TreasuryType = {
   __typename?: 'TreasuryType'
   balanceUSD: Scalars['Float']
+  portfoliosCount: Scalars['Int']
+  protocolsCount: Scalars['Int']
+  trackedUSD: Scalars['Float']
 }
 
 export type UserBillingBillListFilterInputType = {
@@ -3000,7 +3004,14 @@ export type MeQueryVariables = Exact<{ [key: string]: never }>
 
 export type MeQuery = { __typename?: 'Query' } & {
   me?: Maybe<
-    { __typename?: 'UserType' } & Pick<UserType, 'id' | 'role' | 'createdAt'>
+    { __typename?: 'UserType' } & Pick<
+      UserType,
+      'id' | 'role' | 'createdAt'
+    > & {
+        tokenAliases: { __typename?: 'UserTokenAliasListType' } & {
+          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+        }
+      }
   >
 }
 

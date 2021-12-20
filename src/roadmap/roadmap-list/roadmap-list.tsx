@@ -67,7 +67,11 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
   }
   const handleAdd = async () => {
     try {
-      await openRoadmapAttention()
+      if (!user) {
+        await openRoadmapAttention()
+
+        return
+      }
 
       const result = await openRoadmapForm()
 

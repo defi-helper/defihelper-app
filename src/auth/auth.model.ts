@@ -5,12 +5,16 @@ import { MeQuery } from '~/graphql/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { sidUtils, authApi } from './common'
+import { history } from '~/common/history'
+import { paths } from '~/paths'
 
 export const authDomain = createDomain()
 
 export const fetchUserFx = authDomain.createEffect(authApi.me)
 
 export const logoutFx = authDomain.createEffect(sidUtils.remove)
+
+logoutFx.done.watch(() => history.push(paths.portfolio))
 
 export const $user = authDomain
   .createStore<MeQuery['me'] | null>(null)
@@ -20,7 +24,7 @@ export const $user = authDomain
 
 export const $userWallets = settingsWalletModel.$wallets.reset(logoutFx.done)
 
-export const UserGate = createGate({
+export const UserGate = createGate<() => Promise<unknown>>({
   name: 'UserGate',
   domain: authDomain,
 })
@@ -75,4 +79,15 @@ split({
     waves: walletNetworkModel.signMessageWavesFx,
     ethereum: walletNetworkModel.signMessageEthereumFx,
   },
+})
+
+const openBetaDialogFx = authDomain.createEffect((fn: () => Promise<unknown>) =>
+  fn()
+)
+
+guard({
+  source: UserGate.open,
+  clock: walletNetworkModel.saveUserFx.done,
+  filter: (source) => typeof source === 'function',
+  target: openBetaDialogFx,
 })

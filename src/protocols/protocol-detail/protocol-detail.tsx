@@ -63,6 +63,7 @@ const EARNINGS = [
 
 export const ProtocolDetail: React.FC = () => {
   const params = useParams<{ protocolId: string }>()
+
   useGate(model.ProtocolDetailGate, params)
 
   const protocol = useStore(model.$protocol)

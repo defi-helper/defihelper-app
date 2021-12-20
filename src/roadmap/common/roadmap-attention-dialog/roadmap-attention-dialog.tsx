@@ -13,12 +13,9 @@ export const RoadmapAttentionDialog: React.VFC<RoadmapAttentionDialogProps> = (
 ) => {
   return (
     <Dialog className={styles.root}>
-      <Typography className={styles.title}>
-        Only one proposal per day
-      </Typography>
+      <Typography className={styles.title}>Auth</Typography>
       <Typography variant="body2" className={styles.subtitle}>
-        Thanks for your activity in participating in DFH future! Each user can
-        create only one proposal per day, so please try tommorow.
+        Auth
       </Typography>
       <Button className={styles.button} onClick={props.onConfirm}>
         Got it
