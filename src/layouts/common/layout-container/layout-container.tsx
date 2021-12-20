@@ -1,7 +1,13 @@
+import clsx from 'clsx'
+
 import * as styles from './layout-container.css'
 
-export const LayoutContainer: React.FC = (props) => (
-  <main className={styles.root}>
+export type LayoutContainerProps = {
+  className?: string
+}
+
+export const LayoutContainer: React.FC<LayoutContainerProps> = (props) => (
+  <main className={clsx(styles.root, props.className)}>
     <div className={styles.content}>{props.children}</div>
   </main>
 )
