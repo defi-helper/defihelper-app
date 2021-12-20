@@ -22,6 +22,10 @@ export const grey = style({
   marginBottom: 'auto',
 })
 
+export const description = style({
+  whiteSpace: 'break-spaces',
+})
+
 export const overviewTitles = style({
   marginBottom: 8,
 })
