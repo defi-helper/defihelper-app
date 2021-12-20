@@ -1,4 +1,4 @@
-import { useLocalStorage, useInterval } from 'react-use'
+import { useLocalStorage, useInterval, useUpdateEffect } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useMemo, useState } from 'react'
@@ -39,6 +39,7 @@ import * as walletsModel from '~/settings/settings-wallets/settings-wallets.mode
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type StakingListProps = {
   protocolId: string
@@ -54,11 +55,17 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [currentWallet, setCurrentWallet] = useState<WalletListPayload | null>(
     null
   )
-
   const stakingList = useStore(model.$contractList)
+  const [turnOnPayload, setTurnOnPayload] = useState<{
+    contract: typeof stakingList[number]
+    wallet: WalletListPayload
+  } | null>(null)
+
   const freshMetrics = useStore(model.$freshMetrics)
   const wallets = useStore(authModel.$userWallets)
   const loading = useStore(model.fetchStakingListFx.pending)
+
+  const user = useStore(authModel.$user)
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openDescriptionDialog] = useDialog(StakingDescriptionDialog)
@@ -95,21 +102,24 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   }
 
   const handleAutostake =
-    (contract: typeof stakingList[number]) => async () => {
-      if (!contract.automate.autorestake || !contract.prototypeAddress) return
-
+    (contract: typeof stakingList[number], walletPayload?: WalletListPayload) =>
+    async () => {
       try {
         model.autostakingStart(contract.id)
+
+        const walletData =
+          walletPayload ??
+          (await openWalletList({
+            blockchain: contract.blockchain,
+          }))
+
+        if (!contract.automate.autorestake || !contract.prototypeAddress) return
 
         if (!dontShow) {
           const result = await openDescriptionDialog()
 
           setDontShow(result)
         }
-
-        const walletData = await openWalletList({
-          blockchain: contract.blockchain,
-        })
 
         const findedWallet = wallets.find((wallet) => {
           const sameAddreses =
@@ -226,6 +236,29 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     }
   }
 
+  const handleTurnOn = (contract: typeof stakingList[number]) => async () => {
+    try {
+      const wallet = await openWalletList()
+
+      if (!wallet.account) return
+
+      walletNetworkModel.signMessage({
+        chainId: String(wallet.chainId),
+        provider: wallet.provider,
+        account: wallet.account,
+      })
+
+      setTurnOnPayload({
+        contract,
+        wallet,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
   useInterval(
     () => {
       if (currentWallet) {
@@ -237,6 +270,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     },
     currentWallet ? 15000 : null
   )
+
+  useUpdateEffect(() => {
+    if (!user || !turnOnPayload) return
+
+    handleAutostake(turnOnPayload.contract, turnOnPayload.wallet)()
+  }, [user, turnOnPayload])
 
   return (
     <div className={styles.root}>
@@ -433,7 +472,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           stakingListItem.automate.autorestake &&
                           stakingListItem.prototypeAddress &&
                           stakingListItem.automate.autorestake
-                        ) ? (
+                        ) && user ? (
                           <Dropdown
                             trigger="hover"
                             placement="top"
@@ -457,7 +496,11 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           <Button
                             size="small"
                             variant="outlined"
-                            onClick={handleAutostake(stakingListItem)}
+                            onClick={
+                              !user
+                                ? handleTurnOn(stakingListItem)
+                                : handleAutostake(stakingListItem)
+                            }
                             className={styles.turnOn}
                             loading={stakingListItem.autostakingLoading}
                           >

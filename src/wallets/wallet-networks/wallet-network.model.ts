@@ -146,13 +146,15 @@ export const saveUserFx = networkDomain.createEffect(async (data: AuthData) => {
 
 guard({
   clock: signMessageEthereumFx.doneData,
-  filter: (clock): clock is AuthData => Boolean(clock),
+  filter: (clock): clock is AuthData =>
+    Boolean(clock) && sidUtils.get() !== clock.sid,
   target: saveUserFx,
 })
 
 guard({
   clock: signMessageWavesFx.doneData,
-  filter: (clock): clock is AuthData => Boolean(clock),
+  filter: (clock): clock is AuthData =>
+    Boolean(clock) && sidUtils.get() !== clock.sid,
   target: saveUserFx,
 })
 
