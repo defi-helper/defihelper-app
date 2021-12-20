@@ -24,7 +24,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
   return (
     <AppLayout title="Portfolio">
       <Head title="Portfolio" />
-      {Boolean(user?.tokenAliases.pagination.count) ? (
+      {Boolean(user?.tokenAliases?.pagination?.count) ? (
         <>
           <Typography variant="h3" className={styles.title}>
             Portfolio
