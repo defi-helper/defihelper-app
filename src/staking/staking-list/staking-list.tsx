@@ -68,7 +68,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openAutomates] = useDialog(StakingAutomatesDialog)
 
   useGate(model.StakingListGate, props)
-  useGate(authModel.UserGate)
 
   const handleOpenConfirmDialog = (id: string) => async () => {
     try {

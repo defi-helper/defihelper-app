@@ -95,11 +95,14 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
   }
 
   const handleResolveContracts = () => {
+    // eslint-disable-next-line no-alert
     const blockchain = prompt(
       'blockchain: ethereum|waves',
       'ethereum'
     ) as BlockchainEnum
+    // eslint-disable-next-line no-alert
     const network = prompt('network number, ex.: 1')
+    // eslint-disable-next-line no-alert
     const events = prompt(
       'events list comma separated, ex.: Deposit,Approval,Withdraw',
       'Deposit'
