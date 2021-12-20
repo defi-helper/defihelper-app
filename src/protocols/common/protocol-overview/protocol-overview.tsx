@@ -54,7 +54,7 @@ export const ProtocolOverview: React.VFC<ProtocolOverviewProps> = (props) => {
   return (
     <Paper radius={8} className={clsx(styles.overview, props.className)}>
       <div>
-        <Typography variant="body2">
+        <Typography variant="body2" className={styles.description}>
           {!more ? props.text?.substring(0, MAX_CHARS) : props.text}
         </Typography>
         {Number(props.text?.length) > MAX_CHARS && (
