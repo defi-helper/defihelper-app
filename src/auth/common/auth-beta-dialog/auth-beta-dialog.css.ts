@@ -13,6 +13,11 @@ export const title = style({
   marginBottom: 30,
 })
 
+export const proposal = style({
+  marginBottom: 30,
+  fontSize: 20,
+})
+
 export const button = style({
   width: '100%',
 })
