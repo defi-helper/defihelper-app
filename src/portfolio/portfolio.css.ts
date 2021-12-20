@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css'
+
 import { theme } from '~/common/theme'
 
 export const title = style({
@@ -10,6 +11,22 @@ export const title = style({
       display: 'block',
     },
   },
+})
+
+export const generatingTitle = style({
+  marginBottom: 8,
+
+  '@media': {
+    [theme.mediaQueries.lg()]: {
+      fontSize: 48,
+    },
+  },
+})
+
+export const generatingDescription = style({
+  color: theme.colors.textColorGrey,
+  maxWidth: 728,
+  marginBottom: 48,
 })
 
 export const cards = style({

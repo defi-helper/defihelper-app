@@ -1,9 +1,7 @@
 import { useGate, useStore } from 'effector-react'
-import { useMedia } from 'react-use'
 
 import { Button } from '~/common/button'
 import { Typography } from '~/common/typography'
-import { Carousel } from '~/common/carousel'
 import {
   SettingsHeader,
   SettingsContactFormDialog,
@@ -12,26 +10,18 @@ import {
   SettingsInitialCard,
   SettingsConfirmDialog,
   SettingsSuccessDialog,
+  SettingsGrid,
 } from '~/settings/common'
 import { useDialog } from '~/common/dialog'
 import { authModel } from '~/auth'
 import { Loader } from '~/common/loader'
+import { Paper } from '~/common/paper'
 import * as model from './settings-contact.model'
 import * as styles from './settings-contacts.css'
-import { Paper } from '~/common/paper'
 
 export type SettingsContactsProps = {
   className?: string
-}
-
-const Grid: React.FC = (props) => {
-  const isDesktop = useMedia('(min-width: 960px)')
-
-  return isDesktop ? (
-    <div className={styles.list}>{props.children}</div>
-  ) : (
-    <Carousel className={styles.carousel}>{props.children}</Carousel>
-  )
+  withHeader?: boolean
 }
 
 export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
@@ -46,6 +36,8 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const contactCreating = useStore(model.createUserContactFx.pending)
 
   useGate(model.SettingsContactsGate)
+
+  const { withHeader = true } = props
 
   const handleOpenContactForm = async () => {
     try {
@@ -105,21 +97,23 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
 
   return (
     <div className={props.className}>
-      <SettingsHeader className={styles.header}>
-        <Typography variant="h3">Contacts</Typography>
-        <Button
-          color="blue"
-          onClick={handleOpenContactForm}
-          loading={contactCreating}
-          className={styles.addButton}
-        >
-          +
-          <Typography variant="inherit" className={styles.addButtonTitle}>
-            New Contact
-          </Typography>
-        </Button>
-      </SettingsHeader>
-      <Grid>
+      {withHeader && (
+        <SettingsHeader className={styles.header}>
+          <Typography variant="h3">Contacts</Typography>
+          <Button
+            color="blue"
+            onClick={handleOpenContactForm}
+            loading={contactCreating}
+            className={styles.addButton}
+          >
+            +
+            <Typography variant="inherit" className={styles.addButtonTitle}>
+              New Contact
+            </Typography>
+          </Button>
+        </SettingsHeader>
+      )}
+      <SettingsGrid>
         {loading && (
           <Paper radius={8} className={styles.loader}>
             <Loader height="36" />
@@ -155,7 +149,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           Array.from(Array(paperCount)).map((_, index) => (
             <SettingsPaper key={String(index)} />
           ))}
-      </Grid>
+      </SettingsGrid>
     </div>
   )
 }
