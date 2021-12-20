@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import isEmpty from 'lodash.isempty'
 import { useMedia } from 'react-use'
 import { useParams } from 'react-router-dom'
