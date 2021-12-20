@@ -4673,20 +4673,7 @@ export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
   UserType,
   'id' | 'role' | 'createdAt'
 > & {
-    wallets: { __typename?: 'WalletListType' } & {
-      list?: Maybe<
-        Array<
-          { __typename?: 'WalletType' } & Pick<
-            WalletType,
-            | 'id'
-            | 'blockchain'
-            | 'network'
-            | 'address'
-            | 'publicKey'
-            | 'createdAt'
-          >
-        >
-      >
+    tokenAliases: { __typename?: 'UserTokenAliasListType' } & {
       pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
     }
   }
