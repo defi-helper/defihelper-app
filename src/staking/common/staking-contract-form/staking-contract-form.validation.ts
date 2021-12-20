@@ -30,5 +30,5 @@ export const stakingContractFormSchema = yup.object().shape({
   hidden: yup.bool().optional(),
   layout: yup.string().optional(),
   eventsToSubscribe: yup.array(yup.string()).optional(),
-  autorestakeAdapter: yup.string().required(),
+  autorestakeAdapter: yup.string().optional(),
 })

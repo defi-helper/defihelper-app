@@ -431,7 +431,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         </div>
                         {!(
                           stakingListItem.automate.autorestake &&
-                          stakingListItem.prototypeAddress
+                          stakingListItem.prototypeAddress &&
+                          stakingListItem.automate.autorestake
                         ) ? (
                           <Dropdown
                             trigger="hover"
