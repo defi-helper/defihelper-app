@@ -40,7 +40,7 @@ export const bignumberUtils = {
   ) => {
     return bignumberUtils.gt(amount, max)
       ? `${bignumberUtils.format(max)}+`
-      : bignumberUtils.format(amount, 4, negative)
+      : bignumberUtils.format(amount, 2, negative)
   },
 
   getPercentage: (
