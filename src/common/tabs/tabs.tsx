@@ -1,10 +1,18 @@
 import clsx from 'clsx'
-import { Children, useState, isValidElement, cloneElement } from 'react'
+import {
+  Children,
+  useState,
+  isValidElement,
+  cloneElement,
+  useEffect,
+} from 'react'
 
+import { useHistory, useLocation } from 'react-router-dom'
 import * as styles from './tabs.css'
 
 export type TabsProps = {
   className?: string
+  hashSaveState?: boolean
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -16,10 +24,22 @@ const isTab = is('Tab')
 const isTabPanel = is('TabPanel')
 
 export const Tabs: React.FC<TabsProps> = (props) => {
-  const [activeTab, setActiveTab] = useState(0)
+  const location = useLocation()
+  const history = useHistory()
+
+  const defaultTab = Number(location.hash.split('-').pop()) || 0
+  const [activeTab, setActiveTab] = useState(defaultTab)
 
   const tabList = Children.toArray(props.children).filter(isTab)
   const tabPanels = Children.toArray(props.children).filter(isTabPanel)
+
+  useEffect(() => {
+    if (!props.hashSaveState) {
+      return
+    }
+
+    history.push(`#tab-${activeTab}`)
+  }, [props, activeTab, history])
 
   const handleClickOnTab =
     (index: number, cb?: (...args: unknown[]) => void) =>
