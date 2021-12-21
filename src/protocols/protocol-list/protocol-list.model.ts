@@ -139,3 +139,6 @@ export const $tabsCount = restore(
   ...state,
   favorites: params.favorite ? state.favorites + 1 : state.favorites - 1,
 }))
+
+$protocolList.reset(ProtocolListGate.close)
+$tabsCount.reset(ProtocolListGate.close)

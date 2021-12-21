@@ -10,6 +10,7 @@ import * as automationUpdateModel from '~/automations/automation-update/automati
 import * as automationDeployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import { automationApi } from '../common/automation.api'
 import { Trigger } from '../common/automation.types'
+import { toastsService } from '~/toasts'
 
 export const automationListDomain = createDomain()
 
@@ -47,14 +48,14 @@ export const $triggers = automationListDomain
     ...state,
     payload,
   ])
+  .on(automationUpdateModel.updateTriggerFx.doneData, (state, payload) =>
+    state.map((trigger) => (trigger.id === payload.id ? payload : trigger))
+  )
   .on(toggleTriggerFx.doneData, (state, payload) =>
     state.map((trigger) => (trigger.id === payload.id ? payload : trigger))
   )
   .on(deleteTriggerFx.done, (state, { params }) =>
     state.filter((trigger) => trigger.id !== params)
-  )
-  .on(automationUpdateModel.updateTriggerFx.doneData, (state, payload) =>
-    state.map((trigger) => (trigger.id === payload.id ? payload : trigger))
   )
   .on(automationUpdateModel.updateActionFx.doneData, (state, payload) => {
     return state.map((trigger) => ({
@@ -194,4 +195,13 @@ export const $balance = restore(fetchBalanceFx.doneData, 0)
 sample({
   clock: AutomationListGate.open,
   target: [fetchDescriptionFx, fetchBalanceFx],
+})
+
+sample({
+  clock: [
+    automationUpdateModel.createTriggerFx.doneData,
+    automationUpdateModel.updateTriggerFx.doneData,
+  ],
+  fn: () => 'Saved!',
+  target: toastsService.success,
 })

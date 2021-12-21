@@ -16,16 +16,13 @@ import {
 import { toastsService } from '~/toasts'
 import { sidUtils } from '~/auth/common'
 import { config } from '~/config'
-import { UserType } from '~/graphql/_generated-types'
+import { BlockchainEnum, UserType } from '~/graphql/_generated-types'
+import { networksConfig } from '~/networks-config'
 
 const networks = new Map<string, typeof createEthereumProvider>(
-  [
-    ...config.CHAIN_BINANCE_IDS,
-    ...config.CHAIN_ETHEREUM_IDS,
-    ...config.CHAIN_POLYGON_IDS,
-    ...config.CHAIN_MOONRIVER_IDS,
-    ...config.CHAIN_AVALANCHE_IDS,
-  ].map((num) => [String(num), createEthereumProvider])
+  Object.values(networksConfig)
+    .filter(({ blockchain }) => blockchain === BlockchainEnum.Ethereum)
+    .map(({ chainId }) => [String(chainId), createEthereumProvider])
 )
 
 type AuthData = {
@@ -72,7 +69,7 @@ export const diactivateWalletFx = networkDomain.createEffect(
 
 export const $wallet = networkDomain
   .createStore<WalletStore>({
-    chainId: config.CHAIN_ETHEREUM_IDS[0],
+    chainId: config.DEFAULT_CHAIN_ID,
     account: null,
     provider: null,
     connector: undefined,

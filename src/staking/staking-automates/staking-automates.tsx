@@ -11,6 +11,7 @@ import {
   StakingErrorDialog,
 } from '~/staking/common'
 import { useWalletList } from '~/wallets/wallet-list'
+import { switchNetwork } from '~/wallets/common'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
 
@@ -34,6 +35,8 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     async () => {
       try {
         const wallet = await openWalletList()
+
+        await switchNetwork(contract.wallet.network)
 
         if (!wallet.account) return
 
