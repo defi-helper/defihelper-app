@@ -24,25 +24,25 @@ export const StakingDescriptionDialog: React.VFC<StakingDescriptionDialogProps> 
     }
 
     return (
-      <AutomationDialog title="Enable autostake">
+      <AutomationDialog title="Enable autostaking">
         <div className={styles.content}>
           <Typography variant="body2" as="div">
-            Autostake is a special kind of automation which will auto-compound
-            your tokens in most effective way.
+            Austostaking is a special kind of automation which auto-compounds
+            your tokens at the optimal rate, to obtain the most profit
           </Typography>
           <Typography variant="body2" as="div">
             1. First, you need to top up your DeFiHelper balance in order to
             launch the transactions.{' '}
           </Typography>
           <Typography variant="body2" as="div">
-            2. DeFiHelper is a non-custodial DeFi investment tool, that&apos;s
-            why you need to deploy your own contract and transfer LP tokens to
+            2. As DFH is non-custodial, it does not have access to your funds,
+            so you need to deploy your own contract and transfer LP tokens to
             that contract.
           </Typography>
           <Typography variant="inherit" as="div" className={styles.note}>
-            Note: DeFiHelper do not have any access to your deposit. It will
-            only have access regulated by smart-contract to claim your rewards
-            and return them to the deposit.
+            Note: DeFiHelper does not have access to your deposit. It only has
+            access (regulated by smart contract) to claim your rewards and add
+            them to the deposit.
           </Typography>
         </div>
         <Typography as="label" variant="body2" className={styles.checkbox}>

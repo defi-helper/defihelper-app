@@ -166,7 +166,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           {!loading && isEmpty(triggers) && (
             <Paper radius={8} className={styles.loader}>
               <Typography variant="body2">
-                Add automation so you can recieve notifications about any
+                Add automations so you can recieve notifications about any
                 actions.
               </Typography>
               <Button

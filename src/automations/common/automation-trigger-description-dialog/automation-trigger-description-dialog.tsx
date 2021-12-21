@@ -27,8 +27,8 @@ export const AutomationTriggerDescriptionDialog: React.VFC<AutomationTriggerDesc
       <AutomationDialog title="Create an automation">
         <div className={styles.content}>
           <Typography variant="body2" as="div">
-            Automation is a set of actions which will be executed every time a
-            trigger event happens.
+            An automation is a set of actions which will be executed every time
+            a trigger event happens.
           </Typography>
           <Typography variant="body2" as="div">
             1. First, choose a wallet and protocol/network for automation.{' '}
