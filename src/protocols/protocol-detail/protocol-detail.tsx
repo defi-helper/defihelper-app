@@ -123,7 +123,7 @@ export const ProtocolDetail: React.FC = () => {
               </Paper>
             )}
           </div>
-          <Tabs className={styles.tabs}>
+          <Tabs hashSaveState className={styles.tabs}>
             <Tab>Earnings</Tab>
             <Tab>Overview</Tab>
             <TabPanel>
