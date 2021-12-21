@@ -9,7 +9,7 @@ export const bignumberUtils = {
   toSend: (amount: string | number, decimals: number) =>
     new BigNumber(amount || 0)
       .multipliedBy(new BigNumber(10).pow(decimals))
-      .toString(10),
+      .toFixed(0),
 
   format: (amount?: string | number | null, decimal = 4, negative = true) => {
     const result = new BigNumber(amount || 0)
@@ -68,6 +68,9 @@ export const bignumberUtils = {
     new BigNumber(value.toString())
       .multipliedBy(options?.gasSlippage || 1.2)
       .toFixed(0),
+
+  floor: (num?: string | number | null) =>
+    new BigNumber(num || 0).integerValue().toString(10),
 
   gte: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isGreaterThanOrEqualTo(num2 || 0),

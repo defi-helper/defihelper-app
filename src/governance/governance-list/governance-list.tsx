@@ -17,6 +17,8 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { Paper } from '~/common/paper'
 import { Icon } from '~/common/icon'
 import { useWalletList } from '~/wallets/wallet-list'
+import { switchNetwork } from '~/wallets/common'
+import { config } from '~/config'
 import * as model from './governance-list.model'
 import * as styles from './governance-list.css'
 
@@ -55,6 +57,8 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
       const wallet = await openWalletList({
         blockchain: 'ethereum',
       })
+
+      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
       if (!wallet.account) return
 

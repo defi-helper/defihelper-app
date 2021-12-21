@@ -19,6 +19,7 @@ import {
 import { cutAccount } from '~/common/cut-account'
 import { useWalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { switchNetwork } from '~/wallets/common'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
 
@@ -40,6 +41,8 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   const handleDeposit = (wallet: typeof wallets[number]) => async () => {
     try {
       const walletData = await openWalletList({ blockchain: wallet.blockchain })
+
+      await switchNetwork(wallet.network)
 
       if (!walletData.account) return
 
@@ -64,6 +67,8 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   const handleRefund = (wallet: typeof wallets[number]) => async () => {
     try {
       const walletData = await openWalletList({ blockchain: wallet.blockchain })
+
+      await switchNetwork(wallet.network)
 
       if (!walletData.account) return
 

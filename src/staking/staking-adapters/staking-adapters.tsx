@@ -5,8 +5,10 @@ import { useWalletList } from '~/wallets/wallet-list'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { switchNetwork } from '~/wallets/common'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
+import { toastsService } from '~/toasts'
 
 export type StakingAdaptersProps = {
   className?: string
@@ -39,6 +41,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         const wallet = await openWalletList({
           blockchain: props.blockchain,
         })
+
+        await switchNetwork(props.network)
 
         if (!wallet.account) return
 
@@ -92,7 +96,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         })
       } catch (error) {
         if (error instanceof Error) {
-          console.error(error.message)
+          toastsService.error(error.message)
         }
       }
     }

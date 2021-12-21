@@ -50,6 +50,11 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     [protocolList, ability]
   )
 
+  const hiddenProtocols = useMemo(
+    () => protocolList.filter((protocol) => !ability.can('read', protocol)),
+    [protocolList, ability]
+  )
+
   useGate(model.ProtocolListGate, {
     favorite:
       currentTab === Tabs.All ? undefined : currentTab === Tabs.Favourite,
@@ -66,6 +71,8 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const handleSearch = (event: React.FormEvent<HTMLInputElement>) => {
     setSearch(event.currentTarget.value)
   }
+
+  const allTabs = tabsCount.all - hiddenProtocols.length
 
   return (
     <AppLayout
@@ -100,7 +107,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           </Typography>
           <ProtocolTabs
             className={styles.tabs}
-            all={tabsCount.all}
+            all={allTabs < 0 ? 0 : allTabs}
             favorites={tabsCount.favorites}
             onChange={setCurrentTab}
             value={currentTab}

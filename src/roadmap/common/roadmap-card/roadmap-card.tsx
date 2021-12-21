@@ -13,8 +13,8 @@ import { Icon } from '~/common/icon'
 import * as styles from './roadmap-card.css'
 
 export type RoadmapCardProps = Proposal & {
-  onEdit: () => void
-  onDelete: () => void
+  onEdit?: () => void
+  onDelete?: () => void
   onUnvote: () => void
   onVote: () => void
   voted?: boolean
@@ -31,38 +31,40 @@ export const RoadmapCard: React.VFC<RoadmapCardProps> = (props) => {
         >
           {props.title}
         </Typography>
-        <Can I="update" a="Proposal">
-          <Dropdown
-            control={
-              <ButtonBase
-                className={styles.manageButton}
-                disabled={props.updating || props.deleting}
-              >
-                <Icon icon="dots" />
-              </ButtonBase>
-            }
-            offset={[0, 8]}
-          >
-            <Can I="update" a="Proposal">
-              <ButtonBase
-                onClick={props.onEdit}
-                disabled={props.updating}
-                className={styles.manageButtonItem}
-              >
-                Edit
-              </ButtonBase>
-            </Can>
-            <Can I="delete" a="Proposal">
-              <ButtonBase
-                onClick={props.onDelete}
-                disabled={props.deleting}
-                className={styles.manageButtonItem}
-              >
-                Delete
-              </ButtonBase>
-            </Can>
-          </Dropdown>
-        </Can>
+        {(props.onDelete || props.onEdit) && (
+          <Can I="update" a="Proposal">
+            <Dropdown
+              control={
+                <ButtonBase
+                  className={styles.manageButton}
+                  disabled={props.updating || props.deleting}
+                >
+                  <Icon icon="dots" />
+                </ButtonBase>
+              }
+              offset={[0, 8]}
+            >
+              <Can I="update" a="Proposal">
+                <ButtonBase
+                  onClick={props.onEdit}
+                  disabled={props.updating}
+                  className={styles.manageButtonItem}
+                >
+                  Edit
+                </ButtonBase>
+              </Can>
+              <Can I="delete" a="Proposal">
+                <ButtonBase
+                  onClick={props.onDelete}
+                  disabled={props.deleting}
+                  className={styles.manageButtonItem}
+                >
+                  Delete
+                </ButtonBase>
+              </Can>
+            </Dropdown>
+          </Can>
+        )}
       </div>
       <Typography variant="body2" className={styles.description}>
         {props.description}
