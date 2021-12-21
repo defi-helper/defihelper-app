@@ -28,6 +28,7 @@ import { Paper } from '~/common/paper'
 import { useDialog } from '~/common/dialog'
 import { useWalletList } from '~/wallets/wallet-list'
 import { Head } from '~/common/head'
+import { switchNetwork } from '~/wallets/common'
 import * as model from './governance-detail.model'
 import * as styles from './governance-detail.css'
 
@@ -54,6 +55,8 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
     try {
       const wallet = await openWalletList()
 
+      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
+
       if (!wallet.account) return
 
       model.queueFx({
@@ -71,6 +74,8 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const handleExecuteProposal = async () => {
     try {
       const wallet = await openWalletList()
+
+      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
       if (!wallet.account) return
 
@@ -93,6 +98,8 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
     try {
       const wallet = await openWalletList()
 
+      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
+
       if (!wallet.account) return
 
       model.castVoteFx({
@@ -111,6 +118,8 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const handleVoteAbstain = async () => {
     try {
       const wallet = await openWalletList()
+
+      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
       if (!wallet.account) return
 
@@ -135,6 +144,8 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
       const wallet = await openWalletList({
         blockchain: 'ethereum',
       })
+
+      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
       if (!wallet.account) return
 

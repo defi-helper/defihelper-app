@@ -6,8 +6,8 @@ import {
   cloneElement,
   useEffect,
 } from 'react'
-
 import { useHistory, useLocation } from 'react-router-dom'
+
 import * as styles from './tabs.css'
 
 export type TabsProps = {
@@ -39,7 +39,7 @@ export const Tabs: React.FC<TabsProps> = (props) => {
     }
 
     history.push(`#tab-${activeTab}`)
-  }, [props, activeTab, history])
+  }, [props.hashSaveState, activeTab, history])
 
   const handleClickOnTab =
     (index: number, cb?: (...args: unknown[]) => void) =>

@@ -15,9 +15,9 @@ import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { networksConfig } from '~/networks-config'
+import { Loader } from '~/common/loader'
 import * as styles from './settings-transaction-history.css'
 import * as model from './settings-transaction-history.model'
-import { Loader } from '~/common/loader'
 
 export type SettingsTransactionHistoryProps = {
   className?: string

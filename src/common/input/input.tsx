@@ -30,7 +30,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     type === 'textarea' ? (
       <textarea className={styles.textarea} ref={localRef} />
     ) : (
-      <input ref={ref} />
+      <input ref={ref} type={type} />
     )
 
   useEffect(() => {

@@ -22,6 +22,8 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Paper } from '~/common/paper'
 import { useWalletList } from '~/wallets/wallet-list'
 import { Head } from '~/common/head'
+import { switchNetwork } from '~/wallets/common'
+import { config } from '~/config'
 import * as styles from './governance-create.css'
 import * as model from './governance-create.model'
 
@@ -150,6 +152,8 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
       const wallet = await openWalletList({
         blockchain: 'ethereum',
       })
+
+      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
       if (!wallet.account) return
 
