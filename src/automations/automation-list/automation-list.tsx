@@ -166,8 +166,8 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           {!loading && isEmpty(triggers) && (
             <Paper radius={8} className={styles.loader}>
               <Typography variant="body2">
-                Add automations so you can recieve notifications about any
-                actions.
+                Automate your DeFi strategy and earn higher rewards with
+                autostaking and other no-code tools.
               </Typography>
               <Button
                 onClick={handleAddAutomation}
