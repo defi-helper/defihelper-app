@@ -2,6 +2,7 @@ import { Link as ReactRouterLink } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
 import { useMemo, useState } from 'react'
 
+import clsx from 'clsx'
 import { Head } from '~/common/head'
 import { AppLayout } from '~/layouts'
 import { Button } from '~/common/button'
@@ -148,7 +149,13 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           {!loading &&
             protocols &&
             protocols.map((protocol) => (
-              <li key={protocol.id} className={styles.item}>
+              <li
+                key={protocol.id}
+                className={clsx(
+                  styles.item,
+                  protocol.hidden && styles.hiddenItem
+                )}
+              >
                 <ProtocolCard
                   protocol={protocol}
                   onFavorite={handleFavorite(protocol)}
