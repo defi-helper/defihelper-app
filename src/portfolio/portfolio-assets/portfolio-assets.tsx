@@ -94,7 +94,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                   ) : (
                     <div className={styles.assetLogoPlaceholder} />
                   )}
-                  {row.name}
+                  {row.name} ({row.symbol})
                 </Typography>
 
                 <Typography variant="body2">
