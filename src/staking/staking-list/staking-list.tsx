@@ -348,7 +348,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                 )
 
                 return (
-                  <li key={stakingListItem.id} className={styles.listItem}>
+                  <li
+                    key={stakingListItem.id}
+                    className={clsx(
+                      styles.listItem,
+                      stakingListItem.hidden && styles.hiddenListItem
+                    )}
+                  >
                     <div className={clsx(styles.card, styles.row)}>
                       <div className={styles.tableCol}>
                         {currentWallet &&

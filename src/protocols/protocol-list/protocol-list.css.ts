@@ -65,6 +65,11 @@ export const name = style({
   gridColumnStart: 2,
 })
 
+export const hiddenItem = style({
+  opacity: 0.3,
+  filter: 'sepia(.8)',
+})
+
 export const item = style({
   width: '100%',
 
