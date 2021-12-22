@@ -107,6 +107,11 @@ export const listItem = style({
   },
 })
 
+export const hiddenListItem = style({
+  opacity: 0.3,
+  filter: 'sepia(.8)',
+})
+
 export const row = style({
   display: 'grid',
   gridTemplateColumns: '15% 14% 10% 12% 12% 12% 1fr',
