@@ -1,6 +1,13 @@
 import isEmpty from 'lodash.isempty'
 import { useMedia } from 'react-use'
-import { useParams } from 'react-router-dom'
+import {
+  useParams,
+  Switch,
+  Route,
+  NavLink as ReactRouterLink,
+  Redirect,
+  useRouteMatch,
+} from 'react-router-dom'
 import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
 
@@ -9,7 +16,6 @@ import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
 import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
-import { Tabs, Tab, TabPanel } from '~/common/tabs'
 import { StakingList } from '~/staking/staking-list'
 import { ProtocolMetricEarnings } from '~/protocols/protocol-metric-earnings'
 import { ProtocolMetricOverview } from '~/protocols/protocol-metric-overview'
@@ -69,6 +75,8 @@ export const ProtocolDetail: React.FC = () => {
   const protocol = useStore(model.$protocol)
   const loading = useStore(model.fetchProtocolFx.pending)
 
+  const match = useRouteMatch()
+
   return (
     <AppLayout
       title={
@@ -124,66 +132,87 @@ export const ProtocolDetail: React.FC = () => {
               </Paper>
             )}
           </div>
-          <Tabs hashSaveState className={styles.tabs}>
-            <Tab>Earnings</Tab>
-            <Tab>Overview</Tab>
-            <TabPanel>
-              {false && (
-                <Grid>
-                  {EARNINGS.map((earn, index) => (
-                    <Paper
-                      radius={8}
-                      key={String(index)}
-                      className={clsx(styles.card, styles.flex)}
-                    >
-                      <Typography className={styles.grey}>{earn}</Typography>
-                      {index === 1 && (
-                        <Button variant="outlined">Create notification</Button>
-                      )}
-                    </Paper>
-                  ))}
-                </Grid>
-              )}
-              <ProtocolMetricEarnings
-                className={styles.mb120}
-                metric={protocol.metric}
-                myMinUpdatedAt={protocol.metric.myMinUpdatedAt}
+          <div>
+            <div className={styles.tabs}>
+              <Link
+                as={ReactRouterLink}
+                className={styles.tab}
+                activeClassName={styles.tabActive}
+                to={`${match.url}/earnings`}
               >
-                <ProtocolTotal
-                  {...protocol.metric}
-                  hasAutostaking={protocol.hasAutostaking}
-                />
-              </ProtocolMetricEarnings>
-              <StakingAutomates
-                className={styles.automates}
-                protocolId={params.protocolId}
-              />
-              <StakingList
-                protocolId={params.protocolId}
-                protocolAdapter={protocol.adapter}
-              />
-            </TabPanel>
-            <TabPanel>
-              <ProtocolOverview
-                className={clsx(styles.card, styles.mb120)}
-                text={protocol.description}
-                links={protocol.links}
-              />
-              <ProtocolMetricOverview className={styles.mb120} />
-              {!isEmpty(protocol.socialPosts.list) && (
-                <ProtocolMediaActivity
+                Earnings
+              </Link>
+              <Link
+                as={ReactRouterLink}
+                className={styles.tab}
+                activeClassName={styles.tabActive}
+                to={`${match.url}/overview`}
+              >
+                Overview
+              </Link>
+            </div>
+            <Switch>
+              <Redirect exact from={match.path} to={`${match.path}/earnings`} />
+              <Route path={`${match.path}/earnings`}>
+                {false && (
+                  <Grid>
+                    {EARNINGS.map((earn, index) => (
+                      <Paper
+                        radius={8}
+                        key={String(index)}
+                        className={clsx(styles.card, styles.flex)}
+                      >
+                        <Typography className={styles.grey}>{earn}</Typography>
+                        {index === 1 && (
+                          <Button variant="outlined">
+                            Create notification
+                          </Button>
+                        )}
+                      </Paper>
+                    ))}
+                  </Grid>
+                )}
+                <ProtocolMetricEarnings
                   className={styles.mb120}
-                  mediaActity={protocol.socialPosts.list ?? []}
+                  metric={protocol.metric}
+                  myMinUpdatedAt={protocol.metric.myMinUpdatedAt}
+                >
+                  <ProtocolTotal
+                    {...protocol.metric}
+                    hasAutostaking={protocol.hasAutostaking}
+                  />
+                </ProtocolMetricEarnings>
+                <StakingAutomates
+                  className={styles.automates}
+                  protocolId={params.protocolId}
                 />
-              )}
-              <ProtocolDemandMetrics
-                telegram={protocol.telegram}
-                coingecko={protocol.coingecko}
-                coinmarketcap={protocol.coinmarketcap}
-                links={protocol.links}
-              />
-            </TabPanel>
-          </Tabs>
+                <StakingList
+                  protocolId={params.protocolId}
+                  protocolAdapter={protocol.adapter}
+                />
+              </Route>
+              <Route path={`${match.path}/overview`}>
+                <ProtocolOverview
+                  className={clsx(styles.card, styles.mb120)}
+                  text={protocol.description}
+                  links={protocol.links}
+                />
+                <ProtocolMetricOverview className={styles.mb120} />
+                {!isEmpty(protocol.socialPosts.list) && (
+                  <ProtocolMediaActivity
+                    className={styles.mb120}
+                    mediaActity={protocol.socialPosts.list ?? []}
+                  />
+                )}
+                <ProtocolDemandMetrics
+                  telegram={protocol.telegram}
+                  coingecko={protocol.coingecko}
+                  coinmarketcap={protocol.coinmarketcap}
+                  links={protocol.links}
+                />
+              </Route>
+            </Switch>
+          </div>
         </>
       )}
     </AppLayout>
