@@ -1,5 +1,4 @@
-import { sample, createDomain } from 'effector-logger/macro'
-import { createGate } from 'effector-react'
+import { createDomain } from 'effector-logger/macro'
 import contracts from '@defihelper/networks/contracts.json'
 import { ethers } from 'ethers'
 import Balance from '@defihelper/networks/abi/Balance.json'
@@ -23,7 +22,7 @@ type Params = {
 export const walletListDomain = createDomain()
 
 export const fetchWalletListFx = walletListDomain.createEffect(async () => {
-  return settingsApi.walletList()
+  return settingsApi.walletList({ pagination: { limit: 100, offset: 0 } })
 })
 
 export const updateWalletFx = walletListDomain.createEffect(
@@ -196,16 +195,6 @@ export const $wallets = walletListDomain
         : wallet
     )
   )
-
-export const SettingsWalletGate = createGate({
-  domain: walletListDomain,
-  name: 'SettingsWalletGate',
-})
-
-sample({
-  clock: SettingsWalletGate.open,
-  target: fetchWalletListFx,
-})
 
 toastsService.forwardErrors(
   depositFx.failData,

@@ -934,9 +934,9 @@ export type Mutation = {
   contractCreate: ContractType
   contractUpdate: ContractType
   contractDelete: Scalars['Boolean']
-  userNotificationToggle: Scalars['Boolean']
   contractWalletLink: Scalars['Boolean']
   contractWalletUnlink: Scalars['Boolean']
+  userNotificationToggle: Scalars['Boolean']
   tokenUpdate: TokenType
   tokenAliasCreate: TokenAlias
   tokenAliasUpdate: TokenAlias
@@ -1031,11 +1031,6 @@ export type MutationContractDeleteArgs = {
   id: Scalars['UuidType']
 }
 
-export type MutationUserNotificationToggleArgs = {
-  type: UserNotificationTypeEnum
-  state: Scalars['Boolean']
-}
-
 export type MutationContractWalletLinkArgs = {
   contract: Scalars['UuidType']
   wallet: Scalars['UuidType']
@@ -1044,6 +1039,11 @@ export type MutationContractWalletLinkArgs = {
 export type MutationContractWalletUnlinkArgs = {
   contract: Scalars['UuidType']
   wallet: Scalars['UuidType']
+}
+
+export type MutationUserNotificationToggleArgs = {
+  type: UserNotificationTypeEnum
+  state: Scalars['Boolean']
 }
 
 export type MutationTokenUpdateArgs = {
@@ -1169,6 +1169,15 @@ export type MutationAutomateContractUpdateArgs = {
 
 export type MutationAutomateContractDeleteArgs = {
   id: Scalars['UuidType']
+}
+
+export type OnTransferCreatedFilterInputType = {
+  wallet?: Maybe<Array<Scalars['UuidType']>>
+}
+
+export type OnWalletMetricUpdatedFilterInputType = {
+  contract?: Maybe<Array<Scalars['UuidType']>>
+  wallet?: Maybe<Array<Scalars['UuidType']>>
 }
 
 export type Pagination = {
@@ -1901,6 +1910,20 @@ export type StorePurchaseType = {
   tx: Scalars['String']
   /** Date of created */
   createdAt: Scalars['DateTimeType']
+}
+
+export type Subscription = {
+  __typename?: 'Subscription'
+  onWalletMetricUpdated: WalletMetricUpdatedEvent
+  onBillingTransferCreated: BillingTransferType
+}
+
+export type SubscriptionOnWalletMetricUpdatedArgs = {
+  filter?: Maybe<OnWalletMetricUpdatedFilterInputType>
+}
+
+export type SubscriptionOnBillingTransferCreatedArgs = {
+  filter?: Maybe<OnTransferCreatedFilterInputType>
 }
 
 export type TokenAlias = {
@@ -2908,6 +2931,13 @@ export type WalletMetricType = {
   usd: Scalars['String']
 }
 
+export type WalletMetricUpdatedEvent = {
+  __typename?: 'WalletMetricUpdatedEvent'
+  id: Scalars['UuidType']
+  wallet: WalletType
+  contract: ContractType
+}
+
 export type WalletTokenMetricChartFilterInputType = {
   /** Target token alias */
   tokenAlias?: Maybe<UserMetricsTokenAliasFilterInputType>
@@ -3627,6 +3657,19 @@ export type MyMetricQuery = { __typename?: 'Query' } & {
         'stakedUSD' | 'earnedUSD' | 'worth' | 'apy'
       >
     }
+  >
+}
+
+export type OnWalletMetricUpdatedSubscriptionVariables = Exact<{
+  wallet?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
+}>
+
+export type OnWalletMetricUpdatedSubscription = {
+  __typename?: 'Subscription'
+} & {
+  onWalletMetricUpdated: { __typename?: 'WalletMetricUpdatedEvent' } & Pick<
+    WalletMetricUpdatedEvent,
+    'id'
   >
 }
 
@@ -4641,9 +4684,6 @@ export type UserFragment = { __typename?: 'UserType' } & Pick<
 
 export type AuthEthMutationVariables = Exact<{
   input: AuthEthereumInputType
-  filter?: Maybe<WalletListFilterInputType>
-  sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
-  pagination?: Maybe<WalletListPaginationInputType>
 }>
 
 export type AuthEthMutation = { __typename?: 'Mutation' } & {
@@ -4656,9 +4696,6 @@ export type AuthEthMutation = { __typename?: 'Mutation' } & {
 
 export type AuthWavesMutationVariables = Exact<{
   input: AuthWavesInputType
-  filter?: Maybe<WalletListFilterInputType>
-  sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
-  pagination?: Maybe<WalletListPaginationInputType>
 }>
 
 export type AuthWavesMutation = { __typename?: 'Mutation' } & {

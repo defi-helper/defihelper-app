@@ -1,12 +1,15 @@
 import { createDomain, sample, split, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
-import { MeQuery } from '~/graphql/_generated-types'
+import { MeQuery, AuthEthMutation } from '~/graphql/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { sidUtils, authApi } from './common'
 import { history } from '~/common/history'
 import { paths } from '~/paths'
+import { toastsService } from '~/toasts'
+
+type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
 
 export const authDomain = createDomain()
 
@@ -16,28 +19,54 @@ export const logoutFx = authDomain.createEffect(sidUtils.remove)
 
 logoutFx.done.watch(() => history.push(paths.portfolio))
 
-export const $user = authDomain
-  .createStore<MeQuery['me'] | null>(null)
-  .on(fetchUserFx.doneData, (_, payload) => payload)
-  .on(walletNetworkModel.saveUserFx.doneData, (_, payload) => payload)
-  .reset(logoutFx.done)
+export const saveUserFx = authDomain.createEffect(async (data: AuthData) => {
+  sidUtils.set(data.sid)
 
-export const $userWallets = settingsWalletModel.$wallets.reset(logoutFx.done)
-
-export const UserGate = createGate<() => Promise<unknown>>({
-  name: 'UserGate',
-  domain: authDomain,
+  return data.user
 })
 
-sample({
-  clock: UserGate.open,
-  target: fetchUserFx,
+export const $user = authDomain
+  .createStore<Exclude<MeQuery['me'], undefined>>(null)
+  .on(fetchUserFx.doneData, (_, payload) => payload)
+  .on(saveUserFx.doneData, (_, payload) => payload)
+  .reset(logoutFx.done)
+
+export const $userWallets = settingsWalletModel.$wallets.reset(
+  logoutFx.doneData
+)
+
+const signedUserEthereum = guard({
+  clock: walletNetworkModel.signMessageEthereumFx.doneData,
+  filter: (clock): clock is AuthData =>
+    Boolean(clock) && sidUtils.get() !== clock.sid,
+})
+
+const signedUserWaves = guard({
+  clock: walletNetworkModel.signMessageWavesFx.doneData,
+  filter: (clock): clock is AuthData =>
+    Boolean(clock) && sidUtils.get() !== clock.sid,
 })
 
 guard({
-  clock: $user.updates,
-  filter: (user) => Boolean(user),
-  target: settingsWalletModel.fetchWalletListFx,
+  source: $user,
+  clock: [signedUserWaves, signedUserEthereum],
+  filter: (prevUser, { user: nextUser }) =>
+    prevUser !== null && prevUser.id !== nextUser.id,
+  target: toastsService.error.prepend(() => 'Log out first'),
+})
+
+const saveUser = sample({
+  clock: guard({
+    clock: sample({
+      source: $user,
+      clock: [signedUserWaves, signedUserEthereum],
+      fn: (prevUser, nextUser) => ({ prevUser, nextUser }),
+    }),
+    filter: ({ prevUser, nextUser }) =>
+      prevUser === null || prevUser.id === nextUser.user.id,
+  }),
+  fn: ({ nextUser }) => nextUser,
+  target: saveUserFx,
 })
 
 fetchUserFx.doneData.watch((data) => {
@@ -85,9 +114,29 @@ const openBetaDialogFx = authDomain.createEffect((fn: () => Promise<unknown>) =>
   fn()
 )
 
-guard({
-  source: UserGate.open,
-  clock: walletNetworkModel.saveUserFx.done,
-  filter: (source) => typeof source === 'function',
+export const UserGate = createGate<() => Promise<unknown>>({
+  name: 'UserGate',
+  domain: authDomain,
+})
+
+sample({
+  clock: UserGate.open,
+  target: fetchUserFx,
+})
+
+sample({
+  clock: guard({
+    source: [UserGate.state, $user],
+    clock: saveUser,
+    filter: ([source, prevUser]) =>
+      typeof source === 'function' && prevUser === null,
+  }),
+  fn: ([cb]) => cb,
   target: openBetaDialogFx,
+})
+
+guard({
+  clock: $user.updates,
+  filter: (user) => Boolean(user),
+  target: settingsWalletModel.fetchWalletListFx,
 })

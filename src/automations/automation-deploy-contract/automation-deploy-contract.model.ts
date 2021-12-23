@@ -8,7 +8,7 @@ import { toastsService } from '~/toasts'
 import { loadAdapter } from '~/common/load-adapter'
 import { buildAdaptersUrl } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { authModel } from '~/auth'
+import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 
 type DeployParams = {
   inputs: string[]
@@ -92,7 +92,7 @@ export const $deployAdapter = restore(fetchDeployAdapterFx.doneData, null)
 
 export const deployFx = automationDeployContractDomain.createEffect(
   async (params: DeployParams) => {
-    const wallets = authModel.$userWallets.getState()
+    const wallets = settingsWalletModel.$wallets.getState()
 
     const currentWallet = wallets.find((wallet) => {
       return (

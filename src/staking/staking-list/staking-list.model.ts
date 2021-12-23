@@ -10,11 +10,11 @@ import { stakingApi, buildAdaptersUrl } from '~/staking/common'
 import { createPagination, PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
-import { authModel } from '~/auth'
 import { AdapterActions, loadAdapter, isStaking } from '~/common/load-adapter'
 import { automationApi } from '~/automations/common/automation.api'
 import { WalletListPayload } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 
 export const stakingListDomain = createDomain()
 
@@ -192,7 +192,7 @@ export const $connectedContracts = stakingListDomain
 
 guard({
   clock: sample({
-    source: [authModel.$userWallets, $connectedContracts],
+    source: [settingsWalletModel.$wallets, $connectedContracts],
     clock: stakingAdaptersModel.contractActionFx.done,
     fn: ([wallets, connectedContracts], { params }) => {
       const findedWallet = wallets.find((wallet) => {

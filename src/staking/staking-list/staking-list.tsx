@@ -63,7 +63,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   } | null>(null)
 
   const freshMetrics = useStore(model.$freshMetrics)
-  const wallets = useStore(authModel.$userWallets)
+  const wallets = useStore(walletsModel.$wallets)
   const loading = useStore(model.fetchStakingListFx.pending)
 
   const user = useStore(authModel.$user)

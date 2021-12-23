@@ -21,7 +21,6 @@ import {
   AutomationDescriptionQuery,
   AutomationTriggerFragmentFragment,
 } from '~/graphql/_generated-types'
-import { authModel } from '~/auth'
 import { AutomationChooseButton } from '../common/automation-choose-button'
 import { AutomationConditionsDialog } from '../common/automation-conditions-dialog'
 import { AutomationActionsDialog } from '../common/automation-actions-dialog'
@@ -32,6 +31,7 @@ import { useWalletList } from '~/wallets/wallet-list'
 import * as styles from './automation-update.css'
 import * as model from './automation-update.model'
 import * as contactModel from '~/settings/settings-contacts/settings-contact.model'
+import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 
 export type AutomationUpdateProps = {
   updatingTrigger?: AutomationTriggerFragmentFragment
@@ -48,7 +48,7 @@ enum Tabs {
 }
 
 export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
-  const wallets = useStore(authModel.$userWallets)
+  const wallets = useStore(settingsWalletModel.$wallets)
   const [currentType, setType] = useState<Types | null>(null)
   const [currentTab, setTab] = useState<Tabs>(Tabs.Trigger)
   const protocols = useStore(model.$protocols)

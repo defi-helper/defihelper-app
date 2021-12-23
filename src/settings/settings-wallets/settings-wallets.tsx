@@ -1,4 +1,4 @@
-import { useGate, useStore } from 'effector-react'
+import { useStore } from 'effector-react'
 import clsx from 'clsx'
 
 import { Typography } from '~/common/typography'
@@ -137,8 +137,6 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
       }
     }
   }
-
-  useGate(model.SettingsWalletGate)
 
   const paperCount = (wallets.length ? 3 : 2) - wallets.length
 
