@@ -108,6 +108,19 @@ export const tabs = style({
   },
 })
 
+export const tab = style({
+  borderRadius: 8,
+  padding: '8px 16px',
+  fontSize: 20,
+  lineHeight: '28px',
+  opacity: 0.64,
+})
+
+export const tabActive = style({
+  backgroundColor: theme.colors.paper,
+  opacity: 1,
+})
+
 export const loader = style({
   padding: 10,
   display: 'flex',
