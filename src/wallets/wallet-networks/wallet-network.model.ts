@@ -16,7 +16,7 @@ import {
 import { toastsService } from '~/toasts'
 import { sidUtils } from '~/auth/common'
 import { config } from '~/config'
-import { BlockchainEnum, UserType } from '~/graphql/_generated-types'
+import { BlockchainEnum } from '~/graphql/_generated-types'
 import { networksConfig } from '~/networks-config'
 
 const networks = new Map<string, typeof createEthereumProvider>(
@@ -24,14 +24,6 @@ const networks = new Map<string, typeof createEthereumProvider>(
     .filter(({ blockchain }) => blockchain === BlockchainEnum.Ethereum)
     .map(({ chainId }) => [String(chainId), createEthereumProvider])
 )
-
-type AuthData = {
-  sid: string
-  user: Omit<
-    UserType,
-    'billing' | 'locale' | 'blockchains' | 'metricChart' | 'tokenMetricChart'
-  >
-}
 
 export const networkDomain = createDomain('network')
 
@@ -134,26 +126,6 @@ export const signMessageEthereumFx = networkDomain.createEffect(
     return data
   }
 )
-
-export const saveUserFx = networkDomain.createEffect(async (data: AuthData) => {
-  sidUtils.set(data.sid)
-
-  return data.user
-})
-
-guard({
-  clock: signMessageEthereumFx.doneData,
-  filter: (clock): clock is AuthData =>
-    Boolean(clock) && sidUtils.get() !== clock.sid,
-  target: saveUserFx,
-})
-
-guard({
-  clock: signMessageWavesFx.doneData,
-  filter: (clock): clock is AuthData =>
-    Boolean(clock) && sidUtils.get() !== clock.sid,
-  target: saveUserFx,
-})
 
 export const signMessage = networkDomain.createEvent<{
   chainId: string

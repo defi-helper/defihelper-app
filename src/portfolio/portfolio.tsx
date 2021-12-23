@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-extra-boolean-cast */
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
@@ -13,8 +12,8 @@ import { PortfolioMetricCards } from './portfolio-metric-cards'
 import { PortfolioWallets } from './portfolio-wallets/portfolio-wallets'
 import { PortfolioAssets } from './portfolio-assets'
 import { authModel } from '~/auth'
-import * as styles from './portfolio.css'
 import { SettingsContacts } from '~/settings/settings-contacts'
+import * as styles from './portfolio.css'
 
 export type PortfolioProps = unknown
 

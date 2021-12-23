@@ -9,6 +9,7 @@ export const config = {
   TREZOR_EMAIL: process.env.REACT_APP_TREZOR_EMAIL ?? '',
   WAVES_NODE_URL: process.env.REACT_APP_WAVES_NODE_URL ?? '',
   API_URL: process.env.REACT_APP_API_URL,
+  WS_API_URL: process.env.REACT_APP_WS_API_URL,
   ADAPTERS_HOST: process.env.REACT_APP_ADAPTERS_HOST ?? '',
   TELEGRAM_BOT_USERNAME: process.env.REACT_APP_TELEGRAM_BOT_USERNAME,
   BETA: process.env.REACT_APP_BETA === 'true',

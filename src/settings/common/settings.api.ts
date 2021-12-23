@@ -63,7 +63,10 @@ export const settingsApi = {
     getAPIClient()
       .query<UserContactsQuery, UserContactsQueryVariables>(
         USER_CONTACTS,
-        variables
+        variables,
+        {
+          requestPolicy: 'cache-and-network',
+        }
       )
       .toPromise()
       .then(({ data }) => data?.userContacts.list ?? []),
@@ -108,7 +111,11 @@ export const settingsApi = {
 
   walletList: (variables?: WalletListQueryVariables) =>
     getAPIClient()
-      .query<WalletListQuery, WalletListQueryVariables>(WALLET_LIST, variables)
+      .query<WalletListQuery, WalletListQueryVariables>(
+        WALLET_LIST,
+        variables,
+        { requestPolicy: 'cache-and-network' }
+      )
       .toPromise()
       .then(({ data }) => ({
         list: data?.me?.wallets.list ?? [],
