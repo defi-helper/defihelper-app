@@ -3,7 +3,10 @@ import contracts from '@defihelper/networks/contracts.json'
 import { ethers } from 'ethers'
 import Balance from '@defihelper/networks/abi/Balance.json'
 
-import { WalletFragmentFragment } from '~/graphql/_generated-types'
+import {
+  BlockchainEnum,
+  WalletFragmentFragment,
+} from '~/graphql/_generated-types'
 import { settingsApi } from '~/settings/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -96,7 +99,7 @@ export const depositFx = walletListDomain.createEffect(
     const balance = await networkProvider.getBalance(account)
 
     if (balance.lt(amountNormalized)) {
-      throw new Error('not enough money')
+      throw new Error('not enough funds')
     }
 
     try {
@@ -104,7 +107,16 @@ export const depositFx = walletListDomain.createEffect(
         value: amountNormalized,
       })
 
-      await transactionReceipt.wait()
+      const result = await transactionReceipt.wait()
+      await settingsApi.billingTransferCreate({
+        input: {
+          blockchain: BlockchainEnum.Ethereum,
+          network: params.chainId,
+          account: params.walletAddress,
+          amount: params.amount,
+          tx: result.transactionHash,
+        },
+      })
     } catch (error) {
       throw parseError(error)
     }
