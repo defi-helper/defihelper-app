@@ -5,7 +5,9 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import {
   MetricGroupEnum,
   SortOrderEnum,
+  TokenMetricQueryVariables,
   UserMetricChartSortInputTypeColumnEnum,
+  UserTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
 import { portfolioApi } from '../common'
 
@@ -22,10 +24,19 @@ type State = Record<
   }
 >
 
-const defaultVariables = {
+const defaultVariables: TokenMetricQueryVariables = {
+  balancePagination: {
+    limit: DAYS_LIMIT,
+  },
   pagination: {
     limit: DAYS_LIMIT,
   },
+  balanceSort: [
+    {
+      column: UserTokenMetricChartSortInputTypeColumnEnum.Date,
+      order: SortOrderEnum.Desc,
+    },
+  ],
   sort: [
     {
       column: UserMetricChartSortInputTypeColumnEnum.Date,
@@ -54,6 +65,8 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
           data.onWallets[index]?.sum ?? '0'
         )
       ),
+      balance: data.balanceUSD[index]?.sum ?? '0',
+      earned: data.earnedUSD[index]?.sum ?? '0',
       date: totalNetWorth.date,
     }))
   }
