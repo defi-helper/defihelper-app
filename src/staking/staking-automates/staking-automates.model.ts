@@ -58,7 +58,7 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
   }
 )
 
-export const scanWalletMetric = stakingAutomatesDomain.createEffect(
+export const scanWalletMetricFx = stakingAutomatesDomain.createEffect(
   (params: ScanWalletMetricParams) => {
     return walletApi.scanWalletMetric(params.walletId, params.contractId)
   }

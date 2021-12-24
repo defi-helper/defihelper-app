@@ -63,7 +63,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           action,
         })
 
-        await model.scanWalletMetric({
+        await model.scanWalletMetricFx({
           walletId: contract.wallet.id,
           contractId: contract.id,
         })
