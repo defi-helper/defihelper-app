@@ -11,7 +11,7 @@ import {
   StakingErrorDialog,
 } from '~/staking/common'
 import { useWalletList } from '~/wallets/wallet-list'
-import { switchNetwork, walletApi } from '~/wallets/common'
+import { switchNetwork } from '~/wallets/common'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
 
@@ -63,7 +63,10 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           action,
         })
 
-        await walletApi.scanWalletMetric(contract.wallet.id, contract.id)
+        await model.scanWalletMetric({
+          walletId: contract.wallet.id,
+          contractId: contract.id,
+        })
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
