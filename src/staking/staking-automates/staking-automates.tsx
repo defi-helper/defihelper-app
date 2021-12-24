@@ -53,7 +53,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           })
         }
 
-        model.fetchAdapter({
+        await model.fetchAdapter({
           protocolAdapter: contract.protocol.adapter,
           contractAdapter: contract.adapter,
           contractId: contract.id,
@@ -61,6 +61,11 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           provider: wallet.provider,
           chainId: String(wallet.chainId),
           action,
+        })
+
+        await model.scanWalletMetricFx({
+          walletId: contract.wallet.id,
+          contractId: contract.id,
         })
       } catch (error) {
         if (error instanceof Error) {

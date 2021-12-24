@@ -4786,3 +4786,13 @@ export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
       pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
     }
   }
+
+export type WalletMetricScanMutationVariables = Exact<{
+  wallet: Scalars['UuidType']
+  contract: Scalars['UuidType']
+}>
+
+export type WalletMetricScanMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'walletMetricScan'
+>
