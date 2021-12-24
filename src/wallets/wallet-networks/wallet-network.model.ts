@@ -12,10 +12,12 @@ import {
   signMessageWaves,
   signMessageEthereum,
   SIGN_MESSAGE,
+  connectorsByName,
+  Wallet,
+  SignMessagePayload,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { sidUtils } from '~/auth/common'
-import { config } from '~/config'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 import { networksConfig } from '~/networks-config'
 
@@ -25,31 +27,48 @@ const networks = new Map<string, typeof createEthereumProvider>(
     .map(({ chainId }) => [String(chainId), createEthereumProvider])
 )
 
-export const networkDomain = createDomain('network')
+export const networkDomain = createDomain()
 
 export const activateWalletFx = networkDomain.createEffect(
   async (params: {
     connector: AbstractConnector
-    update?: ConnectorUpdate<number | string>
+    update?: ConnectorUpdate<string>
   }) => {
     const updateData = await params.connector.activate()
 
-    return augmentConnectorUpdate(params.connector, params.update ?? updateData)
+    const data = params.update ?? updateData
+
+    const blockchain =
+      Object.values(connectorsByName).find(
+        ({ connector }) => connector === params.connector
+      )?.blockchain ?? null
+
+    return {
+      ...(await augmentConnectorUpdate(params.connector, {
+        ...data,
+        chainId: String(data.chainId),
+      })),
+      blockchain,
+    }
   }
 )
 
 export const updateWalletFx = networkDomain.createEffect(
   async (params: {
     connector: AbstractConnector
-    update: ConnectorUpdate<number | string>
+    update: ConnectorUpdate<string>
   }) => {
-    return augmentConnectorUpdate(params.connector, params.update)
+    const blockchain =
+      Object.values(connectorsByName).find(
+        ({ connector }) => connector === params.connector
+      )?.blockchain ?? null
+
+    return {
+      ...(await augmentConnectorUpdate(params.connector, params.update)),
+      blockchain,
+    }
   }
 )
-
-export type WalletStore = ConnectorUpdate<number | string> & {
-  connector?: AbstractConnector
-}
 
 export const diactivateWalletFx = networkDomain.createEffect(
   async (connector?: AbstractConnector) => {
@@ -60,12 +79,7 @@ export const diactivateWalletFx = networkDomain.createEffect(
 )
 
 export const $wallet = networkDomain
-  .createStore<WalletStore>({
-    chainId: config.DEFAULT_CHAIN_ID,
-    account: null,
-    provider: null,
-    connector: undefined,
-  })
+  .createStore<Wallet | null>(null)
   .on(activateWalletFx.doneData, (state, payload) => {
     return shallowEqual(state, payload) ? undefined : payload
   })
@@ -105,11 +119,7 @@ export const signMessageWavesFx = networkDomain.createEffect(
 )
 
 export const signMessageEthereumFx = networkDomain.createEffect(
-  async (params: {
-    chainId: string | number
-    account: string
-    provider: unknown
-  }) => {
+  async (params: { chainId: string; account: string; provider: unknown }) => {
     const signedMessageData = await signMessageEthereum(
       createEthereumProvider(params.provider),
       params.account,
@@ -117,7 +127,7 @@ export const signMessageEthereumFx = networkDomain.createEffect(
     )
 
     const data = await walletApi.authEth({
-      network: String(params.chainId),
+      network: params.chainId,
       ...signedMessageData,
     })
 
@@ -134,28 +144,19 @@ export const signMessage = networkDomain.createEvent<{
 }>()
 
 sample({
-  source: $wallet.map(({ connector }) => connector),
+  source: $wallet.map((wallet) => wallet?.connector),
   clock: [signMessageEthereumFx.fail, signMessageWavesFx.fail],
   target: diactivateWalletFx,
 })
 
-sample({
-  clock: guard({
-    clock: activateWalletFx.doneData,
-    filter: (
-      clock
-    ): clock is {
-      chainId: string | number
-      account: string
-      provider: unknown
-      connector: AbstractConnector
-    } => Boolean(clock.account) && Boolean(clock.chainId),
-  }),
-  fn: ({ account, chainId, provider }) => ({
+guard({
+  clock: activateWalletFx.doneData.map(({ account, chainId, provider }) => ({
     account,
-    chainId: String(chainId),
+    chainId,
     provider,
-  }),
+  })),
+  filter: (clock): clock is SignMessagePayload =>
+    Boolean(clock.account && clock.chainId) && !sidUtils.get(),
   target: signMessage,
 })
 

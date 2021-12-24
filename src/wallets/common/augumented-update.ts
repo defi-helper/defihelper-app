@@ -5,24 +5,26 @@ import { normalizeChainId } from './normalize-chain-id'
 
 export async function augmentConnectorUpdate(
   connector: AbstractConnector,
-  update: ConnectorUpdate
+  update: ConnectorUpdate<string>
 ) {
   const provider =
     update.provider === undefined
       ? await connector.getProvider()
       : update.provider
   const [chainId, account] = (await Promise.all([
-    update.chainId === undefined ? connector.getChainId() : update.chainId,
+    update.chainId === undefined || typeof update.chainId === 'string'
+      ? connector.getChainId()
+      : update.chainId,
     update.account === undefined ? connector.getAccount() : update.account,
   ])) as [
-    Required<ConnectorUpdate>['chainId'],
-    Required<ConnectorUpdate>['account']
+    Required<ConnectorUpdate<string>>['chainId'],
+    Required<ConnectorUpdate<string>>['account']
   ]
 
   const normalizedChainId = normalizeChainId(chainId)
   if (
     !!connector.supportedChainIds &&
-    !connector.supportedChainIds.includes(normalizedChainId)
+    !connector.supportedChainIds.includes(Number(normalizedChainId))
   ) {
     throw new Error('Unsupported chainId')
   }
@@ -30,7 +32,7 @@ export async function augmentConnectorUpdate(
   return {
     connector,
     provider,
-    chainId: chainId !== 'W' ? normalizedChainId : chainId,
+    chainId: chainId !== 'W' ? String(normalizedChainId) : chainId,
     account,
   }
 }

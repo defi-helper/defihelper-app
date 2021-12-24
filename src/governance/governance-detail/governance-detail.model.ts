@@ -14,7 +14,8 @@ import {
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { GovReceiptFilterInputType } from '~/graphql/_generated-types'
 
-const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
+const GOVERNOR_BRAVO =
+  contracts[config.IS_DEV ? '3' : '1'].GovernorBravo.address
 
 export enum CastVotes {
   against,
@@ -168,3 +169,6 @@ sample({
   }),
   target: fetchReceiptFx,
 })
+
+$governanceDetail.reset(GovernanceDetailGate.close)
+$receipt.reset(GovernanceDetailGate.close)

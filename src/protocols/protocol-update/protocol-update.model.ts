@@ -11,19 +11,17 @@ import { paths } from '~/paths'
 import { protocolsApi } from '../common/protocol.api'
 import { config } from '~/config'
 
-const protocolUpdate = createDomain('protocolUpdate')
+const protocolUpdate = createDomain()
 
-export const protocolUpdateFx = protocolUpdate.createEffect({
-  name: 'protocolUpdateFx',
-  handler: (variables: ProtocolUpdateMutationVariables) =>
-    protocolsApi.protocolUpdate(variables),
-})
+export const protocolUpdateFx = protocolUpdate.createEffect(
+  (variables: ProtocolUpdateMutationVariables) =>
+    protocolsApi.protocolUpdate(variables)
+)
 
-export const protocolResolveContractsFx = protocolUpdate.createEffect({
-  name: 'protocolResolveContractsFx',
-  handler: (variables: ProtocolResolveContractsMutationVariables) =>
-    protocolsApi.protocolResolveContracts(variables),
-})
+export const protocolResolveContractsFx = protocolUpdate.createEffect(
+  (variables: ProtocolResolveContractsMutationVariables) =>
+    protocolsApi.protocolResolveContracts(variables)
+)
 
 export const fetchAdaptersFx = protocolUpdate.createEffect(
   () =>

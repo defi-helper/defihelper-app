@@ -16,9 +16,11 @@ import { useDialog } from '~/common/dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Paper } from '~/common/paper'
 import { Icon } from '~/common/icon'
-import { useWalletList } from '~/wallets/wallet-list'
 import { switchNetwork } from '~/wallets/common'
 import { config } from '~/config'
+import { WalletConnect } from '~/wallets/wallet-connect'
+import { Loader } from '~/common/loader'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as model from './governance-list.model'
 import * as styles from './governance-list.css'
 
@@ -40,7 +42,6 @@ const getDelegateButtonText = (votes?: string | null, delegateTo?: string) => {
 
 export const GovernanceList: React.VFC<GovernanceListProps> = () => {
   const [openDelegate] = useDialog(GovernanceDelegateDialog)
-  const [openWalletList] = useWalletList()
 
   const loading = useStore(model.fetchGovernanceListFx.pending)
   const governanceList = useStore(model.$governanceList)
@@ -50,25 +51,17 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
 
   const delegateLoading = useStore(model.delegateVotesFx.pending)
 
+  const wallet = walletNetworkModel.useWalletNetwork()
+
   useGate(model.GovernanceListGate)
 
   const handleopenDelegate = async () => {
     try {
-      const wallet = await openWalletList({
-        blockchain: 'ethereum',
-      })
-
       await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
-      if (!wallet.account) return
+      if (!wallet?.account) return
 
-      const votes = await model.fetchGovernanceVotesFx({
-        network: Number(wallet.chainId),
-        wallet: wallet.account,
-        contract: model.GOVERNOR_TOKEN,
-      })
-
-      if (bignumberUtils.eq(votes?.votes, 0)) return
+      if (bignumberUtils.eq(governanceVotes?.votes, 0)) return
 
       const result = await openDelegate({
         votes: governanceVotes?.votes,
@@ -101,28 +94,52 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
               {votesLoading ? '...' : governanceVotes?.votes ?? 0} votes
               (locked)
             </Typography>
-            <ButtonBase
-              onClick={handleopenDelegate}
-              disabled={delegateLoading}
-              className={styles.delegate}
+            <WalletConnect
+              fallback={
+                <ButtonBase className={styles.delegate}>Connect</ButtonBase>
+              }
+              blockchain="ethereum"
             >
-              {getDelegateButtonText(
-                governanceVotes?.votes,
-                governanceVotes?.delegates
-              )}
-            </ButtonBase>
+              <ButtonBase
+                onClick={handleopenDelegate}
+                disabled={delegateLoading}
+                className={styles.delegate}
+              >
+                {getDelegateButtonText(
+                  governanceVotes?.votes,
+                  governanceVotes?.delegates
+                )}
+              </ButtonBase>
+            </WalletConnect>
           </Paper>
-          <Button
-            as={ReactRouterLink}
-            variant="contained"
-            color="blue"
-            to={paths.governance.create}
+          <WalletConnect
+            fallback={
+              <Button variant="contained" color="blue">
+                <Icon icon="plus" height="24" width="24" />
+              </Button>
+            }
+            blockchain="ethereum"
           >
-            <Icon icon="plus" height="24" width="24" />
-          </Button>
+            <Button
+              as={ReactRouterLink}
+              variant="contained"
+              color="blue"
+              to={paths.governance.create}
+            >
+              <Icon icon="plus" height="24" width="24" />
+            </Button>
+          </WalletConnect>
         </div>
-        {loading && 'loading...'}
-        {!loading && !governanceList.length && 'No proposals yet...'}
+        {loading && (
+          <div className={styles.loader}>
+            <Loader height="36" />
+          </div>
+        )}
+        {!loading && !governanceList.length && (
+          <Paper className={styles.proposal} radius={8}>
+            No proposals yet...
+          </Paper>
+        )}
         {!loading &&
           Boolean(governanceList.length) &&
           governanceList.map((governanceProposal) => (

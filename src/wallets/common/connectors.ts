@@ -37,7 +37,7 @@ export const trezor = new TrezorConnector({
 
 export const walletlink = new WalletLinkConnector({
   url: config.ETH_URL,
-  appName: 'Bondappetit',
+  appName: 'DeFiHelper',
 })
 
 export const walletconnect = new WalletConnectConnector({

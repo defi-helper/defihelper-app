@@ -9,6 +9,7 @@ import { switchNetwork } from '~/wallets/common'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
 import { toastsService } from '~/toasts'
+import { WalletConnect } from '~/wallets/wallet-connect'
 
 export type StakingAdaptersProps = {
   className?: string
@@ -114,39 +115,66 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   return (
     <div className={styles.root}>
       <div className={styles.stake}>
-        <Button
-          type="submit"
-          onClick={handleStake}
-          disabled={action?.disabled}
-          loading={action?.stake || contractLoading}
-          size="small"
-          variant="outlined"
+        <WalletConnect
+          fallback={
+            <Button type="submit" size="small" variant="outlined">
+              Stake
+            </Button>
+          }
+          blockchain={props.blockchain}
         >
-          Stake
-        </Button>
+          <Button
+            type="submit"
+            onClick={handleStake}
+            disabled={action?.disabled}
+            loading={action?.stake || contractLoading}
+            size="small"
+            variant="outlined"
+          >
+            Stake
+          </Button>
+        </WalletConnect>
       </div>
       <div className={styles.unstake}>
-        <Button
-          type="submit"
-          onClick={handleUnStake}
-          disabled={action?.disabled}
-          loading={action?.unstake || contractLoading}
-          size="small"
-          variant="outlined"
+        <WalletConnect
+          fallback={
+            <Button type="submit" size="small" variant="outlined">
+              Unstake
+            </Button>
+          }
+          blockchain={props.blockchain}
         >
-          Unstake
-        </Button>
+          <Button
+            type="submit"
+            onClick={handleUnStake}
+            disabled={action?.disabled}
+            loading={action?.unstake || contractLoading}
+            size="small"
+            variant="outlined"
+          >
+            Unstake
+          </Button>
+        </WalletConnect>
       </div>
       <div className={styles.claim}>
-        <Button
-          onClick={handleClaim}
-          disabled={action?.disabled}
-          loading={action?.claim || contractLoading}
-          size="small"
-          variant="outlined"
+        <WalletConnect
+          fallback={
+            <Button size="small" variant="outlined">
+              Claim
+            </Button>
+          }
+          blockchain={props.blockchain}
         >
-          Claim
-        </Button>
+          <Button
+            onClick={handleClaim}
+            disabled={action?.disabled}
+            loading={action?.claim || contractLoading}
+            size="small"
+            variant="outlined"
+          >
+            Claim
+          </Button>
+        </WalletConnect>
       </div>
       {false && (
         <div>

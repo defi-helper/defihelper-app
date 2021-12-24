@@ -1,4 +1,4 @@
-import { useLocalStorage, useInterval, useUpdateEffect } from 'react-use'
+import { useLocalStorage, useInterval } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useMemo, useState } from 'react'
@@ -28,19 +28,19 @@ import {
   AutomateConditionTypeEnum,
   AutomateTriggerTypeEnum,
 } from '~/graphql/_generated-types'
-import { useWalletList, WalletListPayload } from '~/wallets/wallet-list'
 import { StakingBillingFormDialog } from '~/staking/common'
 import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
 import { Checkbox } from '~/common/checkbox'
 import { toastsService } from '~/toasts'
 import { CircularProgress } from '~/common/circular-progress'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { switchNetwork } from '~/wallets/common'
+import { WalletConnect } from '~/wallets/wallet-connect'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { switchNetwork } from '~/wallets/common'
 
 export type StakingListProps = {
   protocolId: string
@@ -53,14 +53,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openedContract, setOpenedContract] = useState<string | null>(null)
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutostaking', false)
 
-  const [currentWallet, setCurrentWallet] = useState<WalletListPayload | null>(
-    null
-  )
+  const currentWallet = walletNetworkModel.useWalletNetwork()
   const stakingList = useStore(model.$contractList)
-  const [turnOnPayload, setTurnOnPayload] = useState<{
-    contract: typeof stakingList[number]
-    wallet: WalletListPayload
-  } | null>(null)
 
   const freshMetrics = useStore(model.$freshMetrics)
   const wallets = useStore(walletsModel.$wallets)
@@ -70,7 +64,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openDescriptionDialog] = useDialog(StakingDescriptionDialog)
-  const [openWalletList] = useWalletList()
   const [openBillingForm] = useDialog(StakingBillingFormDialog)
   const [openDeployStepsDialog] = useDialog(AutomationDeployStepsDialog)
   const [openAutomates] = useDialog(StakingAutomatesDialog)
@@ -103,20 +96,18 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   }
 
   const handleAutostake =
-    (contract: typeof stakingList[number], walletPayload?: WalletListPayload) =>
-    async () => {
+    (contract: typeof stakingList[number]) => async () => {
       try {
         model.autostakingStart(contract.id)
 
-        const walletData =
-          walletPayload ??
-          (await openWalletList({
-            blockchain: contract.blockchain,
-          }))
-
         await switchNetwork(contract.network)
 
-        if (!contract.automate.autorestake || !contract.prototypeAddress) return
+        if (
+          !contract.automate.autorestake ||
+          !contract.prototypeAddress ||
+          !currentWallet
+        )
+          return
 
         if (!dontShow) {
           const result = await openDescriptionDialog()
@@ -126,11 +117,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         const findedWallet = wallets.find((wallet) => {
           const sameAddreses =
-            String(walletData.chainId) === 'W'
-              ? walletData.account === wallet.address
-              : walletData.account?.toLowerCase() === wallet.address
+            String(currentWallet.chainId) === 'W'
+              ? currentWallet.account === wallet.address
+              : currentWallet.account?.toLowerCase() === wallet.address
 
-          return sameAddreses && String(walletData.chainId) === wallet.network
+          return (
+            sameAddreses && String(currentWallet.chainId) === wallet.network
+          )
         })
 
         if (!findedWallet) throw new Error('wallet is not connected')
@@ -142,8 +135,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             walletsModel.depositFx({
               amount: result.amount,
               walletAddress: findedWallet.address,
-              chainId: String(walletData.chainId),
-              provider: walletData.provider,
+              chainId: String(currentWallet.chainId),
+              provider: currentWallet.provider,
             }),
         })
 
@@ -151,8 +144,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           address: contract.prototypeAddress,
           protocol: props.protocolAdapter,
           contract: contract.automate.autorestake,
-          chainId: String(walletData.chainId),
-          provider: walletData.provider,
+          chainId: String(currentWallet.chainId),
+          provider: currentWallet.provider,
           contractAddress: contract.address,
         })
 
@@ -167,8 +160,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           adapter: contract.automate.autorestake,
           contract: contract.id,
           account: findedWallet.address,
-          chainId: String(walletData.chainId),
-          provider: walletData.provider,
+          chainId: String(currentWallet.chainId),
+          provider: currentWallet.provider,
         })
 
         const createdTrigger = await automationUpdateModel.createTriggerFx({
@@ -203,8 +196,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             contractAdapter: contract.automate.autorestake,
             contractId: contract.id,
             contractAddress: contract.address,
-            provider: walletData.provider,
-            chainId: String(walletData.chainId),
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
             action: 'migrate',
           })
 
@@ -222,41 +215,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       }
     }
 
-  const handleUpdating = async () => {
-    try {
-      const wallet = await openWalletList()
-
-      setCurrentWallet(wallet)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
-  }
-
-  const handleTurnOn = (contract: typeof stakingList[number]) => async () => {
-    try {
-      const wallet = await openWalletList()
-
-      if (!wallet.account) return
-
-      walletNetworkModel.signMessage({
-        chainId: String(wallet.chainId),
-        provider: wallet.provider,
-        account: wallet.account,
-      })
-
-      setTurnOnPayload({
-        contract,
-        wallet,
-      })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
-  }
-
   useInterval(
     () => {
       if (currentWallet) {
@@ -269,12 +227,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     currentWallet ? 15000 : null
   )
 
-  useUpdateEffect(() => {
-    if (!user || !turnOnPayload) return
-
-    handleAutostake(turnOnPayload.contract, turnOnPayload.wallet)()
-  }, [user, turnOnPayload])
-
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -283,10 +235,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         </Typography>
         {false && <StakingTabs className={styles.tabs} />}
         <Typography as="label" variant="body2" className={styles.checkbox}>
-          <Checkbox
-            checked={Boolean(currentWallet)}
-            onChange={handleUpdating}
-          />
+          <Checkbox checked={Boolean(currentWallet)} />
           <Typography variant="inherit" className={styles.checkboxLabel}>
             update online
           </Typography>
@@ -488,7 +437,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                                 size="small"
                                 variant="outlined"
                                 className={styles.turnOn}
-                                loading={stakingListItem.autostakingLoading}
                               >
                                 Turn on
                               </Button>
@@ -498,19 +446,27 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                             right now
                           </Dropdown>
                         ) : (
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            onClick={
-                              !user
-                                ? handleTurnOn(stakingListItem)
-                                : handleAutostake(stakingListItem)
+                          <WalletConnect
+                            fallback={
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                className={styles.turnOn}
+                              >
+                                Turn on
+                              </Button>
                             }
-                            className={styles.turnOn}
-                            loading={stakingListItem.autostakingLoading}
                           >
-                            Turn on
-                          </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={handleAutostake(stakingListItem)}
+                              className={styles.turnOn}
+                              loading={stakingListItem.autostakingLoading}
+                            >
+                              Turn on
+                            </Button>
+                          </WalletConnect>
                         )}
                         <ButtonBase
                           className={styles.accorionButton}

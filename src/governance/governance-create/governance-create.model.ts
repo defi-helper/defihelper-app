@@ -7,6 +7,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { history } from '~/common/history'
 import { paths } from '~/paths'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { config } from '~/config'
 
 export type ProposeParams = {
   addresses: string[]
@@ -19,9 +20,10 @@ export type ProposeParams = {
   provider: unknown
 }
 
-const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
+const GOVERNOR_BRAVO =
+  contracts[config.IS_DEV ? '3' : '1'].GovernorBravo.address
 
-export const governanceCreateDomain = createDomain('governanceCreateDomain')
+export const governanceCreateDomain = createDomain()
 
 export const proposeFx = governanceCreateDomain.createEffect(
   async (params: ProposeParams) => {

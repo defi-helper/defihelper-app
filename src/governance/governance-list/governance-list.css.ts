@@ -39,7 +39,7 @@ export const votes = style({
 })
 
 export const delegate = style({
-  color: theme.colors.common.green1,
+  color: theme.colors.textColorGreen,
   marginLeft: 20,
 })
 
@@ -47,4 +47,12 @@ export const dotsButton = style({
   width: 32,
   height: 32,
   marginLeft: 20,
+})
+
+export const loader = style({
+  padding: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: 'auto',
 })

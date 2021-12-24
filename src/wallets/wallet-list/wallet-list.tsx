@@ -10,7 +10,7 @@ export type WalletListPayload = {
   connector: AbstractConnector
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   provider: any
-  chainId: string | number
+  chainId: string
   account: string | null
   blockchain: string
 }
@@ -25,10 +25,12 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
   const handleActivate =
     (connector: AbstractConnector, blockchain: string) => async () => {
       try {
-        const data = await augmentConnectorUpdate(
-          connector,
-          await connector.activate()
-        )
+        const result = await connector.activate()
+
+        const data = await augmentConnectorUpdate(connector, {
+          ...result,
+          chainId: String(result.chainId),
+        })
 
         props.onConfirm({ ...data, blockchain })
       } catch (error) {
