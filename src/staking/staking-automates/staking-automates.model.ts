@@ -12,6 +12,7 @@ import {
   stakingApi,
   StakingAutomatesContract,
 } from '../common'
+import { walletApi } from '~/wallets/common'
 
 export type ActionType = 'deposit' | 'migrate' | 'refund'
 
@@ -28,6 +29,11 @@ type FetchAdapterParams = {
 type FetchAutomatesParams = {
   userId: string
   protocolId?: string
+}
+
+type ScanWalletMetricParams = {
+  walletId: string
+  contractId: string
 }
 
 const LOAD_TYPES: Record<ActionType, 'migrating' | 'depositing' | 'refunding'> =
@@ -49,6 +55,12 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
     })
 
     return data
+  }
+)
+
+export const scanWalletMetricFx = stakingAutomatesDomain.createEffect(
+  (params: ScanWalletMetricParams) => {
+    return walletApi.scanWalletMetric(params.walletId, params.contractId)
   }
 )
 

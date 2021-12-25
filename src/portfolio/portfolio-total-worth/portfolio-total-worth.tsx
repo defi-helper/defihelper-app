@@ -21,6 +21,19 @@ const TOTAL_NET_WORTH = [
     dateX: 'date',
     color: '#39C077',
   },
+  {
+    valueY: 'balance',
+    name: 'Balance',
+    dateX: 'date',
+    color: '#e39090',
+  },
+
+  {
+    valueY: 'earned',
+    name: 'Earned',
+    dateX: 'date',
+    color: '#51b0cb',
+  },
 ]
 
 export const PortfolioTotalWorth: React.VFC<PortfolioTotalWorthProps> = (

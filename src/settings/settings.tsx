@@ -14,9 +14,9 @@ export const Settings: React.VFC<SettingsProps> = () => {
     <AppLayout title="Settings">
       <Head title="Settings" />
       <div className={styles.root}>
+        <SettingsWallets className={styles.section} />
         <SettingsContacts className={styles.section} />
         <SettingsSmartNotifications className={styles.section} />
-        <SettingsWallets className={styles.section} />
         <SettingsTransactionHistory className={styles.section} />
         <StakingAutomates className={styles.section} />
       </div>

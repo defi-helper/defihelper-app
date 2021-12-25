@@ -148,7 +148,10 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           </Typography>
           <Typography variant="body2" as="span">
             {bignumberUtils.formatMax(
-              bignumberUtils.mul(props.apy, 100),
+              bignumberUtils.plus(
+                bignumberUtils.mul(props.apy, 100),
+                bignumberUtils.mul(props.apyBoost, 100)
+              ),
               10000,
               true
             )}
