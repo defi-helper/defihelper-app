@@ -57,3 +57,10 @@ export const mainChart = style({
 export const section = style({
   marginBottom: 64,
 })
+
+export const loader = style({
+  padding: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+})

@@ -12,7 +12,7 @@ export const TOKEN_METRIC = gql`
     $balancePagination: UserTokenMetricChartPaginationInputType = { limit: 1 }
   ) {
     me {
-      totalNetWorth: metricChart(
+      stakingUSD: metricChart(
         metric: stakingUSD
         group: $group
         filter: $filter

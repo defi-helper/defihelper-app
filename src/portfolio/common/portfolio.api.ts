@@ -14,6 +14,8 @@ import {
   AssetListQuery,
   OnWalletMetricUpdatedSubscriptionVariables,
   OnWalletMetricUpdatedSubscription,
+  TokenAliasesQuery,
+  TokenAliasesQueryVariables,
 } from '~/graphql/_generated-types'
 import {
   ADD_WALLET,
@@ -22,6 +24,7 @@ import {
   ON_WALLET_METRIC_UPDATED,
   TOKEN_METRIC,
   TOKEN_METRIC_CHART,
+  TOKEN_ALIASSES,
 } from './graphql'
 import { ASSETS_LIST } from '~/portfolio/common/graphql/assets-list.graphql'
 
@@ -82,4 +85,13 @@ export const portfolioApi = {
       OnWalletMetricUpdatedSubscription,
       OnWalletMetricUpdatedSubscriptionVariables
     >({ query: ON_WALLET_METRIC_UPDATED, variables }, ({ data }) => cb(data)),
+
+  tokenAliases: (variables?: TokenAliasesQueryVariables) =>
+    getAPIClient()
+      .query<TokenAliasesQuery, TokenAliasesQueryVariables>(
+        TOKEN_ALIASSES,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.me?.tokenAliases.pagination.count ?? 0),
 }
