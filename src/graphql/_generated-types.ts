@@ -2573,8 +2573,6 @@ export enum UserNotificationTypeEnum {
 }
 
 export enum UserRoleEnum {
-  /** Candidate */
-  Candidate = 'candidate',
   /** User */
   User = 'user',
   /** Administrator */
@@ -3090,14 +3088,7 @@ export type MeQueryVariables = Exact<{ [key: string]: never }>
 
 export type MeQuery = { __typename?: 'Query' } & {
   me?: Maybe<
-    { __typename?: 'UserType' } & Pick<
-      UserType,
-      'id' | 'role' | 'createdAt'
-    > & {
-        tokenAliases: { __typename?: 'UserTokenAliasListType' } & {
-          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-        }
-      }
+    { __typename?: 'UserType' } & Pick<UserType, 'id' | 'role' | 'createdAt'>
   >
 }
 
@@ -3739,6 +3730,18 @@ export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
     >
   }
 
+export type TokenAliasesQueryVariables = Exact<{ [key: string]: never }>
+
+export type TokenAliasesQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      tokenAliases: { __typename?: 'UserTokenAliasListType' } & {
+        pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+      }
+    }
+  >
+}
+
 export type TokenMetricChartQueryVariables = Exact<{
   group: MetricGroupEnum
   dateAfter?: Maybe<Scalars['DateTimeType']>
@@ -3784,7 +3787,7 @@ export type TokenMetricQueryVariables = Exact<{
 export type TokenMetricQuery = { __typename?: 'Query' } & {
   me?: Maybe<
     { __typename?: 'UserType' } & {
-      totalNetWorth: Array<
+      stakingUSD: Array<
         { __typename?: 'MetricChartType' } & Pick<
           MetricChartType,
           'date' | 'sum'
@@ -4792,11 +4795,7 @@ export type AuthWavesMutation = { __typename?: 'Mutation' } & {
 export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
   UserType,
   'id' | 'role' | 'createdAt'
-> & {
-    tokenAliases: { __typename?: 'UserTokenAliasListType' } & {
-      pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-    }
-  }
+>
 
 export type WalletMetricScanMutationVariables = Exact<{
   wallet: Scalars['UuidType']

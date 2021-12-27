@@ -30,7 +30,6 @@ import {
 } from '~/graphql/_generated-types'
 import { StakingBillingFormDialog } from '~/staking/common'
 import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
-import { Checkbox } from '~/common/checkbox'
 import { toastsService } from '~/toasts'
 import { CircularProgress } from '~/common/circular-progress'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -234,12 +233,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           Staking contracts
         </Typography>
         {false && <StakingTabs className={styles.tabs} />}
-        <Typography as="label" variant="body2" className={styles.checkbox}>
-          <Checkbox checked={Boolean(currentWallet)} />
-          <Typography variant="inherit" className={styles.checkboxLabel}>
-            update online
-          </Typography>
-        </Typography>
         {false && (
           <Paper radius={8} className={styles.select}>
             Daily

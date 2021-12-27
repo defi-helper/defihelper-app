@@ -16,7 +16,7 @@ export type PortfolioTotalWorthProps = {
 
 const TOTAL_NET_WORTH = [
   {
-    valueY: 'totalNetWorth',
+    valueY: 'stakingUSD',
     name: 'Staked balance',
     dateX: 'date',
     color: '#39C077',

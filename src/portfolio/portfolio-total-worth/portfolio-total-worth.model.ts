@@ -1,7 +1,5 @@
 import { createDomain } from 'effector-logger/macro'
 
-import { bignumberUtils } from '~/common/bignumber-utils'
-
 import {
   MetricGroupEnum,
   SortOrderEnum,
@@ -58,16 +56,11 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
 
     if (!data) throw new Error('something went wrong')
 
-    return data.totalNetWorth.map((totalNetWorth, index) => ({
-      totalNetWorth: bignumberUtils.format(
-        bignumberUtils.plus(
-          totalNetWorth.sum,
-          data.onWallets[index]?.sum ?? '0'
-        )
-      ),
+    return data.stakingUSD.map((stakingUSD, index) => ({
+      stakingUSD: stakingUSD.sum,
       balance: data.balanceUSD[index]?.sum ?? '0',
       earned: data.earnedUSD[index]?.sum ?? '0',
-      date: totalNetWorth.date,
+      date: stakingUSD.date,
     }))
   }
 )
