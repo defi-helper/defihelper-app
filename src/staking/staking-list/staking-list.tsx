@@ -31,7 +31,6 @@ import {
 import { StakingBillingFormDialog } from '~/staking/common'
 import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
 import { toastsService } from '~/toasts'
-import { CircularProgress } from '~/common/circular-progress'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
 import { WalletConnect } from '~/wallets/wallet-connect'
@@ -316,16 +315,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   >
                     <div className={clsx(styles.card, styles.row)}>
                       <div className={styles.tableCol}>
-                        {currentWallet &&
-                          stakingListItem.blockchain ===
-                            currentWallet.blockchain &&
-                          stakingListItem.network ===
-                            String(currentWallet.chainId) && (
-                            <div className={styles.coinIcons}>
-                              <CircularProgress className={styles.coinIcon} />
-                            </div>
-                          )}
-
                         <Typography variant="body2" as="div">
                           {stakingListItem.name}
                         </Typography>

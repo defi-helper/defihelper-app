@@ -15,14 +15,15 @@ export const WalletConnect: React.FC<WalletConnectProps> = (props) => {
 
   const handleConnect = useWalletConnect()
 
-  return (
-    <>
-      {!wallet || wallet?.blockchain !== props.blockchain
-        ? cloneElement(props.fallback, {
-            ...props.fallback.props,
-            onClick: handleConnect.bind(null, props.blockchain),
-          })
-        : props.children}
-    </>
-  )
+  const fallback = cloneElement(props.fallback, {
+    ...props.fallback.props,
+    onClick: handleConnect.bind(null, props.blockchain),
+  })
+
+  if (!wallet) return fallback
+
+  if (props.blockchain && wallet.blockchain !== props.blockchain)
+    return fallback
+
+  return <>{props.children}</>
 }
