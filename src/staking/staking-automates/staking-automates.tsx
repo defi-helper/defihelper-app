@@ -15,6 +15,11 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
+import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
+import {
+  useOnWalletMetricUpdatedSubscription,
+  useOnTokenMetricUpdatedSubscription,
+} from '~/graphql/_generated-types'
 
 export type StakingAutomatesProps = {
   className?: string
@@ -25,6 +30,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [openAutomates] = useDialog(StakingAutomatesDialog)
   const [openErrorDialog] = useDialog(StakingErrorDialog)
   const wallet = walletNetworkModel.useWalletNetwork()
+  const wallets = useStore(settingsWalletModel.$wallets)
   const handleConnect = useWalletConnect()
 
   const automatesContracts = useStore(model.$automatesContracts)
@@ -53,7 +59,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           })
         }
 
-        await model.fetchAdapter({
+        await model.fetchAdapterFx({
           protocolAdapter: contract.protocol.adapter,
           contractAdapter: contract.adapter,
           contractId: contract.id,
@@ -75,6 +81,25 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     }
 
   useGate(model.StakingAutomatesGate, props.protocolId ?? null)
+
+  const walletIds = wallets.map(({ id }) => id)
+
+  const [walletUpdated] = useOnWalletMetricUpdatedSubscription({
+    variables: {
+      wallet: walletIds,
+    },
+  })
+  const [tokenMetricUpdated] = useOnTokenMetricUpdatedSubscription({
+    variables: {
+      wallet: walletIds,
+    },
+  })
+
+  useEffect(() => {
+    if (walletUpdated.data || tokenMetricUpdated.data) {
+      model.updated()
+    }
+  }, [walletUpdated.data, tokenMetricUpdated.data])
 
   useEffect(() => {
     if (!currentAction || !adapter || !adapter[currentAction]) return

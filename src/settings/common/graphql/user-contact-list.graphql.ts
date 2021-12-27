@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 import { USER_CONTACT_FRAGMENT } from './user-contact.fragment.graphql'
 

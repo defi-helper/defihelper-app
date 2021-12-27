@@ -12,8 +12,6 @@ import {
   TokenMetricQueryVariables,
   AssetListQueryVariables,
   AssetListQuery,
-  OnWalletMetricUpdatedSubscriptionVariables,
-  OnWalletMetricUpdatedSubscription,
   TokenAliasesQuery,
   TokenAliasesQueryVariables,
 } from '~/graphql/_generated-types'
@@ -21,12 +19,11 @@ import {
   ADD_WALLET,
   BLOCKCHAINS,
   MY_METRIC,
-  ON_WALLET_METRIC_UPDATED,
   TOKEN_METRIC,
   TOKEN_METRIC_CHART,
   TOKEN_ALIASSES,
+  ASSETS_LIST,
 } from './graphql'
-import { ASSETS_LIST } from '~/portfolio/common/graphql/assets-list.graphql'
 
 export const portfolioApi = {
   getTokenMetricChart: (variables: TokenMetricChartQueryVariables) =>
@@ -76,15 +73,6 @@ export const portfolioApi = {
       .query<MyMetricQuery, MyMetricQueryVariables>(MY_METRIC, variables)
       .toPromise()
       .then(({ data }) => data?.me?.metric),
-
-  onWalletMetricUpdated: (
-    variables: OnWalletMetricUpdatedSubscriptionVariables,
-    cb: (data?: OnWalletMetricUpdatedSubscription) => void
-  ) =>
-    getAPIClient().subscription<
-      OnWalletMetricUpdatedSubscription,
-      OnWalletMetricUpdatedSubscriptionVariables
-    >({ query: ON_WALLET_METRIC_UPDATED, variables }, ({ data }) => cb(data)),
 
   tokenAliases: (variables?: TokenAliasesQueryVariables) =>
     getAPIClient()

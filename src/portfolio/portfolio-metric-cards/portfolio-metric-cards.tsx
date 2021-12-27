@@ -23,13 +23,17 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
       <PortfolioMetricCard
         title="Total Net Worth"
         value={
-          loading ? 'loading...' : <>${bignumberUtils.format(metric?.worth)}</>
+          loading && !metric ? (
+            'loading...'
+          ) : (
+            <>${bignumberUtils.format(metric?.worth)}</>
+          )
         }
       />
       <PortfolioMetricCard
         title="Avg. APY total"
         value={
-          loading ? (
+          loading && !metric ? (
             'loading...'
           ) : (
             <>
@@ -45,7 +49,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
       <PortfolioMetricCard
         title="Total unclaimed"
         value={
-          loading ? (
+          loading && !metric ? (
             'loading...'
           ) : (
             <>${bignumberUtils.format(metric?.earnedUSD)}</>

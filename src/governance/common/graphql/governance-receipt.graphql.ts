@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const GOVERNANCE_RECEIPT = gql`
   query GovernanceReceipt($filter: GovReceiptFilterInputType!) {

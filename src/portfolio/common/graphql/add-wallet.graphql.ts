@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const ADD_WALLET = gql`
   mutation AddWallet($input: AddWalletInputType!) {

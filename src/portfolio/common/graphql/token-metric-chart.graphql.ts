@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const TOKEN_METRIC_CHART = gql`
   query TokenMetricChart(

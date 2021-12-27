@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 import { AUTOMATION_CONDITION_FRAGMENT } from './automation-condition.fragment.graphql'
 

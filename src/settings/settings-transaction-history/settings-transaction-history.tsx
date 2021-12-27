@@ -10,7 +10,6 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
 import { cutAccount } from '~/common/cut-account'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
-import { BillingBillStatusEnum } from '~/graphql/_generated-types'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
@@ -24,9 +23,8 @@ export type SettingsTransactionHistoryProps = {
 }
 
 const STATUSES = {
-  [BillingBillStatusEnum.Accepted]: 'Accepted',
-  [BillingBillStatusEnum.Pending]: 'Pending',
-  [BillingBillStatusEnum.Rejected]: 'Rejected',
+  confirmed: 'Confirmed',
+  pending: 'Pending',
 }
 
 const defaultLabelDisplayedRows = (from: number, to: number, count: number) => {
@@ -219,19 +217,13 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                     <Typography
                       variant="body2"
                       as="div"
-                      className={
-                        styles.statuses[
-                          historyItem.bill?.status ||
-                            BillingBillStatusEnum.Accepted
-                        ]
-                      }
+                      className={clsx(
+                        historyItem.confirmed && styles.statuses.confirmed,
+                        !historyItem.confirmed && styles.statuses.pending
+                      )}
                     >
-                      {
-                        STATUSES[
-                          historyItem.bill?.status ||
-                            BillingBillStatusEnum.Accepted
-                        ]
-                      }
+                      {historyItem.confirmed && STATUSES.confirmed}
+                      {!historyItem.confirmed && STATUSES.pending}
                     </Typography>
                   </div>
                 ))}

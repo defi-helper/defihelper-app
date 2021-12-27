@@ -1,6 +1,6 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { Chart } from '~/common/chart'
 import { Paper } from '~/common/paper'
@@ -32,21 +32,17 @@ const BALANCE = [
 export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
   props
 ) => {
-  const [currentGroup, setCurrentGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  >(MetricGroupEnum.Day)
+  const currentGroup = useStore(model.$currentGroup)
   const portfolioCoinBalance = useStore(model.$portfolioCoinBalance)
 
   useEffect(() => {
-    model.fetchChartDataFx({
-      group: currentGroup,
-    })
+    model.fetchChartDataFx(currentGroup)
   }, [currentGroup])
 
   const handleChangeMetric = (
     group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
   ) => {
-    setCurrentGroup(group)
+    model.changeGroup(group)
   }
 
   return (

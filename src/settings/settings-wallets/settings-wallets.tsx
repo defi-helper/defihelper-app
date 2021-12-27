@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 
@@ -21,6 +22,10 @@ import { useWalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
 import { useWalletConnect } from '~/wallets/wallet-connect'
+import {
+  useOnBillingTransferCreatedSubscription,
+  useOnBillingTransferUpdatedSubscription,
+} from '~/graphql/_generated-types'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
 
@@ -41,6 +46,27 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   const handleConnect = useWalletConnect()
   const currentWallet = walletNetworkModel.useWalletNetwork()
 
+  const [created] = useOnBillingTransferCreatedSubscription({
+    variables: {
+      wallet: wallets.map(({ id }) => id),
+    },
+  })
+  const [updated] = useOnBillingTransferUpdatedSubscription({
+    variables: {
+      wallet: wallets.map(({ id }) => id),
+    },
+  })
+
+  useEffect(() => {
+    if (updated.data) {
+      model.updated()
+    }
+
+    if (created.data) {
+      model.created()
+    }
+  }, [updated.data, created.data])
+
   const handleDeposit = (wallet: typeof wallets[number]) => async () => {
     try {
       await switchNetwork(wallet.network)
@@ -50,6 +76,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
       const result = await openBillingForm()
 
       await model.depositFx({
+        blockchain: wallet.blockchain,
         amount: result.amount,
         walletAddress: currentWallet.account,
         chainId: String(currentWallet.chainId),
@@ -74,6 +101,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
       const result = await openBillingForm()
 
       await model.refundFx({
+        blockchain: wallet.blockchain,
         amount: result.amount,
         walletAddress: currentWallet.account,
         chainId: String(currentWallet.chainId),

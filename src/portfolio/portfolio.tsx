@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 
@@ -11,17 +12,42 @@ import { PortfolioMetricCards } from './portfolio-metric-cards'
 import { PortfolioWallets } from './portfolio-wallets/portfolio-wallets'
 import { PortfolioAssets } from './portfolio-assets'
 import { SettingsContacts } from '~/settings/settings-contacts'
+import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import { Loader } from '~/common/loader'
 import * as styles from './portfolio.css'
 import * as model from './portfolio.model'
+import {
+  useOnWalletMetricUpdatedSubscription,
+  useOnTokenMetricUpdatedSubscription,
+} from '~/graphql/_generated-types'
 
 export type PortfolioProps = unknown
 
 export const Portfolio: React.VFC<PortfolioProps> = () => {
   const tokenAliasses = useStore(model.$tokenAliasses)
   const loading = useStore(model.fetchTokenAliasses.pending)
+  const wallets = useStore(walletsModel.$wallets)
 
   useGate(model.PortfolioGate)
+
+  const walletIds = wallets.map(({ id }) => id)
+
+  const [walletUpdated] = useOnWalletMetricUpdatedSubscription({
+    variables: {
+      wallet: walletIds,
+    },
+  })
+  const [tokenMetricUpdated] = useOnTokenMetricUpdatedSubscription({
+    variables: {
+      wallet: walletIds,
+    },
+  })
+
+  useEffect(() => {
+    if (walletUpdated.data || tokenMetricUpdated.data) {
+      model.portfolioUpdated()
+    }
+  }, [walletUpdated.data, tokenMetricUpdated.data])
 
   return (
     <AppLayout title="Portfolio">

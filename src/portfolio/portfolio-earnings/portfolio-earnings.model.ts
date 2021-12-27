@@ -1,25 +1,11 @@
-import { createDomain } from 'effector-logger/macro'
+import { createDomain, sample } from 'effector-logger/macro'
 import { BigNumber } from 'bignumber.js'
 
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
+import * as portfolioMetricCardModel from '~/portfolio/portfolio-metric-cards/portfolio-metric-cards.model'
 
 const portfolioEarnings = createDomain()
-
-type State = Record<
-  Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
-  {
-    data: Record<string, string>[]
-    value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-    loading: boolean
-  }
->
-
-type Gate = {
-  group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  balance: number
-  apy: number
-}
 
 type EastimatedEarnings = {
   hold: string
@@ -27,8 +13,19 @@ type EastimatedEarnings = {
   date: number
 }
 
+type State = {
+  data: EastimatedEarnings[]
+  loading: boolean
+}
+
+type Params = {
+  group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+  balance: number
+  apy: number
+}
+
 export const fetchChartDataFx = portfolioEarnings.createEffect(
-  async (params: Gate) => {
+  async (params: Params) => {
     const data = await protocolsApi.earnings({
       balance: params.balance,
       apy: params.apy,
@@ -65,31 +62,32 @@ export const $portfolioEarnings = portfolioEarnings
     Object.values(MetricGroupEnum).reduce<State>((acc, metricGroup) => {
       if (metricGroup === MetricGroupEnum.Hour) return acc
 
-      acc[metricGroup] = {
+      return {
         data: [],
-        value: metricGroup,
         loading: false,
       }
-
-      return acc
     }, {} as State)
   )
-  .on(fetchChartDataFx, (state, payload) => {
+  .on(fetchChartDataFx, (state) => {
     return {
       ...state,
-      [payload.group]: {
-        ...state[payload.group],
-        loading: true,
-      },
+      loading: true,
     }
   })
-  .on(fetchChartDataFx.done, (state, { params, result }) => {
+  .on(fetchChartDataFx.doneData, (state, payload) => {
     return {
       ...state,
-      [params.group]: {
-        ...state[params.group],
-        loading: false,
-        data: result,
-      },
+      loading: false,
+      data: payload,
     }
   })
+
+sample({
+  clock: portfolioMetricCardModel.$metric.updates,
+  fn: (metric): Params => ({
+    group: MetricGroupEnum.Day,
+    balance: Number(metric?.worth ?? 0),
+    apy: Number(metric?.apy ?? 0),
+  }),
+  target: fetchChartDataFx,
+})

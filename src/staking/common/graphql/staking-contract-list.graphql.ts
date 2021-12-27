@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 import { STAKING_CONTRACT_FRAGMENT } from './staking-contract.fragment.graphql'
 

@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const AUTOMATION_CONDITION_DELETE = gql`
   mutation AutomationConditionDelete($id: UuidType!) {

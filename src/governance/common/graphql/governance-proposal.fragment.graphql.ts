@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const GOVERNANCE_PROPOSAL_FRAGMENT = gql`
   fragment governanceProposalFragment on GovProposalType {

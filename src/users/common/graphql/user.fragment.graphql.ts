@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const USER_FRAGMENT = gql`
   fragment user on UserType {

@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const BILLING_TRANSFER_CREATE = gql`
   mutation BillingTransferCreate($input: BillingTransferCreateInputType!) {

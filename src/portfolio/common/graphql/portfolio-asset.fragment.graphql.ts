@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const PORTFOLIO_ASSET_FRAGMENT = gql`
   fragment portfolioAsset on TokenAlias {

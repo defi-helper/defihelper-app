@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const STAKING_CONNECTED_CONTRACTS = gql`
   query StakingConnectedContracts($filter: WalletContractListFilterInputType) {

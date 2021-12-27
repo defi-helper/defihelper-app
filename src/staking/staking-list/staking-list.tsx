@@ -132,6 +132,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           network: findedWallet.network,
           onSubmit: (result) =>
             walletsModel.depositFx({
+              blockchain: findedWallet.blockchain,
               amount: result.amount,
               walletAddress: findedWallet.address,
               chainId: String(currentWallet.chainId),
@@ -190,7 +191,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         })
 
         const stakingAutomatesAdapter =
-          await stakingAutomatesModel.fetchAdapter({
+          await stakingAutomatesModel.fetchAdapterFx({
             protocolAdapter: props.protocolAdapter,
             contractAdapter: contract.automate.autorestake,
             contractId: contract.id,

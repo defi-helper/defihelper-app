@@ -43,16 +43,12 @@ export const row = style({
 })
 
 export const statuses = styleVariants({
-  accepted: {
+  confirmed: {
     color: theme.colors.common.green,
   },
 
   pending: {
     color: theme.colors.textColorGrey,
-  },
-
-  rejected: {
-    color: theme.colors.common.red1,
   },
 })
 

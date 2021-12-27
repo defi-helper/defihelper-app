@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 import { PROTOCOL_METRIC_CHART } from './protocol-metric-chart.fragment.graphql'
 
