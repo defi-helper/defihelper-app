@@ -1,6 +1,6 @@
 import { useGate, useStore } from 'effector-react'
 import { useParams } from 'react-router-dom'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import isEmpty from 'lodash.isempty'
 
 import { AppLayout } from '~/layouts'
@@ -25,13 +25,18 @@ export const AutomationHistoryList: React.VFC<AutomationHistoryListProps> =
 
     const count = useStore(model.$count)
 
-    useGate(model.AutomationHistoryListGate, {
-      automationId: params.automationId,
-      pagination: {
-        limit: ROWS_PER_PAGE,
-        offset: page * ROWS_PER_PAGE,
-      },
-    })
+    const gateProps = useMemo(
+      () => ({
+        automationId: params.automationId,
+        pagination: {
+          limit: ROWS_PER_PAGE,
+          offset: page * ROWS_PER_PAGE,
+        },
+      }),
+      [page, params.automationId]
+    )
+
+    useGate(model.AutomationHistoryListGate, gateProps)
 
     return (
       <AppLayout>
