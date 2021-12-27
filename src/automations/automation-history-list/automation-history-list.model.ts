@@ -24,7 +24,9 @@ export const $count = restore(
 
 export const $history = automationHistoryListDomain
   .createStore<AutomateTriggerCallHistoryType[]>([])
-  .on(fetchHistoryFx.doneData, (_, { list }) => list)
+  .on(fetchHistoryFx.doneData, (_, { list }) => {
+    return list
+  })
 
 export const AutomationHistoryListGate = createGate<{
   automationId: string
