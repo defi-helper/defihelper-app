@@ -320,7 +320,23 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             <Typography variant="body2">Position</Typography>
             <Typography variant="body2">Pool share</Typography>
             <Typography variant="body2">Unclaimed</Typography>
-            <Typography variant="body2">Autostaking Boost</Typography>
+            <Typography variant="body2" className={styles.boostTooltipTHead}>
+              <Dropdown
+                control={
+                  <ButtonBase>
+                    <Icon icon="question" width="16" height="16" />
+                  </ButtonBase>
+                }
+                trigger="hover"
+                placement="top"
+                offset={[0, 8]}
+              >
+                <Typography variant="body3">
+                  We use our math power to boost apy of your savings
+                </Typography>
+              </Dropdown>
+              Autostaking Boost
+            </Typography>
           </div>
           <ul className={styles.list}>
             {loading && (

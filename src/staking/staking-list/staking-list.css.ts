@@ -126,6 +126,11 @@ export const table = style({
   overflowY: 'hidden',
 })
 
+export const boostTooltipTHead = style({
+  display: 'flex',
+  gridGap: 5,
+})
+
 export const tableInner = style({
   minWidth: 900,
 
