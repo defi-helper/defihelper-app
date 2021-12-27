@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { Controller, useForm } from 'react-hook-form'
 
+import { yupResolver } from '@hookform/resolvers/yup'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
@@ -9,6 +10,7 @@ import { AutomationChooseButton } from '../automation-choose-button'
 import { AutomationConditionActionsDialog } from '../automation-condition-actions-dialog'
 import { AutomationForm } from '../automation-form'
 import * as styles from './automation-condition-ethereum-optimal.css'
+import { automationConditionEthereumOptimalSchema } from '~/automations/common/automation-condition-ethereum-optimal/automation-condition-ethereum-optimal.validation'
 
 type FormValues = {
   id: string
@@ -22,7 +24,8 @@ export type AutomationConditionEthereumOptimalProps = {
 
 export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEthereumOptimalProps> =
   (props) => {
-    const { handleSubmit, setValue, control } = useForm<FormValues>({
+    const { handleSubmit, formState, setValue, control } = useForm<FormValues>({
+      resolver: yupResolver(automationConditionEthereumOptimalSchema),
       defaultValues: props.defaultValues,
     })
 
@@ -58,6 +61,7 @@ export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEt
               <AutomationChooseButton
                 label="action"
                 onClick={handleChooseContract}
+                error={formState.errors.id?.message}
                 className={clsx(styles.input, styles.contractButton)}
               >
                 {(field.value && currentAction && (
