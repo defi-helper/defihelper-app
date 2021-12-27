@@ -35,7 +35,7 @@ export const TOKEN_METRIC = gql`
       balanceUSD: tokenMetricChart(
         metric: "usd"
         group: $group
-        filter: { tokenAlias: { liquidity: [stable, unstable] } }
+        filter: { tokenAlias: { liquidity: [stable, unstable] }, contract: [] }
         pagination: $balancePagination
         sort: $balanceSort
       ) {
