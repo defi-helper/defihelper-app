@@ -1,4 +1,4 @@
-import { createDomain, restore, sample } from 'effector-logger/macro'
+import { createDomain, restore, sample, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { ethers } from 'ethers'
 import contracts from '@defihelper/networks/contracts.json'
@@ -10,10 +10,12 @@ import { governanceApi, parseDescription } from '~/governance/common'
 import { GovVotesFilterInputType } from '~/graphql/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 
-export const governanceListDomain = createDomain('governanceListDomain')
+export const governanceListDomain = createDomain()
 
-export const GOVERNOR_TOKEN = contracts[3].GovernanceToken.address
-export const GOVERNOR_BRAVO = contracts[3].GovernorBravo.address
+export const GOVERNOR_TOKEN =
+  contracts[config.IS_DEV ? '3' : '1'].GovernanceToken.address
+export const GOVERNOR_BRAVO =
+  contracts[config.IS_DEV ? '3' : '1'].GovernorBravo.address
 
 export const fetchGovernanceListFx = governanceListDomain.createEffect(
   ({ network, ...pagination }: PaginationState & { network: string }) =>
@@ -98,3 +100,20 @@ sample({
   fn: (clock) => clock.count,
   target: GovernanceListPagination.totalElements,
 })
+
+sample({
+  clock: guard({
+    source: [walletNetworkModel.$wallet, GovernanceListGate.status],
+    clock: [GovernanceListGate.open, walletNetworkModel.$wallet.updates],
+    filter: ([wallet, opened]) => opened && Boolean(wallet?.account),
+  }),
+  fn: ([wallet]) => ({
+    network: Number(wallet?.chainId),
+    wallet: String(wallet?.account),
+    contract: GOVERNOR_TOKEN,
+  }),
+  target: fetchGovernanceVotesFx,
+})
+
+$governanceList.reset(GovernanceListGate.close)
+$governanceVotes.reset(GovernanceListGate.close)

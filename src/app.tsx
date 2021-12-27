@@ -9,8 +9,11 @@ import './app.css'
 import './assets/fonts/Basier-Circle-regular-webfont/stylesheet.css'
 import './assets/fonts/Basier-Square-Mono-Regular-Webfont/stylesheet.css'
 import './assets/fonts/Basier-Square-regular-webfont/stylesheet.css'
+import { useEthereumNetwork } from './wallets/wallet-networks'
 
 export const App: React.VFC = () => {
+  useEthereumNetwork()
+
   return (
     <HelmetProvider>
       <ThemeProvider>

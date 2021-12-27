@@ -3,7 +3,6 @@ import { useGate, useStore } from 'effector-react'
 import { useEffect, useState } from 'react'
 
 import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
-import { WalletListPayload } from '~/wallets/wallet-list'
 import { AutomationDialog } from '../common/automation-dialog'
 import { AutomationChooseButton } from '../common/automation-choose-button'
 import { Icon } from '~/common/icon'
@@ -18,12 +17,13 @@ import { AutomationProtocolDialog } from '../common/automation-protocol-dialog'
 import { AutomationDeployStepsDialog } from '../common/automation-deploy-steps-dialog'
 import * as model from './automation-deploy-contract.model'
 import * as styles from './automation-deploy-contract.css'
+import { Wallet } from '~/wallets/common'
 
 export type AutomationDeployContractProps = {
   onConfirm: (contract: AutomationContractFragmentFragment) => void
   onCancel: (error?: unknown) => void
   protocols: Protocol[]
-  wallet: WalletListPayload
+  wallet: Wallet
 }
 
 export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> =

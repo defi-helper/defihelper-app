@@ -10,8 +10,9 @@ import {
   StakingAutomatesDialog,
   StakingErrorDialog,
 } from '~/staking/common'
-import { useWalletList } from '~/wallets/wallet-list'
 import { switchNetwork } from '~/wallets/common'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { useWalletConnect } from '~/wallets/wallet-connect'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
 
@@ -22,8 +23,9 @@ export type StakingAutomatesProps = {
 
 export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [openAutomates] = useDialog(StakingAutomatesDialog)
-  const [openWalletList] = useWalletList()
   const [openErrorDialog] = useDialog(StakingErrorDialog)
+  const wallet = walletNetworkModel.useWalletNetwork()
+  const handleConnect = useWalletConnect()
 
   const automatesContracts = useStore(model.$automatesContracts)
 
@@ -34,11 +36,9 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     (contract: typeof automatesContracts[number], action: model.ActionType) =>
     async () => {
       try {
-        const wallet = await openWalletList()
+        if (!wallet?.account) return
 
         await switchNetwork(contract.wallet.network)
-
-        if (!wallet.account) return
 
         const addresses =
           String(wallet.chainId) === 'W'
@@ -105,9 +105,21 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             balance={automatesContract.contractWallet?.metric.stakedUSD ?? ''}
             apy={automatesContract.contract?.metric.aprYear}
             apyBoost={automatesContract.contract?.metric.myAPYBoost}
-            onMigrate={handleAction(automatesContract, 'migrate')}
-            onDeposit={handleAction(automatesContract, 'deposit')}
-            onRefund={handleAction(automatesContract, 'refund')}
+            onMigrate={
+              wallet
+                ? handleAction(automatesContract, 'migrate')
+                : () => handleConnect(automatesContract.contract?.blockchain)
+            }
+            onDeposit={
+              wallet
+                ? handleAction(automatesContract, 'deposit')
+                : () => handleConnect(automatesContract.contract?.blockchain)
+            }
+            onRefund={
+              wallet
+                ? handleAction(automatesContract, 'refund')
+                : () => handleConnect(automatesContract.contract?.blockchain)
+            }
             refunding={automatesContract.refunding}
             migrating={automatesContract.migrating}
             depositing={automatesContract.depositing}

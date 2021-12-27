@@ -17,10 +17,11 @@ import { Icon } from '~/common/icon'
 import { AutomationUpdate } from '~/automations/automation-update'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { AutomationProducts } from '../automation-products'
-import { useWalletList } from '~/wallets/wallet-list'
 import { Loader } from '~/common/loader'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { WalletConnect } from '~/wallets/wallet-connect'
 
 export type AutomationListProps = unknown
 
@@ -38,7 +39,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const [openDescriptionDialog] = useDialog(AutomationTriggerDescriptionDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openAutomationProducts] = useDialog(AutomationProducts)
-  const [openWalletList] = useWalletList()
+  const wallet = walletNetworkModel.useWalletNetwork()
 
   const handleDeleteTrigger = (triggerId: string) => async () => {
     try {
@@ -53,10 +54,13 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   }
 
   const handleEditTrigger = (trigger: Trigger) => async () => {
+    if (!wallet) return
+
     await openAutomationTrigger({
       updatingTrigger: trigger,
       contracts,
       descriptions,
+      wallet,
     }).catch((error: Error) => console.error(error.message))
   }
 
@@ -68,6 +72,8 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   }
 
   const handleAddAutomation = async () => {
+    if (!wallet) return
+
     try {
       if (!dontShow) {
         const result = await openDescriptionDialog()
@@ -76,6 +82,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
       }
 
       await openAutomationTrigger({
+        wallet,
         contracts,
         descriptions,
       })
@@ -87,11 +94,9 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   }
 
   const handleBuyProducts = async () => {
+    if (!wallet?.account) return
+
     try {
-      const wallet = await openWalletList()
-
-      if (!wallet.account) return
-
       await openAutomationProducts({
         balance,
         account: wallet.account,
@@ -121,13 +126,15 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           <ButtonBase className={styles.searchButton}>
             <Icon icon="search" width="16" height="16" />
           </ButtonBase>
-          <Button
-            color="blue"
-            className={styles.addAutomations}
-            onClick={handleAddAutomation}
-          >
-            +
-          </Button>
+          <WalletConnect fallback={<Button color="blue">+</Button>}>
+            <Button
+              color="blue"
+              className={styles.addAutomations}
+              onClick={handleAddAutomation}
+            >
+              +
+            </Button>
+          </WalletConnect>
         </div>
       }
     >
@@ -145,14 +152,27 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
               </Typography>
             </Typography>
           </Paper>
-          <Button onClick={handleBuyProducts}>Buy</Button>
+          <WalletConnect fallback={<Button>Buy</Button>}>
+            <Button onClick={handleBuyProducts}>Buy</Button>
+          </WalletConnect>
           <Input placeholder="Search" className={styles.searchDesktop} />
-          <Button color="blue" onClick={handleAddAutomation}>
-            +
-            <Typography variant="inherit" className={styles.left}>
-              new automation
-            </Typography>
-          </Button>
+          <WalletConnect
+            fallback={
+              <Button color="blue">
+                +
+                <Typography variant="inherit" className={styles.left}>
+                  new automation
+                </Typography>
+              </Button>
+            }
+          >
+            <Button color="blue" onClick={handleAddAutomation}>
+              +
+              <Typography variant="inherit" className={styles.left}>
+                new automation
+              </Typography>
+            </Button>
+          </WalletConnect>
         </div>
         <div className={styles.grid}>
           {loading && (

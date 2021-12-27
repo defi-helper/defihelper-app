@@ -20,6 +20,7 @@ import { cutAccount } from '~/common/cut-account'
 import { useWalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
+import { useWalletConnect } from '~/wallets/wallet-connect'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
 
@@ -37,22 +38,22 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   const [openSuccess] = useDialog(SettingsSuccessDialog)
 
   const [openWalletList] = useWalletList()
+  const handleConnect = useWalletConnect()
+  const currentWallet = walletNetworkModel.useWalletNetwork()
 
   const handleDeposit = (wallet: typeof wallets[number]) => async () => {
     try {
-      const walletData = await openWalletList({ blockchain: wallet.blockchain })
-
       await switchNetwork(wallet.network)
 
-      if (!walletData.account) return
+      if (!currentWallet?.account) return
 
       const result = await openBillingForm()
 
       await model.depositFx({
         amount: result.amount,
-        walletAddress: walletData.account,
-        chainId: String(walletData.chainId),
-        provider: walletData.provider,
+        walletAddress: currentWallet.account,
+        chainId: String(currentWallet.chainId),
+        provider: currentWallet.provider,
       })
 
       await openSuccess({
@@ -66,19 +67,17 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   }
   const handleRefund = (wallet: typeof wallets[number]) => async () => {
     try {
-      const walletData = await openWalletList({ blockchain: wallet.blockchain })
-
       await switchNetwork(wallet.network)
 
-      if (!walletData.account) return
+      if (!currentWallet?.account) return
 
       const result = await openBillingForm()
 
       await model.refundFx({
         amount: result.amount,
-        walletAddress: walletData.account,
-        chainId: String(walletData.chainId),
-        provider: walletData.provider,
+        walletAddress: currentWallet.account,
+        chainId: String(currentWallet.chainId),
+        provider: currentWallet.provider,
       })
 
       await openSuccess({
@@ -177,9 +176,21 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
               network={wallet.network}
               blockchain={wallet.blockchain}
               automations={String(wallet.triggersCount)}
-              onDeposit={handleDeposit(wallet)}
-              onRefund={handleRefund(wallet)}
-              onRename={handleRename(wallet)}
+              onDeposit={
+                currentWallet
+                  ? handleDeposit(wallet)
+                  : () => handleConnect(wallet.blockchain)
+              }
+              onRefund={
+                currentWallet
+                  ? handleRefund(wallet)
+                  : () => handleConnect(wallet.blockchain)
+              }
+              onRename={
+                currentWallet
+                  ? handleRename(wallet)
+                  : () => handleConnect(wallet.blockchain)
+              }
               onDelete={handleDelete(wallet)}
               feeFunds={wallet.billing?.balance?.netBalance}
               locked={wallet.billing?.balance?.claim}

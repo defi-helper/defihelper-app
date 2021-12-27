@@ -8,7 +8,7 @@ import { paths } from '~/paths'
 import { protocolsApi } from '../common/protocol.api'
 import { config } from '~/config'
 
-const protocolCreate = createDomain('protocolCreate')
+const protocolCreate = createDomain()
 
 export const protocolCreateFx = protocolCreate.createEffect({
   name: 'protocolCreateFx',

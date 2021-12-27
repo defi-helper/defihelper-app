@@ -26,9 +26,11 @@ import { isEthAddress } from '~/common/is-eth-address'
 import { Chip } from '~/common/chip'
 import { Paper } from '~/common/paper'
 import { useDialog } from '~/common/dialog'
-import { useWalletList } from '~/wallets/wallet-list'
 import { Head } from '~/common/head'
 import { switchNetwork } from '~/wallets/common'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { WalletConnect } from '~/wallets/wallet-connect'
+import { Loader } from '~/common/loader'
 import * as model from './governance-detail.model'
 import * as styles from './governance-detail.css'
 
@@ -40,7 +42,6 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const params = useParams<{ governanceId: string }>()
 
   const [openGovernanceReasonDialog] = useDialog(GovernanceReasonDialog)
-  const [openWalletList] = useWalletList()
 
   const loading = useStore(model.fetchGovernanceProposalFx.pending)
   const governanceDetail = useStore(model.$governanceDetail)
@@ -51,13 +52,13 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const loadingQueue = useStore(model.queueFx.pending)
   const loadingExecute = useStore(model.executeFx.pending)
 
+  const wallet = walletNetworkModel.useWalletNetwork()
+
   const handleQueueProposal = async () => {
     try {
-      const wallet = await openWalletList()
-
       await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
-      if (!wallet.account) return
+      if (!wallet?.account) return
 
       model.queueFx({
         governanceId: Number(params.governanceId),
@@ -73,11 +74,9 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   }
   const handleExecuteProposal = async () => {
     try {
-      const wallet = await openWalletList()
-
       await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
-      if (!wallet.account) return
+      if (!wallet?.account) return
 
       model.executeFx({
         governanceId: Number(params.governanceId),
@@ -96,11 +95,9 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
 
   const handleVoteFor = async () => {
     try {
-      const wallet = await openWalletList()
-
       await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
-      if (!wallet.account) return
+      if (!wallet?.account) return
 
       model.castVoteFx({
         proposalId: Number(params.governanceId),
@@ -117,11 +114,9 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   }
   const handleVoteAbstain = async () => {
     try {
-      const wallet = await openWalletList()
-
       await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
-      if (!wallet.account) return
+      if (!wallet?.account) return
 
       const reason = await openGovernanceReasonDialog()
 
@@ -141,13 +136,9 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   }
   const handleVoteAgainst = async () => {
     try {
-      const wallet = await openWalletList({
-        blockchain: 'ethereum',
-      })
-
       await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
-      if (!wallet.account) return
+      if (!wallet?.account) return
 
       model.castVoteFx({
         proposalId: Number(params.governanceId),
@@ -166,7 +157,11 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   return (
     <AppLayout>
       <Head title={governanceDetail?.title} />
-      {loading && <Typography>loading...</Typography>}
+      {loading && (
+        <div className={styles.loader}>
+          <Loader height="36" />
+        </div>
+      )}
       {governanceDetail && (
         <div className={styles.root}>
           <Typography
@@ -234,52 +229,87 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
           )}
           {governanceDetail.state === GovProposalStateEnum.Active && !receipt && (
             <div className={clsx(styles.voteButtons, styles.mb32)}>
-              <Button
-                className={styles.voteButton}
-                onClick={handleVoteFor}
-                loading={loadingCastVote}
-                color="green"
+              <WalletConnect
+                fallback={
+                  <Button className={styles.voteButton} color="green">
+                    Vote for
+                  </Button>
+                }
+                blockchain="ethereum"
               >
-                Vote for
-              </Button>
-              <Button
-                className={styles.voteButton}
-                onClick={handleVoteAbstain}
-                loading={loadingCastVote}
+                <Button
+                  className={styles.voteButton}
+                  onClick={handleVoteFor}
+                  loading={loadingCastVote}
+                  color="green"
+                >
+                  Vote for
+                </Button>
+              </WalletConnect>
+              <WalletConnect
+                fallback={
+                  <Button className={styles.voteButton}>Vote abstain</Button>
+                }
+                blockchain="ethereum"
               >
-                Vote abstain
-              </Button>
-              <Button
-                className={styles.voteButton}
-                onClick={handleVoteAgainst}
-                loading={loadingCastVote}
-                color="red"
+                <Button
+                  className={styles.voteButton}
+                  onClick={handleVoteAbstain}
+                  loading={loadingCastVote}
+                >
+                  Vote abstain
+                </Button>
+              </WalletConnect>
+              <WalletConnect
+                fallback={
+                  <Button className={styles.voteButton} color="red">
+                    Vote against
+                  </Button>
+                }
+                blockchain="ethereum"
               >
-                Vote against
-              </Button>
+                <Button
+                  className={styles.voteButton}
+                  onClick={handleVoteAgainst}
+                  loading={loadingCastVote}
+                  color="red"
+                >
+                  Vote against
+                </Button>
+              </WalletConnect>
             </div>
           )}
           {governanceDetail.state === GovProposalStateEnum.Succeeded && (
-            <Button
-              onClick={handleQueueProposal}
-              loading={loadingQueue}
-              className={styles.mb32}
+            <WalletConnect
+              fallback={<Button className={styles.mb32}>Connect</Button>}
+              blockchain="ethereum"
             >
-              Queue
-            </Button>
+              <Button
+                onClick={handleQueueProposal}
+                loading={loadingQueue}
+                className={styles.mb32}
+              >
+                Queue
+              </Button>
+            </WalletConnect>
           )}
           {dateUtils.after(
             dateUtils.now(),
             dateUtils.formatUnix(governanceDetail.eta, 'YYYY-MM-DD HH:mm:ss')
           ) &&
             governanceDetail.state === GovProposalStateEnum.Queued && (
-              <Button
-                onClick={handleExecuteProposal}
-                loading={loadingExecute}
-                className={styles.mb32}
+              <WalletConnect
+                fallback={<Button className={styles.mb32}>Connect</Button>}
+                blockchain="ethereum"
               >
-                Execute
-              </Button>
+                <Button
+                  onClick={handleExecuteProposal}
+                  loading={loadingExecute}
+                  className={styles.mb32}
+                >
+                  Execute
+                </Button>
+              </WalletConnect>
             )}
           {governanceDetail.state === GovProposalStateEnum.Active && (
             <Typography align="center" className={styles.mb32}>

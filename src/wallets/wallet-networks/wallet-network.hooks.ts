@@ -53,10 +53,10 @@ export const useEagerConnect = () => {
   }, [])
 
   useEffect(() => {
-    if (!tried && wallet.connector) {
+    if (!tried && wallet?.connector) {
       setTried(true)
     }
-  }, [tried, wallet.connector])
+  }, [tried, wallet?.connector])
 
   return tried
 }
@@ -67,7 +67,7 @@ export const useInactiveListener = (suppress = false) => {
   useEffect(() => {
     const { ethereum } = window
 
-    if (ethereum?.on && !wallet.connector && !suppress) {
+    if (ethereum?.on && !wallet?.connector && !suppress) {
       const handleConnect = () => {
         console.log("Handling 'connect' event")
         activateWalletFx({ connector: connectors.injected })
@@ -75,15 +75,18 @@ export const useInactiveListener = (suppress = false) => {
 
       const handleChainChanged = (chainId: string | number) => {
         console.log("Handling 'chainChanged' event with payload", chainId)
+
+        if (!wallet) return
+
         updateWalletFx({ connector: connectors.injected, update: wallet })
       }
 
       const handleAccountsChanged = (accounts: string[]) => {
         console.log("Handling 'accountsChanged' event with payload", accounts)
 
-        if (accounts.length) {
-          updateWalletFx({ connector: connectors.injected, update: wallet })
-        }
+        if (!accounts.length || !wallet) return
+
+        updateWalletFx({ connector: connectors.injected, update: wallet })
       }
 
       ethereum.on('connect', handleConnect)
@@ -108,8 +111,8 @@ export const useEthereumNetwork = () => {
   useInactiveListener(!triedEager)
 
   useEffect(() => {
-    const handleUpdate = (update: ConnectorUpdate<number>) => {
-      if (!wallet.connector) return
+    const handleUpdate = (update: ConnectorUpdate<string>) => {
+      if (!wallet?.connector) return
 
       updateWalletFx({ connector: wallet.connector, update })
     }
@@ -119,10 +122,10 @@ export const useEthereumNetwork = () => {
     }
 
     const handleDeactivate = () => {
-      diactivateWalletFx(wallet.connector)
+      diactivateWalletFx(wallet?.connector)
     }
 
-    if (wallet.connector) {
+    if (wallet?.connector) {
       wallet.connector
         .on(ConnectorEvent.Update, handleUpdate)
         .on(ConnectorEvent.Error, handleError)
@@ -130,12 +133,12 @@ export const useEthereumNetwork = () => {
     }
 
     return () => {
-      if (wallet.connector) {
+      if (wallet?.connector) {
         wallet.connector
           .off(ConnectorEvent.Update, handleUpdate)
           .off(ConnectorEvent.Error, handleError)
           .off(ConnectorEvent.Deactivate, handleDeactivate)
       }
     }
-  }, [wallet.connector])
+  }, [wallet?.connector])
 }

@@ -12,8 +12,8 @@ import { toastsService } from '~/toasts'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import { AdapterActions, loadAdapter, isStaking } from '~/common/load-adapter'
 import { automationApi } from '~/automations/common/automation.api'
-import { WalletListPayload } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { Wallet } from '~/wallets/common'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 
 export const stakingListDomain = createDomain()
@@ -252,14 +252,14 @@ sample({
 })
 
 export const fetchMetrics = stakingListDomain.createEvent<{
-  wallet: WalletListPayload
+  wallet: Wallet
   protocolAdapter: string
 }>()
 
 export const fetchMetricsFx = stakingListDomain.createEffect(
   async (params: {
     contracts: Contract[]
-    wallet: WalletListPayload
+    wallet: Wallet
     protocolAdapter: string
   }) => {
     const networkProvider = walletNetworkModel.getNetwork(

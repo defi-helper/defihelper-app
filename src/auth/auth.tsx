@@ -7,14 +7,13 @@ import { Typography } from '~/common/typography'
 import { useWalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { toastsService } from '~/toasts'
-import { UserRejectionError } from '~/common/dialog'
-import * as styles from './setup-layout.css'
+import * as styles from './auth.css'
 
-export type SetupLayoutProps = {
+export type AuthProps = {
   className?: string
 }
 
-export const SetupLayout: React.VFC<SetupLayoutProps> = (props) => {
+export const Auth: React.VFC<AuthProps> = (props) => {
   const [openWalletList] = useWalletList()
 
   const handleConnect = async () => {
@@ -23,18 +22,10 @@ export const SetupLayout: React.VFC<SetupLayoutProps> = (props) => {
 
       if (!wallet.account) return
 
-      walletNetworkModel.signMessage({
-        chainId: String(wallet.chainId),
-        provider: wallet.provider,
-        account: wallet.account,
+      walletNetworkModel.activateWalletFx({
+        connector: wallet.connector,
       })
     } catch (error) {
-      if (error instanceof UserRejectionError) {
-        console.error(error.message)
-
-        return
-      }
-
       if (error instanceof Error) {
         toastsService.error(error.message)
       }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Route, RouteProps } from 'react-router-dom'
 
 import * as auth from '~/auth'
-import { SetupLayout } from '~/layouts/setup-layout'
+import { Auth } from '~/auth'
 
 export const PrivateRoute: React.FC<RouteProps> = (props) => {
   const [hasKey, setHasKey] = useState<string | null>(auth.sidUtils.get())
@@ -13,5 +13,5 @@ export const PrivateRoute: React.FC<RouteProps> = (props) => {
     return unsubscribe
   }, [])
 
-  return hasKey ? <Route {...props} /> : <SetupLayout />
+  return hasKey ? <Route {...props} /> : <Auth />
 }

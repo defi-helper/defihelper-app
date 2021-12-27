@@ -43,3 +43,11 @@ export const action = style({
 export const mb32 = style({
   marginBottom: 32,
 })
+
+export const loader = style({
+  padding: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: 'auto',
+})
