@@ -22,6 +22,8 @@ import {
   UserNotificationsListQueryVariables,
   UserNotificationToggleMutationVariables,
   UserNotificationToggleMutation,
+  BillingTransferCreateMutationVariables,
+  BillingTransferCreateMutation,
 } from '~/graphql/_generated-types'
 import {
   USER_CONTACTS,
@@ -36,6 +38,7 @@ import {
   USER_NOTIFICATION_LIST,
   USER_NOTIFICATION_TOGGLE,
 } from './graphql'
+import { BILLING_TRANSFER_CREATE } from '~/settings/common/graphql/billing-transfer-create.graphql'
 
 export const settingsApi = {
   userNotificationsList: () =>
@@ -47,6 +50,15 @@ export const settingsApi = {
       )
       .toPromise()
       .then(({ data }) => data?.userNotifications ?? []),
+
+  billingTransferCreate: (variables: BillingTransferCreateMutationVariables) =>
+    getAPIClient()
+      .mutation<
+        BillingTransferCreateMutation,
+        BillingTransferCreateMutationVariables
+      >(BILLING_TRANSFER_CREATE, variables)
+      .toPromise()
+      .then(({ data }) => data?.billingTransferCreate),
 
   userNotificationToggle: (
     variables: UserNotificationToggleMutationVariables

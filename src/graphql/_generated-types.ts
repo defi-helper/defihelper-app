@@ -4219,6 +4219,17 @@ export type ProposalFragmentFragment = { __typename?: 'ProposalType' } & Pick<
     }
   }
 
+export type BillingTransferCreateMutationVariables = Exact<{
+  input: BillingTransferCreateInputType
+}>
+
+export type BillingTransferCreateMutation = { __typename?: 'Mutation' } & {
+  billingTransferCreate: { __typename?: 'BillingTransferType' } & Pick<
+    BillingTransferType,
+    'id'
+  >
+}
+
 export type BillingHistoryQueryVariables = Exact<{
   filter?: Maybe<UserBillingTransferListFilterInputType>
   sort?: Maybe<
