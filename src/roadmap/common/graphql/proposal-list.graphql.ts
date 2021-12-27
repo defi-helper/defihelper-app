@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 import { PROPOSAL_FRAGMENT } from './proposal.fragment.graphql'
 

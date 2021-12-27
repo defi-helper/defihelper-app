@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const PROPOSAL_UNVOTE = gql`
   mutation ProposalUnvote($proposal: UuidType!) {

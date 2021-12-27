@@ -35,14 +35,12 @@ const defaultVariables = {
   ],
 }
 
-type Gate = {
-  group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-}
+type Params = Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
 
 export const fetchChartDataFx = portfolioCoinBalance.createEffect(
-  async (params: Gate) => {
+  async (params: Params) => {
     const result = await portfolioApi.getTokenMetricChart({
-      group: params.group,
+      group: params,
       ...defaultVariables,
       dateBefore: dateUtils.now(),
       dateAfter: dateUtils.after180Days(),
@@ -58,6 +56,17 @@ export const fetchChartDataFx = portfolioCoinBalance.createEffect(
     }))
   }
 )
+
+export const changeGroup =
+  portfolioCoinBalance.createEvent<
+    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+  >()
+
+export const $currentGroup = portfolioCoinBalance
+  .createStore<Exclude<MetricGroupEnum, MetricGroupEnum.Hour>>(
+    MetricGroupEnum.Day
+  )
+  .on(changeGroup, (_, payload) => payload)
 
 export const $portfolioCoinBalance = portfolioCoinBalance
   .createStore(
@@ -76,8 +85,8 @@ export const $portfolioCoinBalance = portfolioCoinBalance
   .on(fetchChartDataFx, (state, payload) => {
     return {
       ...state,
-      [payload.group]: {
-        ...state[payload.group],
+      [payload]: {
+        ...state[payload],
         loading: true,
       },
     }
@@ -85,8 +94,8 @@ export const $portfolioCoinBalance = portfolioCoinBalance
   .on(fetchChartDataFx.done, (state, { params, result }) => {
     return {
       ...state,
-      [params.group]: {
-        ...state[params.group],
+      [params]: {
+        ...state[params],
         loading: false,
         data: result,
       },

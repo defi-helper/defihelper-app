@@ -1,10 +1,9 @@
-import { createDomain, restore, combine } from 'effector-logger/macro'
-import { createGate } from 'effector-react'
+import { createDomain, restore, combine, guard } from 'effector-logger/macro'
+
 import {
   BillingHistoryQueryVariables,
   WalletFragmentFragment,
 } from '~/graphql/_generated-types'
-
 import { settingsApi } from '~/settings/common'
 import * as settingsWalletsModel from '~/settings/settings-wallets/settings-wallets.model'
 
@@ -23,6 +22,11 @@ const $billingHistory = restore(
 export const $count = restore(
   fetchBillingHistoryFx.doneData.map(({ count }) => count),
   0
+)
+
+export const $params = restore(
+  fetchBillingHistoryFx.map((params) => params),
+  null
 )
 
 export const $history = combine(
@@ -62,7 +66,9 @@ export const $wallets = $history.map((history) => {
   return Object.values(wallets)
 })
 
-export const BillingHistoryGate = createGate({
-  name: 'BillingHistoryGate',
-  domain: billingHistoryDomain,
+guard({
+  source: $params,
+  clock: [settingsWalletsModel.updated, settingsWalletsModel.created],
+  filter: (params): params is BillingHistoryQueryVariables => Boolean(params),
+  target: fetchBillingHistoryFx,
 })

@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const BILLING_HISTORY = gql`
   query BillingHistory(
@@ -18,6 +18,7 @@ export const BILLING_HISTORY = gql`
             account
             amount
             tx
+            confirmed
             bill {
               id
               blockchain

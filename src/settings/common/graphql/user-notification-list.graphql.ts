@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 import { NOTIFICATION_FRAGMENT } from './user-notification.fragment.graphql'
 
 export const USER_NOTIFICATION_LIST = gql`

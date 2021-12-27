@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const STAKING_DISCONNECT_WALLET = gql`
   mutation StakingDisconnectWallet($contract: UuidType!, $wallet: UuidType!) {

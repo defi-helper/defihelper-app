@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const STAKING_AUTOMATES_CONTRACTS = gql`
   query StakingAutomatesContracts(

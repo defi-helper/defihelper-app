@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 import { PORTFOLIO_ASSET_FRAGMENT } from '~/portfolio/common/graphql/portfolio-asset.fragment.graphql'
 
 export const ASSETS_LIST = gql`

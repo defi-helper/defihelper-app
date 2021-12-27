@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const WALLET_FRAGMENT = gql`
   fragment walletFragment on WalletType {

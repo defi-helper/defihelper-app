@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const PROTOCOL_FRAGMENT = gql`
   fragment protocolFragment on ProtocolType {

@@ -1,4 +1,4 @@
-import { createDomain } from 'effector-logger/macro'
+import { createDomain, sample } from 'effector-logger/macro'
 import contracts from '@defihelper/networks/contracts.json'
 import { ethers } from 'ethers'
 import Balance from '@defihelper/networks/abi/Balance.json'
@@ -20,6 +20,7 @@ type Params = {
   walletAddress: string
   chainId: string
   provider: unknown
+  blockchain: BlockchainEnum
 }
 
 export const walletListDomain = createDomain()
@@ -110,7 +111,7 @@ export const depositFx = walletListDomain.createEffect(
       const result = await transactionReceipt.wait()
       await settingsApi.billingTransferCreate({
         input: {
-          blockchain: BlockchainEnum.Ethereum,
+          blockchain: params.blockchain,
           network: params.chainId,
           account: params.walletAddress,
           amount: params.amount,
@@ -207,6 +208,14 @@ export const $wallets = walletListDomain
         : wallet
     )
   )
+
+export const updated = walletListDomain.createEvent()
+export const created = walletListDomain.createEvent()
+
+sample({
+  clock: [updated, created],
+  target: fetchWalletListFx,
+})
 
 toastsService.forwardErrors(
   depositFx.failData,

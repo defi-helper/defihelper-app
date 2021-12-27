@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const STAKING_CONTRACT_METRIC = gql`
   query StakingContractMetric(

@@ -16,11 +16,14 @@ generates:
           content: '/* eslint-disable */'
       - fragment-matcher
   src/graphql/_generated-types.ts:
+    config:
+      withHooks: true
     plugins:
       - add:
           content: '/* eslint-disable */'
       - typescript
       - typescript-operations
+      - typescript-urql
 hooks:
   afterAllFileWrite:
     - prettier --write

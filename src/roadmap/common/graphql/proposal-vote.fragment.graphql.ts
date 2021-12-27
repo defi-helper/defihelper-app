@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const PROPOSAL_VOTE_FRAGMENT = gql`
   fragment proposalVoteFragment on VoteType {

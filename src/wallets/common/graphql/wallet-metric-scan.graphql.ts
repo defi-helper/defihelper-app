@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const WALLET_METRIC_SCAN = gql`
   mutation WalletMetricScan($wallet: UuidType!, $contract: UuidType!) {

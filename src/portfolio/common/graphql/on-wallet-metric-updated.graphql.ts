@@ -1,4 +1,4 @@
-import { gql } from '@urql/core'
+import { gql } from 'urql'
 
 export const ON_WALLET_METRIC_UPDATED = gql`
   subscription OnWalletMetricUpdated($wallet: [UuidType!]) {

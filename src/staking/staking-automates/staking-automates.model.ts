@@ -64,7 +64,7 @@ export const scanWalletMetricFx = stakingAutomatesDomain.createEffect(
   }
 )
 
-export const fetchAdapter = stakingAutomatesDomain.createEffect(
+export const fetchAdapterFx = stakingAutomatesDomain.createEffect(
   async (params: FetchAdapterParams) => {
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,
@@ -84,16 +84,16 @@ export const fetchAdapter = stakingAutomatesDomain.createEffect(
 
 export const reset = stakingAutomatesDomain.createEvent()
 
-export const $adapter = restore(fetchAdapter.doneData, null)
+export const $adapter = restore(fetchAdapterFx.doneData, null)
 export const $action = restore(
-  fetchAdapter.done.map(({ params }) => params.action),
+  fetchAdapterFx.done.map(({ params }) => params.action),
   null
 )
 
 export const $automatesContracts = stakingAutomatesDomain
   .createStore<StakingAutomatesContract[]>([])
   .on(fetchAutomatesContractsFx.doneData, (_, { list }) => list)
-  .on(fetchAdapter, (state, payload) =>
+  .on(fetchAdapterFx, (state, payload) =>
     state.map((contract) =>
       contract.id === payload.contractId
         ? { ...contract, [LOAD_TYPES[payload.action]]: true }
@@ -112,6 +112,8 @@ export const StakingAutomatesGate = createGate<string | null>({
   defaultState: null,
 })
 
+export const updated = stakingAutomatesDomain.createEvent()
+
 sample({
   clock: guard({
     source: [
@@ -123,6 +125,7 @@ sample({
       authModel.$user.updates,
       StakingAutomatesGate.open,
       deployModel.deployFx.doneData,
+      updated,
     ],
     filter: (source): source is [UserType, boolean, string] => {
       const [user, status] = source
