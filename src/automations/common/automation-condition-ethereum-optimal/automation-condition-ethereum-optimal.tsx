@@ -10,7 +10,7 @@ import { AutomationChooseButton } from '../automation-choose-button'
 import { AutomationConditionActionsDialog } from '../automation-condition-actions-dialog'
 import { AutomationForm } from '../automation-form'
 import * as styles from './automation-condition-ethereum-optimal.css'
-import { automationConditionEthereumOptimalSchema } from '~/automations/common/automation-condition-ethereum-optimal/automation-condition-ethereum-optimal.validation'
+import { automationConditionEthereumOptimalSchema } from './automation-condition-ethereum-optimal.validation'
 
 type FormValues = {
   id: string
