@@ -1,6 +1,5 @@
 import { guard, createDomain } from 'effector-logger/macro'
 import omit from 'lodash.omit'
-import type { AbstractConnector } from '@web3-react/abstract-connector'
 import { createGate } from 'effector-react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -15,6 +14,7 @@ import { toastsService } from '~/toasts'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { parseError } from '~/common/parse-error'
+import { Wallet } from '~/wallets/common'
 
 export type StakingAdapter = {
   wallet: null | AdapterWallet
@@ -45,12 +45,7 @@ export type ContractAction = {
   amount: string
   contractAddress: string
   contractId: string
-  wallet: {
-    connector: AbstractConnector
-    provider: unknown
-    chainId: string
-    account: string
-  }
+  wallet: Wallet
 }
 
 export const stakingAdaptersDomain = createDomain()
