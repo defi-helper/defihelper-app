@@ -1,15 +1,15 @@
 import { useGate, useStore } from 'effector-react'
 
 import { StakingAdapterForm, StakingAdapterFormProps } from '~/staking/common'
-import { useWalletList } from '~/wallets/wallet-list'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { switchNetwork } from '~/wallets/common'
+import { toastsService } from '~/toasts'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { WalletConnect } from '~/wallets/wallet-connect'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
-import { toastsService } from '~/toasts'
-import { WalletConnect } from '~/wallets/wallet-connect'
 
 export type StakingAdaptersProps = {
   className?: string
@@ -31,21 +31,18 @@ const FORM_LAYOUTS: Record<
 }
 
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
-  const [openWalletList] = useWalletList()
   const [openAdapterForm] = useDialog(FORM_LAYOUTS[props.contractLayout])
+
+  const wallet = walletNetworkModel.useWalletNetwork()
 
   const contractLoading = useStore(model.fetchContractAdapterFx.pending)
 
   const createAdapterAction =
     (action?: model.ContractAction['action']) => async () => {
       try {
-        const wallet = await openWalletList({
-          blockchain: props.blockchain,
-        })
+        if (!wallet?.account) return
 
         await switchNetwork(props.network)
-
-        if (!wallet.account) return
 
         const contract = await model.fetchContractAdapterFx({
           protocolAdapter: props.protocolAdapter,
@@ -89,11 +86,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           actions: contract?.actions ?? undefined,
           decimals: contract?.staking.decimals,
           contractId: props.contractId,
-          wallet: {
-            ...wallet,
-            account: wallet.account,
-            chainId: String(wallet.chainId),
-          },
+          wallet,
         })
       } catch (error) {
         if (error instanceof Error) {
