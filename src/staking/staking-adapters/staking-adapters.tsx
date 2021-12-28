@@ -98,7 +98,6 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const handleClaim = createAdapterAction('claim')
   const handleStake = createAdapterAction('stake')
   const handleUnStake = createAdapterAction('unstake')
-  const handleExit = createAdapterAction('exit')
 
   const actions = useStore(model.$actions)
   const action = actions[props.contractAddress]
@@ -169,19 +168,6 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           </Button>
         </WalletConnect>
       </div>
-      {false && (
-        <div>
-          <Button
-            onClick={handleExit}
-            disabled={action?.disabled}
-            loading={action?.exit || contractLoading}
-            size="small"
-            variant="outlined"
-          >
-            {action?.exit ? 'loading...' : 'Exit'}
-          </Button>
-        </div>
-      )}
     </div>
   )
 }

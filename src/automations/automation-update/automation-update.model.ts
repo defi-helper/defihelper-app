@@ -173,6 +173,14 @@ export const $conditionsPriority = restore(
   0
 )
 
+$actions.reset(AutomationUpdateGate.close)
+$actionsPriority.reset(AutomationUpdateGate.close)
+$conditions.reset(AutomationUpdateGate.close)
+$conditionsPriority.reset(AutomationUpdateGate.close)
+$protocols.reset(AutomationUpdateGate.close)
+$createdTrigger.reset(AutomationUpdateGate.close)
+$updatedTrigger.reset(AutomationUpdateGate.close)
+
 toastsService.forwardErrors(
   createActionFx.failData,
   updateActionFx.failData,

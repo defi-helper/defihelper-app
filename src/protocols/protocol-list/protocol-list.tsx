@@ -150,7 +150,9 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           )}
           {!loading && !protocols?.length && (
             <li>
-              <Paper radius={8}>no protocols found</Paper>
+              <Paper radius={8} className={styles.empty}>
+                No protocols found
+              </Paper>
             </li>
           )}
           {!loading &&

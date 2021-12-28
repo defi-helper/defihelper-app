@@ -112,6 +112,10 @@ export const hiddenListItem = style({
   filter: 'sepia(.8)',
 })
 
+export const empty = style({
+  padding: 16,
+})
+
 export const row = style({
   display: 'grid',
   gridTemplateColumns: '15% 14% 10% 12% 12% 12% 1fr',

@@ -21,6 +21,7 @@ import { useQueryParams } from '~/common/hooks'
 import { Head } from '~/common/head'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
+import { Loader } from '~/common/loader'
 import * as model from './roadmap-list.model'
 import * as styles from './roadmap-list.css'
 
@@ -138,7 +139,11 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           + New Proposal
         </Button>
       </div>
-      {loading && <Paper radius={8}>loading...</Paper>}
+      {loading && (
+        <Paper radius={8} className={styles.loader}>
+          <Loader height="36" />
+        </Paper>
+      )}
       {!loading && hasGroupedProposals && !status && (
         <RoadmapGroupedByStatus
           proposals={groupedProposals}

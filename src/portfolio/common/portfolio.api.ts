@@ -14,6 +14,8 @@ import {
   AssetListQuery,
   TokenAliasesQuery,
   TokenAliasesQueryVariables,
+  AssetsListByWalletQuery,
+  AssetsListByWalletQueryVariables,
 } from '~/graphql/_generated-types'
 import {
   ADD_WALLET,
@@ -23,6 +25,7 @@ import {
   TOKEN_METRIC_CHART,
   TOKEN_ALIASSES,
   ASSETS_LIST,
+  ASSETS_LIST_BY_WALLET,
 } from './graphql'
 
 export const portfolioApi = {
@@ -49,6 +52,19 @@ export const portfolioApi = {
       .query<AssetListQuery, AssetListQueryVariables>(ASSETS_LIST, variables)
       .toPromise()
       .then(({ data }) => data?.me?.tokenAliases.list ?? []),
+
+  getAssetsListByWallet: (variables: AssetsListByWalletQueryVariables) =>
+    getAPIClient()
+      .query<AssetsListByWalletQuery, AssetsListByWalletQueryVariables>(
+        ASSETS_LIST_BY_WALLET,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => {
+        const [wallet = undefined] = data?.me?.wallets.list ?? []
+
+        return wallet?.tokenAliases.list ?? []
+      }),
 
   addWallet: (variables: AddWalletMutationVariables) =>
     getAPIClient()

@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import isEmpty from 'lodash.isempty'
 
 import { useDialog } from '~/common/dialog'
@@ -82,18 +82,24 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
   useGate(model.StakingAutomatesGate, props.protocolId ?? null)
 
-  const walletIds = wallets.map(({ id }) => id)
+  const walletIds = useMemo(() => wallets.map(({ id }) => id), [wallets])
 
-  const [walletUpdated] = useOnWalletMetricUpdatedSubscription({
-    variables: {
-      wallet: walletIds,
-    },
-  })
-  const [tokenMetricUpdated] = useOnTokenMetricUpdatedSubscription({
-    variables: {
-      wallet: walletIds,
-    },
-  })
+  const [walletUpdated, onWalletMetricUpdated] =
+    useOnWalletMetricUpdatedSubscription()
+  const [tokenMetricUpdated, onTokenMetricUpdated] =
+    useOnTokenMetricUpdatedSubscription()
+
+  useEffect(() => {
+    const opts = {
+      variables: {
+        wallet: walletIds,
+      },
+    }
+
+    onTokenMetricUpdated(opts)
+    onWalletMetricUpdated(opts)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [walletIds])
 
   useEffect(() => {
     if (walletUpdated.data || tokenMetricUpdated.data) {

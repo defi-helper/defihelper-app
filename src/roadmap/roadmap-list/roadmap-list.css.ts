@@ -40,3 +40,10 @@ export const input = style({
 export const addButton = style({
   marginLeft: 24,
 })
+
+export const loader = style({
+  padding: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+})

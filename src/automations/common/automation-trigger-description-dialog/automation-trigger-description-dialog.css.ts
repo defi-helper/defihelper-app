@@ -3,8 +3,6 @@ import { globalStyle, style } from '@vanilla-extract/css'
 import { theme } from '~/common/theme'
 
 export const content = style({
-  overflowX: 'hidden',
-  overflowY: 'auto',
   marginBottom: 24,
 })
 

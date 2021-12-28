@@ -6,6 +6,8 @@ import { authModel } from '~/auth'
 import { RoadmapCard } from '~/roadmap/common'
 import { Paper } from '~/common/paper'
 import { Head } from '~/common/head'
+import { Loader } from '~/common/loader'
+import * as styles from './roadmap-detail.css'
 import * as model from './roadmap-detail.model'
 
 export type RoadmapDetailProps = unknown
@@ -45,8 +47,12 @@ export const RoadmapDetail: React.VFC<RoadmapDetailProps> = () => {
             voted={voted}
           />
         )}
-        {loading && 'loading...'}
-        {!loading && !proposal && 'not found'}
+        {loading && (
+          <div className={styles.loader}>
+            <Loader height="36" />
+          </div>
+        )}
+        {!loading && !proposal && 'Not found'}
       </Paper>
     </AppLayout>
   )
