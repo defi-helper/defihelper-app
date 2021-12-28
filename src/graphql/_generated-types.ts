@@ -2918,6 +2918,7 @@ export type WalletContractListType = {
 }
 
 export type WalletListFilterInputType = {
+  id?: Maybe<Scalars['UuidType']>
   blockchain?: Maybe<BlockchainFilterInputType>
   type?: Maybe<WalletTypeEnum>
   search?: Maybe<Scalars['String']>
@@ -2997,6 +2998,25 @@ export type WalletMetricUpdatedEvent = {
   contract: ContractType
 }
 
+export type WalletTokenAliasListFilterInputType = {
+  /** Liquidity token */
+  liquidity?: Maybe<Array<TokenAliasLiquidityEnum>>
+}
+
+export type WalletTokenAliasListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type WalletTokenAliasListType = {
+  __typename?: 'WalletTokenAliasListType'
+  /** Elements */
+  list?: Maybe<Array<TokenAlias>>
+  pagination: Pagination
+}
+
 export type WalletTokenMetricChartFilterInputType = {
   /** Target token alias */
   tokenAlias?: Maybe<UserMetricsTokenAliasFilterInputType>
@@ -3043,6 +3063,7 @@ export type WalletType = {
   name: Scalars['String']
   contracts: WalletContractListType
   triggersCount: Scalars['Int']
+  tokenAliases: WalletTokenAliasListType
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
   metric: WalletMetricType
@@ -3055,6 +3076,11 @@ export type WalletTypeContractsArgs = {
   filter?: Maybe<WalletContractListFilterInputType>
   sort?: Maybe<Array<WalletContractListSortInputType>>
   pagination?: Maybe<WalletContractListPaginationInputType>
+}
+
+export type WalletTypeTokenAliasesArgs = {
+  filter?: Maybe<WalletTokenAliasListFilterInputType>
+  pagination?: Maybe<WalletTokenAliasListPaginationInputType>
 }
 
 export type WalletTypeMetricChartArgs = {
@@ -3626,6 +3652,30 @@ export type AddWalletMutation = { __typename?: 'Mutation' } & {
     { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
         user: { __typename?: 'UserType' } & Pick<UserType, 'id'>
       }
+  >
+}
+
+export type AssetsListByWalletQueryVariables = Exact<{
+  walletId?: Maybe<Scalars['UuidType']>
+}>
+
+export type AssetsListByWalletQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      wallets: { __typename?: 'WalletListType' } & {
+        list?: Maybe<
+          Array<
+            { __typename?: 'WalletType' } & {
+              tokenAliases: { __typename?: 'WalletTokenAliasListType' } & {
+                list?: Maybe<
+                  Array<{ __typename?: 'TokenAlias' } & PortfolioAssetFragment>
+                >
+              }
+            }
+          >
+        >
+      }
+    }
   >
 }
 
@@ -5770,6 +5820,37 @@ export function useAddWalletMutation() {
   return Urql.useMutation<AddWalletMutation, AddWalletMutationVariables>(
     AddWalletDocument
   )
+}
+export const AssetsListByWalletDocument = gql`
+  query AssetsListByWallet($walletId: UuidType) {
+    me {
+      wallets(filter: { id: $walletId }) {
+        list {
+          tokenAliases(
+            filter: { liquidity: [stable, unstable] }
+            pagination: { limit: 100, offset: 0 }
+          ) {
+            list {
+              ...portfolioAsset
+            }
+          }
+        }
+      }
+    }
+  }
+  ${PortfolioAssetFragmentDoc}
+`
+
+export function useAssetsListByWalletQuery(
+  options: Omit<
+    Urql.UseQueryArgs<AssetsListByWalletQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<AssetsListByWalletQuery>({
+    query: AssetsListByWalletDocument,
+    ...options,
+  })
 }
 export const AssetListDocument = gql`
   query AssetList {

@@ -282,11 +282,15 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           </div>
           <ul className={styles.list}>
             {loading && (
-              <div className={styles.loader}>
+              <li className={clsx(styles.loader, styles.listItem)}>
                 <Loader height="24" />
-              </div>
+              </li>
             )}
-            {!loading && !staking.length && <Paper>no contracts found</Paper>}
+            {!loading && !staking.length && (
+              <li className={clsx(styles.listItem)}>
+                <div className={styles.empty}>No contracts found</div>
+              </li>
+            )}
             {!loading &&
               staking.map((stakingListItem) => {
                 const opened = stakingListItem.address === openedContract

@@ -37,7 +37,7 @@ import {
 export const stakingApi = {
   contractList: (variables: StakingContractListQueryVariables) =>
     getAPIClient()
-      .mutation<StakingContractListQuery, StakingContractListQueryVariables>(
+      .query<StakingContractListQuery, StakingContractListQueryVariables>(
         STAKING_CONTRACT_LIST,
         variables
       )

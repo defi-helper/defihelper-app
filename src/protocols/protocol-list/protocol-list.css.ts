@@ -22,6 +22,13 @@ export const header = composeStyles(
   })
 )
 
+export const empty = style({
+  display: 'flex',
+  padding: '9px 9px 9px 18px',
+  minHeight: 56,
+  alignItems: 'center',
+})
+
 export const tabs = style({
   marginLeft: 'auto',
 })

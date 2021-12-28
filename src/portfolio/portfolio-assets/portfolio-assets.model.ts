@@ -1,49 +1,27 @@
-import { createDomain, sample } from 'effector-logger/macro'
-
+import { createDomain, sample, guard, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
-import BN from 'bignumber.js'
-import { portfolioApi } from '~/portfolio/common'
+
+import { portfolioApi, portfolioSortAssets } from '~/portfolio/common'
 import { PortfolioAssetFragment } from '~/graphql/_generated-types'
 
 export const portfolioAssetsDomain = createDomain()
 
-export const fetchAssetsListFx = portfolioAssetsDomain.createEffect(
-  async () => {
-    return portfolioApi.getAssetsList({})
-  }
+export const fetchAssetsListFx = portfolioAssetsDomain.createEffect(() => {
+  return portfolioApi.getAssetsList({}).then(portfolioSortAssets)
+})
+
+export const fetchAssetsByWallet = portfolioAssetsDomain.createEffect(
+  (walletId: string) =>
+    portfolioApi.getAssetsListByWallet({ walletId }).then(portfolioSortAssets)
 )
 
 export const $assets = portfolioAssetsDomain
   .createStore<PortfolioAssetFragment[]>([])
-  .on(fetchAssetsListFx.doneData, (_, list) => {
-    const l = list.filter((v) => v.metric.myUSD !== '0')
-    const totalValue = l.reduce(
-      (prev, v) => prev.plus(new BN(v.metric.myUSD)),
-      new BN(0)
-    )
+  .on(fetchAssetsListFx.doneData, (_, payload) => payload)
 
-    return l
-      .map((v) => {
-        const percent = new BN(v.metric.myUSD)
-          .multipliedBy(100)
-          .dividedBy(totalValue)
+export const $assetsByWallet = restore(fetchAssetsByWallet.doneData, [])
 
-        return {
-          ...v,
-          metric: {
-            ...v.metric,
-            myPortfolioPercent: percent.toString(10),
-          },
-        }
-      })
-      .sort((a, b) =>
-        new BN(b.metric.myPortfolioPercent)
-          .minus(new BN(a.metric.myPortfolioPercent))
-          .toNumber()
-      )
-  })
-
-export const PortfolioAssetsGate = createGate({
+export const PortfolioAssetsGate = createGate<string>({
   domain: portfolioAssetsDomain,
   name: 'PortfolioAssetsGate',
 })
@@ -51,4 +29,10 @@ export const PortfolioAssetsGate = createGate({
 sample({
   clock: PortfolioAssetsGate.open,
   target: fetchAssetsListFx,
+})
+
+guard({
+  clock: PortfolioAssetsGate.state.updates,
+  filter: (clock) => Boolean(clock),
+  target: fetchAssetsByWallet,
 })

@@ -28,14 +28,7 @@ export const tableWrap = style({
 })
 
 export const table = style({
-  padding: 16,
   minWidth: 900,
-
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      padding: '24px 26px',
-    },
-  },
 })
 
 export const tableRow = style({
@@ -50,10 +43,20 @@ export const tableRow = style({
 })
 
 export const tableHeader = style({
-  color: theme.colors.textColorGrey,
+  padding: '16px 26px',
+  borderBottom: `1px solid ${theme.colors.border}`,
+  display: 'flex',
+  justifyContent: 'space-between',
 })
 
-export const tableBody = style({})
+export const tableHeadings = style({
+  color: theme.colors.textColorGrey,
+  padding: '16px 26px 0',
+})
+
+export const tableBody = style({
+  padding: '0 26px 16px',
+})
 
 export const tableCol = style({})
 
@@ -98,4 +101,23 @@ export const assetLogoPlaceholder = style({
 export const assetLogo = style({
   width: 24,
   height: 24,
+})
+
+export const select = style({
+  width: 200,
+  display: 'flex',
+  flexDirection: 'column',
+  padding: '8px 16px',
+})
+
+export const selectArrow = style({
+  marginLeft: 4,
+})
+
+export const selectOption = style({
+  justifyContent: 'flex-start',
+})
+
+export const selectOptionActive = style({
+  opacity: 0.4,
 })

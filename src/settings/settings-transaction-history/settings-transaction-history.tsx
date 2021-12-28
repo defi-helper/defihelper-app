@@ -17,6 +17,7 @@ import { networksConfig } from '~/networks-config'
 import { Loader } from '~/common/loader'
 import * as styles from './settings-transaction-history.css'
 import * as model from './settings-transaction-history.model'
+import { TablePagination } from '~/common/table-pagination'
 
 export type SettingsTransactionHistoryProps = {
   className?: string
@@ -25,21 +26,6 @@ export type SettingsTransactionHistoryProps = {
 const STATUSES = {
   confirmed: 'Confirmed',
   pending: 'Pending',
-}
-
-const defaultLabelDisplayedRows = (from: number, to: number, count: number) => {
-  return `${from}-${to} of ${count !== -1 ? count : `more than ${to}`}`
-}
-
-const getLabelDisplayedRowsTo = (
-  count: number,
-  page: number,
-  rowsPerPage: number
-) => {
-  if (count === -1) {
-    return (page + 1) * rowsPerPage
-  }
-  return rowsPerPage === -1 ? count : Math.min(count, (page + 1) * rowsPerPage)
 }
 
 const ROWS_PER_PAGE = 10
@@ -59,14 +45,6 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
     }
 
     const wallets = useStore(model.$wallets)
-
-    const handlePrev = () => {
-      setPages(page - 1)
-    }
-
-    const handleNext = () => {
-      setPages(page + 1)
-    }
 
     useEffect(() => {
       model.fetchBillingHistoryFx({
@@ -137,33 +115,13 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                       </ButtonBase>
                     ))}
                   </Dropdown>
-                  <div className={styles.pagination}>
-                    <Typography
-                      variant="body2"
-                      as="span"
-                      className={styles.paginationCount}
-                    >
-                      {defaultLabelDisplayedRows(
-                        count === 0 ? 0 : page * ROWS_PER_PAGE + 1,
-                        getLabelDisplayedRowsTo(count, page, ROWS_PER_PAGE),
-                        count === -1 ? -1 : count
-                      )}
-                    </Typography>
-                    <ButtonBase
-                      className={styles.paginationButton}
-                      onClick={handlePrev}
-                      disabled={count < ROWS_PER_PAGE}
-                    >
-                      <Icon icon="arrowLeft" width="16" />
-                    </ButtonBase>
-                    <ButtonBase
-                      className={styles.paginationButton}
-                      onClick={handleNext}
-                      disabled={count < ROWS_PER_PAGE}
-                    >
-                      <Icon icon="arrowRight" width="16" />
-                    </ButtonBase>
-                  </div>
+                  <TablePagination
+                    rowsPerPage={ROWS_PER_PAGE}
+                    count={count}
+                    className={styles.pagination}
+                    onChange={setPages}
+                    value={page}
+                  />
                 </div>
                 <div className={clsx(styles.row, styles.grey)}>
                   <Typography variant="body2" as="div">
