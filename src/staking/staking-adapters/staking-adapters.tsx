@@ -31,7 +31,9 @@ const FORM_LAYOUTS: Record<
 }
 
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
-  const [openAdapterForm] = useDialog(FORM_LAYOUTS[props.contractLayout])
+  const currentLayout = FORM_LAYOUTS[props.contractLayout]
+
+  const [openAdapterForm] = useDialog(currentLayout)
 
   const wallet = walletNetworkModel.useWalletNetwork()
 
@@ -69,6 +71,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         )
 
         if (action === 'stake') {
+          if (!currentLayout) throw new Error('invalid layout')
+
           amount = await openAdapterForm({
             metrics: contract.metrics,
             reward: contract.reward,
