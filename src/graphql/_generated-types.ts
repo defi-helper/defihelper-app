@@ -4548,6 +4548,7 @@ export type StakingAutomatesContractsQuery = { __typename?: 'Query' } & {
         { __typename?: 'AutomateContractType' } & Pick<
           AutomateContractType,
           | 'id'
+          | 'archivedAt'
           | 'address'
           | 'adapter'
           | 'initParams'
@@ -6931,6 +6932,7 @@ export const StakingAutomatesContractsDocument = gql`
         protocol {
           adapter
         }
+        archivedAt
         contract {
           id
           protocolId

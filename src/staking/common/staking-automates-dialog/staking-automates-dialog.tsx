@@ -66,6 +66,8 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
       await tx.wait()
 
       if (steps.value && currentStepNumber < steps.value.length - 1) {
+        steps.retry()
+
         setCurrentStepNumber(currentStepNumber + 1)
       } else {
         props.onConfirm()
@@ -89,6 +91,8 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
     await tx.wait()
 
     if (steps.value && currentStepNumber < steps.value.length - 1) {
+      steps.retry()
+
       setCurrentStepNumber(currentStepNumber + 1)
     } else {
       props.onConfirm()

@@ -34,6 +34,7 @@ import { toastsService } from '~/toasts'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
 import { WalletConnect } from '~/wallets/wallet-connect'
+import { networksConfig } from '~/networks-config'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
@@ -309,6 +310,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   100
                 )
 
+                const currentNetwork = networksConfig[stakingListItem.network]
+
                 return (
                   <li
                     key={stakingListItem.id}
@@ -319,6 +322,14 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   >
                     <div className={clsx(styles.card, styles.row)}>
                       <div className={styles.tableCol}>
+                        {currentNetwork && (
+                          <div className={styles.coinIcons}>
+                            <Icon
+                              className={styles.coinIcon}
+                              icon={currentNetwork.icon}
+                            />
+                          </div>
+                        )}
                         <Typography variant="body2" as="div">
                           {stakingListItem.name}
                         </Typography>

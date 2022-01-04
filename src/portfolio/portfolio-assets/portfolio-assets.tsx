@@ -9,8 +9,8 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as styles from './portfolio-assets.css'
 import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { settingsWalletModel } from '~/settings/settings-wallets'
+import { PortfolioAssetCard } from '../common'
 
 export type PortfolioAssetsProps = {
   className?: string
@@ -127,31 +127,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
           </div>
           <div className={styles.tableBody}>
             {(currentWallet ? assetsByWallet : assets).map((row, rowIndex) => (
-              <div key={String(rowIndex)} className={styles.tableRow}>
-                <Typography variant="body2">
-                  {bignumberUtils.format(row.metric.myPortfolioPercent, 2)}%
-                </Typography>
-
-                <Typography variant="body2" className={styles.assetName}>
-                  {row.logoUrl ? (
-                    <img
-                      src={row.logoUrl}
-                      className={styles.assetLogo}
-                      alt={`${row.name} logo`}
-                    />
-                  ) : (
-                    <div className={styles.assetLogoPlaceholder} />
-                  )}
-                  {row.name} ({row.symbol})
-                </Typography>
-
-                <Typography variant="body2">
-                  {bignumberUtils.format(row.metric.myBalance)}
-                </Typography>
-                <Typography variant="body2">
-                  ${bignumberUtils.format(row.metric.myUSD)}
-                </Typography>
-              </div>
+              <PortfolioAssetCard key={String(rowIndex)} row={row} />
             ))}
           </div>
         </Paper>

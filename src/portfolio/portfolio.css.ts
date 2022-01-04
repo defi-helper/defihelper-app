@@ -55,7 +55,11 @@ export const mainChart = style({
 })
 
 export const section = style({
-  marginBottom: 64,
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 64,
+    },
+  },
 })
 
 export const loader = style({

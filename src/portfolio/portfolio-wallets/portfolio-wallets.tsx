@@ -1,9 +1,14 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
+import React from 'react'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
+import isEmpty from 'lodash.isempty'
 
 import { Button } from '~/common/button'
-import { PortfolioAddWalletDialog } from '~/portfolio/common'
+import {
+  PortfolioAddWalletDialog,
+  PortfolioAssetCard,
+} from '~/portfolio/common'
 import { useDialog } from '~/common/dialog'
 import { Can } from '~/auth'
 import { useWalletList } from '~/wallets/wallet-list'
@@ -15,10 +20,12 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { cutAccount } from '~/common/cut-account'
 import { Link } from '~/common/link'
 import { Typography } from '~/common/typography'
+import { ButtonBase } from '~/common/button-base'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
+import { networksConfig } from '~/networks-config'
 import * as model from './portfolio-wallets.model'
 import * as styles from './portfolio-wallets.css'
-import { networksConfig } from '~/networks-config'
+import { Loader } from '~/common/loader'
 
 export type PortfolioWalletsProps = {
   className?: string
@@ -27,6 +34,10 @@ export type PortfolioWalletsProps = {
 export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   const [openAddWalletDialog] = useDialog(PortfolioAddWalletDialog)
   const [openWalletList] = useWalletList()
+  const openedWallet = useStore(model.$openedWallet)
+  const wallets = useStore(settingsWalletModel.$wallets)
+  const assetsByWallet = useStore(model.$assetsByWallet)
+  const assetsLoading = useStore(model.fetchAssetsByWalletFx.pending)
 
   const handleOpenAddWalletDialog = async () => {
     try {
@@ -58,7 +69,9 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
     }
   }
 
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const handleOpenWallet = (walletId: string | null) => () => {
+    model.openWallet(walletId)
+  }
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -101,46 +114,86 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
           </div>
           <div className={styles.tableBody}>
             {wallets.map((wallet) => (
-              <div key={wallet.id} className={styles.tableRow}>
-                <Typography variant="body2" as="div">
-                  <Jazzicon
-                    diameter={20}
-                    seed={jsNumberForAddress(wallet.address)}
-                    paperStyles={{ verticalAlign: 'middle' }}
-                  />{' '}
-                  {wallet.name || 'untitled'}
-                </Typography>
-                <Typography variant="body2" as="div">
-                  {networksConfig[wallet.network] && (
-                    <Icon
-                      icon={networksConfig[wallet.network].icon}
-                      className={styles.blockchainIcon}
-                    />
-                  )}{' '}
-                  <Link
-                    href={buildExplorerUrl({
-                      network: wallet.network,
-                      address: wallet.address,
-                    })}
-                    target="_blank"
+              <React.Fragment key={wallet.id}>
+                <div className={styles.tableRow}>
+                  <Typography variant="body2" as="div">
+                    <Jazzicon
+                      diameter={20}
+                      seed={jsNumberForAddress(wallet.address)}
+                      paperStyles={{ verticalAlign: 'middle' }}
+                    />{' '}
+                    {wallet.name || 'untitled'}
+                  </Typography>
+                  <Typography variant="body2" as="div">
+                    {networksConfig[wallet.network] && (
+                      <Icon
+                        icon={networksConfig[wallet.network].icon}
+                        className={styles.blockchainIcon}
+                      />
+                    )}{' '}
+                    <Link
+                      href={buildExplorerUrl({
+                        network: wallet.network,
+                        address: wallet.address,
+                      })}
+                      target="_blank"
+                    >
+                      {cutAccount(wallet.address)}
+                    </Link>
+                  </Typography>
+                  <Typography variant="body2" as="div">
+                    {wallet.triggersCount}
+                  </Typography>
+                  <Typography variant="body2" as="div">
+                    $
+                    {bignumberUtils.format(
+                      bignumberUtils.total(
+                        wallet.metric.stakedUSD,
+                        wallet.metric.earnedUSD,
+                        wallet.metric.usd
+                      )
+                    )}
+                  </Typography>
+                  <ButtonBase
+                    onClick={handleOpenWallet(
+                      openedWallet === wallet.id ? null : wallet.id
+                    )}
                   >
-                    {cutAccount(wallet.address)}
-                  </Link>
-                </Typography>
-                <Typography variant="body2" as="div">
-                  {wallet.triggersCount}
-                </Typography>
-                <Typography variant="body2" as="div">
-                  $
-                  {bignumberUtils.format(
-                    bignumberUtils.total(
-                      wallet.metric.stakedUSD,
-                      wallet.metric.earnedUSD,
-                      wallet.metric.usd
-                    )
-                  )}
-                </Typography>
-              </div>
+                    <Icon
+                      icon={
+                        openedWallet === wallet.id ? 'arrowTop' : 'arrowDown'
+                      }
+                      width="24"
+                      height="24"
+                    />
+                  </ButtonBase>
+                </div>
+                {openedWallet === wallet.id && assetsLoading ? (
+                  <div className={clsx(styles.loader, styles.mb)}>
+                    <Loader height="16" />
+                  </div>
+                ) : (
+                  <>
+                    {openedWallet === wallet.id && !isEmpty(assetsByWallet) && (
+                      <>
+                        {assetsByWallet.map((asset, index) => (
+                          <PortfolioAssetCard row={asset} key={String(index)} />
+                        ))}
+                      </>
+                    )}
+                    {openedWallet === wallet.id && isEmpty(assetsByWallet) && (
+                      <Typography
+                        className={styles.mb}
+                        variant="body2"
+                        as="div"
+                        align="center"
+                      >
+                        No assets found
+                      </Typography>
+                    )}
+                  </>
+                )}
+              </React.Fragment>
             ))}
           </div>
         </Paper>

@@ -1,23 +1,19 @@
 import { createDomain, guard, restore } from 'effector-logger/macro'
 import { attach } from 'effector'
 
-import { AddWalletInputType } from '~/graphql/_generated-types'
-import { portfolioApi } from '~/portfolio/common'
 import * as assetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
 
-export const portfolioWalletsDomain = createDomain()
-
-export const addWalletFx = portfolioWalletsDomain.createEffect(
-  (input: AddWalletInputType) => portfolioApi.addWallet({ input })
-)
+export const portfolioDeployedContracts = createDomain()
 
 export const fetchAssetsByWalletFx = attach({
   effect: assetsModel.fetchAssetsByWalletFx,
 })
 
-export const openWallet = portfolioWalletsDomain.createEvent<string | null>()
+export const openWallet = portfolioDeployedContracts.createEvent<
+  string | null
+>()
 
-export const $openedWallet = portfolioWalletsDomain
+export const $openedWallet = portfolioDeployedContracts
   .createStore<string | null>(null)
   .on(openWallet, (_, payload) => payload)
 

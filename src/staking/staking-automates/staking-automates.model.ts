@@ -50,11 +50,22 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
     const data = await stakingApi.automatesContractList({
       filter: {
         user: params.userId,
+        archived: false,
         ...(params.protocolId ? { protocol: params.protocolId } : {}),
       },
     })
 
     return data
+  }
+)
+
+export const deleteContractFx = stakingAutomatesDomain.createEffect(
+  async (contractId: string) => {
+    const isDeleted = await stakingApi.contractDelete(contractId)
+
+    if (!isDeleted) throw new Error('not deleted')
+
+    return isDeleted
   }
 )
 
@@ -104,6 +115,14 @@ export const $automatesContracts = stakingAutomatesDomain
     state.map((contract) =>
       omit(contract, ['migrating', 'depositing', 'refunding'])
     )
+  )
+  .on(deleteContractFx, (state, payload) =>
+    state.map((contract) =>
+      contract.id === payload ? { ...contract, deleting: true } : contract
+    )
+  )
+  .on(deleteContractFx.done, (state, { params }) =>
+    state.filter((contract) => contract.id !== params)
   )
 
 export const StakingAutomatesGate = createGate<string | null>({
