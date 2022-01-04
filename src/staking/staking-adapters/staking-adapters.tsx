@@ -28,7 +28,6 @@ const FORM_LAYOUTS: Record<
   React.ElementType<StakingAdapterFormProps>
 > = {
   staking: StakingAdapterForm,
-  stacking: StakingAdapterForm,
 }
 
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
