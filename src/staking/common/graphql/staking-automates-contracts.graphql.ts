@@ -12,6 +12,7 @@ export const STAKING_AUTOMATES_CONTRACTS = gql`
         protocol {
           adapter
         }
+        archivedAt
         contract {
           id
           protocolId

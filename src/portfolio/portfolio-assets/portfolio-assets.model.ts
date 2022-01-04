@@ -10,7 +10,7 @@ export const fetchAssetsListFx = portfolioAssetsDomain.createEffect(() => {
   return portfolioApi.getAssetsList({}).then(portfolioSortAssets)
 })
 
-export const fetchAssetsByWallet = portfolioAssetsDomain.createEffect(
+export const fetchAssetsByWalletFx = portfolioAssetsDomain.createEffect(
   (walletId: string) =>
     portfolioApi.getAssetsListByWallet({ walletId }).then(portfolioSortAssets)
 )
@@ -19,7 +19,7 @@ export const $assets = portfolioAssetsDomain
   .createStore<PortfolioAssetFragment[]>([])
   .on(fetchAssetsListFx.doneData, (_, payload) => payload)
 
-export const $assetsByWallet = restore(fetchAssetsByWallet.doneData, [])
+export const $assetsByWallet = restore(fetchAssetsByWalletFx.doneData, [])
 
 export const PortfolioAssetsGate = createGate<string>({
   domain: portfolioAssetsDomain,
@@ -34,5 +34,5 @@ sample({
 guard({
   clock: PortfolioAssetsGate.state.updates,
   filter: (clock) => Boolean(clock),
-  target: fetchAssetsByWallet,
+  target: fetchAssetsByWalletFx,
 })

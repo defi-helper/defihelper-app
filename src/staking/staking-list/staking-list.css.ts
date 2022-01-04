@@ -77,7 +77,6 @@ export const create = style({
 
     [theme.mediaQueries.md()]: {
       padding: 8,
-      marginLeft: 16,
     },
   },
 })
@@ -169,8 +168,8 @@ export const coinIcons = style({
 })
 
 export const coinIcon = style({
-  width: 16,
-  height: 16,
+  width: 24,
+  height: 24,
 })
 
 export const turnOn = style({

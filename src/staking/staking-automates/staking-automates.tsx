@@ -5,6 +5,7 @@ import isEmpty from 'lodash.isempty'
 
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
+import { ConfirmDialog } from '~/common/confirm-dialog'
 import {
   StakingContractCard,
   StakingAutomatesDialog,
@@ -32,11 +33,24 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const wallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
   const handleConnect = useWalletConnect()
+  const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   const automatesContracts = useStore(model.$automatesContracts)
 
   const currentAction = useStore(model.$action)
   const adapter = useStore(model.$adapter)
+
+  const handleDelete = (contractId: string) => async () => {
+    try {
+      await openConfirmDialog()
+
+      model.deleteContractFx(contractId)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
 
   const handleAction =
     (contract: typeof automatesContracts[number], action: model.ActionType) =>
@@ -151,6 +165,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
                 ? handleAction(automatesContract, 'refund')
                 : () => handleConnect(automatesContract.contract?.blockchain)
             }
+            onDelete={handleDelete(automatesContract.id)}
             refunding={automatesContract.refunding}
             migrating={automatesContract.migrating}
             depositing={automatesContract.depositing}

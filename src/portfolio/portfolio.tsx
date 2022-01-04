@@ -11,6 +11,7 @@ import { Typography } from '~/common/typography'
 import { PortfolioMetricCards } from './portfolio-metric-cards'
 import { PortfolioWallets } from './portfolio-wallets/portfolio-wallets'
 import { PortfolioAssets } from './portfolio-assets'
+import { PortfolioDeployedContracts } from './portfolio-deployed-contracts'
 import { SettingsContacts } from '~/settings/settings-contacts'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import { Loader } from '~/common/loader'
@@ -80,7 +81,8 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
                   <PortfolioCoinBalance />
                 </div>
                 <PortfolioAssets className={styles.section} />
-                <PortfolioWallets />
+                <PortfolioWallets className={styles.section} />
+                <PortfolioDeployedContracts />
               </>
             ) : (
               <>
