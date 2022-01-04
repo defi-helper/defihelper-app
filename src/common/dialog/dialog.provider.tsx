@@ -88,40 +88,42 @@ export const DialogProvider: React.FC = (props) => {
         closeOnOverlay: setCloseOnOverlayClick,
       }}
     >
-      {transitions(({ opacity, transform }, node) => (
-        <Portal key={node.id}>
-          <div className={styles.root}>
-            <AnimatedContext.Provider
-              value={{
-                animatedValue: {
-                  style: {
-                    transform: transform.to(
-                      (num) =>
-                        `translate3d(0, ${isDesktop ? -num : num * 2}${
-                          isDesktop ? 'px' : '%'
-                        }, 0)`
-                    ),
-                    opacity: isDesktop ? opacity : undefined,
+      {transitions(({ opacity, transform }, node) => {
+        return (
+          <Portal key={node.id}>
+            <div className={styles.root}>
+              <AnimatedContext.Provider
+                value={{
+                  animatedValue: {
+                    style: {
+                      transform: transform.to(
+                        (num) =>
+                          `translate3d(0, ${isDesktop ? -num : num * 2}${
+                            isDesktop ? 'px' : '%'
+                          }, 0)`
+                      ),
+                      opacity: isDesktop ? opacity : undefined,
+                    },
                   },
-                },
-                onClose: handleClose(node.id),
-              }}
-            >
-              <node.Dialog
-                {...node.props}
-                onCancel={handleClose(node.id)}
-                onConfirm={handleOnConfirm(node.id)}
+                  onClose: handleClose(node.id),
+                }}
+              >
+                <node.Dialog
+                  {...node.props}
+                  onCancel={handleClose(node.id)}
+                  onConfirm={handleOnConfirm(node.id)}
+                />
+              </AnimatedContext.Provider>
+              <animated.div
+                onMouseDown={handleClose(node.id)}
+                aria-hidden="true"
+                className={styles.backdrop}
+                style={{ opacity }}
               />
-            </AnimatedContext.Provider>
-            <animated.div
-              onMouseDown={handleClose(node.id)}
-              aria-hidden="true"
-              className={styles.backdrop}
-              style={{ opacity }}
-            />
-          </div>
-        </Portal>
-      ))}
+            </div>
+          </Portal>
+        )
+      })}
       {props.children}
     </DialogContext.Provider>
   )

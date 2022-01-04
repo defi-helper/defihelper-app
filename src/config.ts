@@ -1,4 +1,6 @@
 export const config = {
+  ENV: process.env.NODE_ENV,
+  SENTRY: process.env.REACT_APP_SENTRY,
   IS_DEV: process.env.NODE_ENV === 'development',
   DEFAULT_CHAIN_ID: 1,
   PORTIS_ID: process.env.REACT_APP_PORTIS_ID,

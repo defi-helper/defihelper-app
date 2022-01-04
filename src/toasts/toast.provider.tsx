@@ -24,7 +24,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = (props) => {
   const transitions = useTransition(toasts.slice(0, props.maxItems), {
     keys: (item) => item.key,
     from: {
-      transform: 500,
+      transform: 1000,
       maxHeight: 0,
       overflow: 0,
     },
@@ -40,7 +40,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = (props) => {
     },
     leave: () => async (next) => {
       await next({
-        transform: 500,
+        transform: 1000,
       })
 
       await next({
@@ -49,7 +49,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = (props) => {
       })
     },
     config: {
-      duration: 250,
+      duration: 200,
       tension: 300,
       friction: 10,
     },
