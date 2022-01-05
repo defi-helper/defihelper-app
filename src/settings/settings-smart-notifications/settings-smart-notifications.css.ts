@@ -49,4 +49,5 @@ export const loader = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  width: '100%',
 })

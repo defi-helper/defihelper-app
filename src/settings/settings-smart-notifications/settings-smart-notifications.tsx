@@ -46,50 +46,50 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
           </Paper>
         )}
 
-        {loading || (
-          <>
-            <SettingsNotificationsCard
-              title="Portfolio statistics"
-              description={
-                <>
-                  We will send you your portfolio value and how much you have
-                  earned every day
-                </>
-              }
-              onSwitch={(state) =>
-                handleSwitchNotification(
-                  UserNotificationTypeEnum.PortfolioMetrics,
-                  state
-                )
-              }
-              enabled={notificationsList.some(
-                (n) => n.type === UserNotificationTypeEnum.PortfolioMetrics
-              )}
-            />
-
-            <SettingsNotificationsCard
-              title="Unable to execute automations"
-              description={
-                <>
-                  We will send you alert when you don’t have enough money to pay
-                  blockchain and service fee to complete the automation
-                </>
-              }
-              onSwitch={(state) =>
-                handleSwitchNotification(
-                  UserNotificationTypeEnum.AutomateCallNotEnoughFunds,
-                  state
-                )
-              }
-              enabled={notificationsList.some(
-                (n) =>
-                  n.type === UserNotificationTypeEnum.AutomateCallNotEnoughFunds
-              )}
-            />
-
-            <SettingsPaper key={2} />
-          </>
+        {!loading && (
+          <SettingsNotificationsCard
+            title="Portfolio statistics"
+            description={
+              <>
+                We will send you your portfolio value and how much you have
+                earned every day
+              </>
+            }
+            onSwitch={(state) =>
+              handleSwitchNotification(
+                UserNotificationTypeEnum.PortfolioMetrics,
+                state
+              )
+            }
+            enabled={notificationsList.some(
+              (n) => n.type === UserNotificationTypeEnum.PortfolioMetrics
+            )}
+          />
         )}
+
+        {!loading && (
+          <SettingsNotificationsCard
+            title="Unable to execute automations"
+            description={
+              <>
+                We will send you alert when you don&apos;t have enough money to
+                pay blockchain and service fee to complete the automation
+              </>
+            }
+            onSwitch={(state) =>
+              handleSwitchNotification(
+                UserNotificationTypeEnum.AutomateCallNotEnoughFunds,
+                state
+              )
+            }
+            enabled={notificationsList.some(
+              (n) =>
+                n.type === UserNotificationTypeEnum.AutomateCallNotEnoughFunds
+            )}
+          />
+        )}
+
+        {!loading && <SettingsPaper key={2} />}
       </SettingsGrid>
     </div>
   )
