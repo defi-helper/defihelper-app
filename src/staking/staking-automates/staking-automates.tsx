@@ -140,38 +140,39 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
         Deployed automations
       </Typography>
       <div className={styles.list}>
-        {automatesContracts.map((automatesContract) => (
-          <StakingContractCard
-            key={automatesContract.id}
-            title={automatesContract.contract?.name ?? ''}
-            address={automatesContract.address}
-            network={automatesContract.contract?.network ?? ''}
-            blockchain={automatesContract.contract?.blockchain ?? ''}
-            balance={automatesContract.contractWallet?.metric.stakedUSD ?? ''}
-            apy={automatesContract.contract?.metric.aprYear}
-            apyBoost={automatesContract.contract?.metric.myAPYBoost}
-            onMigrate={
-              wallet
-                ? handleAction(automatesContract, 'migrate')
-                : () => handleConnect(automatesContract.contract?.blockchain)
-            }
-            onDeposit={
-              wallet
-                ? handleAction(automatesContract, 'deposit')
-                : () => handleConnect(automatesContract.contract?.blockchain)
-            }
-            onRefund={
-              wallet
-                ? handleAction(automatesContract, 'refund')
-                : () => handleConnect(automatesContract.contract?.blockchain)
-            }
-            onDelete={handleDelete(automatesContract.id)}
-            refunding={automatesContract.refunding}
-            migrating={automatesContract.migrating}
-            depositing={automatesContract.depositing}
-            deleting={automatesContract.deleting}
-          />
-        ))}
+        {automatesContracts.map((automatesContract) => {
+          const connect = handleConnect.bind(null, {
+            blockchain: automatesContract.contract?.blockchain,
+            network: automatesContract.contract?.network,
+          })
+
+          return (
+            <StakingContractCard
+              key={automatesContract.id}
+              title={automatesContract.contract?.name ?? ''}
+              address={automatesContract.address}
+              network={automatesContract.contract?.network ?? ''}
+              blockchain={automatesContract.contract?.blockchain ?? ''}
+              balance={automatesContract.contractWallet?.metric.stakedUSD ?? ''}
+              apy={automatesContract.contract?.metric.aprYear}
+              apyBoost={automatesContract.contract?.metric.myAPYBoost}
+              onMigrate={
+                wallet ? handleAction(automatesContract, 'migrate') : connect
+              }
+              onDeposit={
+                wallet ? handleAction(automatesContract, 'deposit') : connect
+              }
+              onRefund={
+                wallet ? handleAction(automatesContract, 'refund') : connect
+              }
+              onDelete={handleDelete(automatesContract.id)}
+              refunding={automatesContract.refunding}
+              migrating={automatesContract.migrating}
+              depositing={automatesContract.depositing}
+              deleting={automatesContract.deleting}
+            />
+          )
+        })}
       </div>
     </div>
   )

@@ -13,7 +13,7 @@ import { WavesExchangeConnector } from './waves-exchange-connector'
 import { networksConfig } from '~/networks-config'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 
-const supportedChainIds = Object.values(networksConfig)
+export const supportedChainIds = Object.values(networksConfig)
   .filter(({ blockchain }) => blockchain === BlockchainEnum.Ethereum)
   .map(({ chainId }) => Number(chainId))
 

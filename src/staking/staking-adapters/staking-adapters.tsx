@@ -118,6 +118,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             </Button>
           }
           blockchain={props.blockchain}
+          network={props.network}
         >
           <Button
             type="submit"
@@ -139,6 +140,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             </Button>
           }
           blockchain={props.blockchain}
+          network={props.network}
         >
           <Button
             type="submit"
@@ -160,6 +162,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             </Button>
           }
           blockchain={props.blockchain}
+          network={props.network}
         >
           <Button
             onClick={handleClaim}

@@ -10,6 +10,9 @@ import { ReactComponent as BinanceIcon } from '~/assets/icons/wallets/binance-wa
 import { ReactComponent as WavesKeeperIcon } from '~/assets/icons/wallets/waves-keeper-wallet.svg'
 import { ReactComponent as WavesExchangeIcon } from '~/assets/icons/wallets/waves-exchange-wallet.svg'
 import * as connectors from './connectors'
+import { config } from '~/config'
+import { networksConfig } from '~/networks-config'
+import { BlockchainEnum } from '~/graphql/_generated-types'
 
 export enum ConnectorNames {
   MetaMask = 'MetaMask',
@@ -25,61 +28,77 @@ export enum ConnectorNames {
   WavesExchange = 'WavesExchange',
 }
 
+const ethereumNetworks = connectors.supportedChainIds.map(String)
+const wavesNetworks = Object.values(networksConfig)
+  .filter(({ blockchain }) => blockchain === BlockchainEnum.Waves)
+  .map(({ chainId }) => String(chainId))
+
 export const connectorsByName = {
   [ConnectorNames.MetaMask]: {
     connector: connectors.injected,
     blockchain: 'ethereum',
     logo: MetaMaskIcon,
+    networks: ethereumNetworks,
   },
   [ConnectorNames.TrustWallet]: {
     connector: connectors.injected,
     blockchain: 'ethereum',
     logo: TrustIcon,
+    networks: ethereumNetworks,
   },
   [ConnectorNames.Ledger]: {
     connector: connectors.ledger,
     blockchain: 'ethereum',
     logo: LedgerIcon,
+    networks: [String(config.DEFAULT_CHAIN_ID)],
   },
   [ConnectorNames.Trezor]: {
     connector: connectors.trezor,
     blockchain: 'ethereum',
     logo: TrezorIcon,
+    networks: [String(config.DEFAULT_CHAIN_ID)],
   },
   [ConnectorNames.CoinBase]: {
     connector: connectors.walletlink,
     blockchain: 'ethereum',
     logo: CoinBaseIcon,
+    networks: [String(config.DEFAULT_CHAIN_ID)],
   },
   [ConnectorNames.WalletConnect]: {
     connector: connectors.walletconnect,
     blockchain: 'ethereum',
     logo: WalletConnectIcon,
+    networks: [String(config.DEFAULT_CHAIN_ID)],
   },
   [ConnectorNames.Binance]: {
     connector: connectors.binance,
     blockchain: 'ethereum',
     logo: BinanceIcon,
+    networks: ethereumNetworks,
   },
   [ConnectorNames.Fortmatic]: {
     connector: connectors.fortmatic,
     blockchain: 'ethereum',
     logo: FortmaticIcon,
+    networks: [String(config.DEFAULT_CHAIN_ID)],
   },
   [ConnectorNames.Portis]: {
     connector: connectors.portis,
     blockchain: 'ethereum',
     logo: PortisIcon,
+    networks: [String(config.DEFAULT_CHAIN_ID)],
   },
   [ConnectorNames.WavesKeeper]: {
     connector: connectors.wavesKepper,
     blockchain: 'waves',
     logo: WavesKeeperIcon,
+    networks: wavesNetworks,
   },
   [ConnectorNames.WavesExchange]: {
     connector: connectors.wavesExchange,
     blockchain: 'waves',
     logo: WavesExchangeIcon,
+    networks: wavesNetworks,
   },
 } as const
 
