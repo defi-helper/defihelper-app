@@ -10,7 +10,7 @@ import { stakingApi, buildAdaptersUrl } from '~/staking/common'
 import { createPagination, PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
-import { AdapterActions, loadAdapter, isStaking } from '~/common/load-adapter'
+import { loadAdapter, Adapters } from '~/common/load-adapter'
 import { automationApi } from '~/automations/common/automation.api'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Wallet } from '~/wallets/common'
@@ -193,8 +193,8 @@ export const $connectedContracts = stakingListDomain
 guard({
   clock: sample({
     source: [settingsWalletModel.$wallets, $connectedContracts],
-    clock: stakingAdaptersModel.contractActionFx.done,
-    fn: ([wallets, connectedContracts], { params }) => {
+    clock: stakingAdaptersModel.stake,
+    fn: ([wallets, connectedContracts], params) => {
       const findedWallet = wallets.find((wallet) => {
         const sameAddreses =
           String(params.wallet.chainId) === 'W'
@@ -205,7 +205,6 @@ guard({
       })
 
       return {
-        action: params.action,
         contract: params.contractId,
         wallet: findedWallet?.id,
         connected: Boolean(connectedContracts[params.contractId]),
@@ -217,9 +216,8 @@ guard({
   ): clock is {
     contract: string
     wallet: string
-    action: keyof AdapterActions
     connected: boolean
-  } => clock.action === 'stake' && Boolean(clock.wallet) && !clock.connected,
+  } => Boolean(clock.wallet) && !clock.connected,
   target: connectWalletFx,
 })
 
@@ -272,20 +270,14 @@ export const fetchMetricsFx = stakingListDomain.createEffect(
         buildAdaptersUrl(params.protocolAdapter)
       )
 
-      if (
-        !isStaking(contract.adapter, Object.keys(adapter)) ||
-        !params.wallet.account
-      )
-        return null
+      if (!params.wallet.account) return null
 
-      const adapterObj = await adapter[contract.adapter](
-        networkProvider,
-        contract.address,
-        {
-          blockNumber: 'latest',
-          signer: networkProvider?.getSigner(),
-        }
-      )
+      const adapterObj = await adapter[
+        contract.adapter as keyof Omit<Adapters, 'automates'>
+      ](networkProvider, contract.address, {
+        blockNumber: 'latest',
+        signer: networkProvider?.getSigner(),
+      })
 
       const wallet = await adapterObj.wallet(params.wallet.account)
 

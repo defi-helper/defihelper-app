@@ -8,7 +8,7 @@ import { Typography } from '~/common/typography'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import {
   StakingContractCard,
-  StakingAutomatesDialog,
+  StakingAdapterDialog,
   StakingErrorDialog,
 } from '~/staking/common'
 import { switchNetwork } from '~/wallets/common'
@@ -28,7 +28,7 @@ export type StakingAutomatesProps = {
 }
 
 export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
-  const [openAutomates] = useDialog(StakingAutomatesDialog)
+  const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openErrorDialog] = useDialog(StakingErrorDialog)
   const wallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
@@ -124,7 +124,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   useEffect(() => {
     if (!currentAction || !adapter || !adapter[currentAction]) return
 
-    openAutomates({
+    openAdapter({
       steps: adapter[currentAction],
     })
       .then(() => model.reset())

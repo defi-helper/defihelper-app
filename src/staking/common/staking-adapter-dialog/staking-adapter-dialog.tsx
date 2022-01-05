@@ -6,19 +6,20 @@ import clsx from 'clsx'
 import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
-import { AutomatesStep } from '~/common/load-adapter'
+import { AdapterStep } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
 import { Typography } from '~/common/typography'
 import { Loader } from '~/common/loader'
 import { Input } from '~/common/input'
-import * as styles from './staking-automates-dialog.css'
+import * as styles from './staking-adapter-dialog.css'
 
-export type StakingAutomatesDialogProps = {
+export type StakingAdapterDialogProps = {
   onConfirm: () => void
-  steps: AutomatesStep[]
+  steps: AdapterStep[]
+  onSubmit?: () => void
 }
 
-export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
+export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
   props
 ) => {
   const { control, handleSubmit, formState, reset } = useForm()
@@ -65,6 +66,8 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
 
       await tx.wait()
 
+      props.onSubmit?.()
+
       if (steps.value && currentStepNumber < steps.value.length - 1) {
         steps.retry()
 
@@ -89,6 +92,8 @@ export const StakingAutomatesDialog: React.FC<StakingAutomatesDialogProps> = (
     const { tx } = await currentStep.send()
 
     await tx.wait()
+
+    props.onSubmit?.()
 
     if (steps.value && currentStepNumber < steps.value.length - 1) {
       steps.retry()

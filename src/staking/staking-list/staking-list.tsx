@@ -10,7 +10,7 @@ import { paths } from '~/paths'
 import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import {
-  StakingAutomatesDialog,
+  StakingAdapterDialog,
   StakingDescriptionDialog,
   StakingTabs,
 } from '../common'
@@ -65,7 +65,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openDescriptionDialog] = useDialog(StakingDescriptionDialog)
   const [openBillingForm] = useDialog(StakingBillingFormDialog)
   const [openDeployStepsDialog] = useDialog(AutomationDeployStepsDialog)
-  const [openAutomates] = useDialog(StakingAutomatesDialog)
+  const [openAdapter] = useDialog(StakingAdapterDialog)
 
   useGate(model.StakingListGate, props)
 
@@ -203,7 +203,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         if (!stakingAutomatesAdapter) throw new Error('something went wrong')
 
-        await openAutomates({
+        await openAdapter({
           steps: stakingAutomatesAdapter.migrate,
         })
       } catch (error) {
@@ -526,11 +526,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     </div>
                     {opened && (
                       <StakingAdapters
-                        poolName={stakingListItem.name}
                         protocolAdapter={props.protocolAdapter}
                         contractAdapter={stakingListItem.adapter}
                         contractAddress={stakingListItem.address}
-                        contractLayout={stakingListItem.layout}
                         contractId={stakingListItem.id}
                         blockchain={stakingListItem.blockchain}
                         network={stakingListItem.network}

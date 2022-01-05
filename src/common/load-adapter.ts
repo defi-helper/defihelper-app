@@ -6,16 +6,6 @@ const moduleExports = {
   exports: new Error(ERROR),
 }
 
-type Action = {
-  can: () => Promise<boolean | Error>
-  send: () => Promise<void>
-}
-
-type ActionWithAmount = {
-  can: (amount: string) => Promise<boolean | Error>
-  send: (amount: string) => Promise<void>
-}
-
 type Token = {
   [key: string]: {
     balance: string
@@ -35,11 +25,25 @@ export type AdapterWallet = {
   }
 }
 
+export type AdapterInfo = {
+  description: string
+  inputs?: { placeholder: string; value: string }[]
+}
+
+export type AdapterStep = {
+  can: (...args: unknown[]) => Promise<boolean | Error>
+  info: () => Promise<AdapterInfo>
+  name: string
+  send: (
+    ...args: unknown[]
+  ) => Promise<{ tx: { wait: () => Promise<unknown> } }>
+}
+
 export type AdapterActions = {
-  stake: ActionWithAmount
-  unstake: ActionWithAmount
-  claim: Action
-  exit: Action
+  stake: AdapterStep[]
+  unstake: AdapterStep[]
+  claim: AdapterStep[]
+  exit: AdapterStep[]
 }
 
 export type Adapter = {
@@ -68,30 +72,16 @@ export type AdapterFn = (
   options?: unknown
 ) => Promise<Adapter>
 
-export type AutomatesStepInfo = {
-  description: string
-  inputs?: { placeholder: string; value: string }[]
-}
-
-export type AutomatesStep = {
-  can: (...args: unknown[]) => Promise<boolean | Error>
-  info: () => Promise<AutomatesStepInfo>
-  name: string
-  send: (
-    ...args: unknown[]
-  ) => Promise<{ tx: { wait: () => Promise<unknown> } }>
-}
-
 export type AutomatesType = {
   contract: string
-  deposit: AutomatesStep[]
-  refund: AutomatesStep[]
-  migrate: AutomatesStep[]
+  deposit: AdapterStep[]
+  refund: AdapterStep[]
+  migrate: AdapterStep[]
 }
 
 export type DeployStep = {
   can: (...args: unknown[]) => Promise<boolean | Error>
-  info: () => Promise<AutomatesStepInfo>
+  info: () => Promise<AdapterInfo>
   name: string
   send: (...args: unknown[]) => Promise<{
     tx: { wait: () => Promise<unknown> }
@@ -139,11 +129,4 @@ export function loadAdapter(url: string): Promise<Adapters> {
 
     return cache[url]
   })
-}
-
-export const isStaking = (
-  str: string,
-  keys: string[]
-): str is 'staking' | 'swopfiStaking' | 'masterChef' => {
-  return keys.includes(str)
 }
