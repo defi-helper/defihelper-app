@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 

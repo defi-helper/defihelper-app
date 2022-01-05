@@ -1,9 +1,8 @@
-import { useGate, useStore } from 'effector-react'
+import { useStore } from 'effector-react'
 
-import { StakingAdapterForm, StakingAdapterFormProps } from '~/staking/common'
+import { StakingAdapterDialog } from '~/staking/common'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { switchNetwork } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -16,33 +15,25 @@ export type StakingAdaptersProps = {
   contractAddress: string
   contractAdapter: string
   protocolAdapter: string
-  poolName: string
-  contractLayout: string
   contractId: string
   blockchain: string
   network: string
 }
 
-const FORM_LAYOUTS: Record<
-  string,
-  React.ElementType<StakingAdapterFormProps>
-> = {
-  staking: StakingAdapterForm,
-}
-
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
-  const currentLayout = FORM_LAYOUTS[props.contractLayout]
-
-  const [openAdapterForm] = useDialog(currentLayout)
+  const [openAdapter] = useDialog(StakingAdapterDialog)
 
   const wallet = walletNetworkModel.useWalletNetwork()
 
-  const contractLoading = useStore(model.fetchContractAdapterFx.pending)
+  const actionLoading = useStore(model.$actionLoading)
 
   const createAdapterAction =
-    (action?: model.ContractAction['action']) => async () => {
+    (action?: keyof Exclude<model.StakingAdapter['actions'], null>) =>
+    async () => {
       try {
-        if (!wallet?.account) return
+        if (!wallet?.account || !action) return
+
+        model.action({ action, contractId: props.contractId })
 
         await switchNetwork(props.network)
 
@@ -57,56 +48,27 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           provider: wallet.provider,
         })
 
-        const tokens = await model.fetchTokensFx({
-          addresses: [
-            ...Object.keys(contract.wallet?.earned ?? {}),
-            ...Object.keys(contract.wallet?.staked ?? {}),
-            ...Object.keys(contract.wallet?.tokens ?? {}),
-          ],
-        })
+        if (!contract.actions) return
 
-        let amount = Object.values(contract.wallet?.earned ?? {}).reduce(
-          (acc, { balance }) => bignumberUtils.plus(acc, balance),
-          '0'
-        )
-
-        if (action === 'stake') {
-          if (!currentLayout) throw new Error('invalid layout')
-
-          amount = await openAdapterForm({
-            metrics: contract.metrics,
-            reward: contract.reward,
-            staking: contract.staking,
-            wallet: contract.wallet,
-            tokens,
-            poolName: props.poolName,
-          })
-        }
-
-        model.contractAction({
-          action,
-          amount,
-          contractAddress: props.contractAddress,
-          actions: contract?.actions ?? undefined,
-          decimals: contract?.staking.decimals,
-          contractId: props.contractId,
-          wallet,
+        await openAdapter({
+          steps: contract.actions[action],
+          onSubmit:
+            action === 'stake'
+              ? () => model.stake({ wallet, contractId: props.contractId })
+              : undefined,
         })
       } catch (error) {
         if (error instanceof Error) {
           toastsService.error(error.message)
         }
+      } finally {
+        model.action(null)
       }
     }
 
   const handleClaim = createAdapterAction('claim')
   const handleStake = createAdapterAction('stake')
   const handleUnStake = createAdapterAction('unstake')
-
-  const actions = useStore(model.$actions)
-  const action = actions[props.contractAddress]
-
-  useGate(model.StakingAdaptersGate)
 
   return (
     <div className={styles.root}>
@@ -123,10 +85,12 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           <Button
             type="submit"
             onClick={handleStake}
-            disabled={action?.disabled}
-            loading={action?.stake || contractLoading}
             size="small"
             variant="outlined"
+            disabled={Boolean(
+              actionLoading && actionLoading.action !== 'stake'
+            )}
+            loading={actionLoading?.action === 'stake'}
           >
             Stake
           </Button>
@@ -145,10 +109,12 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           <Button
             type="submit"
             onClick={handleUnStake}
-            disabled={action?.disabled}
-            loading={action?.unstake || contractLoading}
             size="small"
             variant="outlined"
+            disabled={Boolean(
+              actionLoading && actionLoading.action !== 'unstake'
+            )}
+            loading={actionLoading?.action === 'unstake'}
           >
             Unstake
           </Button>
@@ -166,10 +132,12 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         >
           <Button
             onClick={handleClaim}
-            disabled={action?.disabled}
-            loading={action?.claim || contractLoading}
             size="small"
             variant="outlined"
+            disabled={Boolean(
+              actionLoading && actionLoading.action !== 'claim'
+            )}
+            loading={actionLoading?.action === 'claim'}
           >
             Claim
           </Button>
