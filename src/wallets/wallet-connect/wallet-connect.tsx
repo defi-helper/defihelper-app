@@ -6,6 +6,7 @@ import { useWalletConnect } from './wallet-connect.hook'
 export type WalletConnectProps = {
   fallback: React.ReactNode
   blockchain?: string
+  network?: string
 }
 
 export const WalletConnect: React.FC<WalletConnectProps> = (props) => {
@@ -17,7 +18,10 @@ export const WalletConnect: React.FC<WalletConnectProps> = (props) => {
 
   const fallback = cloneElement(props.fallback, {
     ...props.fallback.props,
-    onClick: handleConnect.bind(null, props.blockchain),
+    onClick: handleConnect.bind(null, {
+      blockchain: props.blockchain,
+      network: props.network,
+    }),
   })
 
   if (!wallet) return fallback

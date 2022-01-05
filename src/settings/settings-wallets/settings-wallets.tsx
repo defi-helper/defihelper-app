@@ -196,39 +196,34 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
           </SettingsInitialCard>
         )}
         {!loading &&
-          wallets.map((wallet) => (
-            <SettingsWalletCard
-              key={wallet.id}
-              title={wallet.name}
-              address={wallet.address}
-              network={wallet.network}
-              blockchain={wallet.blockchain}
-              automations={String(wallet.triggersCount)}
-              onDeposit={
-                currentWallet
-                  ? handleDeposit(wallet)
-                  : () => handleConnect(wallet.blockchain)
-              }
-              onRefund={
-                currentWallet
-                  ? handleRefund(wallet)
-                  : () => handleConnect(wallet.blockchain)
-              }
-              onRename={
-                currentWallet
-                  ? handleRename(wallet)
-                  : () => handleConnect(wallet.blockchain)
-              }
-              onDelete={handleDelete(wallet)}
-              feeFunds={wallet.billing?.balance?.netBalance}
-              locked={wallet.billing?.balance?.claim}
-              editing={wallet.editing}
-              deleting={wallet.deleting}
-              depositing={wallet.depositing}
-              refunding={wallet.refunding}
-              error={wallet.billing?.balance?.lowFeeFunds}
-            />
-          ))}
+          wallets.map((wallet) => {
+            const connect = handleConnect.bind(null, {
+              blockchain: wallet.blockchain,
+              network: wallet.network,
+            })
+
+            return (
+              <SettingsWalletCard
+                key={wallet.id}
+                title={wallet.name}
+                address={wallet.address}
+                network={wallet.network}
+                blockchain={wallet.blockchain}
+                automations={String(wallet.triggersCount)}
+                onDeposit={currentWallet ? handleDeposit(wallet) : connect}
+                onRefund={currentWallet ? handleRefund(wallet) : connect}
+                onRename={currentWallet ? handleRename(wallet) : connect}
+                onDelete={handleDelete(wallet)}
+                feeFunds={wallet.billing?.balance?.netBalance}
+                locked={wallet.billing?.balance?.claim}
+                editing={wallet.editing}
+                deleting={wallet.deleting}
+                depositing={wallet.depositing}
+                refunding={wallet.refunding}
+                error={wallet.billing?.balance?.lowFeeFunds}
+              />
+            )
+          })}
         {!loading &&
           paperCount > 0 &&
           Array.from(Array(paperCount)).map((_, index) => (

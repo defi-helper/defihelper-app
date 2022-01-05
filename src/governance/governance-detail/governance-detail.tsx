@@ -236,6 +236,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   </Button>
                 }
                 blockchain="ethereum"
+                network="1"
               >
                 <Button
                   className={styles.voteButton}
@@ -251,6 +252,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   <Button className={styles.voteButton}>Vote abstain</Button>
                 }
                 blockchain="ethereum"
+                network="1"
               >
                 <Button
                   className={styles.voteButton}
@@ -267,6 +269,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   </Button>
                 }
                 blockchain="ethereum"
+                network="1"
               >
                 <Button
                   className={styles.voteButton}
@@ -283,6 +286,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             <WalletConnect
               fallback={<Button className={styles.mb32}>Connect</Button>}
               blockchain="ethereum"
+              network="1"
             >
               <Button
                 onClick={handleQueueProposal}
@@ -301,6 +305,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               <WalletConnect
                 fallback={<Button className={styles.mb32}>Connect</Button>}
                 blockchain="ethereum"
+                network="1"
               >
                 <Button
                   onClick={handleExecuteProposal}

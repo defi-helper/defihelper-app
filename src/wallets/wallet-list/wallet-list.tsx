@@ -19,6 +19,7 @@ export type WalletListProps = {
   onConfirm: (data: WalletListPayload) => void
   onCancel: (value: unknown) => void
   blockchain?: string
+  network?: string
 }
 
 export const WalletList: React.VFC<WalletListProps> = (props) => {
@@ -44,7 +45,10 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
         {Object.entries(connectorsByName)
           .filter(
             ([, wallet]) =>
-              !props.blockchain || wallet.blockchain === props.blockchain
+              !props.blockchain ||
+              (wallet.blockchain === props.blockchain &&
+                props.network &&
+                wallet.networks.includes(props.network))
           )
           .map(([walletName, wallet]) => (
             <li key={walletName}>
