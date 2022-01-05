@@ -12,7 +12,7 @@ export const list = style({
   display: 'grid',
   gap: 24,
   minHeight: 314,
-  gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(277px, 1fr))',
 
   '@media': {
     [theme.mediaQueries.sm()]: {
