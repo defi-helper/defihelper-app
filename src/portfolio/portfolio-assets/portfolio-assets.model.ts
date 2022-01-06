@@ -23,17 +23,18 @@ export const PortfolioAssetsGate = createGate<string>({
 })
 
 export const PortfolioProtocolsGate = createGate<string>({
-  domain: portfolioAssetsDomain,
+  domain: portfolioProtocolsListDomain,
 })
 
 export const fetchUserInteractedProtocolsListFx =
-  portfolioProtocolsListDomain.createEffect((userId: string) =>
-    protocolsApi.protocolList({
+  portfolioProtocolsListDomain.createEffect((userId: string) => {
+    console.warn(`!!!${userId}`)
+    return protocolsApi.protocolList({
       protocolFilter: {
         linked: userId,
       },
     })
-  )
+  })
 
 export const $assets = portfolioAssetsDomain
   .createStore<PortfolioAssetFragment[]>([])
@@ -50,11 +51,11 @@ export const $protocols = portfolioProtocolsListDomain
 
 sample({
   clock: guard({
-    source: [authModel.$user],
-    clock: [authModel.$user.updates],
-    filter: (source): source is [UserType] => {
-      const [user] = source
-      return user?.id !== undefined
+    source: [authModel.$user, PortfolioAssetsGate.status],
+    clock: [authModel.$user.updates, PortfolioAssetsGate.open],
+    filter: (source): source is [UserType, boolean] => {
+      const [user, opened] = source
+      return user?.id !== undefined && opened
     },
   }),
   fn: ([user]) => user.id,
@@ -62,8 +63,8 @@ sample({
 })
 
 sample({
-  clock: PortfolioProtocolsGate.open,
-  target: fetchUserInteractedProtocolsListFx,
+  clock: PortfolioAssetsGate.open,
+  target: fetchAssetsListFx,
 })
 
 guard({
