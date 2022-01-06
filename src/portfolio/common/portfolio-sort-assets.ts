@@ -21,11 +21,6 @@ export const portfolioSortAssets = (list: PortfolioAssetFragment[]) => {
       }
     })
     .sort((a, b) =>
-      Number(
-        bignumberUtils.minus(
-          b.metric.myPortfolioPercent,
-          a.metric.myPortfolioPercent
-        )
-      )
+      Number(bignumberUtils.minus(b.metric.myUSD, a.metric.myUSD))
     )
 }
