@@ -30,12 +30,8 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   }
 
   const wallets = useStore(settingsWalletModel.$wallets)
-
   useGate(portfolioAssetsModel.PortfolioAssetsGate, currentWallet)
-  useGate(portfolioAssetsModel.PortfolioProtocolsGate)
   // todo introduce pagination and server-side asset percentage calculation
-
-  console.log(protocols)
 
   return (
     <div className={clsx(styles.root, props.className)}>

@@ -7,7 +7,6 @@ import { Protocol, protocolsApi } from '~/protocols/common'
 import { authModel } from '~/auth'
 
 export const portfolioAssetsDomain = createDomain()
-export const portfolioProtocolsListDomain = createDomain()
 
 export const fetchAssetsListFx = portfolioAssetsDomain.createEffect(() => {
   return portfolioApi.getAssetsList({}).then(portfolioSortAssets)
@@ -22,12 +21,8 @@ export const PortfolioAssetsGate = createGate<string>({
   domain: portfolioAssetsDomain,
 })
 
-export const PortfolioProtocolsGate = createGate<string>({
-  domain: portfolioProtocolsListDomain,
-})
-
 export const fetchUserInteractedProtocolsListFx =
-  portfolioProtocolsListDomain.createEffect((userId: string) =>
+  portfolioAssetsDomain.createEffect((userId: string) =>
     protocolsApi.protocolList({
       protocolFilter: {
         linked: userId,
@@ -41,7 +36,7 @@ export const $assets = portfolioAssetsDomain
 
 export const $assetsByWallet = restore(fetchAssetsByWalletFx.doneData, [])
 
-export const $protocols = portfolioProtocolsListDomain
+export const $protocols = portfolioAssetsDomain
   .createStore<Protocol[]>([])
   .on(
     fetchUserInteractedProtocolsListFx.doneData,
