@@ -110,7 +110,15 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           >
             Address
           </Typography>
-          <Typography variant="body2" as="span">
+          <Typography
+            variant="body2"
+            as={Link}
+            href={buildExplorerUrl({
+              network: props.network,
+              address: props.address,
+            })}
+            target="_blank"
+          >
             {cutAccount(props.address)}
           </Typography>
         </div>

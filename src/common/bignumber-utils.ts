@@ -11,7 +11,7 @@ export const bignumberUtils = {
       .multipliedBy(new BigNumber(10).pow(decimals))
       .toFixed(0),
 
-  format: (amount?: string | number | null, decimal = 4, negative = true) => {
+  format: (amount?: string | number | null, decimal = 2, negative = true) => {
     const result = new BigNumber(amount || 0)
 
     const localDecimal = result.isInteger() ? 0 : decimal

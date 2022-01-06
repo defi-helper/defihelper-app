@@ -1,5 +1,6 @@
 import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
+import { authModel } from '~/auth'
 
 import { portfolioApi } from './common/portfolio.api'
 import * as portfolioAssetsModel from './portfolio-assets/portfolio-assets.model'
@@ -8,7 +9,7 @@ import * as portfolioMetricCardsModel from './portfolio-metric-cards/portfolio-m
 
 export const portfolio = createDomain()
 
-export const fetchTokenAliasses = portfolio.createEffect(
+export const fetchTokenAliassesFx = portfolio.createEffect(
   portfolioApi.tokenAliases
 )
 
@@ -16,7 +17,7 @@ export const portfolioUpdated = portfolio.createEvent()
 
 export const $tokenAliasses = portfolio
   .createStore<number>(0)
-  .on(fetchTokenAliasses.doneData, (_, payload) => payload)
+  .on(fetchTokenAliassesFx.doneData, (_, payload) => payload)
 
 export const PortfolioGate = createGate({
   domain: portfolio,
@@ -24,14 +25,14 @@ export const PortfolioGate = createGate({
 })
 
 sample({
-  clock: PortfolioGate.open,
-  target: fetchTokenAliasses,
+  clock: [PortfolioGate.open, authModel.$user.updates],
+  target: fetchTokenAliassesFx,
 })
 
 sample({
   clock: portfolioUpdated,
   target: [
-    fetchTokenAliasses,
+    fetchTokenAliassesFx,
     portfolioAssetsModel.fetchAssetsListFx,
     portfolioCoinModel.fetchChartDataFx.prepend(() =>
       portfolioCoinModel.$currentGroup.getState()
@@ -40,4 +41,4 @@ sample({
   ],
 })
 
-$tokenAliasses.reset(PortfolioGate.close)
+$tokenAliasses.reset(PortfolioGate.close, authModel.logoutFx.done)

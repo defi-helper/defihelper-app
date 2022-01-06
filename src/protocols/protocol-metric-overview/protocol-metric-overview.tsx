@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
@@ -13,6 +13,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { ProtocolChartWrap } from '../common'
 import { Dropdown } from '~/common/dropdown'
 import { MetricGroups, isMetricGroup } from '~/protocols/common'
+import { useTheme } from '~/common/theme'
 import * as model from './protocol-metric-overview.model'
 import * as styles from './protocol-metric-overview.css'
 
@@ -22,15 +23,6 @@ const TVL_FIELDS = [
     name: 'Total value locked',
     dateX: 'date',
     color: '#E9CC67',
-  },
-]
-
-const WALLET_FIELDS = [
-  {
-    valueY: 'sum',
-    name: 'Unique Wallets',
-    dateX: 'date',
-    color: '#CCFF3C',
   },
 ]
 
@@ -76,6 +68,19 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
 
     setCurrentGroup(group)
   }
+
+  const [themeMode] = useTheme()
+
+  const walletFields = useMemo(() => {
+    return [
+      {
+        valueY: 'sum',
+        name: 'Unique Wallets',
+        dateX: 'date',
+        color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
+      },
+    ]
+  }, [themeMode])
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -136,11 +141,11 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
           }
         >
           <Chart
-            dataFields={WALLET_FIELDS}
+            dataFields={walletFields}
             data={walletData}
             tooltipText="{sum}"
             id="unique_wallets"
-            names={WALLET_FIELDS.map(({ name }) => name)}
+            names={walletFields.map(({ name }) => name)}
           />
         </ProtocolChartWrap>
       </div>

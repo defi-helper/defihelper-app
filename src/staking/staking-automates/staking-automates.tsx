@@ -17,6 +17,7 @@ import { useWalletConnect } from '~/wallets/wallet-connect'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
+import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import {
   useOnWalletMetricUpdatedSubscription,
   useOnTokenMetricUpdatedSubscription,
@@ -44,7 +45,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     try {
       await openConfirmDialog()
 
-      model.deleteContractFx(contractId)
+      automationsListModel.deleteContractFx(contractId)
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -52,26 +53,25 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     }
   }
 
+  const handleChangeNetwork =
+    (contract: typeof automatesContracts[number]) => () => {
+      const changeNetwork = () =>
+        switchNetwork(contract.wallet.network).catch(console.error)
+
+      openErrorDialog({
+        contractName: contract.contract?.name ?? '',
+        address: contract.wallet.address,
+        network: contract.wallet.network,
+      })
+        .then(changeNetwork)
+        .catch(changeNetwork)
+    }
+
   const handleAction =
     (contract: typeof automatesContracts[number], action: model.ActionType) =>
     async () => {
       try {
         if (!wallet?.account) return
-
-        await switchNetwork(contract.wallet.network)
-
-        const addresses =
-          String(wallet.chainId) === 'W'
-            ? wallet.account !== contract.wallet.address
-            : wallet.account.toLowerCase() !== contract.wallet.address
-
-        if (addresses || String(wallet.chainId) !== contract.wallet.network) {
-          await openErrorDialog({
-            contractName: contract.contract?.name ?? '',
-            address: contract.wallet.address,
-            network: contract.wallet.network,
-          })
-        }
 
         await model.fetchAdapterFx({
           protocolAdapter: contract.protocol.adapter,
@@ -146,6 +146,28 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             network: automatesContract.contract?.network,
           })
 
+          const isNotSameAddresses =
+            String(wallet?.chainId) === 'W'
+              ? wallet?.account !== automatesContract.wallet.address
+              : wallet?.account?.toLowerCase() !==
+                automatesContract.wallet.address
+
+          const wrongAddressesOrNetworks =
+            isNotSameAddresses ||
+            String(wallet?.chainId) !== automatesContract.wallet.network
+
+          const migrate = wrongAddressesOrNetworks
+            ? handleChangeNetwork(automatesContract)
+            : handleAction(automatesContract, 'migrate')
+
+          const deposit = wrongAddressesOrNetworks
+            ? handleChangeNetwork(automatesContract)
+            : handleAction(automatesContract, 'deposit')
+
+          const refund = wrongAddressesOrNetworks
+            ? handleChangeNetwork(automatesContract)
+            : handleAction(automatesContract, 'refund')
+
           return (
             <StakingContractCard
               key={automatesContract.id}
@@ -156,15 +178,9 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               balance={automatesContract.contractWallet?.metric.stakedUSD ?? ''}
               apy={automatesContract.contract?.metric.aprYear}
               apyBoost={automatesContract.contract?.metric.myAPYBoost}
-              onMigrate={
-                wallet ? handleAction(automatesContract, 'migrate') : connect
-              }
-              onDeposit={
-                wallet ? handleAction(automatesContract, 'deposit') : connect
-              }
-              onRefund={
-                wallet ? handleAction(automatesContract, 'refund') : connect
-              }
+              onMigrate={wallet ? migrate : connect}
+              onDeposit={wallet ? deposit : connect}
+              onRefund={wallet ? refund : connect}
               onDelete={handleDelete(automatesContract.id)}
               refunding={automatesContract.refunding}
               migrating={automatesContract.migrating}

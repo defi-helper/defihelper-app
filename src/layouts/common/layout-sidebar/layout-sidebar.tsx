@@ -9,9 +9,8 @@ import { config } from '~/config'
 import { LayoutThemeSwitcher } from '~/layouts/common/layout-theme-switcher'
 import { Icon } from '~/common/icon'
 import { SOCIAL_LINKS } from '../constants'
-import { LayoutCurrencySwitcher } from '../layout-currency-switcher'
-import * as styles from './layout-sidebar.css'
 import { Dropdown } from '~/common/dropdown'
+import * as styles from './layout-sidebar.css'
 
 type MenuItem = {
   title: string
@@ -87,7 +86,6 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
       {!props.hidden && (
         <div className={styles.switchers}>
           <LayoutThemeSwitcher />
-          <LayoutCurrencySwitcher />
         </div>
       )}
       <div className={clsx(styles.social, props.hidden && styles.socialHidden)}>

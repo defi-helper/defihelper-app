@@ -17,8 +17,9 @@ export const fetchAssetsByWalletFx = portfolioAssetsDomain.createEffect(
     portfolioApi.getAssetsListByWallet({ walletId }).then(portfolioSortAssets)
 )
 
-export const PortfolioAssetsGate = createGate<string>({
+export const PortfolioAssetsGate = createGate<string | null>({
   domain: portfolioAssetsDomain,
+  name: 'PortfolioAssetsGate',
 })
 
 export const fetchUserInteractedProtocolsListFx =
@@ -63,6 +64,6 @@ sample({
 
 guard({
   clock: PortfolioAssetsGate.state.updates,
-  filter: (clock) => Boolean(clock),
+  filter: (clock): clock is string => Boolean(clock),
   target: fetchAssetsByWalletFx,
 })
