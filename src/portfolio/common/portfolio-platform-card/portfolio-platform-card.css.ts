@@ -3,12 +3,6 @@ import { style } from '@vanilla-extract/css'
 export const root = style({
   display: 'grid',
   gridTemplateColumns: '40% 20% 20% 20%',
-
-  selectors: {
-    '&:not(:last-child)': {
-      marginBottom: 16,
-    },
-  },
 })
 
 export const assetName = style({
