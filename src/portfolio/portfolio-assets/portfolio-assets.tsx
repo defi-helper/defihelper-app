@@ -19,16 +19,17 @@ export type PortfolioAssetsProps = {
 export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   const assets = useStore(portfolioAssetsModel.$assets)
   const assetsByWallet = useStore(portfolioAssetsModel.$assetsByWallet)
+  const wallets = useStore(settingsWalletModel.$wallets)
 
-  const [currentWallet, setWallet] = useState('')
+  const [currentWallet, setWallet] = useState<typeof wallets[number] | null>(
+    null
+  )
 
-  const handleSetWallet = (wallet: string) => () => {
+  const handleSetWallet = (wallet: typeof wallets[number] | null) => () => {
     setWallet(wallet)
   }
 
-  const wallets = useStore(settingsWalletModel.$wallets)
-
-  useGate(portfolioAssetsModel.PortfolioAssetsGate, currentWallet)
+  useGate(portfolioAssetsModel.PortfolioAssetsGate, currentWallet?.id ?? null)
   // todo introduce pagination and server-side asset percentage calculation
 
   return (
@@ -51,7 +52,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
             <Dropdown
               control={(active) => (
                 <ButtonBase>
-                  All wallets
+                  {currentWallet?.name ?? 'All wallets'}
                   <Icon
                     icon={active ? 'arrowTop' : 'arrowDown'}
                     width="16"
@@ -61,13 +62,14 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
               )}
               placement="bottom-start"
               className={styles.select}
+              offset={[0, 8]}
             >
               <ButtonBase
                 className={clsx(
                   styles.selectOption,
                   !currentWallet && styles.selectOptionActive
                 )}
-                onClick={handleSetWallet('')}
+                onClick={handleSetWallet(null)}
               >
                 All wallets
               </ButtonBase>
@@ -75,9 +77,9 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                 <ButtonBase
                   className={clsx(
                     styles.selectOption,
-                    currentWallet === wallet.id && styles.selectOptionActive
+                    currentWallet?.id === wallet.id && styles.selectOptionActive
                   )}
-                  onClick={handleSetWallet(wallet.id)}
+                  onClick={handleSetWallet(wallet)}
                 >
                   {wallet.name}
                 </ButtonBase>

@@ -40,6 +40,12 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
   const pending =
     props.deleting || props.depositing || props.refunding || props.migrating
 
+  const apyboostDifference = bignumberUtils.minus(props.apyBoost, props.apy)
+
+  const validDiff =
+    !bignumberUtils.isNaN(apyboostDifference) &&
+    bignumberUtils.gt(apyboostDifference, '0.001')
+
   return (
     <Paper className={clsx(styles.root, props.className)} radius={8}>
       <div className={styles.header}>
@@ -99,7 +105,15 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           >
             Address
           </Typography>
-          <Typography variant="body2" as="span">
+          <Typography
+            variant="body2"
+            as={Link}
+            href={buildExplorerUrl({
+              network: props.network,
+              address: props.address,
+            })}
+            target="_blank"
+          >
             {cutAccount(props.address)}
           </Typography>
         </div>
@@ -155,10 +169,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           </Typography>
           <Typography variant="body2" as="span">
             {bignumberUtils.formatMax(
-              bignumberUtils.plus(
-                bignumberUtils.mul(props.apy, 100),
-                bignumberUtils.mul(props.apyBoost, 100)
-              ),
+              bignumberUtils.mul(props.apy, 100),
               10000,
               true
             )}
@@ -190,10 +201,16 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             </Dropdown>
           </Typography>
           <Typography variant="body2" as="span">
-            {bignumberUtils.gt(props.apyBoost, 0) ? '+ ' : null}
-            {bignumberUtils.formatMax(
-              bignumberUtils.mul(props.apyBoost, 100),
-              10000
+            {validDiff ? (
+              <>
+                {bignumberUtils.gt(props.apyBoost, '0.001') ? '+ ' : null}
+                {bignumberUtils.formatMax(
+                  bignumberUtils.mul(props.apyBoost, 100),
+                  10000
+                )}
+              </>
+            ) : (
+              0
             )}
             %
           </Typography>

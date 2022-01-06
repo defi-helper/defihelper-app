@@ -42,7 +42,7 @@ export const tableRow = composeStyles(
   mb,
   style({
     display: 'grid',
-    gridTemplateColumns: '28% 1fr 13% 13% 6%',
+    gridTemplateColumns: '18% 20% 1fr 13% 13% 6%',
   })
 )
 

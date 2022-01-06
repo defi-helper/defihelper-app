@@ -94,7 +94,8 @@ export const portfolioApi = {
     getAPIClient()
       .query<TokenAliasesQuery, TokenAliasesQueryVariables>(
         TOKEN_ALIASSES,
-        variables
+        variables,
+        { requestPolicy: 'cache-and-network' }
       )
       .toPromise()
       .then(({ data }) => data?.me?.tokenAliases.pagination.count ?? 0),

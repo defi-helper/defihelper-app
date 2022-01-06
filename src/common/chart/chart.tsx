@@ -37,7 +37,6 @@ if (config.AMCHARTS_LICENCE) {
 
 export const Chart: React.VFC<ChartProps> = (props) => {
   const chartRef = useRef<null | XYChart>(null)
-  const dataFieldsRef = useRef(props.dataFields)
   const namesRef = useRef(props.names)
 
   const [themeMode] = useTheme()
@@ -71,7 +70,7 @@ export const Chart: React.VFC<ChartProps> = (props) => {
 
     chartRef.current.data = props.data
 
-    dataFieldsRef.current.forEach((field, index) => {
+    props.dataFields.forEach((field, index) => {
       if (!chartRef.current) return
 
       const valueAxis = chartRef.current.yAxes.push(new ValueAxis())
@@ -112,11 +111,11 @@ export const Chart: React.VFC<ChartProps> = (props) => {
       chartRef.current.cursor.xAxis = dateAxis
     })
 
-    if (dataFieldsRef.current.length > 1) {
+    if (props.dataFields.length > 1) {
       const legend = new Legend()
 
       legend.useDefaultMarker = true
-      legend.data = dataFieldsRef.current.map((seriesitem) => ({
+      legend.data = props.dataFields.map((seriesitem) => ({
         name: seriesitem.valueY,
       }))
       legend.contentAlign = 'left'
@@ -135,7 +134,7 @@ export const Chart: React.VFC<ChartProps> = (props) => {
     return () => {
       chartRef.current?.dispose()
     }
-  }, [props.data, id, themeMode, props.tooltipText])
+  }, [props.data, id, themeMode, props.tooltipText, props.dataFields])
 
   return props.data?.length ? (
     <div id={id} className={styles.root} />

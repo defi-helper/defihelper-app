@@ -4,6 +4,7 @@ import { cutAccount } from '~/common/cut-account'
 import { Dialog } from '~/common/dialog'
 import { Link } from '~/common/link'
 import { Typography } from '~/common/typography'
+import { networksConfig } from '~/networks-config'
 import * as styles from './staking-error-dialog.css'
 
 export type StakingErrorDialogProps = {
@@ -31,7 +32,8 @@ export const StakingErrorDialog: React.VFC<StakingErrorDialogProps> = (
               target="_blank"
             >
               {cutAccount(props.address)}
-            </Link>
+            </Link>{' '}
+            ({networksConfig[props.network]?.title})
           </>
         ) : (
           <>The {props.contractName} doesn&apos;t have a wallet</>

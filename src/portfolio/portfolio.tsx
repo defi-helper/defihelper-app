@@ -26,7 +26,7 @@ export type PortfolioProps = unknown
 
 export const Portfolio: React.VFC<PortfolioProps> = () => {
   const tokenAliasses = useStore(model.$tokenAliasses)
-  const loading = useStore(model.fetchTokenAliasses.pending)
+  const loading = useStore(model.fetchTokenAliassesFx.pending)
   const wallets = useStore(walletsModel.$wallets)
 
   useGate(model.PortfolioGate)

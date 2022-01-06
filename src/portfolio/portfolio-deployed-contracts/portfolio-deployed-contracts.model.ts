@@ -1,7 +1,9 @@
-import { createDomain, guard, restore } from 'effector-logger/macro'
+import { createDomain, guard, restore, sample } from 'effector-logger/macro'
 import { attach } from 'effector'
 
 import * as assetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
+
+export type OpenedWallet = { walletId: string; contractId: string } | null
 
 export const portfolioDeployedContracts = createDomain()
 
@@ -9,17 +11,18 @@ export const fetchAssetsByWalletFx = attach({
   effect: assetsModel.fetchAssetsByWalletFx,
 })
 
-export const openWallet = portfolioDeployedContracts.createEvent<
-  string | null
->()
+export const openWallet = portfolioDeployedContracts.createEvent<OpenedWallet>()
 
 export const $openedWallet = portfolioDeployedContracts
-  .createStore<string | null>(null)
+  .createStore<OpenedWallet>(null)
   .on(openWallet, (_, payload) => payload)
 
-guard({
-  clock: $openedWallet.updates,
-  filter: (walletId): walletId is string => Boolean(walletId),
+sample({
+  clock: guard({
+    clock: $openedWallet.updates,
+    filter: (wallet): wallet is Exclude<OpenedWallet, null> => Boolean(wallet),
+  }),
+  fn: ({ walletId }) => walletId,
   target: fetchAssetsByWalletFx,
 })
 

@@ -119,7 +119,7 @@ export const socialIcon = style({
 export const switchers = style({
   display: 'grid',
   alignItems: 'center',
-  gridTemplateColumns: '1fr 1fr',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(20px, 1fr))',
   gap: 16,
 })
 
