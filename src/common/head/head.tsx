@@ -18,7 +18,7 @@ export const Head: React.VFC<HeadProps> = (props) => {
   const siteTitle = ['DeFiHelper', props.title].filter(Boolean).join(' - ')
 
   const {
-    ogImageUrl = OpenGraph,
+    ogImageUrl = SITE_URL + OpenGraph,
     ogUrl = SITE_URL,
     description = SITE_DESCRIPTION,
   } = props
