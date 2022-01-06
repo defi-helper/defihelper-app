@@ -11,21 +11,21 @@ export const root = style({
   },
 })
 
-export const assetName = style({
+export const platformName = style({
   display: 'grid',
   gridTemplateColumns: '24px auto',
   lineHeight: '24px',
   gridGap: 10,
 })
 
-export const assetLogoPlaceholder = style({
+export const platformLogoPlaceholder = style({
   width: 24,
   height: 24,
   background: '#3a3a3a',
   borderRadius: 16,
 })
 
-export const assetLogo = style({
+export const platformLogo = style({
   width: 24,
   height: 24,
 })

@@ -15,15 +15,15 @@ export const PortfolioPlatformCard: React.VFC<PortfolioAssetCardProps> = (
 ) => {
   return (
     <div className={clsx(styles.root, props.className)}>
-      <Typography variant="body2" className={styles.assetName}>
+      <Typography variant="body2" className={styles.platformName}>
         {props.row.icon ? (
           <img
             src={props.row.icon}
-            className={styles.assetLogo}
+            className={styles.platformLogo}
             alt={`${props.row.name} logo`}
           />
         ) : (
-          <div className={styles.assetLogoPlaceholder} />
+          <div className={styles.platformLogoPlaceholder} />
         )}
         {props.row.name}
       </Typography>
