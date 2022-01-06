@@ -16,10 +16,9 @@ export const header = style({
   },
 })
 
-export const title = style({})
-
-export const grey = style({
+export const inactiveTab = style({
   color: theme.colors.textColorGrey,
+  cursor: 'pointer',
 })
 
 export const tableWrap = style({
@@ -31,9 +30,20 @@ export const table = style({
   minWidth: 900,
 })
 
-export const tableRow = style({
+export const assetsTableRow = style({
   display: 'grid',
   gridTemplateColumns: '10% 60% 15% 15%',
+
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 16,
+    },
+  },
+})
+
+export const platformsTableRow = style({
+  display: 'grid',
+  gridTemplateColumns: '40% 20% 20% 20%',
 
   selectors: {
     '&:not(:last-child)': {

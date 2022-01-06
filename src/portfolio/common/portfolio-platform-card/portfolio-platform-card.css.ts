@@ -1,0 +1,31 @@
+import { style } from '@vanilla-extract/css'
+
+export const root = style({
+  display: 'grid',
+  gridTemplateColumns: '40% 20% 20% 20%',
+
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 16,
+    },
+  },
+})
+
+export const platformName = style({
+  display: 'grid',
+  gridTemplateColumns: '24px auto',
+  lineHeight: '24px',
+  gridGap: 10,
+})
+
+export const platformLogoPlaceholder = style({
+  width: 24,
+  height: 24,
+  background: '#3a3a3a',
+  borderRadius: 16,
+})
+
+export const platformLogo = style({
+  width: 24,
+  height: 24,
+})
