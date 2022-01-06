@@ -27,14 +27,13 @@ export const PortfolioProtocolsGate = createGate<string>({
 })
 
 export const fetchUserInteractedProtocolsListFx =
-  portfolioProtocolsListDomain.createEffect((userId: string) => {
-    console.warn(`!!!${userId}`)
-    return protocolsApi.protocolList({
+  portfolioProtocolsListDomain.createEffect((userId: string) =>
+    protocolsApi.protocolList({
       protocolFilter: {
         linked: userId,
       },
     })
-  })
+  )
 
 export const $assets = portfolioAssetsDomain
   .createStore<PortfolioAssetFragment[]>([])
