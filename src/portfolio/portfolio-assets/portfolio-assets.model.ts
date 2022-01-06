@@ -37,9 +37,7 @@ export const $assets = portfolioAssetsDomain
         }
       })
       .sort((a, b) =>
-        new BN(b.metric.myPortfolioPercent)
-          .minus(new BN(a.metric.myPortfolioPercent))
-          .toNumber()
+        new BN(b.metric.myUSD).minus(new BN(a.metric.myUSD)).toNumber()
       )
   })
 
