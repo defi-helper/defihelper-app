@@ -72,8 +72,8 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
             title="Unable to execute automations"
             description={
               <>
-                We will send you alert when you don&apos;t have enough money to
-                pay blockchain and service fee to complete the automation
+                We will send you an alert when you don&apos;t have enough money
+                to pay the blockchain and service fee to complete the automation
               </>
             }
             onSwitch={(state) =>
