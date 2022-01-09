@@ -1,11 +1,13 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
+import { useMemo } from 'react'
 
 import { Chart } from '~/common/chart'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
 import { config } from '~/config'
+import { useTheme } from '~/common/theme'
 import * as model from './portfolio-earnings.model'
 import * as styles from './portfolio-earnings.css'
 
@@ -20,16 +22,24 @@ const ESTIMATED_FIELDS = [
     dateX: 'date',
     color: '#F08BA9',
   },
-  {
-    valueY: 'autostaking',
-    name: 'Autostaking',
-    dateX: 'date',
-    color: '#CCFF3C',
-  },
 ]
 
 export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
   const portfolioEarnings = useStore(model.$portfolioEarnings)
+
+  const [themeMode] = useTheme()
+
+  const estimatedFields = useMemo(() => {
+    return [
+      ...ESTIMATED_FIELDS,
+      {
+        valueY: 'autostaking',
+        name: 'Autostaking',
+        dateX: 'date',
+        color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
+      },
+    ]
+  }, [themeMode])
 
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
@@ -40,10 +50,10 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
         </Link>
       </div>
       <Chart
-        dataFields={ESTIMATED_FIELDS}
+        dataFields={estimatedFields}
         id="earnings"
         data={portfolioEarnings.data}
-        names={ESTIMATED_FIELDS.map(({ name }) => name)}
+        names={estimatedFields.map(({ name }) => name)}
         // eslint-disable-next-line no-template-curly-in-string
         tooltipText="{name}: [bold]${valueY}[/]"
       />

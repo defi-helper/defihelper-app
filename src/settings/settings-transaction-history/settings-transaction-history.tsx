@@ -38,13 +38,15 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
 
     const [page, setPages] = useState(0)
 
-    const [currentWallet, setWallet] = useState('')
+    const wallets = useStore(model.$wallets)
 
-    const handleSetWallet = (wallet: string) => () => {
+    const [currentWallet, setWallet] = useState<typeof wallets[number] | null>(
+      null
+    )
+
+    const handleSetWallet = (wallet: typeof wallets[number] | null) => () => {
       setWallet(wallet)
     }
-
-    const wallets = useStore(model.$wallets)
 
     useEffect(() => {
       model.fetchBillingHistoryFx({
@@ -53,7 +55,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
           offset: page * ROWS_PER_PAGE,
         },
         filter: {
-          wallet: [currentWallet].filter(Boolean),
+          wallet: [currentWallet?.id].filter((id): id is string => Boolean(id)),
         },
       })
     }, [page, currentWallet])
@@ -82,7 +84,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                   <Dropdown
                     control={(active) => (
                       <ButtonBase>
-                        All wallets
+                        {currentWallet?.name ?? 'All wallets'}
                         <Icon
                           icon={active ? 'arrowTop' : 'arrowDown'}
                           width="16"
@@ -98,7 +100,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                         styles.selectOption,
                         !currentWallet && styles.selectOptionActive
                       )}
-                      onClick={handleSetWallet('')}
+                      onClick={handleSetWallet(null)}
                     >
                       All wallets
                     </ButtonBase>
@@ -106,10 +108,11 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                       <ButtonBase
                         className={clsx(
                           styles.selectOption,
-                          currentWallet === wallet.id &&
+                          currentWallet?.id === wallet.id &&
                             styles.selectOptionActive
                         )}
-                        onClick={handleSetWallet(wallet.id)}
+                        onClick={handleSetWallet(wallet)}
+                        key={wallet.id}
                       >
                         {wallet.name}
                       </ButtonBase>

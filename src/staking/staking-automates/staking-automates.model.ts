@@ -7,6 +7,7 @@ import { loadAdapter } from '~/common/load-adapter'
 import { UserType } from '~/graphql/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
+import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import {
   buildAdaptersUrl,
   stakingApi,
@@ -59,16 +60,6 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
   }
 )
 
-export const deleteContractFx = stakingAutomatesDomain.createEffect(
-  async (contractId: string) => {
-    const isDeleted = await stakingApi.contractDelete(contractId)
-
-    if (!isDeleted) throw new Error('not deleted')
-
-    return isDeleted
-  }
-)
-
 export const scanWalletMetricFx = stakingAutomatesDomain.createEffect(
   (params: ScanWalletMetricParams) => {
     return walletApi.scanWalletMetric(params.walletId, params.contractId)
@@ -116,12 +107,12 @@ export const $automatesContracts = stakingAutomatesDomain
       omit(contract, ['migrating', 'depositing', 'refunding'])
     )
   )
-  .on(deleteContractFx, (state, payload) =>
+  .on(automationsListModel.deleteContractFx, (state, payload) =>
     state.map((contract) =>
       contract.id === payload ? { ...contract, deleting: true } : contract
     )
   )
-  .on(deleteContractFx.done, (state, { params }) =>
+  .on(automationsListModel.deleteContractFx.done, (state, { params }) =>
     state.filter((contract) => contract.id !== params)
   )
 

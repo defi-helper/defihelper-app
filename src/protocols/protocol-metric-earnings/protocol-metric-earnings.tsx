@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 
@@ -11,6 +11,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
 import { Link } from '~/common/link'
 import { config } from '~/config'
+import { useTheme } from '~/common/theme'
 import * as model from './protocol-metric-earnings.model'
 import * as styles from './protocol-metric-earnings.css'
 
@@ -35,12 +36,6 @@ const ESTIMATED_FIELDS = [
     name: 'Just holding',
     dateX: 'date',
     color: '#F08BA9',
-  },
-  {
-    valueY: 'autostaking',
-    name: 'Autostaking',
-    dateX: 'date',
-    color: '#CCFF3C',
   },
 ]
 
@@ -87,6 +82,20 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   ) => {
     setCurrentStakedGroup(group)
   }
+
+  const [themeMode] = useTheme()
+
+  const estimatedFields = useMemo(() => {
+    return [
+      ...ESTIMATED_FIELDS,
+      {
+        valueY: 'autostaking',
+        name: 'Autostaking',
+        dateX: 'date',
+        color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
+      },
+    ]
+  }, [themeMode])
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -139,12 +148,12 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
           }
         >
           <Chart
-            dataFields={ESTIMATED_FIELDS}
+            dataFields={estimatedFields}
             data={earningsMetric[currentEarningsGroup]?.data}
             // eslint-disable-next-line no-template-curly-in-string
             tooltipText="{name}: ${valueY}"
             id="estimated"
-            names={ESTIMATED_FIELDS.map(({ name }) => name)}
+            names={estimatedFields.map(({ name }) => name)}
           />
         </ProtocolChartWrap>
       </div>

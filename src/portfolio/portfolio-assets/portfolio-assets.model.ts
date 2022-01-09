@@ -2,7 +2,9 @@ import { createDomain, sample, guard, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { portfolioApi, portfolioSortAssets } from '~/portfolio/common'
-import { PortfolioAssetFragment } from '~/graphql/_generated-types'
+import { PortfolioAssetFragment, UserType } from '~/graphql/_generated-types'
+import { Protocol, protocolsApi } from '~/protocols/common'
+import { authModel } from '~/auth'
 
 export const portfolioAssetsDomain = createDomain()
 
@@ -15,15 +17,44 @@ export const fetchAssetsByWalletFx = portfolioAssetsDomain.createEffect(
     portfolioApi.getAssetsListByWallet({ walletId }).then(portfolioSortAssets)
 )
 
+export const PortfolioAssetsGate = createGate<string | null>({
+  domain: portfolioAssetsDomain,
+  name: 'PortfolioAssetsGate',
+})
+
+export const fetchUserInteractedProtocolsListFx =
+  portfolioAssetsDomain.createEffect((userId: string) =>
+    protocolsApi.protocolList({
+      protocolFilter: {
+        linked: userId,
+      },
+    })
+  )
+
 export const $assets = portfolioAssetsDomain
   .createStore<PortfolioAssetFragment[]>([])
   .on(fetchAssetsListFx.doneData, (_, payload) => payload)
 
 export const $assetsByWallet = restore(fetchAssetsByWalletFx.doneData, [])
 
-export const PortfolioAssetsGate = createGate<string>({
-  domain: portfolioAssetsDomain,
-  name: 'PortfolioAssetsGate',
+export const $protocols = portfolioAssetsDomain
+  .createStore<Protocol[]>([])
+  .on(
+    fetchUserInteractedProtocolsListFx.doneData,
+    (_, payload) => payload.list as Protocol[]
+  )
+
+sample({
+  clock: guard({
+    source: [authModel.$user, PortfolioAssetsGate.status],
+    clock: [authModel.$user.updates, PortfolioAssetsGate.open],
+    filter: (source): source is [UserType, boolean] => {
+      const [user, opened] = source
+      return user?.id !== undefined && opened
+    },
+  }),
+  fn: ([user]) => user.id,
+  target: fetchUserInteractedProtocolsListFx,
 })
 
 sample({
@@ -33,6 +64,6 @@ sample({
 
 guard({
   clock: PortfolioAssetsGate.state.updates,
-  filter: (clock) => Boolean(clock),
+  filter: (clock): clock is string => Boolean(clock),
   target: fetchAssetsByWalletFx,
 })

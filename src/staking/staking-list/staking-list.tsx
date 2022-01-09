@@ -302,13 +302,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
                 const apy = bignumberUtils.mul(metric.aprYear, 100)
 
-                const apyboostDifference = bignumberUtils.mul(
-                  bignumberUtils.minus(
-                    stakingListItem.metric.myAPYBoost,
-                    metric.aprYear
-                  ),
-                  100
+                const apyboostDifference = bignumberUtils.minus(
+                  stakingListItem.metric.myAPYBoost,
+                  metric.aprYear
                 )
+                const validDiff =
+                  !bignumberUtils.isNaN(apyboostDifference) &&
+                  bignumberUtils.gt(apyboostDifference, '0.001')
 
                 const currentNetwork = networksConfig[stakingListItem.network]
 
@@ -400,41 +400,38 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                             family="mono"
                             transform="uppercase"
                           >
-                            {bignumberUtils.formatMax(
-                              bignumberUtils.mul(
-                                stakingListItem.metric.myAPYBoost,
-                                100
-                              ),
-                              10000
-                            )}
+                            {validDiff
+                              ? bignumberUtils.formatMax(
+                                  bignumberUtils.mul(
+                                    stakingListItem.metric.myAPYBoost,
+                                    100
+                                  ),
+                                  10000
+                                )
+                              : 0}
                             %
                           </Typography>
-                          {!bignumberUtils.isNaN(apyboostDifference) &&
-                            bignumberUtils.gt(
-                              bignumberUtils.floor(apyboostDifference),
-                              0
-                            ) && (
-                              <Typography
-                                variant="body2"
-                                as="div"
-                                family="mono"
-                                transform="uppercase"
-                                className={clsx({
-                                  [styles.positive]: bignumberUtils.gt(
-                                    apyboostDifference,
-                                    0
-                                  ),
-                                })}
-                              >
-                                {bignumberUtils.gt(apyboostDifference, 0) &&
-                                  '+'}
-                                {bignumberUtils.formatMax(
+                          {validDiff && (
+                            <Typography
+                              variant="body2"
+                              as="div"
+                              family="mono"
+                              transform="uppercase"
+                              className={clsx({
+                                [styles.positive]: bignumberUtils.gt(
                                   apyboostDifference,
-                                  10000
-                                )}
-                                %
-                              </Typography>
-                            )}
+                                  '0.001'
+                                ),
+                              })}
+                            >
+                              {bignumberUtils.gt(apyboostDifference, 0) && '+'}
+                              {bignumberUtils.formatMax(
+                                bignumberUtils.mul(apyboostDifference, 100),
+                                10000
+                              )}
+                              %
+                            </Typography>
+                          )}
                         </div>
                         {!(
                           stakingListItem.automate.autorestake &&
