@@ -15,9 +15,9 @@ import { networksConfig } from '~/networks-config'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as styles from './portfolio-deployed-contracts.css'
 import * as model from './portfolio-deployed-contracts.model'
-import { PortfolioAssetCard } from '../common'
 import { Loader } from '~/common/loader'
 import { ButtonBase } from '~/common/button-base'
+import { PortfolioWalletAssetCard } from '~/portfolio/common/portfolio-wallet-asset-card'
 
 export type PortfolioDeployedContractsProps = {
   className?: string
@@ -163,7 +163,7 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
                           !isEmpty(assetsByWallet) && (
                             <>
                               {assetsByWallet.map((asset, index) => (
-                                <PortfolioAssetCard
+                                <PortfolioWalletAssetCard
                                   row={asset}
                                   key={String(index)}
                                 />

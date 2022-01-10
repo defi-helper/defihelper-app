@@ -3013,8 +3013,21 @@ export type WalletTokenAliasListPaginationInputType = {
 export type WalletTokenAliasListType = {
   __typename?: 'WalletTokenAliasListType'
   /** Elements */
-  list?: Maybe<Array<TokenAlias>>
+  list?: Maybe<Array<WalletTokenAliasType>>
   pagination: Pagination
+}
+
+export type WalletTokenAliasMetricType = {
+  __typename?: 'WalletTokenAliasMetricType'
+  balance: Scalars['String']
+  usd: Scalars['String']
+  portfolioPercent: Scalars['String']
+}
+
+export type WalletTokenAliasType = {
+  __typename?: 'WalletTokenAliasType'
+  tokenAlias: TokenAlias
+  metric: WalletTokenAliasMetricType
 }
 
 export type WalletTokenMetricChartFilterInputType = {
@@ -3668,7 +3681,11 @@ export type AssetsListByWalletQuery = { __typename?: 'Query' } & {
             { __typename?: 'WalletType' } & {
               tokenAliases: { __typename?: 'WalletTokenAliasListType' } & {
                 list?: Maybe<
-                  Array<{ __typename?: 'TokenAlias' } & PortfolioAssetFragment>
+                  Array<
+                    {
+                      __typename?: 'WalletTokenAliasType'
+                    } & PortfolioAssetByWalletFragment
+                  >
                 >
               }
             }
@@ -3783,6 +3800,19 @@ export type OnWalletMetricUpdatedSubscription = {
   onWalletMetricUpdated: { __typename?: 'WalletMetricUpdatedEvent' } & Pick<
     WalletMetricUpdatedEvent,
     'id'
+  >
+}
+
+export type PortfolioAssetByWalletFragment = {
+  __typename?: 'WalletTokenAliasType'
+} & {
+  tokenAlias: { __typename?: 'TokenAlias' } & Pick<
+    TokenAlias,
+    'symbol' | 'name' | 'logoUrl'
+  >
+  metric: { __typename?: 'WalletTokenAliasMetricType' } & Pick<
+    WalletTokenAliasMetricType,
+    'portfolioPercent' | 'usd' | 'balance'
   >
 }
 
@@ -5025,6 +5055,20 @@ export const GovernanceProposalFragmentFragmentDoc = gql`
     endVoteDate
   }
 `
+export const PortfolioAssetByWalletFragmentDoc = gql`
+  fragment portfolioAssetByWallet on WalletTokenAliasType {
+    tokenAlias {
+      symbol
+      name
+      logoUrl
+    }
+    metric {
+      portfolioPercent
+      usd
+      balance
+    }
+  }
+`
 export const PortfolioAssetFragmentDoc = gql`
   fragment portfolioAsset on TokenAlias {
     symbol
@@ -5832,14 +5876,14 @@ export const AssetsListByWalletDocument = gql`
             pagination: { limit: 100, offset: 0 }
           ) {
             list {
-              ...portfolioAsset
+              ...portfolioAssetByWallet
             }
           }
         }
       }
     }
   }
-  ${PortfolioAssetFragmentDoc}
+  ${PortfolioAssetByWalletFragmentDoc}
 `
 
 export function useAssetsListByWalletQuery(

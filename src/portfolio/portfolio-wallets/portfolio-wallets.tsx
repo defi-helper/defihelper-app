@@ -5,10 +5,7 @@ import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import isEmpty from 'lodash.isempty'
 
 import { Button } from '~/common/button'
-import {
-  PortfolioAddWalletDialog,
-  PortfolioAssetCard,
-} from '~/portfolio/common'
+import { PortfolioAddWalletDialog } from '~/portfolio/common'
 import { useDialog } from '~/common/dialog'
 import { Can } from '~/auth'
 import { useWalletList } from '~/wallets/wallet-list'
@@ -26,6 +23,7 @@ import { networksConfig } from '~/networks-config'
 import * as model from './portfolio-wallets.model'
 import * as styles from './portfolio-wallets.css'
 import { Loader } from '~/common/loader'
+import { PortfolioWalletAssetCard } from '~/portfolio/common/portfolio-wallet-asset-card'
 
 export type PortfolioWalletsProps = {
   className?: string
@@ -177,7 +175,10 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                     {openedWallet === wallet.id && !isEmpty(assetsByWallet) && (
                       <>
                         {assetsByWallet.map((asset, index) => (
-                          <PortfolioAssetCard row={asset} key={String(index)} />
+                          <PortfolioWalletAssetCard
+                            row={asset}
+                            key={String(index)}
+                          />
                         ))}
                       </>
                     )}
