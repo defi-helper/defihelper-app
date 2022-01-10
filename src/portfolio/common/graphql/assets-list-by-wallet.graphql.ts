@@ -1,6 +1,6 @@
 import { gql } from 'urql'
 
-import { PORTFOLIO_ASSET_FRAGMENT } from './portfolio-asset.fragment.graphql'
+import { PORTFOLIO_ASSET_BY_WALLET_FRAGMENT } from './portfolio-asset-by-wallet.fragment.graphql'
 
 export const ASSETS_LIST_BY_WALLET = gql`
   query AssetsListByWallet($walletId: UuidType) {
@@ -12,12 +12,12 @@ export const ASSETS_LIST_BY_WALLET = gql`
             pagination: { limit: 100, offset: 0 }
           ) {
             list {
-              ...portfolioAsset
+              ...portfolioAssetByWallet
             }
           }
         }
       }
     }
   }
-  ${PORTFOLIO_ASSET_FRAGMENT}
+  ${PORTFOLIO_ASSET_BY_WALLET_FRAGMENT}
 `

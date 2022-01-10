@@ -12,6 +12,11 @@ import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-as
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { PortfolioAssetCard } from '../common'
 import { PortfolioPlatformCard } from '~/portfolio/common/portfolio-platform-card'
+import { PortfolioWalletAssetCard } from '~/portfolio/common/portfolio-wallet-asset-card'
+import {
+  PortfolioAssetByWalletFragment,
+  PortfolioAssetFragment,
+} from '~/graphql/_generated-types'
 
 export type PortfolioAssetsProps = {
   className?: string
@@ -138,9 +143,18 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
               </Typography>
             </div>
             <div className={styles.tableBody}>
-              {(currentWallet ? assetsByWallet : assets).map(
-                (row, rowIndex) => (
-                  <PortfolioAssetCard key={String(rowIndex)} row={row} />
+              {(currentWallet ? assetsByWallet : assets).map((row, rowIndex) =>
+                // eslint-disable-next-line no-underscore-dangle
+                row.__typename === 'WalletTokenAliasType' ? (
+                  <PortfolioWalletAssetCard
+                    key={String(rowIndex)}
+                    row={row as PortfolioAssetByWalletFragment}
+                  />
+                ) : (
+                  <PortfolioAssetCard
+                    key={String(rowIndex)}
+                    row={row as PortfolioAssetFragment}
+                  />
                 )
               )}
             </div>

@@ -1,7 +1,11 @@
 import { createDomain, sample, guard, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
-import { portfolioApi, portfolioSortAssets } from '~/portfolio/common'
+import {
+  portfolioApi,
+  portfolioSortAssets,
+  portfolioSortAssetsByWallet,
+} from '~/portfolio/common'
 import { PortfolioAssetFragment, UserType } from '~/graphql/_generated-types'
 import { Protocol, protocolsApi } from '~/protocols/common'
 import { authModel } from '~/auth'
@@ -14,7 +18,9 @@ export const fetchAssetsListFx = portfolioAssetsDomain.createEffect(() => {
 
 export const fetchAssetsByWalletFx = portfolioAssetsDomain.createEffect(
   (walletId: string) =>
-    portfolioApi.getAssetsListByWallet({ walletId }).then(portfolioSortAssets)
+    portfolioApi
+      .getAssetsListByWallet({ walletId })
+      .then(portfolioSortAssetsByWallet)
 )
 
 export const PortfolioAssetsGate = createGate<string | null>({
