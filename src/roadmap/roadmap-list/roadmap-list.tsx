@@ -173,7 +173,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           <Loader height="36" />
         </Paper>
       )}
-      {!loading && hasGroupedProposals && !status && (
+      {!loading && hasGroupedProposals && !(status || search) && (
         <RoadmapGroupedByStatus
           proposals={groupedProposals}
           onEdit={handleEdit}
@@ -193,7 +193,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           user={user}
         />
       )}
-      {status && <model.ProposalListPagination />}
+      {(status || search) && <model.ProposalListPagination />}
     </AppLayout>
   )
 }

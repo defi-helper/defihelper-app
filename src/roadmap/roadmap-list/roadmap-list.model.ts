@@ -27,7 +27,7 @@ export const fetchProposalListFx = proposalListDomain.createEffect(
       ...(gate.status || gate.search
         ? {
             filter: {
-              status: gate.status,
+              status: gate.status || undefined,
               search: gate.search,
             },
           }
@@ -306,14 +306,17 @@ guard({
       ProposalStatusEnum.InProcess,
     ]
 
-    return Boolean(gate.status && statuses.includes(gate.status))
+    return (
+      Boolean(gate.status && statuses.includes(gate.status)) ||
+      Boolean(gate.search)
+    )
   },
   target: fetchProposalListFx,
 })
 
 guard({
   clock: [ProposalListGate.open, ProposalListGate.state.updates],
-  filter: (gate) => !gate.status,
+  filter: (gate) => !gate.status && !gate.search,
   target: fetchProposalGroupedListByStatusFx,
 })
 
