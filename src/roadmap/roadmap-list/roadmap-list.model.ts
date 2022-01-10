@@ -10,13 +10,28 @@ import {
 } from '~/graphql/_generated-types'
 import { roadmapApi, Proposal, ProposalsByStatus } from '~/roadmap/common'
 
+type Gate = {
+  status: string | null
+  search: string
+}
+
 const proposalListDomain = createDomain()
 
 export const fetchProposalListFx = proposalListDomain.createEffect(
-  ([pagination, status]: [PaginationState, ProposalStatusEnum | undefined]) =>
+  ([pagination, gate]: [
+    PaginationState,
+    { status: ProposalStatusEnum | undefined; search: string }
+  ]) =>
     roadmapApi.proposalList({
       pagination,
-      ...(status ? { filter: { status } } : undefined),
+      ...(gate.status || gate.search
+        ? {
+            filter: {
+              status: gate.status,
+              search: gate.search,
+            },
+          }
+        : undefined),
     })
 )
 
@@ -260,7 +275,7 @@ export const $groupedProposals = proposalListDomain
     },
   }))
 
-export const ProposalListGate = createGate<string | null>({
+export const ProposalListGate = createGate<Gate>({
   name: 'ProposalListGate',
   domain: proposalListDomain,
 })
@@ -276,8 +291,13 @@ guard({
     ProposalListPagination.updates,
     ProposalListGate.state.updates,
   ],
-  filter: (source): source is [PaginationState, ProposalStatusEnum] => {
-    const [, status] = source
+  filter: (
+    source
+  ): source is [
+    PaginationState,
+    { status: ProposalStatusEnum; search: string }
+  ] => {
+    const [, gate] = source
 
     const statuses: string[] = [
       ProposalStatusEnum.Open,
@@ -286,14 +306,14 @@ guard({
       ProposalStatusEnum.InProcess,
     ]
 
-    return Boolean(status && statuses.includes(status))
+    return Boolean(gate.status && statuses.includes(gate.status))
   },
   target: fetchProposalListFx,
 })
 
 guard({
   clock: [ProposalListGate.open, ProposalListGate.state.updates],
-  filter: (status) => !status,
+  filter: (gate) => !gate.status,
   target: fetchProposalGroupedListByStatusFx,
 })
 

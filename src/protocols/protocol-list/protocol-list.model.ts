@@ -2,39 +2,42 @@ import { createDomain, guard, sample, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { createPagination } from '~/common/create-pagination'
-import {
-  BlockchainEnum,
-  ProtocolFavoriteMutationVariables,
-} from '~/graphql/_generated-types'
+import { ProtocolFavoriteMutationVariables } from '~/graphql/_generated-types'
 import { protocolsApi, Protocol } from '~/protocols/common'
 
 const protocolListDomain = createDomain()
 
 type Params = {
-  blockchain: BlockchainEnum
-  network?: string | number
   offset: number
   limit: number
   search?: string
   favorite?: boolean
+  hidden: boolean | null
 }
 
 export const fetchProtocolListFx = protocolListDomain.createEffect(
-  (params?: Params) =>
-    protocolsApi.protocolList({
+  (params: Params) => {
+    return protocolsApi.protocolList({
       ...(params?.search || typeof params?.favorite === 'boolean'
         ? {
-            protocolFilter: {
-              search: params?.search,
+            filter: {
+              search: params.search,
               favorite: params.favorite,
+              hidden: params.hidden,
             },
           }
-        : {}),
-      protocolPagination: {
+        : {
+            filter: {
+              hidden: params.hidden,
+            },
+          }),
+      pagination: {
         offset: params?.offset,
         limit: params?.limit,
       },
+      hidden: params.hidden,
     })
+  }
 )
 
 const ERROR = 'Not deleted'
@@ -95,6 +98,7 @@ export const ProtocolListPagination = createPagination({
 export const ProtocolListGate = createGate<{
   search: string
   favorite?: boolean
+  hidden: boolean | null
 }>({
   domain: protocolListDomain,
   name: 'ProtocolListGate',
@@ -112,7 +116,7 @@ sample({
     filter: ([isOpen, { favorite, search }]) =>
       isOpen || Boolean(favorite) || Boolean(search),
   }),
-  fn: ([{ offset, limit }, clock]) => ({
+  fn: ([{ offset = 0, limit }, clock]): Params => ({
     offset,
     limit,
     ...clock,

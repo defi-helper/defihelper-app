@@ -7,6 +7,8 @@ import { switchNetwork } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { WalletConnect } from '~/wallets/wallet-connect'
+import { Dropdown } from '~/common/dropdown'
+import { authModel } from '~/auth'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
 
@@ -18,6 +20,10 @@ export type StakingAdaptersProps = {
   contractId: string
   blockchain: string
   network: string
+  onTurnOn: () => void
+  autostakingLoading?: boolean
+  autorestake?: string
+  prototypeAddress?: string
 }
 
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
@@ -65,6 +71,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         model.action(null)
       }
     }
+
+  const user = useStore(authModel.$user)
 
   const handleClaim = createAdapterAction('claim')
   const handleStake = createAdapterAction('stake')
@@ -142,6 +150,42 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             Claim
           </Button>
         </WalletConnect>
+      </div>
+      <div>
+        <div className={styles.turnOn}>
+          {!(props.autorestake && props.prototypeAddress) && user ? (
+            <Dropdown
+              trigger="hover"
+              placement="top"
+              offset={[0, 8]}
+              className={styles.tooltip}
+              control={
+                <Button size="small" variant="outlined">
+                  Turn on
+                </Button>
+              }
+            >
+              You can&apos;t enable autostaking for this contract right now
+            </Dropdown>
+          ) : (
+            <WalletConnect
+              fallback={
+                <Button size="small" variant="outlined">
+                  Turn on
+                </Button>
+              }
+            >
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={props.onTurnOn}
+                loading={props.autostakingLoading}
+              >
+                Turn on
+              </Button>
+            </WalletConnect>
+          )}
+        </div>
       </div>
     </div>
   )

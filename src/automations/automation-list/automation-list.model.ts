@@ -14,9 +14,19 @@ import { toastsService } from '~/toasts'
 
 export const automationListDomain = createDomain()
 
-export const fetchTriggersFx = automationListDomain.createEffect(async () => {
-  return automationApi.getTriggers({})
-})
+export const fetchTriggersFx = automationListDomain.createEffect(
+  async (search: string) => {
+    return automationApi.getTriggers(
+      search
+        ? {
+            filter: {
+              search,
+            },
+          }
+        : {}
+    )
+  }
+)
 
 export const deleteTriggerFx = automationListDomain.createEffect(
   async (id: string) => {
@@ -118,19 +128,25 @@ export const $triggers = automationListDomain
       }))
   )
 
-export const AutomationListGate = createGate({
+export const AutomationListGate = createGate<string>({
   domain: automationListDomain,
   name: 'AutomationListGate',
+  defaultState: '',
 })
 
 sample({
-  clock: AutomationListGate.open,
+  source: AutomationListGate.state,
+  clock: [AutomationListGate.open, AutomationListGate.state.updates],
   target: fetchTriggersFx,
 })
 
 export const fetchContractsFx = automationListDomain.createEffect(
   async (userId: string) => {
-    return automationApi.getContracts({ filter: { user: userId } })
+    return automationApi.getContracts({
+      filter: {
+        user: userId,
+      },
+    })
   }
 )
 

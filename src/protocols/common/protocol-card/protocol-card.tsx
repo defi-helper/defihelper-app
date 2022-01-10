@@ -13,7 +13,7 @@ import { paths } from '~/paths'
 import * as styles from './protocol-card.css'
 
 export type ProtocolCardProps = {
-  onFavorite: () => void
+  onFavorite?: () => void
   onDelete: () => void
   protocol: Protocol
 }
@@ -29,6 +29,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
           protocol.favorite && styles.favoriteActive
         )}
         onClick={props.onFavorite}
+        disabled={!props.onFavorite}
       >
         <Icon icon="star" />
       </ButtonBase>

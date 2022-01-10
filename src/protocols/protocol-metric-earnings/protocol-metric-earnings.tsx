@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
+import { useMedia } from 'react-use'
 
 import { Chart } from '~/common/chart'
 import { MetricGroupEnum, ProtocolQuery } from '~/graphql/_generated-types'
@@ -54,6 +55,8 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
     Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
   >(MetricGroupEnum.Day)
 
+  const isDesktop = useMedia('(min-width: 960px)')
+
   const earningsMetric = useStore(model.$earningsMetric)
   const contracts = useStore(stakingListModel.$contractList)
   const stakedMetric = useStore(model.$stakedMetric)
@@ -97,6 +100,8 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
     ]
   }, [themeMode])
 
+  const format = isDesktop ? 'DD MMMM YYYY HH:mm' : 'DD MMM YY'
+
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
@@ -105,8 +110,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
         </Typography>
         {props.myMinUpdatedAt && (
           <Typography className={styles.label} variant="body2">
-            Last updated at:{' '}
-            {dateUtils.format(props.myMinUpdatedAt, 'DD MMMM YYYY HH:mm')}
+            Last updated at: {dateUtils.format(props.myMinUpdatedAt, format)}
           </Typography>
         )}
       </div>

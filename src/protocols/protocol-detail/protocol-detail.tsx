@@ -93,7 +93,7 @@ export const ProtocolDetail: React.FC = () => {
       }
       action={
         loading ? (
-          'loading...'
+          ''
         ) : (
           <Paper
             target="_blank"
