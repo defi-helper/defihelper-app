@@ -110,6 +110,7 @@ export const ProtocolDetail: React.FC = () => {
       <Head
         title={loading ? 'loading...' : protocol?.name}
         ogImageUrl={`https://backend.defihelper.io/protocol/opengraph-preview/${params.protocolId}`}
+        ogUrl={`https://app.defihelper.io/protocols/${params.protocolId}`}
       />
       {loading && !protocol && (
         <div className={styles.loader}>
