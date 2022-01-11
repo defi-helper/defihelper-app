@@ -1,10 +1,10 @@
 import { createDomain, sample } from 'effector-logger/macro'
-import { BigNumber } from 'bignumber.js'
 
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 import * as portfolioMetricCardModel from '~/portfolio/portfolio-metric-cards/portfolio-metric-cards.model'
 import { authModel } from '~/auth'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 const portfolioEarnings = createDomain()
 
@@ -48,8 +48,10 @@ export const fetchChartDataFx = portfolioEarnings.createEffect(
         return [
           ...acc,
           {
-            hold: new BigNumber(hold?.v ?? 0).toFixed(0),
-            autostaking: new BigNumber(optimal?.v ?? 0).toFixed(0),
+            hold: bignumberUtils.floor(hold?.v ?? 0),
+            autostaking: bignumberUtils.floor(optimal?.v ?? 0),
+            holdFormat: bignumberUtils.format(hold?.v ?? 0),
+            autostakingFormat: bignumberUtils.format(optimal?.v ?? 0),
             date: date.setDate(date.getDate() + everyDayItem.t),
           },
         ]

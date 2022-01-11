@@ -1,6 +1,5 @@
 import { createDomain } from 'effector-logger/macro'
 
-import { BigNumber } from 'bignumber.js'
 import { dateUtils } from '~/common/date-utils'
 import { portfolioApi } from '~/portfolio/common'
 import {
@@ -9,6 +8,7 @@ import {
   UserTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
 import { authModel } from '~/auth'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 const portfolioCoinBalance = createDomain()
 
@@ -51,9 +51,11 @@ export const fetchChartDataFx = portfolioCoinBalance.createEffect(
     const altCoins = result?.altCoins ?? []
 
     return stableCoins.map((stableCoin, index) => ({
-      stableCoin: new BigNumber(stableCoin.sum).toFixed(0),
+      stableCoin: bignumberUtils.floor(stableCoin.sum),
       date: stableCoin.date,
-      altCoin: new BigNumber(altCoins?.[index]?.sum).toFixed(0),
+      altCoin: bignumberUtils.floor(altCoins?.[index]?.sum),
+      altCoinFormat: bignumberUtils.format(altCoins?.[index]?.sum),
+      stableCoinFormat: bignumberUtils.format(stableCoin.sum),
     }))
   }
 )

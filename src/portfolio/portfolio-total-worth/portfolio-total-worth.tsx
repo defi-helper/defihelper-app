@@ -17,12 +17,14 @@ export type PortfolioTotalWorthProps = {
 const TOTAL_NET_WORTH = [
   {
     valueY: 'stakingUSD',
+    format: 'stakingUSDFormat',
     name: 'Staked balance',
     dateX: 'date',
     color: '#39C077',
   },
   {
     valueY: 'balance',
+    format: 'balanceFormat',
     name: 'Balance',
     dateX: 'date',
     color: '#e39090',
@@ -30,6 +32,7 @@ const TOTAL_NET_WORTH = [
 
   {
     valueY: 'earned',
+    format: 'earnedFormat',
     name: 'Earned',
     dateX: 'date',
     color: '#51b0cb',
@@ -41,7 +44,7 @@ export const PortfolioTotalWorth: React.VFC<PortfolioTotalWorthProps> = (
 ) => {
   const [currentGroup, setCurrentGroup] = useState<
     Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-  >(MetricGroupEnum.Hour)
+  >(MetricGroupEnum.Day)
   const portfolioTotalWorth = useStore(model.$portfolioTotalWorth)
 
   useEffect(() => {
@@ -73,7 +76,7 @@ export const PortfolioTotalWorth: React.VFC<PortfolioTotalWorthProps> = (
         data={portfolioTotalWorth[currentGroup].data}
         names={TOTAL_NET_WORTH.map(({ name }) => name)}
         // eslint-disable-next-line no-template-curly-in-string
-        tooltipText="{name}: [bold]${valueY}[/]"
+        tooltipText="{name}: [bold]${format}[/]"
       />
     </Paper>
   )
