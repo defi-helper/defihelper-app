@@ -4,6 +4,7 @@ import { BigNumber } from 'bignumber.js'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 import * as portfolioMetricCardModel from '~/portfolio/portfolio-metric-cards/portfolio-metric-cards.model'
+import { authModel } from '~/auth'
 
 const portfolioEarnings = createDomain()
 
@@ -19,7 +20,7 @@ type State = {
 }
 
 type Params = {
-  group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+  group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   balance: number
   apy: number
 }
@@ -60,7 +61,7 @@ export const fetchChartDataFx = portfolioEarnings.createEffect(
 export const $portfolioEarnings = portfolioEarnings
   .createStore(
     Object.values(MetricGroupEnum).reduce<State>((acc, metricGroup) => {
-      if (metricGroup === MetricGroupEnum.Hour) return acc
+      if (metricGroup === MetricGroupEnum.Year) return acc
 
       return {
         data: [],
@@ -91,3 +92,5 @@ sample({
   }),
   target: fetchChartDataFx,
 })
+
+$portfolioEarnings.reset(authModel.fetchUserFx.finally)

@@ -18,7 +18,7 @@ export const fetchEarningMetricFx = protocolMetricEarningsDomain.createEffect(
   async (params: {
     balance: number
     apy: number
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   }) => {
     const data = await protocolsApi.earnings({
       balance: params.balance,
@@ -58,7 +58,7 @@ export const $earningsMetric = protocolMetricEarningsDomain
   .createStore(
     Object.values(MetricGroupEnum).reduce<State<EastimatedEarnings[]>>(
       (acc, metricGroup) => {
-        if (metricGroup === MetricGroupEnum.Hour) return acc
+        if (metricGroup === MetricGroupEnum.Year) return acc
 
         acc[metricGroup] = {
           data: [],
@@ -89,7 +89,7 @@ export const $earningsMetric = protocolMetricEarningsDomain
 
 export const fetchStakedMetricFx = protocolMetricEarningsDomain.createEffect(
   async (params: {
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
     contracts: string[]
   }) => {
     const data = await protocolsApi.protocolStaked({
@@ -119,7 +119,7 @@ export const $stakedMetric = protocolMetricEarningsDomain
   .createStore(
     Object.values(MetricGroupEnum).reduce<State<StakedBalance[]>>(
       (acc, metricGroup) => {
-        if (metricGroup === MetricGroupEnum.Hour) return acc
+        if (metricGroup === MetricGroupEnum.Year) return acc
 
         acc[metricGroup] = {
           data: [],

@@ -40,7 +40,7 @@ export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
   }, [currentGroup])
 
   const handleChangeMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   ) => {
     model.changeGroup(group)
   }

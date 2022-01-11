@@ -14,18 +14,18 @@ export enum Tabs {
 }
 
 export const MetricGroups: Record<string, string> = {
+  [MetricGroupEnum.Hour]: 'hourly',
   [MetricGroupEnum.Day]: 'daily',
   [MetricGroupEnum.Week]: 'weekly',
-  [MetricGroupEnum.Year]: 'yearly',
 }
 
 export const isMetricGroup = (
   group: string
-): group is Exclude<MetricGroupEnum, MetricGroupEnum.Hour> => {
+): group is Exclude<MetricGroupEnum, MetricGroupEnum.Year> => {
   const arr: string[] = [
     MetricGroupEnum.Day,
     MetricGroupEnum.Week,
-    MetricGroupEnum.Year,
+    MetricGroupEnum.Hour,
   ]
 
   return arr.includes(group)
@@ -44,10 +44,10 @@ export type EastimatedEarnings = {
 }
 
 export type State<T> = Record<
-  Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
+  Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
   {
     data: T
-    value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
     loading: boolean
   }
 >

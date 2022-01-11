@@ -1,4 +1,5 @@
 import { createDomain } from 'effector-logger/macro'
+import { authModel } from '~/auth'
 
 import {
   MetricGroupEnum,
@@ -14,10 +15,10 @@ const portfolioTotalWorth = createDomain()
 const DAYS_LIMIT = 180
 
 type State = Record<
-  Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
+  Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
   {
     data: Record<string, string>[]
-    value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
     loading: boolean
   }
 >
@@ -44,7 +45,7 @@ const defaultVariables: TokenMetricQueryVariables = {
 }
 
 type Gate = {
-  group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+  group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
 }
 
 export const fetchChartDataFx = portfolioTotalWorth.createEffect(
@@ -68,7 +69,7 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
 export const $portfolioTotalWorth = portfolioTotalWorth
   .createStore(
     Object.values(MetricGroupEnum).reduce<State>((acc, metricGroup) => {
-      if (metricGroup === MetricGroupEnum.Hour) return acc
+      if (metricGroup === MetricGroupEnum.Year) return acc
 
       acc[metricGroup] = {
         data: [],
@@ -98,3 +99,4 @@ export const $portfolioTotalWorth = portfolioTotalWorth
       },
     }
   })
+  .reset(authModel.logoutFx.finally)

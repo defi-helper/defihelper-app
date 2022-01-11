@@ -30,8 +30,8 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
   props
 ) => {
   const [currentGroup, setCurrentGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  >(MetricGroupEnum.Day)
+    Exclude<MetricGroupEnum, MetricGroupEnum.Year>
+  >(MetricGroupEnum.Hour)
 
   const params = useParams<{ protocolId: string }>()
 

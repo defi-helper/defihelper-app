@@ -108,10 +108,18 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
               <Typography variant="body3" className={styles.tableCol}>
                 Asset
               </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
+              <Typography
+                variant="body3"
+                className={styles.tableCol}
+                align="right"
+              >
                 Balance
               </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
+              <Typography
+                variant="body3"
+                className={styles.tableCol}
+                align="right"
+              >
                 Value{' '}
                 <Typography variant="inherit" className={styles.blue}>
                   Calc
@@ -170,13 +178,25 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
               <Typography variant="body3" className={styles.tableCol}>
                 Name
               </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
+              <Typography
+                variant="body3"
+                className={styles.tableCol}
+                align="right"
+              >
                 My APY
               </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
+              <Typography
+                variant="body3"
+                className={styles.tableCol}
+                align="right"
+              >
                 My position
               </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
+              <Typography
+                variant="body3"
+                className={styles.tableCol}
+                align="right"
+              >
                 My profit
               </Typography>
             </div>

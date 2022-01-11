@@ -92,6 +92,8 @@ globalStyle(`${favorite}:not(${favoriteActive}):hover`, {
 export const profit = style({
   display: 'none',
   alignItems: 'center',
+  justifyContent: 'flex-end',
+  marginRight: 10,
 
   '@media': {
     [theme.mediaQueries.md()]: {
@@ -104,8 +106,7 @@ export const manage = style({
   width: 20,
   height: 20,
   color: theme.colors.textColorPrimary,
-  marginLeft: 'auto',
-  marginRight: 10,
+  marginLeft: 10,
 })
 
 export const manageDropdown = style({

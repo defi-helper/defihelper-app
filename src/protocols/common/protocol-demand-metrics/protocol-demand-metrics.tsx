@@ -29,6 +29,33 @@ const STAKED_FIELDS = [
   },
 ]
 
+type RowProps = {
+  sum?: string
+  link?: string
+  data?: unknown[]
+  title: string
+}
+
+const Row: React.VFC<RowProps> = (props) => {
+  return (
+    <div className={clsx(styles.row)}>
+      <Typography variant="body2" as={Link} href={props.link} target="_blank">
+        {props.title}
+      </Typography>
+      <Typography variant="body2" family="mono" align="right">
+        {bignumberUtils.format(props.sum)}
+      </Typography>
+      <div className={styles.chart}>
+        <ProtocolLastMonthChart
+          dataFields={STAKED_FIELDS}
+          data={props.data}
+          id={props.title.toLowerCase()}
+        />
+      </div>
+    </div>
+  )
+}
+
 export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
   props
 ) => {
@@ -62,74 +89,34 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
       <Paper radius={8} className={styles.tableInner}>
         <div className={clsx(styles.row, styles.grey)}>
           <Typography variant="body2">Pool</Typography>
-          <Typography variant="body2">Users</Typography>
+          <Typography variant="body2" align="right">
+            Users
+          </Typography>
           <Typography variant="body2">Last Month</Typography>
         </div>
         {!isEmpty(props.telegram) && (
-          <div className={clsx(styles.row)}>
-            <Typography
-              variant="body2"
-              as={Link}
-              href={telegramLink?.value}
-              target="_blank"
-            >
-              Telegram
-            </Typography>
-            <Typography variant="body2" family="mono">
-              {bignumberUtils.format(telegramUserCount?.sum)}
-            </Typography>
-            <div className={styles.chart}>
-              <ProtocolLastMonthChart
-                dataFields={STAKED_FIELDS}
-                data={props.telegram}
-                id="telegram"
-              />
-            </div>
-          </div>
+          <Row
+            title="Telegram"
+            sum={telegramUserCount?.sum}
+            link={telegramLink?.value}
+            data={props.telegram}
+          />
         )}
         {!isEmpty(props.coingecko) && (
-          <div className={clsx(styles.row)}>
-            <Typography
-              variant="body2"
-              as={Link}
-              href={coingeckoLink?.value}
-              target="_blank"
-            >
-              Coingecko
-            </Typography>
-            <Typography variant="body2" family="mono">
-              {bignumberUtils.format(coingeckoCount?.sum)}
-            </Typography>
-            <div className={styles.chart}>
-              <ProtocolLastMonthChart
-                dataFields={STAKED_FIELDS}
-                data={props.coingecko}
-                id="coingecko"
-              />
-            </div>
-          </div>
+          <Row
+            title="Coingecko"
+            sum={coingeckoCount?.sum}
+            link={coingeckoLink?.value}
+            data={props.coingecko}
+          />
         )}
         {!isEmpty(props.coinmarketcap) && (
-          <div className={clsx(styles.row)}>
-            <Typography
-              variant="body2"
-              as={Link}
-              href={coinmarketcapLink?.value}
-              target="_blank"
-            >
-              Coinmarketcap
-            </Typography>
-            <Typography variant="body2" family="mono">
-              {bignumberUtils.format(coinmarketcapCount?.sum)}
-            </Typography>
-            <div className={styles.chart}>
-              <ProtocolLastMonthChart
-                id="coinmarketcap"
-                dataFields={STAKED_FIELDS}
-                data={props.coinmarketcap}
-              />
-            </div>
-          </div>
+          <Row
+            title="Coinmarketcap"
+            sum={coinmarketcapCount?.sum}
+            link={coinmarketcapLink?.value}
+            data={props.coinmarketcap}
+          />
         )}
       </Paper>
     </div>

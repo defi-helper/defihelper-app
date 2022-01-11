@@ -145,10 +145,18 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           <Typography variant="body2" className={styles.name}>
             Name
           </Typography>
-          <Typography variant="body2">Protocol TVL</Typography>
-          <Typography variant="body2">My APY</Typography>
-          <Typography variant="body2">My position</Typography>
-          <Typography variant="body2">My profit</Typography>
+          <Typography variant="body2" align="right">
+            Protocol TVL
+          </Typography>
+          <Typography variant="body2" align="right">
+            My APY
+          </Typography>
+          <Typography variant="body2" align="right">
+            My position
+          </Typography>
+          <Typography variant="body2" align="right" className={styles.profit}>
+            My profit
+          </Typography>
         </div>
         <ul className={styles.protocols}>
           {loading && (

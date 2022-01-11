@@ -19,7 +19,7 @@ export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
         {bignumberUtils.format(props.row.metric.myPortfolioPercent, 2)}%
       </Typography>
 
-      <Typography variant="body2" className={styles.assetName}>
+      <Typography variant="body2" className={styles.assetName} as="div">
         {props.row.logoUrl ? (
           <img
             src={props.row.logoUrl}
@@ -32,10 +32,10 @@ export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
         {props.row.name} ({props.row.symbol})
       </Typography>
 
-      <Typography variant="body2">
+      <Typography variant="body2" align="right">
         {bignumberUtils.format(props.row.metric.myBalance)}
       </Typography>
-      <Typography variant="body2">
+      <Typography variant="body2" align="right">
         ${bignumberUtils.format(props.row.metric.myUSD)}
       </Typography>
     </div>

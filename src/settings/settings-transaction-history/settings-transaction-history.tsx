@@ -133,7 +133,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                   <Typography variant="body2" as="div">
                     Txn Hash
                   </Typography>
-                  <Typography variant="body2" as="div">
+                  <Typography variant="body2" as="div" align="right">
                     Amount
                   </Typography>
                   <Typography variant="body2" as="div">
@@ -165,7 +165,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                         )}
                       </Link>
                     </Typography>
-                    <Typography variant="body2" as="div">
+                    <Typography variant="body2" as="div" align="right">
                       {bignumberUtils.format(historyItem.amount, 6, false)}{' '}
                       {networksConfig[historyItem.network]?.coin}
                     </Typography>
