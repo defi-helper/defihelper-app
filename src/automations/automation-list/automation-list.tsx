@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useLocalStorage } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
@@ -18,10 +19,11 @@ import { AutomationUpdate } from '~/automations/automation-update'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { AutomationProducts } from '../automation-products'
 import { Loader } from '~/common/loader'
-import * as styles from './automation-list.css'
-import * as model from './automation-list.model'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { WalletConnect } from '~/wallets/wallet-connect'
+import { SearchDialog } from '~/common/search-dialog'
+import * as styles from './automation-list.css'
+import * as model from './automation-list.model'
 
 export type AutomationListProps = unknown
 
@@ -34,11 +36,13 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const balance = useStore(model.$balance)
 
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutomation', false)
+  const [search, setSearch] = useState('')
 
   const [openAutomationTrigger] = useDialog(AutomationUpdate)
   const [openDescriptionDialog] = useDialog(AutomationTriggerDescriptionDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openAutomationProducts] = useDialog(AutomationProducts)
+  const [openSearchDialog] = useDialog(SearchDialog)
   const wallet = walletNetworkModel.useWalletNetwork()
 
   const handleDeleteTrigger = (triggerId: string) => async () => {
@@ -110,7 +114,23 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
     }
   }
 
-  useGate(model.AutomationListGate)
+  const handleSearchMobile = async () => {
+    try {
+      const result = await openSearchDialog()
+
+      setSearch(result)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const handleSearch = (event: React.FormEvent<HTMLInputElement>) => {
+    setSearch(event.currentTarget.value)
+  }
+
+  useGate(model.AutomationListGate, search)
 
   return (
     <AppLayout
@@ -123,7 +143,10 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
               {balanceLoading ? '...' : balance}
             </Typography>
           </Paper>
-          <ButtonBase className={styles.searchButton}>
+          <ButtonBase
+            className={styles.searchButton}
+            onClick={handleSearchMobile}
+          >
             <Icon icon="search" width="16" height="16" />
           </ButtonBase>
           <WalletConnect fallback={<Button color="blue">+</Button>}>
@@ -155,7 +178,12 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           <WalletConnect fallback={<Button>Buy</Button>}>
             <Button onClick={handleBuyProducts}>Buy</Button>
           </WalletConnect>
-          <Input placeholder="Search" className={styles.searchDesktop} />
+          <Input
+            placeholder="Search"
+            className={styles.searchDesktop}
+            value={search}
+            onChange={handleSearch}
+          />
           <WalletConnect
             fallback={
               <Button color="blue">

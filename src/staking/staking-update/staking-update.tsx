@@ -26,7 +26,7 @@ export const StakingUpdate: React.VFC<unknown> = () => {
 
   const adapterKeys = useStore(stakingCreateModel.$adapterKeys)
 
-  useGate(stakingListModel.StakingListGate, params)
+  useGate(stakingListModel.StakingListGate, { ...params, hidden: null })
   useGate(
     stakingCreateModel.StakingCreateGate,
     queryParams.get('protocol-adapter')

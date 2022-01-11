@@ -1,4 +1,4 @@
-import { composeStyles, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -14,13 +14,13 @@ export const hide = style({
   },
 })
 
-export const header = composeStyles(
+export const header = style([
   hide,
-  style({
+  {
     marginBottom: 28,
     alignItems: 'center',
-  })
-)
+  },
+])
 
 export const empty = style({
   display: 'flex',
@@ -97,14 +97,6 @@ export const searchButton = style({
   padding: 4,
   borderRadius: 6,
 })
-
-export const select = composeStyles(
-  searchButton,
-  style({
-    fontSize: 12,
-    lineHeight: '16px',
-  })
-)
 
 export const createMobile = style({
   width: 24,

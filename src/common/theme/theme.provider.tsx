@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react'
 import { useLocalStorage, useMedia } from 'react-use'
-import { setElementTheme } from '@vanilla-extract/dynamic'
+import { setElementVars } from '@vanilla-extract/dynamic'
 
 import { ThemeModes, themeContract, themes } from './theme.css'
 import { ThemeContext, themeContext } from './theme.context'
@@ -54,7 +54,7 @@ export const ThemeProvider: React.FC = (props) => {
 
     if (!element || !(element instanceof HTMLElement)) return
 
-    setElementTheme(element, themeContract, themes[currentThemeMode])
+    setElementVars(element, themeContract, themes[currentThemeMode])
   }, [currentThemeMode])
 
   return (

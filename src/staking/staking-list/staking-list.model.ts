@@ -2,7 +2,6 @@ import { createDomain, guard, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
-  BlockchainEnum,
   MetricChartType,
   StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
@@ -21,8 +20,7 @@ export const stakingListDomain = createDomain()
 type GateState = {
   protocolId: string
   protocolAdapter?: string | null
-  blockchain?: BlockchainEnum
-  network?: number | string
+  hidden: null | boolean
 }
 
 type ConnectParams = {
@@ -61,18 +59,9 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
       filter: {
         id: params.protocolId,
       },
-      ...(params.blockchain
-        ? {
-            contractFilter: {
-              blockchain: {
-                protocol: params.blockchain,
-                ...(params.network && params.network !== 'waves'
-                  ? { network: String(params.network) }
-                  : {}),
-              },
-            },
-          }
-        : {}),
+      contractFilter: {
+        hidden: params.hidden,
+      },
       contractPagination: {
         offset: params.offset,
         limit: params.limit,
@@ -169,6 +158,13 @@ export const $contractList = stakingListDomain
         : contract
     )
   })
+
+export const openContract = stakingListDomain.createEvent<string | null>()
+
+export const $openedContract = stakingListDomain
+  .createStore<string | null>(null)
+  .on(openContract, (_, payload) => payload)
+  .on($contractList.updates, (_, contracts) => contracts?.[0]?.address)
 
 export const $connectedContracts = stakingListDomain
   .createStore<Record<string, boolean>>({})

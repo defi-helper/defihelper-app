@@ -4029,11 +4029,10 @@ export type ProtocolFavoriteMutation = { __typename?: 'Mutation' } & Pick<
 >
 
 export type ProtocolsQueryVariables = Exact<{
-  protocolFilter?: Maybe<ProtocolListFilterInputType>
-  protocolSort?: Maybe<
-    Array<ProtocolListSortInputType> | ProtocolListSortInputType
-  >
-  protocolPagination?: Maybe<ProtocolListPaginationInputType>
+  filter?: Maybe<ProtocolListFilterInputType>
+  sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
+  pagination?: Maybe<ProtocolListPaginationInputType>
+  hidden?: Maybe<Scalars['Boolean']>
 }>
 
 export type ProtocolsQuery = { __typename?: 'Query' } & {
@@ -6334,15 +6333,12 @@ export function useProtocolFavoriteMutation() {
 }
 export const ProtocolsDocument = gql`
   query Protocols(
-    $protocolFilter: ProtocolListFilterInputType
-    $protocolSort: [ProtocolListSortInputType!]
-    $protocolPagination: ProtocolListPaginationInputType
+    $filter: ProtocolListFilterInputType
+    $sort: [ProtocolListSortInputType!]
+    $pagination: ProtocolListPaginationInputType
+    $hidden: Boolean
   ) {
-    protocols(
-      filter: $protocolFilter
-      sort: $protocolSort
-      pagination: $protocolPagination
-    ) {
+    protocols(filter: $filter, sort: $sort, pagination: $pagination) {
       list {
         ...protocolFragment
       }
@@ -6350,12 +6346,12 @@ export const ProtocolsDocument = gql`
         count
       }
     }
-    favorites: protocols(filter: { favorite: true }) {
+    favorites: protocols(filter: { hidden: $hidden, favorite: true }) {
       pagination {
         count
       }
     }
-    all: protocols {
+    all: protocols(filter: { hidden: $hidden }) {
       pagination {
         count
       }

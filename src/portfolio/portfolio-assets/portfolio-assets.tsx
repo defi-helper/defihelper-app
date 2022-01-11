@@ -88,6 +88,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                 </ButtonBase>
                 {wallets.map((wallet) => (
                   <ButtonBase
+                    key={wallet.id}
                     className={clsx(
                       styles.selectOption,
                       currentWallet?.id === wallet.id &&

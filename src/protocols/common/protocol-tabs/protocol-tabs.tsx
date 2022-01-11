@@ -1,6 +1,9 @@
 import clsx from 'clsx'
+import { useMedia } from 'react-use'
 
 import { ButtonBase } from '~/common/button-base'
+import { Dropdown } from '~/common/dropdown'
+import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Tabs } from '../protocol.types'
 import * as styles from './protocol-tabs.css'
@@ -18,7 +21,39 @@ export const ProtocolTabs: React.VFC<ProtocolTabsProps> = (props) => {
     props.onChange(tab)
   }
 
-  return (
+  const isDesktop = useMedia('(min-width: 960px)')
+
+  const mobile = (
+    <Dropdown
+      control={(active) => (
+        <ButtonBase className={styles.select}>
+          All{' '}
+          <Icon
+            icon={active ? 'arrowTop' : 'arrowDown'}
+            width="12"
+            height="12"
+          />
+        </ButtonBase>
+      )}
+      offset={[0, 8]}
+      className={styles.dropdown}
+    >
+      <ButtonBase
+        className={styles.selectFz}
+        onClick={handleChangeTab(Tabs.All)}
+      >
+        All
+      </ButtonBase>
+      <ButtonBase
+        className={styles.selectFz}
+        onClick={handleChangeTab(Tabs.Favourite)}
+      >
+        Favourite
+      </ButtonBase>
+    </Dropdown>
+  )
+
+  const desktop = (
     <Paper className={clsx(styles.root, props.className)}>
       <ButtonBase
         className={clsx(styles.tab, props.value === Tabs.All && styles.active)}
@@ -37,4 +72,6 @@ export const ProtocolTabs: React.VFC<ProtocolTabsProps> = (props) => {
       </ButtonBase>
     </Paper>
   )
+
+  return isDesktop ? desktop : mobile
 }
