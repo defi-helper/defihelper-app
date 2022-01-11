@@ -69,8 +69,7 @@ export const bignumberUtils = {
       .multipliedBy(options?.gasSlippage || 1.2)
       .toFixed(0),
 
-  floor: (num?: string | number | null) =>
-    new BigNumber(num || 0).integerValue().toString(10),
+  floor: (num?: string | number | null) => new BigNumber(num || 0).toFixed(0),
 
   gte: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isGreaterThanOrEqualTo(num2 || 0),

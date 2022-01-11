@@ -131,3 +131,7 @@ export const loader = style({
 export const automates = style({
   marginBottom: 53,
 })
+
+export const edit = style({
+  marginLeft: 10,
+})

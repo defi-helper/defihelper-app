@@ -1,6 +1,5 @@
 import { createDomain } from 'effector-logger/macro'
 
-import { BigNumber } from 'bignumber.js'
 import { dateUtils } from '~/common/date-utils'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import {
@@ -9,6 +8,7 @@ import {
   StakedBalance,
   State,
 } from '~/protocols/common'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 const DAYS_LIMIT = 180
 
@@ -43,8 +43,8 @@ export const fetchEarningMetricFx = protocolMetricEarningsDomain.createEffect(
           return [
             ...acc,
             {
-              hold: new BigNumber(hold?.v ?? 0).toFixed(0),
-              autostaking: new BigNumber(optimal?.v ?? 0).toFixed(0),
+              hold: bignumberUtils.floor(hold?.v ?? 0),
+              autostaking: bignumberUtils.floor(optimal?.v ?? 0),
               date: date.setDate(date.getDate() + everyDayItem.t),
             },
           ]
@@ -107,9 +107,11 @@ export const fetchStakedMetricFx = protocolMetricEarningsDomain.createEffect(
     return {
       group: params.group,
       data: data.altCoins?.map((altCoin, index) => ({
-        altCoin: new BigNumber(altCoin.sum).toFixed(0),
+        altCoin: bignumberUtils.floor(altCoin.sum),
         date: altCoin.date,
-        stableCoin: new BigNumber(data.stableCoins?.[index]?.sum).toFixed(0),
+        stableCoin: bignumberUtils.floor(data.stableCoins?.[index]?.sum),
+        altCoinFormat: bignumberUtils.format(altCoin.sum),
+        stableCoinFormat: bignumberUtils.format(data.stableCoins?.[index]?.sum),
       })),
     }
   }

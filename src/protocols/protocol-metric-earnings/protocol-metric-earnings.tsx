@@ -19,12 +19,14 @@ import * as styles from './protocol-metric-earnings.css'
 const STAKED_FIELDS = [
   {
     valueY: 'altCoin',
+    format: 'altCoinFormat',
     name: 'Low volume coins',
     dateX: 'date',
     color: '#E9CC67',
   },
   {
     valueY: 'stableCoin',
+    format: 'stableCoinFormat',
     name: 'Liquid coins',
     dateX: 'date',
     color: '#4463EE',
@@ -34,6 +36,7 @@ const STAKED_FIELDS = [
 const ESTIMATED_FIELDS = [
   {
     valueY: 'hold',
+    format: 'holdFormat',
     name: 'Just holding',
     dateX: 'date',
     color: '#F08BA9',
@@ -53,7 +56,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
 ) => {
   const [currentStakedGroup, setCurrentStakedGroup] = useState<
     Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-  >(MetricGroupEnum.Hour)
+  >(MetricGroupEnum.Day)
 
   const isDesktop = useMedia('(min-width: 960px)')
 
@@ -93,6 +96,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
       ...ESTIMATED_FIELDS,
       {
         valueY: 'autostaking',
+        format: 'autostakingFormat',
         name: 'Autostaking',
         dateX: 'date',
         color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
@@ -132,7 +136,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
             dataFields={STAKED_FIELDS}
             data={stakedMetric[currentStakedGroup]?.data}
             // eslint-disable-next-line no-template-curly-in-string
-            tooltipText="{name}: ${valueY}"
+            tooltipText="{name}: ${format}"
             id="staked"
             names={STAKED_FIELDS.map(({ name }) => name)}
           />
@@ -155,7 +159,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
             dataFields={estimatedFields}
             data={earningsMetric[currentEarningsGroup]?.data}
             // eslint-disable-next-line no-template-curly-in-string
-            tooltipText="{name}: ${valueY}"
+            tooltipText="{name}: ${format}"
             id="estimated"
             names={estimatedFields.map(({ name }) => name)}
           />

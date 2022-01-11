@@ -3,7 +3,11 @@ import { style } from '@vanilla-extract/css'
 import { theme } from '~/common/theme'
 
 export const root = style({
-  width: '100%',
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      width: 'calc(100% - 240px)',
+    },
+  },
 })
 
 export const content = style({

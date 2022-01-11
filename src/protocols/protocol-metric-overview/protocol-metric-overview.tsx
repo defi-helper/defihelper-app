@@ -1,18 +1,13 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 
-import { BigNumber } from 'bignumber.js'
 import { Chart } from '~/common/chart'
 import { MetricGroupEnum } from '~/graphql/_generated-types'
-import { ButtonBase } from '~/common/button-base'
-import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { ProtocolChartWrap } from '../common'
-import { Dropdown } from '~/common/dropdown'
-import { MetricGroups, isMetricGroup } from '~/protocols/common'
 import { useTheme } from '~/common/theme'
 import * as model from './protocol-metric-overview.model'
 import * as styles from './protocol-metric-overview.css'
@@ -26,13 +21,11 @@ const TVL_FIELDS = [
   },
 ]
 
+const currentGroup = MetricGroupEnum.Day
+
 export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
   props
 ) => {
-  const [currentGroup, setCurrentGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-  >(MetricGroupEnum.Hour)
-
   const params = useParams<{ protocolId: string }>()
 
   const metric = useStore(model.$metric)
@@ -42,32 +35,28 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
       protocolId: params.protocolId,
       group: currentGroup,
     })
-  }, [currentGroup, params.protocolId])
+  }, [params.protocolId])
 
   const [tvlSum = undefined] = metric[currentGroup]?.data.tvl?.slice(-1)
 
   const tvlData = metric[currentGroup]?.data.tvl?.map((metricItem) => {
     return {
       ...metricItem,
-      sum: new BigNumber(metricItem.sum).toFormat(0),
+      sum: bignumberUtils.floor(metricItem.sum),
+      format: bignumberUtils.format(metricItem.sum, 0),
     }
   })
 
   const walletData = metric[currentGroup]?.data?.uniqueWalletsCount.map(
     (wallet) => ({
       ...wallet,
-      sum: new BigNumber(wallet.sum).toFormat(0),
+      sum: bignumberUtils.floor(wallet.sum),
+      format: bignumberUtils.format(wallet.sum, 0),
     })
   )
 
   const [uniqueWalletsSum = undefined] =
     metric[currentGroup]?.data.uniqueWalletsCount?.slice(-1)
-
-  const handleChangeGroup = (group: string) => () => {
-    if (!isMetricGroup(group)) return
-
-    setCurrentGroup(group)
-  }
 
   const [themeMode] = useTheme()
 
@@ -86,30 +75,6 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.title}>
         <Typography variant="h3">Statistics</Typography>
-        <Dropdown
-          placement="bottom-end"
-          offset={[0, 8]}
-          sameWidth
-          control={(active) => (
-            <ButtonBase className={clsx(styles.select, styles.selectButton)}>
-              {MetricGroups[currentGroup]}{' '}
-              <Icon
-                icon={active ? 'arrowTop' : 'arrowDown'}
-                className={styles.selectArrow}
-              />
-            </ButtonBase>
-          )}
-        >
-          {Object.values(MetricGroupEnum).map((value) => (
-            <ButtonBase
-              key={value}
-              onClick={handleChangeGroup(value)}
-              className={styles.selectButton}
-            >
-              {MetricGroups[value]}
-            </ButtonBase>
-          ))}
-        </Dropdown>
       </div>
       <div className={styles.charts}>
         <ProtocolChartWrap
@@ -125,7 +90,7 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
           <Chart
             dataFields={TVL_FIELDS}
             data={tvlData}
-            tooltipText={['$', '{sum}'].join('')}
+            tooltipText={['$', '{format}'].join('')}
             id="tvl"
             names={TVL_FIELDS.map(({ name }) => name)}
           />
@@ -143,7 +108,7 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
           <Chart
             dataFields={walletFields}
             data={walletData}
-            tooltipText="{sum}"
+            tooltipText="{format}"
             id="unique_wallets"
             names={walletFields.map(({ name }) => name)}
           />
