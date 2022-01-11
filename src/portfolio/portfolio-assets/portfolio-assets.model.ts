@@ -74,3 +74,7 @@ guard({
   filter: (clock): clock is string => typeof clock === 'string',
   target: fetchAssetsByWalletFx,
 })
+
+$assets.reset(authModel.logoutFx.finally)
+$assetsByWallet.reset(authModel.logoutFx.finally)
+$protocols.reset(authModel.logoutFx.finally)

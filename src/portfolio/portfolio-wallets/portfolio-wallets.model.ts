@@ -4,6 +4,7 @@ import { attach } from 'effector'
 import { AddWalletInputType } from '~/graphql/_generated-types'
 import { portfolioApi } from '~/portfolio/common'
 import * as assetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
+import { authModel } from '~/auth'
 
 export const portfolioWalletsDomain = createDomain()
 
@@ -35,4 +36,6 @@ const closeWallet = guard({
 export const $assetsByWallet = restore(
   fetchAssetsByWalletFx.doneData,
   []
-).reset(closeWallet)
+).reset(closeWallet, authModel.logoutFx.finally)
+
+$openedWallet.reset(authModel.logoutFx.finally)

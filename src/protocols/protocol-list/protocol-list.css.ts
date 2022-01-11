@@ -111,3 +111,7 @@ export const loader = style({
   alignItems: 'center',
   justifyContent: 'center',
 })
+
+export const profit = style({
+  marginRight: 10,
+})

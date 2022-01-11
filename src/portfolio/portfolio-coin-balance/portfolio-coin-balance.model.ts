@@ -8,16 +8,17 @@ import {
   SortOrderEnum,
   UserTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
+import { authModel } from '~/auth'
 
 const portfolioCoinBalance = createDomain()
 
 const DAYS_LIMIT = 180
 
 type State = Record<
-  Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
+  Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
   {
     data: Record<string, string>[]
-    value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
     loading: boolean
   }
 >
@@ -35,7 +36,7 @@ const defaultVariables = {
   ],
 }
 
-type Params = Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+type Params = Exclude<MetricGroupEnum, MetricGroupEnum.Year>
 
 export const fetchChartDataFx = portfolioCoinBalance.createEffect(
   async (params: Params) => {
@@ -59,19 +60,19 @@ export const fetchChartDataFx = portfolioCoinBalance.createEffect(
 
 export const changeGroup =
   portfolioCoinBalance.createEvent<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   >()
 
 export const $currentGroup = portfolioCoinBalance
-  .createStore<Exclude<MetricGroupEnum, MetricGroupEnum.Hour>>(
-    MetricGroupEnum.Day
+  .createStore<Exclude<MetricGroupEnum, MetricGroupEnum.Year>>(
+    MetricGroupEnum.Hour
   )
   .on(changeGroup, (_, payload) => payload)
 
 export const $portfolioCoinBalance = portfolioCoinBalance
   .createStore(
     Object.values(MetricGroupEnum).reduce<State>((acc, metricGroup) => {
-      if (metricGroup === MetricGroupEnum.Hour) return acc
+      if (metricGroup === MetricGroupEnum.Year) return acc
 
       acc[metricGroup] = {
         data: [],
@@ -101,3 +102,6 @@ export const $portfolioCoinBalance = portfolioCoinBalance
       },
     }
   })
+
+$portfolioCoinBalance.reset(authModel.logoutFx.finally)
+$currentGroup.reset(authModel.logoutFx.finally)

@@ -40,8 +40,8 @@ export const PortfolioTotalWorth: React.VFC<PortfolioTotalWorthProps> = (
   props
 ) => {
   const [currentGroup, setCurrentGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  >(MetricGroupEnum.Day)
+    Exclude<MetricGroupEnum, MetricGroupEnum.Year>
+  >(MetricGroupEnum.Hour)
   const portfolioTotalWorth = useStore(model.$portfolioTotalWorth)
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export const PortfolioTotalWorth: React.VFC<PortfolioTotalWorthProps> = (
   }, [currentGroup])
 
   const handleChangeMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   ) => {
     setCurrentGroup(group)
   }

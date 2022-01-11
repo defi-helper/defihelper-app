@@ -8,25 +8,25 @@ import * as styles from './portfolio-chart-groups.css'
 export type PortfolioChartGroupsProps = {
   className?: string
   children: { value: string; loading: boolean }[]
-  onChange: (value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>) => void
+  onChange: (value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>) => void
   value: string
 }
 
 const MetricGroups: Record<string, string> = {
+  [MetricGroupEnum.Hour]: '1H',
   [MetricGroupEnum.Day]: '1D',
   [MetricGroupEnum.Week]: '7D',
   [MetricGroupEnum.Month]: '1M',
-  [MetricGroupEnum.Year]: '1Y',
 }
 
 const isMetricGroup = (
   group: string
-): group is Exclude<MetricGroupEnum, MetricGroupEnum.Hour> => {
+): group is Exclude<MetricGroupEnum, MetricGroupEnum.Year> => {
   const arr: string[] = [
+    MetricGroupEnum.Hour,
     MetricGroupEnum.Day,
     MetricGroupEnum.Week,
     MetricGroupEnum.Month,
-    MetricGroupEnum.Year,
   ]
 
   return arr.includes(group)

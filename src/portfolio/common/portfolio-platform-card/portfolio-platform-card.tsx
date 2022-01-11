@@ -15,7 +15,7 @@ export const PortfolioPlatformCard: React.VFC<PortfolioAssetCardProps> = (
 ) => {
   return (
     <div className={clsx(styles.root, props.className)}>
-      <Typography variant="body2" className={styles.platformName}>
+      <Typography variant="body2" className={styles.platformName} as="div">
         {props.row.icon ? (
           <img
             src={props.row.icon}
@@ -28,13 +28,13 @@ export const PortfolioPlatformCard: React.VFC<PortfolioAssetCardProps> = (
         {props.row.name}
       </Typography>
 
-      <Typography variant="body2">
+      <Typography variant="body2" align="right">
         {bignumberUtils.format(props.row.metric.myAPY, 2)}%
       </Typography>
-      <Typography variant="body2">
+      <Typography variant="body2" align="right">
         ${bignumberUtils.format(props.row.metric.myStaked, 2)}
       </Typography>
-      <Typography variant="body2">
+      <Typography variant="body2" align="right">
         ${bignumberUtils.format(props.row.metric.myEarned, 2)}
       </Typography>
     </div>

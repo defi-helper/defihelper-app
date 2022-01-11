@@ -10,6 +10,7 @@ import { Typography } from '~/common/typography'
 import { Dropdown } from '~/common/dropdown'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
+import { MarkdownRender } from '~/common/markdown-render'
 import * as styles from './roadmap-card.css'
 
 export type RoadmapCardProps = Proposal & {
@@ -66,8 +67,8 @@ export const RoadmapCard: React.VFC<RoadmapCardProps> = (props) => {
           </Can>
         )}
       </div>
-      <Typography variant="body2" className={styles.description}>
-        {props.description}
+      <Typography variant="body2" as="div" className={styles.description}>
+        <MarkdownRender>{props.description}</MarkdownRender>
       </Typography>
       <div className={styles.info}>
         <Dropdown

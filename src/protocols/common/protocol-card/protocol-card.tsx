@@ -58,6 +58,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         as="span"
         family="mono"
         className={styles.value}
+        align="right"
       >
         ${bignumberUtils.format(protocol.metric.tvl)}
       </Typography>
@@ -69,6 +70,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         as="span"
         family="mono"
         className={styles.value}
+        align="right"
       >
         {bignumberUtils.formatMax(
           bignumberUtils.mul(protocol.metric.myAPY, 100),
@@ -84,6 +86,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         as="span"
         family="mono"
         className={styles.value}
+        align="right"
       >
         ${bignumberUtils.format(protocol.metric.myStaked)}
       </Typography>
@@ -92,6 +95,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         as="span"
         className={styles.profit}
         family="mono"
+        align="right"
       >
         ${bignumberUtils.format(protocol.metric.myEarned)}
         <Can I="update" a="Protocol">

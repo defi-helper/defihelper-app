@@ -40,7 +40,7 @@ const ESTIMATED_FIELDS = [
   },
 ]
 
-const currentEarningsGroup = MetricGroupEnum.Day
+const currentEarningsGroup = MetricGroupEnum.Hour
 
 export type ProtocolMetricEarningsProps = {
   className?: string
@@ -52,8 +52,8 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   props
 ) => {
   const [currentStakedGroup, setCurrentStakedGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
-  >(MetricGroupEnum.Day)
+    Exclude<MetricGroupEnum, MetricGroupEnum.Year>
+  >(MetricGroupEnum.Hour)
 
   const isDesktop = useMedia('(min-width: 960px)')
 
@@ -81,7 +81,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   }, [currentStakedGroup, contracts])
 
   const handleChangeStakedMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   ) => {
     setCurrentStakedGroup(group)
   }
