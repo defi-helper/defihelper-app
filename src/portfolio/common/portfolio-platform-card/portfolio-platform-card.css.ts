@@ -1,14 +1,32 @@
 import { style } from '@vanilla-extract/css'
+import { theme } from '~/common/theme'
 
 export const root = style({
-  display: 'grid',
-  gridTemplateColumns: '40% 20% 20% 20%',
-
+  padding: '8px 26px 8px 26px',
+  transition: '.2s',
   selectors: {
-    '&:not(:last-child)': {
-      marginBottom: 16,
+    '&:hover': {
+      background: theme.colors.assetsPlatformActive,
     },
   },
+})
+
+export const tableHeadings = style({
+  color: theme.colors.textColorGrey,
+  padding: '16px 26px 0',
+})
+
+export const tableBody = style({
+  padding: '0 26px 16px',
+})
+
+export const rootActive = style({
+  background: theme.colors.assetsPlatformActive,
+})
+
+export const loadingWrapper = style({
+  display: 'flex',
+  justifyContent: 'center',
 })
 
 export const platformName = style({
@@ -28,4 +46,19 @@ export const platformLogoPlaceholder = style({
 export const platformLogo = style({
   width: 24,
   height: 24,
+})
+
+export const platformColumnsList = style({
+  display: 'grid',
+  gridTemplateColumns: '36% 20% 20% 20% 4%',
+})
+
+export const platformAssetsList = style({
+  paddingTop: 10,
+  display: 'none',
+  marginTop: 10,
+})
+
+export const platformAssetsListUnCollapsed = style({
+  display: 'block',
 })

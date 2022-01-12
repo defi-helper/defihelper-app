@@ -30,6 +30,11 @@ export const table = style({
   minWidth: 900,
 })
 
+export const platformsTable = style({
+  minWidth: 900,
+  paddingBottom: 8,
+})
+
 export const assetsTableRow = style({
   display: 'grid',
   gridTemplateColumns: '10% 60% 15% 15%',
@@ -43,7 +48,7 @@ export const assetsTableRow = style({
 
 export const platformsTableRow = style({
   display: 'grid',
-  gridTemplateColumns: '40% 20% 20% 20%',
+  gridTemplateColumns: '36% 20% 20% 20% 4%',
 
   selectors: {
     '&:not(:last-child)': {
@@ -66,6 +71,11 @@ export const tableHeadings = style({
 
 export const tableBody = style({
   padding: '0 26px 16px',
+})
+
+export const platformsTableBody = style({
+  padding: '0',
+  marginBottom: 8,
 })
 
 export const tableCol = style({})

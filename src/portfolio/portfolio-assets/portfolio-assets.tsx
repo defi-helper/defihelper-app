@@ -171,7 +171,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
         )}
 
         {currentTab === 1 && (
-          <Paper radius={8} className={styles.table}>
+          <Paper radius={8} className={styles.platformsTable}>
             <div
               className={clsx(styles.tableHeadings, styles.platformsTableRow)}
             >
@@ -200,9 +200,9 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                 My profit
               </Typography>
             </div>
-            <div className={styles.tableBody}>
+            <div className={styles.platformsTableBody}>
               {protocols.map((row, rowIndex) => (
-                <PortfolioPlatformCard key={String(rowIndex)} row={row} />
+                <PortfolioPlatformCard key={String(rowIndex)} protocol={row} />
               ))}
             </div>
           </Paper>
