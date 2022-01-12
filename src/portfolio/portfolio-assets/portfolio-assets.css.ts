@@ -122,3 +122,15 @@ export const selectOption = style({
 export const selectOptionActive = style({
   opacity: 0.4,
 })
+
+export const loader = style({
+  padding: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: 'auto',
+})
+
+export const nodata = style({
+  padding: '0 24px',
+})

@@ -2,6 +2,10 @@ import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
+export const root = style({
+  width: 460,
+})
+
 export const content = style({
   marginBottom: 24,
 })
