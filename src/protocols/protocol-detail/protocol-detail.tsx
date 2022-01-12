@@ -77,13 +77,21 @@ export const ProtocolDetail: React.FC = () => {
 
   const protocol = useStore(model.$protocol)
   const loading = useStore(model.fetchProtocolFx.pending)
+  const socialPosts = useStore(model.$socialPosts)
 
   const match = useRouteMatch()
+
+  const handleReadMore = () => {
+    model.fetchProtocolFx({
+      ...params,
+      offset: socialPosts.length + 3,
+    })
+  }
 
   return (
     <AppLayout
       title={
-        loading ? (
+        loading && !protocol ? (
           'loading...'
         ) : (
           <div>
@@ -96,7 +104,7 @@ export const ProtocolDetail: React.FC = () => {
       }
       action={
         <>
-          {loading ? (
+          {loading && !protocol ? (
             ''
           ) : (
             <Paper
@@ -113,7 +121,7 @@ export const ProtocolDetail: React.FC = () => {
       }
     >
       <Head
-        title={loading ? 'loading...' : protocol?.name}
+        title={loading && !protocol ? 'loading...' : protocol?.name}
         ogImageUrl={`https://backend.defihelper.io/protocol/opengraph-preview/${params.protocolId}`}
         ogUrl={`https://app.defihelper.io/protocols/${params.protocolId}`}
       />
@@ -122,7 +130,7 @@ export const ProtocolDetail: React.FC = () => {
           <Loader height="36" />
         </div>
       )}
-      {!loading && protocol && (
+      {protocol && (
         <>
           <div className={styles.header}>
             {protocol.icon && (
@@ -216,10 +224,12 @@ export const ProtocolDetail: React.FC = () => {
                   links={protocol.links}
                 />
                 <ProtocolMetricOverview className={styles.mb120} />
-                {!isEmpty(protocol.socialPosts.list) && (
+                {!isEmpty(socialPosts) && (
                   <ProtocolMediaActivity
                     className={styles.mb120}
-                    mediaActity={protocol.socialPosts.list ?? []}
+                    mediaActity={socialPosts}
+                    onReadMore={handleReadMore}
+                    loading={loading}
                   />
                 )}
                 <ProtocolDemandMetrics
