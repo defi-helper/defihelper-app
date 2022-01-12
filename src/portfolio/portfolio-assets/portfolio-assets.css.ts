@@ -48,7 +48,7 @@ export const assetsTableRow = style({
 
 export const platformsTableRow = style({
   display: 'grid',
-  gridTemplateColumns: '38% 20% 20% 20% 2%',
+  gridTemplateColumns: '36% 20% 20% 20% 4%',
 
   selectors: {
     '&:not(:last-child)': {

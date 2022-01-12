@@ -6,7 +6,7 @@ export const root = style({
   transition: '.2s',
   selectors: {
     '&:hover': {
-      background: '#22292a',
+      background: theme.colors.assetsPlatformActive,
     },
   },
 })
@@ -21,7 +21,7 @@ export const tableBody = style({
 })
 
 export const rootActive = style({
-  background: '#22292a',
+  background: theme.colors.assetsPlatformActive,
 })
 
 export const loadingWrapper = style({
@@ -50,7 +50,7 @@ export const platformLogo = style({
 
 export const platformColumnsList = style({
   display: 'grid',
-  gridTemplateColumns: '38% 20% 20% 20% 2%',
+  gridTemplateColumns: '36% 20% 20% 20% 4%',
 })
 
 export const platformAssetsList = style({
