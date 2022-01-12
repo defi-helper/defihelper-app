@@ -1,6 +1,7 @@
 import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
+import { authModel } from '~/auth'
 import { MyMetricQuery } from '~/graphql/_generated-types'
 import { portfolioApi } from '~/portfolio/common'
 
@@ -28,3 +29,5 @@ sample({
   clock: PortfolioMetricCardsGate.open,
   target: fetchMetricCardsFx,
 })
+
+$metric.reset(authModel.logoutFx.finally)

@@ -12,6 +12,7 @@ import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
 
 import { AppLayout } from '~/layouts'
+import { Can } from '~/auth'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
 import { Button } from '~/common/button'
@@ -31,8 +32,10 @@ import { Icon } from '~/common/icon'
 import { Carousel } from '~/common/carousel'
 import { StakingAutomates } from '~/staking/staking-automates'
 import { Loader } from '~/common/loader'
+import { ButtonBase } from '~/common/button-base'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
+import { paths } from '~/paths'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -92,19 +95,21 @@ export const ProtocolDetail: React.FC = () => {
         )
       }
       action={
-        loading ? (
-          'loading...'
-        ) : (
-          <Paper
-            target="_blank"
-            href={protocol?.link}
-            as={Link}
-            radius={8}
-            className={styles.protocolLink}
-          >
-            <Icon icon="link" width="16" height="16" />
-          </Paper>
-        )
+        <>
+          {loading ? (
+            ''
+          ) : (
+            <Paper
+              target="_blank"
+              href={protocol?.link}
+              as={Link}
+              radius={8}
+              className={styles.protocolLink}
+            >
+              <Icon icon="link" width="16" height="16" />
+            </Paper>
+          )}
+        </>
       }
     >
       <Head
@@ -135,6 +140,15 @@ export const ProtocolDetail: React.FC = () => {
                 {clearLink(protocol.link)}
               </Paper>
             )}
+            <Can I="update" a="Protocol">
+              <ButtonBase
+                as={ReactRouterLink}
+                to={paths.protocols.update(params.protocolId)}
+                className={styles.edit}
+              >
+                Edit
+              </ButtonBase>
+            </Can>
           </div>
           <div>
             <div className={styles.tabs}>

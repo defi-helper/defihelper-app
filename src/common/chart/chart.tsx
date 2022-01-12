@@ -24,7 +24,7 @@ import { config } from '~/config'
 import * as styles from './chart.css'
 
 export type ChartProps = {
-  dataFields: Array<IXYSeriesDataFields & { color?: string }>
+  dataFields: Array<IXYSeriesDataFields & { color?: string; format?: string }>
   tooltipText?: string
   data?: Array<unknown>
   id?: string
@@ -86,6 +86,9 @@ export const Chart: React.VFC<ChartProps> = (props) => {
       const series = chartRef.current.series.push(new LineSeries())
 
       series.dataFields.valueY = field.valueY
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (field.format) series.dataFields.format = field.format
       series.dataFields.dateX = field.dateX
       if (field.color) {
         series.stroke = color(field.color)

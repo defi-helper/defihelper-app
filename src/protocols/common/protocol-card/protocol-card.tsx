@@ -13,7 +13,7 @@ import { paths } from '~/paths'
 import * as styles from './protocol-card.css'
 
 export type ProtocolCardProps = {
-  onFavorite: () => void
+  onFavorite?: () => void
   onDelete: () => void
   protocol: Protocol
 }
@@ -29,6 +29,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
           protocol.favorite && styles.favoriteActive
         )}
         onClick={props.onFavorite}
+        disabled={!props.onFavorite}
       >
         <Icon icon="star" />
       </ButtonBase>
@@ -57,6 +58,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         as="span"
         family="mono"
         className={styles.value}
+        align="right"
       >
         ${bignumberUtils.format(protocol.metric.tvl)}
       </Typography>
@@ -68,6 +70,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         as="span"
         family="mono"
         className={styles.value}
+        align="right"
       >
         {bignumberUtils.formatMax(
           bignumberUtils.mul(protocol.metric.myAPY, 100),
@@ -83,6 +86,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         as="span"
         family="mono"
         className={styles.value}
+        align="right"
       >
         ${bignumberUtils.format(protocol.metric.myStaked)}
       </Typography>
@@ -91,6 +95,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         as="span"
         className={styles.profit}
         family="mono"
+        align="right"
       >
         ${bignumberUtils.format(protocol.metric.myEarned)}
         <Can I="update" a="Protocol">

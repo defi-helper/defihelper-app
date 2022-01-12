@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
+import { useMedia } from 'react-use'
 
 import { Chart } from '~/common/chart'
 import { MetricGroupEnum, ProtocolQuery } from '~/graphql/_generated-types'
@@ -18,12 +19,14 @@ import * as styles from './protocol-metric-earnings.css'
 const STAKED_FIELDS = [
   {
     valueY: 'altCoin',
+    format: 'altCoinFormat',
     name: 'Low volume coins',
     dateX: 'date',
     color: '#E9CC67',
   },
   {
     valueY: 'stableCoin',
+    format: 'stableCoinFormat',
     name: 'Liquid coins',
     dateX: 'date',
     color: '#4463EE',
@@ -33,13 +36,14 @@ const STAKED_FIELDS = [
 const ESTIMATED_FIELDS = [
   {
     valueY: 'hold',
+    format: 'holdFormat',
     name: 'Just holding',
     dateX: 'date',
     color: '#F08BA9',
   },
 ]
 
-const currentEarningsGroup = MetricGroupEnum.Day
+const currentEarningsGroup = MetricGroupEnum.Hour
 
 export type ProtocolMetricEarningsProps = {
   className?: string
@@ -51,8 +55,10 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   props
 ) => {
   const [currentStakedGroup, setCurrentStakedGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   >(MetricGroupEnum.Day)
+
+  const isDesktop = useMedia('(min-width: 960px)')
 
   const earningsMetric = useStore(model.$earningsMetric)
   const contracts = useStore(stakingListModel.$contractList)
@@ -78,7 +84,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   }, [currentStakedGroup, contracts])
 
   const handleChangeStakedMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   ) => {
     setCurrentStakedGroup(group)
   }
@@ -90,12 +96,15 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
       ...ESTIMATED_FIELDS,
       {
         valueY: 'autostaking',
+        format: 'autostakingFormat',
         name: 'Autostaking',
         dateX: 'date',
         color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
       },
     ]
   }, [themeMode])
+
+  const format = isDesktop ? 'DD MMMM YYYY HH:mm' : 'DD MMM YY'
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -105,8 +114,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
         </Typography>
         {props.myMinUpdatedAt && (
           <Typography className={styles.label} variant="body2">
-            Last updated at:{' '}
-            {dateUtils.format(props.myMinUpdatedAt, 'DD MMMM YYYY HH:mm')}
+            Last updated at: {dateUtils.format(props.myMinUpdatedAt, format)}
           </Typography>
         )}
       </div>
@@ -128,7 +136,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
             dataFields={STAKED_FIELDS}
             data={stakedMetric[currentStakedGroup]?.data}
             // eslint-disable-next-line no-template-curly-in-string
-            tooltipText="{name}: ${valueY}"
+            tooltipText="{name}: ${format}"
             id="staked"
             names={STAKED_FIELDS.map(({ name }) => name)}
           />
@@ -151,7 +159,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
             dataFields={estimatedFields}
             data={earningsMetric[currentEarningsGroup]?.data}
             // eslint-disable-next-line no-template-curly-in-string
-            tooltipText="{name}: ${valueY}"
+            tooltipText="{name}: ${format}"
             id="estimated"
             names={estimatedFields.map(({ name }) => name)}
           />

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useGate, useStore } from 'effector-react'
 import omit from 'lodash.omit'
 
@@ -22,6 +23,7 @@ import { Head } from '~/common/head'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { Loader } from '~/common/loader'
+import { SearchDialog } from '~/common/search-dialog'
 import * as model from './roadmap-list.model'
 import * as styles from './roadmap-list.css'
 
@@ -34,6 +36,9 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
   const createLoading = useStore(model.createProposalFx.pending)
   const searchParams = useQueryParams()
 
+  const [search, setSearch] = useState('')
+  const [openSearchDialog] = useDialog(SearchDialog)
+
   const user = useStore(authModel.$user)
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
@@ -43,7 +48,23 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
 
   const status = searchParams.get('status')
 
-  useGate(model.ProposalListGate, status)
+  const handleSearchMobile = async () => {
+    try {
+      const result = await openSearchDialog()
+
+      setSearch(result)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const handleSearch = (event: React.FormEvent<HTMLInputElement>) => {
+    setSearch(event.currentTarget.value)
+  }
+
+  useGate(model.ProposalListGate, { status, search })
 
   const handleVote = (proposal: Proposal) => {
     model.voteProposalFx(proposal)
@@ -110,7 +131,10 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
       title="Roadmap"
       action={
         <div className={styles.action}>
-          <ButtonBase className={styles.searchButton}>
+          <ButtonBase
+            className={styles.searchButton}
+            onClick={handleSearchMobile}
+          >
             <Icon icon="search" width="16" height="16" />
           </ButtonBase>
           <Button
@@ -128,7 +152,12 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
       <Head title="Roadmap" />
       <div className={styles.header}>
         <Typography variant="h3">Roadmap</Typography>
-        <Input placeholder="Search" className={styles.input} />
+        <Input
+          placeholder="Search"
+          className={styles.input}
+          value={search}
+          onChange={handleSearch}
+        />
         <Button
           variant="contained"
           color="blue"
@@ -144,7 +173,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           <Loader height="36" />
         </Paper>
       )}
-      {!loading && hasGroupedProposals && !status && (
+      {!loading && hasGroupedProposals && !(status || search) && (
         <RoadmapGroupedByStatus
           proposals={groupedProposals}
           onEdit={handleEdit}
@@ -154,7 +183,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           user={user}
         />
       )}
-      {!loading && status && (
+      {!loading && (status || search) && (
         <RoadmapGrid
           proposals={proposals}
           onEdit={handleEdit}
@@ -164,7 +193,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           user={user}
         />
       )}
-      {status && <model.ProposalListPagination />}
+      {(status || search) && <model.ProposalListPagination />}
     </AppLayout>
   )
 }

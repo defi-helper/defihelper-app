@@ -54,13 +54,13 @@ export const PortfolioPlatformCard: React.VFC<PortfolioAssetCardProps> = (
             {props.protocol.name}
           </Typography>
 
-          <Typography variant="body2">
+          <Typography variant="body2" align="right">
             {bignumberUtils.format(props.protocol.metric.myAPY, 2)}%
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" align="right">
             ${bignumberUtils.format(props.protocol.metric.myStaked, 2)}
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" align="right">
             ${bignumberUtils.format(props.protocol.metric.myEarned, 2)}
           </Typography>
 

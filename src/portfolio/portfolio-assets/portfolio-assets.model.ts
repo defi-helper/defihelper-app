@@ -33,12 +33,13 @@ export const fetchAssetsByPlatformFx = portfolioAssetsDomain.createEffect(
 export const PortfolioAssetsGate = createGate<string | null>({
   domain: portfolioAssetsDomain,
   name: 'PortfolioAssetsGate',
+  defaultState: null,
 })
 
 export const fetchUserInteractedProtocolsListFx =
   portfolioAssetsDomain.createEffect((userId: string) =>
     protocolsApi.protocolList({
-      protocolFilter: {
+      filter: {
         linked: userId,
       },
     })
@@ -102,5 +103,9 @@ sample({
 guard({
   clock: PortfolioAssetsGate.state.updates,
   filter: (clock): clock is string => Boolean(clock),
-  target: fetchAssetsByPlatformFx,
+  target: [fetchAssetsByPlatformFx, fetchAssetsByWalletFx],
 })
+
+$assets.reset(authModel.logoutFx.finally)
+$assetsByWallet.reset(authModel.logoutFx.finally)
+$protocols.reset(authModel.logoutFx.finally)

@@ -34,6 +34,7 @@ type Props<C extends React.ElementType = 'p'> = {
   as?: C
   family?: 'square' | 'mono'
   transform?: 'uppercase' | 'lowercase' | 'normal'
+  weight?: 'bold' | 'normal' | 'light' | 'semibold'
 }
 
 export type TypographyProps<C extends React.ElementType = 'p'> = Props<C> &
@@ -51,6 +52,7 @@ const Typography = <
     align = 'left',
     family = 'square',
     transform = 'normal',
+    weight = 'normal',
     as,
     className,
     ...restOfProps
@@ -61,6 +63,7 @@ const Typography = <
     className,
     styles.variants[variant],
     styles.aligns[align],
+    styles.weights[weight],
     styles.fontFamilies[family],
     styles.transforms[transform]
   )

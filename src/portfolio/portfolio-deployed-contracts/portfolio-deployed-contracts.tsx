@@ -53,9 +53,15 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
             <div className={clsx(styles.tableRow, styles.tableHeader)}>
               <Typography variant="body3">Name</Typography>
               <Typography variant="body3">Address</Typography>
-              <Typography variant="body3">Value</Typography>
-              <Typography variant="body3">APY</Typography>
-              <Typography variant="body3">APY Boost</Typography>
+              <Typography variant="body3" align="right">
+                Value
+              </Typography>
+              <Typography variant="body3" align="right">
+                APY
+              </Typography>
+              <Typography variant="body3" align="right">
+                APY Boost
+              </Typography>
             </div>
             <div className={styles.tableBody}>
               {automatesContracts.map((automateContract) => {
@@ -102,13 +108,13 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
                           </Link>
                         )}
                       </Typography>
-                      <Typography variant="body2" as="div">
+                      <Typography variant="body2" as="div" align="right">
                         $
                         {bignumberUtils.format(
                           automateContract.contractWallet?.metric.stakedUSD
                         )}
                       </Typography>
-                      <Typography variant="body2" as="div">
+                      <Typography variant="body2" as="div" align="right">
                         {bignumberUtils.formatMax(
                           bignumberUtils.mul(
                             automateContract.contract?.metric.aprYear,
@@ -119,7 +125,7 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
                         )}
                         %
                       </Typography>
-                      <Typography variant="body2" as="div">
+                      <Typography variant="body2" as="div" align="right">
                         {validDiff
                           ? bignumberUtils.formatMax(
                               bignumberUtils.mul(

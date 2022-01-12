@@ -41,7 +41,7 @@ export const protocolsApi = {
   protocolList: (variables: ProtocolsQueryVariables) =>
     getAPIClient()
       .query<ProtocolsQuery, ProtocolsQueryVariables>(PROTOCOLS, variables, {
-        requestPolicy: 'cache-and-network',
+        requestPolicy: 'network-only',
       })
       .toPromise()
       .then(({ data }) => ({
