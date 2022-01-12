@@ -293,7 +293,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             )}
             {!loading && !stakingList.length && (
               <li className={clsx(styles.listItem)}>
-                <div className={styles.empty}>No contracts found</div>
+                <div className={styles.empty}>no data</div>
               </li>
             )}
             {!loading &&

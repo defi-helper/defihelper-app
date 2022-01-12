@@ -18,7 +18,7 @@ export const root = style({
 
 export const outlinedColors = styleVariants({
   grey: {
-    color: theme.colors.common.grey1,
+    color: theme.colors.textColorGrey,
   },
 
   blue: {

@@ -48,7 +48,7 @@ export const ProtocolTabs: React.VFC<ProtocolTabsProps> = (props) => {
         className={styles.selectFz}
         onClick={handleChangeTab(Tabs.Favourite)}
       >
-        Favourite
+        Favorites
       </ButtonBase>
     </Dropdown>
   )
@@ -68,7 +68,7 @@ export const ProtocolTabs: React.VFC<ProtocolTabsProps> = (props) => {
         )}
         onClick={handleChangeTab(Tabs.Favourite)}
       >
-        {props.favorites} Favourite
+        {props.favorites} Favorites
       </ButtonBase>
     </Paper>
   )

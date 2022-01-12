@@ -24,6 +24,7 @@ export const DialogProvider: React.FC = (props) => {
       if (!closeOnOverlayClick) return
 
       setDialogs((previousDialogs) => omit(previousDialogs, id))
+
       if (args instanceof Error) {
         rejectRef.current[id]?.(args)
       } else {
@@ -37,13 +38,12 @@ export const DialogProvider: React.FC = (props) => {
 
   const handleOnConfirm = useCallback(
     (id: string) => (value?: unknown) => {
-      if (!closeOnOverlayClick) return
-
       setDialogs((previousDialogs) => omit(previousDialogs, id))
+
       resolveRef.current[id]?.(value)
       resolveRef.current = omit(resolveRef.current, id)
     },
-    [closeOnOverlayClick]
+    []
   )
 
   const handleOpen = useCallback((node: Node, resolve, reject) => {
