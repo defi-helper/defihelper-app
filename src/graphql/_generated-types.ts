@@ -4572,7 +4572,7 @@ export type WalletFragmentFragment = { __typename?: 'WalletType' } & Pick<
 > & {
     metric: { __typename?: 'WalletMetricType' } & Pick<
       WalletMetricType,
-      'stakedUSD' | 'earnedUSD' | 'usd'
+      'stakedUSD' | 'earnedUSD' | 'usd' | 'worth'
     >
     billing: { __typename?: 'WalletBillingType' } & {
       balance: { __typename?: 'BillingBalanceType' } & Pick<
@@ -5227,6 +5227,7 @@ export const WalletFragmentFragmentDoc = gql`
       stakedUSD
       earnedUSD
       usd
+      worth
     }
     billing {
       balance {

@@ -33,5 +33,7 @@ export const colors = styleVariants({
     color: 'currentColor',
   },
 
-  blue: {},
+  blue: {
+    color: theme.colors.common.blue1,
+  },
 })

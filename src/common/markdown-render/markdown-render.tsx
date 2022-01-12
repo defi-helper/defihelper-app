@@ -9,7 +9,7 @@ md.renderer = new RemarkableReactRenderer({
   components: {
     a: ({ children, href }) => {
       return (
-        <Link target="_blank" href={href}>
+        <Link target="_blank" href={href} color="blue">
           {children}
         </Link>
       )
