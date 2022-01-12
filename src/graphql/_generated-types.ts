@@ -3970,6 +3970,7 @@ export type ProtocolMetricQuery = { __typename?: 'Query' } & {
 
 export type ProtocolQueryVariables = Exact<{
   filter: ProtocolFilterInputType
+  socialPostsPagination?: Maybe<ProtocolSocialPostListPaginationInputType>
 }>
 
 export type ProtocolQuery = { __typename?: 'Query' } & {
@@ -3984,6 +3985,7 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
             >
           >
         >
+        pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
       }
       telegram: Array<
         { __typename?: 'MetricChartType' } & Pick<
@@ -6274,12 +6276,18 @@ export function useProtocolMetricQuery(
   })
 }
 export const ProtocolDocument = gql`
-  query Protocol($filter: ProtocolFilterInputType!) {
+  query Protocol(
+    $filter: ProtocolFilterInputType!
+    $socialPostsPagination: ProtocolSocialPostListPaginationInputType = {
+      limit: 3
+      offset: 0
+    }
+  ) {
     protocol(filter: $filter) {
       ...protocolFragment
       socialPosts(
         sort: [{ column: createdAt, order: desc }]
-        pagination: { limit: 3, offset: 0 }
+        pagination: $socialPostsPagination
       ) {
         list {
           id
@@ -6288,6 +6296,9 @@ export const ProtocolDocument = gql`
           content
           link
           createdAt
+        }
+        pagination {
+          count
         }
       }
       telegram: metricChart(

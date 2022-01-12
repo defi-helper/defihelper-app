@@ -3,12 +3,18 @@ import { gql } from 'urql'
 import { PROTOCOL_FRAGMENT } from './protocol.fragment.graphql'
 
 export const PROTOCOL_DETAIL = gql`
-  query Protocol($filter: ProtocolFilterInputType!) {
+  query Protocol(
+    $filter: ProtocolFilterInputType!
+    $socialPostsPagination: ProtocolSocialPostListPaginationInputType = {
+      limit: 3
+      offset: 0
+    }
+  ) {
     protocol(filter: $filter) {
       ...protocolFragment
       socialPosts(
         sort: [{ column: createdAt, order: desc }]
-        pagination: { limit: 3, offset: 0 }
+        pagination: $socialPostsPagination
       ) {
         list {
           id
@@ -17,6 +23,9 @@ export const PROTOCOL_DETAIL = gql`
           content
           link
           createdAt
+        }
+        pagination {
+          count
         }
       }
       telegram: metricChart(

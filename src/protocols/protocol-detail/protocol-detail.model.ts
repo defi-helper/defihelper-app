@@ -1,5 +1,6 @@
 import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
+import omit from 'lodash.omit'
 
 import { automationApi } from '~/automations/common/automation.api'
 import { ProtocolQuery } from '~/graphql/_generated-types'
@@ -11,11 +12,17 @@ type Protocol = Exclude<ProtocolQuery['protocol'], undefined | null> & {
 
 export const protocolDetailDomain = createDomain()
 
+const LIMIT = 3
+
 export const fetchProtocolFx = protocolDetailDomain.createEffect(
-  async (params: { protocolId: string }) => {
+  async (params: { protocolId: string; offset?: number }) => {
     const protocol = await protocolsApi.protocolDetail({
       filter: {
         id: params.protocolId,
+      },
+      socialPostsPagination: {
+        offset: params.offset ?? 0,
+        limit: LIMIT,
       },
     })
 
@@ -39,8 +46,15 @@ export const fetchProtocolFx = protocolDetailDomain.createEffect(
 )
 
 export const $protocol = protocolDetailDomain
-  .createStore<Protocol | null>(null)
-  .on(fetchProtocolFx.doneData, (_, payload) => payload)
+  .createStore<Omit<Protocol, 'socialPosts'> | null>(null)
+  .on(fetchProtocolFx.doneData, (_, payload) => omit(payload, 'socialPosts'))
+
+export const $socialPosts = protocolDetailDomain
+  .createStore<Exclude<Protocol['socialPosts']['list'], null | undefined>>([])
+  .on(fetchProtocolFx.doneData, (state, { socialPosts }) => [
+    ...state,
+    ...(socialPosts.list ?? []),
+  ])
 
 export const ProtocolDetailGate = createGate<{ protocolId: string }>({
   name: 'ProtocolDetailGate',
