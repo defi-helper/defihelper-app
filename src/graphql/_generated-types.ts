@@ -2666,6 +2666,8 @@ export type UserStoreTypeProductsArgs = {
 export type UserTokenAliasListFilterInputType = {
   /** Liquidity token */
   liquidity?: Maybe<Array<TokenAliasLiquidityEnum>>
+  /** Only tokens touched by protocol */
+  protocol?: Maybe<Scalars['UuidType']>
 }
 
 export type UserTokenAliasListPaginationInputType = {
@@ -3665,6 +3667,22 @@ export type AddWalletMutation = { __typename?: 'Mutation' } & {
     { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
         user: { __typename?: 'UserType' } & Pick<UserType, 'id'>
       }
+  >
+}
+
+export type AssetListByProtocolQueryVariables = Exact<{
+  protocolId?: Maybe<Scalars['UuidType']>
+}>
+
+export type AssetListByProtocolQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      tokenAliases: { __typename?: 'UserTokenAliasListType' } & {
+        list?: Maybe<
+          Array<{ __typename?: 'TokenAlias' } & PortfolioAssetFragment>
+        >
+      }
+    }
   >
 }
 
@@ -5864,6 +5882,33 @@ export function useAddWalletMutation() {
   return Urql.useMutation<AddWalletMutation, AddWalletMutationVariables>(
     AddWalletDocument
   )
+}
+export const AssetListByProtocolDocument = gql`
+  query AssetListByProtocol($protocolId: UuidType) {
+    me {
+      tokenAliases(
+        pagination: { limit: 50 }
+        filter: { liquidity: [stable, unstable], protocol: $protocolId }
+      ) {
+        list {
+          ...portfolioAsset
+        }
+      }
+    }
+  }
+  ${PortfolioAssetFragmentDoc}
+`
+
+export function useAssetListByProtocolQuery(
+  options: Omit<
+    Urql.UseQueryArgs<AssetListByProtocolQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<AssetListByProtocolQuery>({
+    query: AssetListByProtocolDocument,
+    ...options,
+  })
 }
 export const AssetsListByWalletDocument = gql`
   query AssetsListByWallet($walletId: UuidType) {
