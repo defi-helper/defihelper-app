@@ -2,13 +2,13 @@ import { useStore } from 'effector-react'
 
 import { StakingAdapterDialog } from '~/staking/common'
 import { Button } from '~/common/button'
-import { useDialog } from '~/common/dialog'
+import { useDialog, UserRejectionError } from '~/common/dialog'
 import { switchNetwork } from '~/wallets/common'
-import { toastsService } from '~/toasts'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { Dropdown } from '~/common/dropdown'
 import { authModel } from '~/auth'
+import { toastsService } from '~/toasts'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
 
@@ -41,7 +41,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
 
         model.action({ action, contractId: props.contractId })
 
-        await switchNetwork(props.network)
+        await switchNetwork(props.network).catch((error) => {
+          if (error instanceof Error) {
+            toastsService.error(error.message)
+          }
+        })
 
         const contract = await model.fetchContractAdapterFx({
           protocolAdapter: props.protocolAdapter,
@@ -64,8 +68,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
               : undefined,
         })
       } catch (error) {
-        if (error instanceof Error) {
-          toastsService.error(error.message)
+        if (error instanceof Error && !(error instanceof UserRejectionError)) {
+          console.error(error.message)
         }
       } finally {
         model.action(null)

@@ -15,7 +15,7 @@ import {
   StakingTabs,
 } from '../common'
 import { Paper } from '~/common/paper'
-import { useDialog } from '~/common/dialog'
+import { useDialog, UserRejectionError } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { StakingAdapters } from '~/staking/staking-adapters'
 import { Typography } from '~/common/typography'
@@ -201,7 +201,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           steps: stakingAutomatesAdapter.migrate,
         })
       } catch (error) {
-        if (error instanceof Error) {
+        if (error instanceof Error && !(error instanceof UserRejectionError)) {
           toastsService.error(error.message)
         }
       } finally {
@@ -293,7 +293,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             )}
             {!loading && !stakingList.length && (
               <li className={clsx(styles.listItem)}>
-                <div className={styles.empty}>No contracts found</div>
+                <div className={styles.empty}>no data</div>
               </li>
             )}
             {!loading &&

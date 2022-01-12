@@ -48,7 +48,7 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
       <div className={styles.header}>
         <Typography>Estimated Earnings (in 3 months)</Typography>
         <Link href={config.MEDIUM_LINK} target="_blank" className={styles.link}>
-          How autostaking works
+          How auto-staking works
         </Link>
       </div>
       <Chart

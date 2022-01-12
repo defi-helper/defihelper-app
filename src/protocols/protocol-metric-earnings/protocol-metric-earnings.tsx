@@ -150,7 +150,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
                 target="_blank"
                 className={styles.link}
               >
-                How autostaking works
+                How auto-staking works
               </Link>
             </div>
           }

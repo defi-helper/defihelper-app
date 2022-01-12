@@ -122,7 +122,7 @@ export const Chart: React.VFC<ChartProps> = (props) => {
         name: seriesitem.valueY,
       }))
       legend.contentAlign = 'left'
-      legend.fontSize = 12
+      legend.fontSize = 16
       if (themeMode === 'dark') {
         legend.labels.template.fill = color('rgba(255, 255, 255, 0.64)')
       } else {

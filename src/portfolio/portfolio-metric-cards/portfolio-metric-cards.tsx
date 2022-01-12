@@ -31,7 +31,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
         }
       />
       <PortfolioMetricCard
-        title="Avg. APY total"
+        title="Avg. APY Total"
         value={
           loading && !metric ? (
             'loading...'
@@ -47,7 +47,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
         }
       />
       <PortfolioMetricCard
-        title="Total unclaimed"
+        title="Total Unclaimed"
         value={
           loading && !metric ? (
             'loading...'

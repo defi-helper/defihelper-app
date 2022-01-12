@@ -4,6 +4,7 @@ import { theme } from '~/common/theme'
 export const root = style({
   padding: '8px 26px 8px 26px',
   transition: '.2s',
+
   selectors: {
     '&:hover': {
       background: theme.colors.assetsPlatformActive,

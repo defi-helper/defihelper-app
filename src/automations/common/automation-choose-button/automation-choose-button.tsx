@@ -42,7 +42,11 @@ export const AutomationChooseButton = forwardRef<
           className={styles.icon}
         />
       </ButtonBase>
-      <small>{error}</small>
+      {error && (
+        <Typography as="span" variant="body3">
+          {error}
+        </Typography>
+      )}
     </div>
   )
 })
