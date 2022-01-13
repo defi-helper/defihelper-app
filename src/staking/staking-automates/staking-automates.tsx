@@ -104,6 +104,8 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     useOnTokenMetricUpdatedSubscription()
 
   useEffect(() => {
+    if (!walletIds.length) return
+
     const opts = {
       variables: {
         wallet: walletIds,
@@ -115,11 +117,15 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletIds])
 
+  const walletUpdatedId = walletUpdated.data?.onWalletMetricUpdated.id ?? ''
+  const tokenMetricUpdatedId =
+    tokenMetricUpdated.data?.onTokenMetricUpdated.id ?? ''
+
   useEffect(() => {
-    if (walletUpdated.data || tokenMetricUpdated.data) {
+    if (walletUpdatedId || tokenMetricUpdatedId) {
       model.updated()
     }
-  }, [walletUpdated.data, tokenMetricUpdated.data])
+  }, [walletUpdatedId, tokenMetricUpdatedId])
 
   useEffect(() => {
     if (!currentAction || !adapter || !adapter[currentAction]) return

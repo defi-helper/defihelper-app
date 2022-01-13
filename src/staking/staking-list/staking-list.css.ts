@@ -96,14 +96,13 @@ export const createIcon = style({
 export const row = style({
   display: 'grid',
   gridTemplateColumns: '15% 14% 13% 13% 13% 13% 1fr',
-  padding: '16px 0 16px 24px',
+  padding: '16px 24px',
   alignItems: 'center',
 })
 
 export const tableHeader = style({
   color: theme.colors.textColorGrey,
   borderBottom: `1px solid ${theme.colors.border}`,
-  paddingRight: 24,
 })
 
 export const listItem = style({
