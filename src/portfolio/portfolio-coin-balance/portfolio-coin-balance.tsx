@@ -41,6 +41,12 @@ export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
     model.fetchChartDataFx(currentGroup)
   }, [currentGroup])
 
+  useEffect(() => {
+    return () => {
+      model.reset()
+    }
+  }, [])
+
   const handleChangeMetric = (
     group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   ) => {

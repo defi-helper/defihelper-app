@@ -39,6 +39,8 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     useOnTokenMetricUpdatedSubscription()
 
   useEffect(() => {
+    if (!walletIds.length) return
+
     const opts = {
       variables: {
         wallet: walletIds,

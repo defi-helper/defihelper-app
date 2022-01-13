@@ -17,6 +17,8 @@ export const dateUtils = {
     format = 'YYYY-MM-DD'
   ) => dayjs(date).format(format),
 
+  toDate: (date?: string | number | Date | dayjs.Dayjs) => dayjs(date).toDate(),
+
   fromNow: (date?: string | number | Date | dayjs.Dayjs) =>
     dayjs(date).fromNow(),
 

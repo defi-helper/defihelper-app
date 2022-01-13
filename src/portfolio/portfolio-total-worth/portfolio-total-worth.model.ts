@@ -2,6 +2,7 @@ import { createDomain } from 'effector-logger/macro'
 
 import { authModel } from '~/auth'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { dateUtils } from '~/common/date-utils'
 import {
   MetricGroupEnum,
   SortOrderEnum,
@@ -62,7 +63,7 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
       stakingUSD: stakingUSD.sum,
       balance: data.balanceUSD[index]?.sum ?? '0',
       earned: data.earnedUSD[index]?.sum ?? '0',
-      date: stakingUSD.date,
+      date: dateUtils.toDate(stakingUSD.date),
       stakingUSDFormat: bignumberUtils.format(stakingUSD.sum),
       balanceFormat: bignumberUtils.format(data.balanceUSD[index]?.sum ?? '0'),
       earnedFormat: bignumberUtils.format(data.earnedUSD[index]?.sum ?? '0'),

@@ -52,7 +52,7 @@ export const fetchChartDataFx = portfolioCoinBalance.createEffect(
 
     return stableCoins.map((stableCoin, index) => ({
       stableCoin: bignumberUtils.floor(stableCoin.sum),
-      date: stableCoin.date,
+      date: dateUtils.toDate(stableCoin.date),
       altCoin: bignumberUtils.floor(altCoins?.[index]?.sum),
       altCoinFormat: bignumberUtils.format(altCoins?.[index]?.sum),
       stableCoinFormat: bignumberUtils.format(stableCoin.sum),
@@ -67,7 +67,7 @@ export const changeGroup =
 
 export const $currentGroup = portfolioCoinBalance
   .createStore<Exclude<MetricGroupEnum, MetricGroupEnum.Year>>(
-    MetricGroupEnum.Hour
+    MetricGroupEnum.Day
   )
   .on(changeGroup, (_, payload) => payload)
 
@@ -105,5 +105,7 @@ export const $portfolioCoinBalance = portfolioCoinBalance
     }
   })
 
+export const reset = portfolioCoinBalance.createEvent()
+
 $portfolioCoinBalance.reset(authModel.logoutFx.finally)
-$currentGroup.reset(authModel.logoutFx.finally)
+$currentGroup.reset(authModel.logoutFx.finally, reset)
