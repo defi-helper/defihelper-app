@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useEffect, useMemo } from 'react'
 import isEmpty from 'lodash.isempty'
+import { useThrottle } from 'react-use'
 
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
@@ -27,6 +28,8 @@ export type StakingAutomatesProps = {
   className?: string
   protocolId?: string
 }
+
+const TIME = 15000
 
 export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [openAdapter] = useDialog(StakingAdapterDialog)
@@ -117,9 +120,14 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletIds])
 
-  const walletUpdatedId = walletUpdated.data?.onWalletMetricUpdated.id ?? ''
-  const tokenMetricUpdatedId =
-    tokenMetricUpdated.data?.onTokenMetricUpdated.id ?? ''
+  const walletUpdatedId = useThrottle(
+    walletUpdated.data?.onWalletMetricUpdated.id ?? '',
+    TIME
+  )
+  const tokenMetricUpdatedId = useThrottle(
+    tokenMetricUpdated.data?.onTokenMetricUpdated.id ?? '',
+    TIME
+  )
 
   useEffect(() => {
     if (walletUpdatedId || tokenMetricUpdatedId) {
