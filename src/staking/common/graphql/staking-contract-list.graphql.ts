@@ -8,6 +8,7 @@ export const STAKING_CONTRACT_LIST = gql`
     $contractFilter: ContractListFilterInputType
     $contractSort: [ContractListSortInputType!] = [
       { column: myStaked, order: desc }
+      { column: name, order: asc }
     ]
     $contractPagination: ContractListPaginationInputType
   ) {
