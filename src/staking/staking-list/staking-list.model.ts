@@ -224,6 +224,7 @@ export const StakingListGate = createGate<GateState>({
 
 export const StakingListPagination = createPagination({
   domain: stakingListDomain,
+  limit: 20,
 })
 
 guard({
