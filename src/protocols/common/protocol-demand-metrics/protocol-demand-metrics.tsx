@@ -29,27 +29,59 @@ const STAKED_FIELDS = [
   },
 ]
 
+type RowProps = {
+  sum?: string
+  link?: string
+  data?: unknown[]
+  title?: string
+}
+
+const Row: React.VFC<RowProps> = (props) => {
+  return (
+    <div className={clsx(styles.row)}>
+      <Typography variant="body2" as={Link} href={props.link} target="_blank">
+        {props.title || 'title not set yet'}
+      </Typography>
+      <Typography variant="body2" family="mono" align="right">
+        {bignumberUtils.format(props.sum)}
+      </Typography>
+      <div className={styles.chart}>
+        <ProtocolLastMonthChart
+          dataFields={STAKED_FIELDS}
+          data={props.data}
+          id={(props.title || '').toLowerCase()}
+        />
+      </div>
+    </div>
+  )
+}
+
 export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
   props
 ) => {
-  const [telegramUserCount = undefined] = props.telegram.slice(-1)
-  const [coinmarketcapCount = undefined] = props.coinmarketcap.slice(-1)
-  const [coingeckoCount = undefined] = props.coingecko.slice(-1)
-
   const metric = [
     ...props.telegram,
     ...props.coinmarketcap,
     ...props.coinmarketcap,
   ]
 
-  const telegramLink = props.links.social.find(
-    ({ name }) => name.toLowerCase() === 'telegram'
-  )
-  const coingeckoLink = props.links.listing.find(
-    ({ name }) => name.toLowerCase() === 'coingecko'
-  )
-  const coinmarketcapLink = props.links.listing.find(
-    ({ name }) => name.toLowerCase() === 'coinmarketcap'
+  const servicesSupply = [
+    props.telegram,
+    props.coingecko,
+    props.coinmarketcap,
+  ].map((target) =>
+    target
+      .map((v) => v.entityIdentifier)
+      .filter((x, i, a) => a.indexOf(x) === i)
+      .map((v) => {
+        return {
+          identifier: v,
+          link: [...props.links.social, ...props.links.listing].find(
+            (link) => link.id === v
+          ),
+          points: target.filter((tg) => tg.entityIdentifier === v),
+        }
+      })
   )
 
   if (isEmpty(metric)) return <></>
@@ -65,71 +97,16 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
           <Typography variant="body2">Users</Typography>
           <Typography variant="body2">Last Month</Typography>
         </div>
-        {!isEmpty(props.telegram) && (
-          <div className={clsx(styles.row)}>
-            <Typography
-              variant="body2"
-              as={Link}
-              href={telegramLink?.value}
-              target="_blank"
-            >
-              Telegram
-            </Typography>
-            <Typography variant="body2" family="mono">
-              {bignumberUtils.format(telegramUserCount?.sum)}
-            </Typography>
-            <div className={styles.chart}>
-              <ProtocolLastMonthChart
-                dataFields={STAKED_FIELDS}
-                data={props.telegram}
-                id="telegram"
-              />
-            </div>
-          </div>
-        )}
-        {!isEmpty(props.coingecko) && (
-          <div className={clsx(styles.row)}>
-            <Typography
-              variant="body2"
-              as={Link}
-              href={coingeckoLink?.value}
-              target="_blank"
-            >
-              Coingecko
-            </Typography>
-            <Typography variant="body2" family="mono">
-              {bignumberUtils.format(coingeckoCount?.sum)}
-            </Typography>
-            <div className={styles.chart}>
-              <ProtocolLastMonthChart
-                dataFields={STAKED_FIELDS}
-                data={props.coingecko}
-                id="coingecko"
-              />
-            </div>
-          </div>
-        )}
-        {!isEmpty(props.coinmarketcap) && (
-          <div className={clsx(styles.row)}>
-            <Typography
-              variant="body2"
-              as={Link}
-              href={coinmarketcapLink?.value}
-              target="_blank"
-            >
-              Coinmarketcap
-            </Typography>
-            <Typography variant="body2" family="mono">
-              {bignumberUtils.format(coinmarketcapCount?.sum)}
-            </Typography>
-            <div className={styles.chart}>
-              <ProtocolLastMonthChart
-                id="coinmarketcap"
-                dataFields={STAKED_FIELDS}
-                data={props.coinmarketcap}
-              />
-            </div>
-          </div>
+
+        {servicesSupply.map((stack) =>
+          stack.map((row) => (
+            <Row
+              title={row.link?.name}
+              sum={row.points[0].sum}
+              link={row.link?.value}
+              data={row.points}
+            />
+          ))
         )}
       </Paper>
     </div>
