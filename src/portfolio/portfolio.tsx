@@ -52,11 +52,15 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletIds])
 
+  const walletUpdatedId = walletUpdated.data?.onWalletMetricUpdated.id ?? ''
+  const tokenMetricUpdatedId =
+    tokenMetricUpdated.data?.onTokenMetricUpdated.id ?? ''
+
   useEffect(() => {
-    if (walletUpdated.data || tokenMetricUpdated.data) {
+    if (walletUpdatedId || tokenMetricUpdatedId) {
       model.portfolioUpdated()
     }
-  }, [walletUpdated.data, tokenMetricUpdated.data])
+  }, [walletUpdatedId, tokenMetricUpdatedId])
 
   return (
     <AppLayout title="Portfolio">
