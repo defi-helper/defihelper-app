@@ -57,9 +57,16 @@ export const Chart: React.VFC<ChartProps> = (props) => {
     const dateAxis = chartRef.current.xAxes.push(new DateAxis())
     dateAxis.renderer.minGridDistance = 60
     dateAxis.baseInterval = {
-      timeUnit: 'day',
+      timeUnit: 'hour',
       count: 1,
     }
+
+    dateAxis.gridIntervals.setAll([
+      { timeUnit: 'hour', count: 1 },
+      { timeUnit: 'day', count: 1 },
+      { timeUnit: 'day', count: 7 },
+      { timeUnit: 'month', count: 1 },
+    ])
 
     dateAxis.fontSize = 12
     dateAxis.dateFormats.setKey('month', 'MMM YYYY')
@@ -111,7 +118,7 @@ export const Chart: React.VFC<ChartProps> = (props) => {
       }
 
       chartRef.current.cursor = new XYCursor()
-      chartRef.current.cursor.xAxis = dateAxis
+      // chartRef.current.cursor.xAxis = dateAxis
     })
 
     if (props.dataFields.length > 1) {

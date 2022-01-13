@@ -11,6 +11,7 @@ import { ProtocolChartWrap } from '../common'
 import { useTheme } from '~/common/theme'
 import * as model from './protocol-metric-overview.model'
 import * as styles from './protocol-metric-overview.css'
+import { dateUtils } from '~/common/date-utils'
 
 const TVL_FIELDS = [
   {
@@ -42,6 +43,7 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
   const tvlData = metric[currentGroup]?.data.tvl?.map((metricItem) => {
     return {
       ...metricItem,
+      date: dateUtils.toDate(metricItem.date),
       sum: bignumberUtils.floor(metricItem.sum),
       format: bignumberUtils.format(metricItem.sum, 0),
     }
@@ -50,6 +52,7 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
   const walletData = metric[currentGroup]?.data?.uniqueWalletsCount.map(
     (wallet) => ({
       ...wallet,
+      date: dateUtils.toDate(wallet.date),
       sum: bignumberUtils.floor(wallet.sum),
       format: bignumberUtils.format(wallet.sum, 0),
     })

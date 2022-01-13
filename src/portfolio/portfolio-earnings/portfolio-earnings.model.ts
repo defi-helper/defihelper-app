@@ -95,4 +95,4 @@ sample({
   target: fetchChartDataFx,
 })
 
-$portfolioEarnings.reset(authModel.fetchUserFx.finally)
+$portfolioEarnings.reset(authModel.logoutFx.finally)
