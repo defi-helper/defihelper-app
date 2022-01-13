@@ -9,7 +9,7 @@ import * as styles from './protocol-metric-groups.css'
 export type ProtocolMetricGroupsProps = {
   className?: string
   children: { value: string; loading: boolean }[]
-  onChange: (value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>) => void
+  onChange: (value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>) => void
   value: string
 }
 

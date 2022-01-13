@@ -99,6 +99,7 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
                 <ButtonBase className={styles.delegate}>Connect</ButtonBase>
               }
               blockchain="ethereum"
+              network="1"
             >
               <ButtonBase
                 onClick={handleopenDelegate}
@@ -119,6 +120,7 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
               </Button>
             }
             blockchain="ethereum"
+            network="1"
           >
             <Button
               as={ReactRouterLink}

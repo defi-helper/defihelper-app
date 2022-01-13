@@ -24,7 +24,7 @@ export const AutomationTriggerDescriptionDialog: React.VFC<AutomationTriggerDesc
     }
 
     return (
-      <AutomationDialog title="Create an automation">
+      <AutomationDialog title="Create an automation" className={styles.root}>
         <div className={styles.content}>
           <Typography variant="body2" as="div">
             An automation is a set of actions which will be executed every time
@@ -50,14 +50,14 @@ export const AutomationTriggerDescriptionDialog: React.VFC<AutomationTriggerDesc
             enacting it.
           </Typography>
           <Typography variant="inherit" as="div" className={styles.note}>
-            Note: A GAS Fee will be charged for every completed action
+            Note: A gas fee will be charged for every completed action
           </Typography>
         </div>
         <Typography as="label" variant="body2" className={styles.checkbox}>
           <Checkbox checked={checked} onChange={handleToggle} />
           <Typography variant="inherit">Don&apos;t show this again</Typography>
         </Typography>
-        <Button onClick={handleConfirm}>Setup Automation</Button>
+        <Button onClick={handleConfirm}>Set up automation</Button>
       </AutomationDialog>
     )
   }

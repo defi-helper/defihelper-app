@@ -1,11 +1,11 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useLocalStorage, useInterval } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
-import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
-import { authModel, Can, useAbility } from '~/auth'
+import { Can, useAbility } from '~/auth'
 import { paths } from '~/paths'
 import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
@@ -15,7 +15,7 @@ import {
   StakingTabs,
 } from '../common'
 import { Paper } from '~/common/paper'
-import { useDialog } from '~/common/dialog'
+import { useDialog, UserRejectionError } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { StakingAdapters } from '~/staking/staking-adapters'
 import { Typography } from '~/common/typography'
@@ -33,7 +33,6 @@ import { AutomationDeployStepsDialog } from '~/automations/common/automation-dep
 import { toastsService } from '~/toasts'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
-import { WalletConnect } from '~/wallets/wallet-connect'
 import { networksConfig } from '~/networks-config'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
@@ -49,7 +48,6 @@ export type StakingListProps = {
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const ability = useAbility()
 
-  const [openedContract, setOpenedContract] = useState<string | null>(null)
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutostaking', false)
 
   const currentWallet = walletNetworkModel.useWalletNetwork()
@@ -59,7 +57,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const wallets = useStore(walletsModel.$wallets)
   const loading = useStore(model.fetchStakingListFx.pending)
 
-  const user = useStore(authModel.$user)
+  const openedContract = useStore(model.$openedContract)
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openDescriptionDialog] = useDialog(StakingDescriptionDialog)
@@ -67,7 +65,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openDeployStepsDialog] = useDialog(AutomationDeployStepsDialog)
   const [openAdapter] = useDialog(StakingAdapterDialog)
 
-  useGate(model.StakingListGate, props)
+  useGate(model.StakingListGate, {
+    ...props,
+    hidden: ability.can('update', 'Contract') ? null : false,
+  })
 
   const handleOpenConfirmDialog = (id: string) => async () => {
     try {
@@ -81,17 +82,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     }
   }
 
-  const staking = useMemo(
-    () => stakingList.filter((stakingItem) => ability.can('read', stakingItem)),
-    [stakingList, ability]
-  )
-
   const handleOpenContract = (contractAddress: string) => () => {
-    if (openedContract === contractAddress) {
-      setOpenedContract(null)
-    } else {
-      setOpenedContract(contractAddress)
-    }
+    const address = openedContract === contractAddress ? null : contractAddress
+
+    model.openContract(address)
   }
 
   const handleAutostake =
@@ -207,7 +201,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           steps: stakingAutomatesAdapter.migrate,
         })
       } catch (error) {
-        if (error instanceof Error) {
+        if (error instanceof Error && !(error instanceof UserRejectionError)) {
           toastsService.error(error.message)
         }
       } finally {
@@ -258,11 +252,21 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         <Paper radius={8} className={styles.tableInner}>
           <div className={clsx(styles.tableHeader, styles.row)}>
             <Typography variant="body2">Pool</Typography>
-            <Typography variant="body2">TVL</Typography>
-            <Typography variant="body2">APY</Typography>
-            <Typography variant="body2">Position</Typography>
-            <Typography variant="body2">Pool share</Typography>
-            <Typography variant="body2">Unclaimed</Typography>
+            <Typography variant="body2" align="right">
+              TVL
+            </Typography>
+            <Typography variant="body2" align="right">
+              APY
+            </Typography>
+            <Typography variant="body2" align="right">
+              Position
+            </Typography>
+            <Typography variant="body2" align="right">
+              Pool share
+            </Typography>
+            <Typography variant="body2" align="right">
+              Unclaimed
+            </Typography>
             <Typography variant="body2" className={styles.boostTooltipTHead}>
               <Dropdown
                 control={
@@ -287,13 +291,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                 <Loader height="24" />
               </li>
             )}
-            {!loading && !staking.length && (
+            {!loading && !stakingList.length && (
               <li className={clsx(styles.listItem)}>
-                <div className={styles.empty}>No contracts found</div>
+                <div className={styles.empty}>no data</div>
               </li>
             )}
             {!loading &&
-              staking.map((stakingListItem) => {
+              stakingList.map((stakingListItem) => {
                 const opened = stakingListItem.address === openedContract
 
                 const metric = freshMetrics[stakingListItem.id]
@@ -320,7 +324,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       stakingListItem.hidden && styles.hiddenListItem
                     )}
                   >
-                    <div className={clsx(styles.card, styles.row)}>
+                    <div
+                      className={clsx(styles.card, styles.row)}
+                      onClick={handleOpenContract(stakingListItem.address)}
+                      role="button"
+                      tabIndex={0}
+                    >
                       <div className={styles.tableCol}>
                         {currentNetwork && (
                           <div className={styles.coinIcons}>
@@ -340,6 +349,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           as="div"
                           family="mono"
                           transform="uppercase"
+                          align="right"
                         >
                           ${bignumberUtils.format(metric.tvl)}
                         </Typography>
@@ -350,6 +360,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           as="div"
                           family="mono"
                           transform="uppercase"
+                          align="right"
                         >
                           {bignumberUtils.formatMax(apy, 10000)}%
                         </Typography>
@@ -360,6 +371,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           as="div"
                           family="mono"
                           transform="uppercase"
+                          align="right"
                         >
                           ${bignumberUtils.format(metric.myStaked)}
                         </Typography>
@@ -370,6 +382,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           as="div"
                           family="mono"
                           transform="uppercase"
+                          align="right"
                         >
                           {bignumberUtils.format(
                             bignumberUtils.mul(
@@ -386,19 +399,19 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           as="div"
                           family="mono"
                           transform="uppercase"
+                          align="right"
                         >
                           ${bignumberUtils.format(metric.myEarned)}
                         </Typography>
                       </div>
-                      <div
-                        className={clsx(styles.tableCol, styles.autostaking)}
-                      >
-                        <div>
+                      <div className={clsx(styles.tableCol)}>
+                        <div className={styles.autostakingCol}>
                           <Typography
                             variant="body2"
                             as="div"
                             family="mono"
                             transform="uppercase"
+                            align="right"
                           >
                             {validDiff
                               ? bignumberUtils.formatMax(
@@ -417,6 +430,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                               as="div"
                               family="mono"
                               transform="uppercase"
+                              align="right"
                               className={clsx({
                                 [styles.positive]: bignumberUtils.gt(
                                   apyboostDifference,
@@ -433,52 +447,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                             </Typography>
                           )}
                         </div>
-                        {!(
-                          stakingListItem.automate.autorestake &&
-                          stakingListItem.prototypeAddress &&
-                          stakingListItem.automate.autorestake
-                        ) && user ? (
-                          <Dropdown
-                            trigger="hover"
-                            placement="top"
-                            offset={[0, 8]}
-                            className={styles.tooltip}
-                            control={
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                className={styles.turnOn}
-                              >
-                                Turn on
-                              </Button>
-                            }
-                          >
-                            You can&apos;t enable autostaking for this contract
-                            right now
-                          </Dropdown>
-                        ) : (
-                          <WalletConnect
-                            fallback={
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                className={styles.turnOn}
-                              >
-                                Turn on
-                              </Button>
-                            }
-                          >
-                            <Button
-                              size="small"
-                              variant="outlined"
-                              onClick={handleAutostake(stakingListItem)}
-                              className={styles.turnOn}
-                              loading={stakingListItem.autostakingLoading}
-                            >
-                              Turn on
-                            </Button>
-                          </WalletConnect>
-                        )}
                         <ButtonBase
                           className={styles.accorionButton}
                           onClick={handleOpenContract(stakingListItem.address)}
@@ -529,6 +497,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         contractId={stakingListItem.id}
                         blockchain={stakingListItem.blockchain}
                         network={stakingListItem.network}
+                        onTurnOn={handleAutostake(stakingListItem)}
+                        autostakingLoading={stakingListItem.autostakingLoading}
+                        autorestake={
+                          stakingListItem.automate.autorestake ?? undefined
+                        }
+                        prototypeAddress={stakingListItem.prototypeAddress}
                       />
                     )}
                   </li>

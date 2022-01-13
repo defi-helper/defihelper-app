@@ -6,7 +6,7 @@ import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 
 type State = Record<
-  Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
+  Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
   {
     data: {
       tvl: Unwrap<ReturnType<typeof protocolsApi.protocolDetailMetric>>
@@ -14,7 +14,7 @@ type State = Record<
         ReturnType<typeof protocolsApi.protocolDetailMetric>
       >
     }
-    value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
     loading: boolean
   }
 >
@@ -26,7 +26,7 @@ const DAYS_LIMIT = 180
 export const fetchMetricFx = protocolMetricOverviewDomain.createEffect(
   async (params: {
     protocolId: string
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   }) => {
     const data = await protocolsApi.protocolOverviewMetric({
       filter: {
@@ -51,7 +51,7 @@ export const fetchMetricFx = protocolMetricOverviewDomain.createEffect(
 
 const initialState = Object.values(MetricGroupEnum).reduce<State>(
   (acc, metricGroup) => {
-    if (metricGroup === MetricGroupEnum.Hour) return acc
+    if (metricGroup === MetricGroupEnum.Year) return acc
 
     acc[metricGroup] = {
       data: {

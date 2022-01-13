@@ -2668,6 +2668,8 @@ export type UserStoreTypeProductsArgs = {
 export type UserTokenAliasListFilterInputType = {
   /** Liquidity token */
   liquidity?: Maybe<Array<TokenAliasLiquidityEnum>>
+  /** Only tokens touched by protocol */
+  protocol?: Maybe<Scalars['UuidType']>
 }
 
 export type UserTokenAliasListPaginationInputType = {
@@ -3670,6 +3672,22 @@ export type AddWalletMutation = { __typename?: 'Mutation' } & {
   >
 }
 
+export type AssetListByProtocolQueryVariables = Exact<{
+  protocolId?: Maybe<Scalars['UuidType']>
+}>
+
+export type AssetListByProtocolQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      tokenAliases: { __typename?: 'UserTokenAliasListType' } & {
+        list?: Maybe<
+          Array<{ __typename?: 'TokenAlias' } & PortfolioAssetFragment>
+        >
+      }
+    }
+  >
+}
+
 export type AssetsListByWalletQueryVariables = Exact<{
   walletId?: Maybe<Scalars['UuidType']>
 }>
@@ -3954,6 +3972,7 @@ export type ProtocolMetricQuery = { __typename?: 'Query' } & {
 
 export type ProtocolQueryVariables = Exact<{
   filter: ProtocolFilterInputType
+  socialPostsPagination?: Maybe<ProtocolSocialPostListPaginationInputType>
 }>
 
 export type ProtocolQuery = { __typename?: 'Query' } & {
@@ -3968,6 +3987,7 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
             >
           >
         >
+        pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
       }
       telegram: Array<
         { __typename?: 'MetricChartType' } & Pick<
@@ -4031,11 +4051,10 @@ export type ProtocolFavoriteMutation = { __typename?: 'Mutation' } & Pick<
 >
 
 export type ProtocolsQueryVariables = Exact<{
-  protocolFilter?: Maybe<ProtocolListFilterInputType>
-  protocolSort?: Maybe<
-    Array<ProtocolListSortInputType> | ProtocolListSortInputType
-  >
-  protocolPagination?: Maybe<ProtocolListPaginationInputType>
+  filter?: Maybe<ProtocolListFilterInputType>
+  sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
+  pagination?: Maybe<ProtocolListPaginationInputType>
+  hidden?: Maybe<Scalars['Boolean']>
 }>
 
 export type ProtocolsQuery = { __typename?: 'Query' } & {
@@ -4555,7 +4574,7 @@ export type WalletFragmentFragment = { __typename?: 'WalletType' } & Pick<
 > & {
     metric: { __typename?: 'WalletMetricType' } & Pick<
       WalletMetricType,
-      'stakedUSD' | 'earnedUSD' | 'usd'
+      'stakedUSD' | 'earnedUSD' | 'usd' | 'worth'
     >
     billing: { __typename?: 'WalletBillingType' } & {
       balance: { __typename?: 'BillingBalanceType' } & Pick<
@@ -5210,6 +5229,7 @@ export const WalletFragmentFragmentDoc = gql`
       stakedUSD
       earnedUSD
       usd
+      worth
     }
     billing {
       balance {
@@ -5868,6 +5888,33 @@ export function useAddWalletMutation() {
     AddWalletDocument
   )
 }
+export const AssetListByProtocolDocument = gql`
+  query AssetListByProtocol($protocolId: UuidType) {
+    me {
+      tokenAliases(
+        pagination: { limit: 50 }
+        filter: { liquidity: [stable, unstable], protocol: $protocolId }
+      ) {
+        list {
+          ...portfolioAsset
+        }
+      }
+    }
+  }
+  ${PortfolioAssetFragmentDoc}
+`
+
+export function useAssetListByProtocolQuery(
+  options: Omit<
+    Urql.UseQueryArgs<AssetListByProtocolQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<AssetListByProtocolQuery>({
+    query: AssetListByProtocolDocument,
+    ...options,
+  })
+}
 export const AssetsListByWalletDocument = gql`
   query AssetsListByWallet($walletId: UuidType) {
     me {
@@ -6232,12 +6279,18 @@ export function useProtocolMetricQuery(
   })
 }
 export const ProtocolDocument = gql`
-  query Protocol($filter: ProtocolFilterInputType!) {
+  query Protocol(
+    $filter: ProtocolFilterInputType!
+    $socialPostsPagination: ProtocolSocialPostListPaginationInputType = {
+      limit: 3
+      offset: 0
+    }
+  ) {
     protocol(filter: $filter) {
       ...protocolFragment
       socialPosts(
         sort: [{ column: createdAt, order: desc }]
-        pagination: { limit: 3, offset: 0 }
+        pagination: $socialPostsPagination
       ) {
         list {
           id
@@ -6246,6 +6299,9 @@ export const ProtocolDocument = gql`
           content
           link
           createdAt
+        }
+        pagination {
+          count
         }
       }
       telegram: metricChart(
@@ -6342,15 +6398,12 @@ export function useProtocolFavoriteMutation() {
 }
 export const ProtocolsDocument = gql`
   query Protocols(
-    $protocolFilter: ProtocolListFilterInputType
-    $protocolSort: [ProtocolListSortInputType!]
-    $protocolPagination: ProtocolListPaginationInputType
+    $filter: ProtocolListFilterInputType
+    $sort: [ProtocolListSortInputType!]
+    $pagination: ProtocolListPaginationInputType
+    $hidden: Boolean
   ) {
-    protocols(
-      filter: $protocolFilter
-      sort: $protocolSort
-      pagination: $protocolPagination
-    ) {
+    protocols(filter: $filter, sort: $sort, pagination: $pagination) {
       list {
         ...protocolFragment
       }
@@ -6358,12 +6411,12 @@ export const ProtocolsDocument = gql`
         count
       }
     }
-    favorites: protocols(filter: { favorite: true }) {
+    favorites: protocols(filter: { hidden: $hidden, favorite: true }) {
       pagination {
         count
       }
     }
-    all: protocols {
+    all: protocols(filter: { hidden: $hidden }) {
       pagination {
         count
       }

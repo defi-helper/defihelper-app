@@ -18,6 +18,7 @@ export type PortfolioEarningsProps = {
 const ESTIMATED_FIELDS = [
   {
     valueY: 'hold',
+    format: 'holdFormat',
     name: 'Just holding',
     dateX: 'date',
     color: '#F08BA9',
@@ -34,6 +35,7 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
       ...ESTIMATED_FIELDS,
       {
         valueY: 'autostaking',
+        format: 'autostakingFormat',
         name: 'Autostaking',
         dateX: 'date',
         color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
@@ -46,7 +48,7 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
       <div className={styles.header}>
         <Typography>Estimated Earnings (in 3 months)</Typography>
         <Link href={config.MEDIUM_LINK} target="_blank" className={styles.link}>
-          How autostaking works
+          How auto-staking works
         </Link>
       </div>
       <Chart
@@ -55,7 +57,7 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
         data={portfolioEarnings.data}
         names={estimatedFields.map(({ name }) => name)}
         // eslint-disable-next-line no-template-curly-in-string
-        tooltipText="{name}: [bold]${valueY}[/]"
+        tooltipText="{name}: [bold]${format}[/]"
       />
     </Paper>
   )

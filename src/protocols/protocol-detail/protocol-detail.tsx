@@ -12,6 +12,7 @@ import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
 
 import { AppLayout } from '~/layouts'
+import { Can } from '~/auth'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
 import { Button } from '~/common/button'
@@ -31,8 +32,10 @@ import { Icon } from '~/common/icon'
 import { Carousel } from '~/common/carousel'
 import { StakingAutomates } from '~/staking/staking-automates'
 import { Loader } from '~/common/loader'
+import { ButtonBase } from '~/common/button-base'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
+import { paths } from '~/paths'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -74,13 +77,21 @@ export const ProtocolDetail: React.FC = () => {
 
   const protocol = useStore(model.$protocol)
   const loading = useStore(model.fetchProtocolFx.pending)
+  const socialPosts = useStore(model.$socialPosts)
 
   const match = useRouteMatch()
+
+  const handleReadMore = () => {
+    model.fetchProtocolFx({
+      ...params,
+      offset: socialPosts.length + 3,
+    })
+  }
 
   return (
     <AppLayout
       title={
-        loading ? (
+        loading && !protocol ? (
           'loading...'
         ) : (
           <div>
@@ -92,23 +103,25 @@ export const ProtocolDetail: React.FC = () => {
         )
       }
       action={
-        loading ? (
-          'loading...'
-        ) : (
-          <Paper
-            target="_blank"
-            href={protocol?.link}
-            as={Link}
-            radius={8}
-            className={styles.protocolLink}
-          >
-            <Icon icon="link" width="16" height="16" />
-          </Paper>
-        )
+        <>
+          {loading && !protocol ? (
+            ''
+          ) : (
+            <Paper
+              target="_blank"
+              href={protocol?.link}
+              as={Link}
+              radius={8}
+              className={styles.protocolLink}
+            >
+              <Icon icon="link" width="16" height="16" />
+            </Paper>
+          )}
+        </>
       }
     >
       <Head
-        title={loading ? 'loading...' : protocol?.name}
+        title={loading && !protocol ? 'loading...' : protocol?.name}
         ogImageUrl={`https://backend.defihelper.io/protocol/opengraph-preview/${params.protocolId}`}
         ogUrl={`https://app.defihelper.io/protocols/${params.protocolId}`}
       />
@@ -117,7 +130,7 @@ export const ProtocolDetail: React.FC = () => {
           <Loader height="36" />
         </div>
       )}
-      {!loading && protocol && (
+      {protocol && (
         <>
           <div className={styles.header}>
             {protocol.icon && (
@@ -135,6 +148,15 @@ export const ProtocolDetail: React.FC = () => {
                 {clearLink(protocol.link)}
               </Paper>
             )}
+            <Can I="update" a="Protocol">
+              <ButtonBase
+                as={ReactRouterLink}
+                to={paths.protocols.update(params.protocolId)}
+                className={styles.edit}
+              >
+                Edit
+              </ButtonBase>
+            </Can>
           </div>
           <div>
             <div className={styles.tabs}>
@@ -202,10 +224,12 @@ export const ProtocolDetail: React.FC = () => {
                   links={protocol.links}
                 />
                 <ProtocolMetricOverview className={styles.mb120} />
-                {!isEmpty(protocol.socialPosts.list) && (
+                {!isEmpty(socialPosts) && (
                   <ProtocolMediaActivity
                     className={styles.mb120}
-                    mediaActity={protocol.socialPosts.list ?? []}
+                    mediaActity={socialPosts}
+                    onReadMore={handleReadMore}
+                    loading={loading}
                   />
                 )}
                 <ProtocolDemandMetrics

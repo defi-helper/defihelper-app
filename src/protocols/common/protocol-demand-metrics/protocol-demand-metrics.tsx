@@ -94,10 +94,11 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
       <Paper radius={8} className={styles.tableInner}>
         <div className={clsx(styles.row, styles.grey)}>
           <Typography variant="body2">Pool</Typography>
-          <Typography variant="body2">Users</Typography>
+          <Typography variant="body2" align="right">
+            Users
+          </Typography>
           <Typography variant="body2">Last Month</Typography>
         </div>
-
         {servicesSupply.map((stack) =>
           stack.map((row) => (
             <Row

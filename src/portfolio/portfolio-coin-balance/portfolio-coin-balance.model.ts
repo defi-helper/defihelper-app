@@ -1,6 +1,5 @@
 import { createDomain } from 'effector-logger/macro'
 
-import { BigNumber } from 'bignumber.js'
 import { dateUtils } from '~/common/date-utils'
 import { portfolioApi } from '~/portfolio/common'
 import {
@@ -8,16 +7,18 @@ import {
   SortOrderEnum,
   UserTokenMetricChartSortInputTypeColumnEnum,
 } from '~/graphql/_generated-types'
+import { authModel } from '~/auth'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 const portfolioCoinBalance = createDomain()
 
 const DAYS_LIMIT = 180
 
 type State = Record<
-  Exclude<MetricGroupEnum, MetricGroupEnum.Hour>,
+  Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
   {
     data: Record<string, string>[]
-    value: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
     loading: boolean
   }
 >
@@ -35,7 +36,7 @@ const defaultVariables = {
   ],
 }
 
-type Params = Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+type Params = Exclude<MetricGroupEnum, MetricGroupEnum.Year>
 
 export const fetchChartDataFx = portfolioCoinBalance.createEffect(
   async (params: Params) => {
@@ -50,20 +51,22 @@ export const fetchChartDataFx = portfolioCoinBalance.createEffect(
     const altCoins = result?.altCoins ?? []
 
     return stableCoins.map((stableCoin, index) => ({
-      stableCoin: new BigNumber(stableCoin.sum).toFixed(0),
-      date: stableCoin.date,
-      altCoin: new BigNumber(altCoins?.[index]?.sum).toFixed(0),
+      stableCoin: bignumberUtils.floor(stableCoin.sum),
+      date: dateUtils.toDate(stableCoin.date),
+      altCoin: bignumberUtils.floor(altCoins?.[index]?.sum),
+      altCoinFormat: bignumberUtils.format(altCoins?.[index]?.sum),
+      stableCoinFormat: bignumberUtils.format(stableCoin.sum),
     }))
   }
 )
 
 export const changeGroup =
   portfolioCoinBalance.createEvent<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   >()
 
 export const $currentGroup = portfolioCoinBalance
-  .createStore<Exclude<MetricGroupEnum, MetricGroupEnum.Hour>>(
+  .createStore<Exclude<MetricGroupEnum, MetricGroupEnum.Year>>(
     MetricGroupEnum.Day
   )
   .on(changeGroup, (_, payload) => payload)
@@ -71,7 +74,7 @@ export const $currentGroup = portfolioCoinBalance
 export const $portfolioCoinBalance = portfolioCoinBalance
   .createStore(
     Object.values(MetricGroupEnum).reduce<State>((acc, metricGroup) => {
-      if (metricGroup === MetricGroupEnum.Hour) return acc
+      if (metricGroup === MetricGroupEnum.Year) return acc
 
       acc[metricGroup] = {
         data: [],
@@ -101,3 +104,8 @@ export const $portfolioCoinBalance = portfolioCoinBalance
       },
     }
   })
+
+export const reset = portfolioCoinBalance.createEvent()
+
+$portfolioCoinBalance.reset(authModel.logoutFx.finally)
+$currentGroup.reset(authModel.logoutFx.finally, reset)

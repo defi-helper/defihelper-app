@@ -24,7 +24,7 @@ import { config } from '~/config'
 import * as styles from './chart.css'
 
 export type ChartProps = {
-  dataFields: Array<IXYSeriesDataFields & { color?: string }>
+  dataFields: Array<IXYSeriesDataFields & { color?: string; format?: string }>
   tooltipText?: string
   data?: Array<unknown>
   id?: string
@@ -57,9 +57,16 @@ export const Chart: React.VFC<ChartProps> = (props) => {
     const dateAxis = chartRef.current.xAxes.push(new DateAxis())
     dateAxis.renderer.minGridDistance = 60
     dateAxis.baseInterval = {
-      timeUnit: 'day',
+      timeUnit: 'hour',
       count: 1,
     }
+
+    dateAxis.gridIntervals.setAll([
+      { timeUnit: 'hour', count: 1 },
+      { timeUnit: 'day', count: 1 },
+      { timeUnit: 'day', count: 7 },
+      { timeUnit: 'month', count: 1 },
+    ])
 
     dateAxis.fontSize = 12
     dateAxis.dateFormats.setKey('month', 'MMM YYYY')
@@ -86,6 +93,9 @@ export const Chart: React.VFC<ChartProps> = (props) => {
       const series = chartRef.current.series.push(new LineSeries())
 
       series.dataFields.valueY = field.valueY
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (field.format) series.dataFields.format = field.format
       series.dataFields.dateX = field.dateX
       if (field.color) {
         series.stroke = color(field.color)
@@ -108,7 +118,7 @@ export const Chart: React.VFC<ChartProps> = (props) => {
       }
 
       chartRef.current.cursor = new XYCursor()
-      chartRef.current.cursor.xAxis = dateAxis
+      // chartRef.current.cursor.xAxis = dateAxis
     })
 
     if (props.dataFields.length > 1) {
@@ -119,7 +129,7 @@ export const Chart: React.VFC<ChartProps> = (props) => {
         name: seriesitem.valueY,
       }))
       legend.contentAlign = 'left'
-      legend.fontSize = 12
+      legend.fontSize = 16
       if (themeMode === 'dark') {
         legend.labels.template.fill = color('rgba(255, 255, 255, 0.64)')
       } else {

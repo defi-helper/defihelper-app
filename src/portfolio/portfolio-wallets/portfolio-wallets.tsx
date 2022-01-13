@@ -105,10 +105,12 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
           <div className={clsx(styles.tableRow, styles.tableHeader)}>
             <Typography variant="body3">Wallet</Typography>
             <Typography variant="body3">Address</Typography>
-            <Typography variant="body3">
+            <Typography variant="body3" align="right">
               <Icon icon="automation" width="20" height="20" />
             </Typography>
-            <Typography variant="body3">Value</Typography>
+            <Typography variant="body3" align="right">
+              Value
+            </Typography>
           </div>
           <div className={styles.tableBody}>
             {wallets.map((wallet) => (
@@ -139,18 +141,11 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                       {cutAccount(wallet.address)}
                     </Link>
                   </Typography>
-                  <Typography variant="body2" as="div">
+                  <Typography variant="body2" as="div" align="right">
                     {wallet.triggersCount}
                   </Typography>
-                  <Typography variant="body2" as="div">
-                    $
-                    {bignumberUtils.format(
-                      bignumberUtils.total(
-                        wallet.metric.stakedUSD,
-                        wallet.metric.earnedUSD,
-                        wallet.metric.usd
-                      )
-                    )}
+                  <Typography variant="body2" as="div" align="right">
+                    ${bignumberUtils.format(wallet.metric.worth)}
                   </Typography>
                   <ButtonBase
                     onClick={handleOpenWallet(

@@ -14,6 +14,7 @@ export const WALLET_FRAGMENT = gql`
       stakedUSD
       earnedUSD
       usd
+      worth
     }
     billing {
       balance {

@@ -57,15 +57,18 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     },
   })
 
+  const createdId = created.data?.onBillingTransferCreated.id ?? ''
+  const updatedId = updated.data?.onBillingTransferUpdated.id ?? ''
+
   useEffect(() => {
-    if (updated.data) {
+    if (updatedId) {
       model.updated()
     }
 
-    if (created.data) {
+    if (createdId) {
       model.created()
     }
-  }, [updated.data, created.data])
+  }, [updatedId, createdId])
 
   const handleDeposit = (wallet: typeof wallets[number]) => async () => {
     try {

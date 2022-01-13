@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
+import { useThrottle } from 'react-use'
 
 import { AppLayout } from '~/layouts'
 import { PortfolioEarnings } from '~/portfolio/portfolio-earnings'
@@ -24,6 +25,8 @@ import {
 
 export type PortfolioProps = unknown
 
+const TIME = 15000
+
 export const Portfolio: React.VFC<PortfolioProps> = () => {
   const tokenAliasses = useStore(model.$tokenAliasses)
   const loading = useStore(model.fetchTokenAliassesFx.pending)
@@ -39,6 +42,8 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     useOnTokenMetricUpdatedSubscription()
 
   useEffect(() => {
+    if (!walletIds.length) return
+
     const opts = {
       variables: {
         wallet: walletIds,
@@ -50,62 +55,68 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletIds])
 
+  const walletUpdatedId = useThrottle(
+    walletUpdated.data?.onWalletMetricUpdated.id ?? '',
+    TIME
+  )
+  const tokenMetricUpdatedId = useThrottle(
+    tokenMetricUpdated.data?.onTokenMetricUpdated.id ?? '',
+    TIME
+  )
+
   useEffect(() => {
-    if (walletUpdated.data || tokenMetricUpdated.data) {
+    if (walletUpdatedId || tokenMetricUpdatedId) {
       model.portfolioUpdated()
     }
-  }, [walletUpdated.data, tokenMetricUpdated.data])
+  }, [walletUpdatedId, tokenMetricUpdatedId])
 
   return (
     <AppLayout title="Portfolio">
       <Head title="Portfolio" />
       <>
-        {loading && (
+        {loading && !tokenAliasses && (
           <div className={styles.loader}>
             <Loader height="36" />
           </div>
         )}
       </>
       <>
-        {!loading && (
+        {!loading && Boolean(tokenAliasses) && (
           <>
-            {tokenAliasses ? (
-              <>
-                <Typography variant="h3" className={styles.title}>
-                  Portfolio
-                </Typography>
-                <PortfolioMetricCards className={styles.cards} />
-                <div className={clsx(styles.grid, styles.section)}>
-                  <PortfolioTotalWorth className={styles.mainChart} />
-                  <PortfolioEarnings />
-                  <PortfolioCoinBalance />
-                </div>
-                <PortfolioAssets className={styles.section} />
-                <PortfolioWallets className={styles.section} />
-                <PortfolioDeployedContracts />
-              </>
-            ) : (
-              <>
-                <Typography variant="h3" className={styles.title}>
-                  Portfolio
-                </Typography>
-                <Typography
-                  variant="h3"
-                  family="mono"
-                  transform="uppercase"
-                  className={styles.generatingTitle}
-                >
-                  Generating Portfolio...
-                </Typography>
-                <Typography className={styles.generatingDescription}>
-                  Building process can take up to 24 hours. Add contacts so you
-                  can recieve notifications about any actions. You will be
-                  notified when portfolio is ready. You will be able to change
-                  it any time in settings.
-                </Typography>
-                <SettingsContacts withHeader={false} />
-              </>
-            )}
+            <Typography variant="h3" className={styles.title}>
+              Portfolio
+            </Typography>
+            <PortfolioMetricCards className={styles.cards} />
+            <div className={clsx(styles.grid, styles.section)}>
+              <PortfolioTotalWorth className={styles.mainChart} />
+              <PortfolioEarnings />
+              <PortfolioCoinBalance />
+            </div>
+            <PortfolioAssets className={styles.section} />
+            <PortfolioWallets className={styles.section} />
+            <PortfolioDeployedContracts />
+          </>
+        )}
+        {!loading && !tokenAliasses && (
+          <>
+            <Typography variant="h3" className={styles.title}>
+              Portfolio
+            </Typography>
+            <Typography
+              variant="h3"
+              family="mono"
+              transform="uppercase"
+              className={styles.generatingTitle}
+            >
+              Generating Portfolio...
+            </Typography>
+            <Typography className={styles.generatingDescription}>
+              Building process can take up to 24 hours. Add contacts so you can
+              recieve notifications about any actions. You will be notified when
+              portfolio is ready. You will be able to change it any time in
+              settings.
+            </Typography>
+            <SettingsContacts withHeader={false} />
           </>
         )}
       </>

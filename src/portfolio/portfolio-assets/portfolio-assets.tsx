@@ -1,14 +1,13 @@
 import clsx from 'clsx'
 import { useState } from 'react'
-
 import { useGate, useStore } from 'effector-react'
+import isEmpty from 'lodash.isempty'
+
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import * as styles from './portfolio-assets.css'
-import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { PortfolioAssetCard } from '../common'
 import { PortfolioPlatformCard } from '~/portfolio/common/portfolio-platform-card'
@@ -17,6 +16,9 @@ import {
   PortfolioAssetByWalletFragment,
   PortfolioAssetFragment,
 } from '~/graphql/_generated-types'
+import * as styles from './portfolio-assets.css'
+import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
+import { Loader } from '~/common/loader'
 
 export type PortfolioAssetsProps = {
   className?: string
@@ -26,6 +28,17 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   const assets = useStore(portfolioAssetsModel.$assets)
   const assetsByWallet = useStore(portfolioAssetsModel.$assetsByWallet)
   const wallets = useStore(settingsWalletModel.$wallets)
+  const assetListLoading = useStore(
+    portfolioAssetsModel.fetchAssetsListFx.pending
+  )
+  const assetByWalletLoading = useStore(
+    portfolioAssetsModel.fetchAssetsByWalletFx.pending
+  )
+  const platformsLoading = useStore(
+    portfolioAssetsModel.fetchUserInteractedProtocolsListFx.pending
+  )
+
+  const assetsLoading = assetListLoading || assetByWalletLoading
 
   const [currentWallet, setWallet] = useState<typeof wallets[number] | null>(
     null
@@ -39,6 +52,8 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   }
 
   useGate(portfolioAssetsModel.PortfolioAssetsGate, currentWallet?.id ?? null)
+
+  const currentAssets = currentWallet ? assetsByWallet : assets
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -88,6 +103,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                 </ButtonBase>
                 {wallets.map((wallet) => (
                   <ButtonBase
+                    key={wallet.id}
                     className={clsx(
                       styles.selectOption,
                       currentWallet?.id === wallet.id &&
@@ -107,10 +123,18 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
               <Typography variant="body3" className={styles.tableCol}>
                 Asset
               </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
+              <Typography
+                variant="body3"
+                className={styles.tableCol}
+                align="right"
+              >
                 Balance
               </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
+              <Typography
+                variant="body3"
+                className={styles.tableCol}
+                align="right"
+              >
                 Value{' '}
                 <Typography variant="inherit" className={styles.blue}>
                   Calc
@@ -143,46 +167,83 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
               </Typography>
             </div>
             <div className={styles.tableBody}>
-              {(currentWallet ? assetsByWallet : assets).map((row, rowIndex) =>
-                // eslint-disable-next-line no-underscore-dangle
-                row.__typename === 'WalletTokenAliasType' ? (
-                  <PortfolioWalletAssetCard
-                    key={String(rowIndex)}
-                    row={row as PortfolioAssetByWalletFragment}
-                  />
-                ) : (
-                  <PortfolioAssetCard
-                    key={String(rowIndex)}
-                    row={row as PortfolioAssetFragment}
-                  />
-                )
+              {assetsLoading && (
+                <div className={styles.loader}>
+                  <Loader height="36" />
+                </div>
               )}
+              {!assetsLoading &&
+                isEmpty(currentAssets) &&
+                'Your wallets are empty'}
+              {!assetsLoading &&
+                !isEmpty(currentAssets) &&
+                currentAssets.map((row, rowIndex) =>
+                  // eslint-disable-next-line no-underscore-dangle
+                  row.__typename === 'WalletTokenAliasType' ? (
+                    <PortfolioWalletAssetCard
+                      key={String(rowIndex)}
+                      row={row as PortfolioAssetByWalletFragment}
+                    />
+                  ) : (
+                    <PortfolioAssetCard
+                      key={String(rowIndex)}
+                      row={row as PortfolioAssetFragment}
+                    />
+                  )
+                )}
             </div>
           </Paper>
         )}
 
         {currentTab === 1 && (
-          <Paper radius={8} className={styles.table}>
+          <Paper radius={8} className={styles.platformsTable}>
             <div
               className={clsx(styles.tableHeadings, styles.platformsTableRow)}
             >
               <Typography variant="body3" className={styles.tableCol}>
                 Name
               </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
+              <Typography
+                variant="body3"
+                className={styles.tableCol}
+                align="right"
+              >
                 My APY
               </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
+              <Typography
+                variant="body3"
+                className={styles.tableCol}
+                align="right"
+              >
                 My position
               </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
+              <Typography
+                variant="body3"
+                className={styles.tableCol}
+                align="right"
+              >
                 My profit
               </Typography>
             </div>
-            <div className={styles.tableBody}>
-              {protocols.map((row, rowIndex) => (
-                <PortfolioPlatformCard key={String(rowIndex)} row={row} />
-              ))}
+            <div className={styles.platformsTableBody}>
+              {platformsLoading && (
+                <div className={styles.loader}>
+                  <Loader height="36" />
+                </div>
+              )}
+              {!platformsLoading && isEmpty(protocols) && (
+                <Typography variant="body2" className={styles.nodata}>
+                  no data
+                </Typography>
+              )}
+              {!platformsLoading &&
+                !isEmpty(protocols) &&
+                protocols.map((row, rowIndex) => (
+                  <PortfolioPlatformCard
+                    key={String(rowIndex)}
+                    protocol={row}
+                  />
+                ))}
             </div>
           </Paper>
         )}

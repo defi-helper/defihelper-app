@@ -17,12 +17,14 @@ export type PortfolioCoinBalanceProps = {
 const BALANCE = [
   {
     valueY: 'stableCoin',
+    format: 'stableCoinFormat',
     name: 'Liquid coins',
     dateX: 'date',
     color: '#4463EE',
   },
   {
     valueY: 'altCoin',
+    format: 'altCoinFormat',
     name: 'Low volume coins',
     dateX: 'date',
     color: '#E9CC67',
@@ -39,8 +41,14 @@ export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
     model.fetchChartDataFx(currentGroup)
   }, [currentGroup])
 
+  useEffect(() => {
+    return () => {
+      model.reset()
+    }
+  }, [])
+
   const handleChangeMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Hour>
+    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
   ) => {
     model.changeGroup(group)
   }
@@ -62,7 +70,7 @@ export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
         data={portfolioCoinBalance[currentGroup].data}
         names={BALANCE.map(({ name }) => name)}
         // eslint-disable-next-line no-template-curly-in-string
-        tooltipText="{name}: [bold]${valueY}[/]"
+        tooltipText="{name}: [bold]${format}[/]"
       />
     </Paper>
   )

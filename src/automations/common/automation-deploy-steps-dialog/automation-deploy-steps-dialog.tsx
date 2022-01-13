@@ -11,6 +11,7 @@ import { NumericalInput } from '~/common/numerical-input'
 import { Typography } from '~/common/typography'
 import { Loader } from '~/common/loader'
 import { Input } from '~/common/input'
+import { MarkdownRender } from '~/common/markdown-render'
 import * as styles from './automation-deploy-steps-dialog.css'
 
 export type AutomationDeployStepsDialogProps = {
@@ -108,9 +109,9 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
                 </Typography>
               ))}
             </div>
-            <Typography variant="body2" className={styles.description}>
-              {currentStep?.info.description}
-            </Typography>
+            <div className={styles.description}>
+              <MarkdownRender>{currentStep?.info.description}</MarkdownRender>
+            </div>
             {currentStep && currentStep.info.inputs && (
               <form
                 noValidate

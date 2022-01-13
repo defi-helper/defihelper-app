@@ -1,4 +1,4 @@
-import { composeStyles, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -32,30 +32,30 @@ export const ml = style({
   marginLeft: 'auto',
 })
 
-export const checkbox = composeStyles(
+export const checkbox = style([
   ml,
-  style({
+  {
     display: 'flex',
     alignItems: 'center',
-  })
-)
+  },
+])
 
 export const checkboxLabel = style({
   marginLeft: 5,
 })
 
-export const tabs = composeStyles(hide, ml)
+export const tabs = style([hide, ml])
 
-export const select = composeStyles(
+export const select = style([
   hide,
-  style({
+  {
     marginLeft: 10,
     padding: '8px 16px',
     fontSize: 16,
     lineHeight: '24px',
     color: theme.colors.textColorGrey,
-  })
-)
+  },
+])
 
 export const selectArrow = style({
   width: 8,
@@ -93,6 +93,13 @@ export const createIcon = style({
   },
 })
 
+export const row = style({
+  display: 'grid',
+  gridTemplateColumns: '15% 14% 13% 13% 13% 13% 1fr',
+  padding: '16px 24px',
+  alignItems: 'center',
+})
+
 export const tableHeader = style({
   color: theme.colors.textColorGrey,
   borderBottom: `1px solid ${theme.colors.border}`,
@@ -115,14 +122,17 @@ export const empty = style({
   padding: 16,
 })
 
-export const row = style({
-  display: 'grid',
-  gridTemplateColumns: '15% 14% 10% 12% 12% 12% 1fr',
-  padding: '16px 0 16px 24px',
-  alignItems: 'center',
-})
+export const card = style({
+  cursor: 'pointer',
 
-export const card = style({})
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      ':hover': {
+        opacity: 0.6,
+      },
+    },
+  },
+})
 
 export const table = style({
   overflowX: 'auto',
@@ -132,6 +142,7 @@ export const table = style({
 export const boostTooltipTHead = style({
   display: 'flex',
   gridGap: 5,
+  justifyContent: 'flex-end',
 })
 
 export const tableInner = style({
@@ -164,7 +175,8 @@ export const tableCol = style({
 export const coinIcons = style({
   display: 'inline-flex',
   alignItems: 'center',
-  marginRight: 10,
+  marginRight: 20,
+  marginLeft: -10,
 })
 
 export const coinIcon = style({
@@ -172,13 +184,9 @@ export const coinIcon = style({
   height: 24,
 })
 
-export const turnOn = style({
-  marginLeft: 'auto',
-})
-
 export const accorionButton = style({
   color: theme.colors.textColorGrey,
-  marginLeft: 10,
+  marginLeft: 'auto',
 })
 
 export const manageButton = style({
@@ -195,9 +203,8 @@ export const loader = style({
   justifyContent: 'center',
 })
 
-export const autostaking = style({
-  borderLeft: `1px solid ${theme.colors.border}`,
-  paddingLeft: 16,
+export const autostakingCol = style({
+  width: '60%',
 })
 
 export const negative = style({
@@ -206,8 +213,4 @@ export const negative = style({
 
 export const positive = style({
   color: theme.colors.textColorGreen,
-})
-
-export const tooltip = style({
-  width: 300,
 })

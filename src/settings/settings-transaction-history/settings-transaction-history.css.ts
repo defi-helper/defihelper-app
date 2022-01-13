@@ -34,6 +34,7 @@ export const row = style({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
   padding: '0 32px',
+  gap: 20,
 
   selectors: {
     '&:not(:last-child)': {

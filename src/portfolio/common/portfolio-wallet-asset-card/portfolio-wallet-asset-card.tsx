@@ -19,7 +19,7 @@ export const PortfolioWalletAssetCard: React.VFC<PortfolioAssetCardProps> = (
         {bignumberUtils.format(props.row.metric.portfolioPercent, 2)}%
       </Typography>
 
-      <Typography variant="body2" className={styles.assetName}>
+      <Typography variant="body2" className={styles.assetName} as="div">
         {props.row.tokenAlias.logoUrl ? (
           <img
             src={props.row.tokenAlias.logoUrl}
@@ -32,10 +32,10 @@ export const PortfolioWalletAssetCard: React.VFC<PortfolioAssetCardProps> = (
         {props.row.tokenAlias.name} ({props.row.tokenAlias.symbol})
       </Typography>
 
-      <Typography variant="body2">
+      <Typography variant="body2" align="right">
         {bignumberUtils.format(props.row.metric.balance)}
       </Typography>
-      <Typography variant="body2">
+      <Typography variant="body2" align="right">
         ${bignumberUtils.format(props.row.metric.usd)}
       </Typography>
     </div>

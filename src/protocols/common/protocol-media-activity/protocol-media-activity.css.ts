@@ -18,6 +18,12 @@ export const grid = style({
       gap: 24,
     },
   },
+
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 20,
+    },
+  },
 })
 
 export const card = style({
@@ -55,4 +61,9 @@ export const twitterIcon = style({
 
 export const icon = style({
   verticalAlign: 'middle',
+})
+
+export const more = style({
+  display: 'flex',
+  justifyContent: 'center',
 })

@@ -11,6 +11,7 @@ import { NumericalInput } from '~/common/numerical-input'
 import { Typography } from '~/common/typography'
 import { Loader } from '~/common/loader'
 import { Input } from '~/common/input'
+import { MarkdownRender } from '~/common/markdown-render'
 import * as styles from './staking-adapter-dialog.css'
 
 export type StakingAdapterDialogProps = {
@@ -137,9 +138,9 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
               </Typography>
             ))}
           </div>
-          <Typography variant="body2" className={styles.description}>
-            {currentStep?.info.description}
-          </Typography>
+          <div className={styles.description}>
+            <MarkdownRender>{currentStep?.info.description}</MarkdownRender>
+          </div>
           {currentStep && currentStep.info.inputs && (
             <form
               noValidate

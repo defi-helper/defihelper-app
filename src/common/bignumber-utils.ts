@@ -20,17 +20,17 @@ export const bignumberUtils = {
 
     if (result.lt('10')) return result.toFormat(localDecimal)
 
-    if (result.lt('10000')) return result.toFormat(localDecimal)
+    if (result.lt('10000')) return result.toFormat(0)
 
-    if (result.lt('100000')) return result.toFormat(localDecimal)
+    if (result.lt('100000')) return result.toFormat(0)
 
-    if (result.lt('1000000')) return result.toFormat(localDecimal)
+    if (result.lt('1000000')) return result.toFormat(0)
 
     if (result.isGreaterThanOrEqualTo('1000000000')) {
-      return `${result.div('1000000000').toFormat(localDecimal)}B`
+      return `${result.div('1000000000').toFormat(0)}B`
     }
 
-    return `${result.div('1000000').toFormat(localDecimal)}M`
+    return `${result.div('1000000').toFormat(0)}M`
   },
 
   formatMax: (
@@ -69,8 +69,7 @@ export const bignumberUtils = {
       .multipliedBy(options?.gasSlippage || 1.2)
       .toFixed(0),
 
-  floor: (num?: string | number | null) =>
-    new BigNumber(num || 0).integerValue().toString(10),
+  floor: (num?: string | number | null) => new BigNumber(num || 0).toFixed(0),
 
   gte: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isGreaterThanOrEqualTo(num2 || 0),

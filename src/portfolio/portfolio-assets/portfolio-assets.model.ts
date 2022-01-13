@@ -23,15 +23,23 @@ export const fetchAssetsByWalletFx = portfolioAssetsDomain.createEffect(
       .then(portfolioSortAssetsByWallet)
 )
 
+export const fetchAssetsByPlatformFx = portfolioAssetsDomain.createEffect(
+  (protocolId: string) =>
+    portfolioApi
+      .getAssetsListByProtocol({ protocolId })
+      .then(portfolioSortAssets)
+)
+
 export const PortfolioAssetsGate = createGate<string | null>({
   domain: portfolioAssetsDomain,
   name: 'PortfolioAssetsGate',
+  defaultState: null,
 })
 
 export const fetchUserInteractedProtocolsListFx =
   portfolioAssetsDomain.createEffect((userId: string) =>
     protocolsApi.protocolList({
-      protocolFilter: {
+      filter: {
         linked: userId,
       },
     })
@@ -42,13 +50,37 @@ export const $assets = portfolioAssetsDomain
   .on(fetchAssetsListFx.doneData, (_, payload) => payload)
 
 export const $assetsByWallet = restore(fetchAssetsByWalletFx.doneData, [])
+export const openPlatform = portfolioAssetsDomain.createEvent<string | null>()
+
+export const $openedPlatform = portfolioAssetsDomain
+  .createStore<string | null>(null)
+  .on(openPlatform, (_, payload) => payload)
+
+guard({
+  clock: $openedPlatform.updates,
+  filter: (walletId): walletId is string => Boolean(walletId),
+  target: fetchAssetsByPlatformFx,
+})
+
+const closePlatform = guard({
+  clock: $openedPlatform.updates,
+  filter: (walletId): walletId is null => walletId === null,
+})
 
 export const $protocols = portfolioAssetsDomain
   .createStore<Protocol[]>([])
   .on(
     fetchUserInteractedProtocolsListFx.doneData,
-    (_, payload) => payload.list as Protocol[]
+    (_, payload) =>
+      payload.list
+        .filter((v) => v.metric.myStaked !== '0')
+        .sort((v) => Number(v.metric.myStaked)) as Protocol[]
   )
+
+export const $assetsByPlatform = restore(
+  fetchAssetsByPlatformFx.doneData,
+  []
+).reset(closePlatform)
 
 sample({
   clock: guard({
@@ -71,5 +103,9 @@ sample({
 guard({
   clock: PortfolioAssetsGate.state.updates,
   filter: (clock): clock is string => Boolean(clock),
-  target: fetchAssetsByWalletFx,
+  target: [fetchAssetsByPlatformFx, fetchAssetsByWalletFx],
 })
+
+$assets.reset(authModel.logoutFx.finally)
+$assetsByWallet.reset(authModel.logoutFx.finally)
+$protocols.reset(authModel.logoutFx.finally)

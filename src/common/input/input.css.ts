@@ -47,6 +47,10 @@ export const input = style({
   },
 })
 
+globalStyle(`${input}:focus::placeholder`, {
+  color: theme.colors.primaryButtonBorder,
+})
+
 export const textarea = style({
   resize: 'none',
 })

@@ -1,6 +1,6 @@
 import { createClient, defaultExchanges, subscriptionExchange } from 'urql'
 import memoize from 'fast-memoize'
-import { createClient as createWSClient } from 'graphql-ws'
+import { SubscriptionClient } from 'subscriptions-transport-ws'
 
 import { sidUtils } from '~/auth/common/sid-utils'
 import { config } from '~/config'
@@ -19,9 +19,7 @@ export const getAPIClient = memoize(() => {
     throw new Error(WS_API_URLERROR_MESSAGE)
   }
 
-  const wsClient = createWSClient({
-    url: wsUrl,
-  })
+  const wsClient = new SubscriptionClient(wsUrl, { reconnect: true })
 
   const client = createClient({
     url,
@@ -39,11 +37,7 @@ export const getAPIClient = memoize(() => {
     exchanges: [
       ...defaultExchanges,
       subscriptionExchange({
-        forwardSubscription: (operation) => ({
-          subscribe: (sink) => ({
-            unsubscribe: wsClient.subscribe(operation, sink),
-          }),
-        }),
+        forwardSubscription: (operation) => wsClient.request(operation),
       }),
     ],
   })
