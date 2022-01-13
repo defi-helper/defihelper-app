@@ -67,3 +67,4 @@ sample({
 })
 
 $protocol.reset(ProtocolDetailGate.close)
+$socialPosts.reset(ProtocolDetailGate.close)
