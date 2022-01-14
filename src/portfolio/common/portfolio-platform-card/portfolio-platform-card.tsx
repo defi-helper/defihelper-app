@@ -1,43 +1,35 @@
 import clsx from 'clsx'
 
 import React from 'react'
-import { useStore } from 'effector-react'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
 import * as styles from './portfolio-platform-card.css'
 import { Protocol } from '~/protocols/common'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
-import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
 import { PortfolioAssetCard } from '~/portfolio/common'
 import { Loader } from '~/common/loader'
+import { PortfolioAssetFragment } from '~/graphql/_generated-types'
 
 export type PortfolioAssetCardProps = {
   className?: string
   protocol: Protocol
+  assets: PortfolioAssetFragment[]
+  loading: boolean
+  isCollapsed: boolean
+  onToggle: () => void
 }
 
 export const PortfolioPlatformCard: React.VFC<PortfolioAssetCardProps> = (
   props
 ) => {
-  const assetsByPlatform = useStore(portfolioAssetsModel.$assetsByPlatform)
-  const openedPlatform = useStore(portfolioAssetsModel.$openedPlatform)
-  const assetsLoading = useStore(
-    portfolioAssetsModel.fetchAssetsByPlatformFx.pending
-  )
-
-  const handleOpenPlatform = () =>
-    portfolioAssetsModel.openPlatform(
-      openedPlatform === props.protocol.id ? null : props.protocol.id
-    )
-
   return (
     <>
       <div
         className={clsx(
           styles.root,
           props.className,
-          openedPlatform === props.protocol.id ? styles.rootActive : null
+          props.isCollapsed ? styles.rootActive : null
         )}
       >
         <div className={styles.platformColumnsList}>
@@ -64,11 +56,9 @@ export const PortfolioPlatformCard: React.VFC<PortfolioAssetCardProps> = (
             ${bignumberUtils.format(props.protocol.metric.myEarned, 2)}
           </Typography>
 
-          <ButtonBase onClick={handleOpenPlatform}>
+          <ButtonBase onClick={() => props.onToggle()}>
             <Icon
-              icon={`arrow${
-                openedPlatform === props.protocol.id ? 'Top' : 'Down'
-              }`}
+              icon={`arrow${props.isCollapsed ? 'Top' : 'Down'}`}
               width="24"
               height="24"
             />
@@ -78,26 +68,24 @@ export const PortfolioPlatformCard: React.VFC<PortfolioAssetCardProps> = (
         <div
           className={clsx(
             styles.platformAssetsList,
-            openedPlatform === props.protocol.id
-              ? styles.platformAssetsListUnCollapsed
-              : null
+            props.isCollapsed ? styles.platformAssetsListUnCollapsed : null
           )}
         >
           <div className={styles.tableBody}>
-            {assetsLoading && (
+            {props.loading && (
               <div className={clsx(styles.loadingWrapper)}>
                 <Loader height="16" />
               </div>
             )}
 
-            {!assetsByPlatform.length && !assetsLoading && (
+            {!props.assets.length && !props.loading && (
               <Typography variant="body2" as="div" align="center">
                 No assets found
               </Typography>
             )}
 
-            {assetsByPlatform.map((row, rowIndex) => (
-              <PortfolioAssetCard key={String(rowIndex)} row={row} />
+            {props.assets.map((row, i) => (
+              <PortfolioAssetCard key={String(i)} row={row} />
             ))}
           </div>
         </div>
