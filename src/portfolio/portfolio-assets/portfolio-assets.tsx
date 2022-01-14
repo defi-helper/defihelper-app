@@ -58,8 +58,6 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
 
   useGate(portfolioAssetsModel.PortfolioAssetsGate, currentWallet?.id ?? null)
 
-  console.log(openedPlatform)
-
   const currentAssets = currentWallet ? assetsByWallet : assets
   return (
     <div className={clsx(styles.root, props.className)}>
