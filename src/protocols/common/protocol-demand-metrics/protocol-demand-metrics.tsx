@@ -99,16 +99,15 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
           </Typography>
           <Typography variant="body2">Last Month</Typography>
         </div>
-        {servicesSupply.map((stack) =>
-          stack.map((row) => (
-            <Row
-              title={row.link?.name}
-              sum={row.points[0].sum}
-              link={row.link?.value}
-              data={row.points}
-            />
-          ))
-        )}
+        {servicesSupply.flatMap(([row], i) => (
+          <Row
+            key={i.toString()}
+            title={row.link?.name}
+            sum={row.points.slice(-1)?.[0]?.sum}
+            link={row.link?.value}
+            data={row.points}
+          />
+        ))}
       </Paper>
     </div>
   )
