@@ -33,14 +33,14 @@ type RowProps = {
   sum?: string
   link?: string
   data?: unknown[]
-  title: string
+  title?: string
 }
 
 const Row: React.VFC<RowProps> = (props) => {
   return (
     <div className={clsx(styles.row)}>
       <Typography variant="body2" as={Link} href={props.link} target="_blank">
-        {props.title}
+        {props.title || 'title not set yet'}
       </Typography>
       <Typography variant="body2" family="mono" align="right">
         {bignumberUtils.format(props.sum)}
@@ -49,7 +49,7 @@ const Row: React.VFC<RowProps> = (props) => {
         <ProtocolLastMonthChart
           dataFields={STAKED_FIELDS}
           data={props.data}
-          id={props.title.toLowerCase()}
+          id={(props.title || '').toLowerCase()}
         />
       </div>
     </div>
@@ -59,24 +59,29 @@ const Row: React.VFC<RowProps> = (props) => {
 export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
   props
 ) => {
-  const [telegramUserCount = undefined] = props.telegram.slice(-1)
-  const [coinmarketcapCount = undefined] = props.coinmarketcap.slice(-1)
-  const [coingeckoCount = undefined] = props.coingecko.slice(-1)
-
   const metric = [
     ...props.telegram,
     ...props.coinmarketcap,
     ...props.coinmarketcap,
   ]
 
-  const telegramLink = props.links.social.find(
-    ({ name }) => name.toLowerCase() === 'telegram'
-  )
-  const coingeckoLink = props.links.listing.find(
-    ({ name }) => name.toLowerCase() === 'coingecko'
-  )
-  const coinmarketcapLink = props.links.listing.find(
-    ({ name }) => name.toLowerCase() === 'coinmarketcap'
+  const servicesSupply = [
+    props.telegram,
+    props.coingecko,
+    props.coinmarketcap,
+  ].map((target) =>
+    target
+      .map((v) => v.entityIdentifier)
+      .filter((x, i, a) => a.indexOf(x) === i)
+      .map((v) => {
+        return {
+          identifier: v,
+          link: [...props.links.social, ...props.links.listing].find(
+            (link) => link.id === v
+          ),
+          points: target.filter((tg) => tg.entityIdentifier === v),
+        }
+      })
   )
 
   if (isEmpty(metric)) return <></>
@@ -94,30 +99,15 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
           </Typography>
           <Typography variant="body2">Last Month</Typography>
         </div>
-        {!isEmpty(props.telegram) && (
+        {servicesSupply.flatMap(([row], i) => (
           <Row
-            title="Telegram"
-            sum={telegramUserCount?.sum}
-            link={telegramLink?.value}
-            data={props.telegram}
+            key={i.toString()}
+            title={row.link?.name}
+            sum={row.points.slice(-1)?.[0]?.sum}
+            link={row.link?.value}
+            data={row.points}
           />
-        )}
-        {!isEmpty(props.coingecko) && (
-          <Row
-            title="Coingecko"
-            sum={coingeckoCount?.sum}
-            link={coingeckoLink?.value}
-            data={props.coingecko}
-          />
-        )}
-        {!isEmpty(props.coinmarketcap) && (
-          <Row
-            title="Coinmarketcap"
-            sum={coinmarketcapCount?.sum}
-            link={coinmarketcapLink?.value}
-            data={props.coinmarketcap}
-          />
-        )}
+        ))}
       </Paper>
     </div>
   )

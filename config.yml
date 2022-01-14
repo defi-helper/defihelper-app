@@ -1,7 +1,7 @@
 overwrite: true
 schema: "https://backend.defihelper.io/api"
 documents: [
-  './src/**/**/*.graphql.ts',
+    './src/**/**/*.graphql.ts',
 ]
 config:
   scalars:

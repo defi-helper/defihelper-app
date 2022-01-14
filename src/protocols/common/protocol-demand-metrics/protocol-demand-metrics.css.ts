@@ -17,9 +17,10 @@ export const title = style({
 
 export const row = style({
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr 122px',
+  gridTemplateColumns: '1fr auto 122px',
+  gridGap: '5%',
   padding: '16px 24px',
-  gap: 50,
+  textAlign: 'right',
 
   selectors: {
     '&:not(:last-child)': {

@@ -917,6 +917,8 @@ export enum LocaleEnum {
 export type MetricChartType = {
   __typename?: 'MetricChartType'
   date: Scalars['DateTimeType']
+  entityIdentifier: Scalars['String']
+  provider: Scalars['String']
   min: Scalars['String']
   max: Scalars['String']
   avg: Scalars['String']
@@ -3990,19 +3992,19 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
       telegram: Array<
         { __typename?: 'MetricChartType' } & Pick<
           MetricChartType,
-          'date' | 'sum'
+          'date' | 'sum' | 'provider' | 'entityIdentifier'
         >
       >
       coingecko: Array<
         { __typename?: 'MetricChartType' } & Pick<
           MetricChartType,
-          'date' | 'sum'
+          'date' | 'sum' | 'provider' | 'entityIdentifier'
         >
       >
       coinmarketcap: Array<
         { __typename?: 'MetricChartType' } & Pick<
           MetricChartType,
-          'date' | 'sum'
+          'date' | 'sum' | 'provider' | 'entityIdentifier'
         >
       >
     } & ProtocolFragmentFragment
@@ -6309,6 +6311,8 @@ export const ProtocolDocument = gql`
       ) {
         date
         sum
+        provider
+        entityIdentifier
       }
       coingecko: metricChart(
         metric: coingeckoWatchers
@@ -6317,6 +6321,8 @@ export const ProtocolDocument = gql`
       ) {
         date
         sum
+        provider
+        entityIdentifier
       }
       coinmarketcap: metricChart(
         metric: coinmarketcapWatchers
@@ -6325,6 +6331,8 @@ export const ProtocolDocument = gql`
       ) {
         date
         sum
+        provider
+        entityIdentifier
       }
     }
   }

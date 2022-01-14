@@ -35,6 +35,8 @@ export const PROTOCOL_DETAIL = gql`
       ) {
         date
         sum
+        provider
+        entityIdentifier
       }
       coingecko: metricChart(
         metric: coingeckoWatchers
@@ -43,6 +45,8 @@ export const PROTOCOL_DETAIL = gql`
       ) {
         date
         sum
+        provider
+        entityIdentifier
       }
       coinmarketcap: metricChart(
         metric: coinmarketcapWatchers
@@ -51,6 +55,8 @@ export const PROTOCOL_DETAIL = gql`
       ) {
         date
         sum
+        provider
+        entityIdentifier
       }
     }
   }
