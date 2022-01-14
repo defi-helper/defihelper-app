@@ -36,6 +36,8 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
     useGate(stakingAutomatesModel.StakingAutomatesGate, null)
 
     const handleOpenWallet = (wallet: model.OpenedWallet) => () => {
+      if (wallet && !wallet.walletId.length) return
+
       model.openWallet(wallet)
     }
 
@@ -142,7 +144,8 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
                           openedWallet?.contractId === automateContract.id
                             ? null
                             : {
-                                walletId: automateContract.wallet.id,
+                                walletId:
+                                  automateContract.contractWallet?.id ?? '',
                                 contractId: automateContract.id,
                               }
                         )}
@@ -166,16 +169,13 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
                     ) : (
                       <>
                         {openedWallet?.contractId === automateContract.id &&
-                          !isEmpty(assetsByWallet) && (
-                            <>
-                              {assetsByWallet.map((asset, index) => (
-                                <PortfolioWalletAssetCard
-                                  row={asset}
-                                  key={String(index)}
-                                />
-                              ))}
-                            </>
-                          )}
+                          !isEmpty(assetsByWallet) &&
+                          assetsByWallet.map((asset, index) => (
+                            <PortfolioWalletAssetCard
+                              row={asset}
+                              key={String(index)}
+                            />
+                          ))}
                         {openedWallet?.contractId === automateContract.id &&
                           isEmpty(assetsByWallet) && (
                             <Typography

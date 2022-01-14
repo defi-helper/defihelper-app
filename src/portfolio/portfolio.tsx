@@ -73,53 +73,50 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
   return (
     <AppLayout title="Portfolio">
       <Head title="Portfolio" />
-      <>
-        {loading && !tokenAliasses && (
-          <div className={styles.loader}>
-            <Loader height="36" />
+      {loading && !tokenAliasses && (
+        <div className={styles.loader}>
+          <Loader height="36" />
+        </div>
+      )}
+
+      {Boolean(tokenAliasses) && (
+        <>
+          <Typography variant="h3" className={styles.title}>
+            Portfolio
+          </Typography>
+          <PortfolioMetricCards className={styles.cards} />
+          <div className={clsx(styles.grid, styles.section)}>
+            <PortfolioTotalWorth className={styles.mainChart} />
+            <PortfolioEarnings />
+            <PortfolioCoinBalance />
           </div>
-        )}
-      </>
-      <>
-        {!loading && Boolean(tokenAliasses) && (
-          <>
-            <Typography variant="h3" className={styles.title}>
-              Portfolio
-            </Typography>
-            <PortfolioMetricCards className={styles.cards} />
-            <div className={clsx(styles.grid, styles.section)}>
-              <PortfolioTotalWorth className={styles.mainChart} />
-              <PortfolioEarnings />
-              <PortfolioCoinBalance />
-            </div>
-            <PortfolioAssets className={styles.section} />
-            <PortfolioWallets className={styles.section} />
-            <PortfolioDeployedContracts />
-          </>
-        )}
-        {!loading && !tokenAliasses && (
-          <>
-            <Typography variant="h3" className={styles.title}>
-              Portfolio
-            </Typography>
-            <Typography
-              variant="h3"
-              family="mono"
-              transform="uppercase"
-              className={styles.generatingTitle}
-            >
-              Generating Portfolio...
-            </Typography>
-            <Typography className={styles.generatingDescription}>
-              Building process can take up to 24 hours. Add contacts so you can
-              recieve notifications about any actions. You will be notified when
-              portfolio is ready. You will be able to change it any time in
-              settings.
-            </Typography>
-            <SettingsContacts withHeader={false} />
-          </>
-        )}
-      </>
+          <PortfolioAssets className={styles.section} />
+          <PortfolioWallets className={styles.section} />
+          <PortfolioDeployedContracts />
+        </>
+      )}
+      {!loading && !tokenAliasses && (
+        <>
+          <Typography variant="h3" className={styles.title}>
+            Portfolio
+          </Typography>
+          <Typography
+            variant="h3"
+            family="mono"
+            transform="uppercase"
+            className={styles.generatingTitle}
+          >
+            Generating Portfolio...
+          </Typography>
+          <Typography className={styles.generatingDescription}>
+            Building process can take up to 24 hours. Add contacts so you can
+            recieve notifications about any actions. You will be notified when
+            portfolio is ready. You will be able to change it any time in
+            settings.
+          </Typography>
+          <SettingsContacts withHeader={false} />
+        </>
+      )}
     </AppLayout>
   )
 }
