@@ -88,8 +88,10 @@ split({
       return Boolean(
         clock.account &&
           clock.wallets?.every(({ address, network }) => {
-            if (clock.chainId === 'W' && address !== clock.account) return true
-            if (clock.chainId === 'W' && address === clock.account) return false
+            if (clock.chainId === 'main' && address !== clock.account)
+              return true
+            if (clock.chainId === 'main' && address === clock.account)
+              return false
 
             return (
               (Number(network) !== Number(clock.chainId) &&
@@ -101,7 +103,7 @@ split({
     },
   }),
   match: {
-    waves: (source) => source.chainId === 'W' && Boolean(source.provider),
+    waves: (source) => source.chainId === 'main' && Boolean(source.provider),
     ethereum: (source) => Boolean(source.provider),
   },
   cases: {

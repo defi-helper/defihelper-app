@@ -65,7 +65,7 @@ export const signMessageWaves = async (
   const data = {
     address,
     message,
-    network: 'W',
+    network: 'main',
   }
 
   let signedData:

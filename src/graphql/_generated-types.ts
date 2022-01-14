@@ -631,6 +631,8 @@ export enum ContractListSortInputTypeColumnEnum {
   Name = 'name',
   Address = 'address',
   CreatedAt = 'createdAt',
+  Tvl = 'tvl',
+  AprYear = 'aprYear',
   MyStaked = 'myStaked',
 }
 
@@ -917,7 +919,7 @@ export enum LocaleEnum {
 export type MetricChartType = {
   __typename?: 'MetricChartType'
   date: Scalars['DateTimeType']
-  entityIdentifier: Scalars['String']
+  entityIdentifier: Scalars['UuidType']
   provider: Scalars['String']
   min: Scalars['String']
   max: Scalars['String']
@@ -7213,6 +7215,7 @@ export const StakingContractListDocument = gql`
     $contractFilter: ContractListFilterInputType
     $contractSort: [ContractListSortInputType!] = [
       { column: myStaked, order: desc }
+      { column: name, order: asc }
     ]
     $contractPagination: ContractListPaginationInputType
   ) {

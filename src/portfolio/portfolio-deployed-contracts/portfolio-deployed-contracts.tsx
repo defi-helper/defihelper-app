@@ -62,7 +62,7 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
                 APY
               </Typography>
               <Typography variant="body3" align="right">
-                APY Boost
+                Boosted APY
               </Typography>
             </div>
             <div className={styles.tableBody}>

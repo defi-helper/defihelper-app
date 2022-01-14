@@ -179,7 +179,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
         <div className={styles.row}>
           <Typography variant="body2" as="span" className={styles.infoTitle}>
             <Typography variant="inherit" className={styles.opacity}>
-              APY Boost
+              Boosted APY
             </Typography>
             <Dropdown
               control={
@@ -203,7 +203,6 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           <Typography variant="body2" as="span">
             {validDiff ? (
               <>
-                {bignumberUtils.gt(props.apyBoost, '0.001') ? '+ ' : null}
                 {bignumberUtils.formatMax(
                   bignumberUtils.mul(props.apyBoost, 100),
                   10000
