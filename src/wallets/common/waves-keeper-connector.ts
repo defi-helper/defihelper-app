@@ -1,7 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
-const CHAIN_ID = 'W'
+const CHAIN_ID = 'main'
 
 const ERROR_MESSAGE = 'Account is null'
 

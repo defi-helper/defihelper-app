@@ -96,7 +96,7 @@ export const deployFx = automationDeployContractDomain.createEffect(
 
     const currentWallet = wallets.find((wallet) => {
       return (
-        (wallet.network === 'W'
+        (wallet.network === 'main'
           ? wallet.address === params.account
           : wallet.address === params.account.toLowerCase()) &&
         wallet.network === params.chainId

@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
+import { useState } from 'react'
 import { useLocalStorage, useInterval } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
@@ -27,6 +28,8 @@ import {
   AutomateActionTypeEnum,
   AutomateConditionTypeEnum,
   AutomateTriggerTypeEnum,
+  ContractListSortInputTypeColumnEnum,
+  SortOrderEnum,
 } from '~/graphql/_generated-types'
 import { StakingBillingFormDialog } from '~/staking/common'
 import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
@@ -45,8 +48,29 @@ export type StakingListProps = {
   protocolAdapter: string
 }
 
+const sortIcon = (
+  sort: {
+    column: ContractListSortInputTypeColumnEnum
+    order: SortOrderEnum
+  },
+  column: ContractListSortInputTypeColumnEnum
+) => {
+  let icon: 'arrowDown' | 'arrowTop' = 'arrowDown'
+
+  if (sort.column === column && column && sort.order === SortOrderEnum.Desc) {
+    icon = 'arrowTop'
+  }
+
+  return <Icon icon={icon} width="18" />
+}
+
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const ability = useAbility()
+
+  const [sortBy, setSort] = useState({
+    column: ContractListSortInputTypeColumnEnum.MyStaked,
+    order: SortOrderEnum.Desc,
+  })
 
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutostaking', false)
 
@@ -68,6 +92,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   useGate(model.StakingListGate, {
     ...props,
     hidden: ability.can('update', 'Contract') ? null : false,
+    sortColumn: sortBy.column,
+    sortOrder: sortBy.order,
   })
 
   const handleOpenConfirmDialog = (id: string) => async () => {
@@ -110,7 +136,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         const findedWallet = wallets.find((wallet) => {
           const sameAddreses =
-            String(currentWallet.chainId) === 'W'
+            String(currentWallet.chainId) === 'main'
               ? currentWallet.account === wallet.address
               : currentWallet.account?.toLowerCase() === wallet.address
 
@@ -209,6 +235,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       }
     }
 
+  const handleSort = (sort: typeof sortBy) => () => {
+    setSort(sort)
+  }
+
   useInterval(
     () => {
       if (currentWallet) {
@@ -253,13 +283,59 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           <div className={clsx(styles.tableHeader, styles.row)}>
             <Typography variant="body2">Pool</Typography>
             <Typography variant="body2" align="right">
-              TVL
+              <ButtonBase
+                onClick={handleSort({
+                  column: ContractListSortInputTypeColumnEnum.Tvl,
+                  order:
+                    sortBy.column === ContractListSortInputTypeColumnEnum.Tvl &&
+                    sortBy.order === SortOrderEnum.Asc
+                      ? SortOrderEnum.Desc
+                      : SortOrderEnum.Asc,
+                })}
+              >
+                TVL{' '}
+                {sortBy.column === ContractListSortInputTypeColumnEnum.Tvl &&
+                  sortIcon(sortBy, ContractListSortInputTypeColumnEnum.Tvl)}
+              </ButtonBase>
             </Typography>
             <Typography variant="body2" align="right">
-              APY
+              <ButtonBase
+                onClick={handleSort({
+                  column: ContractListSortInputTypeColumnEnum.AprYear,
+                  order:
+                    sortBy.column ===
+                      ContractListSortInputTypeColumnEnum.AprYear &&
+                    sortBy.order === SortOrderEnum.Asc
+                      ? SortOrderEnum.Desc
+                      : SortOrderEnum.Asc,
+                })}
+              >
+                APY{' '}
+                {sortBy.column ===
+                  ContractListSortInputTypeColumnEnum.AprYear &&
+                  sortIcon(sortBy, ContractListSortInputTypeColumnEnum.AprYear)}
+              </ButtonBase>
             </Typography>
             <Typography variant="body2" align="right">
-              Position
+              <ButtonBase
+                onClick={handleSort({
+                  column: ContractListSortInputTypeColumnEnum.MyStaked,
+                  order:
+                    sortBy.column ===
+                      ContractListSortInputTypeColumnEnum.MyStaked &&
+                    sortBy.order === SortOrderEnum.Asc
+                      ? SortOrderEnum.Desc
+                      : SortOrderEnum.Asc,
+                })}
+              >
+                Position{' '}
+                {sortBy.column ===
+                  ContractListSortInputTypeColumnEnum.MyStaked &&
+                  sortIcon(
+                    sortBy,
+                    ContractListSortInputTypeColumnEnum.MyStaked
+                  )}
+              </ButtonBase>
             </Typography>
             <Typography variant="body2" align="right">
               Pool share

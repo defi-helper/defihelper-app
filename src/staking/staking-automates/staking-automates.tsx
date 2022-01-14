@@ -161,7 +161,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           })
 
           const isNotSameAddresses =
-            String(wallet?.chainId) === 'W'
+            String(wallet?.chainId) === 'main'
               ? wallet?.account !== automatesContract.wallet.address
               : wallet?.account?.toLowerCase() !==
                 automatesContract.wallet.address

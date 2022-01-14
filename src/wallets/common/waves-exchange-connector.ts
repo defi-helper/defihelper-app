@@ -2,7 +2,7 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import type { Signer as WavesSigner } from '@waves/signer'
 
-const CHAIN_ID = 'W'
+const CHAIN_ID = 'main'
 
 type Options = {
   nodeUrl?: string

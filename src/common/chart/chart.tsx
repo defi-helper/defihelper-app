@@ -116,10 +116,13 @@ export const Chart: React.VFC<ChartProps> = (props) => {
       if (series.tooltip) {
         series.tooltip.pointerOrientation = 'vertical'
       }
-
-      chartRef.current.cursor = new XYCursor()
-      // chartRef.current.cursor.xAxis = dateAxis
     })
+
+    chartRef.current.cursor = new XYCursor()
+
+    dateAxis.tooltipDateFormat = 'dd MMM YYYY HH:mm'
+
+    chartRef.current.cursor.xAxis = dateAxis
 
     if (props.dataFields.length > 1) {
       const legend = new Legend()

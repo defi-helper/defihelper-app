@@ -97,8 +97,8 @@ const prodNetworks: Record<string, Network> = {
       'https://api.avax.network/ext/bc/C/rpc',
     ],
   },
-  W: {
-    chainId: 'W',
+  main: {
+    chainId: 'main',
     title: 'Waves',
     explorerUrl: 'https://wavesexplorer.com',
     coin: 'WAVES',

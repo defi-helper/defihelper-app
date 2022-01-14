@@ -2,7 +2,9 @@ import { createDomain, guard, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
+  ContractListSortInputTypeColumnEnum,
   MetricChartType,
+  SortOrderEnum,
   StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { stakingApi, buildAdaptersUrl } from '~/staking/common'
@@ -21,6 +23,8 @@ type GateState = {
   protocolId: string
   protocolAdapter?: string | null
   hidden: null | boolean
+  sortColumn?: ContractListSortInputTypeColumnEnum
+  sortOrder?: SortOrderEnum
 }
 
 type ConnectParams = {
@@ -53,8 +57,10 @@ const NOT_DELETED = 'Not deleted'
 const NOT_CONNECTED = 'Not connected'
 const NOT_DISCONNECTED = 'Not disconnected'
 
+type Params = GateState & PaginationState
+
 export const fetchStakingListFx = stakingListDomain.createEffect(
-  async (params: GateState & PaginationState) => {
+  async (params: Params) => {
     const data = await stakingApi.contractList({
       filter: {
         id: params.protocolId,
@@ -66,6 +72,17 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
         offset: params.offset,
         limit: params.limit,
       },
+      contractSort: [
+        {
+          column:
+            params.sortColumn ?? ContractListSortInputTypeColumnEnum.MyStaked,
+          order: params.sortOrder ?? SortOrderEnum.Desc,
+        },
+        {
+          column: ContractListSortInputTypeColumnEnum.Name,
+          order: SortOrderEnum.Asc,
+        },
+      ],
     })
 
     const stakingListWithAutostaking = data.contracts.map(async (contract) => {
@@ -193,7 +210,7 @@ guard({
     fn: ([wallets, connectedContracts], params) => {
       const findedWallet = wallets.find((wallet) => {
         const sameAddreses =
-          String(params.wallet.chainId) === 'W'
+          String(params.wallet.chainId) === 'main'
             ? params.wallet.account === wallet.address
             : params.wallet.account?.toLowerCase() === wallet.address
 
@@ -230,7 +247,11 @@ export const StakingListPagination = createPagination({
 guard({
   clock: sample({
     source: [StakingListPagination.state, StakingListGate.state],
-    clock: [StakingListGate.open, StakingListPagination.updates],
+    clock: [
+      StakingListGate.open,
+      StakingListGate.state.updates,
+      StakingListPagination.updates,
+    ],
     fn: ([pagination, gate]) => ({
       ...pagination,
       ...gate,

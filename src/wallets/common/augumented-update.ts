@@ -32,7 +32,7 @@ export async function augmentConnectorUpdate(
   return {
     connector,
     provider,
-    chainId: chainId !== 'W' ? String(normalizedChainId) : chainId,
+    chainId: chainId !== 'main' ? String(normalizedChainId) : chainId,
     account,
   }
 }
