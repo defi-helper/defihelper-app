@@ -38,14 +38,19 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
     portfolioAssetsModel.fetchUserInteractedProtocolsListFx.pending
   )
 
+  const assetsByPlatform = useStore(portfolioAssetsModel.$assetsByPlatform)
+  const openedPlatform = useStore(portfolioAssetsModel.$openedPlatform)
+  const assetsByPlatformLoading = useStore(
+    portfolioAssetsModel.fetchAssetsByPlatformFx.pending
+  )
+
   const assetsLoading = assetListLoading || assetByWalletLoading
 
+  const [currentTab, setCurrentTab] = useState(0)
   const [currentWallet, setWallet] = useState<typeof wallets[number] | null>(
     null
   )
   const protocols = useStore(portfolioAssetsModel.$protocols)
-
-  const [currentTab, setCurrentTab] = useState(0)
 
   const handleSetWallet = (wallet: typeof wallets[number] | null) => () => {
     setWallet(wallet)
@@ -54,7 +59,6 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   useGate(portfolioAssetsModel.PortfolioAssetsGate, currentWallet?.id ?? null)
 
   const currentAssets = currentWallet ? assetsByWallet : assets
-
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
@@ -240,7 +244,15 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                 !isEmpty(protocols) &&
                 protocols.map((row, rowIndex) => (
                   <PortfolioPlatformCard
+                    assets={assetsByPlatform}
+                    isCollapsed={openedPlatform === row.id}
+                    loading={assetsByPlatformLoading}
                     key={String(rowIndex)}
+                    onToggle={() =>
+                      portfolioAssetsModel.openPlatform(
+                        openedPlatform === row.id ? null : row.id
+                      )
+                    }
                     protocol={row}
                   />
                 ))}
