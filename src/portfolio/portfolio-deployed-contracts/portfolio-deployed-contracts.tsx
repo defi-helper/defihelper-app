@@ -12,12 +12,12 @@ import { Link } from '~/common/link'
 import { Typography } from '~/common/typography'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { networksConfig } from '~/networks-config'
+import { PortfolioAssetCard, PortfolioAssetsHeader } from '~/portfolio/common'
+import { ButtonBase } from '~/common/button-base'
+import { Loader } from '~/common/loader'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as styles from './portfolio-deployed-contracts.css'
 import * as model from './portfolio-deployed-contracts.model'
-import { Loader } from '~/common/loader'
-import { ButtonBase } from '~/common/button-base'
-import { PortfolioAssetCard } from '~/portfolio/common'
 
 export type PortfolioDeployedContractsProps = {
   className?: string
@@ -169,13 +169,17 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
                     ) : (
                       <>
                         {openedWallet?.contractId === automateContract.id &&
-                          !isEmpty(assetsByWallet) &&
-                          assetsByWallet.map((asset, index) => (
-                            <PortfolioAssetCard
-                              row={asset}
-                              key={String(index)}
-                            />
-                          ))}
+                          !isEmpty(assetsByWallet) && (
+                            <>
+                              <PortfolioAssetsHeader />
+                              {assetsByWallet.map((asset, index) => (
+                                <PortfolioAssetCard
+                                  row={asset}
+                                  key={String(index)}
+                                />
+                              ))}
+                            </>
+                          )}
                         {openedWallet?.contractId === automateContract.id &&
                           isEmpty(assetsByWallet) && (
                             <Typography
