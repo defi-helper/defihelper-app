@@ -8,6 +8,7 @@ import { Button } from '~/common/button'
 import {
   PortfolioAddWalletDialog,
   PortfolioAssetCard,
+  PortfolioAssetsHeader,
 } from '~/portfolio/common'
 import { useDialog } from '~/common/dialog'
 import { Can } from '~/auth'
@@ -181,6 +182,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                   <>
                     {openedWallet === wallet.id && !isEmpty(assetsByWallet) && (
                       <>
+                        <PortfolioAssetsHeader />
                         {assetsByWallet.map((asset, index) => (
                           <PortfolioAssetCard row={asset} key={String(index)} />
                         ))}

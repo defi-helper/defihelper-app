@@ -9,7 +9,7 @@ import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { settingsWalletModel } from '~/settings/settings-wallets'
-import { PortfolioAssetCard } from '../common'
+import { PortfolioAssetCard, PortfolioAssetsHeader } from '../common'
 import { PortfolioPlatformCard } from '~/portfolio/common/portfolio-platform-card'
 import * as styles from './portfolio-assets.css'
 import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
@@ -73,7 +73,6 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
           Platforms {protocols.length}
         </Typography>
       </div>
-
       <div className={styles.tableWrap}>
         {currentTab === 0 && (
           <Paper radius={8} className={styles.table}>
@@ -116,56 +115,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                 ))}
               </Dropdown>
             </div>
-            <div className={clsx(styles.tableHeadings, styles.assetsTableRow)}>
-              <Typography variant="body3" className={styles.tableCol}>
-                %
-              </Typography>
-              <Typography variant="body3" className={styles.tableCol}>
-                Asset
-              </Typography>
-              <Typography
-                variant="body3"
-                className={styles.tableCol}
-                align="right"
-              >
-                Balance
-              </Typography>
-              <Typography
-                variant="body3"
-                className={styles.tableCol}
-                align="right"
-              >
-                Value{' '}
-                <Typography variant="inherit" className={styles.blue}>
-                  Calc
-                </Typography>{' '}
-                <Dropdown
-                  control={
-                    <ButtonBase className={styles.question}>
-                      <Icon icon="question" width="16" height="16" />
-                    </ButtonBase>
-                  }
-                  placement="top"
-                  className={styles.dropdown}
-                  offset={[0, 8]}
-                >
-                  <Typography variant="body3">
-                    <Typography variant="inherit" className={styles.blue}>
-                      Calc
-                    </Typography>{' '}
-                    — Calculated value based on your amount of asset and its
-                    price
-                  </Typography>
-                  <Typography variant="body3">
-                    <Typography variant="inherit" className={styles.blue}>
-                      Act
-                    </Typography>{' '}
-                    — Actual value you can exchange right now based on real
-                    market liquidity
-                  </Typography>
-                </Dropdown>
-              </Typography>
-            </div>
+            <PortfolioAssetsHeader className={styles.assetHeader} />
             <div className={styles.tableBody}>
               {assetsLoading && (
                 <div className={styles.loader}>
@@ -226,22 +176,25 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                   no data
                 </Typography>
               )}
-              {!platformsLoading &&
-                !isEmpty(protocols) &&
-                protocols.map((row, rowIndex) => (
-                  <PortfolioPlatformCard
-                    assets={assetsByPlatform}
-                    isCollapsed={openedPlatform === row.id}
-                    loading={assetsByPlatformLoading}
-                    key={String(rowIndex)}
-                    onToggle={() =>
-                      portfolioAssetsModel.openPlatform(
-                        openedPlatform === row.id ? null : row.id
-                      )
-                    }
-                    protocol={row}
-                  />
-                ))}
+              {!platformsLoading && !isEmpty(protocols) && (
+                <>
+                  <PortfolioAssetsHeader />
+                  {protocols.map((row, rowIndex) => (
+                    <PortfolioPlatformCard
+                      assets={assetsByPlatform}
+                      isCollapsed={openedPlatform === row.id}
+                      loading={assetsByPlatformLoading}
+                      key={String(rowIndex)}
+                      onToggle={() =>
+                        portfolioAssetsModel.openPlatform(
+                          openedPlatform === row.id ? null : row.id
+                        )
+                      }
+                      protocol={row}
+                    />
+                  ))}
+                </>
+              )}
             </div>
           </Paper>
         )}

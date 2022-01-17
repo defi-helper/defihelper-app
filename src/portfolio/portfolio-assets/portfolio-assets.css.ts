@@ -16,6 +16,10 @@ export const header = style({
   },
 })
 
+export const assetHeader = style({
+  padding: '16px 26px 0',
+})
+
 export const inactiveTab = style({
   color: theme.colors.textColorGrey,
   cursor: 'pointer',
@@ -33,17 +37,6 @@ export const table = style({
 export const platformsTable = style({
   minWidth: 900,
   paddingBottom: 8,
-})
-
-export const assetsTableRow = style({
-  display: 'grid',
-  gridTemplateColumns: '10% 60% 15% 15%',
-
-  selectors: {
-    '&:not(:last-child)': {
-      marginBottom: 16,
-    },
-  },
 })
 
 export const platformsTableRow = style({
@@ -80,20 +73,8 @@ export const platformsTableBody = style({
 
 export const tableCol = style({})
 
-export const dropdown = style({
-  width: 296,
-  height: 132,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-})
-
 export const blue = style({
   color: theme.colors.common.blue1,
-})
-
-export const question = style({
-  verticalAlign: 'middle',
 })
 
 export const positive = style({
