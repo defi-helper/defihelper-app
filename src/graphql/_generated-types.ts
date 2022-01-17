@@ -1204,19 +1204,23 @@ export type OnTokenMetricUpdatedFilterInputType = {
   token?: Maybe<Array<Scalars['UuidType']>>
   contract?: Maybe<Array<Scalars['UuidType']>>
   wallet?: Maybe<Array<Scalars['UuidType']>>
+  user?: Maybe<Array<Scalars['UuidType']>>
 }
 
 export type OnTransferCreatedFilterInputType = {
   wallet?: Maybe<Array<Scalars['UuidType']>>
+  user?: Maybe<Array<Scalars['UuidType']>>
 }
 
 export type OnTransferUpdatedFilterInputType = {
   wallet?: Maybe<Array<Scalars['UuidType']>>
+  user?: Maybe<Array<Scalars['UuidType']>>
 }
 
 export type OnWalletMetricUpdatedFilterInputType = {
   contract?: Maybe<Array<Scalars['UuidType']>>
   wallet?: Maybe<Array<Scalars['UuidType']>>
+  user?: Maybe<Array<Scalars['UuidType']>>
 }
 
 export type Pagination = {
@@ -1953,6 +1957,7 @@ export type StorePurchaseType = {
 
 export type Subscription = {
   __typename?: 'Subscription'
+  onWalletCreated: WalletType
   onWalletMetricUpdated: WalletMetricUpdatedEvent
   onTokenMetricUpdated: TokenMetricUpdatedEvent
   onBillingTransferCreated: BillingTransferType
@@ -3800,7 +3805,7 @@ export type MyMetricQuery = { __typename?: 'Query' } & {
 }
 
 export type OnTokenMetricUpdatedSubscriptionVariables = Exact<{
-  wallet?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
+  user?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
 }>
 
 export type OnTokenMetricUpdatedSubscription = {
@@ -3813,7 +3818,7 @@ export type OnTokenMetricUpdatedSubscription = {
 }
 
 export type OnWalletMetricUpdatedSubscriptionVariables = Exact<{
-  wallet?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
+  user?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
 }>
 
 export type OnWalletMetricUpdatedSubscription = {
@@ -6043,8 +6048,8 @@ export function useMyMetricQuery(
   return Urql.useQuery<MyMetricQuery>({ query: MyMetricDocument, ...options })
 }
 export const OnTokenMetricUpdatedDocument = gql`
-  subscription OnTokenMetricUpdated($wallet: [UuidType!]) {
-    onTokenMetricUpdated(filter: { wallet: $wallet }) {
+  subscription OnTokenMetricUpdated($user: [UuidType!]) {
+    onTokenMetricUpdated(filter: { user: $user }) {
       id
     }
   }
@@ -6066,8 +6071,8 @@ export function useOnTokenMetricUpdatedSubscription<
   >({ query: OnTokenMetricUpdatedDocument, ...options }, handler)
 }
 export const OnWalletMetricUpdatedDocument = gql`
-  subscription OnWalletMetricUpdated($wallet: [UuidType!]) {
-    onWalletMetricUpdated(filter: { wallet: $wallet }) {
+  subscription OnWalletMetricUpdated($user: [UuidType!]) {
+    onWalletMetricUpdated(filter: { user: $user }) {
       id
     }
   }

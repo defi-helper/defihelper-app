@@ -226,6 +226,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         await openAdapter({
           steps: stakingAutomatesAdapter.migrate,
         })
+
+        toastsService.success('success!')
       } catch (error) {
         if (error instanceof Error && !(error instanceof UserRejectionError)) {
           toastsService.error(error.message)
@@ -355,7 +357,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                 offset={[0, 8]}
               >
                 <Typography variant="body3">
-                  We use our math power to boost apy of your savings
+                  Activate auto-staking to boost your yield
                 </Typography>
               </Dropdown>
               Autostaking Boost

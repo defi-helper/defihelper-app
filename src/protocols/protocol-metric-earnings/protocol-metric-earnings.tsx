@@ -144,7 +144,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
         <ProtocolChartWrap
           header={
             <div>
-              <Typography>Estimated Earnings (in 3 months)</Typography>
+              <Typography>Estimated Earnings in 3 months</Typography>
               <Link
                 href={config.MEDIUM_LINK}
                 target="_blank"

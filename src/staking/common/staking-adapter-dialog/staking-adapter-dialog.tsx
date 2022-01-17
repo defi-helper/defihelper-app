@@ -161,6 +161,8 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
                         label={input.placeholder}
                         disabled={formState.isSubmitting}
                         className={styles.input}
+                        helperText={errorValue.error?.message}
+                        error={Boolean(errorValue.error?.message)}
                         {...field}
                         value={field.value || input.value}
                       />
@@ -174,7 +176,7 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
                 disabled={Boolean(errorValue.error?.message)}
                 className={styles.button}
               >
-                {errorValue.error?.message ?? currentStep.name}
+                {currentStep.name}
               </Button>
             </form>
           )}
@@ -185,7 +187,7 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
               disabled={Boolean(errorValue.error?.message)}
               className={styles.button}
             >
-              {errorValue.error?.message ?? currentStep?.name}
+              {currentStep?.name}
             </Button>
           )}
         </>

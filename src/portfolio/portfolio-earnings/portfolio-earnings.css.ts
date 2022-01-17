@@ -17,5 +17,6 @@ export const header = style({
 })
 
 export const link = style({
-  color: theme.colors.common.blue1,
+  fontSize: 14,
+  height: '18px',
 })
