@@ -165,7 +165,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
               className={styles.tooltip}
               control={
                 <Button size="small" variant="outlined">
-                  Turn on
+                  Auto-Stake
                 </Button>
               }
             >
@@ -175,7 +175,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             <WalletConnect
               fallback={
                 <Button size="small" variant="outlined">
-                  Turn on
+                  Auto-Stake
                 </Button>
               }
             >
@@ -185,7 +185,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                 onClick={props.onTurnOn}
                 loading={props.autostakingLoading}
               >
-                Turn on
+                Auto-Stake
               </Button>
             </WalletConnect>
           )}

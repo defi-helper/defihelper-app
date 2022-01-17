@@ -8,6 +8,7 @@ import { Button } from '~/common/button'
 import {
   PortfolioAddWalletDialog,
   PortfolioAssetCard,
+  PortfolioAssetsHeader,
 } from '~/portfolio/common'
 import { useDialog } from '~/common/dialog'
 import { Can } from '~/auth'
@@ -23,9 +24,10 @@ import { Typography } from '~/common/typography'
 import { ButtonBase } from '~/common/button-base'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { networksConfig } from '~/networks-config'
+import { Loader } from '~/common/loader'
+import { Dropdown } from '~/common/dropdown'
 import * as model from './portfolio-wallets.model'
 import * as styles from './portfolio-wallets.css'
-import { Loader } from '~/common/loader'
 
 export type PortfolioWalletsProps = {
   className?: string
@@ -108,7 +110,16 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
             <Typography variant="body3">Wallet</Typography>
             <Typography variant="body3">Address</Typography>
             <Typography variant="body3" align="right">
-              <Icon icon="automation" width="20" height="20" />
+              <Dropdown
+                trigger="hover"
+                control={
+                  <ButtonBase>
+                    <Icon icon="automation" width="20" height="20" />
+                  </ButtonBase>
+                }
+              >
+                <Typography>Autostaking</Typography>
+              </Dropdown>
             </Typography>
             <Typography variant="body3" align="right">
               Value
@@ -171,6 +182,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                   <>
                     {openedWallet === wallet.id && !isEmpty(assetsByWallet) && (
                       <>
+                        <PortfolioAssetsHeader />
                         {assetsByWallet.map((asset, index) => (
                           <PortfolioAssetCard row={asset} key={String(index)} />
                         ))}
