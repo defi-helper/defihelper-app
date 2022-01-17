@@ -1204,19 +1204,27 @@ export type OnTokenMetricUpdatedFilterInputType = {
   token?: Maybe<Array<Scalars['UuidType']>>
   contract?: Maybe<Array<Scalars['UuidType']>>
   wallet?: Maybe<Array<Scalars['UuidType']>>
+  user?: Maybe<Array<Scalars['UuidType']>>
 }
 
 export type OnTransferCreatedFilterInputType = {
   wallet?: Maybe<Array<Scalars['UuidType']>>
+  user?: Maybe<Array<Scalars['UuidType']>>
 }
 
 export type OnTransferUpdatedFilterInputType = {
   wallet?: Maybe<Array<Scalars['UuidType']>>
+  user?: Maybe<Array<Scalars['UuidType']>>
+}
+
+export type OnWalletCreatedFilterInputType = {
+  user?: Maybe<Array<Scalars['UuidType']>>
 }
 
 export type OnWalletMetricUpdatedFilterInputType = {
   contract?: Maybe<Array<Scalars['UuidType']>>
   wallet?: Maybe<Array<Scalars['UuidType']>>
+  user?: Maybe<Array<Scalars['UuidType']>>
 }
 
 export type Pagination = {
@@ -1953,10 +1961,15 @@ export type StorePurchaseType = {
 
 export type Subscription = {
   __typename?: 'Subscription'
+  onWalletCreated: WalletType
   onWalletMetricUpdated: WalletMetricUpdatedEvent
   onTokenMetricUpdated: TokenMetricUpdatedEvent
   onBillingTransferCreated: BillingTransferType
   onBillingTransferUpdated: BillingTransferType
+}
+
+export type SubscriptionOnWalletCreatedArgs = {
+  filter?: Maybe<OnWalletCreatedFilterInputType>
 }
 
 export type SubscriptionOnWalletMetricUpdatedArgs = {
@@ -4830,6 +4843,7 @@ export type StakingContractFragmentFragment = {
   | 'adapter'
   | 'protocolId'
   | 'layout'
+  | 'deployBlockNumber'
 > & {
     automate: { __typename?: 'ContractAutomatesType' } & Pick<
       ContractAutomatesType,
@@ -5257,6 +5271,7 @@ export const StakingContractFragmentFragmentDoc = gql`
     adapter
     protocolId
     layout
+    deployBlockNumber
     automate {
       adapters
       autorestake
