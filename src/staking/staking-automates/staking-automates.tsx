@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import isEmpty from 'lodash.isempty'
 import { useThrottle } from 'react-use'
 
@@ -17,7 +17,7 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
-import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
+import { authModel } from '~/auth'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import {
   useOnWalletMetricUpdatedSubscription,
@@ -35,7 +35,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openErrorDialog] = useDialog(StakingErrorDialog)
   const wallet = walletNetworkModel.useWalletNetwork()
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const user = useStore(authModel.$user)
   const handleConnect = useWalletConnect()
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
@@ -99,26 +99,24 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
   useGate(model.StakingAutomatesGate, props.protocolId ?? null)
 
-  const walletIds = useMemo(() => wallets.map(({ id }) => id), [wallets])
-
   const [walletUpdated, onWalletMetricUpdated] =
     useOnWalletMetricUpdatedSubscription()
   const [tokenMetricUpdated, onTokenMetricUpdated] =
     useOnTokenMetricUpdatedSubscription()
 
   useEffect(() => {
-    if (!walletIds.length) return
+    if (!user) return
 
     const opts = {
       variables: {
-        wallet: walletIds,
+        user: [user.id],
       },
     }
 
     onTokenMetricUpdated(opts)
     onWalletMetricUpdated(opts)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletIds])
+  }, [user])
 
   const walletUpdatedId = useThrottle(
     walletUpdated.data?.onWalletMetricUpdated.id ?? '',

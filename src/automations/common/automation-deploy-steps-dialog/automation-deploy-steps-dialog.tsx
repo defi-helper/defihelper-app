@@ -132,6 +132,8 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
                           label={input.placeholder}
                           disabled={formState.isSubmitting}
                           className={styles.input}
+                          helperText={errorValue.error?.message}
+                          error={Boolean(errorValue.error?.message)}
                           {...field}
                           value={field.value || input.value}
                         />
@@ -145,7 +147,7 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
                   disabled={Boolean(errorValue.error?.message)}
                   className={styles.button}
                 >
-                  {errorValue.error?.message ?? currentStep.name}
+                  {currentStep.name}
                 </Button>
               </form>
             )}
