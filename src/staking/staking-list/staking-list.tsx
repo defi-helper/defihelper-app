@@ -432,8 +432,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         <Typography variant="body2" as="div">
                           {stakingListItem.name}
 
-                          {ability.can('update', 'Protocol') &&
-                            (stakingListItem.deployBlockNumber ? (
+                          <Can I="update" a="Protocol">
+                            {stakingListItem.deployBlockNumber ? (
                               <>
                                 <br />
                                 {stakingListItem.deployBlockNumber}/
@@ -443,7 +443,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                               <>
                                 <br /> not deployed
                               </>
-                            ))}
+                            )}
+                          </Can>
                         </Typography>
                       </div>
                       <div>
