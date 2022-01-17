@@ -17,7 +17,7 @@ import * as styles from './portfolio-deployed-contracts.css'
 import * as model from './portfolio-deployed-contracts.model'
 import { Loader } from '~/common/loader'
 import { ButtonBase } from '~/common/button-base'
-import { PortfolioWalletAssetCard } from '~/portfolio/common/portfolio-wallet-asset-card'
+import { PortfolioAssetCard } from '~/portfolio/common'
 
 export type PortfolioDeployedContractsProps = {
   className?: string
@@ -171,7 +171,7 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
                         {openedWallet?.contractId === automateContract.id &&
                           !isEmpty(assetsByWallet) &&
                           assetsByWallet.map((asset, index) => (
-                            <PortfolioWalletAssetCard
+                            <PortfolioAssetCard
                               row={asset}
                               key={String(index)}
                             />

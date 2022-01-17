@@ -11,11 +11,6 @@ import { Typography } from '~/common/typography'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { PortfolioAssetCard } from '../common'
 import { PortfolioPlatformCard } from '~/portfolio/common/portfolio-platform-card'
-import { PortfolioWalletAssetCard } from '~/portfolio/common/portfolio-wallet-asset-card'
-import {
-  PortfolioAssetByWalletFragment,
-  PortfolioAssetFragment,
-} from '~/graphql/_generated-types'
 import * as styles from './portfolio-assets.css'
 import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
 import { Loader } from '~/common/loader'
@@ -59,6 +54,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   useGate(portfolioAssetsModel.PortfolioAssetsGate, currentWallet?.id ?? null)
 
   const currentAssets = currentWallet ? assetsByWallet : assets
+
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
@@ -179,22 +175,12 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
               {!assetsLoading &&
                 isEmpty(currentAssets) &&
                 'Your wallets are empty'}
+
               {!assetsLoading &&
                 !isEmpty(currentAssets) &&
-                currentAssets.map((row, rowIndex) =>
-                  // eslint-disable-next-line no-underscore-dangle
-                  row.__typename === 'WalletTokenAliasType' ? (
-                    <PortfolioWalletAssetCard
-                      key={String(rowIndex)}
-                      row={row as PortfolioAssetByWalletFragment}
-                    />
-                  ) : (
-                    <PortfolioAssetCard
-                      key={String(rowIndex)}
-                      row={row as PortfolioAssetFragment}
-                    />
-                  )
-                )}
+                currentAssets.map((row, rowIndex) => (
+                  <PortfolioAssetCard key={String(rowIndex)} row={row} />
+                ))}
             </div>
           </Paper>
         )}
