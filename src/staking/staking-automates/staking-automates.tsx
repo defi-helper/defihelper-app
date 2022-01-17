@@ -118,20 +118,18 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
-  const walletUpdatedId = useThrottle(
-    walletUpdated.data?.onWalletMetricUpdated.id ?? '',
-    TIME
-  )
-  const tokenMetricUpdatedId = useThrottle(
-    tokenMetricUpdated.data?.onTokenMetricUpdated.id ?? '',
+  const metricUpdated = useThrottle(
+    walletUpdated.data?.onWalletMetricUpdated.id ||
+      tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
+      '',
     TIME
   )
 
   useEffect(() => {
-    if (walletUpdatedId || tokenMetricUpdatedId) {
+    if (metricUpdated) {
       model.updated()
     }
-  }, [walletUpdatedId, tokenMetricUpdatedId])
+  }, [metricUpdated])
 
   useEffect(() => {
     if (!currentAction || !adapter || !adapter[currentAction]) return

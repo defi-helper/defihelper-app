@@ -54,20 +54,18 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
-  const walletUpdatedId = useThrottle(
-    walletUpdated.data?.onWalletMetricUpdated.id ?? '',
-    TIME
-  )
-  const tokenMetricUpdatedId = useThrottle(
-    tokenMetricUpdated.data?.onTokenMetricUpdated.id ?? '',
+  const metricUpdated = useThrottle(
+    walletUpdated.data?.onWalletMetricUpdated.id ||
+      tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
+      '',
     TIME
   )
 
   useEffect(() => {
-    if (walletUpdatedId || tokenMetricUpdatedId) {
+    if (metricUpdated) {
       model.portfolioUpdated()
     }
-  }, [walletUpdatedId, tokenMetricUpdatedId])
+  }, [metricUpdated])
 
   return (
     <AppLayout title="Portfolio">
