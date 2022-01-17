@@ -11,11 +11,6 @@ import { Typography } from '~/common/typography'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { PortfolioAssetCard } from '../common'
 import { PortfolioPlatformCard } from '~/portfolio/common/portfolio-platform-card'
-import { PortfolioWalletAssetCard } from '~/portfolio/common/portfolio-wallet-asset-card'
-import {
-  PortfolioAssetByWalletFragment,
-  PortfolioAssetFragment,
-} from '~/graphql/_generated-types'
 import * as styles from './portfolio-assets.css'
 import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
 import { Loader } from '~/common/loader'
@@ -38,14 +33,19 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
     portfolioAssetsModel.fetchUserInteractedProtocolsListFx.pending
   )
 
+  const assetsByPlatform = useStore(portfolioAssetsModel.$assetsByPlatform)
+  const openedPlatform = useStore(portfolioAssetsModel.$openedPlatform)
+  const assetsByPlatformLoading = useStore(
+    portfolioAssetsModel.fetchAssetsByPlatformFx.pending
+  )
+
   const assetsLoading = assetListLoading || assetByWalletLoading
 
+  const [currentTab, setCurrentTab] = useState(0)
   const [currentWallet, setWallet] = useState<typeof wallets[number] | null>(
     null
   )
   const protocols = useStore(portfolioAssetsModel.$protocols)
-
-  const [currentTab, setCurrentTab] = useState(0)
 
   const handleSetWallet = (wallet: typeof wallets[number] | null) => () => {
     setWallet(wallet)
@@ -175,22 +175,12 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
               {!assetsLoading &&
                 isEmpty(currentAssets) &&
                 'Your wallets are empty'}
+
               {!assetsLoading &&
                 !isEmpty(currentAssets) &&
-                currentAssets.map((row, rowIndex) =>
-                  // eslint-disable-next-line no-underscore-dangle
-                  row.__typename === 'WalletTokenAliasType' ? (
-                    <PortfolioWalletAssetCard
-                      key={String(rowIndex)}
-                      row={row as PortfolioAssetByWalletFragment}
-                    />
-                  ) : (
-                    <PortfolioAssetCard
-                      key={String(rowIndex)}
-                      row={row as PortfolioAssetFragment}
-                    />
-                  )
-                )}
+                currentAssets.map((row, rowIndex) => (
+                  <PortfolioAssetCard key={String(rowIndex)} row={row} />
+                ))}
             </div>
           </Paper>
         )}
@@ -240,7 +230,15 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                 !isEmpty(protocols) &&
                 protocols.map((row, rowIndex) => (
                   <PortfolioPlatformCard
+                    assets={assetsByPlatform}
+                    isCollapsed={openedPlatform === row.id}
+                    loading={assetsByPlatformLoading}
                     key={String(rowIndex)}
+                    onToggle={() =>
+                      portfolioAssetsModel.openPlatform(
+                        openedPlatform === row.id ? null : row.id
+                      )
+                    }
                     protocol={row}
                   />
                 ))}
