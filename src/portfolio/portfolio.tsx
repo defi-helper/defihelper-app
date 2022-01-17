@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useThrottle } from 'react-use'
@@ -14,14 +14,14 @@ import { PortfolioWallets } from './portfolio-wallets/portfolio-wallets'
 import { PortfolioAssets } from './portfolio-assets'
 import { PortfolioDeployedContracts } from './portfolio-deployed-contracts'
 import { SettingsContacts } from '~/settings/settings-contacts'
-import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import { Loader } from '~/common/loader'
-import * as styles from './portfolio.css'
-import * as model from './portfolio.model'
 import {
   useOnWalletMetricUpdatedSubscription,
   useOnTokenMetricUpdatedSubscription,
 } from '~/graphql/_generated-types'
+import { authModel } from '~/auth'
+import * as styles from './portfolio.css'
+import * as model from './portfolio.model'
 
 export type PortfolioProps = unknown
 
@@ -30,11 +30,10 @@ const TIME = 15000
 export const Portfolio: React.VFC<PortfolioProps> = () => {
   const tokenAliasses = useStore(model.$tokenAliasses)
   const loading = useStore(model.fetchTokenAliassesFx.pending)
-  const wallets = useStore(walletsModel.$wallets)
+
+  const user = useStore(authModel.$user)
 
   useGate(model.PortfolioGate)
-
-  const walletIds = useMemo(() => wallets.map(({ id }) => id), [wallets])
 
   const [walletUpdated, onWalletMetricUpdated] =
     useOnWalletMetricUpdatedSubscription()
@@ -42,33 +41,31 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     useOnTokenMetricUpdatedSubscription()
 
   useEffect(() => {
-    if (!walletIds.length) return
+    if (!user) return
 
     const opts = {
       variables: {
-        wallet: walletIds,
+        user: [user.id],
       },
     }
 
     onTokenMetricUpdated(opts)
     onWalletMetricUpdated(opts)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [walletIds])
+  }, [user])
 
-  const walletUpdatedId = useThrottle(
-    walletUpdated.data?.onWalletMetricUpdated.id ?? '',
-    TIME
-  )
-  const tokenMetricUpdatedId = useThrottle(
-    tokenMetricUpdated.data?.onTokenMetricUpdated.id ?? '',
+  const metricUpdated = useThrottle(
+    walletUpdated.data?.onWalletMetricUpdated.id ||
+      tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
+      '',
     TIME
   )
 
   useEffect(() => {
-    if (walletUpdatedId || tokenMetricUpdatedId) {
+    if (metricUpdated) {
       model.portfolioUpdated()
     }
-  }, [walletUpdatedId, tokenMetricUpdatedId])
+  }, [metricUpdated])
 
   return (
     <AppLayout title="Portfolio">

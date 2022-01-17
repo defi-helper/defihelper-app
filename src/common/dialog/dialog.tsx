@@ -40,7 +40,7 @@ export const Dialog: React.FC<DialogProps> = (props) => {
       ref={handleSetContent}
     >
       <ButtonBase onClick={onClose} className={styles.closeButton}>
-        <Icon icon="close" width="34" height="34" />
+        <Icon icon="close" width="44" height="44" />
       </ButtonBase>
       {props.children}
     </AnimatedPaper>
