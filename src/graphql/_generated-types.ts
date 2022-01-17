@@ -1217,6 +1217,10 @@ export type OnTransferUpdatedFilterInputType = {
   user?: Maybe<Array<Scalars['UuidType']>>
 }
 
+export type OnWalletCreatedFilterInputType = {
+  user?: Maybe<Array<Scalars['UuidType']>>
+}
+
 export type OnWalletMetricUpdatedFilterInputType = {
   contract?: Maybe<Array<Scalars['UuidType']>>
   wallet?: Maybe<Array<Scalars['UuidType']>>
@@ -1962,6 +1966,10 @@ export type Subscription = {
   onTokenMetricUpdated: TokenMetricUpdatedEvent
   onBillingTransferCreated: BillingTransferType
   onBillingTransferUpdated: BillingTransferType
+}
+
+export type SubscriptionOnWalletCreatedArgs = {
+  filter?: Maybe<OnWalletCreatedFilterInputType>
 }
 
 export type SubscriptionOnWalletMetricUpdatedArgs = {
@@ -4439,6 +4447,14 @@ export type OnBillingTransferUpdatedSubscription = {
   >
 }
 
+export type OnWalletCreatedSubscriptionVariables = Exact<{
+  user?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
+}>
+
+export type OnWalletCreatedSubscription = { __typename?: 'Subscription' } & {
+  onWalletCreated: { __typename?: 'WalletType' } & WalletFragmentFragment
+}
+
 export type UserContactEmailConfirmMutationVariables = Exact<{
   input: UserContactConfirmEmailInputType
 }>
@@ -6857,6 +6873,30 @@ export function useOnBillingTransferUpdatedSubscription<
     TData,
     OnBillingTransferUpdatedSubscriptionVariables
   >({ query: OnBillingTransferUpdatedDocument, ...options }, handler)
+}
+export const OnWalletCreatedDocument = gql`
+  subscription OnWalletCreated($user: [UuidType!]) {
+    onWalletCreated(filter: { user: $user }) {
+      ...walletFragment
+    }
+  }
+  ${WalletFragmentFragmentDoc}
+`
+
+export function useOnWalletCreatedSubscription<
+  TData = OnWalletCreatedSubscription
+>(
+  options: Omit<
+    Urql.UseSubscriptionArgs<OnWalletCreatedSubscriptionVariables>,
+    'query'
+  > = {},
+  handler?: Urql.SubscriptionHandler<OnWalletCreatedSubscription, TData>
+) {
+  return Urql.useSubscription<
+    OnWalletCreatedSubscription,
+    TData,
+    OnWalletCreatedSubscriptionVariables
+  >({ query: OnWalletCreatedDocument, ...options }, handler)
 }
 export const UserContactEmailConfirmDocument = gql`
   mutation UserContactEmailConfirm($input: UserContactConfirmEmailInputType!) {

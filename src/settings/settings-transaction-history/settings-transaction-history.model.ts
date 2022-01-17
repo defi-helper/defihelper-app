@@ -68,7 +68,7 @@ export const $wallets = $history.map((history) => {
 
 guard({
   source: $params,
-  clock: [settingsWalletsModel.updated, settingsWalletsModel.created],
+  clock: settingsWalletsModel.updated,
   filter: (params): params is BillingHistoryQueryVariables => Boolean(params),
   target: fetchBillingHistoryFx,
 })

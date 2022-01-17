@@ -145,7 +145,7 @@ export const settingsApi = {
 
   walletDelete: (variables: WalletDeleteMutationVariables) =>
     getAPIClient()
-      .query<WalletDeleteMutation, WalletDeleteMutationVariables>(
+      .mutation<WalletDeleteMutation, WalletDeleteMutationVariables>(
         WALLET_DELETE,
         variables
       )

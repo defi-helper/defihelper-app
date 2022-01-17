@@ -1,5 +1,6 @@
 import { createDomain, sample, split, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
+import { shallowEqual } from 'fast-equals'
 
 import { MeQuery, AuthEthMutation } from '~/graphql/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -27,8 +28,12 @@ export const saveUserFx = authDomain.createEffect(async (data: AuthData) => {
 
 export const $user = authDomain
   .createStore<Exclude<MeQuery['me'], undefined>>(null)
-  .on(fetchUserFx.doneData, (_, payload) => payload)
-  .on(saveUserFx.doneData, (_, payload) => payload)
+  .on(fetchUserFx.doneData, (state, payload) =>
+    shallowEqual(state, payload) ? undefined : payload
+  )
+  .on(saveUserFx.doneData, (state, payload) =>
+    shallowEqual(state, payload) ? undefined : payload
+  )
   .reset(logoutFx.done)
 
 export const $userWallets = settingsWalletModel.$wallets.reset(
