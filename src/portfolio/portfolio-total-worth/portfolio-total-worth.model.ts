@@ -14,7 +14,12 @@ import { portfolioApi } from '../common'
 
 const portfolioTotalWorth = createDomain()
 
-const DAYS_LIMIT = 180
+const DAYS_LIMITS = {
+  [MetricGroupEnum.Hour]: 7,
+  [MetricGroupEnum.Day]: 30,
+  [MetricGroupEnum.Week]: 90,
+  [MetricGroupEnum.Month]: 180,
+} as const
 
 type State = Record<
   Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
@@ -26,12 +31,6 @@ type State = Record<
 >
 
 const defaultVariables: TokenMetricQueryVariables = {
-  balancePagination: {
-    limit: DAYS_LIMIT,
-  },
-  pagination: {
-    limit: DAYS_LIMIT,
-  },
   balanceSort: [
     {
       column: UserTokenMetricChartSortInputTypeColumnEnum.Date,
@@ -54,6 +53,14 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
   async (params: Gate) => {
     const data = await portfolioApi.getTokenMetric({
       ...defaultVariables,
+      metricDateBefore: dateUtils.now(),
+      metricDateAfter: dateUtils.fromNowTo(DAYS_LIMITS[params.group]),
+      balancePagination: {
+        limit: DAYS_LIMITS[params.group],
+      },
+      pagination: {
+        limit: DAYS_LIMITS[params.group],
+      },
       group: params.group,
     })
 

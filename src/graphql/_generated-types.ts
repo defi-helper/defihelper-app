@@ -3904,7 +3904,8 @@ export type TokenMetricChartQuery = { __typename?: 'Query' } & {
 
 export type TokenMetricQueryVariables = Exact<{
   group?: MetricGroupEnum
-  filter?: Maybe<UserMetricChartFilterInputType>
+  metricDateBefore?: Maybe<Scalars['DateTimeType']>
+  metricDateAfter?: Maybe<Scalars['DateTimeType']>
   sort?: Maybe<
     Array<UserMetricChartSortInputType> | UserMetricChartSortInputType
   >
@@ -4422,7 +4423,7 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
 }
 
 export type OnBillingTransferCreatedSubscriptionVariables = Exact<{
-  wallet?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
+  user?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
 }>
 
 export type OnBillingTransferCreatedSubscription = {
@@ -4435,7 +4436,7 @@ export type OnBillingTransferCreatedSubscription = {
 }
 
 export type OnBillingTransferUpdatedSubscriptionVariables = Exact<{
-  wallet?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
+  user?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
 }>
 
 export type OnBillingTransferUpdatedSubscription = {
@@ -4452,7 +4453,7 @@ export type OnWalletCreatedSubscriptionVariables = Exact<{
 }>
 
 export type OnWalletCreatedSubscription = { __typename?: 'Subscription' } & {
-  onWalletCreated: { __typename?: 'WalletType' } & WalletFragmentFragment
+  onWalletCreated: { __typename?: 'WalletType' } & Pick<WalletType, 'id'>
 }
 
 export type UserContactEmailConfirmMutationVariables = Exact<{
@@ -6181,7 +6182,8 @@ export function useTokenMetricChartQuery(
 export const TokenMetricDocument = gql`
   query TokenMetric(
     $group: MetricGroupEnum! = day
-    $filter: UserMetricChartFilterInputType = {}
+    $metricDateBefore: DateTimeType
+    $metricDateAfter: DateTimeType
     $sort: [UserMetricChartSortInputType!] = [{ column: date, order: asc }]
     $pagination: UserMetricChartPaginationInputType = { limit: 1 }
     $balanceSort: [UserTokenMetricChartSortInputType!] = [
@@ -6193,7 +6195,7 @@ export const TokenMetricDocument = gql`
       stakingUSD: metricChart(
         metric: stakingUSD
         group: $group
-        filter: $filter
+        filter: { dateAfter: $metricDateAfter, dateBefore: $metricDateBefore }
         pagination: $pagination
         sort: $sort
       ) {
@@ -6203,7 +6205,7 @@ export const TokenMetricDocument = gql`
       earnedUSD: metricChart(
         metric: earnedUSD
         group: $group
-        filter: $filter
+        filter: { dateAfter: $metricDateAfter, dateBefore: $metricDateBefore }
         pagination: $pagination
         sort: $sort
       ) {
@@ -6213,7 +6215,12 @@ export const TokenMetricDocument = gql`
       balanceUSD: tokenMetricChart(
         metric: "usd"
         group: $group
-        filter: { tokenAlias: { liquidity: [stable, unstable] }, contract: [] }
+        filter: {
+          tokenAlias: { liquidity: [stable, unstable] }
+          contract: []
+          dateAfter: $metricDateAfter
+          dateBefore: $metricDateBefore
+        }
         pagination: $balancePagination
         sort: $balanceSort
       ) {
@@ -6223,7 +6230,7 @@ export const TokenMetricDocument = gql`
       onWallets: metricChart(
         metric: earnedUSD
         group: $group
-        filter: $filter
+        filter: { dateAfter: $metricDateAfter, dateBefore: $metricDateBefore }
         pagination: $pagination
         sort: $sort
       ) {
@@ -6823,8 +6830,8 @@ export function useBillingHistoryQuery(
   })
 }
 export const OnBillingTransferCreatedDocument = gql`
-  subscription OnBillingTransferCreated($wallet: [UuidType!]) {
-    onBillingTransferCreated(filter: { wallet: $wallet }) {
+  subscription OnBillingTransferCreated($user: [UuidType!]) {
+    onBillingTransferCreated(filter: { user: $user }) {
       id
     }
   }
@@ -6849,8 +6856,8 @@ export function useOnBillingTransferCreatedSubscription<
   >({ query: OnBillingTransferCreatedDocument, ...options }, handler)
 }
 export const OnBillingTransferUpdatedDocument = gql`
-  subscription OnBillingTransferUpdated($wallet: [UuidType!]) {
-    onBillingTransferUpdated(filter: { wallet: $wallet }) {
+  subscription OnBillingTransferUpdated($user: [UuidType!]) {
+    onBillingTransferUpdated(filter: { user: $user }) {
       id
     }
   }
@@ -6877,10 +6884,9 @@ export function useOnBillingTransferUpdatedSubscription<
 export const OnWalletCreatedDocument = gql`
   subscription OnWalletCreated($user: [UuidType!]) {
     onWalletCreated(filter: { user: $user }) {
-      ...walletFragment
+      id
     }
   }
-  ${WalletFragmentFragmentDoc}
 `
 
 export function useOnWalletCreatedSubscription<

@@ -57,10 +57,10 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   }, [user])
 
   useEffect(() => {
-    if (!walletCreated.data) return
+    if (!walletCreated.data?.onWalletCreated.id) return
 
-    settingsWalletModel.addWallet(walletCreated.data.onWalletCreated)
-  }, [walletCreated.data])
+    settingsWalletModel.updated()
+  }, [walletCreated.data?.onWalletCreated.id])
 
   const handleOpenAddWalletDialog = async () => {
     try {

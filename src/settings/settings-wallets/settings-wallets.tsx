@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import { useThrottle } from 'react-use'
@@ -51,12 +51,22 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   const handleConnect = useWalletConnect()
   const currentWallet = walletNetworkModel.useWalletNetwork()
 
-  const [transferCreated, onTransferCreated] =
-    useOnBillingTransferCreatedSubscription()
-  const [transferUpdated, onTransferUpdated] =
-    useOnBillingTransferUpdatedSubscription()
+  const subscriptionOptions = useMemo(() => {
+    if (!user) return undefined
 
-  const [walletCreated, onWalletCreated] = useOnWalletCreatedSubscription()
+    return {
+      variables: {
+        user: [user.id],
+      },
+    }
+  }, [user])
+
+  const [transferCreated] =
+    useOnBillingTransferCreatedSubscription(subscriptionOptions)
+  const [transferUpdated] =
+    useOnBillingTransferUpdatedSubscription(subscriptionOptions)
+
+  const [walletCreated] = useOnWalletCreatedSubscription(subscriptionOptions)
 
   const transferCreatedOrUpdated = useThrottle(
     transferCreated.data?.onBillingTransferCreated.id ??
@@ -66,31 +76,16 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   )
 
   useEffect(() => {
-    if (!user) return
-
-    const opts = {
-      variables: {
-        user: [user.id],
-      },
-    }
-
-    onWalletCreated(opts)
-    onTransferCreated(opts)
-    onTransferUpdated(opts)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user])
-
-  useEffect(() => {
     if (transferCreatedOrUpdated) {
       model.updated()
     }
   }, [transferCreatedOrUpdated])
 
   useEffect(() => {
-    if (walletCreated.data) {
-      model.addWallet(walletCreated.data.onWalletCreated)
+    if (walletCreated.data?.onWalletCreated.id) {
+      model.updated()
     }
-  }, [walletCreated.data])
+  }, [walletCreated.data?.onWalletCreated.id])
 
   const handleDeposit = (wallet: typeof wallets[number]) => async () => {
     try {

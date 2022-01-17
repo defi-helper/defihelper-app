@@ -10,7 +10,12 @@ import {
 } from '~/protocols/common'
 import { bignumberUtils } from '~/common/bignumber-utils'
 
-const DAYS_LIMIT = 180
+const DAYS_LIMITS = {
+  [MetricGroupEnum.Hour]: 7,
+  [MetricGroupEnum.Day]: 30,
+  [MetricGroupEnum.Week]: 90,
+  [MetricGroupEnum.Month]: 180,
+} as const
 
 const protocolMetricEarningsDomain = createDomain()
 
@@ -96,9 +101,9 @@ export const fetchStakedMetricFx = protocolMetricEarningsDomain.createEffect(
       contract: params.contracts,
       group: params.group,
       dateBefore: dateUtils.now(),
-      dateAfter: dateUtils.after180Days(),
+      dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[params.group]),
       pagination: {
-        limit: DAYS_LIMIT,
+        limit: DAYS_LIMITS[params.group],
       },
     })
 

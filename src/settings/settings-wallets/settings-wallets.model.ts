@@ -215,7 +215,7 @@ export const $wallets = walletListDomain
 export const updated = walletListDomain.createEvent()
 
 sample({
-  clock: [updated],
+  clock: updated,
   target: fetchWalletListFx,
 })
 

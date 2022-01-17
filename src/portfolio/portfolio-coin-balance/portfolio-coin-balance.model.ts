@@ -12,7 +12,12 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 
 const portfolioCoinBalance = createDomain()
 
-const DAYS_LIMIT = 180
+const DAYS_LIMITS = {
+  [MetricGroupEnum.Hour]: 7,
+  [MetricGroupEnum.Day]: 30,
+  [MetricGroupEnum.Week]: 90,
+  [MetricGroupEnum.Month]: 180,
+} as const
 
 type State = Record<
   Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
@@ -25,9 +30,6 @@ type State = Record<
 
 const defaultVariables = {
   metric: 'usd',
-  pagination: {
-    limit: DAYS_LIMIT,
-  },
   sort: [
     {
       column: UserTokenMetricChartSortInputTypeColumnEnum.Date,
@@ -44,7 +46,10 @@ export const fetchChartDataFx = portfolioCoinBalance.createEffect(
       group: params,
       ...defaultVariables,
       dateBefore: dateUtils.now(),
-      dateAfter: dateUtils.after180Days(),
+      dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[params]),
+      pagination: {
+        limit: DAYS_LIMITS[params],
+      },
     })
 
     const stableCoins = result?.stableCoins ?? []

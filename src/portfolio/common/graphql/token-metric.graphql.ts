@@ -3,7 +3,8 @@ import { gql } from 'urql'
 export const TOKEN_METRIC = gql`
   query TokenMetric(
     $group: MetricGroupEnum! = day
-    $filter: UserMetricChartFilterInputType = {}
+    $metricDateBefore: DateTimeType
+    $metricDateAfter: DateTimeType
     $sort: [UserMetricChartSortInputType!] = [{ column: date, order: asc }]
     $pagination: UserMetricChartPaginationInputType = { limit: 1 }
     $balanceSort: [UserTokenMetricChartSortInputType!] = [
@@ -15,7 +16,7 @@ export const TOKEN_METRIC = gql`
       stakingUSD: metricChart(
         metric: stakingUSD
         group: $group
-        filter: $filter
+        filter: { dateAfter: $metricDateAfter, dateBefore: $metricDateBefore }
         pagination: $pagination
         sort: $sort
       ) {
@@ -25,7 +26,7 @@ export const TOKEN_METRIC = gql`
       earnedUSD: metricChart(
         metric: earnedUSD
         group: $group
-        filter: $filter
+        filter: { dateAfter: $metricDateAfter, dateBefore: $metricDateBefore }
         pagination: $pagination
         sort: $sort
       ) {
@@ -35,7 +36,12 @@ export const TOKEN_METRIC = gql`
       balanceUSD: tokenMetricChart(
         metric: "usd"
         group: $group
-        filter: { tokenAlias: { liquidity: [stable, unstable] }, contract: [] }
+        filter: {
+          tokenAlias: { liquidity: [stable, unstable] }
+          contract: []
+          dateAfter: $metricDateAfter
+          dateBefore: $metricDateBefore
+        }
         pagination: $balancePagination
         sort: $balanceSort
       ) {
@@ -45,7 +51,7 @@ export const TOKEN_METRIC = gql`
       onWallets: metricChart(
         metric: earnedUSD
         group: $group
-        filter: $filter
+        filter: { dateAfter: $metricDateAfter, dateBefore: $metricDateBefore }
         pagination: $pagination
         sort: $sort
       ) {
