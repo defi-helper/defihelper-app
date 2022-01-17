@@ -1217,6 +1217,10 @@ export type OnTransferUpdatedFilterInputType = {
   user?: Maybe<Array<Scalars['UuidType']>>
 }
 
+export type OnWalletCreatedFilterInputType = {
+  user?: Maybe<Array<Scalars['UuidType']>>
+}
+
 export type OnWalletMetricUpdatedFilterInputType = {
   contract?: Maybe<Array<Scalars['UuidType']>>
   wallet?: Maybe<Array<Scalars['UuidType']>>
@@ -1962,6 +1966,10 @@ export type Subscription = {
   onTokenMetricUpdated: TokenMetricUpdatedEvent
   onBillingTransferCreated: BillingTransferType
   onBillingTransferUpdated: BillingTransferType
+}
+
+export type SubscriptionOnWalletCreatedArgs = {
+  filter?: Maybe<OnWalletCreatedFilterInputType>
 }
 
 export type SubscriptionOnWalletMetricUpdatedArgs = {
@@ -4835,6 +4843,7 @@ export type StakingContractFragmentFragment = {
   | 'adapter'
   | 'protocolId'
   | 'layout'
+  | 'deployBlockNumber'
 > & {
     automate: { __typename?: 'ContractAutomatesType' } & Pick<
       ContractAutomatesType,
@@ -5262,6 +5271,7 @@ export const StakingContractFragmentFragmentDoc = gql`
     adapter
     protocolId
     layout
+    deployBlockNumber
     automate {
       adapters
       autorestake
