@@ -42,6 +42,7 @@ import * as walletsModel from '~/settings/settings-wallets/settings-wallets.mode
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
+import { StakingListRowSyncIndicator } from '~/staking/common/staking-list-row-sync-indicator'
 
 export type StakingListProps = {
   protocolId: string
@@ -264,7 +265,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
   useInterval(async () => {
     if (!networkProvider) return
-    setCurrentBlock(await networkProvider.getBlockNumber())
+
+    try {
+      setCurrentBlock(await networkProvider.getBlockNumber())
+    } catch {
+      setCurrentBlock(-1)
+    }
   }, 3000)
 
   return (
@@ -435,17 +441,11 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           {stakingListItem.name}
 
                           <Can I="update" a="Protocol">
-                            {stakingListItem.deployBlockNumber ? (
-                              <>
-                                <br />
-                                {stakingListItem.deployBlockNumber}/
-                                {currentBlock}
-                              </>
-                            ) : (
-                              <>
-                                <br /> not deployed
-                              </>
-                            )}
+                            <StakingListRowSyncIndicator
+                              row={stakingListItem}
+                              currentBlock={currentBlock}
+                              activeChain={walletNetwork?.chainId}
+                            />
                           </Can>
                         </Typography>
                       </div>
