@@ -1,4 +1,5 @@
 import { createDomain } from 'effector-logger/macro'
+import omit from 'lodash.omit'
 
 import { dateUtils } from '~/common/date-utils'
 import { portfolioApi } from '~/portfolio/common'
@@ -9,6 +10,7 @@ import {
 } from '~/graphql/_generated-types'
 import { authModel } from '~/auth'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { mergeChartData } from '~/common/merge-chart-data'
 
 const portfolioCoinBalance = createDomain()
 
@@ -52,15 +54,12 @@ export const fetchChartDataFx = portfolioCoinBalance.createEffect(
       },
     })
 
-    const stableCoins = result?.stableCoins ?? []
-    const altCoins = result?.altCoins ?? []
-
-    return stableCoins.map((stableCoin, index) => ({
-      stableCoin: bignumberUtils.floor(stableCoin.sum),
-      date: dateUtils.toDate(stableCoin.date),
-      altCoin: bignumberUtils.floor(altCoins?.[index]?.sum),
-      altCoinFormat: bignumberUtils.format(altCoins?.[index]?.sum),
-      stableCoinFormat: bignumberUtils.format(stableCoin.sum),
+    return mergeChartData(omit(result ?? {}, '__typename')).map((item) => ({
+      stableCoin: bignumberUtils.floor(item.stableCoin),
+      date: dateUtils.toDate(item.date),
+      altCoin: bignumberUtils.floor(item.altCoin),
+      altCoinFormat: bignumberUtils.format(item.altCoin),
+      stableCoinFormat: bignumberUtils.format(item.stableCoin),
     }))
   }
 )

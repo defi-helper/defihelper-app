@@ -10,7 +10,7 @@ export const PROTOCOL_STAKED_BALANCE = gql`
     $sort: [UserTokenMetricChartSortInputType!]
   ) {
     me {
-      altCoins: tokenMetricChart(
+      altCoin: tokenMetricChart(
         metric: usd
         group: $group
         filter: {
@@ -25,7 +25,7 @@ export const PROTOCOL_STAKED_BALANCE = gql`
         sum
         date
       }
-      stableCoins: tokenMetricChart(
+      stableCoin: tokenMetricChart(
         metric: usd
         group: $group
         filter: {

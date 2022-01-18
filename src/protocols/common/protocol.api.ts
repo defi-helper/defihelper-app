@@ -142,7 +142,7 @@ export const protocolsApi = {
       )
       .toPromise()
       .then(({ data }) => ({
-        altCoins: data?.me?.altCoins ?? [],
-        stableCoins: data?.me?.stableCoins ?? [],
+        altCoin: data?.me?.altCoin ?? [],
+        stableCoin: data?.me?.stableCoin ?? [],
       })),
 }

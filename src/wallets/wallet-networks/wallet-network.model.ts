@@ -7,7 +7,6 @@ import { shallowEqual } from 'fast-equals'
 
 import {
   augmentConnectorUpdate,
-  walletApi,
   createEthereumProvider,
   signMessageWaves,
   signMessageEthereum,
@@ -20,6 +19,17 @@ import { toastsService } from '~/toasts'
 import { sidUtils } from '~/auth/common'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 import { networksConfig } from '~/networks-config'
+
+export type SignMessageEthereum = {
+  chainId: string
+  account: string
+  provider: unknown
+}
+
+export type SignMessageWaves = {
+  provider: unknown
+  account: string
+}
 
 const networks = new Map<string, typeof createEthereumProvider>(
   Object.values(networksConfig)
@@ -101,39 +111,26 @@ export const useWalletNetwork = () => {
 }
 
 export const signMessageWavesFx = networkDomain.createEffect(
-  async (params: { provider: unknown; account: string }) => {
+  async (params: SignMessageWaves) => {
     const signedMessageData = await signMessageWaves(
       params.provider,
       params.account,
       SIGN_MESSAGE
     )
 
-    const data = await walletApi.authWaves(signedMessageData)
-
-    if (!data) {
-      throw new Error('Unable to authenticate')
-    }
-
-    return data
+    return { ...params, ...signedMessageData }
   }
 )
 
 export const signMessageEthereumFx = networkDomain.createEffect(
-  async (params: { chainId: string; account: string; provider: unknown }) => {
+  async (params: SignMessageEthereum) => {
     const signedMessageData = await signMessageEthereum(
       createEthereumProvider(params.provider),
       params.account,
       SIGN_MESSAGE
     )
 
-    const data = await walletApi.authEth({
-      network: params.chainId,
-      ...signedMessageData,
-    })
-
-    if (!data) throw new Error('Unable to authenticate')
-
-    return data
+    return { ...params, ...signedMessageData }
   }
 )
 

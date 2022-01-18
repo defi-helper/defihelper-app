@@ -1,6 +1,13 @@
 import { getAPIClient } from '~/api'
-import { MeQuery, MeQueryVariables } from '~/graphql/_generated-types'
-import { ME } from './graphql'
+import {
+  MeQuery,
+  MeQueryVariables,
+  AuthEthMutationVariables,
+  AuthEthMutation,
+  AuthWavesMutationVariables,
+  AuthWavesMutation,
+} from '~/graphql/_generated-types'
+import { ME, AUTH_ETH, AUTH_WAVES } from './graphql'
 
 export const authApi = {
   me: () =>
@@ -8,4 +15,19 @@ export const authApi = {
       .query<MeQuery, MeQueryVariables>(ME)
       .toPromise()
       .then(({ data }) => data?.me),
+  authEth: (input: AuthEthMutationVariables['input']) =>
+    getAPIClient()
+      .mutation<AuthEthMutation, AuthEthMutationVariables>(AUTH_ETH, {
+        input,
+      })
+      .toPromise()
+      .then(({ data }) => data?.authEth),
+
+  authWaves: (input: AuthWavesMutationVariables['input']) =>
+    getAPIClient()
+      .mutation<AuthWavesMutation, AuthWavesMutationVariables>(AUTH_WAVES, {
+        input,
+      })
+      .toPromise()
+      .then(({ data }) => data?.authWaves),
 }

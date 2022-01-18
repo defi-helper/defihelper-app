@@ -9,6 +9,7 @@ import {
   State,
 } from '~/protocols/common'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { mergeChartData } from '~/common/merge-chart-data'
 
 const DAYS_LIMITS = {
   [MetricGroupEnum.Hour]: 7,
@@ -107,16 +108,14 @@ export const fetchStakedMetricFx = protocolMetricEarningsDomain.createEffect(
       },
     })
 
-    if (!data) throw new Error('something went wrong')
-
     return {
       group: params.group,
-      data: data.altCoins?.map((altCoin, index) => ({
-        altCoin: bignumberUtils.floor(altCoin.sum),
-        date: altCoin.date,
-        stableCoin: bignumberUtils.floor(data.stableCoins?.[index]?.sum),
-        altCoinFormat: bignumberUtils.format(altCoin.sum),
-        stableCoinFormat: bignumberUtils.format(data.stableCoins?.[index]?.sum),
+      data: mergeChartData(data).map((item) => ({
+        altCoin: bignumberUtils.floor(item.altCoin),
+        date: dateUtils.toDate(item.date),
+        stableCoin: bignumberUtils.floor(item.stableCoin),
+        altCoinFormat: bignumberUtils.format(item.altCoin),
+        stableCoinFormat: bignumberUtils.format(item.stableCoin),
       })),
     }
   }

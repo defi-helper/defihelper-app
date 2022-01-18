@@ -1,8 +1,10 @@
 import { createDomain } from 'effector-logger/macro'
+import omit from 'lodash.omit'
 
 import { authModel } from '~/auth'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
+import { mergeChartData } from '~/common/merge-chart-data'
 import {
   MetricGroupEnum,
   SortOrderEnum,
@@ -66,14 +68,14 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
 
     if (!data) throw new Error('something went wrong')
 
-    return data.stakingUSD.map((stakingUSD, index) => ({
-      stakingUSD: stakingUSD.sum,
-      balance: data.balanceUSD[index]?.sum ?? '0',
-      earned: data.earnedUSD[index]?.sum ?? '0',
-      date: dateUtils.toDate(stakingUSD.date),
-      stakingUSDFormat: bignumberUtils.format(stakingUSD.sum),
-      balanceFormat: bignumberUtils.format(data.balanceUSD[index]?.sum ?? '0'),
-      earnedFormat: bignumberUtils.format(data.earnedUSD[index]?.sum ?? '0'),
+    return mergeChartData(omit(data, '__typename')).map((item) => ({
+      stakingUSD: item.stakingUSD,
+      balance: item.balanceUSD,
+      earned: item.earnedUSD,
+      date: dateUtils.toDate(item.date),
+      stakingUSDFormat: bignumberUtils.format(item.stakingUSD),
+      balanceFormat: bignumberUtils.format(item.balanceUSD),
+      earnedFormat: bignumberUtils.format(item.earnedUSD),
     }))
   }
 )

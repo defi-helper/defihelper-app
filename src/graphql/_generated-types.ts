@@ -43,6 +43,8 @@ export type AuthEthereumInputType = {
   message: Scalars['String']
   /** Signed message */
   signature: Scalars['String']
+  /** Merged target account to current account */
+  merge?: Maybe<Scalars['Boolean']>
 }
 
 export type AuthType = {
@@ -3145,13 +3147,40 @@ export type WalletUpdateInputType = {
   name?: Maybe<Scalars['String']>
 }
 
+export type AuthEthMutationVariables = Exact<{
+  input: AuthEthereumInputType
+}>
+
+export type AuthEthMutation = { __typename?: 'Mutation' } & {
+  authEth?: Maybe<
+    { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
+        user: { __typename?: 'UserType' } & UserFragmentFragment
+      }
+  >
+}
+
+export type AuthWavesMutationVariables = Exact<{
+  input: AuthWavesInputType
+}>
+
+export type AuthWavesMutation = { __typename?: 'Mutation' } & {
+  authWaves?: Maybe<
+    { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
+        user: { __typename?: 'UserType' } & UserFragmentFragment
+      }
+  >
+}
+
 export type MeQueryVariables = Exact<{ [key: string]: never }>
 
 export type MeQuery = { __typename?: 'Query' } & {
-  me?: Maybe<
-    { __typename?: 'UserType' } & Pick<UserType, 'id' | 'role' | 'createdAt'>
-  >
+  me?: Maybe<{ __typename?: 'UserType' } & UserFragmentFragment>
 }
+
+export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
+  UserType,
+  'id' | 'role' | 'createdAt'
+>
 
 export type AutomationActionCreateMutationVariables = Exact<{
   input: AutomateActionCreateInputType
@@ -3886,13 +3915,13 @@ export type TokenMetricChartQueryVariables = Exact<{
 export type TokenMetricChartQuery = { __typename?: 'Query' } & {
   me?: Maybe<
     { __typename?: 'UserType' } & {
-      altCoins: Array<
+      altCoin: Array<
         { __typename?: 'MetricChartType' } & Pick<
           MetricChartType,
           'sum' | 'date'
         >
       >
-      stableCoins: Array<
+      stableCoin: Array<
         { __typename?: 'MetricChartType' } & Pick<
           MetricChartType,
           'sum' | 'date'
@@ -4139,13 +4168,13 @@ export type ProtocolStakedBalanceQueryVariables = Exact<{
 export type ProtocolStakedBalanceQuery = { __typename?: 'Query' } & {
   me?: Maybe<
     { __typename?: 'UserType' } & {
-      altCoins: Array<
+      altCoin: Array<
         { __typename?: 'MetricChartType' } & Pick<
           MetricChartType,
           'sum' | 'date'
         >
       >
-      stableCoins: Array<
+      stableCoin: Array<
         { __typename?: 'MetricChartType' } & Pick<
           MetricChartType,
           'sum' | 'date'
@@ -4938,35 +4967,6 @@ export type UserFragment = { __typename?: 'UserType' } & Pick<
     }
   }
 
-export type AuthEthMutationVariables = Exact<{
-  input: AuthEthereumInputType
-}>
-
-export type AuthEthMutation = { __typename?: 'Mutation' } & {
-  authEth?: Maybe<
-    { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
-        user: { __typename?: 'UserType' } & UserFragmentFragment
-      }
-  >
-}
-
-export type AuthWavesMutationVariables = Exact<{
-  input: AuthWavesInputType
-}>
-
-export type AuthWavesMutation = { __typename?: 'Mutation' } & {
-  authWaves?: Maybe<
-    { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
-        user: { __typename?: 'UserType' } & UserFragmentFragment
-      }
-  >
-}
-
-export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
-  UserType,
-  'id' | 'role' | 'createdAt'
->
-
 export type WalletMetricScanMutationVariables = Exact<{
   wallet: Scalars['UuidType']
   contract: Scalars['UuidType']
@@ -4977,6 +4977,13 @@ export type WalletMetricScanMutation = { __typename?: 'Mutation' } & Pick<
   'walletMetricScan'
 >
 
+export const UserFragmentFragmentDoc = gql`
+  fragment userFragment on UserType {
+    id
+    role
+    createdAt
+  }
+`
 export const AutomationContractFragmentFragmentDoc = gql`
   fragment automationContractFragment on AutomateContractType {
     id
@@ -5311,21 +5318,47 @@ export const UserFragmentDoc = gql`
     }
   }
 `
-export const UserFragmentFragmentDoc = gql`
-  fragment userFragment on UserType {
-    id
-    role
-    createdAt
+export const AuthEthDocument = gql`
+  mutation AuthEth($input: AuthEthereumInputType!) {
+    authEth(input: $input) {
+      user {
+        ...userFragment
+      }
+      sid
+    }
   }
+  ${UserFragmentFragmentDoc}
 `
+
+export function useAuthEthMutation() {
+  return Urql.useMutation<AuthEthMutation, AuthEthMutationVariables>(
+    AuthEthDocument
+  )
+}
+export const AuthWavesDocument = gql`
+  mutation AuthWaves($input: AuthWavesInputType!) {
+    authWaves(input: $input) {
+      user {
+        ...userFragment
+      }
+      sid
+    }
+  }
+  ${UserFragmentFragmentDoc}
+`
+
+export function useAuthWavesMutation() {
+  return Urql.useMutation<AuthWavesMutation, AuthWavesMutationVariables>(
+    AuthWavesDocument
+  )
+}
 export const MeDocument = gql`
   query Me {
     me {
-      id
-      role
-      createdAt
+      ...userFragment
     }
   }
+  ${UserFragmentFragmentDoc}
 `
 
 export function useMeQuery(
@@ -6141,7 +6174,7 @@ export const TokenMetricChartDocument = gql`
     $sort: [UserTokenMetricChartSortInputType!]
   ) {
     me {
-      altCoins: tokenMetricChart(
+      altCoin: tokenMetricChart(
         metric: usd
         group: $group
         filter: {
@@ -6155,7 +6188,7 @@ export const TokenMetricChartDocument = gql`
         sum
         date
       }
-      stableCoins: tokenMetricChart(
+      stableCoin: tokenMetricChart(
         metric: usd
         group: $group
         filter: {
@@ -6530,7 +6563,7 @@ export const ProtocolStakedBalanceDocument = gql`
     $sort: [UserTokenMetricChartSortInputType!]
   ) {
     me {
-      altCoins: tokenMetricChart(
+      altCoin: tokenMetricChart(
         metric: usd
         group: $group
         filter: {
@@ -6545,7 +6578,7 @@ export const ProtocolStakedBalanceDocument = gql`
         sum
         date
       }
-      stableCoins: tokenMetricChart(
+      stableCoin: tokenMetricChart(
         metric: usd
         group: $group
         filter: {
@@ -7463,40 +7496,6 @@ export const UserUpdateDocument = gql`
 export function useUserUpdateMutation() {
   return Urql.useMutation<UserUpdateMutation, UserUpdateMutationVariables>(
     UserUpdateDocument
-  )
-}
-export const AuthEthDocument = gql`
-  mutation AuthEth($input: AuthEthereumInputType!) {
-    authEth(input: $input) {
-      user {
-        ...userFragment
-      }
-      sid
-    }
-  }
-  ${UserFragmentFragmentDoc}
-`
-
-export function useAuthEthMutation() {
-  return Urql.useMutation<AuthEthMutation, AuthEthMutationVariables>(
-    AuthEthDocument
-  )
-}
-export const AuthWavesDocument = gql`
-  mutation AuthWaves($input: AuthWavesInputType!) {
-    authWaves(input: $input) {
-      user {
-        ...userFragment
-      }
-      sid
-    }
-  }
-  ${UserFragmentFragmentDoc}
-`
-
-export function useAuthWavesMutation() {
-  return Urql.useMutation<AuthWavesMutation, AuthWavesMutationVariables>(
-    AuthWavesDocument
   )
 }
 export const WalletMetricScanDocument = gql`
