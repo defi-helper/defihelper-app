@@ -441,6 +441,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           {stakingListItem.name}
 
                           <Can I="update" a="Protocol">
+                            <br />
                             <StakingListRowSyncIndicator
                               row={stakingListItem}
                               currentBlock={currentBlock}

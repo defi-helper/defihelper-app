@@ -13,7 +13,12 @@ export const StakingListRowSyncIndicator: React.VFC<StakingContractCardProps> =
       bignumberUtils.minus(props.currentBlock, props.row.deployBlockNumber),
       100
     )
-    return props.row.deployBlockNumber ? (
+
+    if (!props.row.deployBlockNumber) {
+      return <>not deployed</>
+    }
+
+    return (
       <span
         style={{
           color:
@@ -22,12 +27,7 @@ export const StakingListRowSyncIndicator: React.VFC<StakingContractCardProps> =
               : 'white',
         }}
       >
-        <br />
         {props.row.deployBlockNumber}/{props.currentBlock}
       </span>
-    ) : (
-      <>
-        <br /> not deployed
-      </>
     )
   }
