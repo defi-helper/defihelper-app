@@ -150,6 +150,8 @@ export const refundFx = walletListDomain.createEffect(
   }
 )
 
+export const addWallet = walletListDomain.createEvent<WalletFragmentFragment>()
+
 export const $wallets = walletListDomain
   .createStore<
     (WalletFragmentFragment & {
@@ -165,6 +167,7 @@ export const $wallets = walletListDomain
       wallet.id === payload.walletId ? { ...wallet, editing: true } : wallet
     )
   )
+  .on(addWallet, (state, payload) => [...state, payload])
   .on(updateWalletFx.doneData, (state, payload) =>
     state.map((wallet) => (wallet.id === payload.id ? payload : wallet))
   )
@@ -210,10 +213,9 @@ export const $wallets = walletListDomain
   )
 
 export const updated = walletListDomain.createEvent()
-export const created = walletListDomain.createEvent()
 
 sample({
-  clock: [updated, created],
+  clock: updated,
   target: fetchWalletListFx,
 })
 

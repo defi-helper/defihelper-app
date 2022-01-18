@@ -1,6 +1,6 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import isEmpty from 'lodash.isempty'
 
@@ -11,7 +11,7 @@ import {
   PortfolioAssetsHeader,
 } from '~/portfolio/common'
 import { useDialog } from '~/common/dialog'
-import { Can } from '~/auth'
+import { Can, authModel } from '~/auth'
 import { useWalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Paper } from '~/common/paper'
@@ -28,6 +28,7 @@ import { Loader } from '~/common/loader'
 import { Dropdown } from '~/common/dropdown'
 import * as model from './portfolio-wallets.model'
 import * as styles from './portfolio-wallets.css'
+import { useOnWalletCreatedSubscription } from '~/graphql/_generated-types'
 
 export type PortfolioWalletsProps = {
   className?: string
@@ -40,6 +41,26 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   const wallets = useStore(settingsWalletModel.$wallets)
   const assetsByWallet = useStore(model.$assetsByWallet)
   const assetsLoading = useStore(model.fetchAssetsByWalletFx.pending)
+
+  const user = useStore(authModel.$user)
+  const [walletCreated, onWalletCreated] = useOnWalletCreatedSubscription()
+
+  useEffect(() => {
+    if (!user) return
+
+    onWalletCreated({
+      variables: {
+        user: [user.id],
+      },
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
+  useEffect(() => {
+    if (!walletCreated.data?.onWalletCreated.id) return
+
+    settingsWalletModel.updated()
+  }, [walletCreated.data?.onWalletCreated.id])
 
   const handleOpenAddWalletDialog = async () => {
     try {

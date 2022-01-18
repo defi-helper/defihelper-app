@@ -22,7 +22,8 @@ export const dateUtils = {
   fromNow: (date?: string | number | Date | dayjs.Dayjs) =>
     dayjs(date).fromNow(),
 
-  after180Days: () => dayjs().subtract(180, 'days').toISOString(),
+  fromNowTo: (count: number, unit: dayjs.OpUnitType = 'days') =>
+    dayjs().subtract(count, unit).toISOString(),
 
   now: () => dayjs().toISOString(),
 

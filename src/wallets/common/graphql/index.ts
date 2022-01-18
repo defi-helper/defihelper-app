@@ -1,2 +1,1 @@
-export * from './auth-eth.graphql'
-export * from './auth-waves.graphql'
+export * from './wallet-metric-scan.graphql'

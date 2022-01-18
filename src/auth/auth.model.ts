@@ -1,19 +1,32 @@
-import { createDomain, sample, split, guard } from 'effector-logger/macro'
+import {
+  createDomain,
+  sample,
+  split,
+  guard,
+  restore,
+} from 'effector-logger/macro'
 import { createGate } from 'effector-react'
+import { shallowEqual } from 'fast-equals'
 
-import { MeQuery, AuthEthMutation } from '~/graphql/_generated-types'
+import {
+  MeQuery,
+  AuthEthMutation,
+  AuthWavesInputType,
+  AuthEthereumInputType,
+} from '~/graphql/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { sidUtils, authApi } from './common'
 import { history } from '~/common/history'
 import { paths } from '~/paths'
-import { toastsService } from '~/toasts'
 
 type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
 
+const ERROR_MESSAGE = 'Unable to authenticate'
+
 export const authDomain = createDomain()
 
-export const fetchUserFx = authDomain.createEffect(authApi.me)
+export const fetchUserFx = authDomain.createEffect(() => authApi.me())
 
 export const logoutFx = authDomain.createEffect(sidUtils.remove)
 
@@ -27,32 +40,79 @@ export const saveUserFx = authDomain.createEffect(async (data: AuthData) => {
 
 export const $user = authDomain
   .createStore<Exclude<MeQuery['me'], undefined>>(null)
-  .on(fetchUserFx.doneData, (_, payload) => payload)
-  .on(saveUserFx.doneData, (_, payload) => payload)
+  .on(fetchUserFx.doneData, (state, payload) =>
+    shallowEqual(state, payload) ? undefined : payload
+  )
+  .on(saveUserFx.doneData, (state, payload) =>
+    shallowEqual(state, payload) ? undefined : payload
+  )
   .reset(logoutFx.done)
 
 export const $userWallets = settingsWalletModel.$wallets.reset(
   logoutFx.doneData
 )
 
-const signedUserEthereum = guard({
+export const authWavesFx = authDomain.createEffect(
+  async (params: AuthWavesInputType) => {
+    const data = await authApi.authWaves(params)
+
+    if (!data) {
+      throw new Error(ERROR_MESSAGE)
+    }
+
+    return data
+  }
+)
+
+export const authEthereumFx = authDomain.createEffect(
+  async (input: AuthEthereumInputType) => {
+    const data = await authApi.authEth({
+      ...input,
+      merge: input.merge ?? false,
+    })
+
+    if (!data) throw new Error(ERROR_MESSAGE)
+
+    return data
+  }
+)
+
+sample({
   clock: walletNetworkModel.signMessageEthereumFx.doneData,
+  fn: (clock) => ({
+    network: clock.chainId,
+    address: clock.address,
+    message: clock.message,
+    signature: clock.signature,
+  }),
+  target: authEthereumFx,
+})
+
+sample({
+  clock: walletNetworkModel.signMessageWavesFx.doneData,
+  target: authWavesFx,
+})
+
+const $signedMessageEthereum = restore(
+  authEthereumFx.map((payload) => payload),
+  null
+)
+
+const $signedMessageWaves = restore(
+  authWavesFx.map((payload) => payload),
+  null
+)
+
+const signedUserEthereum = guard({
+  clock: authEthereumFx.doneData,
   filter: (clock): clock is AuthData =>
     Boolean(clock) && sidUtils.get() !== clock.sid,
 })
 
 const signedUserWaves = guard({
-  clock: walletNetworkModel.signMessageWavesFx.doneData,
+  clock: authWavesFx.doneData,
   filter: (clock): clock is AuthData =>
     Boolean(clock) && sidUtils.get() !== clock.sid,
-})
-
-guard({
-  source: $user,
-  clock: [signedUserWaves, signedUserEthereum],
-  filter: (prevUser, { user: nextUser }) =>
-    prevUser !== null && prevUser.id !== nextUser.id,
-  target: toastsService.error.prepend(() => 'Log out first'),
 })
 
 const saveUser = sample({
@@ -112,11 +172,14 @@ split({
   },
 })
 
-const openBetaDialogFx = authDomain.createEffect((fn: () => Promise<unknown>) =>
-  fn()
+export const openBetaDialogFx = authDomain.createEffect(
+  (fn: () => Promise<unknown>) => fn()
 )
 
-export const UserGate = createGate<() => Promise<unknown>>({
+export const UserGate = createGate<{
+  openBetaDialog: () => Promise<unknown>
+  openMergeWalletsDialog: () => Promise<unknown>
+}>({
   name: 'UserGate',
   domain: authDomain,
 })
@@ -126,6 +189,41 @@ sample({
   target: fetchUserFx,
 })
 
+export const mergeWalletsDialogFx = authDomain.createEffect(
+  (fn: () => Promise<unknown>) => fn()
+)
+
+sample({
+  source: UserGate.state,
+  clock: guard({
+    source: [$user],
+    clock: [signedUserWaves, signedUserEthereum],
+    filter: ([prevUser], { user: nextUser }) =>
+      prevUser !== null && prevUser.id !== nextUser.id,
+  }),
+  fn: ({ openMergeWalletsDialog }) => openMergeWalletsDialog,
+  target: mergeWalletsDialogFx,
+})
+
+guard({
+  source: $signedMessageEthereum.map((store) =>
+    store ? { ...store, merge: true } : null
+  ),
+  clock: mergeWalletsDialogFx.done,
+  filter: (
+    source
+  ): source is Omit<AuthEthereumInputType, 'merge'> & { merge: boolean } =>
+    Boolean(source),
+  target: authEthereumFx,
+})
+
+guard({
+  source: $signedMessageWaves,
+  clock: mergeWalletsDialogFx.done,
+  filter: (source): source is AuthWavesInputType => Boolean(source),
+  target: authWavesFx,
+})
+
 sample({
   clock: guard({
     source: [UserGate.state, $user],
@@ -133,7 +231,7 @@ sample({
     filter: ([source, prevUser]) =>
       typeof source === 'function' && prevUser === null,
   }),
-  fn: ([cb]) => cb,
+  fn: ([{ openBetaDialog }]) => openBetaDialog,
   target: openBetaDialogFx,
 })
 

@@ -9,8 +9,14 @@ import {
   State,
 } from '~/protocols/common'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { mergeChartData } from '~/common/merge-chart-data'
 
-const DAYS_LIMIT = 180
+const DAYS_LIMITS = {
+  [MetricGroupEnum.Hour]: 7,
+  [MetricGroupEnum.Day]: 30,
+  [MetricGroupEnum.Week]: 90,
+  [MetricGroupEnum.Month]: 180,
+} as const
 
 const protocolMetricEarningsDomain = createDomain()
 
@@ -96,22 +102,20 @@ export const fetchStakedMetricFx = protocolMetricEarningsDomain.createEffect(
       contract: params.contracts,
       group: params.group,
       dateBefore: dateUtils.now(),
-      dateAfter: dateUtils.after180Days(),
+      dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[params.group]),
       pagination: {
-        limit: DAYS_LIMIT,
+        limit: DAYS_LIMITS[params.group],
       },
     })
 
-    if (!data) throw new Error('something went wrong')
-
     return {
       group: params.group,
-      data: data.altCoins?.map((altCoin, index) => ({
-        altCoin: bignumberUtils.floor(altCoin.sum),
-        date: altCoin.date,
-        stableCoin: bignumberUtils.floor(data.stableCoins?.[index]?.sum),
-        altCoinFormat: bignumberUtils.format(altCoin.sum),
-        stableCoinFormat: bignumberUtils.format(data.stableCoins?.[index]?.sum),
+      data: mergeChartData(data).map((item) => ({
+        altCoin: bignumberUtils.floor(item.altCoin),
+        date: dateUtils.toDate(item.date),
+        stableCoin: bignumberUtils.floor(item.stableCoin),
+        altCoinFormat: bignumberUtils.format(item.altCoin),
+        stableCoinFormat: bignumberUtils.format(item.stableCoin),
       })),
     }
   }

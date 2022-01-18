@@ -1,4 +1,5 @@
 import { createDomain } from 'effector-logger/macro'
+import omit from 'lodash.omit'
 
 import { dateUtils } from '~/common/date-utils'
 import { portfolioApi } from '~/portfolio/common'
@@ -9,10 +10,16 @@ import {
 } from '~/graphql/_generated-types'
 import { authModel } from '~/auth'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { mergeChartData } from '~/common/merge-chart-data'
 
 const portfolioCoinBalance = createDomain()
 
-const DAYS_LIMIT = 180
+const DAYS_LIMITS = {
+  [MetricGroupEnum.Hour]: 7,
+  [MetricGroupEnum.Day]: 30,
+  [MetricGroupEnum.Week]: 90,
+  [MetricGroupEnum.Month]: 180,
+} as const
 
 type State = Record<
   Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
@@ -25,9 +32,6 @@ type State = Record<
 
 const defaultVariables = {
   metric: 'usd',
-  pagination: {
-    limit: DAYS_LIMIT,
-  },
   sort: [
     {
       column: UserTokenMetricChartSortInputTypeColumnEnum.Date,
@@ -44,18 +48,18 @@ export const fetchChartDataFx = portfolioCoinBalance.createEffect(
       group: params,
       ...defaultVariables,
       dateBefore: dateUtils.now(),
-      dateAfter: dateUtils.after180Days(),
+      dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[params]),
+      pagination: {
+        limit: DAYS_LIMITS[params],
+      },
     })
 
-    const stableCoins = result?.stableCoins ?? []
-    const altCoins = result?.altCoins ?? []
-
-    return stableCoins.map((stableCoin, index) => ({
-      stableCoin: bignumberUtils.floor(stableCoin.sum),
-      date: dateUtils.toDate(stableCoin.date),
-      altCoin: bignumberUtils.floor(altCoins?.[index]?.sum),
-      altCoinFormat: bignumberUtils.format(altCoins?.[index]?.sum),
-      stableCoinFormat: bignumberUtils.format(stableCoin.sum),
+    return mergeChartData(omit(result ?? {}, '__typename')).map((item) => ({
+      stableCoin: bignumberUtils.floor(item.stableCoin),
+      date: dateUtils.toDate(item.date),
+      altCoin: bignumberUtils.floor(item.altCoin),
+      altCoinFormat: bignumberUtils.format(item.altCoin),
+      stableCoinFormat: bignumberUtils.format(item.stableCoin),
     }))
   }
 )

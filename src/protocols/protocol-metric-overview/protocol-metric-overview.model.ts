@@ -21,7 +21,12 @@ type State = Record<
 
 const protocolMetricOverviewDomain = createDomain()
 
-const DAYS_LIMIT = 180
+const DAYS_LIMITS = {
+  [MetricGroupEnum.Hour]: 7,
+  [MetricGroupEnum.Day]: 30,
+  [MetricGroupEnum.Week]: 90,
+  [MetricGroupEnum.Month]: 180,
+} as const
 
 export const fetchMetricFx = protocolMetricOverviewDomain.createEffect(
   async (params: {
@@ -35,10 +40,10 @@ export const fetchMetricFx = protocolMetricOverviewDomain.createEffect(
       metricGroup: params.group,
       metricFilter: {
         dateBefore: dateUtils.now(),
-        dateAfter: dateUtils.after180Days(),
+        dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[params.group]),
       },
       metricPagination: {
-        limit: DAYS_LIMIT,
+        limit: DAYS_LIMITS[params.group],
       },
     })
 

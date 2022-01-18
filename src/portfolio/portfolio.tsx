@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useThrottle } from 'react-use'
@@ -35,24 +35,20 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
 
   useGate(model.PortfolioGate)
 
-  const [walletUpdated, onWalletMetricUpdated] =
-    useOnWalletMetricUpdatedSubscription()
-  const [tokenMetricUpdated, onTokenMetricUpdated] =
-    useOnTokenMetricUpdatedSubscription()
+  const subscriptionOptions = useMemo(() => {
+    if (!user) return undefined
 
-  useEffect(() => {
-    if (!user) return
-
-    const opts = {
+    return {
       variables: {
         user: [user.id],
       },
     }
-
-    onTokenMetricUpdated(opts)
-    onWalletMetricUpdated(opts)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
+
+  const [walletUpdated] =
+    useOnWalletMetricUpdatedSubscription(subscriptionOptions)
+  const [tokenMetricUpdated] =
+    useOnTokenMetricUpdatedSubscription(subscriptionOptions)
 
   const metricUpdated = useThrottle(
     walletUpdated.data?.onWalletMetricUpdated.id ||
