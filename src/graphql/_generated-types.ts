@@ -4852,6 +4852,7 @@ export type StakingContractFragmentFragment = {
   | 'adapter'
   | 'protocolId'
   | 'layout'
+  | 'deployBlockNumber'
 > & {
     automate: { __typename?: 'ContractAutomatesType' } & Pick<
       ContractAutomatesType,
@@ -5279,6 +5280,7 @@ export const StakingContractFragmentFragmentDoc = gql`
     adapter
     protocolId
     layout
+    deployBlockNumber
     automate {
       adapters
       autorestake
