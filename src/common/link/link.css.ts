@@ -1,4 +1,4 @@
-import { style, styleVariants } from '@vanilla-extract/css'
+import { style, styleVariants, globalStyle } from '@vanilla-extract/css'
 import { transitions } from 'polished'
 
 import { theme } from '~/common/theme'
@@ -25,6 +25,14 @@ export const underlines = styleVariants({
 
   hover: {
     textDecorationLine: 'none',
+  },
+})
+
+globalStyle(`${underlines.hover}:hover`, {
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      textDecorationLine: 'underline',
+    },
   },
 })
 

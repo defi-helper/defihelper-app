@@ -1,5 +1,4 @@
 import {
-  forwardRef,
   Children,
   isValidElement,
   cloneElement,
@@ -10,6 +9,7 @@ import clsx from 'clsx'
 
 import { Input, InputProps } from '~/common/input'
 import { Dropdown } from '~/common/dropdown'
+import { createComponent } from '~/common/create-component'
 import * as styles from './select.css'
 
 export type SelectProps = Omit<InputProps, 'value' | 'defaultValue'> & {
@@ -18,8 +18,8 @@ export type SelectProps = Omit<InputProps, 'value' | 'defaultValue'> & {
   defaultValue?: string | number
 }
 
-export const Select = forwardRef<HTMLInputElement, SelectProps>(
-  (props, ref) => {
+export const Select = createComponent<HTMLInputElement, SelectProps>(
+  function Select(props, ref) {
     const { sameWidth = true, value, defaultValue, className } = props
 
     const [localValue, setLocalValue] = useState(defaultValue ?? value ?? '')

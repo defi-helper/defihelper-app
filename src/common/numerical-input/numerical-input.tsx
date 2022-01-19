@@ -1,11 +1,12 @@
-import { forwardRef, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { escapeRegex } from '~/common/escape-regex'
+import { createComponent } from '~/common/create-component'
 import { Input } from '../input'
 
 const INPUT_REGEX = RegExp(`^\\d*(?:\\\\[.])?\\d*$`) // match escaped "." characters via in a non-capturing group
 
-export const NumericalInput = forwardRef<
+export const NumericalInput = createComponent<
   HTMLInputElement,
   React.ComponentProps<typeof Input>
 >(function NumericalInput(props, ref) {

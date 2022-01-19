@@ -1,8 +1,8 @@
 import { Remarkable } from 'remarkable'
 import RemarkableReactRenderer from 'remarkable-react'
 
-import { Link } from '../link'
-import { Typography } from '../typography'
+import { Link } from '~/common/link'
+import { Typography } from '~/common/typography'
 
 const md = new Remarkable()
 md.renderer = new RemarkableReactRenderer({
