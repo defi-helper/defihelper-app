@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import clsx from 'clsx'
 import { useState } from 'react'
-import { animated } from '@react-spring/web'
+import { animated, AnimatedProps } from '@react-spring/web'
 
 import { useBodyScrollLock } from '~/common/hooks'
 import { Paper } from '~/common/paper'
@@ -33,7 +34,7 @@ export const Dialog: React.FC<DialogProps> = (props) => {
 
   return (
     <AnimatedPaper
-      {...animatedValue}
+      {...(animatedValue as AnimatedProps<object>)}
       onMouseDown={handleOnClickContent}
       className={clsx(styles.content, props.className)}
       radius={8}
