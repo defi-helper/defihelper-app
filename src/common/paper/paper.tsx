@@ -11,13 +11,10 @@ type Props<C extends React.ElementType = 'div'> = {
 export type PaperProps<C extends React.ElementType = 'div'> = Props<C> &
   Omit<React.ComponentProps<C>, keyof Props<C> | 'radioGroup'>
 
-const Paper = <
+export const Paper = createComponent(function Paper<
   C extends React.ElementType = 'div',
   R extends HTMLElement = HTMLDivElement
->(
-  props: PaperProps<C>,
-  ref: React.ForwardedRef<R>
-) => {
+>(props: PaperProps<C>, ref: React.ForwardedRef<R>) {
   const { as = 'div', className, radius = 24, ...restOfProps } = props
 
   const Component = as
@@ -29,8 +26,4 @@ const Paper = <
       className={clsx(styles.root, styles.radius[radius], className)}
     />
   )
-}
-
-const Component = createComponent(Paper)
-
-export { Component as Paper }
+})

@@ -13,13 +13,10 @@ type Props<C extends React.ElementType = 'a'> = {
 export type LinkProps<C extends React.ElementType = 'a'> = Props<C> &
   Omit<React.ComponentProps<C>, keyof Props<C>>
 
-const Link = <
+export const Link = createComponent(function Link<
   C extends React.ElementType = 'a',
   R extends HTMLElement = HTMLAnchorElement
->(
-  props: LinkProps<C>,
-  ref: React.ForwardedRef<R>
-) => {
+>(props: LinkProps<C>, ref: React.ForwardedRef<R>) {
   const {
     as = 'a',
     underline = 'none',
@@ -44,8 +41,4 @@ const Link = <
       {...restOfProps}
     />
   )
-}
-
-const Component = createComponent(Link)
-
-export { Component as Link }
+})

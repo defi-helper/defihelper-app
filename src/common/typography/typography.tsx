@@ -40,13 +40,10 @@ type Props<C extends React.ElementType = 'p'> = {
 export type TypographyProps<C extends React.ElementType = 'p'> = Props<C> &
   Omit<React.ComponentProps<C>, keyof Props<C>>
 
-const Typography = <
+export const Typography = createComponent(function Typography<
   C extends React.ElementType = 'p',
   R extends HTMLElement = HTMLParagraphElement
->(
-  props: TypographyProps<C>,
-  ref: React.ForwardedRef<R>
-) => {
+>(props: TypographyProps<C>, ref: React.ForwardedRef<R>) {
   const {
     variant = 'body1',
     align = 'left',
@@ -77,8 +74,4 @@ const Typography = <
       ref={ref as React.ForwardedRef<HTMLParagraphElement>}
     />
   )
-}
-
-const Component = createComponent(Typography)
-
-export { Component as Typography }
+})

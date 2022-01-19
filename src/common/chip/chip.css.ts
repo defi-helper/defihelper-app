@@ -114,9 +114,9 @@ export const containedColors = styleVariants({
   },
 
   black: {
-    backgroundcolor: 'inherit',
-    color: theme.colors.secondary,
-    bordercolor: 'inherit',
+    backgroundColor: theme.colors.common.black1,
+    color: theme.colors.common.white1,
+    borderColor: theme.colors.common.black1,
   },
 })
 

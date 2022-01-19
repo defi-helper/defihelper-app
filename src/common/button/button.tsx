@@ -17,13 +17,10 @@ type Props<C extends React.ElementType = 'button'> = {
 export type ButtonProps<C extends React.ElementType = 'button'> = Props<C> &
   Omit<React.ComponentProps<C>, keyof Props<C>>
 
-const Button = <
+export const Button = createComponent(function Button<
   C extends React.ElementType = 'button',
   R extends HTMLElement = HTMLButtonElement
->(
-  props: ButtonProps<C>,
-  ref: React.ForwardedRef<R>
-) => {
+>(props: ButtonProps<C>, ref: React.ForwardedRef<R>) {
   const {
     className,
     children,
@@ -61,8 +58,4 @@ const Button = <
       </span>
     </ButtonBase>
   )
-}
-
-const Component = createComponent(Button)
-
-export { Component as Button }
+})
