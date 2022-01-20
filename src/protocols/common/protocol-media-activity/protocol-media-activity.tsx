@@ -5,7 +5,10 @@ import { Icon } from '~/common/icon'
 import { dateUtils } from '~/common/date-utils'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { ProtocolQuery } from '~/graphql/_generated-types'
+import {
+  ProtocolQuery,
+  ProtocolSocialPostProviderEnum,
+} from '~/graphql/_generated-types'
 import { Button } from '~/common/button'
 import * as styles from './protocol-media-activity.css'
 
@@ -48,7 +51,9 @@ export const ProtocolMediaActivity: React.VFC<ProtocolMediaActivityProps> = (
                       [styles.twitterIcon]: activity.provider === 'twitter',
                     })}
                   />{' '}
-                  {activity.title}
+                  {activity.provider !== ProtocolSocialPostProviderEnum.Twitter
+                    ? activity.title
+                    : ''}
                 </Typography>
                 <Typography className={styles.cardText} as="div">
                   {activity.content}
