@@ -73,7 +73,7 @@ export const stakingApi = {
         StakingContractUpdateMutationVariables
       >(STAKING_CONTRACT_UPDATE, variables)
       .toPromise()
-      .then(({ data }) => data?.contractUpdate.protocolId),
+      .then(({ data }) => data?.contractUpdate),
 
   connectWallet: (variables: StakingConnectWalletMutationVariables) =>
     getAPIClient()

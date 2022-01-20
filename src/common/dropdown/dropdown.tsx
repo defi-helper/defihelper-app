@@ -47,8 +47,6 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
     const target = (event?.currentTarget as HTMLElement) ?? null
 
     if (target && referenceElement) {
-      event?.stopPropagation()
-
       setReferenceElement(null)
     } else {
       setReferenceElement(target)
