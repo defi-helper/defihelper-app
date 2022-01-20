@@ -1,4 +1,4 @@
-import { createDomain, sample, restore, guard } from 'effector-logger/macro'
+import { createDomain, sample, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import omit from 'lodash.omit'
 
@@ -15,7 +15,7 @@ import {
 } from '../common'
 import { walletApi } from '~/wallets/common'
 
-export type ActionType = 'deposit' | 'migrate' | 'refund'
+export type ActionType = 'deposit' | 'migrate' | 'refund' | 'run'
 
 type FetchAdapterParams = {
   protocolAdapter: string
@@ -37,12 +37,15 @@ type ScanWalletMetricParams = {
   contractId: string
 }
 
-const LOAD_TYPES: Record<ActionType, 'migrating' | 'depositing' | 'refunding'> =
-  {
-    migrate: 'migrating',
-    deposit: 'depositing',
-    refund: 'refunding',
-  }
+const LOAD_TYPES: Record<
+  ActionType,
+  'migrating' | 'depositing' | 'refunding' | 'running'
+> = {
+  migrate: 'migrating',
+  deposit: 'depositing',
+  refund: 'refunding',
+  run: 'running',
+}
 
 export const stakingAutomatesDomain = createDomain()
 
@@ -86,12 +89,6 @@ export const fetchAdapterFx = stakingAutomatesDomain.createEffect(
 
 export const reset = stakingAutomatesDomain.createEvent()
 
-export const $adapter = restore(fetchAdapterFx.doneData, null)
-export const $action = restore(
-  fetchAdapterFx.done.map(({ params }) => params.action),
-  null
-)
-
 export const $automatesContracts = stakingAutomatesDomain
   .createStore<StakingAutomatesContract[]>([])
   .on(fetchAutomatesContractsFx.doneData, (_, { list }) => list)
@@ -104,7 +101,7 @@ export const $automatesContracts = stakingAutomatesDomain
   )
   .on(reset, (state) =>
     state.map((contract) =>
-      omit(contract, ['migrating', 'depositing', 'refunding'])
+      omit(contract, ['migrating', 'depositing', 'refunding', 'running'])
     )
   )
   .on(automationsListModel.deleteContractFx, (state, payload) =>
@@ -146,6 +143,3 @@ sample({
   fn: ([user, , protocolId]) => ({ userId: user.id, protocolId }),
   target: fetchAutomatesContractsFx,
 })
-
-$adapter.reset(StakingAutomatesGate.close, reset)
-$action.reset(StakingAutomatesGate.close, reset)

@@ -25,6 +25,7 @@ export type StakingContractCardProps = {
   onRefund: () => void
   onMigrate: () => void
   onDelete: () => void
+  onRun: () => void
   error?: boolean
   apy?: string
   apyBoost?: string
@@ -32,6 +33,7 @@ export type StakingContractCardProps = {
   depositing?: boolean
   refunding?: boolean
   migrating?: boolean
+  running?: boolean
 }
 
 export const StakingContractCard: React.VFC<StakingContractCardProps> = (
@@ -62,14 +64,15 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
                   pending && styles.manageLoading
                 )}
               >
-                {props.deleting && (
+                {(props.deleting || props.running) && (
                   <CircularProgress className={styles.circularProgress} />
                 )}
                 <Icon
                   icon="dots"
                   className={clsx(
                     styles.manageIcon,
-                    props.deleting && styles.manageIconloading
+                    (props.deleting || props.running) &&
+                      styles.manageIconloading
                   )}
                 />
               </ButtonBase>
@@ -78,16 +81,8 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             placement="left-start"
             offset={[0, 4]}
           >
-            <ButtonBase
-              className={styles.dropdownItem}
-              as="a"
-              href={buildExplorerUrl({
-                network: props.network,
-                address: props.address,
-              })}
-              target="_blank"
-            >
-              Explorer
+            <ButtonBase className={styles.dropdownItem} onClick={props.onRun}>
+              Run manually
             </ButtonBase>
             <ButtonBase
               className={clsx(styles.deleteButton, styles.dropdownItem)}

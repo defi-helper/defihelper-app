@@ -77,6 +77,7 @@ export type AutomatesType = {
   deposit: AdapterStep[]
   refund: AdapterStep[]
   migrate: AdapterStep[]
+  run: () => Promise<{ wait: () => Promise<unknown> }>
 }
 
 export type DeployStep = {

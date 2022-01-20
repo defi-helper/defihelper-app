@@ -56,10 +56,10 @@ const sortIcon = (
   },
   column: ContractListSortInputTypeColumnEnum
 ) => {
-  let icon: 'arrowDown' | 'arrowTop' = 'arrowDown'
+  let icon: 'arrowDown' | 'arrowTop' = 'arrowTop'
 
   if (sort.column === column && column && sort.order === SortOrderEnum.Desc) {
-    icon = 'arrowTop'
+    icon = 'arrowDown'
   }
 
   return <Icon icon={icon} width="18" />
@@ -77,7 +77,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutostaking', false)
 
   const currentWallet = walletNetworkModel.useWalletNetwork()
-  const stakingList = useStore(model.$contractList)
+  const stakingList = useStore(model.$contractsListCopies)
 
   const freshMetrics = useStore(model.$freshMetrics)
   const wallets = useStore(walletsModel.$wallets)
@@ -243,6 +243,25 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     setSort(sort)
   }
 
+  const handleToggleContract = (contract: typeof stakingList[number]) => () => {
+    model.stakingUpdateFx({
+      id: contract.id,
+      input: {
+        blockchain: contract.blockchain,
+        network: contract.network,
+        address: contract.address,
+        adapter: contract.adapter,
+        name: contract.name,
+        description: contract.description,
+        link: contract.link,
+        hidden: !contract.hidden,
+        layout: contract.layout,
+        automates: contract.automate.adapters,
+        autorestakeAdapter: contract.automate.autorestake ?? undefined,
+      },
+    })
+  }
+
   useInterval(
     () => {
       if (currentWallet) {
@@ -310,9 +329,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   column: ContractListSortInputTypeColumnEnum.Tvl,
                   order:
                     sortBy.column === ContractListSortInputTypeColumnEnum.Tvl &&
-                    sortBy.order === SortOrderEnum.Asc
-                      ? SortOrderEnum.Desc
-                      : SortOrderEnum.Asc,
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
                 })}
               >
                 TVL{' '}
@@ -327,9 +346,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   order:
                     sortBy.column ===
                       ContractListSortInputTypeColumnEnum.AprYear &&
-                    sortBy.order === SortOrderEnum.Asc
-                      ? SortOrderEnum.Desc
-                      : SortOrderEnum.Asc,
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
                 })}
               >
                 APY{' '}
@@ -345,9 +364,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   order:
                     sortBy.column ===
                       ContractListSortInputTypeColumnEnum.MyStaked &&
-                    sortBy.order === SortOrderEnum.Asc
-                      ? SortOrderEnum.Desc
-                      : SortOrderEnum.Asc,
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
                 })}
               >
                 Position{' '}
@@ -581,6 +600,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                                 )}?protocol-adapter=${props.protocolAdapter}`}
                               >
                                 Edit
+                              </ButtonBase>
+                            </Can>
+                            <Can I="update" a="Contract">
+                              <ButtonBase
+                                onClick={handleToggleContract(stakingListItem)}
+                              >
+                                {stakingListItem.hidden ? 'Show' : 'Hide'}
                               </ButtonBase>
                             </Can>
                             <Can I="delete" a="Contract">

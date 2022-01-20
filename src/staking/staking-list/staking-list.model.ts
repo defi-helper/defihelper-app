@@ -1,4 +1,4 @@
-import { createDomain, guard, sample } from 'effector-logger/macro'
+import { createDomain, guard, sample, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
@@ -16,6 +16,7 @@ import { automationApi } from '~/automations/common/automation.api'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Wallet } from '~/wallets/common'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
+import * as stakingUpdateModel from '~/staking/staking-update/staking-update.model'
 
 export const stakingListDomain = createDomain()
 
@@ -59,6 +60,10 @@ const NOT_DISCONNECTED = 'Not disconnected'
 
 type Params = GateState & PaginationState
 
+export const stakingUpdateFx = stakingListDomain.createEffect(
+  stakingUpdateModel.contractUpdate
+)
+
 export const fetchStakingListFx = stakingListDomain.createEffect(
   async (params: Params) => {
     const data = await stakingApi.contractList({
@@ -77,6 +82,10 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
           column:
             params.sortColumn ?? ContractListSortInputTypeColumnEnum.MyStaked,
           order: params.sortOrder ?? SortOrderEnum.Desc,
+        },
+        {
+          column: ContractListSortInputTypeColumnEnum.AprYear,
+          order: SortOrderEnum.Desc,
         },
         {
           column: ContractListSortInputTypeColumnEnum.Name,
@@ -175,6 +184,17 @@ export const $contractList = stakingListDomain
         : contract
     )
   })
+
+export const $contractsListCopies = restore($contractList.updates, []).on(
+  stakingUpdateFx.doneData,
+  (state, payload) => {
+    return state.map((contract) =>
+      contract.id === payload?.id
+        ? { ...contract, hidden: payload.hidden }
+        : contract
+    )
+  }
+)
 
 export const openContract = stakingListDomain.createEvent<string | null>()
 
