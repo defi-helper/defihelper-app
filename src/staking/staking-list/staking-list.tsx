@@ -68,7 +68,6 @@ const sortIcon = (
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const ability = useAbility()
 
-  const [currentBlock, setCurrentBlock] = useState(-1)
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.MyStaked,
     order: SortOrderEnum.Desc,
@@ -255,24 +254,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     currentWallet ? 15000 : null
   )
 
-  const walletNetwork = walletNetworkModel.useWalletNetwork()
-  const networkProvider = walletNetwork
-    ? walletNetworkModel.getNetwork(
-        walletNetwork.provider,
-        walletNetwork.chainId
-      )
-    : null
-
-  useInterval(async () => {
-    if (!networkProvider) return
-
-    try {
-      setCurrentBlock(await networkProvider.getBlockNumber())
-    } catch {
-      setCurrentBlock(-1)
-    }
-  }, 3000)
-
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -444,8 +425,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                             <br />
                             <StakingListRowSyncIndicator
                               row={stakingListItem}
-                              currentBlock={currentBlock}
-                              activeChain={walletNetwork?.chainId}
                             />
                           </Can>
                         </Typography>
