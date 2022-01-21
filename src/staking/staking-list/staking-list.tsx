@@ -31,7 +31,7 @@ import {
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
 } from '~/graphql/_generated-types'
-import { StakingBillingFormDialog } from '~/staking/common'
+import { StakingBillingFormDialog, StakingApyDialog } from '~/staking/common'
 import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
 import { toastsService } from '~/toasts'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -90,6 +90,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openBillingForm] = useDialog(StakingBillingFormDialog)
   const [openDeployStepsDialog] = useDialog(AutomationDeployStepsDialog)
   const [openAdapter] = useDialog(StakingAdapterDialog)
+  const [openApyDialog] = useDialog(StakingApyDialog)
 
   useGate(model.StakingListGate, {
     ...props,
@@ -225,9 +226,20 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         if (!stakingAutomatesAdapter) throw new Error('something went wrong')
 
+        const cb = () => {
+          stakingAutomatesModel
+            .scanWalletMetricFx({
+              walletId: createdTrigger.wallet.id,
+              contractId: contract.id,
+            })
+            .catch(console.error)
+        }
+
         await openAdapter({
           steps: stakingAutomatesAdapter.migrate,
         })
+          .catch(cb)
+          .then(cb)
 
         toastsService.success('success!')
       } catch (error) {
@@ -261,6 +273,27 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       },
     })
   }
+
+  const handleOpenApy =
+    (metric: typeof stakingList[number]['metric']) => async () => {
+      const apr = {
+        '1d': metric.aprDay,
+        '7d': metric.aprWeek,
+        '30d': metric.aprMonth,
+        '365d(APY)': metric.aprYear,
+      }
+
+      try {
+        await openApyDialog({
+          apr,
+          staked: metric.myStaked,
+        })
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
 
   useInterval(
     () => {
@@ -488,7 +521,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           transform="uppercase"
                           align="right"
                         >
-                          {bignumberUtils.formatMax(apy, 10000)}%
+                          {bignumberUtils.formatMax(apy, 10000)}%{' '}
+                          <ButtonBase
+                            onClick={handleOpenApy(stakingListItem.metric)}
+                            className={styles.apyButton}
+                          >
+                            <Icon icon="calculator" width="24" height="24" />
+                          </ButtonBase>
                         </Typography>
                       </div>
                       <div>

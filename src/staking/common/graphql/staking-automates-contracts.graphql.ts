@@ -1,5 +1,7 @@
 import { gql } from 'urql'
 
+import { STAKING_AUTOMATES_CONTRACT_FRAGMENT } from './staking-automates-contract.fragment.graphql'
+
 export const STAKING_AUTOMATES_CONTRACTS = gql`
   query StakingAutomatesContracts(
     $filter: AutomateContractListFilterInputType
@@ -8,61 +10,12 @@ export const STAKING_AUTOMATES_CONTRACTS = gql`
   ) {
     automateContracts(filter: $filter, sort: $sort, pagination: $pagination) {
       list {
-        id
-        protocol {
-          adapter
-        }
-        archivedAt
-        contract {
-          id
-          protocolId
-          adapter
-          layout
-          blockchain
-          network
-          address
-          deployBlockNumber
-          automate {
-            adapters
-            autorestake
-          }
-          name
-          description
-          link
-          hidden
-          metric {
-            tvl
-            aprYear
-            myStaked
-            myEarned
-            myAPYBoost
-          }
-          events
-          createdAt
-        }
-        address
-        contractWallet {
-          id
-          network
-          address
-          metric {
-            stakedUSD
-          }
-        }
-        wallet {
-          id
-          network
-          address
-          blockchain
-        }
-        adapter
-        initParams
-        verification
-        rejectReason
+        ...stakingAutomatesContractFragment
       }
       pagination {
         count
       }
     }
   }
+  ${STAKING_AUTOMATES_CONTRACT_FRAGMENT}
 `

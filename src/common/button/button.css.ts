@@ -10,14 +10,6 @@ export const root = style({
   position: 'relative',
   verticalAlign: 'middle',
   overflow: 'hidden',
-
-  '@media': {
-    [theme.mediaQueries.hover()]: {
-      ':hover': {
-        opacity: 0.85,
-      },
-    },
-  },
 })
 
 export const colors = styleVariants({
