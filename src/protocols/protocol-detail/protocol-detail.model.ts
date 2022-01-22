@@ -1,10 +1,10 @@
-import { createDomain, sample } from 'effector-logger/macro'
+import { createDomain, guard, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import omit from 'lodash.omit'
 
-import { automationApi } from '~/automations/common/automation.api'
 import { ProtocolQuery } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
+import { stakingApi } from '~/staking/common'
 
 type Protocol = Exclude<ProtocolQuery['protocol'], undefined | null> & {
   hasAutostaking: boolean
@@ -28,7 +28,7 @@ export const fetchProtocolFx = protocolDetailDomain.createEffect(
 
     if (!protocol) throw new Error('something went wrong')
 
-    const automations = await automationApi.getContracts({
+    const automations = await stakingApi.automatesContractList({
       filter: {
         protocol: params.protocolId,
       },
@@ -61,8 +61,15 @@ export const ProtocolDetailGate = createGate<{ protocolId: string }>({
   domain: protocolDetailDomain,
 })
 
-sample({
-  clock: ProtocolDetailGate.open,
+export const updated = protocolDetailDomain.createEvent()
+
+guard({
+  clock: sample({
+    source: [ProtocolDetailGate.state, ProtocolDetailGate.status],
+    clock: [ProtocolDetailGate.open, updated],
+    fn: ([{ protocolId }, opened]) => ({ protocolId, opened }),
+  }),
+  filter: ({ opened }) => opened,
   target: fetchProtocolFx,
 })
 

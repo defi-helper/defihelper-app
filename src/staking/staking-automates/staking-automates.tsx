@@ -89,14 +89,19 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
         await openAdapter({
           steps: adapter[action],
+          onSubmit: () => {
+            if (!contract.contract) return
+
+            model
+              .scanWalletMetricFx({
+                walletId: contract.wallet.id,
+                contractId: contract.contract.id,
+              })
+              .catch(console.error)
+          },
         })
           .then(() => model.reset())
           .catch(() => model.reset())
-
-        await model.scanWalletMetricFx({
-          walletId: contract.wallet.id,
-          contractId: contract.id,
-        })
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
@@ -124,6 +129,15 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
         const tx = await adapter.run()
 
         await tx.wait()
+
+        if (!contract.contract) return
+
+        model
+          .scanWalletMetricFx({
+            walletId: contract.wallet.id,
+            contractId: contract.contract.id,
+          })
+          .catch(console.error)
       } catch (error) {
         const { message } = parseError(error)
 

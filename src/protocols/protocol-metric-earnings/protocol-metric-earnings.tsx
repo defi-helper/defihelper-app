@@ -1,10 +1,15 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import { useMedia } from 'react-use'
+import { useMedia, useThrottle } from 'react-use'
 
 import { Chart } from '~/common/chart'
-import { MetricGroupEnum, ProtocolQuery } from '~/graphql/_generated-types'
+import {
+  MetricGroupEnum,
+  ProtocolQuery,
+  useOnTokenMetricUpdatedSubscription,
+  useOnWalletMetricUpdatedSubscription,
+} from '~/graphql/_generated-types'
 import { Typography } from '~/common/typography'
 import { ProtocolChartWrap, ProtocolMetricGroups } from '../common'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
@@ -13,6 +18,7 @@ import { dateUtils } from '~/common/date-utils'
 import { Link } from '~/common/link'
 import { config } from '~/config'
 import { useTheme } from '~/common/theme'
+import { authModel } from '~/auth'
 import * as model from './protocol-metric-earnings.model'
 import * as styles from './protocol-metric-earnings.css'
 
@@ -64,6 +70,30 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   const contracts = useStore(stakingListModel.$contractList)
   const stakedMetric = useStore(model.$stakedMetric)
 
+  const user = useStore(authModel.$user)
+
+  const subscriptionOptions = useMemo(() => {
+    if (!user) return undefined
+
+    return {
+      variables: {
+        user: [user.id],
+      },
+    }
+  }, [user])
+
+  const [walletUpdated] =
+    useOnWalletMetricUpdatedSubscription(subscriptionOptions)
+  const [tokenMetricUpdated] =
+    useOnTokenMetricUpdatedSubscription(subscriptionOptions)
+
+  const metricUpdated = useThrottle(
+    walletUpdated.data?.onWalletMetricUpdated.id ||
+      tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
+      '',
+    15000
+  )
+
   useEffect(() => {
     model.fetchEarningMetricFx({
       group: currentEarningsGroup,
@@ -72,7 +102,12 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
       ),
       apy: Number(props.metric.myAPY ?? 0),
     })
-  }, [props.metric.myStaked, props.metric.myEarned, props.metric.myAPY])
+  }, [
+    props.metric.myStaked,
+    props.metric.myEarned,
+    props.metric.myAPY,
+    metricUpdated,
+  ])
 
   useEffect(() => {
     if (!contracts.length) return
@@ -81,7 +116,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
       group: currentStakedGroup,
       contracts: contracts.map(({ id }) => id),
     })
-  }, [currentStakedGroup, contracts])
+  }, [currentStakedGroup, contracts, metricUpdated])
 
   const handleChangeStakedMetric = (
     group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>

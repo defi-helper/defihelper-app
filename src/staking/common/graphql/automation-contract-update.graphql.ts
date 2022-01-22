@@ -1,12 +1,12 @@
 import { gql } from 'urql'
 
-import { AUTOMATION_CONTRACT_FRAGMENT } from './automation-contract.fragment.graphql'
+import { STAKING_AUTOMATES_CONTRACT_FRAGMENT } from './staking-automates-contract.fragment.graphql'
 
 export const AUTOMATION_CONTRACT_UPDATE = gql`
   mutation AutomationContractUpdate($input: AutomateContractUpdateInputType!) {
     automateContractUpdate(input: $input) {
-      ...automationContractFragment
+      ...stakingAutomatesContractFragment
     }
   }
-  ${AUTOMATION_CONTRACT_FRAGMENT}
+  ${STAKING_AUTOMATES_CONTRACT_FRAGMENT}
 `

@@ -128,12 +128,7 @@ sample({
       StakingAutomatesGate.status,
       StakingAutomatesGate.state,
     ],
-    clock: [
-      authModel.$user.updates,
-      StakingAutomatesGate.open,
-      deployModel.deployFx.doneData,
-      updated,
-    ],
+    clock: [authModel.$user.updates, StakingAutomatesGate.open, updated],
     filter: (source): source is [UserType, boolean, string] => {
       const [user, status] = source
 
@@ -143,3 +138,14 @@ sample({
   fn: ([user, , protocolId]) => ({ userId: user.id, protocolId }),
   target: fetchAutomatesContractsFx,
 })
+
+const contractCreated = guard({
+  clock: sample({
+    source: StakingAutomatesGate.status,
+    clock: deployModel.deployFx.doneData,
+    fn: (opened, contract) => ({ opened, contract }),
+  }),
+  filter: ({ opened }) => opened,
+}).map(({ contract }) => contract)
+
+$automatesContracts.on(contractCreated, (state, payload) => [...state, payload])

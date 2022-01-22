@@ -60,3 +60,14 @@ export const activeTab = style({
     background: 'currentcolor',
   },
 })
+
+export const advancedButton = style([
+  {
+    justifyContent: 'flex-start',
+  },
+  input,
+])
+
+export const advancedAttention = style({
+  color: theme.colors.common.red1,
+})

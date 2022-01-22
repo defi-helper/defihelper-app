@@ -14,10 +14,12 @@ import { PortfolioWallets } from './portfolio-wallets/portfolio-wallets'
 import { PortfolioAssets } from './portfolio-assets'
 import { PortfolioDeployedContracts } from './portfolio-deployed-contracts'
 import { SettingsContacts } from '~/settings/settings-contacts'
+import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Loader } from '~/common/loader'
 import {
   useOnWalletMetricUpdatedSubscription,
   useOnTokenMetricUpdatedSubscription,
+  useOnWalletCreatedSubscription,
 } from '~/graphql/_generated-types'
 import { authModel } from '~/auth'
 import * as styles from './portfolio.css'
@@ -49,10 +51,12 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     useOnWalletMetricUpdatedSubscription(subscriptionOptions)
   const [tokenMetricUpdated] =
     useOnTokenMetricUpdatedSubscription(subscriptionOptions)
+  const [walletCreated] = useOnWalletCreatedSubscription(subscriptionOptions)
 
   const metricUpdated = useThrottle(
     walletUpdated.data?.onWalletMetricUpdated.id ||
       tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
+      walletCreated.data?.onWalletCreated.id ||
       '',
     TIME
   )
@@ -60,6 +64,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
   useEffect(() => {
     if (metricUpdated) {
       model.portfolioUpdated()
+      settingsWalletModel.updated()
     }
   }, [metricUpdated])
 

@@ -2,7 +2,7 @@ import { createDomain, sample, guard, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
-  AutomationContractFragmentFragment,
+  StakingAutomatesContractFragmentFragment,
   UserType,
 } from '~/graphql/_generated-types'
 import { authModel } from '~/auth'
@@ -11,6 +11,7 @@ import * as automationDeployModel from '~/automations/automation-deploy-contract
 import { automationApi } from '../common/automation.api'
 import { Trigger } from '../common/automation.types'
 import { toastsService } from '~/toasts'
+import { stakingApi } from '~/staking/common'
 
 export const automationListDomain = createDomain()
 
@@ -142,7 +143,7 @@ sample({
 
 export const fetchContractsFx = automationListDomain.createEffect(
   async (userId: string) => {
-    return automationApi.getContracts({
+    return stakingApi.automatesContractList({
       filter: {
         user: userId,
       },
@@ -152,19 +153,21 @@ export const fetchContractsFx = automationListDomain.createEffect(
 
 export const deleteContractFx = automationListDomain.createEffect(
   async (contractId: string) => {
-    const isDeleted = await automationApi.deleteContract({ id: contractId })
+    const isDeleted = await stakingApi.deleteAutomatesContract({
+      id: contractId,
+    })
 
     if (!isDeleted) throw new Error('contract is not deleted')
   }
 )
 
 export const setUpdateContract =
-  automationListDomain.createEvent<AutomationContractFragmentFragment>()
+  automationListDomain.createEvent<StakingAutomatesContractFragmentFragment>()
 
 export const $contracts = automationListDomain
-  .createStore<(AutomationContractFragmentFragment & { deleting?: boolean })[]>(
-    []
-  )
+  .createStore<
+    (StakingAutomatesContractFragmentFragment & { deleting?: boolean })[]
+  >([])
   .on(fetchContractsFx.doneData, (_, { list }) => list)
   .on(automationDeployModel.deployFx.doneData, (state, payload) => [
     ...state,
