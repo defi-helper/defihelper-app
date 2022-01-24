@@ -491,11 +491,16 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           {stakingListItem.name}
 
                           <Can I="update" a="Protocol">
-                            <br />
-                            <StakingListRowSyncIndicator
-                              row={stakingListItem}
-                              currentBlock={currentBlock}
-                            />
+                            {stakingListItem.network ===
+                              currentWallet?.chainId && (
+                              <>
+                                <br />
+                                <StakingListRowSyncIndicator
+                                  row={stakingListItem}
+                                  currentBlock={currentBlock}
+                                />
+                              </>
+                            )}
                           </Can>
                         </Typography>
                       </div>

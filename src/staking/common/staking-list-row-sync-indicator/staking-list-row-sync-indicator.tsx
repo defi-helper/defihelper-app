@@ -4,7 +4,6 @@ import {
   StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type StakingContractCardProps = {
   row: StakingContractFragmentFragment & {
@@ -17,9 +16,7 @@ export type StakingContractCardProps = {
 export const StakingListRowSyncIndicator: React.VFC<StakingContractCardProps> =
   (props) => {
     const { row, currentBlock } = props
-
     const [seemsUnusual, setSeemsUnusual] = useState(false)
-    const walletNetwork = walletNetworkModel.useWalletNetwork()
 
     useMemo(
       () =>
@@ -34,10 +31,6 @@ export const StakingListRowSyncIndicator: React.VFC<StakingContractCardProps> =
 
     if (!row.deployBlockNumber || row.blockchain !== BlockchainEnum.Ethereum) {
       return <>not deployed</>
-    }
-
-    if (row.network !== walletNetwork?.chainId) {
-      return <>wrong network</>
     }
 
     return (
