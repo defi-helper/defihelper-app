@@ -1,4 +1,4 @@
-import { createDomain, guard, sample } from 'effector-logger/macro'
+import { createDomain, guard, sample, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
@@ -16,6 +16,8 @@ import { automationApi } from '~/automations/common/automation.api'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Wallet } from '~/wallets/common'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
+import { protocolsApi } from '~/protocols/common'
+import * as stakingUpdateModel from '~/staking/staking-update/staking-update.model'
 
 export const stakingListDomain = createDomain()
 
@@ -34,6 +36,8 @@ type ConnectParams = {
 
 type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
+  syncedBlock: number
+  scannerId?: string
   prototypeAddress?: string
   autostakingLoading?: boolean
 }
@@ -59,6 +63,10 @@ const NOT_DISCONNECTED = 'Not disconnected'
 
 type Params = GateState & PaginationState
 
+export const stakingUpdateFx = stakingListDomain.createEffect(
+  stakingUpdateModel.contractUpdate
+)
+
 export const fetchStakingListFx = stakingListDomain.createEffect(
   async (params: Params) => {
     const data = await stakingApi.contractList({
@@ -79,6 +87,10 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
           order: params.sortOrder ?? SortOrderEnum.Desc,
         },
         {
+          column: ContractListSortInputTypeColumnEnum.AprYear,
+          order: SortOrderEnum.Desc,
+        },
+        {
           column: ContractListSortInputTypeColumnEnum.Name,
           order: SortOrderEnum.Asc,
         },
@@ -86,10 +98,25 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
     })
 
     const stakingListWithAutostaking = data.contracts.map(async (contract) => {
+      let syncedBlock = -1
+      const scannerContract = await protocolsApi.scannerGetContract({
+        network: contract.network,
+        address: contract.address,
+      })
+      if (scannerContract) {
+        const listenedPools = await protocolsApi.scannerGetEventListener({
+          id: scannerContract.id,
+        })
+
+        syncedBlock = Math.min(...listenedPools.map((v) => v.syncHeight)) || 0
+      }
+
       if (!params.protocolAdapter || !contract.automate.autorestake) {
         return {
           ...contract,
           prototypeAddress: undefined,
+          scannerId: scannerContract?.id,
+          syncedBlock,
         }
       }
 
@@ -104,6 +131,8 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
       return {
         ...contract,
         prototypeAddress: contractAddress?.address,
+        scannerId: scannerContract?.id,
+        syncedBlock,
       }
     })
 
@@ -156,7 +185,10 @@ export const autostakingEnd = stakingListDomain.createEvent<string>()
 export const $contractList = stakingListDomain
   .createStore<Contract[]>([])
   .on(fetchStakingListFx.doneData, (_, payload) =>
-    payload.contracts.map((contract) => ({ ...contract, type: 'Contract' }))
+    payload.contracts.map((contract) => ({
+      ...contract,
+      type: 'Contract',
+    }))
   )
   .on(deleteStakingFx.doneData, (state, payload) => {
     return state.filter(({ id }) => id !== payload)
@@ -175,6 +207,17 @@ export const $contractList = stakingListDomain
         : contract
     )
   })
+
+export const $contractsListCopies = restore($contractList.updates, []).on(
+  stakingUpdateFx.doneData,
+  (state, payload) => {
+    return state.map((contract) =>
+      contract.id === payload?.id
+        ? { ...contract, hidden: payload.hidden }
+        : contract
+    )
+  }
+)
 
 export const openContract = stakingListDomain.createEvent<string | null>()
 

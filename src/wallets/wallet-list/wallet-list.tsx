@@ -50,17 +50,34 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
                 props.network &&
                 wallet.networks.includes(props.network))
           )
-          .map(([walletName, wallet]) => (
-            <li key={walletName}>
-              <ButtonBase
-                onClick={handleActivate(wallet.connector, wallet.blockchain)}
-                className={styles.wallet}
-              >
-                <wallet.logo className={styles.icon} />
-                <Typography as="span">{walletName}</Typography>
-              </ButtonBase>
-            </li>
-          ))}
+          .map(([walletName, wallet]) => {
+            const buttonProps = wallet.available
+              ? {
+                  onClick: handleActivate(wallet.connector, wallet.blockchain),
+                }
+              : {
+                  as: 'a' as const,
+                  href: wallet.extensionLink,
+                  target: '_blank' as const,
+                }
+
+            return (
+              <li key={walletName}>
+                <ButtonBase
+                  onClick={buttonProps.onClick}
+                  as={buttonProps.as}
+                  href={buttonProps.href}
+                  target={buttonProps.target}
+                  className={styles.wallet}
+                >
+                  <wallet.logo className={styles.icon} />
+                  <Typography as="span">
+                    {wallet.available ? walletName : `Install ${walletName}`}
+                  </Typography>
+                </ButtonBase>
+              </li>
+            )
+          })}
       </ul>
     </Dialog>
   )

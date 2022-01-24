@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import { useAsync, useAsyncRetry } from 'react-use'
+import { useAsyncRetry } from 'react-use'
 import { useForm, Controller } from 'react-hook-form'
 
 import { ButtonBase } from '~/common/button-base'
@@ -12,6 +12,7 @@ import { Typography } from '~/common/typography'
 import { Loader } from '~/common/loader'
 import { Input } from '~/common/input'
 import { MarkdownRender } from '~/common/markdown-render'
+import { toastsService } from '~/toasts'
 import * as styles from './automation-deploy-steps-dialog.css'
 
 export type AutomationDeployStepsDialogProps = {
@@ -21,6 +22,7 @@ export type AutomationDeployStepsDialogProps = {
 
 export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogProps> =
   (props) => {
+    const [advanced, setAdvanced] = useState(false)
     const { handleSubmit, formState, control, reset } = useForm()
     const [currentStepNumber, setCurrentStepNumber] = useState(0)
 
@@ -37,16 +39,6 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
 
     const currentStep = steps.value?.[currentStepNumber]
 
-    const errorValue = useAsync(async () => {
-      if (!currentStep || !currentStep.info.inputs) return
-
-      const can = await currentStep.can(
-        ...currentStep.info.inputs.map(({ value }) => value)
-      )
-
-      if (can instanceof Error) throw can
-    }, [currentStep])
-
     const handleSetStep = (stepIndex: number) => () => {
       setCurrentStepNumber(stepIndex)
     }
@@ -59,7 +51,7 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
       try {
         const can = await currentStep.can(...values)
 
-        if (can instanceof Error) return
+        if (can instanceof Error) throw can
 
         const { tx, getAddress } = await currentStep.send(...values)
 
@@ -71,7 +63,7 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
         })
       } catch (error) {
         if (error instanceof Error) {
-          console.error(error.message)
+          toastsService.error(error.message)
         }
       }
     })
@@ -83,6 +75,8 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
         [currentStep.name]: currentStep.info.inputs.map(({ value }) => value),
       })
     }, [reset, props.steps, currentStep])
+
+    const handleEnableAdvancedMode = () => setAdvanced(!advanced)
 
     return (
       <Dialog className={styles.root}>
@@ -119,32 +113,54 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
                 onSubmit={handleOnSubmit}
                 className={styles.form}
               >
-                {currentStep.info.inputs.map((input, index) => {
-                  const Component = !input.value ? Input : NumericalInput
+                {!advanced ? (
+                  <>
+                    <ButtonBase
+                      onClick={handleEnableAdvancedMode}
+                      className={styles.advancedButton}
+                    >
+                      Advanced settings
+                    </ButtonBase>
+                    <Typography
+                      variant="body3"
+                      className={styles.advancedAttention}
+                    >
+                      Changed it if you only know what to change. You can loose
+                      your funds.
+                    </Typography>
+                  </>
+                ) : (
+                  <ButtonBase
+                    onClick={handleEnableAdvancedMode}
+                    className={styles.advancedButton}
+                  >
+                    Advanced settings
+                  </ButtonBase>
+                )}
+                {advanced &&
+                  currentStep.info.inputs.map((input, index) => {
+                    const Component = !input.value ? Input : NumericalInput
 
-                  return (
-                    <Controller
-                      control={control}
-                      key={input.placeholder}
-                      name={`${currentStep?.name}.${index}`}
-                      render={({ field }) => (
-                        <Component
-                          label={input.placeholder}
-                          disabled={formState.isSubmitting}
-                          className={styles.input}
-                          helperText={errorValue.error?.message}
-                          error={Boolean(errorValue.error?.message)}
-                          {...field}
-                          value={field.value || input.value}
-                        />
-                      )}
-                    />
-                  )
-                })}
+                    return (
+                      <Controller
+                        control={control}
+                        key={input.placeholder}
+                        name={`${currentStep?.name}.${index}`}
+                        render={({ field }) => (
+                          <Component
+                            label={input.placeholder}
+                            disabled={formState.isSubmitting}
+                            className={styles.input}
+                            {...field}
+                            value={field.value || input.value}
+                          />
+                        )}
+                      />
+                    )
+                  })}
                 <Button
                   type="submit"
                   loading={formState.isSubmitting}
-                  disabled={Boolean(errorValue.error?.message)}
                   className={styles.button}
                 >
                   {currentStep.name}

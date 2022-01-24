@@ -31,7 +31,7 @@ import {
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
 } from '~/graphql/_generated-types'
-import { StakingBillingFormDialog } from '~/staking/common'
+import { StakingBillingFormDialog, StakingApyDialog } from '~/staking/common'
 import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
 import { toastsService } from '~/toasts'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -56,10 +56,10 @@ const sortIcon = (
   },
   column: ContractListSortInputTypeColumnEnum
 ) => {
-  let icon: 'arrowDown' | 'arrowTop' = 'arrowDown'
+  let icon: 'arrowDown' | 'arrowTop' = 'arrowTop'
 
   if (sort.column === column && column && sort.order === SortOrderEnum.Desc) {
-    icon = 'arrowTop'
+    icon = 'arrowDown'
   }
 
   return <Icon icon={icon} width="18" />
@@ -68,6 +68,7 @@ const sortIcon = (
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const ability = useAbility()
 
+  const [currentBlock, setCurrentBlock] = useState(-1)
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.MyStaked,
     order: SortOrderEnum.Desc,
@@ -76,8 +77,14 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutostaking', false)
 
   const currentWallet = walletNetworkModel.useWalletNetwork()
-  const stakingList = useStore(model.$contractList)
+  const networkProvider = currentWallet
+    ? walletNetworkModel.getNetwork(
+        currentWallet.provider,
+        currentWallet.chainId
+      )
+    : null
 
+  const stakingList = useStore(model.$contractsListCopies)
   const freshMetrics = useStore(model.$freshMetrics)
   const wallets = useStore(walletsModel.$wallets)
   const loading = useStore(model.fetchStakingListFx.pending)
@@ -89,6 +96,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openBillingForm] = useDialog(StakingBillingFormDialog)
   const [openDeployStepsDialog] = useDialog(AutomationDeployStepsDialog)
   const [openAdapter] = useDialog(StakingAdapterDialog)
+  const [openApyDialog] = useDialog(StakingApyDialog)
 
   useGate(model.StakingListGate, {
     ...props,
@@ -224,9 +232,20 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         if (!stakingAutomatesAdapter) throw new Error('something went wrong')
 
+        const cb = () => {
+          stakingAutomatesModel
+            .scanWalletMetricFx({
+              walletId: createdTrigger.wallet.id,
+              contractId: contract.id,
+            })
+            .catch(console.error)
+        }
+
         await openAdapter({
           steps: stakingAutomatesAdapter.migrate,
         })
+          .catch(cb)
+          .then(cb)
 
         toastsService.success('success!')
       } catch (error) {
@@ -242,6 +261,46 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     setSort(sort)
   }
 
+  const handleToggleContract = (contract: typeof stakingList[number]) => () => {
+    model.stakingUpdateFx({
+      id: contract.id,
+      input: {
+        blockchain: contract.blockchain,
+        network: contract.network,
+        address: contract.address,
+        adapter: contract.adapter,
+        name: contract.name,
+        description: contract.description,
+        link: contract.link,
+        hidden: !contract.hidden,
+        layout: contract.layout,
+        automates: contract.automate.adapters,
+        autorestakeAdapter: contract.automate.autorestake ?? undefined,
+      },
+    })
+  }
+
+  const handleOpenApy =
+    (metric: typeof stakingList[number]['metric']) => async () => {
+      const apr = {
+        '1d': metric.aprDay,
+        '7d': metric.aprWeek,
+        '30d': metric.aprMonth,
+        '365d(APY)': metric.aprYear,
+      }
+
+      try {
+        await openApyDialog({
+          apr,
+          staked: metric.myStaked,
+        })
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
+
   useInterval(
     () => {
       if (currentWallet) {
@@ -253,6 +312,16 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     },
     currentWallet ? 15000 : null
   )
+
+  useInterval(async () => {
+    if (!networkProvider) return
+
+    try {
+      setCurrentBlock(await networkProvider.getBlockNumber())
+    } catch (e) {
+      console.error(e)
+    }
+  }, 3000)
 
   return (
     <div className={styles.root}>
@@ -291,9 +360,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   column: ContractListSortInputTypeColumnEnum.Tvl,
                   order:
                     sortBy.column === ContractListSortInputTypeColumnEnum.Tvl &&
-                    sortBy.order === SortOrderEnum.Asc
-                      ? SortOrderEnum.Desc
-                      : SortOrderEnum.Asc,
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
                 })}
               >
                 TVL{' '}
@@ -308,9 +377,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   order:
                     sortBy.column ===
                       ContractListSortInputTypeColumnEnum.AprYear &&
-                    sortBy.order === SortOrderEnum.Asc
-                      ? SortOrderEnum.Desc
-                      : SortOrderEnum.Asc,
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
                 })}
               >
                 APY{' '}
@@ -326,9 +395,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   order:
                     sortBy.column ===
                       ContractListSortInputTypeColumnEnum.MyStaked &&
-                    sortBy.order === SortOrderEnum.Asc
-                      ? SortOrderEnum.Desc
-                      : SortOrderEnum.Asc,
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
                 })}
               >
                 Position{' '}
@@ -422,10 +491,16 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           {stakingListItem.name}
 
                           <Can I="update" a="Protocol">
-                            <br />
-                            <StakingListRowSyncIndicator
-                              row={stakingListItem}
-                            />
+                            {stakingListItem.network ===
+                              currentWallet?.chainId && (
+                              <>
+                                <br />
+                                <StakingListRowSyncIndicator
+                                  row={stakingListItem}
+                                  currentBlock={currentBlock}
+                                />
+                              </>
+                            )}
                           </Can>
                         </Typography>
                       </div>
@@ -448,7 +523,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           transform="uppercase"
                           align="right"
                         >
-                          {bignumberUtils.formatMax(apy, 10000)}%
+                          {bignumberUtils.formatMax(apy, 10000)}%{' '}
+                          <ButtonBase
+                            onClick={handleOpenApy(stakingListItem.metric)}
+                            className={styles.apyButton}
+                          >
+                            <Icon icon="calculator" width="24" height="24" />
+                          </ButtonBase>
                         </Typography>
                       </div>
                       <div>
@@ -560,6 +641,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                                 )}?protocol-adapter=${props.protocolAdapter}`}
                               >
                                 Edit
+                              </ButtonBase>
+                            </Can>
+                            <Can I="update" a="Contract">
+                              <ButtonBase
+                                onClick={handleToggleContract(stakingListItem)}
+                              >
+                                {stakingListItem.hidden ? 'Show' : 'Hide'}
                               </ButtonBase>
                             </Can>
                             <Can I="delete" a="Contract">

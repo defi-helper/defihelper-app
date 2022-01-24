@@ -35,7 +35,7 @@ export const bignumberUtils = {
 
   formatMax: (
     amount: string | number | null | undefined,
-    max: number,
+    max = 10000,
     negative = false
   ) => {
     return bignumberUtils.gt(amount, max)

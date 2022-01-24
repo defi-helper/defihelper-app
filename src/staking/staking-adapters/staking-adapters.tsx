@@ -9,6 +9,8 @@ import { WalletConnect } from '~/wallets/wallet-connect'
 import { Dropdown } from '~/common/dropdown'
 import { authModel } from '~/auth'
 import { toastsService } from '~/toasts'
+import { settingsWalletModel } from '~/settings/settings-wallets'
+import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
 
@@ -30,6 +32,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const [openAdapter] = useDialog(StakingAdapterDialog)
 
   const wallet = walletNetworkModel.useWalletNetwork()
+  const wallets = useStore(settingsWalletModel.$wallets)
 
   const actionLoading = useStore(model.$actionLoading)
 
@@ -74,6 +77,20 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       } finally {
         model.action(null)
       }
+
+      const findedWallet = wallets.find(
+        ({ address, network }) =>
+          address === wallet?.account && network === wallet.chainId
+      )
+
+      if (!findedWallet) return
+
+      stakingAutomatesModel
+        .scanWalletMetricFx({
+          walletId: findedWallet.id,
+          contractId: props.contractId,
+        })
+        .catch(console.error)
     }
 
   const user = useStore(authModel.$user)

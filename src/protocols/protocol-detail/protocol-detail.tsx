@@ -1,5 +1,6 @@
+import { useMemo, useEffect } from 'react'
 import isEmpty from 'lodash.isempty'
-import { useMedia } from 'react-use'
+import { useMedia, useThrottle } from 'react-use'
 import {
   useParams,
   Switch,
@@ -12,7 +13,7 @@ import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
 
 import { AppLayout } from '~/layouts'
-import { Can } from '~/auth'
+import { authModel, Can } from '~/auth'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
 import { Button } from '~/common/button'
@@ -33,9 +34,13 @@ import { Carousel } from '~/common/carousel'
 import { StakingAutomates } from '~/staking/staking-automates'
 import { Loader } from '~/common/loader'
 import { ButtonBase } from '~/common/button-base'
+import { paths } from '~/paths'
+import {
+  useOnTokenMetricUpdatedSubscription,
+  useOnWalletMetricUpdatedSubscription,
+} from '~/graphql/_generated-types'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
-import { paths } from '~/paths'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -87,6 +92,36 @@ export const ProtocolDetail: React.FC = () => {
       offset: socialPosts.length + 3,
     })
   }
+
+  const user = useStore(authModel.$user)
+
+  const subscriptionOptions = useMemo(() => {
+    if (!user) return undefined
+
+    return {
+      variables: {
+        user: [user.id],
+      },
+    }
+  }, [user])
+
+  const [walletUpdated] =
+    useOnWalletMetricUpdatedSubscription(subscriptionOptions)
+  const [tokenMetricUpdated] =
+    useOnTokenMetricUpdatedSubscription(subscriptionOptions)
+
+  const metricUpdated = useThrottle(
+    walletUpdated.data?.onWalletMetricUpdated.id ||
+      tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
+      '',
+    15000
+  )
+
+  useEffect(() => {
+    if (metricUpdated) {
+      model.updated()
+    }
+  }, [metricUpdated])
 
   return (
     <AppLayout

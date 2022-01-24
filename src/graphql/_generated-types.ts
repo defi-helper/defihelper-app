@@ -676,6 +676,9 @@ export type ContractMetricFilterInputType = {
 export type ContractMetricType = {
   __typename?: 'ContractMetricType'
   tvl: Scalars['String']
+  aprDay: Scalars['String']
+  aprWeek: Scalars['String']
+  aprMonth: Scalars['String']
   aprYear: Scalars['String']
   myStaked: Scalars['String']
   myEarned: Scalars['String']
@@ -3253,79 +3256,6 @@ export type AutomationConditionFragmentFragment = {
   'id' | 'type' | 'params' | 'paramsDescription' | 'priority' | 'createdAt'
 >
 
-export type AutomationContractCreateMutationVariables = Exact<{
-  input: AutomateContractCreateInputType
-}>
-
-export type AutomationContractCreateMutation = { __typename?: 'Mutation' } & {
-  automateContractCreate: {
-    __typename?: 'AutomateContractType'
-  } & AutomationContractFragmentFragment
-}
-
-export type AutomationContractDeleteMutationVariables = Exact<{
-  id: Scalars['UuidType']
-}>
-
-export type AutomationContractDeleteMutation = {
-  __typename?: 'Mutation'
-} & Pick<Mutation, 'automateContractDelete'>
-
-export type AutomationContractUpdateMutationVariables = Exact<{
-  input: AutomateContractUpdateInputType
-}>
-
-export type AutomationContractUpdateMutation = { __typename?: 'Mutation' } & {
-  automateContractUpdate: {
-    __typename?: 'AutomateContractType'
-  } & AutomationContractFragmentFragment
-}
-
-export type AutomationContractFragmentFragment = {
-  __typename?: 'AutomateContractType'
-} & Pick<
-  AutomateContractType,
-  'id' | 'address' | 'adapter' | 'initParams' | 'verification' | 'rejectReason'
-> & {
-    wallet: { __typename?: 'WalletType' } & Pick<
-      WalletType,
-      'id' | 'blockchain' | 'network' | 'address' | 'publicKey' | 'createdAt'
-    >
-    protocol: { __typename?: 'ProtocolType' } & Pick<
-      ProtocolType,
-      | 'id'
-      | 'adapter'
-      | 'name'
-      | 'description'
-      | 'icon'
-      | 'link'
-      | 'hidden'
-      | 'createdAt'
-    >
-    contract?: Maybe<{ __typename?: 'ContractType' } & Pick<ContractType, 'id'>>
-  }
-
-export type AutomationContractsQueryVariables = Exact<{
-  filter?: Maybe<AutomateContractListFilterInputType>
-  sort?: Maybe<
-    Array<AutomateContractListSortInputType> | AutomateContractListSortInputType
-  >
-  pagination?: Maybe<AutomateContractListPaginationInputType>
-}>
-
-export type AutomationContractsQuery = { __typename?: 'Query' } & {
-  automateContracts: { __typename?: 'AutomateContractListQuery' } & {
-    list?: Maybe<
-      Array<
-        {
-          __typename?: 'AutomateContractType'
-        } & AutomationContractFragmentFragment
-      >
-    >
-    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-  }
-}
-
 export type AutomationDescriptionFragmentFragment = {
   __typename?: 'AutomateDescriptionType'
 } & Pick<AutomateDescriptionType, 'name' | 'description'>
@@ -4637,6 +4567,95 @@ export type WalletFragmentFragment = { __typename?: 'WalletType' } & Pick<
     }
   }
 
+export type AutomationContractCreateMutationVariables = Exact<{
+  input: AutomateContractCreateInputType
+}>
+
+export type AutomationContractCreateMutation = { __typename?: 'Mutation' } & {
+  automateContractCreate: {
+    __typename?: 'AutomateContractType'
+  } & StakingAutomatesContractFragmentFragment
+}
+
+export type AutomationContractDeleteMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type AutomationContractDeleteMutation = {
+  __typename?: 'Mutation'
+} & Pick<Mutation, 'automateContractDelete'>
+
+export type AutomationContractUpdateMutationVariables = Exact<{
+  input: AutomateContractUpdateInputType
+}>
+
+export type AutomationContractUpdateMutation = { __typename?: 'Mutation' } & {
+  automateContractUpdate: {
+    __typename?: 'AutomateContractType'
+  } & StakingAutomatesContractFragmentFragment
+}
+
+export type StakingAutomatesContractFragmentFragment = {
+  __typename?: 'AutomateContractType'
+} & Pick<
+  AutomateContractType,
+  | 'id'
+  | 'archivedAt'
+  | 'address'
+  | 'adapter'
+  | 'initParams'
+  | 'verification'
+  | 'rejectReason'
+> & {
+    protocol: { __typename?: 'ProtocolType' } & Pick<
+      ProtocolType,
+      'adapter' | 'name'
+    >
+    contract?: Maybe<
+      { __typename?: 'ContractType' } & Pick<
+        ContractType,
+        | 'id'
+        | 'protocolId'
+        | 'adapter'
+        | 'layout'
+        | 'blockchain'
+        | 'network'
+        | 'address'
+        | 'deployBlockNumber'
+        | 'name'
+        | 'description'
+        | 'link'
+        | 'hidden'
+        | 'events'
+        | 'createdAt'
+      > & {
+          automate: { __typename?: 'ContractAutomatesType' } & Pick<
+            ContractAutomatesType,
+            'adapters' | 'autorestake'
+          >
+          metric: { __typename?: 'ContractMetricType' } & Pick<
+            ContractMetricType,
+            'tvl' | 'aprYear' | 'myStaked' | 'myEarned' | 'myAPYBoost'
+          >
+        }
+    >
+    contractWallet?: Maybe<
+      { __typename?: 'WalletType' } & Pick<
+        WalletType,
+        'id' | 'network' | 'address'
+      > & {
+          metric: { __typename?: 'WalletMetricType' } & Pick<
+            WalletMetricType,
+            'stakedUSD'
+          >
+        }
+    >
+    wallet: { __typename?: 'WalletType' } & Pick<
+      WalletType,
+      'id' | 'network' | 'address' | 'blockchain'
+    >
+  }
+
 export type StakingAutomatesContractsQueryVariables = Exact<{
   filter?: Maybe<AutomateContractListFilterInputType>
   sort?: Maybe<
@@ -4649,64 +4668,9 @@ export type StakingAutomatesContractsQuery = { __typename?: 'Query' } & {
   automateContracts: { __typename?: 'AutomateContractListQuery' } & {
     list?: Maybe<
       Array<
-        { __typename?: 'AutomateContractType' } & Pick<
-          AutomateContractType,
-          | 'id'
-          | 'archivedAt'
-          | 'address'
-          | 'adapter'
-          | 'initParams'
-          | 'verification'
-          | 'rejectReason'
-        > & {
-            protocol: { __typename?: 'ProtocolType' } & Pick<
-              ProtocolType,
-              'adapter'
-            >
-            contract?: Maybe<
-              { __typename?: 'ContractType' } & Pick<
-                ContractType,
-                | 'id'
-                | 'protocolId'
-                | 'adapter'
-                | 'layout'
-                | 'blockchain'
-                | 'network'
-                | 'address'
-                | 'deployBlockNumber'
-                | 'name'
-                | 'description'
-                | 'link'
-                | 'hidden'
-                | 'events'
-                | 'createdAt'
-              > & {
-                  automate: { __typename?: 'ContractAutomatesType' } & Pick<
-                    ContractAutomatesType,
-                    'adapters' | 'autorestake'
-                  >
-                  metric: { __typename?: 'ContractMetricType' } & Pick<
-                    ContractMetricType,
-                    'tvl' | 'aprYear' | 'myStaked' | 'myEarned' | 'myAPYBoost'
-                  >
-                }
-            >
-            contractWallet?: Maybe<
-              { __typename?: 'WalletType' } & Pick<
-                WalletType,
-                'id' | 'network' | 'address'
-              > & {
-                  metric: { __typename?: 'WalletMetricType' } & Pick<
-                    WalletMetricType,
-                    'stakedUSD'
-                  >
-                }
-            >
-            wallet: { __typename?: 'WalletType' } & Pick<
-              WalletType,
-              'id' | 'network' | 'address' | 'blockchain'
-            >
-          }
+        {
+          __typename?: 'AutomateContractType'
+        } & StakingAutomatesContractFragmentFragment
       >
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
@@ -4889,7 +4853,14 @@ export type StakingContractFragmentFragment = {
     >
     metric: { __typename?: 'ContractMetricType' } & Pick<
       ContractMetricType,
-      'tvl' | 'aprYear' | 'myStaked' | 'myEarned' | 'myAPYBoost'
+      | 'tvl'
+      | 'aprDay'
+      | 'aprWeek'
+      | 'aprMonth'
+      | 'aprYear'
+      | 'myStaked'
+      | 'myEarned'
+      | 'myAPYBoost'
     >
   }
 
@@ -4982,37 +4953,6 @@ export const UserFragmentFragmentDoc = gql`
     id
     role
     createdAt
-  }
-`
-export const AutomationContractFragmentFragmentDoc = gql`
-  fragment automationContractFragment on AutomateContractType {
-    id
-    wallet {
-      id
-      blockchain
-      network
-      address
-      publicKey
-      createdAt
-    }
-    protocol {
-      id
-      adapter
-      name
-      description
-      icon
-      link
-      hidden
-      createdAt
-    }
-    contract {
-      id
-    }
-    address
-    adapter
-    initParams
-    verification
-    rejectReason
   }
 `
 export const AutomationDescriptionFragmentFragmentDoc = gql`
@@ -5273,6 +5213,62 @@ export const WalletFragmentFragmentDoc = gql`
     }
   }
 `
+export const StakingAutomatesContractFragmentFragmentDoc = gql`
+  fragment stakingAutomatesContractFragment on AutomateContractType {
+    id
+    protocol {
+      adapter
+      name
+    }
+    archivedAt
+    contract {
+      id
+      protocolId
+      adapter
+      layout
+      blockchain
+      network
+      address
+      deployBlockNumber
+      automate {
+        adapters
+        autorestake
+      }
+      name
+      description
+      link
+      hidden
+      metric {
+        tvl
+        aprYear
+        myStaked
+        myEarned
+        myAPYBoost
+      }
+      events
+      createdAt
+    }
+    address
+    contractWallet {
+      id
+      network
+      address
+      metric {
+        stakedUSD
+      }
+    }
+    wallet {
+      id
+      network
+      address
+      blockchain
+    }
+    adapter
+    initParams
+    verification
+    rejectReason
+  }
+`
 export const StakingContractFragmentFragmentDoc = gql`
   fragment stakingContractFragment on ContractType {
     id
@@ -5294,6 +5290,9 @@ export const StakingContractFragmentFragmentDoc = gql`
     }
     metric(filter: { wallet: { type: [wallet] } }) {
       tvl
+      aprDay
+      aprWeek
+      aprMonth
       aprYear
       myStaked
       myEarned
@@ -5453,79 +5452,6 @@ export function useAutomationConditionUpdateMutation() {
     AutomationConditionUpdateMutation,
     AutomationConditionUpdateMutationVariables
   >(AutomationConditionUpdateDocument)
-}
-export const AutomationContractCreateDocument = gql`
-  mutation AutomationContractCreate($input: AutomateContractCreateInputType!) {
-    automateContractCreate(input: $input) {
-      ...automationContractFragment
-    }
-  }
-  ${AutomationContractFragmentFragmentDoc}
-`
-
-export function useAutomationContractCreateMutation() {
-  return Urql.useMutation<
-    AutomationContractCreateMutation,
-    AutomationContractCreateMutationVariables
-  >(AutomationContractCreateDocument)
-}
-export const AutomationContractDeleteDocument = gql`
-  mutation AutomationContractDelete($id: UuidType!) {
-    automateContractDelete(id: $id)
-  }
-`
-
-export function useAutomationContractDeleteMutation() {
-  return Urql.useMutation<
-    AutomationContractDeleteMutation,
-    AutomationContractDeleteMutationVariables
-  >(AutomationContractDeleteDocument)
-}
-export const AutomationContractUpdateDocument = gql`
-  mutation AutomationContractUpdate($input: AutomateContractUpdateInputType!) {
-    automateContractUpdate(input: $input) {
-      ...automationContractFragment
-    }
-  }
-  ${AutomationContractFragmentFragmentDoc}
-`
-
-export function useAutomationContractUpdateMutation() {
-  return Urql.useMutation<
-    AutomationContractUpdateMutation,
-    AutomationContractUpdateMutationVariables
-  >(AutomationContractUpdateDocument)
-}
-export const AutomationContractsDocument = gql`
-  query AutomationContracts(
-    $filter: AutomateContractListFilterInputType
-    $sort: [AutomateContractListSortInputType!] = [
-      { column: createdAt, order: desc }
-    ]
-    $pagination: AutomateContractListPaginationInputType
-  ) {
-    automateContracts(filter: $filter, sort: $sort, pagination: $pagination) {
-      list {
-        ...automationContractFragment
-      }
-      pagination {
-        count
-      }
-    }
-  }
-  ${AutomationContractFragmentFragmentDoc}
-`
-
-export function useAutomationContractsQuery(
-  options: Omit<
-    Urql.UseQueryArgs<AutomationContractsQueryVariables>,
-    'query'
-  > = {}
-) {
-  return Urql.useQuery<AutomationContractsQuery>({
-    query: AutomationContractsDocument,
-    ...options,
-  })
 }
 export const AutomationDescriptionDocument = gql`
   query AutomationDescription {
@@ -7113,6 +7039,48 @@ export function useWalletUpdateMutation() {
     WalletUpdateDocument
   )
 }
+export const AutomationContractCreateDocument = gql`
+  mutation AutomationContractCreate($input: AutomateContractCreateInputType!) {
+    automateContractCreate(input: $input) {
+      ...stakingAutomatesContractFragment
+    }
+  }
+  ${StakingAutomatesContractFragmentFragmentDoc}
+`
+
+export function useAutomationContractCreateMutation() {
+  return Urql.useMutation<
+    AutomationContractCreateMutation,
+    AutomationContractCreateMutationVariables
+  >(AutomationContractCreateDocument)
+}
+export const AutomationContractDeleteDocument = gql`
+  mutation AutomationContractDelete($id: UuidType!) {
+    automateContractDelete(id: $id)
+  }
+`
+
+export function useAutomationContractDeleteMutation() {
+  return Urql.useMutation<
+    AutomationContractDeleteMutation,
+    AutomationContractDeleteMutationVariables
+  >(AutomationContractDeleteDocument)
+}
+export const AutomationContractUpdateDocument = gql`
+  mutation AutomationContractUpdate($input: AutomateContractUpdateInputType!) {
+    automateContractUpdate(input: $input) {
+      ...stakingAutomatesContractFragment
+    }
+  }
+  ${StakingAutomatesContractFragmentFragmentDoc}
+`
+
+export function useAutomationContractUpdateMutation() {
+  return Urql.useMutation<
+    AutomationContractUpdateMutation,
+    AutomationContractUpdateMutationVariables
+  >(AutomationContractUpdateDocument)
+}
 export const StakingAutomatesContractsDocument = gql`
   query StakingAutomatesContracts(
     $filter: AutomateContractListFilterInputType
@@ -7121,63 +7089,14 @@ export const StakingAutomatesContractsDocument = gql`
   ) {
     automateContracts(filter: $filter, sort: $sort, pagination: $pagination) {
       list {
-        id
-        protocol {
-          adapter
-        }
-        archivedAt
-        contract {
-          id
-          protocolId
-          adapter
-          layout
-          blockchain
-          network
-          address
-          deployBlockNumber
-          automate {
-            adapters
-            autorestake
-          }
-          name
-          description
-          link
-          hidden
-          metric {
-            tvl
-            aprYear
-            myStaked
-            myEarned
-            myAPYBoost
-          }
-          events
-          createdAt
-        }
-        address
-        contractWallet {
-          id
-          network
-          address
-          metric {
-            stakedUSD
-          }
-        }
-        wallet {
-          id
-          network
-          address
-          blockchain
-        }
-        adapter
-        initParams
-        verification
-        rejectReason
+        ...stakingAutomatesContractFragment
       }
       pagination {
         count
       }
     }
   }
+  ${StakingAutomatesContractFragmentFragmentDoc}
 `
 
 export function useStakingAutomatesContractsQuery(

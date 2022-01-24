@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
+import { useAsyncFn, useAsyncRetry } from 'react-use'
 import { useForm, Controller } from 'react-hook-form'
 import clsx from 'clsx'
 
@@ -12,6 +12,7 @@ import { Typography } from '~/common/typography'
 import { Loader } from '~/common/loader'
 import { Input } from '~/common/input'
 import { MarkdownRender } from '~/common/markdown-render'
+import { toastsService } from '~/toasts'
 import * as styles from './staking-adapter-dialog.css'
 
 export type StakingAdapterDialogProps = {
@@ -39,16 +40,6 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
 
   const currentStep = steps.value?.[currentStepNumber]
 
-  const errorValue = useAsync(async () => {
-    if (!currentStep || !currentStep.info.inputs) return
-
-    const can = await currentStep.can(
-      ...currentStep.info.inputs.map(({ value }) => value)
-    )
-
-    if (can instanceof Error) throw can
-  }, [currentStep])
-
   const handleSetStep = (stepIndex: number) => () => {
     setCurrentStepNumber(stepIndex)
   }
@@ -61,7 +52,7 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
     try {
       const can = await currentStep.can(...values)
 
-      if (can instanceof Error) return
+      if (can instanceof Error) throw can
 
       const { tx } = await currentStep.send(...values)
 
@@ -78,7 +69,7 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.error(error.message)
+        toastsService.error(error.message)
       }
     }
   })
@@ -88,7 +79,7 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
 
     const can = await currentStep.can()
 
-    if (can instanceof Error) return
+    if (can instanceof Error) return toastsService.error(can.message)
 
     const { tx } = await currentStep.send()
 
@@ -161,8 +152,6 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
                         label={input.placeholder}
                         disabled={formState.isSubmitting}
                         className={styles.input}
-                        helperText={errorValue.error?.message}
-                        error={Boolean(errorValue.error?.message)}
                         {...field}
                         value={field.value || input.value}
                       />
@@ -173,7 +162,6 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
               <Button
                 type="submit"
                 loading={formState.isSubmitting}
-                disabled={Boolean(errorValue.error?.message)}
                 className={styles.button}
               >
                 {currentStep.name}
@@ -184,7 +172,6 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
             <Button
               loading={sendState.loading}
               onClick={handleSend}
-              disabled={Boolean(errorValue.error?.message)}
               className={styles.button}
             >
               {currentStep?.name}

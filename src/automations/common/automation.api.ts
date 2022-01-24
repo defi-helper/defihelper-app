@@ -13,12 +13,6 @@ import {
   AutomationConditionDeleteMutationVariables,
   AutomationConditionUpdateMutation,
   AutomationConditionUpdateMutationVariables,
-  AutomationContractCreateMutation,
-  AutomationContractCreateMutationVariables,
-  AutomationContractDeleteMutation,
-  AutomationContractDeleteMutationVariables,
-  AutomationContractsQuery,
-  AutomationContractsQueryVariables,
   AutomationHistoryQuery,
   AutomationHistoryQueryVariables,
   AutomationTriggerCreateMutation,
@@ -31,8 +25,6 @@ import {
   AutomationTriggersQueryVariables,
   AutomationTriggerUpdateMutation,
   AutomationTriggerUpdateMutationVariables,
-  AutomationContractUpdateMutation,
-  AutomationContractUpdateMutationVariables,
   AutomationProtocolsQueryVariables,
   AutomationProtocolsQuery,
   AutomationDescriptionQuery,
@@ -49,10 +41,6 @@ import {
   AUTOMATION_CONDITION_CREATE,
   AUTOMATION_CONDITION_DELETE,
   AUTOMATION_CONDITION_UPDATE,
-  AUTOMATION_CONTRACTS,
-  AUTOMATION_CONTRACT_CREATE,
-  AUTOMATION_CONTRACT_DELETE,
-  AUTOMATION_CONTRACT_UPDATE,
   AUTOMATION_HISTORY,
   AUTOMATION_TRIGGER,
   AUTOMATION_TRIGGERS,
@@ -113,45 +101,6 @@ export const automationApi = {
       >(AUTOMATION_TRIGGER_DELETE, variables)
       .toPromise()
       .then(({ data }) => data?.automateTriggerDelete),
-
-  getContracts: (variables: AutomationContractsQueryVariables) =>
-    getAPIClient()
-      .query<AutomationContractsQuery, AutomationContractsQueryVariables>(
-        AUTOMATION_CONTRACTS,
-        variables
-      )
-      .toPromise()
-      .then(({ data }) => ({
-        list: data?.automateContracts.list ?? [],
-        count: data?.automateContracts.pagination.count ?? 0,
-      })),
-
-  createContract: (variables: AutomationContractCreateMutationVariables) =>
-    getAPIClient()
-      .mutation<
-        AutomationContractCreateMutation,
-        AutomationContractCreateMutationVariables
-      >(AUTOMATION_CONTRACT_CREATE, variables)
-      .toPromise()
-      .then(({ data }) => data?.automateContractCreate),
-
-  updateContract: (variables: AutomationContractUpdateMutationVariables) =>
-    getAPIClient()
-      .mutation<
-        AutomationContractUpdateMutation,
-        AutomationContractUpdateMutationVariables
-      >(AUTOMATION_CONTRACT_UPDATE, variables)
-      .toPromise()
-      .then(({ data }) => data?.automateContractUpdate),
-
-  deleteContract: (variables: AutomationContractDeleteMutationVariables) =>
-    getAPIClient()
-      .mutation<
-        AutomationContractDeleteMutation,
-        AutomationContractDeleteMutationVariables
-      >(AUTOMATION_CONTRACT_DELETE, variables)
-      .toPromise()
-      .then(({ data }) => data?.automateContractDelete),
 
   createCondition: (variables: AutomationConditionCreateMutationVariables) =>
     getAPIClient()

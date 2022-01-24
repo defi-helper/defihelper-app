@@ -16,12 +16,13 @@ export const fetchAssetsListFx = portfolioAssetsDomain.createEffect(() => {
   return portfolioApi.getAssetsList({}).then(portfolioSortAssets)
 })
 
-export const fetchAssetsByWalletFx = portfolioAssetsDomain.createEffect(
-  (walletId: string) =>
-    portfolioApi
-      .getAssetsListByWallet({ walletId })
-      .then(portfolioSortAssetsByWallet)
-)
+export const fetchAssetsByWallet = (walletId: string) =>
+  portfolioApi
+    .getAssetsListByWallet({ walletId })
+    .then(portfolioSortAssetsByWallet)
+
+export const fetchAssetsByWalletFx =
+  portfolioAssetsDomain.createEffect(fetchAssetsByWallet)
 
 export const fetchAssetsByPlatformFx = portfolioAssetsDomain.createEffect(
   (protocolId: string) =>

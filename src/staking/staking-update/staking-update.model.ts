@@ -8,15 +8,20 @@ import { stakingApi } from '~/staking/common'
 
 const stakingUpdate = createDomain()
 
-export const stakingUpdateFx = stakingUpdate.createEffect(
-  (input: StakingContractUpdateMutationVariables) =>
-    stakingApi.contractUpdate(input)
-)
+export const contractUpdate = async (
+  input: StakingContractUpdateMutationVariables
+) => {
+  const data = await stakingApi.contractUpdate(input)
+
+  if (!data) throw new Error('something went wrong')
+
+  return data
+}
+
+export const stakingUpdateFx = stakingUpdate.createEffect(contractUpdate)
 
 stakingUpdateFx.doneData.watch((payload) => {
-  if (!payload) return
-
-  history.push(paths.protocols.detail(payload))
+  history.push(paths.protocols.detail(payload.protocolId))
 })
 
 toastsService.forwardErrors(stakingUpdateFx.failData)

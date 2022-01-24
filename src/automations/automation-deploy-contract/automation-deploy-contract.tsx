@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useEffect, useState } from 'react'
 
-import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
+import { StakingAutomatesContractFragmentFragment } from '~/graphql/_generated-types'
 import { AutomationDialog } from '../common/automation-dialog'
 import { AutomationChooseButton } from '../common/automation-choose-button'
 import { Icon } from '~/common/icon'
@@ -20,7 +20,7 @@ import * as styles from './automation-deploy-contract.css'
 import { Wallet } from '~/wallets/common'
 
 export type AutomationDeployContractProps = {
-  onConfirm: (contract: AutomationContractFragmentFragment) => void
+  onConfirm: (contract: StakingAutomatesContractFragmentFragment) => void
   onCancel: (error?: unknown) => void
   protocols: Protocol[]
   wallet: Wallet

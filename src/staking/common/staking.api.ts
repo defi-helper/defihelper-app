@@ -20,6 +20,12 @@ import {
   StakingContractMetricQuery,
   StakingAutomatesContractsQueryVariables,
   StakingAutomatesContractsQuery,
+  AutomationContractCreateMutation,
+  AutomationContractCreateMutationVariables,
+  AutomationContractUpdateMutation,
+  AutomationContractUpdateMutationVariables,
+  AutomationContractDeleteMutation,
+  AutomationContractDeleteMutationVariables,
 } from '~/graphql/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -32,6 +38,9 @@ import {
   STAKING_CONTRACT_METRIC,
   STAKING_AUTOMATES_CONTRACTS,
   STAKING_CONNECTED_CONTRACTS,
+  AUTOMATION_CONTRACT_CREATE,
+  AUTOMATION_CONTRACT_UPDATE,
+  AUTOMATION_CONTRACT_DELETE,
 } from './graphql'
 
 export const stakingApi = {
@@ -73,7 +82,7 @@ export const stakingApi = {
         StakingContractUpdateMutationVariables
       >(STAKING_CONTRACT_UPDATE, variables)
       .toPromise()
-      .then(({ data }) => data?.contractUpdate.protocolId),
+      .then(({ data }) => data?.contractUpdate),
 
   connectWallet: (variables: StakingConnectWalletMutationVariables) =>
     getAPIClient()
@@ -139,4 +148,36 @@ export const stakingApi = {
         list: data?.automateContracts.list ?? [],
         count: data?.automateContracts.pagination.count ?? 0,
       })),
+  createAutomatesContract: (
+    variables: AutomationContractCreateMutationVariables
+  ) =>
+    getAPIClient()
+      .mutation<
+        AutomationContractCreateMutation,
+        AutomationContractCreateMutationVariables
+      >(AUTOMATION_CONTRACT_CREATE, variables)
+      .toPromise()
+      .then(({ data }) => data?.automateContractCreate),
+
+  updateAutomatesContract: (
+    variables: AutomationContractUpdateMutationVariables
+  ) =>
+    getAPIClient()
+      .mutation<
+        AutomationContractUpdateMutation,
+        AutomationContractUpdateMutationVariables
+      >(AUTOMATION_CONTRACT_UPDATE, variables)
+      .toPromise()
+      .then(({ data }) => data?.automateContractUpdate),
+
+  deleteAutomatesContract: (
+    variables: AutomationContractDeleteMutationVariables
+  ) =>
+    getAPIClient()
+      .mutation<
+        AutomationContractDeleteMutation,
+        AutomationContractDeleteMutationVariables
+      >(AUTOMATION_CONTRACT_DELETE, variables)
+      .toPromise()
+      .then(({ data }) => data?.automateContractDelete),
 }
