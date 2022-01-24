@@ -17,7 +17,7 @@ import {
   AutomateConditionType,
   AutomateTriggerCreateInputType,
   AutomateTriggerTypeEnum,
-  AutomationContractFragmentFragment,
+  StakingAutomatesContractFragmentFragment,
   AutomationDescriptionQuery,
   AutomationTriggerFragmentFragment,
 } from '~/graphql/_generated-types'
@@ -35,7 +35,7 @@ import * as settingsWalletModel from '~/settings/settings-wallets/settings-walle
 
 export type AutomationUpdateProps = {
   updatingTrigger?: AutomationTriggerFragmentFragment
-  contracts: AutomationContractFragmentFragment[]
+  contracts: StakingAutomatesContractFragmentFragment[]
   descriptions?: AutomationDescriptionQuery['automateDescription'] | null
   wallet: Wallet
 }

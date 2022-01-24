@@ -15,14 +15,16 @@ import {
 import { switchNetwork } from '~/wallets/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { useWalletConnect } from '~/wallets/wallet-connect'
-import * as styles from './staking-automates.css'
-import * as model from './staking-automates.model'
 import { authModel } from '~/auth'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import {
   useOnWalletMetricUpdatedSubscription,
   useOnTokenMetricUpdatedSubscription,
 } from '~/graphql/_generated-types'
+import { parseError } from '~/common/parse-error'
+import { toastsService } from '~/toasts'
+import * as styles from './staking-automates.css'
+import * as model from './staking-automates.model'
 
 export type StakingAutomatesProps = {
   className?: string
@@ -40,9 +42,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   const automatesContracts = useStore(model.$automatesContracts)
-
-  const currentAction = useStore(model.$action)
-  const adapter = useStore(model.$adapter)
 
   const handleDelete = (contractId: string) => async () => {
     try {
@@ -76,7 +75,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
       try {
         if (!wallet?.account) return
 
-        await model.fetchAdapterFx({
+        const adapter = await model.fetchAdapterFx({
           protocolAdapter: contract.protocol.adapter,
           contractAdapter: contract.adapter,
           contractId: contract.id,
@@ -86,14 +85,65 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           action,
         })
 
-        await model.scanWalletMetricFx({
-          walletId: contract.wallet.id,
-          contractId: contract.id,
+        if (!adapter || action === 'run') return
+
+        await openAdapter({
+          steps: adapter[action],
+          onSubmit: () => {
+            if (!contract.contract) return
+
+            model
+              .scanWalletMetricFx({
+                walletId: contract.wallet.id,
+                contractId: contract.contract.id,
+              })
+              .catch(console.error)
+          },
         })
+          .then(() => model.reset())
+          .catch(() => model.reset())
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
         }
+      }
+    }
+
+  const handleRunManually =
+    (contract: typeof automatesContracts[number]) => async () => {
+      try {
+        if (!wallet?.account) return
+
+        const adapter = await model.fetchAdapterFx({
+          protocolAdapter: contract.protocol.adapter,
+          contractAdapter: contract.adapter,
+          contractId: contract.id,
+          contractAddress: contract.address,
+          provider: wallet.provider,
+          chainId: String(wallet.chainId),
+          action: 'run',
+        })
+
+        if (!adapter) return
+
+        const tx = await adapter.run()
+
+        await tx.wait()
+
+        if (!contract.contract) return
+
+        model
+          .scanWalletMetricFx({
+            walletId: contract.wallet.id,
+            contractId: contract.contract.id,
+          })
+          .catch(console.error)
+      } catch (error) {
+        const { message } = parseError(error)
+
+        toastsService.error(message)
+      } finally {
+        model.reset()
       }
     }
 
@@ -126,17 +176,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
       model.updated()
     }
   }, [metricUpdated])
-
-  useEffect(() => {
-    if (!currentAction || !adapter || !adapter[currentAction]) return
-
-    openAdapter({
-      steps: adapter[currentAction],
-    })
-      .then(() => model.reset())
-      .catch(() => model.reset())
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentAction, adapter])
 
   if (isEmpty(automatesContracts)) return <></>
 
@@ -174,6 +213,10 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             ? handleChangeNetwork(automatesContract)
             : handleAction(automatesContract, 'refund')
 
+          const run = wrongAddressesOrNetworks
+            ? handleChangeNetwork(automatesContract)
+            : handleRunManually(automatesContract)
+
           return (
             <StakingContractCard
               key={automatesContract.id}
@@ -187,11 +230,13 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               onMigrate={wallet ? migrate : connect}
               onDeposit={wallet ? deposit : connect}
               onRefund={wallet ? refund : connect}
+              onRun={wallet ? run : connect}
               onDelete={handleDelete(automatesContract.id)}
               refunding={automatesContract.refunding}
               migrating={automatesContract.migrating}
               depositing={automatesContract.depositing}
               deleting={automatesContract.deleting}
+              running={automatesContract.running}
             />
           )
         })}

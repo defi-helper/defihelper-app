@@ -21,6 +21,9 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
     }
     metric(filter: { wallet: { type: [wallet] } }) {
       tvl
+      aprDay
+      aprWeek
+      aprMonth
       aprYear
       myStaked
       myEarned

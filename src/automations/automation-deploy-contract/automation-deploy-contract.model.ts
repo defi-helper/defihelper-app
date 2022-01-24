@@ -6,7 +6,7 @@ import { automationApi } from '~/automations/common/automation.api'
 import { Automates } from '../common/automation.types'
 import { toastsService } from '~/toasts'
 import { loadAdapter } from '~/common/load-adapter'
-import { buildAdaptersUrl } from '~/staking/common'
+import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 
@@ -105,7 +105,7 @@ export const deployFx = automationDeployContractDomain.createEffect(
 
     if (!currentWallet) throw new Error('something went wrong')
 
-    const createdContract = await automationApi.createContract({
+    const createdContract = await stakingApi.createAutomatesContract({
       input: {
         wallet: currentWallet.id,
         address: params.proxyAddress,

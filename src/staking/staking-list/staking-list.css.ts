@@ -214,3 +214,7 @@ export const negative = style({
 export const positive = style({
   color: theme.colors.textColorGreen,
 })
+
+export const apyButton = style({
+  verticalAlign: 'middle',
+})

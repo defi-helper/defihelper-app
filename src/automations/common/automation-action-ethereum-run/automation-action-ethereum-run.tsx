@@ -5,7 +5,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
-import { AutomationContractFragmentFragment } from '~/graphql/_generated-types'
+import { StakingAutomatesContractFragmentFragment } from '~/graphql/_generated-types'
 import { AutomationChooseButton } from '../automation-choose-button'
 import { AutomationDeployContractDialog } from '../automation-deploy-contract-dialog'
 import { AutomationForm } from '../automation-form'
@@ -18,8 +18,8 @@ type FormValues = {
 export type AutomationActionEthereumRunProps = {
   className?: string
   onSubmit: (formValues: string) => void
-  onDeploy: () => Promise<AutomationContractFragmentFragment>
-  contracts: AutomationContractFragmentFragment[]
+  onDeploy: () => Promise<StakingAutomatesContractFragmentFragment>
+  contracts: StakingAutomatesContractFragmentFragment[]
   defaultValues?: FormValues
 }
 

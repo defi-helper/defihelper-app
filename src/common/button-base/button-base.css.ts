@@ -1,5 +1,7 @@
 import { style } from '@vanilla-extract/css'
 
+import { theme } from '~/common/theme'
+
 export const root = style({
   display: 'inline-flex',
   alignItems: 'center',
@@ -14,6 +16,14 @@ export const root = style({
   color: 'currentColor',
   textDecoration: 'none',
   textTransform: 'inherit',
+
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      ':hover': {
+        opacity: 0.7,
+      },
+    },
+  },
 })
 
 export const disabled = style({

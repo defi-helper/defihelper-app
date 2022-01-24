@@ -4,7 +4,7 @@ import { Typography } from '~/common/typography'
 import {
   AutomateActionCreateInputType,
   AutomateActionTypeEnum,
-  AutomationContractFragmentFragment,
+  StakingAutomatesContractFragmentFragment,
   AutomationDescriptionQuery,
   UserContactFragmentFragment,
 } from '~/graphql/_generated-types'
@@ -23,9 +23,9 @@ export type AutomationActionsDialogProps = {
   onCancel: () => void
   onConfirm: (formValues: AutomateActionCreateInputType) => void
   type?: string | null
-  contracts: AutomationContractFragmentFragment[]
+  contracts: StakingAutomatesContractFragmentFragment[]
   contacts: UserContactFragmentFragment[]
-  onDeploy: () => Promise<AutomationContractFragmentFragment>
+  onDeploy: () => Promise<StakingAutomatesContractFragmentFragment>
   triggerId?: string
   params?: string
   descriptions: Exclude<
