@@ -77,8 +77,14 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutostaking', false)
 
   const currentWallet = walletNetworkModel.useWalletNetwork()
-  const stakingList = useStore(model.$contractsListCopies)
+  const networkProvider = currentWallet
+    ? walletNetworkModel.getNetwork(
+        currentWallet.provider,
+        currentWallet.chainId
+      )
+    : null
 
+  const stakingList = useStore(model.$contractsListCopies)
   const freshMetrics = useStore(model.$freshMetrics)
   const wallets = useStore(walletsModel.$wallets)
   const loading = useStore(model.fetchStakingListFx.pending)
@@ -307,21 +313,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     currentWallet ? 15000 : null
   )
 
-  const walletNetwork = walletNetworkModel.useWalletNetwork()
-  const networkProvider = walletNetwork
-    ? walletNetworkModel.getNetwork(
-        walletNetwork.provider,
-        walletNetwork.chainId
-      )
-    : null
-
   useInterval(async () => {
     if (!networkProvider) return
 
     try {
       setCurrentBlock(await networkProvider.getBlockNumber())
-    } catch {
-      setCurrentBlock(-1)
+    } catch (e) {
+      console.error(e)
     }
   }, 3000)
 
@@ -493,12 +491,16 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           {stakingListItem.name}
 
                           <Can I="update" a="Protocol">
-                            <br />
-                            <StakingListRowSyncIndicator
-                              row={stakingListItem}
-                              currentBlock={currentBlock}
-                              activeChain={walletNetwork?.chainId}
-                            />
+                            {stakingListItem.network ===
+                              currentWallet?.chainId && (
+                              <>
+                                <br />
+                                <StakingListRowSyncIndicator
+                                  row={stakingListItem}
+                                  currentBlock={currentBlock}
+                                />
+                              </>
+                            )}
                           </Can>
                         </Typography>
                       </div>
