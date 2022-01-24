@@ -29,21 +29,6 @@ export const fetchWalletListFx = walletListDomain.createEffect(async () => {
   return settingsApi.walletList({ pagination: { limit: 100, offset: 0 } })
 })
 
-export const updateWalletFx = walletListDomain.createEffect(
-  async (params: { walletId: string; name: string }) => {
-    const data = await settingsApi.walletUpdate({
-      id: params.walletId,
-      input: {
-        name: params.name,
-      },
-    })
-
-    if (!data) throw new Error('something went wrong')
-
-    return data
-  }
-)
-
 export const deleteWalletFx = walletListDomain.createEffect(
   async (walletId: string) => {
     const data = await settingsApi.walletDelete({ id: walletId })
@@ -53,9 +38,6 @@ export const deleteWalletFx = walletListDomain.createEffect(
     return data
   }
 )
-
-const isChainId = (chainId: unknown): chainId is ChainIdEnum =>
-  String(chainId) in contracts
 
 const createContract = (
   provider: unknown,
@@ -86,69 +68,6 @@ const createContract = (
     balanceContract,
   }
 }
-
-export const depositFx = walletListDomain.createEffect(
-  async (params: Params) => {
-    const { networkProvider, account, balanceContract } = createContract(
-      params.provider,
-      params.chainId,
-      params.walletAddress
-    )
-
-    const amountNormalized = bignumberUtils.toSend(params.amount, 18)
-
-    const balance = await networkProvider.getBalance(account)
-
-    if (balance.lt(amountNormalized)) {
-      throw new Error('not enough funds')
-    }
-
-    try {
-      const transactionReceipt = await balanceContract.deposit(account, {
-        value: amountNormalized,
-      })
-
-      const result = await transactionReceipt.wait()
-      await settingsApi.billingTransferCreate({
-        input: {
-          blockchain: params.blockchain,
-          network: params.chainId,
-          account: params.walletAddress,
-          amount: params.amount,
-          tx: result.transactionHash,
-        },
-      })
-    } catch (error) {
-      throw parseError(error)
-    }
-  }
-)
-
-export const refundFx = walletListDomain.createEffect(
-  async (params: Params) => {
-    const { account, balanceContract } = createContract(
-      params.provider,
-      params.chainId,
-      params.walletAddress
-    )
-
-    const amountNormalized = bignumberUtils.toSend(params.amount, 18)
-
-    const balance = await balanceContract.netBalanceOf(account)
-
-    if (balance.lt(amountNormalized)) {
-      throw new Error('not enough money')
-    }
-
-    try {
-      const transactionReceipt = await balanceContract.refund(amountNormalized)
-
-      await transactionReceipt.wait()
-    } catch (error) {
-      throw parseError(error)
-    }
-  }
-)
 
 export const addWallet = walletListDomain.createEvent<WalletFragmentFragment>()
 
