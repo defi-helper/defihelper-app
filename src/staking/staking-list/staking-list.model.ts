@@ -36,6 +36,7 @@ type ConnectParams = {
 type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
   syncedBlock: number
+  scannerId?: string
   prototypeAddress?: string
   autostakingLoading?: boolean
 }
@@ -105,6 +106,7 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
         return {
           ...contract,
           prototypeAddress: undefined,
+          scannerId: scannerContract?.id,
           syncedBlock,
         }
       }
@@ -120,6 +122,7 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
       return {
         ...contract,
         prototypeAddress: contractAddress?.address,
+        scannerId: scannerContract?.id,
         syncedBlock,
       }
     })

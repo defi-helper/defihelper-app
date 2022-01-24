@@ -7,7 +7,10 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type StakingContractCardProps = {
-  row: StakingContractFragmentFragment & { syncedBlock: number }
+  row: StakingContractFragmentFragment & {
+    syncedBlock: number
+    scannerId?: string
+  }
   currentBlock: number
 }
 
@@ -38,12 +41,15 @@ export const StakingListRowSyncIndicator: React.VFC<StakingContractCardProps> =
     }
 
     return (
-      <span
+      <a
+        href={`https://scanner.defihelper.io/contract/${row.scannerId}`}
+        target="_blank"
+        rel="noreferrer"
         style={{
           color: seemsUnusual ? 'red' : 'white',
         }}
       >
         {row.syncedBlock}/{currentBlock}
-      </span>
+      </a>
     )
   }
