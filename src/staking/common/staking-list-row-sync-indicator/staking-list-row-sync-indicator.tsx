@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react'
+
 import {
   BlockchainEnum,
   StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { Link } from '~/common/link'
 
-export type StakingContractCardProps = {
+export type StakingListRowSyncIndicatorProps = {
   row: StakingContractFragmentFragment & {
     syncedBlock: number
     scannerId?: string
@@ -13,7 +15,9 @@ export type StakingContractCardProps = {
   currentBlock: number
 }
 
-export const StakingListRowSyncIndicator: React.VFC<StakingContractCardProps> =
+const SCANER_URL = 'https://scanner.defihelper.io/contract'
+
+export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorProps> =
   (props) => {
     const { row, currentBlock } = props
     const [seemsUnusual, setSeemsUnusual] = useState(false)
@@ -34,8 +38,8 @@ export const StakingListRowSyncIndicator: React.VFC<StakingContractCardProps> =
     }
 
     return (
-      <a
-        href={`https://scanner.defihelper.io/contract/${row.scannerId}`}
+      <Link
+        href={`${SCANER_URL}/${row.scannerId}`}
         target="_blank"
         rel="noreferrer"
         style={{
@@ -43,6 +47,6 @@ export const StakingListRowSyncIndicator: React.VFC<StakingContractCardProps> =
         }}
       >
         {row.syncedBlock}/{currentBlock}
-      </a>
+      </Link>
     )
   }

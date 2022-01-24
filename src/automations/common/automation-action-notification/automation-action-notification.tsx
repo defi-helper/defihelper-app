@@ -1,5 +1,6 @@
 import { useForm, Controller } from 'react-hook-form'
 import { useEffect } from 'react'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
@@ -10,6 +11,7 @@ import { AutomationContactsDialog } from '../automation-contacts-dialog'
 import { AutomationChooseButton } from '../automation-choose-button'
 import { Icon } from '~/common/icon'
 import * as styles from './automation-action-notification.css'
+import { automationActionNotificationSchema } from './automation-action-notification.validation'
 
 type FormValues = {
   contact: UserContactFragmentFragment
@@ -24,8 +26,18 @@ export type AutomationActionNotificationProps = {
 
 export const AutomationActionNotification: React.VFC<AutomationActionNotificationProps> =
   (props) => {
-    const { handleSubmit, register, formState, control, setValue, reset } =
-      useForm<FormValues>()
+    const {
+      handleSubmit,
+      register,
+      formState,
+      control,
+      setValue,
+      reset,
+      watch,
+      trigger,
+    } = useForm<FormValues>({
+      resolver: yupResolver(automationActionNotificationSchema),
+    })
 
     const [openContactDialog] = useDialog(AutomationContactsDialog)
 
@@ -58,6 +70,14 @@ export const AutomationActionNotification: React.VFC<AutomationActionNotificatio
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.defaultValues, props.contacts])
 
+    const contactId = watch('contact.id')
+
+    useEffect(() => {
+      if (!contactId) return
+
+      trigger()
+    }, [contactId, trigger])
+
     return (
       <AutomationForm
         onSubmit={handleSubmit(({ contact, message }) =>
@@ -75,6 +95,7 @@ export const AutomationActionNotification: React.VFC<AutomationActionNotificatio
               onClick={handleAddContact}
               label="contact"
               className={styles.input}
+              error={formState.errors.contact?.id?.message}
             >
               {field.value && (
                 <>

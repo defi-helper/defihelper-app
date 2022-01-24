@@ -3,11 +3,16 @@ import { createGate } from 'effector-react'
 
 import {
   ContractListSortInputTypeColumnEnum,
-  MetricChartType,
   SortOrderEnum,
-  StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
-import { stakingApi, buildAdaptersUrl } from '~/staking/common'
+import {
+  stakingApi,
+  buildAdaptersUrl,
+  StakingListPayload,
+  ConnectParams,
+  Contract,
+  FreshMetrics,
+} from '~/staking/common'
 import { createPagination, PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
@@ -21,47 +26,11 @@ import * as stakingUpdateModel from '~/staking/staking-update/staking-update.mod
 
 export const stakingListDomain = createDomain()
 
-type GateState = {
-  protocolId: string
-  protocolAdapter?: string | null
-  hidden: null | boolean
-  sortColumn?: ContractListSortInputTypeColumnEnum
-  sortOrder?: SortOrderEnum
-}
-
-type ConnectParams = {
-  contract: string
-  wallet: string
-}
-
-type Contract = StakingContractFragmentFragment & {
-  type: 'Contract'
-  syncedBlock: number
-  scannerId?: string
-  prototypeAddress?: string
-  autostakingLoading?: boolean
-}
-
-export type ContractMetric = {
-  tvl: Array<Pick<MetricChartType, 'avg'>>
-  apr: Array<Pick<MetricChartType, 'avg'>>
-  stakingUSD: Array<Pick<MetricChartType, 'avg'>>
-  earnedUSD: Array<Pick<MetricChartType, 'avg'>>
-}
-
-export type FreshMetrics = {
-  contractId: string
-  tvl: string
-  aprYear: string
-  myStaked: string
-  myEarned: string
-}
-
 const NOT_DELETED = 'Not deleted'
 const NOT_CONNECTED = 'Not connected'
 const NOT_DISCONNECTED = 'Not disconnected'
 
-type Params = GateState & PaginationState
+type Params = StakingListPayload & PaginationState
 
 export const stakingUpdateFx = stakingListDomain.createEffect(
   stakingUpdateModel.contractUpdate
@@ -176,7 +145,8 @@ export const disconnectWalletFx = stakingListDomain.createEffect(
 )
 
 export const fetchConnectedContractsFx = stakingListDomain.createEffect(
-  (params: GateState) => stakingApi.connectedContracts(params.protocolId)
+  (params: StakingListPayload) =>
+    stakingApi.connectedContracts(params.protocolId)
 )
 
 export const autostakingStart = stakingListDomain.createEvent<string>()
@@ -277,7 +247,7 @@ guard({
   target: connectWalletFx,
 })
 
-export const StakingListGate = createGate<GateState>({
+export const StakingListGate = createGate<StakingListPayload>({
   name: 'StakingListGate',
   domain: stakingListDomain,
 })

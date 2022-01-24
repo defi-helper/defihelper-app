@@ -1,4 +1,6 @@
+import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
@@ -8,6 +10,7 @@ import { AutomationChooseButton } from '../automation-choose-button'
 import { AutomationForm } from '../automation-form'
 import { AutomationNetworksDialog } from '../automation-networks-dialog'
 import { networksConfig } from '~/networks-config'
+import { automationConditionEthereumGasPriceSchema } from './automation-condition-ethereum-gas-price.validation'
 import * as styles from './automation-condition-ethereum-gas-price.css'
 
 type FormValues = {
@@ -24,10 +27,18 @@ export const AutomationConditionEthereumGasPrice: React.VFC<AutomationConditionE
   (props) => {
     const [openNetworksDialog] = useDialog(AutomationNetworksDialog)
 
-    const { handleSubmit, formState, register, control, setValue } =
-      useForm<FormValues>({
-        defaultValues: props.defaultValues,
-      })
+    const {
+      handleSubmit,
+      formState,
+      register,
+      control,
+      setValue,
+      watch,
+      trigger,
+    } = useForm<FormValues>({
+      defaultValues: props.defaultValues,
+      resolver: yupResolver(automationConditionEthereumGasPriceSchema),
+    })
 
     const handleChooseNetwork = async () => {
       try {
@@ -40,6 +51,14 @@ export const AutomationConditionEthereumGasPrice: React.VFC<AutomationConditionE
         }
       }
     }
+
+    const network = watch('network')
+
+    useEffect(() => {
+      if (!network) return
+
+      trigger('network')
+    }, [network, trigger])
 
     return (
       <AutomationForm
@@ -54,6 +73,7 @@ export const AutomationConditionEthereumGasPrice: React.VFC<AutomationConditionE
               onClick={handleChooseNetwork}
               className={styles.input}
               disabled={Boolean(props.defaultValues)}
+              error={formState.errors.network?.message}
             >
               {(field.value && (
                 <>
