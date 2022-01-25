@@ -12,6 +12,7 @@ import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import {
   StakingAdapterDialog,
+  StakingContractCard,
   StakingDescriptionDialog,
   StakingTabs,
 } from '../common'
@@ -22,7 +23,6 @@ import { StakingAdapters } from '~/staking/staking-adapters'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
 import { Dropdown } from '~/common/dropdown'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { Loader } from '~/common/loader'
 import {
   AutomateActionTypeEnum,
@@ -36,13 +36,11 @@ import { AutomationDeployStepsDialog } from '~/automations/common/automation-dep
 import { toastsService } from '~/toasts'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
-import { networksConfig } from '~/networks-config'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
-import { StakingListRowSyncIndicator } from '~/staking/common/staking-list-row-sync-indicator'
 
 export type StakingListProps = {
   protocolId: string
@@ -448,22 +446,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
               stakingList.map((stakingListItem) => {
                 const opened = stakingListItem.address === openedContract
 
-                const metric = freshMetrics[stakingListItem.id]
-                  ? freshMetrics[stakingListItem.id]
-                  : stakingListItem.metric
-
-                const apy = bignumberUtils.mul(metric.aprYear, 100)
-
-                const apyboostDifference = bignumberUtils.minus(
-                  stakingListItem.metric.myAPYBoost,
-                  metric.aprYear
-                )
-                const validDiff =
-                  !bignumberUtils.isNaN(apyboostDifference) &&
-                  bignumberUtils.gt(apyboostDifference, '0.001')
-
-                const currentNetwork = networksConfig[stakingListItem.network]
-
                 return (
                   <li
                     key={stakingListItem.id}
@@ -472,197 +454,22 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       stakingListItem.hidden && styles.hiddenListItem
                     )}
                   >
-                    <div
-                      className={clsx(styles.card, styles.row)}
-                      onClick={handleOpenContract(stakingListItem.address)}
-                      role="button"
-                      tabIndex={0}
-                    >
-                      <div className={styles.tableCol}>
-                        {currentNetwork && (
-                          <div className={styles.coinIcons}>
-                            <Icon
-                              className={styles.coinIcon}
-                              icon={currentNetwork.icon}
-                            />
-                          </div>
-                        )}
-                        <Typography variant="body2" as="div">
-                          {stakingListItem.name}
-
-                          <Can I="update" a="Protocol">
-                            {stakingListItem.network ===
-                              currentWallet?.chainId && (
-                              <>
-                                <br />
-                                <StakingListRowSyncIndicator
-                                  row={stakingListItem}
-                                  currentBlock={currentBlock}
-                                />
-                              </>
-                            )}
-                          </Can>
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          family="mono"
-                          transform="uppercase"
-                          align="right"
-                        >
-                          ${bignumberUtils.format(metric.tvl)}
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          family="mono"
-                          transform="uppercase"
-                          align="right"
-                        >
-                          {bignumberUtils.formatMax(apy, 10000)}%{' '}
-                          <ButtonBase
-                            onClick={handleOpenApy(stakingListItem.metric)}
-                            className={styles.apyButton}
-                          >
-                            <Icon icon="calculator" width="24" height="24" />
-                          </ButtonBase>
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          family="mono"
-                          transform="uppercase"
-                          align="right"
-                        >
-                          ${bignumberUtils.format(metric.myStaked)}
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          family="mono"
-                          transform="uppercase"
-                          align="right"
-                        >
-                          {bignumberUtils.format(
-                            bignumberUtils.mul(
-                              bignumberUtils.div(metric.myStaked, metric.tvl),
-                              100
-                            )
-                          )}
-                          %
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography
-                          variant="body2"
-                          as="div"
-                          family="mono"
-                          transform="uppercase"
-                          align="right"
-                        >
-                          ${bignumberUtils.format(metric.myEarned)}
-                        </Typography>
-                      </div>
-                      <div className={clsx(styles.tableCol)}>
-                        <div className={styles.autostakingCol}>
-                          <Typography
-                            variant="body2"
-                            as="div"
-                            family="mono"
-                            transform="uppercase"
-                            align="right"
-                          >
-                            {validDiff
-                              ? bignumberUtils.formatMax(
-                                  bignumberUtils.mul(
-                                    stakingListItem.metric.myAPYBoost,
-                                    100
-                                  ),
-                                  10000
-                                )
-                              : 0}
-                            %
-                          </Typography>
-                          {validDiff && (
-                            <Typography
-                              variant="body2"
-                              as="div"
-                              family="mono"
-                              transform="uppercase"
-                              align="right"
-                              className={clsx({
-                                [styles.positive]: bignumberUtils.gt(
-                                  apyboostDifference,
-                                  '0.001'
-                                ),
-                              })}
-                            >
-                              {bignumberUtils.gt(apyboostDifference, 0) && '+'}
-                              {bignumberUtils.formatMax(
-                                bignumberUtils.mul(apyboostDifference, 100),
-                                10000
-                              )}
-                              %
-                            </Typography>
-                          )}
-                        </div>
-                        <ButtonBase
-                          className={styles.accorionButton}
-                          onClick={handleOpenContract(stakingListItem.address)}
-                        >
-                          <Icon
-                            icon={opened ? 'arrowTop' : 'arrowDown'}
-                            width="24"
-                            height="24"
-                          />
-                        </ButtonBase>
-                        <Can I="update" a="Contract">
-                          <Dropdown
-                            control={
-                              <ButtonBase className={styles.manageButton}>
-                                <Icon icon="dots" />
-                              </ButtonBase>
-                            }
-                          >
-                            <Can I="update" a="Contract">
-                              <ButtonBase
-                                as={ReactRouterLink}
-                                to={`${paths.staking.update(
-                                  props.protocolId,
-                                  stakingListItem.id
-                                )}?protocol-adapter=${props.protocolAdapter}`}
-                              >
-                                Edit
-                              </ButtonBase>
-                            </Can>
-                            <Can I="update" a="Contract">
-                              <ButtonBase
-                                onClick={handleToggleContract(stakingListItem)}
-                              >
-                                {stakingListItem.hidden ? 'Show' : 'Hide'}
-                              </ButtonBase>
-                            </Can>
-                            <Can I="delete" a="Contract">
-                              <ButtonBase
-                                onClick={handleOpenConfirmDialog(
-                                  stakingListItem.id
-                                )}
-                              >
-                                Delete
-                              </ButtonBase>
-                            </Can>
-                          </Dropdown>
-                        </Can>
-                      </div>
-                    </div>
+                    <StakingContractCard
+                      className={styles.row}
+                      {...stakingListItem}
+                      onOpenContract={handleOpenContract(
+                        stakingListItem.address
+                      )}
+                      opened={opened}
+                      freshMetrics={freshMetrics}
+                      protocolAdapter={props.protocolAdapter}
+                      protocolId={props.protocolId}
+                      onToggleContract={handleToggleContract(stakingListItem)}
+                      onDelete={handleOpenConfirmDialog(stakingListItem.id)}
+                      currentBlock={currentBlock}
+                      currentNetwork={currentWallet?.chainId}
+                      onOpenApy={handleOpenApy(stakingListItem.metric)}
+                    />
                     {opened && (
                       <StakingAdapters
                         protocolAdapter={props.protocolAdapter}

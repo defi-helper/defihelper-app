@@ -1,262 +1,223 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import clsx from 'clsx'
+import { Link as ReactRouterLink } from 'react-router-dom'
 
+import { Can } from '~/auth'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
-import { ButtonBase } from '~/common/button-base'
-import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { cutAccount } from '~/common/cut-account'
-import { Button } from '~/common/button'
-import { Link } from '~/common/link'
-import { buildExplorerUrl } from '~/common/build-explorer-url'
-import { CircularProgress } from '~/common/circular-progress'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { networksConfig } from '~/networks-config'
+import { paths } from '~/paths'
+import { StakingListRowSyncIndicator } from '~/staking/common/staking-list-row-sync-indicator'
+import { FreshMetrics, Contract } from '~/staking/common/staking.types'
 import * as styles from './staking-contract-card.css'
 
 export type StakingContractCardProps = {
   className?: string
-  title: string
-  address: string
-  network: string
-  blockchain: string
-  balance: string
-  onDeposit: () => void
-  onRefund: () => void
-  onMigrate: () => void
+  onOpenContract: () => void
+  onOpenApy: () => void
+  opened: boolean
+  onToggleContract: () => void
   onDelete: () => void
-  onRun: () => void
-  error?: boolean
-  apy?: string
-  apyBoost?: string
-  deleting?: boolean
-  depositing?: boolean
-  refunding?: boolean
-  migrating?: boolean
-  running?: boolean
-}
+  protocolId: string
+  protocolAdapter: string
+  freshMetrics: Record<string, FreshMetrics>
+  currentBlock: number
+  currentNetwork?: string
+} & Contract
 
 export const StakingContractCard: React.VFC<StakingContractCardProps> = (
   props
 ) => {
-  const pending =
-    props.deleting || props.depositing || props.refunding || props.migrating
+  const metric = props.freshMetrics[props.id]
+    ? props.freshMetrics[props.id]
+    : props.metric
 
-  const apyboostDifference = bignumberUtils.minus(props.apyBoost, props.apy)
+  const apy = bignumberUtils.mul(metric.aprYear, 100)
 
+  const apyboostDifference = bignumberUtils.minus(
+    props.metric.myAPYBoost,
+    metric.aprYear
+  )
   const validDiff =
     !bignumberUtils.isNaN(apyboostDifference) &&
     bignumberUtils.gt(apyboostDifference, '0.001')
 
+  const currentNetwork = networksConfig[props.network]
+
   return (
-    <Paper className={clsx(styles.root, props.className)} radius={8}>
-      <div className={styles.header}>
-        <div className={styles.heading}>
-          <Typography as="span">
-            {props.title || cutAccount(props.address)}
-          </Typography>
-          <Dropdown
-            control={(active) => (
-              <ButtonBase
-                className={clsx(
-                  styles.manage,
-                  active && styles.manageActive,
-                  pending && styles.manageLoading
-                )}
-              >
-                {(props.deleting || props.running) && (
-                  <CircularProgress className={styles.circularProgress} />
-                )}
-                <Icon
-                  icon="dots"
-                  className={clsx(
-                    styles.manageIcon,
-                    (props.deleting || props.running) &&
-                      styles.manageIconloading
-                  )}
-                />
-              </ButtonBase>
-            )}
-            className={styles.dropdown}
-            placement="left-start"
-            offset={[0, 4]}
-          >
-            <ButtonBase className={styles.dropdownItem} onClick={props.onRun}>
-              Run manually
-            </ButtonBase>
-            <ButtonBase
-              className={clsx(styles.deleteButton, styles.dropdownItem)}
-              onClick={props.onDelete}
-            >
-              Delete
-            </ButtonBase>
-          </Dropdown>
-        </div>
-        <div className={styles.row}>
-          <Typography
-            variant="body2"
-            as="span"
-            className={clsx(styles.infoTitle, styles.opacity)}
-          >
-            Address
-          </Typography>
-          <Typography
-            variant="body2"
-            as={Link}
-            href={buildExplorerUrl({
-              network: props.network,
-              address: props.address,
-            })}
-            target="_blank"
-          >
-            {cutAccount(props.address)}
-          </Typography>
-        </div>
-        <div className={styles.row}>
-          <Typography
-            variant="body2"
-            as="span"
-            className={clsx(styles.infoTitle, styles.opacity)}
-          >
-            Network
-          </Typography>
-          <Typography variant="body2" as="span">
-            {networksConfig[props.network]?.title}
-          </Typography>
-        </div>
-        <div className={styles.row}>
-          <Typography
-            variant="body2"
-            as="span"
-            className={clsx(styles.infoTitle, styles.opacity)}
-          >
-            Balance
-          </Typography>
-          <Typography variant="body2" as="span">
-            ${bignumberUtils.format(props.balance)}
-          </Typography>
-        </div>
+    <div
+      className={clsx(styles.root, props.className)}
+      onClick={props.onOpenContract}
+      role="button"
+      tabIndex={0}
+    >
+      <div className={styles.tableCol}>
+        {currentNetwork && (
+          <div className={styles.coinIcons}>
+            <Icon className={styles.coinIcon} icon={currentNetwork.icon} />
+          </div>
+        )}
+        <Typography variant="body2" as="div">
+          {props.name}
+
+          {props.network === props.currentNetwork && (
+            <Can I="update" a="Protocol">
+              <br />
+              <StakingListRowSyncIndicator
+                row={props}
+                currentBlock={props.currentBlock}
+              />
+            </Can>
+          )}
+        </Typography>
       </div>
-      <div className={clsx(styles.footer, props.error && styles.error)}>
-        <div className={styles.row}>
-          <Typography variant="body2" as="span" className={styles.infoTitle}>
-            <Typography variant="inherit" className={styles.opacity}>
-              APY
-            </Typography>
-            <Dropdown
-              control={
-                <ButtonBase className={clsx(styles.opacity)}>
-                  <Icon className={styles.question} icon="question" />
-                </ButtonBase>
-              }
-              placement="top"
-              className={styles.questionDropdown}
-              offset={[0, 8]}
-            >
-              <Typography variant="inherit">
-                In order to execute every automation action in blockchain, such
-                as auto-restaking, provide fee balance we can use.{' '}
-                <Link href="/" className={styles.howItWorks}>
-                  Learn more on How It Work
-                </Link>
-              </Typography>
-            </Dropdown>
-          </Typography>
-          <Typography variant="body2" as="span">
-            {bignumberUtils.formatMax(
-              bignumberUtils.mul(props.apy, 100),
-              10000,
-              true
-            )}
-            %
-          </Typography>
-        </div>
-        <div className={styles.row}>
-          <Typography variant="body2" as="span" className={styles.infoTitle}>
-            <Typography variant="inherit" className={styles.opacity}>
-              Boosted APY
-            </Typography>
-            <Dropdown
-              control={
-                <ButtonBase className={clsx(styles.opacity)}>
-                  <Icon className={styles.question} icon="question" />
-                </ButtonBase>
-              }
-              placement="top"
-              className={styles.questionDropdown}
-              offset={[0, 8]}
-            >
-              <Typography variant="inherit">
-                In order to execute every automation action in blockchain, such
-                as auto-restaking, provide fee balance we can use.{' '}
-                <Link href="/" className={styles.howItWorks}>
-                  Learn more on How It Work
-                </Link>
-              </Typography>
-            </Dropdown>
-          </Typography>
-          <Typography variant="body2" as="span">
-            {validDiff ? (
-              <>
-                {bignumberUtils.formatMax(
-                  bignumberUtils.mul(props.apyBoost, 100),
+      <div>
+        <Typography
+          variant="body2"
+          as="div"
+          family="mono"
+          transform="uppercase"
+          align="right"
+        >
+          ${bignumberUtils.format(metric.tvl)}
+        </Typography>
+      </div>
+      <div>
+        <Typography
+          variant="body2"
+          as="div"
+          family="mono"
+          transform="uppercase"
+          align="right"
+        >
+          {bignumberUtils.formatMax(apy, 10000)}%{' '}
+          <ButtonBase onClick={props.onOpenApy} className={styles.apyButton}>
+            <Icon icon="calculator" width="24" height="24" />
+          </ButtonBase>
+        </Typography>
+      </div>
+      <div>
+        <Typography
+          variant="body2"
+          as="div"
+          family="mono"
+          transform="uppercase"
+          align="right"
+        >
+          ${bignumberUtils.format(metric.myStaked)}
+        </Typography>
+      </div>
+      <div>
+        <Typography
+          variant="body2"
+          as="div"
+          family="mono"
+          transform="uppercase"
+          align="right"
+        >
+          {bignumberUtils.format(
+            bignumberUtils.mul(
+              bignumberUtils.div(metric.myStaked, metric.tvl),
+              100
+            )
+          )}
+          %
+        </Typography>
+      </div>
+      <div>
+        <Typography
+          variant="body2"
+          as="div"
+          family="mono"
+          transform="uppercase"
+          align="right"
+        >
+          ${bignumberUtils.format(metric.myEarned)}
+        </Typography>
+      </div>
+      <div className={clsx(styles.tableCol)}>
+        <div className={styles.autostakingCol}>
+          <Typography
+            variant="body2"
+            as="div"
+            family="mono"
+            transform="uppercase"
+            align="right"
+          >
+            {validDiff
+              ? bignumberUtils.formatMax(
+                  bignumberUtils.mul(props.metric.myAPYBoost, 100),
                   10000
-                )}
-              </>
-            ) : (
-              0
-            )}
+                )
+              : 0}
             %
           </Typography>
-        </div>
-        <div className={styles.buttons}>
-          <Button
-            size="small"
-            className={styles.deposit}
-            onClick={props.onDeposit}
-            loading={props.depositing}
-            disabled={props.deleting || props.refunding || props.migrating}
-          >
-            Deposit
-          </Button>
-          <Button
-            size="small"
-            variant="light"
-            className={styles.refund}
-            onClick={props.onMigrate}
-            loading={props.migrating}
-            disabled={props.deleting || props.depositing || props.refunding}
-          >
-            Migrate
-          </Button>
-          <Button
-            size="small"
-            variant="light"
-            className={styles.refund}
-            onClick={props.onRefund}
-            loading={props.refunding}
-            disabled={props.deleting || props.depositing || props.migrating}
-          >
-            Unstake
-          </Button>
-          {props.error && (
-            <Dropdown
-              control={
-                <ButtonBase className={styles.attention}>
-                  <Icon icon="attention" />
-                </ButtonBase>
-              }
-              className={styles.attentionDropdown}
-              placement="top-end"
-              offset={[0, 8]}
+          {validDiff && (
+            <Typography
+              variant="body2"
+              as="div"
+              family="mono"
+              transform="uppercase"
+              align="right"
+              className={clsx({
+                [styles.positive]: bignumberUtils.gt(
+                  apyboostDifference,
+                  '0.001'
+                ),
+              })}
             >
-              This wallet has 3 active automations which doesn&apos;t work now
-              due to low Fee Funds balance. Deposit Fee Funds to continue
-              automations.
-            </Dropdown>
+              {bignumberUtils.gt(apyboostDifference, 0) && '+'}
+              {bignumberUtils.formatMax(
+                bignumberUtils.mul(apyboostDifference, 100),
+                10000
+              )}
+              %
+            </Typography>
           )}
         </div>
+        <ButtonBase
+          className={styles.accorionButton}
+          onClick={props.onOpenContract}
+        >
+          <Icon
+            icon={props.opened ? 'arrowTop' : 'arrowDown'}
+            width="24"
+            height="24"
+          />
+        </ButtonBase>
+        <Can I="update" a="Contract">
+          <Dropdown
+            control={
+              <ButtonBase className={styles.manageButton}>
+                <Icon icon="dots" />
+              </ButtonBase>
+            }
+          >
+            <Can I="update" a="Contract">
+              <ButtonBase
+                as={ReactRouterLink}
+                to={`${paths.staking.update(
+                  props.protocolId,
+                  props.id
+                )}?protocol-adapter=${props.protocolAdapter}`}
+              >
+                Edit
+              </ButtonBase>
+            </Can>
+            <Can I="update" a="Contract">
+              <ButtonBase onClick={props.onToggleContract}>
+                {props.hidden ? 'Show' : 'Hide'}
+              </ButtonBase>
+            </Can>
+            <Can I="delete" a="Contract">
+              <ButtonBase onClick={props.onDelete}>Delete</ButtonBase>
+            </Can>
+          </Dropdown>
+        </Can>
       </div>
-    </Paper>
+    </div>
   )
 }

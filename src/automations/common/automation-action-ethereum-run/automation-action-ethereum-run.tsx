@@ -1,6 +1,7 @@
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
@@ -10,6 +11,7 @@ import { AutomationChooseButton } from '../automation-choose-button'
 import { AutomationDeployContractDialog } from '../automation-deploy-contract-dialog'
 import { AutomationForm } from '../automation-form'
 import * as styles from './automation-action-ethereum-run.css'
+import { automationActionEthereumRunSchema } from './automation-action-ethereum-run.validation'
 
 type FormValues = {
   id: string
@@ -29,8 +31,12 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
       control,
       handleSubmit: reactHookSubmit,
       setValue,
+      formState,
+      watch,
+      trigger,
     } = useForm<FormValues>({
       defaultValues: props.defaultValues,
+      resolver: yupResolver(automationActionEthereumRunSchema),
     })
 
     const [contracts, setContracts] = useState(props.contracts)
@@ -74,6 +80,14 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
       }
     }
 
+    const id = watch('id')
+
+    useEffect(() => {
+      if (!id) return
+
+      trigger()
+    }, [id, trigger])
+
     return (
       <AutomationForm onSubmit={reactHookSubmit(handleSubmit)}>
         <Controller
@@ -86,6 +100,7 @@ export const AutomationActionEthereumRun: React.VFC<AutomationActionEthereumRunP
               <AutomationChooseButton
                 label="contract"
                 onClick={handleChooseContract}
+                error={formState.errors.id?.message}
                 className={clsx(styles.input, styles.contractButton)}
               >
                 {(field.value && currentContract && (

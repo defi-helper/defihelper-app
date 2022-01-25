@@ -1,5 +1,6 @@
 import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect } from 'react'
 
 import { Button } from '~/common/button'
 import { automationConditionEthereumSchema } from './automation-condition-ethereum.validation'
@@ -41,11 +42,18 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
   (props) => {
     const [openNetworksDialog] = useDialog(AutomationNetworksDialog)
 
-    const { register, handleSubmit, formState, control, setValue } =
-      useForm<FormValues>({
-        resolver: yupResolver(automationConditionEthereumSchema),
-        defaultValues: props.defaultValues,
-      })
+    const {
+      register,
+      handleSubmit,
+      formState,
+      control,
+      setValue,
+      watch,
+      trigger,
+    } = useForm<FormValues>({
+      resolver: yupResolver(automationConditionEthereumSchema),
+      defaultValues: props.defaultValues,
+    })
 
     const handleChooseNetwork = async () => {
       try {
@@ -58,6 +66,14 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
         }
       }
     }
+
+    const network = watch('network')
+
+    useEffect(() => {
+      if (!network) return
+
+      trigger('network')
+    }, [network, trigger])
 
     return (
       <AutomationForm
@@ -72,6 +88,7 @@ export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEt
               onClick={handleChooseNetwork}
               className={styles.input}
               disabled={Boolean(props.defaultValues)}
+              error={formState.errors.network?.message}
             >
               {(field.value && (
                 <>
