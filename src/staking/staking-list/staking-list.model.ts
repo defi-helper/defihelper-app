@@ -1,28 +1,30 @@
-import { createDomain, guard, sample, restore } from 'effector-logger/macro'
+import { createDomain, guard, restore, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
+  UserRoleEnum,
 } from '~/graphql/_generated-types'
 import {
-  stakingApi,
   buildAdaptersUrl,
-  StakingListPayload,
   ConnectParams,
   Contract,
   FreshMetrics,
+  stakingApi,
+  StakingListPayload,
 } from '~/staking/common'
 import { createPagination, PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
-import { loadAdapter, Adapters } from '~/common/load-adapter'
+import { Adapters, loadAdapter } from '~/common/load-adapter'
 import { automationApi } from '~/automations/common/automation.api'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Wallet } from '~/wallets/common'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { protocolsApi } from '~/protocols/common'
 import * as stakingUpdateModel from '~/staking/staking-update/staking-update.model'
+import { authModel } from '~/auth'
 
 export const stakingListDomain = createDomain()
 
@@ -30,7 +32,7 @@ const NOT_DELETED = 'Not deleted'
 const NOT_CONNECTED = 'Not connected'
 const NOT_DISCONNECTED = 'Not disconnected'
 
-type Params = StakingListPayload & PaginationState
+type Params = StakingListPayload & PaginationState & { userRole?: UserRoleEnum }
 
 export const stakingUpdateFx = stakingListDomain.createEffect(
   stakingUpdateModel.contractUpdate
@@ -68,34 +70,33 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
 
     const stakingListWithAutostaking = data.contracts.map(async (contract) => {
       let syncedBlock = -1
-      const scannerContract = await protocolsApi.scannerGetContract({
-        network: contract.network,
-        address: contract.address,
-      })
-      if (scannerContract) {
-        const listenedPools = await protocolsApi.scannerGetEventListener({
-          id: scannerContract.id,
+      let contractAddress
+      let scannerContract
+
+      if (params.userRole === UserRoleEnum.Admin) {
+        scannerContract = await protocolsApi.scannerGetContract({
+          network: contract.network,
+          address: contract.address,
         })
 
-        syncedBlock = Math.min(...listenedPools.map((v) => v.syncHeight)) || 0
-      }
+        if (scannerContract) {
+          const listenedPools = await protocolsApi.scannerGetEventListener({
+            id: scannerContract.id,
+          })
 
-      if (!params.protocolAdapter || !contract.automate.autorestake) {
-        return {
-          ...contract,
-          prototypeAddress: undefined,
-          scannerId: scannerContract?.id,
-          syncedBlock,
+          syncedBlock = Math.min(...listenedPools.map((v) => v.syncHeight)) || 0
         }
       }
 
-      const contractAddress = await automationApi
-        .getContractAddress({
-          protocol: params.protocolAdapter,
-          contract: contract.automate.autorestake,
-          chainId: contract.network,
-        })
-        .catch(console.error)
+      if (params.protocolAdapter && contract.automate.autorestake) {
+        contractAddress = await automationApi
+          .getContractAddress({
+            protocol: params.protocolAdapter,
+            contract: contract.automate.autorestake,
+            chainId: contract.network,
+          })
+          .catch(console.error)
+      }
 
       return {
         ...contract,
@@ -259,15 +260,23 @@ export const StakingListPagination = createPagination({
 
 guard({
   clock: sample({
-    source: [StakingListPagination.state, StakingListGate.state],
+    source: [
+      StakingListPagination.state,
+      StakingListGate.state,
+      authModel.$user,
+    ],
     clock: [
       StakingListGate.open,
       StakingListGate.state.updates,
       StakingListPagination.updates,
+      authModel.$user.updates,
     ],
-    fn: ([pagination, gate]) => ({
+    fn: ([pagination, gate, user]) => ({
       ...pagination,
       ...gate,
+      ...{
+        userRole: user?.role,
+      },
     }),
   }),
   filter: ({ protocolId }) => Boolean(protocolId),
