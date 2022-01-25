@@ -1,4 +1,5 @@
 import { createDomain, combine } from 'effector-logger/macro'
+import omit from 'lodash.omit'
 
 import {
   IntegrationBinanceConnectMutationVariables,
@@ -27,7 +28,7 @@ export const connectIntegrationBinanceFx = integrationListDomain.createEffect(
     input: IntegrationBinanceConnectMutationVariables['input'] & {
       type: WalletExchangeTypeEnum
     }
-  ) => settingsApi.integrationBinanceConnect({ input })
+  ) => settingsApi.integrationBinanceConnect({ input: omit(input, 'type') })
 )
 
 export const disconnectIntegrationFx = integrationListDomain.createEffect(
