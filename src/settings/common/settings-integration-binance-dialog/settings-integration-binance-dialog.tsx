@@ -4,21 +4,22 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
 import { Input } from '~/common/input'
-import { settingsIntegrationBinanceSchema } from './settings-integration-binance-dialog.validation'
-import * as styles from './settings-integration-binance-dialog.css'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
-import { createApiInstructionLink } from './settings-integration-binance-dialog.css'
+import { settingsIntegrationBinanceSchema } from './settings-integration-binance-dialog.validation'
+import * as styles from './settings-integration-binance-dialog.css'
 
 type FormValues = {
   apiKey: string
-  secretKey: string
+  apiSecret: string
 }
 
 export type SettingsIntegrationBinanceDialogProps = {
   onConfirm: (formValues: FormValues) => void
   defaultValues?: FormValues
 }
+
+const HOW_TO_CREATE_API = 'https://www.binance.com/en/support/faq/360002502072'
 
 export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationBinanceDialogProps> =
   (props) => {
@@ -40,9 +41,9 @@ export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationBina
             can not to spend or withdraw any assets from your account!
             <br />
             <Link
-              href="https://www.binance.com/en/support/faq/360002502072"
+              href={HOW_TO_CREATE_API}
               target="_blank"
-              className={createApiInstructionLink}
+              className={styles.createApiInstructionLink}
             >
               How to create API key
             </Link>
@@ -57,12 +58,12 @@ export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationBina
             error={Boolean(formState.errors.apiKey?.message)}
           />
           <Input
-            {...register('secretKey')}
+            {...register('apiSecret')}
             className={styles.input}
             placeholder="Secret key"
-            defaultValue={props.defaultValues?.secretKey}
-            helperText={formState.errors.secretKey?.message}
-            error={Boolean(formState.errors.secretKey?.message)}
+            defaultValue={props.defaultValues?.apiSecret}
+            helperText={formState.errors.apiSecret?.message}
+            error={Boolean(formState.errors.apiSecret?.message)}
           />
           <div className={styles.buttons}>
             <Button type="submit">Connect</Button>

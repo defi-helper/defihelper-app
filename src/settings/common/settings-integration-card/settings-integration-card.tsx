@@ -12,19 +12,25 @@ export type SettingsWalletCardProps = {
   icon: ReactElement
   account?: string
   platform: string
-  onInteraction: () => void
+  onConnect: () => void
+  onDisconnect: () => void
+  deleting?: boolean
+  adding?: boolean
 }
 
 export const SettingsIntegrationCard: React.VFC<SettingsWalletCardProps> = (
   props
 ) => {
   const { icon, platform, account } = props
+
   return (
     <Paper className={clsx(styles.root, props.className)} radius={8}>
       <div className={styles.header}>
         <div className={styles.heading}>
           <div className={styles.icon}>{icon}</div>
-          <Typography as="span">{platform}</Typography>
+          <Typography as="span" className={styles.platform}>
+            {platform}
+          </Typography>
         </div>
         <div className={styles.row}>
           <Typography
@@ -44,8 +50,9 @@ export const SettingsIntegrationCard: React.VFC<SettingsWalletCardProps> = (
         <div className={styles.buttons}>
           <Button
             size="small"
-            onClick={props.onInteraction}
+            onClick={account ? props.onDisconnect : props.onConnect}
             className={account ? styles.disconnect : styles.connect}
+            loading={props.deleting || props.adding}
           >
             {account ? 'Disconnect' : 'Connect'}
           </Button>

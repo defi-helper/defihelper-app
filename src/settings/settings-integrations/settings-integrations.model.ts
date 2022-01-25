@@ -1,19 +1,38 @@
-import { createDomain, sample } from 'effector-logger/macro'
+import { createDomain, combine } from 'effector-logger/macro'
 
-import { WalletExchangeFragmentFragment } from '~/graphql/_generated-types'
+import {
+  IntegrationBinanceConnectMutationVariables,
+  WalletExchangeFragmentFragment,
+  WalletExchangeTypeEnum,
+} from '~/graphql/_generated-types'
 import { settingsApi } from '~/settings/common'
 import { toastsService } from '~/toasts'
+
+export type Integrations = Record<
+  string,
+  | (WalletExchangeFragmentFragment & {
+      deleting?: boolean
+      adding?: boolean
+    })
+  | undefined
+>
 
 export const integrationListDomain = createDomain()
 
 export const fetchEstablishedIntegrationsListFx =
-  integrationListDomain.createEffect(async () => {
-    return settingsApi.integrationList({})
-  })
+  integrationListDomain.createEffect(async () => settingsApi.integrationList())
 
-export const deleteWalletFx = integrationListDomain.createEffect(
-  async (walletId: string) => {
-    const data = await settingsApi.walletDelete({ id: walletId })
+export const connectIntegrationBinanceFx = integrationListDomain.createEffect(
+  async (
+    input: IntegrationBinanceConnectMutationVariables['input'] & {
+      type: WalletExchangeTypeEnum
+    }
+  ) => settingsApi.integrationBinanceConnect({ input })
+)
+
+export const disconnectIntegrationFx = integrationListDomain.createEffect(
+  async (integrationId: string) => {
+    const data = await settingsApi.integrationDisconnect(integrationId)
 
     if (!data) throw new Error('something went wrong')
 
@@ -21,21 +40,51 @@ export const deleteWalletFx = integrationListDomain.createEffect(
   }
 )
 
-export const addWallet =
-  integrationListDomain.createEvent<WalletExchangeFragmentFragment>()
+export const $integrationsList = integrationListDomain
+  .createStore<
+    (WalletExchangeFragmentFragment & {
+      deleting?: boolean
+      adding?: boolean
+    })[]
+  >([])
+  .on(fetchEstablishedIntegrationsListFx.doneData, (_, payload) => payload)
+  .on(disconnectIntegrationFx, (state, payload) => {
+    return state.map((integration) =>
+      integration.id === payload
+        ? { ...integration, deleting: true }
+        : integration
+    )
+  })
+  .on(disconnectIntegrationFx.done, (state, payload) => {
+    return state.filter(
+      (integration) => integration.id !== payload.params && payload.result
+    )
+  })
+  .on(connectIntegrationBinanceFx, (state, payload) => {
+    return state.map((integration) =>
+      integration.type === payload.type
+        ? { ...integration, adding: true }
+        : integration
+    )
+  })
+  .on(connectIntegrationBinanceFx.done, (state, payload) => {
+    return state.map((integration) =>
+      integration.type === payload.params.type
+        ? { ...integration, adding: false }
+        : integration
+    )
+  })
 
-export const $integrations = integrationListDomain
-  .createStore<WalletExchangeFragmentFragment[]>([])
-  .on(fetchEstablishedIntegrationsListFx.doneData, (_, v) => v)
+export const $integrations = combine($integrationsList, (integrations) => {
+  return integrations.reduce<Integrations>((acc, integration) => {
+    acc[integration.type] = integration
 
-export const updated = integrationListDomain.createEvent()
-
-sample({
-  clock: updated,
-  target: integrationListDomain,
+    return acc
+  }, {})
 })
 
 toastsService.forwardErrors(
   fetchEstablishedIntegrationsListFx.failData,
-  deleteWalletFx.failData
+  connectIntegrationBinanceFx.failData,
+  disconnectIntegrationFx.failData
 )

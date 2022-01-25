@@ -916,6 +916,13 @@ export type GovVotesFilterInputType = {
   wallet: Scalars['String']
 }
 
+export type IntegrationBinanceConnectInputType = {
+  /** Api key */
+  apiKey: Scalars['String']
+  /** Api secret */
+  apiSecret: Scalars['String']
+}
+
 export enum LocaleEnum {
   EnUs = 'enUS',
   RuRu = 'ruRU',
@@ -943,6 +950,8 @@ export enum MetricGroupEnum {
 
 export type Mutation = {
   __typename?: 'Mutation'
+  integrationBinanceConnect: WalletExchangeType
+  integrationDisconnect: Scalars['Boolean']
   authEth?: Maybe<AuthType>
   authWaves?: Maybe<AuthType>
   addWallet?: Maybe<AuthType>
@@ -992,6 +1001,14 @@ export type Mutation = {
   automateContractCreate: AutomateContractType
   automateContractUpdate: AutomateContractType
   automateContractDelete: Scalars['Boolean']
+}
+
+export type MutationIntegrationBinanceConnectArgs = {
+  input: IntegrationBinanceConnectInputType
+}
+
+export type MutationIntegrationDisconnectArgs = {
+  id: Scalars['UuidType']
 }
 
 export type MutationAuthEthArgs = {
@@ -4396,6 +4413,25 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type IntegrationBinanceConnectMutationVariables = Exact<{
+  input: IntegrationBinanceConnectInputType
+}>
+
+export type IntegrationBinanceConnectMutation = { __typename?: 'Mutation' } & {
+  integrationBinanceConnect: {
+    __typename?: 'WalletExchangeType'
+  } & WalletExchangeFragmentFragment
+}
+
+export type IntegrationDisconnectMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type IntegrationDisconnectMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'integrationDisconnect'
+>
+
 export type IntegrationListQueryVariables = Exact<{ [key: string]: never }>
 
 export type IntegrationListQuery = { __typename?: 'Query' } & {
@@ -6827,6 +6863,35 @@ export function useBillingHistoryQuery(
     query: BillingHistoryDocument,
     ...options,
   })
+}
+export const IntegrationBinanceConnectDocument = gql`
+  mutation IntegrationBinanceConnect(
+    $input: IntegrationBinanceConnectInputType!
+  ) {
+    integrationBinanceConnect(input: $input) {
+      ...walletExchangeFragment
+    }
+  }
+  ${WalletExchangeFragmentFragmentDoc}
+`
+
+export function useIntegrationBinanceConnectMutation() {
+  return Urql.useMutation<
+    IntegrationBinanceConnectMutation,
+    IntegrationBinanceConnectMutationVariables
+  >(IntegrationBinanceConnectDocument)
+}
+export const IntegrationDisconnectDocument = gql`
+  mutation IntegrationDisconnect($id: UuidType!) {
+    integrationDisconnect(id: $id)
+  }
+`
+
+export function useIntegrationDisconnectMutation() {
+  return Urql.useMutation<
+    IntegrationDisconnectMutation,
+    IntegrationDisconnectMutationVariables
+  >(IntegrationDisconnectDocument)
 }
 export const IntegrationListDocument = gql`
   query IntegrationList {

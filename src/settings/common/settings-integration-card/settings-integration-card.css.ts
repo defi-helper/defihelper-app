@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css'
+
 import { theme } from '~/common/theme'
 
 export const root = style({
@@ -17,61 +18,8 @@ export const icon = style({
   alignItems: 'center',
 })
 
-export const manage = style({
-  width: 24,
-  height: 24,
-  border: `1px solid ${theme.colors.textColorPrimary}`,
-  borderRadius: 4,
-  marginLeft: 'auto',
-  marginRight: -12,
-  marginTop: -24,
-  opacity: 0.64,
-  position: 'relative',
-
-  '@media': {
-    [theme.mediaQueries.hover()]: {
-      ':hover': {
-        opacity: 1,
-      },
-    },
-  },
-})
-
-export const manageLoading = style({
-  pointerEvents: 'none',
-})
-
-export const manageActive = style({
-  opacity: 1,
-})
-
-export const manageIcon = style({
-  width: 16,
-  height: 16,
-})
-
-export const manageIconloading = style({
-  opacity: 0,
-})
-
-export const circularProgress = style({
-  position: 'absolute',
-  top: 0,
-  right: 0,
-  bottom: 0,
-  left: 0,
-  margin: 'auto',
-  width: 16,
-  height: 16,
-})
-
-export const dropdown = style({
-  paddingTop: 8,
-  paddingBottom: 8,
-})
-
-export const deleteButton = style({
-  color: theme.colors.common.red1,
+export const platform = style({
+  textTransform: 'capitalize',
 })
 
 export const header = style({
@@ -82,10 +30,6 @@ export const footer = style({
   padding: '16px 24px 24px',
   background: theme.colors.common.blue1,
   color: theme.colors.common.white1,
-})
-
-export const error = style({
-  background: theme.colors.common.red1,
 })
 
 export const row = style({
@@ -124,24 +68,4 @@ export const disconnect = style({
   background: theme.colors.common.white3,
   border: theme.colors.common.white3,
   color: theme.colors.common.white1,
-})
-
-export const question = style({
-  width: 16,
-  height: 16,
-  verticalAlign: 'middle',
-})
-
-export const howItWorks = style({
-  color: theme.colors.textColorGrey,
-})
-
-export const attention = style({
-  width: 27,
-  height: 27,
-  marginLeft: 'auto',
-  color: theme.colors.textColorSecondary,
-  position: 'relative',
-  right: -12,
-  bottom: -12,
 })
