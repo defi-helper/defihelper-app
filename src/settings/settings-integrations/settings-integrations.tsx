@@ -21,8 +21,8 @@ export type SettingsWalletsProps = {
 export const SettingsIntegrations: React.VFC<SettingsWalletsProps> = (
   props
 ) => {
-  const wallets = useStore(model.$wallets)
-  const loading = useStore(model.fetchWalletListFx.pending)
+  const integrations = useStore(model.$integrations)
+  const loading = useStore(model.fetchEstablishedIntegrationsListFx.pending)
   const [openConnectBinance] = useDialog(SettingsIntegrationBinanceDialog)
 
   const connectWalletHandler = async () => {
@@ -40,14 +40,17 @@ export const SettingsIntegrations: React.VFC<SettingsWalletsProps> = (
         <Typography variant="h3">Integrations</Typography>
       </SettingsHeader>
       <div className={styles.list}>
-        {loading && <SettingsWalletLoading />}
-        {!loading && !wallets.length && (
-          <SettingsIntegrationCard
-            icon={<BinanceIcon />}
-            platform="Binance"
-            account="avT55DccZMENH54MIoXesamrkDFp6s9nCRBijkQLj7CPMsq9639N2jJYjEbEg3Fu"
-            onConnect={connectWalletHandler}
-          />
+        {!loading ? (
+          integrations.map((v) => (
+            <SettingsIntegrationCard
+              icon={<BinanceIcon />}
+              platform="Binance"
+              account={v.account}
+              onInteraction={connectWalletHandler}
+            />
+          ))
+        ) : (
+          <SettingsWalletLoading />
         )}
 
         {!loading &&

@@ -12,7 +12,7 @@ export type SettingsWalletCardProps = {
   icon: ReactElement
   account?: string
   platform: string
-  onConnect: () => void
+  onInteraction: () => void
 }
 
 export const SettingsIntegrationCard: React.VFC<SettingsWalletCardProps> = (
@@ -44,7 +44,7 @@ export const SettingsIntegrationCard: React.VFC<SettingsWalletCardProps> = (
         <div className={styles.buttons}>
           <Button
             size="small"
-            onClick={props.onConnect}
+            onClick={props.onInteraction}
             className={account ? styles.disconnect : styles.connect}
           >
             {account ? 'Disconnect' : 'Connect'}

@@ -24,6 +24,8 @@ import {
   UserNotificationToggleMutation,
   BillingTransferCreateMutationVariables,
   BillingTransferCreateMutation,
+  IntegrationListQuery,
+  IntegrationListQueryVariables,
 } from '~/graphql/_generated-types'
 import {
   USER_CONTACTS,
@@ -133,6 +135,16 @@ export const settingsApi = {
         list: data?.me?.wallets.list ?? [],
         count: data?.me?.wallets.pagination.count ?? 0,
       })),
+
+  integrationList: (variables?: IntegrationListQueryVariables) =>
+    getAPIClient()
+      .query<IntegrationListQuery, IntegrationListQueryVariables>(
+        WALLET_LIST,
+        variables,
+        { requestPolicy: 'cache-and-network' }
+      )
+      .toPromise()
+      .then(({ data }) => data?.me?.exchanges ?? []),
 
   walletUpdate: (variables: WalletUpdateMutationVariables) =>
     getAPIClient()

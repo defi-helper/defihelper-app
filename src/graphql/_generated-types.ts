@@ -2747,6 +2747,7 @@ export type UserType = {
   locale: LocaleEnum
   tokenAliases: UserTokenAliasListType
   wallets: WalletListType
+  exchanges: Array<WalletExchangeType>
   blockchains: Array<UserBlockchainType>
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
@@ -2939,6 +2940,20 @@ export type WalletContractListType = {
   /** Elements */
   list?: Maybe<Array<ContractType>>
   pagination: Pagination
+}
+
+export type WalletExchangeType = {
+  __typename?: 'WalletExchangeType'
+  /** Identifier */
+  id: Scalars['UuidType']
+  /** Exchange type */
+  type: WalletExchangeTypeEnum
+  /** Account */
+  account: Scalars['String']
+}
+
+export enum WalletExchangeTypeEnum {
+  Binance = 'binance',
 }
 
 export type WalletListFilterInputType = {
@@ -4381,6 +4396,18 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type IntegrationListQueryVariables = Exact<{ [key: string]: never }>
+
+export type IntegrationListQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      exchanges: Array<
+        { __typename?: 'WalletExchangeType' } & WalletExchangeFragmentFragment
+      >
+    }
+  >
+}
+
 export type OnBillingTransferCreatedSubscriptionVariables = Exact<{
   user?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
 }>
@@ -4516,6 +4543,10 @@ export type WalletDeleteMutation = { __typename?: 'Mutation' } & Pick<
   Mutation,
   'walletDelete'
 >
+
+export type WalletExchangeFragmentFragment = {
+  __typename?: 'WalletExchangeType'
+} & Pick<WalletExchangeType, 'id' | 'type' | 'account'>
 
 export type WalletListQueryVariables = Exact<{
   sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
@@ -5185,6 +5216,13 @@ export const UserContactFragmentFragmentDoc = gql`
 export const UserNotificationTypeFragmentDoc = gql`
   fragment userNotificationType on UserNotificationType {
     type
+  }
+`
+export const WalletExchangeFragmentFragmentDoc = gql`
+  fragment walletExchangeFragment on WalletExchangeType {
+    id
+    type
+    account
   }
 `
 export const WalletFragmentFragmentDoc = gql`
@@ -6787,6 +6825,25 @@ export function useBillingHistoryQuery(
 ) {
   return Urql.useQuery<BillingHistoryQuery>({
     query: BillingHistoryDocument,
+    ...options,
+  })
+}
+export const IntegrationListDocument = gql`
+  query IntegrationList {
+    me {
+      exchanges {
+        ...walletExchangeFragment
+      }
+    }
+  }
+  ${WalletExchangeFragmentFragmentDoc}
+`
+
+export function useIntegrationListQuery(
+  options: Omit<Urql.UseQueryArgs<IntegrationListQueryVariables>, 'query'> = {}
+) {
+  return Urql.useQuery<IntegrationListQuery>({
+    query: IntegrationListDocument,
     ...options,
   })
 }
