@@ -1,5 +1,6 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
+import { useEffect } from 'react'
 
 import { Typography } from '~/common/typography'
 import { SettingsHeader, SettingsPaper } from '~/settings/common'
@@ -68,6 +69,10 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
   const placeholders = Array.from(
     Array(PLACEHOLDERS_COUNT < 0 ? 0 : PLACEHOLDERS_COUNT)
   )
+
+  useEffect(() => {
+    model.fetchEstablishedIntegrationsListFx()
+  }, [])
 
   return (
     <div className={clsx(styles.root, props.className)}>
