@@ -36,9 +36,6 @@ export type ConnectParams = {
 
 export type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
-  // syncedBlock: number
-  // scannerId?: string
-  // prototypeAddress?: string
   autostakingLoading?: boolean
 }
 
