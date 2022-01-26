@@ -53,7 +53,6 @@ export const $integrationsList = integrationListDomain
   .createStore<
     (WalletExchangeFragmentFragment & {
       deleting?: boolean
-      adding?: boolean
     })[]
   >([])
   .on(fetchEstablishedIntegrationsListFx.doneData, (_, payload) => payload)
@@ -69,18 +68,16 @@ export const $integrationsList = integrationListDomain
       (integration) => integration.id !== payload.params && payload.result
     )
   })
-  .on(connectIntegrationBinanceFx, (state, payload) => {
-    return state.map((integration) =>
-      integration.type === payload.type
-        ? { ...integration, adding: true }
-        : integration
-    )
-  })
   .on(connectIntegrationBinanceFx.done, (state, payload) => {
     return state.map((integration) =>
       integration.type === payload.params.type ? payload.result : integration
     )
   })
+
+export const $connectAdding = integrationListDomain
+  .createStore<WalletExchangeFragmentFragment['type'] | null>(null)
+  .on(connectIntegrationBinanceFx, (_, { type }) => type)
+  .on(connectIntegrationBinanceFx.finally, () => null)
 
 export const $integrations = combine($integrationsList, (integrations) => {
   return integrations.reduce<Integrations>((acc, integration) => {

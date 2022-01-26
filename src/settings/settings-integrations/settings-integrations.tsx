@@ -26,6 +26,8 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
 ) => {
   const integrations = useStore(model.$integrations)
   const loading = useStore(model.fetchEstablishedIntegrationsListFx.pending)
+  const connectAdding = useStore(model.$connectAdding)
+
   const [openConnectBinance] = useDialog(SettingsIntegrationBinanceDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
@@ -91,6 +93,8 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
               account={integration?.account}
               onConnect={handleConnectIntegration(integrationType)}
               onDisconnect={handleDisconnect(integration?.id)}
+              adding={connectAdding === integrationType}
+              deleting={integration?.deleting}
             />
           )
         })}
