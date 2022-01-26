@@ -69,9 +69,7 @@ export const $integrationsList = integrationListDomain
     )
   })
   .on(connectIntegrationBinanceFx.done, (state, payload) => {
-    return state.map((integration) =>
-      integration.type === payload.params.type ? payload.result : integration
-    )
+    return [...state, payload.result]
   })
 
 export const $connectAdding = integrationListDomain
