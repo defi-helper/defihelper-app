@@ -86,6 +86,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const freshMetrics = useStore(model.$freshMetrics)
   const wallets = useStore(walletsModel.$wallets)
   const loading = useStore(model.fetchStakingListFx.pending)
+  const scanner = useStore(model.$scanner)
+  const contractPrototypeAddresses = useStore(model.$contractAddresses)
 
   const openedContract = useStore(model.$openedContract)
 
@@ -126,11 +128,14 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       try {
         model.autostakingStart(contract.id)
 
+        const prototypeAddress =
+          contractPrototypeAddresses[contract.id]?.prototypeAddress
+
         await switchNetwork(contract.network)
 
         if (
           !contract.automate.autorestake ||
-          !contract.prototypeAddress ||
+          !prototypeAddress ||
           !currentWallet
         )
           return
@@ -168,7 +173,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         })
 
         const deployAdapter = await deployModel.fetchDeployAdapterFx({
-          address: contract.prototypeAddress,
+          address: prototypeAddress,
           protocol: props.protocolAdapter,
           contract: contract.automate.autorestake,
           chainId: String(currentWallet.chainId),
@@ -469,6 +474,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       currentBlock={currentBlock}
                       currentNetwork={currentWallet?.chainId}
                       onOpenApy={handleOpenApy(stakingListItem.metric)}
+                      scannerData={scanner[stakingListItem.id]}
                     />
                     {opened && (
                       <StakingAdapters
@@ -483,7 +489,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         autorestake={
                           stakingListItem.automate.autorestake ?? undefined
                         }
-                        prototypeAddress={stakingListItem.prototypeAddress}
+                        prototypeAddress={
+                          contractPrototypeAddresses[stakingListItem.id]
+                            ?.prototypeAddress
+                        }
                       />
                     )}
                   </li>
