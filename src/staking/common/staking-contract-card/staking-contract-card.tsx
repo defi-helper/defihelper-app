@@ -26,6 +26,11 @@ export type StakingContractCardProps = {
   freshMetrics: Record<string, FreshMetrics>
   currentBlock: number
   currentNetwork?: string
+  scannerData: {
+    scannerId?: string | undefined
+    syncedBlock: number
+    contractId: string
+  }
 } & Contract
 
 export const StakingContractCard: React.VFC<StakingContractCardProps> = (
@@ -67,7 +72,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             <Can I="update" a="Protocol">
               <br />
               <StakingListRowSyncIndicator
-                row={props}
+                row={{ ...props, ...props.scannerData }}
                 currentBlock={props.currentBlock}
               />
             </Can>

@@ -42,6 +42,7 @@ import {
   AUTOMATION_CONTRACT_UPDATE,
   AUTOMATION_CONTRACT_DELETE,
 } from './graphql'
+import { config } from '~/config'
 
 export const stakingApi = {
   contractList: (variables: StakingContractListQueryVariables) =>
@@ -180,4 +181,22 @@ export const stakingApi = {
       >(AUTOMATION_CONTRACT_DELETE, variables)
       .toPromise()
       .then(({ data }) => data?.automateContractDelete),
+
+  scannerGetEventListener: (variables: {
+    id: string
+  }): Promise<{ id: string; syncHeight: number; contract: string }[]> =>
+    fetch(
+      `${config.SCANNER_HOST}/contract/${variables.id}/event-listener`
+    ).then((res) => res.json()),
+
+  scannerGetContract: (variables: {
+    network: string
+    address: string
+  }): Promise<{ startHeight: number; id: string } | null> =>
+    fetch(
+      `${config.SCANNER_HOST}/contract?network=${variables.network}&address=${variables.address}`
+    ).then(async (res) => {
+      const response: { startHeight: number; id: string }[] = await res.json()
+      return response.length ? response[0] : null
+    }),
 }
