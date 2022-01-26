@@ -28,7 +28,15 @@ export const connectIntegrationBinanceFx = integrationListDomain.createEffect(
     input: IntegrationBinanceConnectMutationVariables['input'] & {
       type: WalletExchangeTypeEnum
     }
-  ) => settingsApi.integrationBinanceConnect({ input: omit(input, 'type') })
+  ) => {
+    const data = await settingsApi.integrationBinanceConnect({
+      input: omit(input, 'type'),
+    })
+
+    if (!data) throw new Error('something went worng')
+
+    return data
+  }
 )
 
 export const disconnectIntegrationFx = integrationListDomain.createEffect(
@@ -70,9 +78,7 @@ export const $integrationsList = integrationListDomain
   })
   .on(connectIntegrationBinanceFx.done, (state, payload) => {
     return state.map((integration) =>
-      integration.type === payload.params.type
-        ? { ...integration, adding: false }
-        : integration
+      integration.type === payload.params.type ? payload.result : integration
     )
   })
 
