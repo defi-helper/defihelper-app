@@ -15,7 +15,7 @@ export type StakingListRowSyncIndicatorProps = {
   currentBlock: number
 }
 
-const SCANER_URL = 'https://scanner.defihelper.io/contract'
+const SCANNER_URL = 'https://scanner.defihelper.io/contract'
 
 export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorProps> =
   (props) => {
@@ -37,9 +37,13 @@ export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorP
       return <>not deployed</>
     }
 
+    if (!row.scannerId) {
+      return <></>
+    }
+
     return (
       <Link
-        href={`${SCANER_URL}/${row.scannerId}`}
+        href={`${SCANNER_URL}/${row.scannerId}`}
         target="_blank"
         rel="noreferrer"
         style={{
