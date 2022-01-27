@@ -195,6 +195,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                   Auto-Stake
                 </Button>
               }
+              blockchain={props.blockchain}
+              network={props.network}
             >
               <Button
                 size="small"

@@ -165,7 +165,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           onClick={handleAdd}
           loading={createLoading}
         >
-          + New Proposal
+          + New Request
         </Button>
       </div>
       {loading && (

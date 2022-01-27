@@ -36,7 +36,6 @@ import {
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 import { PROTOCOL_RESOLVE_CONTRACTS } from '~/protocols/common/graphql/protocol-resolve-contracts.graphql'
-import { config } from '~/config'
 
 export const protocolsApi = {
   protocolList: (variables: ProtocolsQueryVariables) =>
@@ -146,22 +145,4 @@ export const protocolsApi = {
         altCoin: data?.me?.altCoin ?? [],
         stableCoin: data?.me?.stableCoin ?? [],
       })),
-
-  scannerGetEventListener: (variables: {
-    id: string
-  }): Promise<{ id: string; syncHeight: number; contract: string }[]> =>
-    fetch(
-      `${config.SCANNER_HOST}/contract/${variables.id}/event-listener`
-    ).then((res) => res.json()),
-
-  scannerGetContract: (variables: {
-    network: string
-    address: string
-  }): Promise<{ startHeight: number; id: string } | null> =>
-    fetch(
-      `${config.SCANNER_HOST}/contract?network=${variables.network}&address=${variables.address}`
-    ).then(async (res) => {
-      const response: { startHeight: number; id: string }[] = await res.json()
-      return response.length ? response[0] : null
-    }),
 }

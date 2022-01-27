@@ -18,7 +18,7 @@ export const StakingApyDialog: React.FC<StakingApyDialogProps> = (props) => {
     return {
       title,
       apy: apyMul,
-      perStaked: bignumberUtils.mul(apyMul, staked),
+      perStaked: bignumberUtils.mul(apy, staked),
     }
   })
 
