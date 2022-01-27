@@ -17,6 +17,7 @@ import {
   ConnectParams,
   Contract,
   FreshMetrics,
+  RegisterParams,
   stakingApi,
   StakingListPayload,
 } from '~/staking/common'
@@ -30,10 +31,12 @@ import { Wallet } from '~/wallets/common'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as stakingUpdateModel from '~/staking/staking-update/staking-update.model'
 import { authModel } from '~/auth'
+import { protocolsApi } from '~/protocols/common'
 
 export const stakingListDomain = createDomain()
 
 const NOT_DELETED = 'Not deleted'
+const NOT_REGISTERED = 'Not registered'
 const NOT_CONNECTED = 'Not connected'
 const NOT_DISCONNECTED = 'Not disconnected'
 
@@ -159,6 +162,22 @@ export const deleteStakingFx = stakingListDomain.createEffect(
     }
 
     throw new Error(NOT_DELETED)
+  }
+)
+
+export const scannerRegisterContractFx = stakingListDomain.createEffect(
+  async (params: RegisterParams) => {
+    const { id, events } = params
+    const done = await protocolsApi.contractScannerRegister({
+      id,
+      events,
+    })
+
+    if (done) {
+      return id
+    }
+
+    throw new Error(NOT_REGISTERED)
   }
 )
 

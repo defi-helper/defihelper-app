@@ -22,6 +22,8 @@ import {
   ProtocolStakedBalanceQueryVariables,
   ProtocolResolveContractsMutationVariables,
   ProtocolResolveContractsMutation,
+  ContractScannerRegisterMutationVariables,
+  ContractScannerRegisterMutation,
 } from '~/graphql/_generated-types'
 import {
   PROTOCOLS,
@@ -36,6 +38,7 @@ import {
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 import { PROTOCOL_RESOLVE_CONTRACTS } from '~/protocols/common/graphql/protocol-resolve-contracts.graphql'
+import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-scanner-register.graphql'
 
 export const protocolsApi = {
   protocolList: (variables: ProtocolsQueryVariables) =>
@@ -106,6 +109,17 @@ export const protocolsApi = {
       >(PROTOCOL_RESOLVE_CONTRACTS, variables)
       .toPromise()
       .then(({ data }) => data?.protocolResolveContracts),
+
+  contractScannerRegister: (
+    variables: ContractScannerRegisterMutationVariables
+  ) =>
+    getAPIClient()
+      .mutation<
+        ContractScannerRegisterMutation,
+        ContractScannerRegisterMutationVariables
+      >(CONTRACT_SCANNER_REGISTER, variables)
+      .toPromise()
+      .then(({ data }) => data?.contractScannerRegister),
 
   protocolDelete: (id: string) =>
     getAPIClient()

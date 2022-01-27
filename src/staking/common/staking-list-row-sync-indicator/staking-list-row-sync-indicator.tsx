@@ -6,6 +6,7 @@ import {
 } from '~/graphql/_generated-types'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Link } from '~/common/link'
+import { ButtonBase } from '~/common/button-base'
 
 export type StakingListRowSyncIndicatorProps = {
   row: StakingContractFragmentFragment & {
@@ -13,13 +14,14 @@ export type StakingListRowSyncIndicatorProps = {
     scannerId?: string
   }
   currentBlock: number
+  onContractRegister: () => void
 }
 
 const SCANNER_URL = 'https://scanner.defihelper.io/contract'
 
 export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorProps> =
   (props) => {
-    const { row, currentBlock } = props
+    const { row, currentBlock, onContractRegister } = props
     const [seemsUnusual, setSeemsUnusual] = useState(false)
 
     useMemo(
@@ -38,7 +40,9 @@ export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorP
     }
 
     if (!row.scannerId) {
-      return <></>
+      return (
+        <ButtonBase onClick={onContractRegister}>register scanner</ButtonBase>
+      )
     }
 
     return (

@@ -123,6 +123,21 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     model.openContract(address)
   }
 
+  const handleScannerRegister = (contractId: string) => async () => {
+    const events = prompt(
+      'events list comma separated, ex.: Deposit,Approval,Withdraw',
+      'Deposit'
+    )
+    if (!events) return
+
+    await model.scannerRegisterContractFx({
+      id: contractId,
+      events: events.split(',').map((e) => e.trim()),
+    })
+    // eslint-disable-next-line no-alert
+    alert('task pushed! wait little bit')
+  }
+
   const handleAutostake =
     (contract: typeof stakingList[number]) => async () => {
       try {
@@ -475,6 +490,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       currentNetwork={currentWallet?.chainId}
                       onOpenApy={handleOpenApy(stakingListItem.metric)}
                       scannerData={scanner[stakingListItem.id]}
+                      onScannerRegister={handleScannerRegister(
+                        stakingListItem.id
+                      )}
                     />
                     {opened && (
                       <StakingAdapters

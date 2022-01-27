@@ -21,6 +21,7 @@ export type StakingContractCardProps = {
   opened: boolean
   onToggleContract: () => void
   onDelete: () => void
+  onScannerRegister: () => void
   protocolId: string
   protocolAdapter: string
   freshMetrics: Record<string, FreshMetrics>
@@ -74,6 +75,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
               <StakingListRowSyncIndicator
                 row={{ ...props, ...props.scannerData }}
                 currentBlock={props.currentBlock}
+                onContractRegister={props.onScannerRegister}
               />
             </Can>
           )}
