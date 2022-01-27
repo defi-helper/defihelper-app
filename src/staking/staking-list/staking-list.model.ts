@@ -31,7 +31,6 @@ import { Wallet } from '~/wallets/common'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as stakingUpdateModel from '~/staking/staking-update/staking-update.model'
 import { authModel } from '~/auth'
-import { protocolsApi } from '~/protocols/common'
 
 export const stakingListDomain = createDomain()
 
@@ -168,7 +167,7 @@ export const deleteStakingFx = stakingListDomain.createEffect(
 export const scannerRegisterContractFx = stakingListDomain.createEffect(
   async (params: RegisterParams) => {
     const { id, events } = params
-    const done = await protocolsApi.contractScannerRegister({
+    const done = await stakingApi.contractScannerRegister({
       id,
       events,
     })

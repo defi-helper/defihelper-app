@@ -26,6 +26,8 @@ import {
   AutomationContractUpdateMutationVariables,
   AutomationContractDeleteMutation,
   AutomationContractDeleteMutationVariables,
+  ContractScannerRegisterMutationVariables,
+  ContractScannerRegisterMutation,
 } from '~/graphql/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -43,6 +45,7 @@ import {
   AUTOMATION_CONTRACT_DELETE,
 } from './graphql'
 import { config } from '~/config'
+import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-scanner-register.graphql'
 
 export const stakingApi = {
   contractList: (variables: StakingContractListQueryVariables) =>
@@ -135,6 +138,17 @@ export const stakingApi = {
       )
       .toPromise()
       .then(({ data }) => data?.me),
+
+  contractScannerRegister: (
+    variables: ContractScannerRegisterMutationVariables
+  ) =>
+    getAPIClient()
+      .mutation<
+        ContractScannerRegisterMutation,
+        ContractScannerRegisterMutationVariables
+      >(CONTRACT_SCANNER_REGISTER, variables)
+      .toPromise()
+      .then(({ data }) => data?.contractScannerRegister),
 
   automatesContractList: (
     variables?: StakingAutomatesContractsQueryVariables
