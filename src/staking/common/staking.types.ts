@@ -34,6 +34,11 @@ export type ConnectParams = {
   wallet: string
 }
 
+export type RegisterParams = {
+  id: string
+  events: string[]
+}
+
 export type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
   autostakingLoading?: boolean

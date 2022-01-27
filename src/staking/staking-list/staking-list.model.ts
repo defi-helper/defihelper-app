@@ -17,6 +17,7 @@ import {
   ConnectParams,
   Contract,
   FreshMetrics,
+  RegisterParams,
   stakingApi,
   StakingListPayload,
 } from '~/staking/common'
@@ -34,6 +35,7 @@ import { authModel } from '~/auth'
 export const stakingListDomain = createDomain()
 
 const NOT_DELETED = 'Not deleted'
+const NOT_REGISTERED = 'Not registered'
 const NOT_CONNECTED = 'Not connected'
 const NOT_DISCONNECTED = 'Not disconnected'
 
@@ -159,6 +161,22 @@ export const deleteStakingFx = stakingListDomain.createEffect(
     }
 
     throw new Error(NOT_DELETED)
+  }
+)
+
+export const scannerRegisterContractFx = stakingListDomain.createEffect(
+  async (params: RegisterParams) => {
+    const { id, events } = params
+    const done = await stakingApi.contractScannerRegister({
+      id,
+      events,
+    })
+
+    if (done) {
+      return id
+    }
+
+    throw new Error(NOT_REGISTERED)
   }
 )
 
