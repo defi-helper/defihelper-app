@@ -62,7 +62,7 @@ export const PortfolioTotalWorth: React.VFC<PortfolioTotalWorthProps> = (
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
-        <Typography>Total Net Worth Dynamics</Typography>
+        <Typography>Tracked Balance Dynamics</Typography>
         <PortfolioChartGroups
           onChange={handleChangeMetric}
           value={currentGroup}

@@ -5,9 +5,9 @@ import { FortmaticConnector } from '@web3-react/fortmatic-connector'
 import { PortisConnector } from '@web3-react/portis-connector'
 import { TrezorConnector } from '@web3-react/trezor-connector'
 import { BscConnector } from '@binance-chain/bsc-connector'
+import { WalletLinkConnector } from '@web3-react/walletlink-connector'
 
 import { config } from '~/config'
-import { WalletLinkConnector } from './wallet-link'
 import { WavesKeeperConnector } from './waves-keeper-connector'
 import { WavesExchangeConnector } from './waves-exchange-connector'
 import { networksConfig } from '~/networks-config'
@@ -46,7 +46,6 @@ export const walletconnect = new WalletConnectConnector({
   },
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true,
-  pollingInterval: config.POLLING_INTERVAL,
 })
 
 export const fortmatic = new FortmaticConnector({

@@ -32,6 +32,7 @@ export type StakingContractCardProps = {
     syncedBlock: number
     contractId: string
   }
+  hideAutostakingBoost: boolean
 } & Contract
 
 export const StakingContractCard: React.VFC<StakingContractCardProps> = (
@@ -99,10 +100,11 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           family="mono"
           transform="uppercase"
           align="right"
+          className={styles.apy}
         >
           {bignumberUtils.formatMax(apy, 10000)}%{' '}
           <ButtonBase onClick={props.onOpenApy} className={styles.apyButton}>
-            <Icon icon="calculator" width="24" height="24" />
+            <Icon icon="calculator" width="20" height="20" />
           </ButtonBase>
         </Typography>
       </div>
@@ -154,15 +156,21 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             transform="uppercase"
             align="right"
           >
-            {validDiff
-              ? bignumberUtils.formatMax(
-                  bignumberUtils.mul(props.metric.myAPYBoost, 100),
-                  10000
-                )
-              : 0}
-            %
+            {props.hideAutostakingBoost ? (
+              '-'
+            ) : (
+              <>
+                {validDiff
+                  ? bignumberUtils.formatMax(
+                      bignumberUtils.mul(props.metric.myAPYBoost, 100),
+                      10000
+                    )
+                  : 0}
+                %
+              </>
+            )}
           </Typography>
-          {validDiff && (
+          {!props.hideAutostakingBoost && validDiff && (
             <Typography
               variant="body2"
               as="div"
