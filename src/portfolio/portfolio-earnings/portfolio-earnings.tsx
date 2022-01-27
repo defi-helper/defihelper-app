@@ -5,13 +5,12 @@ import { useMemo } from 'react'
 import { Chart } from '~/common/chart'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { Link } from '~/common/link'
-import { config } from '~/config'
 import { useTheme } from '~/common/theme'
-import * as model from './portfolio-earnings.model'
-import * as styles from './portfolio-earnings.css'
 import { Dropdown } from '~/common/dropdown'
 import { ButtonBase } from '~/common/button-base'
+import { Icon } from '~/common/icon'
+import * as model from './portfolio-earnings.model'
+import * as styles from './portfolio-earnings.css'
 
 export type PortfolioEarningsProps = {
   className?: string
@@ -48,16 +47,18 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
-        <Typography>
+        <Typography className={styles.title}>
           Estimated Earnings in 3 months
-          <Dropdown control={<ButtonBase>*</ButtonBase>}>
-            <Link
-              href={config.MEDIUM_LINK}
-              target="_blank"
-              className={styles.link}
-            >
-              How auto-staking works
-            </Link>
+          <Dropdown
+            control={
+              <ButtonBase className={styles.question}>
+                <Icon icon="question" width="24" height="24" />
+              </ButtonBase>
+            }
+            trigger="hover"
+            offset={[0, 8]}
+          >
+            text
           </Dropdown>
         </Typography>
       </div>

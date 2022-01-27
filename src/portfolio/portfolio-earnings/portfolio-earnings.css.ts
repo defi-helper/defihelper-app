@@ -16,7 +16,17 @@ export const header = style({
   marginBottom: 36,
 })
 
+export const title = style({
+  display: 'flex',
+  alignItems: 'center',
+})
+
 export const link = style({
   fontSize: 14,
   height: '18px',
+})
+
+export const question = style({
+  verticalAlign: 'middle',
+  marginLeft: 10,
 })

@@ -13,4 +13,6 @@ globalStyle(`${root} *:not(:last-child)`, {
 
 export const title = style({
   color: theme.colors.textColorGrey,
+  display: 'flex',
+  alignItems: 'center',
 })

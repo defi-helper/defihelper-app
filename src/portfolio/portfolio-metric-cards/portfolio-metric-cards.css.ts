@@ -13,3 +13,8 @@ export const root = style({
     },
   },
 })
+
+export const question = style({
+  verticalAlign: 'middle',
+  marginLeft: 10,
+})
