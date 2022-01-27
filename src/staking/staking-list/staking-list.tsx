@@ -124,6 +124,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   }
 
   const handleScannerRegister = (contractId: string) => async () => {
+    // eslint-disable-next-line no-alert
     const events = prompt(
       'events list comma separated, ex.: Deposit,Approval,Withdraw',
       'Deposit'
