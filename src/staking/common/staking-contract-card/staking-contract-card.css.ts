@@ -33,6 +33,7 @@ export const coinIcon = style({
 
 export const apyButton = style({
   verticalAlign: 'middle',
+  marginLeft: 10,
 })
 
 export const autostakingCol = style({
@@ -53,4 +54,10 @@ export const manageButton = style({
   height: 24,
   padding: 6,
   marginLeft: 5,
+})
+
+export const apy = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
 })

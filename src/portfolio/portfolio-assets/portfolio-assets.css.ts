@@ -115,3 +115,8 @@ export const loader = style({
 export const nodata = style({
   padding: '0 24px',
 })
+
+export const copyright = style({
+  color: theme.colors.textColorGrey,
+  marginTop: 10,
+})

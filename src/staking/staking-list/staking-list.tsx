@@ -475,6 +475,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       currentNetwork={currentWallet?.chainId}
                       onOpenApy={handleOpenApy(stakingListItem.metric)}
                       scannerData={scanner[stakingListItem.id]}
+                      hideAutostakingBoost={
+                        !(
+                          stakingListItem.automate.autorestake &&
+                          contractPrototypeAddresses[stakingListItem.id]
+                            ?.prototypeAddress
+                        )
+                      }
                     />
                     {opened && (
                       <StakingAdapters
