@@ -1,8 +1,9 @@
-import { createDomain } from 'effector-logger/macro'
+import { createDomain, UnitValue } from 'effector-logger/macro'
 import omit from 'lodash.omit'
 
 import { authModel } from '~/auth'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { CHART_GROUP_VALUES, CHART_DAYS_LIMITS } from '~/common/chart'
 import { dateUtils } from '~/common/date-utils'
 import { mergeChartData } from '~/common/merge-chart-data'
 import {
@@ -15,22 +16,6 @@ import {
 import { portfolioApi } from '../common'
 
 const portfolioTotalWorth = createDomain()
-
-const DAYS_LIMITS = {
-  [MetricGroupEnum.Hour]: 7,
-  [MetricGroupEnum.Day]: 30,
-  [MetricGroupEnum.Week]: 90,
-  [MetricGroupEnum.Month]: 180,
-} as const
-
-type State = Record<
-  Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
-  {
-    data: Record<string, string>[]
-    value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-    loading: boolean
-  }
->
 
 const defaultVariables: TokenMetricQueryVariables = {
   balanceSort: [
@@ -47,23 +32,24 @@ const defaultVariables: TokenMetricQueryVariables = {
   ],
 }
 
-type Gate = {
-  group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-}
-
 export const fetchChartDataFx = portfolioTotalWorth.createEffect(
-  async (params: Gate) => {
+  async (params: { group: string }) => {
     const data = await portfolioApi.getTokenMetric({
       ...defaultVariables,
-      metricDateBefore: dateUtils.now(),
-      metricDateAfter: dateUtils.fromNowTo(DAYS_LIMITS[params.group]),
+      metricDateAfter: dateUtils.addDate(
+        -CHART_DAYS_LIMITS[params.group],
+        params.group === CHART_GROUP_VALUES.day ? 'hours' : 'days'
+      ),
       balancePagination: {
-        limit: DAYS_LIMITS[params.group],
+        limit: CHART_DAYS_LIMITS[params.group],
       },
       pagination: {
-        limit: DAYS_LIMITS[params.group],
+        limit: CHART_DAYS_LIMITS[params.group],
       },
-      group: params.group,
+      group:
+        params.group === CHART_GROUP_VALUES.day
+          ? MetricGroupEnum.Hour
+          : MetricGroupEnum.Day,
     })
 
     if (!data) throw new Error('something went wrong')
@@ -80,11 +66,18 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
   }
 )
 
+type State = Record<
+  string,
+  {
+    data: UnitValue<typeof fetchChartDataFx.doneData>
+    value: string
+    loading: boolean
+  }
+>
+
 export const $portfolioTotalWorth = portfolioTotalWorth
   .createStore(
-    Object.values(MetricGroupEnum).reduce<State>((acc, metricGroup) => {
-      if (metricGroup === MetricGroupEnum.Year) return acc
-
+    Object.values(CHART_GROUP_VALUES).reduce((acc, metricGroup) => {
       acc[metricGroup] = {
         data: [],
         value: metricGroup,
