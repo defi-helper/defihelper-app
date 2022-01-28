@@ -51,7 +51,7 @@ export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorP
         target="_blank"
         rel="noreferrer"
         style={{
-          color: seemsUnusual ? 'red' : 'white',
+          color: seemsUnusual ? '#ff0000' : '#3eab3a',
         }}
       >
         {row.syncedBlock}/{currentBlock}
