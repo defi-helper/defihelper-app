@@ -1,4 +1,4 @@
-import { createDomain } from 'effector-logger/macro'
+import { createDomain, UnitValue } from 'effector-logger/macro'
 import omit from 'lodash.omit'
 
 import { dateUtils } from '~/common/date-utils'
@@ -11,24 +11,9 @@ import {
 import { authModel } from '~/auth'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { mergeChartData } from '~/common/merge-chart-data'
+import { CHART_GROUP_VALUES, CHART_DAYS_LIMITS } from '~/common/chart'
 
 const portfolioCoinBalance = createDomain()
-
-const DAYS_LIMITS = {
-  [MetricGroupEnum.Hour]: 7,
-  [MetricGroupEnum.Day]: 30,
-  [MetricGroupEnum.Week]: 90,
-  [MetricGroupEnum.Month]: 180,
-} as const
-
-type State = Record<
-  Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
-  {
-    data: Record<string, string>[]
-    value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-    loading: boolean
-  }
->
 
 const defaultVariables = {
   metric: 'usd',
@@ -40,17 +25,21 @@ const defaultVariables = {
   ],
 }
 
-type Params = Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-
 export const fetchChartDataFx = portfolioCoinBalance.createEffect(
-  async (params: Params) => {
+  async (params: string) => {
     const result = await portfolioApi.getTokenMetricChart({
-      group: params,
+      group:
+        params === CHART_GROUP_VALUES.day
+          ? MetricGroupEnum.Hour
+          : MetricGroupEnum.Day,
       ...defaultVariables,
       dateBefore: dateUtils.now(),
-      dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[params]),
+      dateAfter: dateUtils.addDate(
+        -CHART_DAYS_LIMITS[params],
+        params === CHART_GROUP_VALUES.day ? 'hours' : 'days'
+      ),
       pagination: {
-        limit: DAYS_LIMITS[params],
+        limit: CHART_DAYS_LIMITS[params],
       },
     })
 
@@ -64,22 +53,24 @@ export const fetchChartDataFx = portfolioCoinBalance.createEffect(
   }
 )
 
-export const changeGroup =
-  portfolioCoinBalance.createEvent<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-  >()
+type State = Record<
+  string,
+  {
+    data: UnitValue<typeof fetchChartDataFx.doneData>
+    value: string
+    loading: boolean
+  }
+>
+
+export const changeGroup = portfolioCoinBalance.createEvent<string>()
 
 export const $currentGroup = portfolioCoinBalance
-  .createStore<Exclude<MetricGroupEnum, MetricGroupEnum.Year>>(
-    MetricGroupEnum.Day
-  )
+  .createStore<string>(CHART_GROUP_VALUES.month)
   .on(changeGroup, (_, payload) => payload)
 
 export const $portfolioCoinBalance = portfolioCoinBalance
   .createStore(
-    Object.values(MetricGroupEnum).reduce<State>((acc, metricGroup) => {
-      if (metricGroup === MetricGroupEnum.Year) return acc
-
+    Object.values(CHART_GROUP_VALUES).reduce<State>((acc, metricGroup) => {
       acc[metricGroup] = {
         data: [],
         value: metricGroup,

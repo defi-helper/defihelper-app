@@ -1,7 +1,6 @@
 export * from './portfolio.api'
 export * from './portfolio-add-wallet-dialog'
 export * from './portfolio-metric-card'
-export * from './portfolio-chart-groups'
 export * from './portfolio-sort-assets'
 export * from './portfolio-asset-card'
 export * from './portfolio-assets-header'
