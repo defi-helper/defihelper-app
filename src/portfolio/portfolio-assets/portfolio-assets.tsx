@@ -201,8 +201,14 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
         )}
       </div>
       <Typography align="right" variant="body3" className={styles.copyright}>
-        Powered by{' '}
-        <Link target="_blank" href="https://moralis.io/" underline="always">
+        Powered by
+        <Link
+          target="_blank"
+          href="https://moralis.io/"
+          underline="always"
+          className={styles.copyrightLink}
+        >
+          <Icon icon="moralis" className={styles.copyrightIcon} />
           Moralis.io
         </Link>
       </Typography>
