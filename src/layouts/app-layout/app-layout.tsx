@@ -41,7 +41,7 @@ const MENU: MenuItem[] = [
     icon: 'energy',
   },
   {
-    title: 'Roadmap',
+    title: 'Vote',
     path: paths.roadmap.list,
     icon: 'check',
   },
