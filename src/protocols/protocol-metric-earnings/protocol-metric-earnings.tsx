@@ -25,14 +25,14 @@ const STAKED_FIELDS = [
   {
     valueY: 'altCoin',
     format: 'altCoinFormat',
-    name: 'Low volume coins',
+    name: 'Volatile coins',
     dateX: 'date',
     color: '#E9CC67',
   },
   {
     valueY: 'stableCoin',
     format: 'stableCoinFormat',
-    name: 'Liquid coins',
+    name: 'Stable coins',
     dateX: 'date',
     color: '#4463EE',
   },

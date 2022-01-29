@@ -16,14 +16,14 @@ const BALANCE = [
   {
     valueY: 'stableCoin',
     format: 'stableCoinFormat',
-    name: 'Liquid coins',
+    name: 'Stable coins',
     dateX: 'date',
     color: '#4463EE',
   },
   {
     valueY: 'altCoin',
     format: 'altCoinFormat',
-    name: 'Low volume coins',
+    name: 'Volatile coins',
     dateX: 'date',
     color: '#E9CC67',
   },
