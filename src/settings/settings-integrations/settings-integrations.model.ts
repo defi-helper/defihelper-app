@@ -33,7 +33,10 @@ export const connectIntegrationBinanceFx = integrationListDomain.createEffect(
       input: omit(input, 'type'),
     })
 
-    if (!data) throw new Error('something went worng')
+    if (!data)
+      throw new Error(
+        'Please, verify your keys pair, the pair is expired or wrong'
+      )
 
     return data
   }
