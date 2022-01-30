@@ -34,6 +34,8 @@ export const fetchEarningMetricFx = protocolMetricEarningsDomain.createEffect(
           {
             hold: bignumberUtils.floor(hold?.v ?? 0),
             autostaking: bignumberUtils.floor(optimal?.v ?? 0),
+            holdFormat: bignumberUtils.format(hold?.v ?? 0),
+            autostakingFormat: bignumberUtils.format(optimal?.v ?? 0),
             date: date.setDate(date.getDate() + everyDayItem.t),
           },
         ]
@@ -103,3 +105,8 @@ export const $stakedMetric = protocolMetricEarningsDomain
       loading: false,
     },
   }))
+
+export const reset = protocolMetricEarningsDomain.createEvent()
+
+$stakedMetric.reset(reset)
+$earningsMetric.reset(reset)

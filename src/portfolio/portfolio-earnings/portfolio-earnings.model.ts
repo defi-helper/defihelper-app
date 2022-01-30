@@ -56,7 +56,7 @@ export const fetchChartDataFx = portfolioEarnings.createEffect(
           },
         ]
       }, [])
-      .slice(0, 4)
+      .slice(0, 3)
   }
 )
 
