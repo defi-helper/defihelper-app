@@ -114,6 +114,10 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
     })
   }, [currentStakedGroup, contracts, metricUpdated])
 
+  useEffect(() => {
+    return () => model.reset()
+  }, [])
+
   const handleChangeStakedMetric = (group: string) => {
     setCurrentStakedGroup(group)
   }
