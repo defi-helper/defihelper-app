@@ -50,7 +50,7 @@ export const RoadmapForm: React.VFC<RoadmapFormProps> = (props) => {
       >
         <Input
           type="text"
-          label="Proposal Name"
+          label="Request title"
           defaultValue={props.defaultValues?.title}
           {...register('title')}
           disabled={props.loading}
@@ -62,7 +62,7 @@ export const RoadmapForm: React.VFC<RoadmapFormProps> = (props) => {
           <MarkdownEditor
             value={props.defaultValues?.description ?? ''}
             onChange={(value) => setValue('description', value)}
-            label="Enter your proposal"
+            label="Your request"
             className={styles.input}
           />
         </Suspense>

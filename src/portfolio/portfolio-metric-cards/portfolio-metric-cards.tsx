@@ -21,7 +21,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
   return (
     <div className={clsx(styles.root, props.className)}>
       <PortfolioMetricCard
-        title="Total Net Worth"
+        title="Tracked Balance"
         value={
           loading && !metric ? (
             'loading...'
@@ -31,7 +31,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
         }
       />
       <PortfolioMetricCard
-        title="Avg. APY Total"
+        title="Avg. Tracked APY"
         value={
           loading && !metric ? (
             'loading...'

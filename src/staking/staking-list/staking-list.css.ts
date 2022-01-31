@@ -122,18 +122,6 @@ export const empty = style({
   padding: 16,
 })
 
-export const card = style({
-  cursor: 'pointer',
-
-  '@media': {
-    [theme.mediaQueries.hover()]: {
-      ':hover': {
-        opacity: 0.6,
-      },
-    },
-  },
-})
-
 export const table = style({
   overflowX: 'auto',
   overflowY: 'hidden',
@@ -172,49 +160,9 @@ export const tableCol = style({
   alignItems: 'center',
 })
 
-export const coinIcons = style({
-  display: 'inline-flex',
-  alignItems: 'center',
-  marginRight: 20,
-  marginLeft: -10,
-})
-
-export const coinIcon = style({
-  width: 24,
-  height: 24,
-})
-
-export const accorionButton = style({
-  color: theme.colors.textColorGrey,
-  marginLeft: 'auto',
-})
-
-export const manageButton = style({
-  width: 24,
-  height: 24,
-  padding: 6,
-  marginLeft: 5,
-})
-
 export const loader = style({
   padding: 10,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-})
-
-export const autostakingCol = style({
-  width: '60%',
-})
-
-export const negative = style({
-  color: theme.colors.common.red1,
-})
-
-export const positive = style({
-  color: theme.colors.textColorGreen,
-})
-
-export const apyButton = style({
-  verticalAlign: 'middle',
 })

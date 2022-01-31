@@ -56,20 +56,27 @@ export const $socialPosts = protocolDetailDomain
     ...(socialPosts.list ?? []),
   ])
 
-export const ProtocolDetailGate = createGate<{ protocolId: string }>({
+type GateState = { protocolId: string }
+
+export const ProtocolDetailGate = createGate<GateState | null>({
   name: 'ProtocolDetailGate',
   domain: protocolDetailDomain,
+  defaultState: null,
 })
 
 export const updated = protocolDetailDomain.createEvent()
 
-guard({
-  clock: sample({
+sample({
+  clock: guard({
     source: [ProtocolDetailGate.state, ProtocolDetailGate.status],
-    clock: [ProtocolDetailGate.open, updated],
-    fn: ([{ protocolId }, opened]) => ({ protocolId, opened }),
+    clock: [ProtocolDetailGate.open, ProtocolDetailGate.state.updates, updated],
+    filter: (payload): payload is [GateState, boolean] => {
+      const [gateState, opened] = payload
+
+      return Boolean(gateState) && opened
+    },
   }),
-  filter: ({ opened }) => opened,
+  fn: ([{ protocolId }]) => ({ protocolId }),
   target: fetchProtocolFx,
 })
 

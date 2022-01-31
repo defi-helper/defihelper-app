@@ -1,7 +1,8 @@
+import { useEffect } from 'react'
 import clsx from 'clsx'
 import { Controller, useForm } from 'react-hook-form'
-
 import { yupResolver } from '@hookform/resolvers/yup'
+
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
@@ -24,10 +25,11 @@ export type AutomationConditionEthereumOptimalProps = {
 
 export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEthereumOptimalProps> =
   (props) => {
-    const { handleSubmit, formState, setValue, control } = useForm<FormValues>({
-      resolver: yupResolver(automationConditionEthereumOptimalSchema),
-      defaultValues: props.defaultValues,
-    })
+    const { handleSubmit, formState, setValue, control, watch, trigger } =
+      useForm<FormValues>({
+        resolver: yupResolver(automationConditionEthereumOptimalSchema),
+        defaultValues: props.defaultValues,
+      })
 
     const [openContractDialog] = useDialog(AutomationConditionActionsDialog)
 
@@ -44,6 +46,14 @@ export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEt
         }
       }
     }
+
+    const id = watch('id')
+
+    useEffect(() => {
+      if (!id) return
+
+      trigger()
+    }, [id, trigger])
 
     return (
       <AutomationForm

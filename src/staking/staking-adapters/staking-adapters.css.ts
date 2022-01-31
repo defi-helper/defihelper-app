@@ -39,10 +39,6 @@ export const unstake = style([
   },
 ])
 
-export const tooltip = style({
-  width: 300,
-})
-
 export const turnOn = style([
   button,
   {

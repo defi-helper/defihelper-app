@@ -6,7 +6,6 @@ import { useDialog, UserRejectionError } from '~/common/dialog'
 import { switchNetwork } from '~/wallets/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { WalletConnect } from '~/wallets/wallet-connect'
-import { Dropdown } from '~/common/dropdown'
 import { authModel } from '~/auth'
 import { toastsService } from '~/toasts'
 import { settingsWalletModel } from '~/settings/settings-wallets'
@@ -175,19 +174,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       <div>
         <div className={styles.turnOn}>
           {!(props.autorestake && props.prototypeAddress) && user ? (
-            <Dropdown
-              trigger="hover"
-              placement="top"
-              offset={[0, 8]}
-              className={styles.tooltip}
-              control={
-                <Button size="small" variant="outlined">
-                  Auto-Stake
-                </Button>
-              }
-            >
-              You can&apos;t enable autostaking for this contract right now
-            </Dropdown>
+            <>-</>
           ) : (
             <WalletConnect
               fallback={
@@ -195,6 +182,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                   Auto-Stake
                 </Button>
               }
+              blockchain={props.blockchain}
+              network={props.network}
             >
               <Button
                 size="small"

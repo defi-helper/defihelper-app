@@ -128,7 +128,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
 
   return (
     <AppLayout
-      title="Roadmap"
+      title="Vote"
       action={
         <div className={styles.action}>
           <ButtonBase
@@ -149,9 +149,9 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
         </div>
       }
     >
-      <Head title="Roadmap" />
+      <Head title="Vote" />
       <div className={styles.header}>
-        <Typography variant="h3">Roadmap</Typography>
+        <Typography variant="h3">Vote</Typography>
         <Input
           placeholder="Search"
           className={styles.input}
@@ -165,7 +165,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           onClick={handleAdd}
           loading={createLoading}
         >
-          + New Proposal
+          + New Request
         </Button>
       </div>
       {loading && (
