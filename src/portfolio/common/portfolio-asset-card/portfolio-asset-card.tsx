@@ -49,6 +49,12 @@ export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
       </Typography>
 
       <Typography variant="body2" align="right">
+        $
+        {bignumberUtils.format(
+          bignumberUtils.div(asset.metric.myUSD, asset.metric.myBalance)
+        )}
+      </Typography>
+      <Typography variant="body2" align="right">
         {bignumberUtils.format(asset.metric.myBalance)}
       </Typography>
       <Typography variant="body2" align="right">

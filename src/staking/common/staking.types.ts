@@ -27,6 +27,7 @@ export type StakingListPayload = {
   hidden: null | boolean
   sortColumn?: ContractListSortInputTypeColumnEnum
   sortOrder?: SortOrderEnum
+  search?: string
 }
 
 export type ConnectParams = {

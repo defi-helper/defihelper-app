@@ -159,6 +159,11 @@ export const ProtocolDetail: React.FC = () => {
         title={loading && !protocol ? 'loading...' : protocol?.name}
         ogImageUrl={`https://backend.defihelper.io/protocol/opengraph-preview/${params.protocolId}`}
         ogUrl={`https://app.defihelper.io/protocols/${params.protocolId}`}
+        description={
+          protocol?.name
+            ? `${protocol?.name} auto compound with our autostaking feature. Automate your DeFi strategies across chains, earn more - DeFiHelper`
+            : undefined
+        }
       />
       {loading && !protocol && (
         <div className={styles.loader}>

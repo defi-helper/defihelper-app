@@ -13,6 +13,7 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
+import { useDebounce } from '~/common/hooks'
 import { SearchDialog } from '~/common/search-dialog'
 import { Protocol, ProtocolCard, ProtocolTabs, Tabs } from '../common'
 import { Paper } from '~/common/paper'
@@ -50,10 +51,12 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     }
   }
 
+  const searchDebounced = useDebounce(search, 1000)
+
   useGate(model.ProtocolListGate, {
     favorite:
       currentTab === Tabs.All ? undefined : currentTab === Tabs.Favourite,
-    search,
+    search: searchDebounced,
     hidden: ability.can('update', 'Protocol') ? null : false,
   })
 

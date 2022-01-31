@@ -1,18 +1,18 @@
 import type { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { ReactComponent as MetaMaskIcon } from '~/assets/icons/wallets/metamask.svg'
-import { ReactComponent as LedgerIcon } from '~/assets/icons/wallets/ledger.svg'
 import { ReactComponent as CoinBaseIcon } from '~/assets/icons/wallets/coinbase-wallet.svg'
-import { ReactComponent as WalletConnectIcon } from '~/assets/icons/wallets/wallet-connect.svg'
 import { ReactComponent as FortmaticIcon } from '~/assets/icons/wallets/fortmatic-wallet.svg'
-import { ReactComponent as PortisIcon } from '~/assets/icons/wallets/portis-wallet.svg'
 import { ReactComponent as TrustIcon } from '~/assets/icons/wallets/trustwallet.svg'
-import { ReactComponent as TrezorIcon } from '~/assets/icons/wallets/trezor-wallet.svg'
-import { ReactComponent as BinanceIcon } from '~/assets/icons/wallets/binance-wallet.svg'
-// import { ReactComponent as WavesKeeperIcon } from '~/assets/icons/wallets/waves-keeper-wallet.svg'
-// import { ReactComponent as WavesExchangeIcon } from '~/assets/icons/wallets/waves-exchange-wallet.svg'
 import * as connectors from './connectors'
 import { config } from '~/config'
+// import { ReactComponent as LedgerIcon } from '~/assets/icons/wallets/ledger.svg'
+// import { ReactComponent as WalletConnectIcon } from '~/assets/icons/wallets/wallet-connect.svg'
+// import { ReactComponent as PortisIcon } from '~/assets/icons/wallets/portis-wallet.svg'
+// import { ReactComponent as TrezorIcon } from '~/assets/icons/wallets/trezor-wallet.svg'
+// import { ReactComponent as BinanceIcon } from '~/assets/icons/wallets/binance-wallet.svg'
+// import { ReactComponent as WavesKeeperIcon } from '~/assets/icons/wallets/waves-keeper-wallet.svg'
+// import { ReactComponent as WavesExchangeIcon } from '~/assets/icons/wallets/waves-exchange-wallet.svg'
 // import { networksConfig } from '~/networks-config'
 // import { BlockchainEnum } from '~/graphql/_generated-types'
 
@@ -40,12 +40,12 @@ const IS_ANDROID = /Android/i.test(navigator.userAgent)
 
 const METAMASK_LINK =
   'https://chrome.google.com/webstore/detail/nkbihfbeogaeaoehlefnkodbefgpgknn'
-const BINANCE_LINK =
-  'https://chrome.google.com/webstore/detail/binance-wallet/fhbohimaelbohpjbbldcngcnapndodjp'
-// const WAVES_KEEPER_LINK =
-//   'https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo'
 const TRUST_MOBILE = 'https://trustwallet.com/'
 const METAMASK_MOBILE = 'https://metamask.io/'
+// const BINANCE_LINK =
+//   'https://chrome.google.com/webstore/detail/binance-wallet/fhbohimaelbohpjbbldcngcnapndodjp'
+// const WAVES_KEEPER_LINK =
+//   'https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo'
 
 const IS_MOBILE = IS_IOS || IS_ANDROID
 
@@ -62,7 +62,7 @@ type ConnectorByName = {
   extensionLink?: string
 }
 
-export const connectorsByName: Record<ConnectorNames, ConnectorByName> = {
+export const connectorsByName: Record<string, ConnectorByName> = {
   [ConnectorNames.MetaMask]: {
     connector: connectors.injected,
     blockchain: 'ethereum',
@@ -79,41 +79,12 @@ export const connectorsByName: Record<ConnectorNames, ConnectorByName> = {
     available: Boolean(window.ethereum),
     extensionLink: IS_MOBILE ? TRUST_MOBILE : METAMASK_LINK,
   },
-  [ConnectorNames.Ledger]: {
-    connector: connectors.ledger,
-    blockchain: 'ethereum',
-    logo: LedgerIcon,
-    networks: [String(config.DEFAULT_CHAIN_ID)],
-    available: true,
-  },
-  [ConnectorNames.Trezor]: {
-    connector: connectors.trezor,
-    blockchain: 'ethereum',
-    logo: TrezorIcon,
-    networks: [String(config.DEFAULT_CHAIN_ID)],
-    available: true,
-  },
   [ConnectorNames.CoinBase]: {
     connector: connectors.walletlink,
     blockchain: 'ethereum',
     logo: CoinBaseIcon,
     networks: [String(config.DEFAULT_CHAIN_ID)],
     available: true,
-  },
-  [ConnectorNames.WalletConnect]: {
-    connector: connectors.walletconnect,
-    blockchain: 'ethereum',
-    logo: WalletConnectIcon,
-    networks: [String(config.DEFAULT_CHAIN_ID)],
-    available: true,
-  },
-  [ConnectorNames.Binance]: {
-    connector: connectors.binance,
-    blockchain: 'ethereum',
-    logo: BinanceIcon,
-    networks: ethereumNetworks,
-    available: Boolean(window.BinanceChain),
-    extensionLink: BINANCE_LINK,
   },
   [ConnectorNames.Fortmatic]: {
     connector: connectors.fortmatic,
@@ -122,13 +93,42 @@ export const connectorsByName: Record<ConnectorNames, ConnectorByName> = {
     networks: [String(config.DEFAULT_CHAIN_ID)],
     available: true,
   },
-  [ConnectorNames.Portis]: {
-    connector: connectors.portis,
-    blockchain: 'ethereum',
-    logo: PortisIcon,
-    networks: [String(config.DEFAULT_CHAIN_ID)],
-    available: true,
-  },
+  // [ConnectorNames.Ledger]: {
+  //   connector: connectors.ledger,
+  //   blockchain: 'ethereum',
+  //   logo: LedgerIcon,
+  //   networks: [String(config.DEFAULT_CHAIN_ID)],
+  //   available: true,
+  // },
+  // [ConnectorNames.Trezor]: {
+  //   connector: connectors.trezor,
+  //   blockchain: 'ethereum',
+  //   logo: TrezorIcon,
+  //   networks: [String(config.DEFAULT_CHAIN_ID)],
+  //   available: true,
+  // },
+  // [ConnectorNames.WalletConnect]: {
+  //   connector: connectors.walletconnect,
+  //   blockchain: 'ethereum',
+  //   logo: WalletConnectIcon,
+  //   networks: [String(config.DEFAULT_CHAIN_ID)],
+  //   available: true,
+  // },
+  // [ConnectorNames.Binance]: {
+  //   connector: connectors.binance,
+  //   blockchain: 'ethereum',
+  //   logo: BinanceIcon,
+  //   networks: ethereumNetworks,
+  //   available: Boolean(window.BinanceChain),
+  //   extensionLink: BINANCE_LINK,
+  // },
+  // [ConnectorNames.Portis]: {
+  //   connector: connectors.portis,
+  //   blockchain: 'ethereum',
+  //   logo: PortisIcon,
+  //   networks: [String(config.DEFAULT_CHAIN_ID)],
+  //   available: true,
+  // },
   // [ConnectorNames.WavesKeeper]: {
   //   connector: connectors.wavesKepper,
   //   blockchain: 'waves',

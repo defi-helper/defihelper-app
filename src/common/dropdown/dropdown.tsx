@@ -46,6 +46,8 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
   const handleOnTrigger = (event: Event | null) => {
     const target = (event?.currentTarget as HTMLElement) ?? null
 
+    event?.stopPropagation() // portfolio wallet select
+
     if (target && referenceElement) {
       setReferenceElement(null)
     } else {

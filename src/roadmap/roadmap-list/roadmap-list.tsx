@@ -191,6 +191,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           onVote={handleVote}
           onUnvote={handleUnvote}
           user={user}
+          status={status}
         />
       )}
       {(status || search) && <model.ProposalListPagination />}

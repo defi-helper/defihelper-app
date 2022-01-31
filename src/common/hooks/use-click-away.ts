@@ -6,7 +6,7 @@ export function useClickAway<T extends HTMLElement = HTMLElement>(
   ref: RefObject<T>,
   handler: (event: AnyEvent) => void
 ): void {
-  const hanlderRef = useRef(handler)
+  const handlerRef = useRef(handler)
 
   useEffect(() => {
     const listener = (event: AnyEvent) => {
@@ -16,7 +16,7 @@ export function useClickAway<T extends HTMLElement = HTMLElement>(
         return
       }
 
-      hanlderRef.current(event)
+      handlerRef.current(event)
     }
 
     document.addEventListener('click', listener)

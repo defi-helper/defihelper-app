@@ -6,3 +6,7 @@ export const loader = style({
   alignItems: 'center',
   justifyContent: 'center',
 })
+
+export const title = style({
+  marginBottom: 32,
+})

@@ -66,6 +66,7 @@ export const selectArrow = style({
 
 export const selectOption = style({
   justifyContent: 'flex-start',
+  textAlign: 'left',
 })
 
 export const selectOptionActive = style({
