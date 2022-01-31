@@ -14,6 +14,7 @@ import { PortfolioPlatformCard } from '~/portfolio/common/portfolio-platform-car
 import * as styles from './portfolio-assets.css'
 import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
 import { Loader } from '~/common/loader'
+import { Link } from '~/common/link'
 
 export type PortfolioAssetsProps = {
   className?: string
@@ -199,6 +200,18 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
           </Paper>
         )}
       </div>
+      <Typography align="right" variant="body3" className={styles.copyright}>
+        Powered by
+        <Link
+          target="_blank"
+          href="https://moralis.io/"
+          underline="always"
+          className={styles.copyrightLink}
+        >
+          <Icon icon="moralis" className={styles.copyrightIcon} />
+          Moralis.io
+        </Link>
+      </Typography>
     </div>
   )
 }

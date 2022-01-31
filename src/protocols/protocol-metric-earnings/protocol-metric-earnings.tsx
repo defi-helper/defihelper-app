@@ -3,15 +3,14 @@ import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import { useMedia, useThrottle } from 'react-use'
 
-import { Chart } from '~/common/chart'
+import { Chart, CHART_GROUP_VALUES, ChartGroups } from '~/common/chart'
 import {
-  MetricGroupEnum,
   ProtocolQuery,
   useOnTokenMetricUpdatedSubscription,
   useOnWalletMetricUpdatedSubscription,
 } from '~/graphql/_generated-types'
 import { Typography } from '~/common/typography'
-import { ProtocolChartWrap, ProtocolMetricGroups } from '../common'
+import { ProtocolChartWrap } from '../common'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
@@ -26,14 +25,14 @@ const STAKED_FIELDS = [
   {
     valueY: 'altCoin',
     format: 'altCoinFormat',
-    name: 'Low volume coins',
+    name: 'Volatile coins',
     dateX: 'date',
     color: '#E9CC67',
   },
   {
     valueY: 'stableCoin',
     format: 'stableCoinFormat',
-    name: 'Liquid coins',
+    name: 'Stable coins',
     dateX: 'date',
     color: '#4463EE',
   },
@@ -49,8 +48,6 @@ const ESTIMATED_FIELDS = [
   },
 ]
 
-const currentEarningsGroup = MetricGroupEnum.Hour
-
 export type ProtocolMetricEarningsProps = {
   className?: string
   metric: Exclude<ProtocolQuery['protocol'], null | undefined>['metric']
@@ -60,9 +57,9 @@ export type ProtocolMetricEarningsProps = {
 export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   props
 ) => {
-  const [currentStakedGroup, setCurrentStakedGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-  >(MetricGroupEnum.Day)
+  const [currentStakedGroup, setCurrentStakedGroup] = useState<string>(
+    CHART_GROUP_VALUES.month
+  )
 
   const isDesktop = useMedia('(min-width: 960px)')
 
@@ -96,7 +93,6 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
 
   useEffect(() => {
     model.fetchEarningMetricFx({
-      group: currentEarningsGroup,
       balance: Number(
         bignumberUtils.plus(props.metric.myEarned, props.metric.myStaked)
       ),
@@ -118,9 +114,11 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
     })
   }, [currentStakedGroup, contracts, metricUpdated])
 
-  const handleChangeStakedMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-  ) => {
+  useEffect(() => {
+    return () => model.reset()
+  }, [])
+
+  const handleChangeStakedMetric = (group: string) => {
     setCurrentStakedGroup(group)
   }
 
@@ -158,12 +156,12 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
           header={
             <>
               <Typography>Coin Balance</Typography>
-              <ProtocolMetricGroups
+              <ChartGroups
                 value={currentStakedGroup}
                 onChange={handleChangeStakedMetric}
               >
                 {Object.values(stakedMetric)}
-              </ProtocolMetricGroups>
+              </ChartGroups>
             </>
           }
         >
@@ -192,7 +190,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
         >
           <Chart
             dataFields={estimatedFields}
-            data={earningsMetric[currentEarningsGroup]?.data}
+            data={earningsMetric}
             // eslint-disable-next-line no-template-curly-in-string
             tooltipText="{name}: ${format}"
             id="estimated"

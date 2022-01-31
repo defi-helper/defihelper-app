@@ -8,7 +8,7 @@ import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import {
-  StakingContractCard,
+  StakingAutomatesContractCard,
   StakingAdapterDialog,
   StakingErrorDialog,
 } from '~/staking/common'
@@ -218,7 +218,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             : handleRunManually(automatesContract)
 
           return (
-            <StakingContractCard
+            <StakingAutomatesContractCard
               key={automatesContract.id}
               title={automatesContract.contract?.name ?? ''}
               address={automatesContract.address}

@@ -15,19 +15,28 @@ export const authApi = {
       .query<MeQuery, MeQueryVariables>(ME)
       .toPromise()
       .then(({ data }) => data?.me),
+
   authEth: (input: AuthEthMutationVariables['input']) =>
     getAPIClient()
-      .mutation<AuthEthMutation, AuthEthMutationVariables>(AUTH_ETH, {
-        input,
-      })
+      .mutation<AuthEthMutation, AuthEthMutationVariables>(
+        AUTH_ETH,
+        {
+          input,
+        },
+        { requestPolicy: 'network-only' }
+      )
       .toPromise()
       .then(({ data }) => data?.authEth),
 
   authWaves: (input: AuthWavesMutationVariables['input']) =>
     getAPIClient()
-      .mutation<AuthWavesMutation, AuthWavesMutationVariables>(AUTH_WAVES, {
-        input,
-      })
+      .mutation<AuthWavesMutation, AuthWavesMutationVariables>(
+        AUTH_WAVES,
+        {
+          input,
+        },
+        { requestPolicy: 'network-only' }
+      )
       .toPromise()
       .then(({ data }) => data?.authWaves),
 }

@@ -115,3 +115,21 @@ export const loader = style({
 export const nodata = style({
   padding: '0 24px',
 })
+
+export const copyright = style({
+  color: theme.colors.textColorGrey,
+  marginTop: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+})
+
+export const copyrightLink = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  marginLeft: 4,
+})
+
+export const copyrightIcon = style({
+  marginRight: 4,
+})

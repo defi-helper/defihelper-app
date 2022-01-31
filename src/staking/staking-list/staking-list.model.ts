@@ -1,67 +1,45 @@
-import { createDomain, guard, sample, restore } from 'effector-logger/macro'
+import {
+  createDomain,
+  guard,
+  restore,
+  sample,
+  UnitValue,
+} from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
   ContractListSortInputTypeColumnEnum,
-  MetricChartType,
   SortOrderEnum,
-  StakingContractFragmentFragment,
+  UserRoleEnum,
 } from '~/graphql/_generated-types'
-import { stakingApi, buildAdaptersUrl } from '~/staking/common'
+import {
+  buildAdaptersUrl,
+  ConnectParams,
+  Contract,
+  FreshMetrics,
+  RegisterParams,
+  stakingApi,
+  StakingListPayload,
+} from '~/staking/common'
 import { createPagination, PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
-import { loadAdapter, Adapters } from '~/common/load-adapter'
+import { Adapters, loadAdapter } from '~/common/load-adapter'
 import { automationApi } from '~/automations/common/automation.api'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Wallet } from '~/wallets/common'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
-import { protocolsApi } from '~/protocols/common'
 import * as stakingUpdateModel from '~/staking/staking-update/staking-update.model'
+import { authModel } from '~/auth'
 
 export const stakingListDomain = createDomain()
 
-type GateState = {
-  protocolId: string
-  protocolAdapter?: string | null
-  hidden: null | boolean
-  sortColumn?: ContractListSortInputTypeColumnEnum
-  sortOrder?: SortOrderEnum
-}
-
-type ConnectParams = {
-  contract: string
-  wallet: string
-}
-
-type Contract = StakingContractFragmentFragment & {
-  type: 'Contract'
-  syncedBlock: number
-  scannerId?: string
-  prototypeAddress?: string
-  autostakingLoading?: boolean
-}
-
-export type ContractMetric = {
-  tvl: Array<Pick<MetricChartType, 'avg'>>
-  apr: Array<Pick<MetricChartType, 'avg'>>
-  stakingUSD: Array<Pick<MetricChartType, 'avg'>>
-  earnedUSD: Array<Pick<MetricChartType, 'avg'>>
-}
-
-export type FreshMetrics = {
-  contractId: string
-  tvl: string
-  aprYear: string
-  myStaked: string
-  myEarned: string
-}
-
 const NOT_DELETED = 'Not deleted'
+const NOT_REGISTERED = 'Not registered'
 const NOT_CONNECTED = 'Not connected'
 const NOT_DISCONNECTED = 'Not disconnected'
 
-type Params = GateState & PaginationState
+type Params = StakingListPayload & PaginationState
 
 export const stakingUpdateFx = stakingListDomain.createEffect(
   stakingUpdateModel.contractUpdate
@@ -97,49 +75,80 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
       ],
     })
 
-    const stakingListWithAutostaking = data.contracts.map(async (contract) => {
+    return data
+  }
+)
+
+export const fetchScannerFx = stakingListDomain.createEffect(
+  async (contracts: Contract[]) => {
+    const stakingListWithAutostaking = contracts.map(async (contract) => {
       let syncedBlock = -1
-      const scannerContract = await protocolsApi.scannerGetContract({
+
+      const scannerContract = await stakingApi.scannerGetContract({
         network: contract.network,
         address: contract.address,
       })
+
       if (scannerContract) {
-        const listenedPools = await protocolsApi.scannerGetEventListener({
+        const listenedPools = await stakingApi.scannerGetEventListener({
           id: scannerContract.id,
         })
 
-        syncedBlock = Math.min(...listenedPools.map((v) => v.syncHeight)) || 0
+        syncedBlock =
+          Math.min(...listenedPools.map(({ syncHeight }) => syncHeight)) || 0
       }
-
-      if (!params.protocolAdapter || !contract.automate.autorestake) {
-        return {
-          ...contract,
-          prototypeAddress: undefined,
-          scannerId: scannerContract?.id,
-          syncedBlock,
-        }
-      }
-
-      const contractAddress = await automationApi
-        .getContractAddress({
-          protocol: params.protocolAdapter,
-          contract: contract.automate.autorestake,
-          chainId: contract.network,
-        })
-        .catch(console.error)
 
       return {
-        ...contract,
-        prototypeAddress: contractAddress?.address,
         scannerId: scannerContract?.id,
         syncedBlock,
+        contractId: contract.id,
       }
     })
 
-    return {
-      ...data,
-      contracts: await Promise.all(stakingListWithAutostaking),
-    }
+    return (await Promise.all(stakingListWithAutostaking)).reduce<
+      Record<
+        string,
+        { scannerId?: string; syncedBlock: number; contractId: string }
+      >
+    >((acc, scannerItem) => {
+      acc[scannerItem.contractId] = scannerItem
+
+      return acc
+    }, {})
+  }
+)
+
+export const fetchContractAddressesFx = stakingListDomain.createEffect(
+  async (params: { contracts: Contract[]; protocolAdapter?: string }) => {
+    const contractAddresses = params.contracts.map(async (contract) => {
+      let contractAddress
+
+      if (params.protocolAdapter && contract.automate.autorestake) {
+        contractAddress = await automationApi
+          .getContractAddress({
+            protocol: params.protocolAdapter,
+            contract: contract.automate.autorestake,
+            chainId: contract.network,
+          })
+          .catch(console.error)
+      }
+
+      return {
+        contractId: contract.id,
+        prototypeAddress: contractAddress?.address,
+      }
+    })
+
+    return (await Promise.all(contractAddresses)).reduce<
+      Record<
+        string,
+        { contractId: string; prototypeAddress: string | undefined }
+      >
+    >((acc, address) => {
+      acc[address.contractId] = address
+
+      return acc
+    }, {})
   }
 )
 
@@ -152,6 +161,22 @@ export const deleteStakingFx = stakingListDomain.createEffect(
     }
 
     throw new Error(NOT_DELETED)
+  }
+)
+
+export const scannerRegisterContractFx = stakingListDomain.createEffect(
+  async (params: RegisterParams) => {
+    const { id, events } = params
+    const done = await stakingApi.contractScannerRegister({
+      id,
+      events,
+    })
+
+    if (done) {
+      return id
+    }
+
+    throw new Error(NOT_REGISTERED)
   }
 )
 
@@ -176,7 +201,8 @@ export const disconnectWalletFx = stakingListDomain.createEffect(
 )
 
 export const fetchConnectedContractsFx = stakingListDomain.createEffect(
-  (params: GateState) => stakingApi.connectedContracts(params.protocolId)
+  (params: StakingListPayload) =>
+    stakingApi.connectedContracts(params.protocolId)
 )
 
 export const autostakingStart = stakingListDomain.createEvent<string>()
@@ -246,6 +272,14 @@ export const $connectedContracts = stakingListDomain
     [params.contract]: false,
   }))
 
+export const $scanner = stakingListDomain
+  .createStore<UnitValue<typeof fetchScannerFx.doneData>>({})
+  .on(fetchScannerFx.doneData, (_, payload) => payload)
+
+export const $contractAddresses = stakingListDomain
+  .createStore<UnitValue<typeof fetchContractAddressesFx.doneData>>({})
+  .on(fetchContractAddressesFx.doneData, (_, payload) => payload)
+
 guard({
   clock: sample({
     source: [settingsWalletModel.$wallets, $connectedContracts],
@@ -277,7 +311,7 @@ guard({
   target: connectWalletFx,
 })
 
-export const StakingListGate = createGate<GateState>({
+export const StakingListGate = createGate<StakingListPayload>({
   name: 'StakingListGate',
   domain: stakingListDomain,
 })
@@ -302,6 +336,17 @@ guard({
   }),
   filter: ({ protocolId }) => Boolean(protocolId),
   target: [fetchStakingListFx, fetchConnectedContractsFx],
+})
+
+sample({
+  clock: guard({
+    source: [$contractsListCopies, authModel.$user],
+    clock: [authModel.$user.updates, $contractsListCopies.updates],
+    filter: ([contracts, user]) =>
+      Boolean(user && contracts.length) && user?.role === UserRoleEnum.Admin,
+  }),
+  fn: ([contracts]) => contracts,
+  target: fetchScannerFx,
 })
 
 sample({
@@ -378,6 +423,16 @@ sample({
     protocolAdapter,
   }),
   target: fetchMetricsFx,
+})
+
+sample({
+  source: StakingListGate.state,
+  clock: $contractsListCopies.updates,
+  fn: ({ protocolAdapter }, contracts) => ({
+    protocolAdapter: protocolAdapter ?? undefined,
+    contracts,
+  }),
+  target: fetchContractAddressesFx,
 })
 
 toastsService.forwardErrors(

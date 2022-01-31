@@ -33,7 +33,11 @@ export const AutomationChooseButton = forwardRef<
           </ButtonBase>
         )}
       </Typography>
-      <ButtonBase {...restOfProps} ref={ref} className={styles.button}>
+      <ButtonBase
+        {...restOfProps}
+        ref={ref}
+        className={clsx(styles.button, props.error && styles.error)}
+      >
         {children}{' '}
         <Icon
           icon="arrowRight"

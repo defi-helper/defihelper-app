@@ -2,42 +2,33 @@ import clsx from 'clsx'
 
 import { ButtonBase } from '~/common/button-base'
 import { CircularProgress } from '~/common/circular-progress'
-import { MetricGroupEnum } from '~/graphql/_generated-types'
-import * as styles from './portfolio-chart-groups.css'
+import * as styles from './chart-groups.css'
 
-export type PortfolioChartGroupsProps = {
+export type ChartGroupsProps = {
   className?: string
   children: { value: string; loading: boolean }[]
-  onChange: (value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>) => void
+  onChange: (value: string) => void
   value: string
 }
 
-const MetricGroups: Record<string, string> = {
-  [MetricGroupEnum.Hour]: '1H',
-  [MetricGroupEnum.Day]: '1D',
-  [MetricGroupEnum.Week]: '7D',
-  [MetricGroupEnum.Month]: '1M',
+export const CHART_GROUP_VALUES = {
+  day: '24h',
+  week: '7d',
+  twoWeeks: '14d',
+  month: '30d',
+  threeMonth: '90d',
+} as const
+
+export const CHART_DAYS_LIMITS: Record<string, number> = {
+  [CHART_GROUP_VALUES.day]: 24,
+  [CHART_GROUP_VALUES.week]: 7,
+  [CHART_GROUP_VALUES.twoWeeks]: 14,
+  [CHART_GROUP_VALUES.month]: 30,
+  [CHART_GROUP_VALUES.threeMonth]: 90,
 }
 
-const isMetricGroup = (
-  group: string
-): group is Exclude<MetricGroupEnum, MetricGroupEnum.Year> => {
-  const arr: string[] = [
-    MetricGroupEnum.Hour,
-    MetricGroupEnum.Day,
-    MetricGroupEnum.Week,
-    MetricGroupEnum.Month,
-  ]
-
-  return arr.includes(group)
-}
-
-export const PortfolioChartGroups: React.VFC<PortfolioChartGroupsProps> = (
-  props
-) => {
+export const ChartGroups: React.VFC<ChartGroupsProps> = (props) => {
   const handleOnClick = (group: string) => () => {
-    if (!isMetricGroup(group)) return
-
     props.onChange(group)
   }
 
@@ -62,7 +53,7 @@ export const PortfolioChartGroups: React.VFC<PortfolioChartGroupsProps> = (
               metricItem.loading && styles.groupLabelLoading
             )}
           >
-            {MetricGroups[metricItem.value]}
+            {metricItem.value}
           </span>
         </ButtonBase>
       ))}

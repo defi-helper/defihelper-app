@@ -1,7 +1,4 @@
-import {
-  MetricGroupEnum,
-  ProtocolFragmentFragment,
-} from '~/graphql/_generated-types'
+import { ProtocolFragmentFragment } from '~/graphql/_generated-types'
 
 export type Protocol = ProtocolFragmentFragment & {
   deleting: boolean
@@ -13,30 +10,6 @@ export enum Tabs {
   All,
 }
 
-export const MetricGroups: Record<string, string> = {
-  [MetricGroupEnum.Hour]: 'hourly',
-  [MetricGroupEnum.Day]: 'daily',
-  [MetricGroupEnum.Week]: 'weekly',
-}
-
-export const isMetricGroup = (
-  group: string
-): group is Exclude<MetricGroupEnum, MetricGroupEnum.Year> => {
-  const arr: string[] = [
-    MetricGroupEnum.Day,
-    MetricGroupEnum.Week,
-    MetricGroupEnum.Hour,
-  ]
-
-  return arr.includes(group)
-}
-
-export type StakedBalance = {
-  date: string
-  altCoin: string
-  stableCoin: string
-}
-
 export type EastimatedEarnings = {
   hold: string
   autostaking: string
@@ -44,10 +17,10 @@ export type EastimatedEarnings = {
 }
 
 export type State<T> = Record<
-  Exclude<MetricGroupEnum, MetricGroupEnum.Year>,
+  string,
   {
     data: T
-    value: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
+    value: string
     loading: boolean
   }
 >

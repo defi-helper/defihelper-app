@@ -2,13 +2,11 @@ import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import { useEffect } from 'react'
 
-import { Chart } from '~/common/chart'
+import { Chart, ChartGroups } from '~/common/chart'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { PortfolioChartGroups } from '~/portfolio/common'
 import * as model from './portfolio-coin-balance.model'
 import * as styles from './portfolio-coin-balance.css'
-import { MetricGroupEnum } from '~/graphql/_generated-types'
 
 export type PortfolioCoinBalanceProps = {
   className?: string
@@ -18,14 +16,14 @@ const BALANCE = [
   {
     valueY: 'stableCoin',
     format: 'stableCoinFormat',
-    name: 'Liquid coins',
+    name: 'Stable coins',
     dateX: 'date',
     color: '#4463EE',
   },
   {
     valueY: 'altCoin',
     format: 'altCoinFormat',
-    name: 'Low volume coins',
+    name: 'Volatile coins',
     dateX: 'date',
     color: '#E9CC67',
   },
@@ -47,9 +45,7 @@ export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
     }
   }, [])
 
-  const handleChangeMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-  ) => {
+  const handleChangeMetric = (group: string) => {
     model.changeGroup(group)
   }
 
@@ -57,12 +53,9 @@ export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
         <Typography>Overall Portfolio Balance</Typography>
-        <PortfolioChartGroups
-          onChange={handleChangeMetric}
-          value={currentGroup}
-        >
+        <ChartGroups onChange={handleChangeMetric} value={currentGroup}>
           {Object.values(portfolioCoinBalance)}
-        </PortfolioChartGroups>
+        </ChartGroups>
       </div>
       <Chart
         dataFields={BALANCE}

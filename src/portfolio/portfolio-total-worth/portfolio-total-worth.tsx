@@ -2,11 +2,9 @@ import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 
-import { Chart } from '~/common/chart'
+import { Chart, ChartGroups, CHART_GROUP_VALUES } from '~/common/chart'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { PortfolioChartGroups } from '~/portfolio/common'
-import { MetricGroupEnum } from '~/graphql/_generated-types'
 import * as model from './portfolio-total-worth.model'
 import * as styles from './portfolio-total-worth.css'
 
@@ -42,9 +40,9 @@ const TOTAL_NET_WORTH = [
 export const PortfolioTotalWorth: React.VFC<PortfolioTotalWorthProps> = (
   props
 ) => {
-  const [currentGroup, setCurrentGroup] = useState<
-    Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-  >(MetricGroupEnum.Day)
+  const [currentGroup, setCurrentGroup] = useState<string>(
+    CHART_GROUP_VALUES.month
+  )
   const portfolioTotalWorth = useStore(model.$portfolioTotalWorth)
 
   useEffect(() => {
@@ -53,22 +51,17 @@ export const PortfolioTotalWorth: React.VFC<PortfolioTotalWorthProps> = (
     })
   }, [currentGroup])
 
-  const handleChangeMetric = (
-    group: Exclude<MetricGroupEnum, MetricGroupEnum.Year>
-  ) => {
+  const handleChangeMetric = (group: string) => {
     setCurrentGroup(group)
   }
 
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
-        <Typography>Total Net Worth Dynamics</Typography>
-        <PortfolioChartGroups
-          onChange={handleChangeMetric}
-          value={currentGroup}
-        >
+        <Typography>Tracked Balance Dynamics</Typography>
+        <ChartGroups onChange={handleChangeMetric} value={currentGroup}>
           {Object.values(portfolioTotalWorth)}
-        </PortfolioChartGroups>
+        </ChartGroups>
       </div>
       <Chart
         dataFields={TOTAL_NET_WORTH}

@@ -125,8 +125,8 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
                       variant="body3"
                       className={styles.advancedAttention}
                     >
-                      Changed it if you only know what to change. You can loose
-                      your funds.
+                      Attention! Change it if you only know what to change. You
+                      can loose your funds.
                     </Typography>
                   </>
                 ) : (

@@ -962,6 +962,7 @@ export type Mutation = {
   protocolCreate: ProtocolType
   protocolUpdate: ProtocolType
   protocolResolveContracts: Scalars['Boolean']
+  contractScannerRegister: Scalars['Boolean']
   protocolDelete: Scalars['Boolean']
   protocolFavorite: Scalars['Boolean']
   contractCreate: ContractType
@@ -1054,6 +1055,11 @@ export type MutationProtocolUpdateArgs = {
 export type MutationProtocolResolveContractsArgs = {
   id: Scalars['UuidType']
   input: ProtocolResolveContractsInputType
+}
+
+export type MutationContractScannerRegisterArgs = {
+  id: Scalars['UuidType']
+  events: Array<Scalars['String']>
 }
 
 export type MutationProtocolDeleteArgs = {
@@ -3938,6 +3944,15 @@ export type TokenMetricQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type ContractScannerRegisterMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  events: Array<Scalars['String']> | Scalars['String']
+}>
+
+export type ContractScannerRegisterMutation = {
+  __typename?: 'Mutation'
+} & Pick<Mutation, 'contractScannerRegister'>
+
 export type ProtocolCreateMutationVariables = Exact<{
   input: ProtocolCreateInputType
 }>
@@ -6283,6 +6298,18 @@ export function useTokenMetricQuery(
     query: TokenMetricDocument,
     ...options,
   })
+}
+export const ContractScannerRegisterDocument = gql`
+  mutation ContractScannerRegister($id: UuidType!, $events: [String!]!) {
+    contractScannerRegister(id: $id, events: $events)
+  }
+`
+
+export function useContractScannerRegisterMutation() {
+  return Urql.useMutation<
+    ContractScannerRegisterMutation,
+    ContractScannerRegisterMutationVariables
+  >(ContractScannerRegisterDocument)
 }
 export const ProtocolCreateDocument = gql`
   mutation ProtocolCreate($input: ProtocolCreateInputType!) {

@@ -1,21 +1,27 @@
 import { useMemo, useState } from 'react'
+
 import {
   BlockchainEnum,
   StakingContractFragmentFragment,
 } from '~/graphql/_generated-types'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { Link } from '~/common/link'
+import { ButtonBase } from '~/common/button-base'
 
-export type StakingContractCardProps = {
+export type StakingListRowSyncIndicatorProps = {
   row: StakingContractFragmentFragment & {
     syncedBlock: number
     scannerId?: string
   }
   currentBlock: number
+  onContractRegister: () => void
 }
 
-export const StakingListRowSyncIndicator: React.VFC<StakingContractCardProps> =
+const SCANNER_URL = 'https://scanner.defihelper.io/contract'
+
+export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorProps> =
   (props) => {
-    const { row, currentBlock } = props
+    const { row, currentBlock, onContractRegister } = props
     const [seemsUnusual, setSeemsUnusual] = useState(false)
 
     useMemo(
@@ -33,16 +39,22 @@ export const StakingListRowSyncIndicator: React.VFC<StakingContractCardProps> =
       return <>not deployed</>
     }
 
+    if (!row.scannerId) {
+      return (
+        <ButtonBase onClick={onContractRegister}>register scanner</ButtonBase>
+      )
+    }
+
     return (
-      <a
-        href={`https://scanner.defihelper.io/contract/${row.scannerId}`}
+      <Link
+        href={`${SCANNER_URL}/${row.scannerId}`}
         target="_blank"
         rel="noreferrer"
         style={{
-          color: seemsUnusual ? 'red' : 'white',
+          color: seemsUnusual ? '#ff0000' : '#3eab3a',
         }}
       >
         {row.syncedBlock}/{currentBlock}
-      </a>
+      </Link>
     )
   }

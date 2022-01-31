@@ -33,3 +33,7 @@ export const icon = style({
   right: 3,
   opacity: 0.64,
 })
+
+export const error = style({
+  borderColor: theme.colors.common.red1,
+})

@@ -8,6 +8,7 @@ import { useWalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { toastsService } from '~/toasts'
 import * as styles from './auth.css'
+import { Head } from '~/common/head'
 
 export type AuthProps = {
   className?: string
@@ -34,6 +35,7 @@ export const Auth: React.VFC<AuthProps> = (props) => {
 
   return (
     <AppLayout>
+      <Head title="Autopilot for your DeFi portfolio" />
       <div className={clsx(styles.root, props.className)}>
         <Typography
           family="mono"
