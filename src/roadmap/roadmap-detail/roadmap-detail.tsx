@@ -7,6 +7,7 @@ import { RoadmapCard } from '~/roadmap/common'
 import { Paper } from '~/common/paper'
 import { Head } from '~/common/head'
 import { Loader } from '~/common/loader'
+import { Typography } from '~/common/typography'
 import * as styles from './roadmap-detail.css'
 import * as model from './roadmap-detail.model'
 
@@ -38,6 +39,9 @@ export const RoadmapDetail: React.VFC<RoadmapDetailProps> = () => {
   return (
     <AppLayout>
       <Head title={loading ? 'loading...' : proposal?.title} />
+      <Typography variant="h3" className={styles.title}>
+        Vote
+      </Typography>
       <Paper radius={8}>
         {!loading && proposal && (
           <RoadmapCard

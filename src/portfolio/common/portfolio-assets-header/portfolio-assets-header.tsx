@@ -18,37 +18,44 @@ export const PortfolioAssetsHeader: React.VFC<PortfolioAssetsHeaderProps> = (
       <Typography variant="body3">%</Typography>
       <Typography variant="body3">Asset</Typography>
       <Typography variant="body3" align="right">
+        Price
+      </Typography>
+      <Typography variant="body3" align="right">
         Balance
       </Typography>
       <Typography variant="body3" align="right">
         Value{' '}
-        <Typography variant="inherit" className={styles.blue}>
-          Calc
-        </Typography>{' '}
-        <Dropdown
-          control={
-            <ButtonBase className={styles.question}>
-              <Icon icon="question" width="16" height="16" />
-            </ButtonBase>
-          }
-          placement="top"
-          className={styles.dropdown}
-          offset={[0, 8]}
-        >
-          <Typography variant="body3">
+        {false && (
+          <>
             <Typography variant="inherit" className={styles.blue}>
               Calc
             </Typography>{' '}
-            — Calculated value based on your amount of asset and its price
-          </Typography>
-          <Typography variant="body3">
-            <Typography variant="inherit" className={styles.blue}>
-              Act
-            </Typography>{' '}
-            — Actual value you can exchange right now based on real market
-            liquidity
-          </Typography>
-        </Dropdown>
+            <Dropdown
+              control={
+                <ButtonBase className={styles.question}>
+                  <Icon icon="question" width="16" height="16" />
+                </ButtonBase>
+              }
+              placement="top"
+              className={styles.dropdown}
+              offset={[0, 8]}
+            >
+              <Typography variant="body3">
+                <Typography variant="inherit" className={styles.blue}>
+                  Calc
+                </Typography>{' '}
+                — Calculated value based on your amount of asset and its price
+              </Typography>
+              <Typography variant="body3">
+                <Typography variant="inherit" className={styles.blue}>
+                  Act
+                </Typography>{' '}
+                — Actual value you can exchange right now based on real market
+                liquidity
+              </Typography>
+            </Dropdown>
+          </>
+        )}
       </Typography>
     </div>
   )

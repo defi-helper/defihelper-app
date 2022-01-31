@@ -179,7 +179,6 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
               )}
               {!platformsLoading && !isEmpty(protocols) && (
                 <>
-                  <PortfolioAssetsHeader />
                   {protocols.map((row, rowIndex) => (
                     <PortfolioPlatformCard
                       assets={assetsByPlatform}

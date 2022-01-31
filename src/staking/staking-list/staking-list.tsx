@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useState } from 'react'
 import { useLocalStorage, useInterval } from 'react-use'
 import { useGate, useStore } from 'effector-react'
@@ -39,6 +38,8 @@ import { switchNetwork } from '~/wallets/common'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
+import { Input } from '~/common/input'
+import { useDebounce } from '~/common/hooks'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
 
@@ -67,6 +68,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const ability = useAbility()
 
   const [currentBlock, setCurrentBlock] = useState(-1)
+  const [search, setSearch] = useState('')
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.MyStaked,
     order: SortOrderEnum.Desc,
@@ -98,11 +100,14 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openApyDialog] = useDialog(StakingApyDialog)
 
+  const searchDebounced = useDebounce(search, 1000)
+
   useGate(model.StakingListGate, {
     ...props,
     hidden: ability.can('update', 'Contract') ? null : false,
     sortColumn: sortBy.column,
     sortOrder: sortBy.order,
+    search: searchDebounced,
   })
 
   const handleOpenConfirmDialog = (id: string) => async () => {
@@ -320,6 +325,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       }
     }
 
+  const handleSearch = (event: React.FormEvent<HTMLInputElement>) => {
+    setSearch(event.currentTarget.value)
+  }
+
   useInterval(
     () => {
       if (currentWallet) {
@@ -348,6 +357,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         <Typography variant="h3" className={styles.title}>
           Staking contracts
         </Typography>
+        <Input
+          placeholder="Search"
+          className={styles.search}
+          value={search}
+          onChange={handleSearch}
+        />
         {false && <StakingTabs className={styles.tabs} />}
         {false && (
           <Paper radius={8} className={styles.select}>

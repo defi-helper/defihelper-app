@@ -66,9 +66,14 @@ export const selectArrow = style({
   transform: 'rotate(180deg)',
 })
 
+export const search = style({
+  width: 211,
+  marginLeft: 'auto',
+})
+
 export const create = style({
   padding: 2,
-  marginLeft: 'auto',
+  marginLeft: 24,
 
   '@media': {
     [theme.mediaQueries.down(959)]: {

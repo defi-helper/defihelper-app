@@ -53,6 +53,7 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
       },
       contractFilter: {
         hidden: params.hidden,
+        ...(params.search ? { search: params.search } : {}),
       },
       contractPagination: {
         offset: params.offset,
@@ -411,7 +412,7 @@ export const $freshMetrics = stakingListDomain
   .on(fetchMetricsFx.doneData, (_, payload) => payload)
 
 sample({
-  source: $contractList,
+  source: $contractsListCopies,
   clock: fetchMetrics,
   fn: (contracts, { wallet, protocolAdapter }) => ({
     contracts: contracts.filter(

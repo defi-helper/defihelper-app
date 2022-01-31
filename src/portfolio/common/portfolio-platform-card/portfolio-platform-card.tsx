@@ -1,15 +1,15 @@
 import clsx from 'clsx'
 
-import React from 'react'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
-import * as styles from './portfolio-platform-card.css'
 import { Protocol } from '~/protocols/common'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { PortfolioAssetCard } from '~/portfolio/common'
 import { Loader } from '~/common/loader'
 import { PortfolioAssetFragment } from '~/graphql/_generated-types'
+import { PortfolioAssetsHeader } from '../portfolio-assets-header'
+import * as styles from './portfolio-platform-card.css'
 
 export type PortfolioAssetCardProps = {
   className?: string
@@ -72,6 +72,7 @@ export const PortfolioPlatformCard: React.VFC<PortfolioAssetCardProps> = (
           )}
         >
           <div className={styles.tableBody}>
+            <PortfolioAssetsHeader />
             {props.loading && (
               <div className={clsx(styles.loadingWrapper)}>
                 <Loader height="16" />
