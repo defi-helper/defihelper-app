@@ -12,7 +12,6 @@ import {
 import { Typography } from '~/common/typography'
 import { ProtocolChartWrap } from '../common'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
 import { Link } from '~/common/link'
 import { config } from '~/config'
