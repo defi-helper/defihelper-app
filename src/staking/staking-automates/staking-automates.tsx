@@ -90,11 +90,11 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
         await openAdapter({
           steps: adapter[action],
           onSubmit: () => {
-            if (!contract.contract) return
+            if (!contract.contract || !contract.contractWallet) return
 
             model
               .scanWalletMetricFx({
-                walletId: contract.wallet.id,
+                walletId: contract.contractWallet.id,
                 contractId: contract.contract.id,
               })
               .catch(console.error)
@@ -130,11 +130,11 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
         await tx.wait()
 
-        if (!contract.contract) return
+        if (!contract.contract || !contract.contractWallet) return
 
         model
           .scanWalletMetricFx({
-            walletId: contract.wallet.id,
+            walletId: contract.contractWallet.id,
             contractId: contract.contract.id,
           })
           .catch(console.error)
