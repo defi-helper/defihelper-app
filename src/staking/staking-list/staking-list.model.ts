@@ -326,6 +326,12 @@ export const StakingListPagination = createPagination({
 })
 
 guard({
+  clock: StakingListGate.state,
+  filter: ({ search }) => Boolean(search),
+  target: StakingListPagination.reset,
+})
+
+guard({
   clock: sample({
     source: [
       StakingListPagination.state,

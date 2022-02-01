@@ -25,6 +25,7 @@ import { parseError } from '~/common/parse-error'
 import { toastsService } from '~/toasts'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type StakingAutomatesProps = {
   className?: string
@@ -112,6 +113,11 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const handleRunManually =
     (contract: typeof automatesContracts[number]) => async () => {
       try {
+        if (
+          bignumberUtils.eq(contract.contractWallet?.metric.stakedUSD ?? '', 0)
+        )
+          throw new Error('not enough money')
+
         if (!wallet?.account) return
 
         const adapter = await model.fetchAdapterFx({

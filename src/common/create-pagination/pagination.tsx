@@ -12,6 +12,7 @@ import * as styles from './pagination.css'
 export type PaginationProps = {
   $pages: Store<number>
   changePage: Event<number>
+  reset: Event<void>
   className?: string
 }
 
@@ -30,7 +31,7 @@ export const Pagination: React.VFC<PaginationProps> = (props) => {
 
   useEffect(() => {
     return () => {
-      props.changePage(DEFAULT_PAGE - 1)
+      props.reset()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
