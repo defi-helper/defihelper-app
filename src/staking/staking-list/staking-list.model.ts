@@ -4,6 +4,7 @@ import {
   restore,
   sample,
   UnitValue,
+  StoreValue,
 } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
@@ -22,6 +23,7 @@ import {
   StakingListPayload,
 } from '~/staking/common'
 import { createPagination, PaginationState } from '~/common/create-pagination'
+import { bignumberUtils } from '~/common/bignumber-utils'
 import { toastsService } from '~/toasts'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import { Adapters, loadAdapter } from '~/common/load-adapter'
@@ -366,6 +368,7 @@ export const fetchMetricsFx = stakingListDomain.createEffect(
     contracts: Contract[]
     wallet: Wallet
     protocolAdapter: string
+    wallets: StoreValue<typeof settingsWalletModel.$wallets>
   }) => {
     const networkProvider = walletNetworkModel.getNetwork(
       params.wallet.provider,
@@ -377,8 +380,6 @@ export const fetchMetricsFx = stakingListDomain.createEffect(
         buildAdaptersUrl(params.protocolAdapter)
       )
 
-      if (!params.wallet.account) return null
-
       const adapterObj = await adapter[
         contract.adapter as keyof Omit<Adapters, 'automates'>
       ](networkProvider, contract.address, {
@@ -386,14 +387,35 @@ export const fetchMetricsFx = stakingListDomain.createEffect(
         signer: networkProvider?.getSigner(),
       })
 
-      const wallet = await adapterObj.wallet(params.wallet.account)
+      const walletMetrics = (
+        await Promise.all(
+          params.wallets.map((wallet) => adapterObj.wallet(wallet.address))
+        )
+      ).reduce(
+        (acc, wallet) => {
+          return {
+            stakingUSD: bignumberUtils.plus(
+              acc.stakingUSD,
+              wallet.metrics.stakingUSD
+            ),
+            earnedUSD: bignumberUtils.plus(
+              acc.earnedUSD,
+              wallet.metrics.earnedUSD
+            ),
+          }
+        },
+        {
+          stakingUSD: '0',
+          earnedUSD: '0',
+        }
+      )
 
       return {
         contractId: contract.id,
         tvl: adapterObj.metrics.tvl,
         aprYear: adapterObj.metrics.aprYear,
-        myStaked: wallet.metrics.stakingUSD,
-        myEarned: wallet.metrics.earnedUSD,
+        myStaked: walletMetrics.stakingUSD,
+        myEarned: walletMetrics.earnedUSD,
       }
     })
 
@@ -412,9 +434,9 @@ export const $freshMetrics = stakingListDomain
   .on(fetchMetricsFx.doneData, (_, payload) => payload)
 
 sample({
-  source: $contractsListCopies,
+  source: [$contractsListCopies, settingsWalletModel.$wallets],
   clock: fetchMetrics,
-  fn: (contracts, { wallet, protocolAdapter }) => ({
+  fn: ([contracts, wallets], { wallet, protocolAdapter }) => ({
     contracts: contracts.filter(
       (contract) =>
         contract.network === String(wallet.chainId) &&
@@ -422,6 +444,10 @@ sample({
     ),
     wallet,
     protocolAdapter,
+    wallets: wallets.filter(
+      ({ blockchain, network }) =>
+        blockchain === wallet.blockchain && network === wallet.chainId
+    ),
   }),
   target: fetchMetricsFx,
 })

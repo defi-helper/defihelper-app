@@ -7,6 +7,8 @@ import {
 } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { shallowEqual } from 'fast-equals'
+import { combineEvents } from 'patronum/combine-events'
+import { delay } from 'patronum/delay'
 
 import {
   MeQuery,
@@ -196,9 +198,9 @@ export const mergeWalletsDialogFx = authDomain.createEffect(
 sample({
   source: UserGate.state,
   clock: guard({
-    source: [$user],
+    source: $user,
     clock: [signedUserWaves, signedUserEthereum],
-    filter: ([prevUser], { user: nextUser }) =>
+    filter: (prevUser, { user: nextUser }) =>
       prevUser !== null && prevUser.id !== nextUser.id,
   }),
   fn: ({ openMergeWalletsDialog }) => openMergeWalletsDialog,
@@ -235,8 +237,28 @@ sample({
   target: openBetaDialogFx,
 })
 
+const mergedEthereum = combineEvents({
+  events: [
+    mergeWalletsDialogFx.finally,
+    delay({
+      source: authEthereumFx.done,
+      timeout: 2000,
+    }),
+  ],
+})
+const mergedWaves = combineEvents({
+  events: [
+    mergeWalletsDialogFx.finally,
+    delay({
+      source: authWavesFx.done,
+      timeout: 2000,
+    }),
+  ],
+})
+
 guard({
-  clock: $user.updates,
+  source: $user,
+  clock: [$user.updates, mergedWaves, mergedEthereum],
   filter: (user) => Boolean(user),
   target: settingsWalletModel.fetchWalletListFx,
 })
