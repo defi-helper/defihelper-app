@@ -18,6 +18,9 @@ import { Link } from '~/common/link'
 import { config } from '~/config'
 import { useTheme } from '~/common/theme'
 import { authModel } from '~/auth'
+import { Dropdown } from '~/common/dropdown'
+import { ButtonBase } from '~/common/button-base'
+import { Icon } from '~/common/icon'
 import * as model from './protocol-metric-earnings.model'
 import * as styles from './protocol-metric-earnings.css'
 
@@ -177,7 +180,20 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
         <ProtocolChartWrap
           header={
             <div>
-              <Typography>Estimated Earnings in 3 months</Typography>
+              <Typography className={styles.eastimatedTitle}>
+                Estimated Earnings in 3 months{' '}
+                <Dropdown
+                  control={
+                    <ButtonBase className={styles.question}>
+                      <Icon icon="question" width="24" height="24" />
+                    </ButtonBase>
+                  }
+                  trigger="hover"
+                  offset={[0, 8]}
+                >
+                  text
+                </Dropdown>
+              </Typography>
               <Link
                 href={config.MEDIUM_LINK}
                 target="_blank"
