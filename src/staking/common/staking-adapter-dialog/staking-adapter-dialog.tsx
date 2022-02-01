@@ -19,6 +19,7 @@ export type StakingAdapterDialogProps = {
   onConfirm: () => void
   steps: AdapterStep[]
   onSubmit?: () => void
+  onLastStep?: () => void
 }
 
 export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
@@ -66,6 +67,7 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
         setCurrentStepNumber(currentStepNumber + 1)
       } else {
         props.onConfirm()
+        props.onLastStep?.()
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -93,6 +95,7 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
       setCurrentStepNumber(currentStepNumber + 1)
     } else {
       props.onConfirm()
+      props.onLastStep?.()
     }
   }, [currentStep, currentStepNumber, steps.value])
 

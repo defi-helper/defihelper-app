@@ -89,7 +89,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
         await openAdapter({
           steps: adapter[action],
-          onSubmit: () => {
+          onLastStep: () => {
             if (!contract.contract || !contract.contractWallet) return
 
             model

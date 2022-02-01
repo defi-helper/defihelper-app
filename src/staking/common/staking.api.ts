@@ -157,7 +157,9 @@ export const stakingApi = {
       .query<
         StakingAutomatesContractsQuery,
         StakingAutomatesContractsQueryVariables
-      >(STAKING_AUTOMATES_CONTRACTS, variables)
+      >(STAKING_AUTOMATES_CONTRACTS, variables, {
+        requestPolicy: 'cache-and-network',
+      })
       .toPromise()
       .then(({ data }) => ({
         list: data?.automateContracts.list ?? [],
