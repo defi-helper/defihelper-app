@@ -191,7 +191,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
                   trigger="hover"
                   offset={[0, 8]}
                 >
-                  text
+                  Extra income you may earn with auto-staking activated
                 </Dropdown>
               </Typography>
               <Link

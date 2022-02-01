@@ -58,7 +58,7 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
             trigger="hover"
             offset={[0, 8]}
           >
-            text
+            Extra income you may earn with auto-staking activated
           </Dropdown>
         </Typography>
       </div>
