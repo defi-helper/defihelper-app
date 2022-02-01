@@ -164,18 +164,20 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [tokenMetricUpdated] =
     useOnTokenMetricUpdatedSubscription(subscriptionOptions)
 
-  const metricUpdated = useThrottle(
-    walletUpdated.data?.onWalletMetricUpdated.id ||
-      tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
-      '',
+  const onWalletMetricUpdated = useThrottle(
+    walletUpdated.data?.onWalletMetricUpdated.id || '',
+    TIME
+  )
+  const onTokenMetricUpdated = useThrottle(
+    tokenMetricUpdated.data?.onTokenMetricUpdated.id || '',
     TIME
   )
 
   useEffect(() => {
-    if (metricUpdated) {
+    if (onWalletMetricUpdated || onTokenMetricUpdated) {
       model.updated()
     }
-  }, [metricUpdated])
+  }, [onWalletMetricUpdated, onTokenMetricUpdated])
 
   if (isEmpty(automatesContracts)) return <></>
 
