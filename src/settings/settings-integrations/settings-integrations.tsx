@@ -38,8 +38,6 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
     },
   }
 
-  console.warn(integrations)
-
   const handleConnectIntegration =
     (integrationType: WalletExchangeTypeEnum) => async () => {
       try {
