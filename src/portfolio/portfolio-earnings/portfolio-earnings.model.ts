@@ -90,7 +90,7 @@ guard({
     clock: portfolioMetricCardModel.$metric.updates,
     fn: (metric): Params => ({
       group: MetricGroupEnum.Day,
-      balance: Number(metric?.worth ?? 0),
+      balance: Number(metric?.earnedUSD ?? 0),
       apy: Number(metric?.apy ?? 0),
     }),
   }),
