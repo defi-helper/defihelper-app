@@ -26,6 +26,7 @@ import { createPagination, PaginationState } from '~/common/create-pagination'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { toastsService } from '~/toasts'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
+import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import { Adapters, loadAdapter } from '~/common/load-adapter'
 import { automationApi } from '~/automations/common/automation.api'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -326,18 +327,24 @@ export const StakingListPagination = createPagination({
 
 guard({
   clock: sample({
-    source: [StakingListPagination.state, StakingListGate.state],
+    source: [
+      StakingListPagination.state,
+      StakingListGate.state,
+      StakingListGate.status,
+    ],
     clock: [
       StakingListGate.open,
       StakingListGate.state.updates,
       StakingListPagination.updates,
+      stakingAutomatesModel.updated,
     ],
-    fn: ([pagination, gate]) => ({
+    fn: ([pagination, gate, opened]) => ({
       ...pagination,
       ...gate,
+      opened,
     }),
   }),
-  filter: ({ protocolId }) => Boolean(protocolId),
+  filter: ({ protocolId, opened }) => Boolean(protocolId) && opened,
   target: [fetchStakingListFx, fetchConnectedContractsFx],
 })
 
