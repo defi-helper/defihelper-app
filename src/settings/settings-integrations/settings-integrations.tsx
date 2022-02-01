@@ -38,6 +38,8 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
     },
   }
 
+  console.warn(integrations)
+
   const handleConnectIntegration =
     (integrationType: WalletExchangeTypeEnum) => async () => {
       try {
@@ -45,7 +47,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
 
         handlers[integrationType].effect({
           ...apiKeyPair,
-          type: integrationType,
+          exchange: integrationType,
         })
       } catch (error) {
         if (error instanceof Error) {

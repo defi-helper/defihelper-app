@@ -1,7 +1,7 @@
 import { gql } from 'urql'
 
 export const WALLET_FRAGMENT = gql`
-  fragment walletFragment on WalletType {
+  fragment walletFragment on WalletBlockchainType {
     id
     blockchain
     network
