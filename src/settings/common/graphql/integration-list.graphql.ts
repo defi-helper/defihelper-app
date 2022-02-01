@@ -5,8 +5,10 @@ import { WALLET_EXCHANGE_FRAGMENT } from './wallet-exchange.fragment.graphql'
 export const WALLET_EXCHANGE_LIST = gql`
   query IntegrationList {
     me {
-      exchanges {
-        ...walletExchangeFragment
+      exchanges(pagination: { limit: 10 }) {
+        list {
+          ...walletExchangeFragment
+        }
       }
     }
   }

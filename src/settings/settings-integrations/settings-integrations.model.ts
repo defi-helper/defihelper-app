@@ -26,11 +26,11 @@ export const fetchEstablishedIntegrationsListFx =
 export const connectIntegrationBinanceFx = integrationListDomain.createEffect(
   async (
     input: IntegrationBinanceConnectMutationVariables['input'] & {
-      type: WalletExchangeTypeEnum
+      exchange: WalletExchangeTypeEnum
     }
   ) => {
     const data = await settingsApi.integrationBinanceConnect({
-      input: omit(input, 'type'),
+      input: omit(input, 'exchange'),
     })
 
     if (!data)
@@ -76,13 +76,13 @@ export const $integrationsList = integrationListDomain
   })
 
 export const $connectAdding = integrationListDomain
-  .createStore<WalletExchangeFragmentFragment['type'] | null>(null)
-  .on(connectIntegrationBinanceFx, (_, { type }) => type)
+  .createStore<WalletExchangeFragmentFragment['exchange'] | null>(null)
+  .on(connectIntegrationBinanceFx, (_, { exchange }) => exchange)
   .on(connectIntegrationBinanceFx.finally, () => null)
 
 export const $integrations = combine($integrationsList, (integrations) => {
   return integrations.reduce<Integrations>((acc, integration) => {
-    acc[integration.type] = integration
+    acc[integration.exchange] = integration
 
     return acc
   }, {})

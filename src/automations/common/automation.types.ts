@@ -1,6 +1,6 @@
 import {
   AutomationTriggerFragmentFragment,
-  WalletType,
+  WalletBlockchainType,
   AutomationProtocolsQuery,
 } from '~/graphql/_generated-types'
 
@@ -19,7 +19,7 @@ export type AutomationNetwork = {
 }
 
 export type Wallet = Pick<
-  WalletType,
+  WalletBlockchainType,
   | 'address'
   | 'id'
   | 'network'

@@ -151,7 +151,7 @@ export const settingsApi = {
         { requestPolicy: 'cache-and-network' }
       )
       .toPromise()
-      .then(({ data }) => data?.me?.exchanges ?? []),
+      .then(({ data }) => data?.me?.exchanges.list ?? []),
 
   integrationBinanceConnect: (
     variables: IntegrationBinanceConnectMutationVariables

@@ -45,7 +45,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
 
         handlers[integrationType].effect({
           ...apiKeyPair,
-          type: integrationType,
+          exchange: integrationType,
         })
       } catch (error) {
         if (error instanceof Error) {
