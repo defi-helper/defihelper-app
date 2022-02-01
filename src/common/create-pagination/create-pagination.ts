@@ -25,6 +25,7 @@ export const createPagination = (options: Options) => {
   const changeOffset = options.domain.createEvent<number>()
   const totalPages = options.domain.createEvent<number>()
   const totalElements = options.domain.createEvent<number>()
+  const reset = options.domain.createEvent()
 
   sample({
     source: $limit,
@@ -35,6 +36,8 @@ export const createPagination = (options: Options) => {
 
   $offset.on(changeOffset, (_, payload) => payload)
   $pages.on(totalPages, (_, payload) => payload)
+  $offset.reset(reset)
+  $pages.reset(reset)
 
   sample({
     source: $limit,
@@ -47,6 +50,7 @@ export const createPagination = (options: Options) => {
     createElement(Pagination, {
       $pages,
       changePage,
+      reset,
       className: props.className,
     })
 
@@ -60,6 +64,7 @@ export const createPagination = (options: Options) => {
   )
   Component.totalElements = totalElements
   Component.updates = Component.state.updates
+  Component.reset = reset
 
   return Component
 }

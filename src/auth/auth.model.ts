@@ -7,6 +7,8 @@ import {
 } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { shallowEqual } from 'fast-equals'
+import { combineEvents } from 'patronum/combine-events'
+import { delay } from 'patronum/delay'
 
 import {
   MeQuery,
@@ -19,6 +21,7 @@ import * as settingsWalletModel from '~/settings/settings-wallets/settings-walle
 import { sidUtils, authApi } from './common'
 import { history } from '~/common/history'
 import { paths } from '~/paths'
+import { toastsService } from '~/toasts'
 
 type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
 
@@ -172,6 +175,28 @@ split({
   },
 })
 
+guard({
+  clock: sample({
+    source: $userWallets,
+    clock: walletNetworkModel.signMessage,
+    fn: (wallets, signMessage) => ({ wallets, ...signMessage }),
+  }),
+  filter: (clock) => {
+    return Boolean(
+      clock.account &&
+        clock.wallets?.some(({ address, network }) => {
+          const isWaves = clock.chainId === 'main'
+
+          return isWaves
+            ? clock.account === address && clock.chainId === network
+            : clock.account.toLowerCase() === address &&
+                clock.chainId === network
+        })
+    )
+  },
+  target: toastsService.info.prepend(() => 'Wallet already added!'),
+})
+
 export const openBetaDialogFx = authDomain.createEffect(
   (fn: () => Promise<unknown>) => fn()
 )
@@ -196,9 +221,9 @@ export const mergeWalletsDialogFx = authDomain.createEffect(
 sample({
   source: UserGate.state,
   clock: guard({
-    source: [$user],
+    source: $user,
     clock: [signedUserWaves, signedUserEthereum],
-    filter: ([prevUser], { user: nextUser }) =>
+    filter: (prevUser, { user: nextUser }) =>
       prevUser !== null && prevUser.id !== nextUser.id,
   }),
   fn: ({ openMergeWalletsDialog }) => openMergeWalletsDialog,
@@ -235,8 +260,28 @@ sample({
   target: openBetaDialogFx,
 })
 
+const mergedEthereum = combineEvents({
+  events: [
+    mergeWalletsDialogFx.done,
+    delay({
+      source: authEthereumFx.done,
+      timeout: 3000,
+    }),
+  ],
+})
+const mergedWaves = combineEvents({
+  events: [
+    mergeWalletsDialogFx.done,
+    delay({
+      source: authWavesFx.done,
+      timeout: 3000,
+    }),
+  ],
+})
+
 guard({
-  clock: $user.updates,
+  source: $user,
+  clock: [$user.updates, mergedWaves, mergedEthereum],
   filter: (user) => Boolean(user),
   target: settingsWalletModel.fetchWalletListFx,
 })
