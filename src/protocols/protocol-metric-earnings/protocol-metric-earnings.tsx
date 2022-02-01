@@ -95,11 +95,16 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   )
 
   useEffect(() => {
+    const balance = Number(
+      bignumberUtils.plus(props.metric.myEarned, props.metric.myStaked)
+    )
+    const apy = Number(props.metric.myAPY ?? 0)
+
+    if (!apy) return
+
     model.fetchEarningMetricFx({
-      balance: Number(
-        bignumberUtils.plus(props.metric.myEarned, props.metric.myStaked)
-      ),
-      apy: Number(props.metric.myAPY ?? 0),
+      balance,
+      apy,
     })
   }, [
     props.metric.myStaked,

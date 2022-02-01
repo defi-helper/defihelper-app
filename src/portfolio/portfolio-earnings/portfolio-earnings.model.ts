@@ -1,4 +1,4 @@
-import { createDomain, sample } from 'effector-logger/macro'
+import { createDomain, sample, guard } from 'effector-logger/macro'
 
 import { MetricGroupEnum } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
@@ -85,13 +85,16 @@ export const $portfolioEarnings = portfolioEarnings
     }
   })
 
-sample({
-  clock: portfolioMetricCardModel.$metric.updates,
-  fn: (metric): Params => ({
-    group: MetricGroupEnum.Day,
-    balance: Number(metric?.worth ?? 0),
-    apy: Number(metric?.apy ?? 0),
+guard({
+  clock: sample({
+    clock: portfolioMetricCardModel.$metric.updates,
+    fn: (metric): Params => ({
+      group: MetricGroupEnum.Day,
+      balance: Number(metric?.worth ?? 0),
+      apy: Number(metric?.apy ?? 0),
+    }),
   }),
+  filter: ({ apy }) => apy > 0,
   target: fetchChartDataFx,
 })
 
