@@ -65,24 +65,22 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
     ...props.coinmarketcap,
   ]
 
-  const servicesSupply = [
-    props.telegram,
-    props.coingecko,
-    props.coinmarketcap,
-  ].map((target) =>
-    target
-      .map((v) => v.entityIdentifier)
-      .filter((x, i, a) => a.indexOf(x) === i)
-      .map((v) => {
-        return {
-          identifier: v,
-          link: [...props.links.social, ...props.links.listing].find(
-            (link) => link.id === v
-          ),
-          points: target.filter((tg) => tg.entityIdentifier === v),
-        }
-      })
-  )
+  const servicesSupply = [props.telegram, props.coingecko, props.coinmarketcap]
+    .map((target) =>
+      target
+        .map((v) => v.entityIdentifier)
+        .filter((x, i, a) => a.indexOf(x) === i)
+        .map((v) => {
+          return {
+            identifier: v,
+            link: [...props.links.social, ...props.links.listing].find(
+              (link) => link.id === v
+            ),
+            points: target.filter((tg) => tg.entityIdentifier === v),
+          }
+        })
+    )
+    .flat()
 
   if (isEmpty(metric)) return <></>
 
@@ -99,7 +97,7 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
           </Typography>
           <Typography variant="body2">Last Month</Typography>
         </div>
-        {servicesSupply.flatMap(([row], i) => (
+        {servicesSupply.map((row, i) => (
           <Row
             key={i.toString()}
             title={row.link?.name}
