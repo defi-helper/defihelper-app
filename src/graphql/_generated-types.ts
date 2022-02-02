@@ -282,7 +282,7 @@ export type AutomateContractType = {
   /** Identificator */
   id: Scalars['UuidType']
   /** Owner wallet */
-  wallet: WalletType
+  wallet: WalletBlockchainType
   /** Protocol */
   protocol: ProtocolType
   /** Protocol contract */
@@ -290,7 +290,7 @@ export type AutomateContractType = {
   /** Address in blockchain */
   address: Scalars['String']
   /** Automate contract wallet */
-  contractWallet?: Maybe<WalletType>
+  contractWallet?: Maybe<WalletBlockchainType>
   /** Adapter name */
   adapter: Scalars['String']
   /** Init method parameters */
@@ -417,7 +417,7 @@ export type AutomateTriggerType = {
   /** Trigger parameters */
   params: Scalars['String']
   /** Wallet of owner */
-  wallet: WalletType
+  wallet: WalletBlockchainType
   /** Name */
   name: Scalars['String']
   /** Is trigger active */
@@ -686,7 +686,7 @@ export type ContractMetricType = {
 }
 
 export type ContractMetricWalletFilterInputType = {
-  type?: Maybe<Array<WalletTypeEnum>>
+  type?: Maybe<Array<WalletBlockchainTypeEnum>>
 }
 
 export type ContractType = {
@@ -916,6 +916,13 @@ export type GovVotesFilterInputType = {
   wallet: Scalars['String']
 }
 
+export type IntegrationBinanceConnectInputType = {
+  /** Api key */
+  apiKey: Scalars['String']
+  /** Api secret */
+  apiSecret: Scalars['String']
+}
+
 export enum LocaleEnum {
   EnUs = 'enUS',
   RuRu = 'ruRU',
@@ -943,13 +950,15 @@ export enum MetricGroupEnum {
 
 export type Mutation = {
   __typename?: 'Mutation'
+  userUpdate: UserType
   authEth?: Maybe<AuthType>
   authWaves?: Maybe<AuthType>
   addWallet?: Maybe<AuthType>
-  walletUpdate: WalletType
+  walletUpdate: WalletBlockchainType
   walletDelete: Scalars['Boolean']
-  userUpdate: UserType
   walletMetricScan: Scalars['Boolean']
+  integrationBinanceConnect: WalletExchangeType
+  integrationDisconnect: Scalars['Boolean']
   protocolCreate: ProtocolType
   protocolUpdate: ProtocolType
   protocolResolveContracts: Scalars['Boolean']
@@ -995,6 +1004,11 @@ export type Mutation = {
   automateContractDelete: Scalars['Boolean']
 }
 
+export type MutationUserUpdateArgs = {
+  id: Scalars['UuidType']
+  input: UserUpdateInputType
+}
+
 export type MutationAuthEthArgs = {
   input: AuthEthereumInputType
 }
@@ -1016,14 +1030,17 @@ export type MutationWalletDeleteArgs = {
   id: Scalars['UuidType']
 }
 
-export type MutationUserUpdateArgs = {
-  id: Scalars['UuidType']
-  input: UserUpdateInputType
-}
-
 export type MutationWalletMetricScanArgs = {
   wallet: Scalars['UuidType']
   contract: Scalars['UuidType']
+}
+
+export type MutationIntegrationBinanceConnectArgs = {
+  input: IntegrationBinanceConnectInputType
+}
+
+export type MutationIntegrationDisconnectArgs = {
+  id: Scalars['UuidType']
 }
 
 export type MutationProtocolCreateArgs = {
@@ -1972,7 +1989,7 @@ export type StorePurchaseType = {
 
 export type Subscription = {
   __typename?: 'Subscription'
-  onWalletCreated: WalletType
+  onWalletCreated: WalletBlockchainType
   onWalletMetricUpdated: WalletMetricUpdatedEvent
   onTokenMetricUpdated: TokenMetricUpdatedEvent
   onBillingTransferCreated: BillingTransferType
@@ -2158,9 +2175,9 @@ export type TokenListType = {
 export type TokenMetricUpdatedEvent = {
   __typename?: 'TokenMetricUpdatedEvent'
   id: Scalars['UuidType']
-  wallet: WalletType
+  wallet: WalletBlockchainType
   contract?: Maybe<ContractType>
-  token: WalletType
+  token: WalletBlockchainType
 }
 
 export type TokenType = {
@@ -2334,7 +2351,7 @@ export enum UserBlockchainWalletListSortInputTypeColumnEnum {
 export type UserBlockchainWalletListType = {
   __typename?: 'UserBlockchainWalletListType'
   /** Elements */
-  list?: Maybe<Array<WalletType>>
+  list?: Maybe<Array<WalletBlockchainType>>
   pagination: Pagination
 }
 
@@ -2753,6 +2770,7 @@ export type UserType = {
   locale: LocaleEnum
   tokenAliases: UserTokenAliasListType
   wallets: WalletListType
+  exchanges: WalletExchangeListType
   blockchains: Array<UserBlockchainType>
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
@@ -2772,6 +2790,11 @@ export type UserTypeWalletsArgs = {
   filter?: Maybe<WalletListFilterInputType>
   sort?: Maybe<Array<WalletListSortInputType>>
   pagination?: Maybe<WalletListPaginationInputType>
+}
+
+export type UserTypeExchangesArgs = {
+  sort?: Maybe<Array<WalletExchangeListSortInputType>>
+  pagination?: Maybe<WalletExchangeListPaginationInputType>
 }
 
 export type UserTypeMetricChartArgs = {
@@ -2914,6 +2937,69 @@ export type WalletBillingTypeBillsArgs = {
   pagination?: Maybe<WalletBillingBillListPaginationInputType>
 }
 
+export type WalletBlockchainType = {
+  __typename?: 'WalletBlockchainType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Type */
+  type: WalletBlockchainTypeEnum
+  /** Name */
+  name: Scalars['String']
+  /** Blockchain type */
+  blockchain: BlockchainEnum
+  /** Blockchain network id */
+  network: Scalars['String']
+  /** Address */
+  address: Scalars['String']
+  /** Public key */
+  publicKey: Scalars['String']
+  contracts: WalletContractListType
+  triggersCount: Scalars['Int']
+  tokenAliases: WalletTokenAliasListType
+  metricChart: Array<MetricChartType>
+  tokenMetricChart: Array<MetricChartType>
+  metric: WalletMetricType
+  billing: WalletBillingType
+  /** Date of created account */
+  createdAt: Scalars['DateTimeType']
+}
+
+export type WalletBlockchainTypeContractsArgs = {
+  filter?: Maybe<WalletContractListFilterInputType>
+  sort?: Maybe<Array<WalletContractListSortInputType>>
+  pagination?: Maybe<WalletContractListPaginationInputType>
+}
+
+export type WalletBlockchainTypeTokenAliasesArgs = {
+  filter?: Maybe<WalletTokenAliasListFilterInputType>
+  pagination?: Maybe<WalletTokenAliasListPaginationInputType>
+}
+
+export type WalletBlockchainTypeMetricChartArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<WalletMetricChartFilterInputType>
+  sort?: Maybe<Array<WalletMetricChartSortInputType>>
+  pagination?: Maybe<WalletMetricChartPaginationInputType>
+}
+
+export type WalletBlockchainTypeTokenMetricChartArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<WalletTokenMetricChartFilterInputType>
+  sort?: Maybe<Array<WalletTokenMetricChartSortInputType>>
+  pagination?: Maybe<WalletTokenMetricChartPaginationInputType>
+}
+
+export type WalletBlockchainTypeMetricArgs = {
+  filter?: Maybe<WalletMetricFilterInputType>
+}
+
+export enum WalletBlockchainTypeEnum {
+  Wallet = 'wallet',
+  Contract = 'contract',
+}
+
 export type WalletContractListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   protocol?: Maybe<Array<Scalars['UuidType']>>
@@ -2947,10 +3033,52 @@ export type WalletContractListType = {
   pagination: Pagination
 }
 
+export type WalletExchangeListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type WalletExchangeListSortInputType = {
+  column: WalletExchangeListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum WalletExchangeListSortInputTypeColumnEnum {
+  Id = 'id',
+  CreatedAt = 'createdAt',
+}
+
+export type WalletExchangeListType = {
+  __typename?: 'WalletExchangeListType'
+  /** Elements */
+  list?: Maybe<Array<WalletExchangeType>>
+  pagination: Pagination
+}
+
+export type WalletExchangeType = {
+  __typename?: 'WalletExchangeType'
+  /** Identifier */
+  id: Scalars['UuidType']
+  /** Name */
+  name: Scalars['String']
+  /** Exchange type */
+  exchange: WalletExchangeTypeEnum
+  /** Account */
+  account: Scalars['String']
+  /** Date of created account */
+  createdAt: Scalars['DateTimeType']
+}
+
+export enum WalletExchangeTypeEnum {
+  Binance = 'binance',
+}
+
 export type WalletListFilterInputType = {
   id?: Maybe<Scalars['UuidType']>
   blockchain?: Maybe<BlockchainFilterInputType>
-  type?: Maybe<WalletTypeEnum>
+  type?: Maybe<WalletBlockchainTypeEnum>
   search?: Maybe<Scalars['String']>
 }
 
@@ -2975,7 +3103,7 @@ export enum WalletListSortInputTypeColumnEnum {
 export type WalletListType = {
   __typename?: 'WalletListType'
   /** Elements */
-  list?: Maybe<Array<WalletType>>
+  list?: Maybe<Array<WalletBlockchainType>>
   pagination: Pagination
 }
 
@@ -3024,7 +3152,7 @@ export type WalletMetricType = {
 export type WalletMetricUpdatedEvent = {
   __typename?: 'WalletMetricUpdatedEvent'
   id: Scalars['UuidType']
-  wallet: WalletType
+  wallet: WalletBlockchainType
   contract: ContractType
 }
 
@@ -3086,69 +3214,6 @@ export type WalletTokenMetricChartSortInputType = {
 export enum WalletTokenMetricChartSortInputTypeColumnEnum {
   Date = 'date',
   Value = 'value',
-}
-
-export type WalletType = {
-  __typename?: 'WalletType'
-  /** Identificator */
-  id: Scalars['UuidType']
-  /** Blockchain type */
-  blockchain: BlockchainEnum
-  /** Blockchain network id */
-  network: Scalars['String']
-  /** Type */
-  type: WalletTypeEnum
-  /** Address */
-  address: Scalars['String']
-  /** Public key */
-  publicKey: Scalars['String']
-  /** Name */
-  name: Scalars['String']
-  contracts: WalletContractListType
-  triggersCount: Scalars['Int']
-  tokenAliases: WalletTokenAliasListType
-  metricChart: Array<MetricChartType>
-  tokenMetricChart: Array<MetricChartType>
-  metric: WalletMetricType
-  billing: WalletBillingType
-  /** Date of created account */
-  createdAt: Scalars['DateTimeType']
-}
-
-export type WalletTypeContractsArgs = {
-  filter?: Maybe<WalletContractListFilterInputType>
-  sort?: Maybe<Array<WalletContractListSortInputType>>
-  pagination?: Maybe<WalletContractListPaginationInputType>
-}
-
-export type WalletTypeTokenAliasesArgs = {
-  filter?: Maybe<WalletTokenAliasListFilterInputType>
-  pagination?: Maybe<WalletTokenAliasListPaginationInputType>
-}
-
-export type WalletTypeMetricChartArgs = {
-  metric: Scalars['MetricColumnType']
-  group: MetricGroupEnum
-  filter?: Maybe<WalletMetricChartFilterInputType>
-  sort?: Maybe<Array<WalletMetricChartSortInputType>>
-  pagination?: Maybe<WalletMetricChartPaginationInputType>
-}
-
-export type WalletTypeTokenMetricChartArgs = {
-  metric: Scalars['MetricColumnType']
-  group: MetricGroupEnum
-  filter?: Maybe<WalletTokenMetricChartFilterInputType>
-  sort?: Maybe<Array<WalletTokenMetricChartSortInputType>>
-  pagination?: Maybe<WalletTokenMetricChartPaginationInputType>
-}
-
-export type WalletTypeMetricArgs = {
-  filter?: Maybe<WalletMetricFilterInputType>
-}
-
-export enum WalletTypeEnum {
-  Wallet = 'wallet',
-  Contract = 'contract',
 }
 
 export type WalletUpdateInputType = {
@@ -3479,8 +3544,8 @@ export type AutomationTriggerFragmentFragment = {
   AutomateTriggerType,
   'id' | 'type' | 'params' | 'name' | 'active' | 'lastCallAt' | 'createdAt'
 > & {
-    wallet: { __typename?: 'WalletType' } & Pick<
-      WalletType,
+    wallet: { __typename?: 'WalletBlockchainType' } & Pick<
+      WalletBlockchainType,
       | 'id'
       | 'blockchain'
       | 'network'
@@ -3678,7 +3743,7 @@ export type AssetsListByWalletQuery = { __typename?: 'Query' } & {
       wallets: { __typename?: 'WalletListType' } & {
         list?: Maybe<
           Array<
-            { __typename?: 'WalletType' } & {
+            { __typename?: 'WalletBlockchainType' } & {
               tokenAliases: { __typename?: 'WalletTokenAliasListType' } & {
                 list?: Maybe<
                   Array<
@@ -3744,8 +3809,8 @@ export type BlockChainsQuery = { __typename?: 'Query' } & {
             wallets: { __typename?: 'UserBlockchainWalletListType' } & {
               list?: Maybe<
                 Array<
-                  { __typename?: 'WalletType' } & Pick<
-                    WalletType,
+                  { __typename?: 'WalletBlockchainType' } & Pick<
+                    WalletBlockchainType,
                     'id' | 'network' | 'blockchain' | 'address'
                   > & {
                       tokenMetricChart: Array<
@@ -4285,8 +4350,8 @@ export type ProposalVoteFragmentFragment = { __typename?: 'VoteType' } & Pick<
         wallets: { __typename?: 'WalletListType' } & {
           list?: Maybe<
             Array<
-              { __typename?: 'WalletType' } & Pick<
-                WalletType,
+              { __typename?: 'WalletBlockchainType' } & Pick<
+                WalletBlockchainType,
                 | 'id'
                 | 'blockchain'
                 | 'network'
@@ -4396,6 +4461,43 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type IntegrationBinanceConnectMutationVariables = Exact<{
+  input: IntegrationBinanceConnectInputType
+}>
+
+export type IntegrationBinanceConnectMutation = { __typename?: 'Mutation' } & {
+  integrationBinanceConnect: {
+    __typename?: 'WalletExchangeType'
+  } & WalletExchangeFragmentFragment
+}
+
+export type IntegrationDisconnectMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type IntegrationDisconnectMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'integrationDisconnect'
+>
+
+export type IntegrationListQueryVariables = Exact<{ [key: string]: never }>
+
+export type IntegrationListQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      exchanges: { __typename?: 'WalletExchangeListType' } & {
+        list?: Maybe<
+          Array<
+            {
+              __typename?: 'WalletExchangeType'
+            } & WalletExchangeFragmentFragment
+          >
+        >
+      }
+    }
+  >
+}
+
 export type OnBillingTransferCreatedSubscriptionVariables = Exact<{
   user?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
 }>
@@ -4427,7 +4529,10 @@ export type OnWalletCreatedSubscriptionVariables = Exact<{
 }>
 
 export type OnWalletCreatedSubscription = { __typename?: 'Subscription' } & {
-  onWalletCreated: { __typename?: 'WalletType' } & Pick<WalletType, 'id'>
+  onWalletCreated: { __typename?: 'WalletBlockchainType' } & Pick<
+    WalletBlockchainType,
+    'id'
+  >
 }
 
 export type UserContactEmailConfirmMutationVariables = Exact<{
@@ -4532,6 +4637,10 @@ export type WalletDeleteMutation = { __typename?: 'Mutation' } & Pick<
   'walletDelete'
 >
 
+export type WalletExchangeFragmentFragment = {
+  __typename?: 'WalletExchangeType'
+} & Pick<WalletExchangeType, 'id' | 'exchange' | 'account'>
+
 export type WalletListQueryVariables = Exact<{
   sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
   pagination?: Maybe<WalletListPaginationInputType>
@@ -4542,7 +4651,9 @@ export type WalletListQuery = { __typename?: 'Query' } & {
     { __typename?: 'UserType' } & {
       wallets: { __typename?: 'WalletListType' } & {
         list?: Maybe<
-          Array<{ __typename?: 'WalletType' } & WalletFragmentFragment>
+          Array<
+            { __typename?: 'WalletBlockchainType' } & WalletFragmentFragment
+          >
         >
         pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
       }
@@ -4556,11 +4667,13 @@ export type WalletUpdateMutationVariables = Exact<{
 }>
 
 export type WalletUpdateMutation = { __typename?: 'Mutation' } & {
-  walletUpdate: { __typename?: 'WalletType' } & WalletFragmentFragment
+  walletUpdate: { __typename?: 'WalletBlockchainType' } & WalletFragmentFragment
 }
 
-export type WalletFragmentFragment = { __typename?: 'WalletType' } & Pick<
-  WalletType,
+export type WalletFragmentFragment = {
+  __typename?: 'WalletBlockchainType'
+} & Pick<
+  WalletBlockchainType,
   | 'id'
   | 'blockchain'
   | 'network'
@@ -4655,8 +4768,8 @@ export type StakingAutomatesContractFragmentFragment = {
         }
     >
     contractWallet?: Maybe<
-      { __typename?: 'WalletType' } & Pick<
-        WalletType,
+      { __typename?: 'WalletBlockchainType' } & Pick<
+        WalletBlockchainType,
         'id' | 'network' | 'address'
       > & {
           metric: { __typename?: 'WalletMetricType' } & Pick<
@@ -4665,8 +4778,8 @@ export type StakingAutomatesContractFragmentFragment = {
           >
         }
     >
-    wallet: { __typename?: 'WalletType' } & Pick<
-      WalletType,
+    wallet: { __typename?: 'WalletBlockchainType' } & Pick<
+      WalletBlockchainType,
       'id' | 'network' | 'address' | 'blockchain'
     >
   }
@@ -4712,7 +4825,7 @@ export type StakingConnectedContractsQuery = { __typename?: 'Query' } & {
       wallets: { __typename?: 'WalletListType' } & {
         list?: Maybe<
           Array<
-            { __typename?: 'WalletType' } & {
+            { __typename?: 'WalletBlockchainType' } & {
               contracts: { __typename?: 'WalletContractListType' } & {
                 list?: Maybe<
                   Array<
@@ -4944,8 +5057,8 @@ export type UserFragment = { __typename?: 'UserType' } & Pick<
     wallets: { __typename?: 'WalletListType' } & {
       list?: Maybe<
         Array<
-          { __typename?: 'WalletType' } & Pick<
-            WalletType,
+          { __typename?: 'WalletBlockchainType' } & Pick<
+            WalletBlockchainType,
             'id' | 'blockchain' | 'network' | 'address'
           >
         >
@@ -5202,8 +5315,15 @@ export const UserNotificationTypeFragmentDoc = gql`
     type
   }
 `
+export const WalletExchangeFragmentFragmentDoc = gql`
+  fragment walletExchangeFragment on WalletExchangeType {
+    id
+    exchange
+    account
+  }
+`
 export const WalletFragmentFragmentDoc = gql`
-  fragment walletFragment on WalletType {
+  fragment walletFragment on WalletBlockchainType {
     id
     blockchain
     network
@@ -6814,6 +6934,56 @@ export function useBillingHistoryQuery(
 ) {
   return Urql.useQuery<BillingHistoryQuery>({
     query: BillingHistoryDocument,
+    ...options,
+  })
+}
+export const IntegrationBinanceConnectDocument = gql`
+  mutation IntegrationBinanceConnect(
+    $input: IntegrationBinanceConnectInputType!
+  ) {
+    integrationBinanceConnect(input: $input) {
+      ...walletExchangeFragment
+    }
+  }
+  ${WalletExchangeFragmentFragmentDoc}
+`
+
+export function useIntegrationBinanceConnectMutation() {
+  return Urql.useMutation<
+    IntegrationBinanceConnectMutation,
+    IntegrationBinanceConnectMutationVariables
+  >(IntegrationBinanceConnectDocument)
+}
+export const IntegrationDisconnectDocument = gql`
+  mutation IntegrationDisconnect($id: UuidType!) {
+    integrationDisconnect(id: $id)
+  }
+`
+
+export function useIntegrationDisconnectMutation() {
+  return Urql.useMutation<
+    IntegrationDisconnectMutation,
+    IntegrationDisconnectMutationVariables
+  >(IntegrationDisconnectDocument)
+}
+export const IntegrationListDocument = gql`
+  query IntegrationList {
+    me {
+      exchanges(pagination: { limit: 10 }) {
+        list {
+          ...walletExchangeFragment
+        }
+      }
+    }
+  }
+  ${WalletExchangeFragmentFragmentDoc}
+`
+
+export function useIntegrationListQuery(
+  options: Omit<Urql.UseQueryArgs<IntegrationListQueryVariables>, 'query'> = {}
+) {
+  return Urql.useQuery<IntegrationListQuery>({
+    query: IntegrationListDocument,
     ...options,
   })
 }
