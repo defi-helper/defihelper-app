@@ -66,6 +66,7 @@ export const wavesKepper = new WavesKeeperConnector({
   authData: {
     data: 'Auth on site',
   },
+  nodeUrl: 'https://nodes-keeper.wavesnodes.com',
 })
 
 export const wavesExchange = new WavesExchangeConnector()

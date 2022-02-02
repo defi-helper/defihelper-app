@@ -6,10 +6,10 @@ import { ReactComponent as FortmaticIcon } from '~/assets/icons/wallets/fortmati
 import { ReactComponent as TrustIcon } from '~/assets/icons/wallets/trustwallet.svg'
 import * as connectors from './connectors'
 import { config } from '~/config'
-// import { ReactComponent as WavesKeeperIcon } from '~/assets/icons/wallets/waves-keeper-wallet.svg'
-// import { ReactComponent as WavesExchangeIcon } from '~/assets/icons/wallets/waves-exchange-wallet.svg'
-// import { networksConfig } from '~/networks-config'
-// import { BlockchainEnum } from '~/graphql/_generated-types'
+import { ReactComponent as WavesKeeperIcon } from '~/assets/icons/wallets/waves-keeper-wallet.svg'
+import { ReactComponent as WavesExchangeIcon } from '~/assets/icons/wallets/waves-exchange-wallet.svg'
+import { networksConfig } from '~/networks-config'
+import { BlockchainEnum } from '~/graphql/_generated-types'
 // import { ReactComponent as LedgerIcon } from '~/assets/icons/wallets/ledger.svg'
 // import { ReactComponent as WalletConnectIcon } from '~/assets/icons/wallets/wallet-connect.svg'
 // import { ReactComponent as PortisIcon } from '~/assets/icons/wallets/portis-wallet.svg'
@@ -31,9 +31,9 @@ export enum ConnectorNames {
 }
 
 const ethereumNetworks = connectors.supportedChainIds.map(String)
-// const wavesNetworks = Object.values(networksConfig)
-//   .filter(({ blockchain }) => blockchain === BlockchainEnum.Waves)
-//   .map(({ chainId }) => String(chainId))
+const wavesNetworks = Object.values(networksConfig)
+  .filter(({ blockchain }) => blockchain === BlockchainEnum.Waves)
+  .map(({ chainId }) => String(chainId))
 
 const IS_IOS = /(iPad|iPhone|iPod)/g.test(navigator.userAgent)
 const IS_ANDROID = /Android/i.test(navigator.userAgent)
@@ -44,8 +44,8 @@ const TRUST_MOBILE = 'https://trustwallet.com/'
 const METAMASK_MOBILE = 'https://metamask.io/'
 // const BINANCE_LINK =
 //   'https://chrome.google.com/webstore/detail/binance-wallet/fhbohimaelbohpjbbldcngcnapndodjp'
-// const WAVES_KEEPER_LINK =
-//   'https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo'
+const WAVES_KEEPER_LINK =
+  'https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo'
 
 const IS_MOBILE = IS_IOS || IS_ANDROID
 
@@ -93,21 +93,21 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     networks: [String(config.DEFAULT_CHAIN_ID)],
     available: true,
   },
-  // [ConnectorNames.WavesKeeper]: {
-  //   connector: connectors.wavesKepper,
-  //   blockchain: 'waves',
-  //   logo: WavesKeeperIcon,
-  //   networks: wavesNetworks,
-  //   available: Boolean(window.WavesKeeper),
-  //   extensionLink: WAVES_KEEPER_LINK,
-  // },
-  // [ConnectorNames.WavesExchange]: {
-  //   connector: connectors.wavesExchange,
-  //   blockchain: 'waves',
-  //   logo: WavesExchangeIcon,
-  //   networks: wavesNetworks,
-  //   available: true,
-  // },
+  [ConnectorNames.WavesKeeper]: {
+    connector: connectors.wavesKepper,
+    blockchain: 'waves',
+    logo: WavesKeeperIcon,
+    networks: wavesNetworks,
+    available: Boolean(window.WavesKeeper),
+    extensionLink: WAVES_KEEPER_LINK,
+  },
+  [ConnectorNames.WavesExchange]: {
+    connector: connectors.wavesExchange,
+    blockchain: 'waves',
+    logo: WavesExchangeIcon,
+    networks: wavesNetworks,
+    available: true,
+  },
   // [ConnectorNames.Ledger]: {
   //   connector: connectors.ledger,
   //   blockchain: 'ethereum',

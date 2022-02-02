@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable class-methods-use-this */
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import type { Signer as WavesSigner } from '@waves/signer'
@@ -40,7 +41,16 @@ export class WavesKeeperConnector extends AbstractConnector {
         : { LOG_LEVEL: 'verbose' }
     )
 
-    waves.setProvider(new Provider(this.options.authData))
+    // @ts-ignore
+    const keeper = new Provider()
+
+    // await keeper.connect({
+    //   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    //   NODE_URL: this.options.nodeUrl!,
+    //   NETWORK_BYTE: 'W'.charCodeAt(0),
+    // })
+
+    waves.setProvider(keeper)
 
     try {
       if (!this.account) {
