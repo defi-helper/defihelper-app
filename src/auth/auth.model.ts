@@ -260,8 +260,7 @@ sample({
   clock: guard({
     source: [UserGate.state, $user],
     clock: saveUser,
-    filter: ([source, prevUser]) =>
-      typeof source === 'function' && prevUser === null,
+    filter: ([, prevUser]) => prevUser === null,
   }),
   fn: ([{ openBetaDialog }]) => openBetaDialog,
   target: openBetaDialogFx,
