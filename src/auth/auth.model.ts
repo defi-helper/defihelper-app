@@ -31,7 +31,7 @@ export const authDomain = createDomain()
 
 export const fetchUserFx = authDomain.createEffect(() => authApi.me())
 
-export const logoutFx = authDomain.createEffect(sidUtils.remove)
+export const logoutFx = authDomain.createEffect(() => sidUtils.remove())
 
 logoutFx.done.watch(() => history.push(paths.portfolio))
 
@@ -93,6 +93,13 @@ sample({
 
 sample({
   clock: walletNetworkModel.signMessageWavesFx.doneData,
+  fn: (params): AuthWavesInputType => ({
+    network: params.network,
+    publicKey: params.publicKey,
+    address: params.address,
+    message: params.message,
+    signature: params.signature,
+  }),
   target: authWavesFx,
 })
 
