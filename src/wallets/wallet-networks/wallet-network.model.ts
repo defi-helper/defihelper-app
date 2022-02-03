@@ -63,6 +63,25 @@ export const activateWalletFx = networkDomain.createEffect(
   }
 )
 
+const saveLastConnectorFx = networkDomain.createEffect((connector: string) => {
+  localStorage.connector = connector
+})
+
+guard({
+  clock: sample({
+    clock: activateWalletFx,
+    fn: (clock) => {
+      const connectorName = Object.entries(connectorsByName).find(
+        ([, { connector }]) => connector === clock.connector
+      )
+
+      return connectorName?.[0]
+    },
+  }),
+  filter: (clock): clock is string => typeof clock === 'string',
+  target: saveLastConnectorFx,
+})
+
 export const updateWalletFx = networkDomain.createEffect(
   async (params: {
     connector: AbstractConnector

@@ -41,14 +41,13 @@ export class WavesKeeperConnector extends AbstractConnector {
         : { LOG_LEVEL: 'verbose' }
     )
 
-    // @ts-ignore
-    const keeper = new Provider()
+    const keeper = new Provider(this.options.authData)
 
-    // await keeper.connect({
-    //   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    //   NODE_URL: this.options.nodeUrl!,
-    //   NETWORK_BYTE: 'W'.charCodeAt(0),
-    // })
+    await keeper.connect({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      NODE_URL: this.options.nodeUrl!,
+      NETWORK_BYTE: 'W'.charCodeAt(0),
+    })
 
     waves.setProvider(keeper)
 

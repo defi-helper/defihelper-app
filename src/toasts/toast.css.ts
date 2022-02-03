@@ -8,6 +8,7 @@ export const root = style({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-end',
+  width: 'calc(100% - 20px)',
 })
 
 globalStyle(`${root} > * + *`, {
