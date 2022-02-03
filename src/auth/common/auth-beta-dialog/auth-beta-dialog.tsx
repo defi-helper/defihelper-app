@@ -20,7 +20,7 @@ export const AuthBetaDialog: React.VFC<AuthBetaDialogProps> = (props) => {
       </Typography>
       <Typography variant="body2" className={styles.title}>
         If you want to propose a new feature or a new protocol to support, do
-        not hesitate to create a proposal in the &apos;Governance&apos; section.
+        not hesitate to create a proposal in the &apos;Vote&apos; section.
       </Typography>
       <Button onClick={props.onConfirm} className={styles.button} size="small">
         Continue
