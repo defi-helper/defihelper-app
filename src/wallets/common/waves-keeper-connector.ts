@@ -1,7 +1,9 @@
-/* eslint-disable no-underscore-dangle */
 /* eslint-disable class-methods-use-this */
 import { AbstractConnector } from '@web3-react/abstract-connector'
-import type { Signer as WavesSigner } from '@waves/signer'
+import type {
+  Signer as WavesSigner,
+  Provider as WavesProvider,
+} from '@waves/signer'
 
 const CHAIN_ID = 'main'
 
@@ -10,6 +12,9 @@ type Options = {
   nodeUrl?: string
   signerUrl?: string
 }
+
+let waves: WavesSigner | null = null
+let keeper: WavesProvider | null = null
 
 export class WavesKeeperConnector extends AbstractConnector {
   private account: string | null = null
@@ -37,13 +42,15 @@ export class WavesKeeperConnector extends AbstractConnector {
       /* webpackChunkName: "waves-provider-keeper" */ '@defihelper/provider-keeper'
     ).then((m) => m.ProviderKeeper)
 
-    const waves = new Signer(
-      this.options.nodeUrl
-        ? { NODE_URL: this.options.nodeUrl }
-        : { LOG_LEVEL: 'verbose' }
-    )
+    waves =
+      waves ??
+      new Signer(
+        this.options.nodeUrl
+          ? { NODE_URL: this.options.nodeUrl }
+          : { LOG_LEVEL: 'verbose' }
+      )
 
-    const keeper = new Provider(this.options.authData)
+    keeper = keeper ?? new Provider(this.options.authData)
 
     await keeper.connect({
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
