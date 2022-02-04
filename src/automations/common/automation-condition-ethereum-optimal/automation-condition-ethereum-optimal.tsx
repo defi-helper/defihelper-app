@@ -21,6 +21,7 @@ export type AutomationConditionEthereumOptimalProps = {
   onSubmit: (formValues: string) => void
   defaultValues?: FormValues
   actions: AutomateActionType[]
+  names: Record<string, string>
 }
 
 export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEthereumOptimalProps> =
@@ -37,6 +38,7 @@ export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEt
       try {
         const result = await openContractDialog({
           actions: props.actions,
+          names: props.names,
         })
 
         setValue('id', result.id)
@@ -77,7 +79,12 @@ export const AutomationConditionEthereumOptimal: React.VFC<AutomationConditionEt
                 {(field.value && currentAction && (
                   <>
                     <Typography variant="body2" as="div">
-                      {currentAction.paramsDescription}
+                      {currentAction.paramsDescription
+                        .split(' ')
+                        .map((str) =>
+                          props.names[str] ? props.names[str] : str
+                        )
+                        .join(' ')}
                     </Typography>
                     <Typography
                       variant="body3"

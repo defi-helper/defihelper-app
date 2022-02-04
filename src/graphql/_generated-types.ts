@@ -4463,6 +4463,43 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type IntegrationBinanceConnectMutationVariables = Exact<{
+  input: IntegrationBinanceConnectInputType
+}>
+
+export type IntegrationBinanceConnectMutation = { __typename?: 'Mutation' } & {
+  integrationBinanceConnect: {
+    __typename?: 'WalletExchangeType'
+  } & WalletExchangeFragmentFragment
+}
+
+export type IntegrationDisconnectMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type IntegrationDisconnectMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'integrationDisconnect'
+>
+
+export type IntegrationListQueryVariables = Exact<{ [key: string]: never }>
+
+export type IntegrationListQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      exchanges: { __typename?: 'WalletExchangeListType' } & {
+        list?: Maybe<
+          Array<
+            {
+              __typename?: 'WalletExchangeType'
+            } & WalletExchangeFragmentFragment
+          >
+        >
+      }
+    }
+  >
+}
+
 export type OnBillingTransferCreatedSubscriptionVariables = Exact<{
   user?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
 }>
@@ -4601,6 +4638,10 @@ export type WalletDeleteMutation = { __typename?: 'Mutation' } & Pick<
   Mutation,
   'walletDelete'
 >
+
+export type WalletExchangeFragmentFragment = {
+  __typename?: 'WalletExchangeType'
+} & Pick<WalletExchangeType, 'id' | 'exchange' | 'account'>
 
 export type WalletListQueryVariables = Exact<{
   sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
@@ -5274,6 +5315,13 @@ export const UserContactFragmentFragmentDoc = gql`
 export const UserNotificationTypeFragmentDoc = gql`
   fragment userNotificationType on UserNotificationType {
     type
+  }
+`
+export const WalletExchangeFragmentFragmentDoc = gql`
+  fragment walletExchangeFragment on WalletExchangeType {
+    id
+    exchange
+    account
   }
 `
 export const WalletFragmentFragmentDoc = gql`
@@ -6888,6 +6936,56 @@ export function useBillingHistoryQuery(
 ) {
   return Urql.useQuery<BillingHistoryQuery>({
     query: BillingHistoryDocument,
+    ...options,
+  })
+}
+export const IntegrationBinanceConnectDocument = gql`
+  mutation IntegrationBinanceConnect(
+    $input: IntegrationBinanceConnectInputType!
+  ) {
+    integrationBinanceConnect(input: $input) {
+      ...walletExchangeFragment
+    }
+  }
+  ${WalletExchangeFragmentFragmentDoc}
+`
+
+export function useIntegrationBinanceConnectMutation() {
+  return Urql.useMutation<
+    IntegrationBinanceConnectMutation,
+    IntegrationBinanceConnectMutationVariables
+  >(IntegrationBinanceConnectDocument)
+}
+export const IntegrationDisconnectDocument = gql`
+  mutation IntegrationDisconnect($id: UuidType!) {
+    integrationDisconnect(id: $id)
+  }
+`
+
+export function useIntegrationDisconnectMutation() {
+  return Urql.useMutation<
+    IntegrationDisconnectMutation,
+    IntegrationDisconnectMutationVariables
+  >(IntegrationDisconnectDocument)
+}
+export const IntegrationListDocument = gql`
+  query IntegrationList {
+    me {
+      exchanges(pagination: { limit: 10 }) {
+        list {
+          ...walletExchangeFragment
+        }
+      }
+    }
+  }
+  ${WalletExchangeFragmentFragmentDoc}
+`
+
+export function useIntegrationListQuery(
+  options: Omit<Urql.UseQueryArgs<IntegrationListQueryVariables>, 'query'> = {}
+) {
+  return Urql.useQuery<IntegrationListQuery>({
+    query: IntegrationListDocument,
     ...options,
   })
 }

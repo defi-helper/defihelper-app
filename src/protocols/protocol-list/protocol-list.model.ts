@@ -104,6 +104,12 @@ export const ProtocolListGate = createGate<{
   name: 'ProtocolListGate',
 })
 
+guard({
+  clock: ProtocolListGate.state,
+  filter: ({ search }) => Boolean(search),
+  target: ProtocolListPagination.reset,
+})
+
 sample({
   source: [ProtocolListPagination.state, ProtocolListGate.state],
   clock: guard({

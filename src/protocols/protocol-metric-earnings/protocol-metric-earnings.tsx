@@ -12,7 +12,6 @@ import {
 import { Typography } from '~/common/typography'
 import { ProtocolChartWrap } from '../common'
 import * as stakingListModel from '~/staking/staking-list/staking-list.model'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
 import { Link } from '~/common/link'
 import { config } from '~/config'
@@ -95,11 +94,14 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
   )
 
   useEffect(() => {
+    const balance = Number(props.metric.myStaked)
+    const apy = Number(props.metric.myAPY ?? 0)
+
+    if (!apy) return
+
     model.fetchEarningMetricFx({
-      balance: Number(
-        bignumberUtils.plus(props.metric.myEarned, props.metric.myStaked)
-      ),
-      apy: Number(props.metric.myAPY ?? 0),
+      balance,
+      apy,
     })
   }, [
     props.metric.myStaked,
@@ -191,7 +193,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
                   trigger="hover"
                   offset={[0, 8]}
                 >
-                  text
+                  Extra income you may earn with auto-staking activated
                 </Dropdown>
               </Typography>
               <Link

@@ -36,7 +36,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
               trigger="hover"
               offset={[0, 8]}
             >
-              text
+              Tokens in your wallet + staked tokens
             </Dropdown>
           </>
         }
@@ -61,7 +61,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
               trigger="hover"
               offset={[0, 8]}
             >
-              text
+              Average APY from staked tokens
             </Dropdown>
           </>
         }

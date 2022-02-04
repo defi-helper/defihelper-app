@@ -11,6 +11,7 @@ export const root = style({
   display: 'flex',
   alignItems: 'center',
   minHeight: 0,
+  maxWidth: '40%',
 })
 
 export const variants = styleVariants({
@@ -36,7 +37,8 @@ export const variants = styleVariants({
 })
 
 export const text = style({
-  marginRight: 10,
+  paddingRight: 10,
+  width: 'calc(100% - 28px)',
 })
 
 export const button = style({

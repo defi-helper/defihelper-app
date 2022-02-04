@@ -24,6 +24,12 @@ import {
   UserNotificationToggleMutation,
   BillingTransferCreateMutationVariables,
   BillingTransferCreateMutation,
+  IntegrationListQuery,
+  IntegrationListQueryVariables,
+  IntegrationBinanceConnectMutation,
+  IntegrationBinanceConnectMutationVariables,
+  IntegrationDisconnectMutation,
+  IntegrationDisconnectMutationVariables,
 } from '~/graphql/_generated-types'
 import {
   USER_CONTACTS,
@@ -37,6 +43,9 @@ import {
   BILLING_HISTORY,
   USER_NOTIFICATION_LIST,
   USER_NOTIFICATION_TOGGLE,
+  WALLET_EXCHANGE_LIST,
+  INTEGRATION_BINANCE_CONNECT,
+  INTEGRATION_DISCONNECT,
 } from './graphql'
 import { BILLING_TRANSFER_CREATE } from '~/settings/common/graphql/billing-transfer-create.graphql'
 
@@ -133,6 +142,36 @@ export const settingsApi = {
         list: data?.me?.wallets.list ?? [],
         count: data?.me?.wallets.pagination.count ?? 0,
       })),
+
+  integrationList: (variables?: IntegrationListQueryVariables) =>
+    getAPIClient()
+      .query<IntegrationListQuery, IntegrationListQueryVariables>(
+        WALLET_EXCHANGE_LIST,
+        variables,
+        { requestPolicy: 'cache-and-network' }
+      )
+      .toPromise()
+      .then(({ data }) => data?.me?.exchanges.list ?? []),
+
+  integrationBinanceConnect: (
+    variables: IntegrationBinanceConnectMutationVariables
+  ) =>
+    getAPIClient()
+      .mutation<
+        IntegrationBinanceConnectMutation,
+        IntegrationBinanceConnectMutationVariables
+      >(INTEGRATION_BINANCE_CONNECT, variables)
+      .toPromise()
+      .then(({ data }) => data?.integrationBinanceConnect),
+
+  integrationDisconnect: (id: string) =>
+    getAPIClient()
+      .mutation<
+        IntegrationDisconnectMutation,
+        IntegrationDisconnectMutationVariables
+      >(INTEGRATION_DISCONNECT, { id })
+      .toPromise()
+      .then(({ data }) => data?.integrationDisconnect),
 
   walletUpdate: (variables: WalletUpdateMutationVariables) =>
     getAPIClient()

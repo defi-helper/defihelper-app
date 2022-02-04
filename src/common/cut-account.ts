@@ -1,8 +1,12 @@
-export const cutAccount = (account?: string | null) => {
+export const cutAccount = (
+  account?: string | null,
+  leftCharacters = 6,
+  rightCharacters = 4
+) => {
   if (!account) return ''
 
-  return `${account.substring(0, 6)}...${account.substring(
-    account.length - 4,
+  return `${account.substring(0, leftCharacters)}...${account.substring(
+    account.length - rightCharacters,
     account.length
   )}`
 }

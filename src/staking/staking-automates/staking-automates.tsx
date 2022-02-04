@@ -25,6 +25,7 @@ import { parseError } from '~/common/parse-error'
 import { toastsService } from '~/toasts'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type StakingAutomatesProps = {
   className?: string
@@ -89,12 +90,12 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
         await openAdapter({
           steps: adapter[action],
-          onSubmit: () => {
-            if (!contract.contract) return
+          onLastStep: () => {
+            if (!contract.contract || !contract.contractWallet) return
 
             model
               .scanWalletMetricFx({
-                walletId: contract.wallet.id,
+                walletId: contract.contractWallet.id,
                 contractId: contract.contract.id,
               })
               .catch(console.error)
@@ -112,6 +113,11 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const handleRunManually =
     (contract: typeof automatesContracts[number]) => async () => {
       try {
+        if (
+          bignumberUtils.eq(contract.contractWallet?.metric.stakedUSD ?? '', 0)
+        )
+          throw new Error('not enough money')
+
         if (!wallet?.account) return
 
         const adapter = await model.fetchAdapterFx({
@@ -130,11 +136,11 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
         await tx.wait()
 
-        if (!contract.contract) return
+        if (!contract.contract || !contract.contractWallet) return
 
         model
           .scanWalletMetricFx({
-            walletId: contract.wallet.id,
+            walletId: contract.contractWallet.id,
             contractId: contract.contract.id,
           })
           .catch(console.error)
@@ -164,18 +170,20 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [tokenMetricUpdated] =
     useOnTokenMetricUpdatedSubscription(subscriptionOptions)
 
-  const metricUpdated = useThrottle(
-    walletUpdated.data?.onWalletMetricUpdated.id ||
-      tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
-      '',
+  const onWalletMetricUpdated = useThrottle(
+    walletUpdated.data?.onWalletMetricUpdated.id || '',
+    TIME
+  )
+  const onTokenMetricUpdated = useThrottle(
+    tokenMetricUpdated.data?.onTokenMetricUpdated.id || '',
     TIME
   )
 
   useEffect(() => {
-    if (metricUpdated) {
+    if (onWalletMetricUpdated || onTokenMetricUpdated) {
       model.updated()
     }
-  }, [metricUpdated])
+  }, [onWalletMetricUpdated, onTokenMetricUpdated])
 
   if (isEmpty(automatesContracts)) return <></>
 

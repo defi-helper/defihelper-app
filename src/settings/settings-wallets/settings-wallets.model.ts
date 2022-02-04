@@ -26,7 +26,12 @@ type Params = {
 export const walletListDomain = createDomain()
 
 export const fetchWalletListFx = walletListDomain.createEffect(async () => {
-  return settingsApi.walletList({ pagination: { limit: 100, offset: 0 } })
+  return settingsApi.walletList({
+    pagination: {
+      limit: 100,
+      offset: 0,
+    },
+  })
 })
 
 export const updateWalletFx = walletListDomain.createEffect(

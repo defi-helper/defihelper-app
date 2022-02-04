@@ -30,7 +30,7 @@ export const ToastProvider: React.FC<ToastProviderProps> = (props) => {
     },
     enter: () => async (next) => {
       await next({
-        maxHeight: 40,
+        maxHeight: 1000,
         overflow: 1,
       })
 

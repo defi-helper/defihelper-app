@@ -107,6 +107,6 @@ guard({
   target: [fetchAssetsByPlatformFx, fetchAssetsByWalletFx],
 })
 
-$assets.reset(authModel.logoutFx.finally)
-$assetsByWallet.reset(authModel.logoutFx.finally)
-$protocols.reset(authModel.logoutFx.finally)
+$assets.reset(authModel.logoutFx.done)
+$assetsByWallet.reset(authModel.logoutFx.done)
+$protocols.reset(authModel.logoutFx.done)

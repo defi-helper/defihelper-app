@@ -1,59 +1,34 @@
+/* eslint-disable no-unused-vars */
 import type { Provider } from '@waves/signer'
 import { Signer } from '@waves/signer'
 
-type WavesKeeper = typeof window.WavesKeeper
-
-const isWavesKeeper = (provider: unknown): provider is WavesKeeper => {
-  return (
-    provider !== null &&
-    provider !== undefined &&
-    provider === window.WavesKeeper
-  )
-}
-
-const isWavesExchangeSigner = (provider: unknown): provider is Signer => {
+const isWavesSigner = (provider: unknown): provider is Signer => {
   return (
     provider !== null && provider !== undefined && provider instanceof Signer
   )
 }
 
-const signWavesKeeper = async (provider: WavesKeeper, message: string) => {
-  const { signature, publicKey } = await provider.signCustomData({
-    version: 2,
-    data: [
+const signWaves = async (provider: Provider, message: string) => {
+  let signature: string
+
+  try {
+    signature = await provider.signTypedData([
       {
         type: 'string',
         key: 'name',
         value: message,
       },
-    ],
-  })
-
-  return {
-    signature,
-    publicKey,
-  }
-}
-
-const signWavesExchange = async (provider: Provider, message: string) => {
-  let publicKey: string
-  let signature: string
-
-  try {
-    const loginPayload = await provider.login()
-
-    publicKey = loginPayload.publicKey
-
-    signature = await provider.signMessage(message)
+    ])
 
     return {
       signature,
-      publicKey,
     }
   } catch (error) {
     if (typeof error === 'string') {
       throw new Error(error)
     }
+
+    throw error
   }
 }
 
@@ -71,20 +46,15 @@ export const signMessageWaves = async (
   let signedData:
     | {
         signature: string
-        publicKey: string
       }
     | undefined
 
-  if (isWavesKeeper(provider)) {
-    signedData = await signWavesKeeper(provider, message)
-  }
-
-  if (isWavesExchangeSigner(provider) && provider.currentProvider) {
-    signedData = await signWavesExchange(provider.currentProvider, message)
+  if (isWavesSigner(provider) && provider.currentProvider) {
+    signedData = await signWaves(provider.currentProvider, message)
   }
 
   if (!signedData) {
-    throw new Error('something went wrong')
+    throw new Error('unknown signer')
   }
 
   return {

@@ -1,9 +1,11 @@
 /* eslint-disable class-methods-use-this */
 import { AbstractConnector } from '@web3-react/abstract-connector'
+import type {
+  Signer as WavesSigner,
+  Provider as WavesProvider,
+} from '@waves/signer'
 
 const CHAIN_ID = 'main'
-
-const ERROR_MESSAGE = 'Account is null'
 
 type Options = {
   authData: WavesKeeper.IAuthData
@@ -11,8 +13,15 @@ type Options = {
   signerUrl?: string
 }
 
+let waves: WavesSigner | null = null
+let keeper: WavesProvider | null = null
+
 export class WavesKeeperConnector extends AbstractConnector {
   private account: string | null = null
+
+  private provider: WavesSigner | null = null
+
+  public publicKey: string | null = null
 
   private options: Options
 
@@ -21,73 +30,80 @@ export class WavesKeeperConnector extends AbstractConnector {
 
     this.activate = this.activate.bind(this)
     this.getAccount = this.getAccount.bind(this)
-    this.isAuthorized = this.isAuthorized.bind(this)
 
     this.options = options
   }
 
   async activate() {
-    if (!window.WavesKeeper) {
-      throw new Error("WavesKeeper hasn't installed")
-    }
+    const Signer = await import(
+      /* webpackChunkName: "waves-signer" */ '@waves/signer'
+    ).then((m) => m.Signer)
+    const Provider = await import(
+      /* webpackChunkName: "waves-provider-keeper" */ '@defihelper/provider-keeper'
+    ).then((m) => m.ProviderKeeper)
 
-    if (window.WavesKeeper?.on) {
-      window.WavesKeeper.on('update', (state) => {
-        if (state.account?.address) {
-          this.account = state.account.address
-        }
-      })
-    }
+    waves =
+      waves ??
+      new Signer(
+        this.options.nodeUrl
+          ? { NODE_URL: this.options.nodeUrl }
+          : { LOG_LEVEL: 'verbose' }
+      )
 
-    const { account } = await window.WavesKeeper.publicState()
+    keeper = keeper ?? new Provider(this.options.authData)
 
-    this.account = account?.address ?? null
+    await keeper.connect({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      NODE_URL: this.options.nodeUrl!,
+      NETWORK_BYTE: 'W'.charCodeAt(0),
+    })
 
-    if (!account?.address || !this.account) {
-      const auth = await window.WavesKeeper.auth(this.options.authData)
+    waves.setProvider(keeper)
 
-      this.account = auth.address
+    try {
+      if (!this.account) {
+        const { address, publicKey } = await waves.login()
+
+        this.account = address
+        this.publicKey = publicKey
+      }
+
+      if (!this.provider) {
+        this.provider = waves
+      }
 
       return {
-        provider: window.WavesKeeper,
+        provider: waves,
         chainId: CHAIN_ID,
         account: this.account,
       }
-    }
+    } catch (e) {
+      if (typeof e === 'string') throw new Error(e)
 
-    return {
-      provider: window.WavesKeeper,
-      chainId: CHAIN_ID,
-      account: this.account,
+      if (e instanceof Error) throw e
+
+      throw new Error('something went wrong')
     }
   }
 
   public deactivate() {
-    return undefined
-  }
-
-  public async getAccount() {
-    if (!window.WavesKeeper) throw new Error('waves keeper does not installed')
-
-    const state = await window.WavesKeeper.publicState()
-
-    const account = state.account?.address
-
-    if (account !== undefined) {
-      this.account = account
-
-      return account
-    }
-
-    return Promise.reject(new Error(ERROR_MESSAGE))
+    this.provider
+      ?.logout()
+      // eslint-disable-next-line no-console
+      .then(() => console.log('logout success'))
+      .catch((error) => console.error(error.message))
   }
 
   public async isAuthorized() {
-    if (!window.WavesKeeper) return false
+    if (!this.provider) return false
 
-    const state = await window.WavesKeeper.publicState()
+    const state = await this.provider.login()
 
-    return state.initialized
+    return Boolean(state.address)
+  }
+
+  public async getAccount() {
+    return this.account
   }
 
   public async getChainId() {
@@ -95,6 +111,6 @@ export class WavesKeeperConnector extends AbstractConnector {
   }
 
   public async getProvider() {
-    return window.WavesKeeper
+    return this.provider
   }
 }

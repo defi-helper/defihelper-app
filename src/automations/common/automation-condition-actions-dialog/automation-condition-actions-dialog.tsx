@@ -9,6 +9,7 @@ export type AutomationConditionActionsDialogProps = {
   onConfirm: (contract: AutomateActionType) => void
   onCancel: () => void
   actions: AutomateActionType[]
+  names: Record<string, string>
 }
 
 export const AutomationConditionActionsDialog: React.VFC<AutomationConditionActionsDialogProps> =
@@ -25,7 +26,10 @@ export const AutomationConditionActionsDialog: React.VFC<AutomationConditionActi
               key={action.id}
               onClick={handleOnChange(action)}
             >
-              {action.paramsDescription}
+              {action.paramsDescription
+                .split(' ')
+                .map((str) => (props.names[str] ? props.names[str] : str))
+                .join(' ')}
             </AutomationSelectListItem>
           ))}
         </AutomationSelectList>

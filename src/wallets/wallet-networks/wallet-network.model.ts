@@ -19,6 +19,7 @@ import { toastsService } from '~/toasts'
 import { sidUtils } from '~/auth/common'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 import { networksConfig } from '~/networks-config'
+import type { WavesKeeperConnector } from '../common/waves-keeper-connector'
 
 export type SignMessageEthereum = {
   chainId: string
@@ -29,6 +30,7 @@ export type SignMessageEthereum = {
 export type SignMessageWaves = {
   provider: unknown
   account: string
+  connector: WavesKeeperConnector
 }
 
 const networks = new Map<string, typeof createEthereumProvider>(
@@ -63,6 +65,25 @@ export const activateWalletFx = networkDomain.createEffect(
   }
 )
 
+const saveLastConnectorFx = networkDomain.createEffect((connector: string) => {
+  localStorage.connector = connector
+})
+
+guard({
+  clock: sample({
+    clock: activateWalletFx,
+    fn: (clock) => {
+      const connectorName = Object.entries(connectorsByName).find(
+        ([, { connector }]) => connector === clock.connector
+      )
+
+      return connectorName?.[0]
+    },
+  }),
+  filter: (clock): clock is string => typeof clock === 'string',
+  target: saveLastConnectorFx,
+})
+
 export const updateWalletFx = networkDomain.createEffect(
   async (params: {
     connector: AbstractConnector
@@ -83,8 +104,6 @@ export const updateWalletFx = networkDomain.createEffect(
 export const diactivateWalletFx = networkDomain.createEffect(
   async (connector?: AbstractConnector) => {
     connector?.deactivate()
-
-    sidUtils.remove()
   }
 )
 
@@ -118,7 +137,13 @@ export const signMessageWavesFx = networkDomain.createEffect(
       SIGN_MESSAGE
     )
 
-    return { ...params, ...signedMessageData }
+    if (!params.connector.publicKey) throw new Error('publicKey is null')
+
+    return {
+      ...params,
+      ...signedMessageData,
+      publicKey: params.connector.publicKey,
+    }
   }
 )
 
@@ -138,6 +163,7 @@ export const signMessage = networkDomain.createEvent<{
   chainId: string
   provider: unknown
   account: string
+  connector: AbstractConnector
 }>()
 
 sample({
@@ -147,11 +173,14 @@ sample({
 })
 
 guard({
-  clock: activateWalletFx.doneData.map(({ account, chainId, provider }) => ({
-    account,
-    chainId,
-    provider,
-  })),
+  clock: activateWalletFx.doneData.map(
+    ({ account, chainId, provider, connector }) => ({
+      account,
+      chainId,
+      provider,
+      connector,
+    })
+  ),
   filter: (clock): clock is SignMessagePayload =>
     Boolean(clock.account && clock.chainId) && !sidUtils.get(),
   target: signMessage,
