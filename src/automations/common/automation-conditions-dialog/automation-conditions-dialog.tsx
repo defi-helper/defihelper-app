@@ -33,6 +33,7 @@ export type AutomationConditionsDialogProps = {
     null | undefined
   >
   priority: number
+  names: Record<string, string>
 }
 
 export const AutomationConditionsDialog: React.VFC<AutomationConditionsDialogProps> =
@@ -78,6 +79,7 @@ export const AutomationConditionsDialog: React.VFC<AutomationConditionsDialogPro
           <AutomationConditionEthereumOptimal
             onSubmit={handleSubmit}
             actions={props.actions}
+            names={props.names}
             defaultValues={params}
           />
         ),

@@ -48,6 +48,14 @@ enum Tabs {
   Actions = 'actions',
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const normalize = (array: any[]) =>
+  array.reduce<Record<string, string>>((acc, item) => {
+    acc[item.id] = item.type || item.adapter || item.name || item.address
+
+    return acc
+  }, {})
+
 export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const wallets = useStore(settingsWalletModel.$wallets)
   const [currentType, setType] = useState<Types | null>(null)
@@ -110,6 +118,13 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     setType(automation ? 'ByTime' : 'ByEvent')
   }, [automation])
 
+  const names = {
+    ...normalize(props.contracts),
+    ...normalize(conditions),
+    ...normalize(contacts),
+    ...normalize(actions),
+  }
+
   const handleAddCondition = async () => {
     if (!props.descriptions) return
 
@@ -118,6 +133,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
         actions: actions.filter(
           (action) => action.type === AutomateActionTypeEnum.EthereumAutomateRun
         ),
+        names,
         wallets,
         triggerId: trigger?.id,
         descriptions: props.descriptions,
@@ -195,6 +211,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
       try {
         const result = await openConditionsDialog({
           actions,
+          names,
           wallets,
           triggerId: trigger?.id,
           type: condition.type,
@@ -328,7 +345,10 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
                     {props.descriptions?.conditions[condition.type]?.name}
                   </Typography>
                   <Typography variant="body3" className={styles.itemSubtitle}>
-                    {condition.paramsDescription}
+                    {condition.paramsDescription
+                      .split(' ')
+                      .map((str) => (names[str] ? names[str] : str))
+                      .join(' ')}
                   </Typography>
                 </AutomationChooseButton>
               ))}
@@ -354,7 +374,10 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
                     {props.descriptions?.actions[action.type]?.name}
                   </Typography>
                   <Typography variant="body3" className={styles.itemSubtitle}>
-                    {action.paramsDescription}
+                    {action.paramsDescription
+                      .split(' ')
+                      .map((str) => (names[str] ? names[str] : str))
+                      .join(' ')}
                   </Typography>
                 </AutomationChooseButton>
               ))}

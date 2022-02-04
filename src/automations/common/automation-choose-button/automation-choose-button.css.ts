@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -16,13 +16,19 @@ export const button = style({
   padding: '8px 16px',
   borderRadius: 8,
   border: `1px solid ${theme.colors.border}`,
-  width: '100%',
+  maxWidth: '100%',
   height: 64,
   gap: 8,
   position: 'relative',
   flexWrap: 'wrap',
   justifyContent: 'flex-start',
   textAlign: 'left',
+})
+
+globalStyle(`${button} *`, {
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 })
 
 export const icon = style({
