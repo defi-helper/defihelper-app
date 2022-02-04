@@ -1,6 +1,7 @@
 /* eslint-disable class-methods-use-this */
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import type { Signer as WavesSigner } from '@waves/signer'
+import type { ProviderWeb } from '@waves.exchange/provider-web'
 
 const CHAIN_ID = 'main'
 
@@ -8,6 +9,9 @@ type Options = {
   nodeUrl?: string
   signerUrl?: string
 }
+
+let waves: WavesSigner | null = null
+let exchange: ProviderWeb | null = null
 
 export class WavesExchangeConnector extends AbstractConnector {
   private account: string | null = null
@@ -35,13 +39,16 @@ export class WavesExchangeConnector extends AbstractConnector {
       /* webpackChunkName: "waves-provider-web" */ '@waves.exchange/provider-web'
     ).then((m) => m.ProviderWeb)
 
-    const waves = new Signer(
-      this.options.nodeUrl
-        ? { NODE_URL: this.options.nodeUrl }
-        : { LOG_LEVEL: 'verbose' }
-    )
+    waves =
+      waves ??
+      new Signer(
+        this.options.nodeUrl
+          ? { NODE_URL: this.options.nodeUrl }
+          : { LOG_LEVEL: 'verbose' }
+      )
+    exchange = exchange ?? new Provider(this.options.signerUrl)
 
-    waves.setProvider(new Provider(this.options.signerUrl))
+    waves.setProvider(exchange)
 
     try {
       if (!this.account) {
