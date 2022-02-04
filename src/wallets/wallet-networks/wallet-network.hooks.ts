@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useStore } from 'effector-react'
 import { ConnectorEvent, ConnectorUpdate } from '@web3-react/types'
 
-import { connectors, connectorsByName, ConnectorNames } from '~/wallets/common'
+import { connectors, connectorsByName } from '~/wallets/common'
 import {
   $wallet,
   activateWalletFx,
@@ -28,7 +28,7 @@ export const useEagerConnect = () => {
   const [tried, setTried] = useState(false)
 
   useEffect(() => {
-    const lastConnectorName: ConnectorNames = localStorage.connector
+    const lastConnectorName: string = localStorage.connector
 
     const lastConnector =
       connectorsByName[lastConnectorName]?.connector ?? connectors.injected
@@ -36,7 +36,9 @@ export const useEagerConnect = () => {
     if (isAuthorizable(lastConnector)) {
       lastConnector.isAuthorized().then((isAuthorized: boolean) => {
         if (isAuthorized) {
-          activateWalletFx({ connector: lastConnector }).catch(() => {
+          activateWalletFx({
+            connector: lastConnector,
+          }).catch(() => {
             setTried(true)
           })
         } else {
@@ -44,10 +46,8 @@ export const useEagerConnect = () => {
         }
       })
     } else {
-      lastConnector.activate().then(() => {
-        activateWalletFx({ connector: lastConnector }).catch(() => {
-          setTried(true)
-        })
+      activateWalletFx({ connector: lastConnector }).catch(() => {
+        setTried(true)
       })
     }
   }, [])

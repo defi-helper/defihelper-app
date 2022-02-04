@@ -63,6 +63,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
         chainId: String(wallet.chainId),
         provider: wallet.provider,
         account: wallet.account,
+        connector: wallet.connector,
       })
     } catch (error) {
       if (error instanceof Error) {
