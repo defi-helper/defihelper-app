@@ -16,6 +16,8 @@ export class WavesKeeperConnector extends AbstractConnector {
 
   private provider: WavesSigner | null = null
 
+  public publicKey: string | null = null
+
   private options: Options
 
   constructor(options: Options) {
@@ -53,9 +55,10 @@ export class WavesKeeperConnector extends AbstractConnector {
 
     try {
       if (!this.account) {
-        const { address } = await waves.login()
+        const { address, publicKey } = await waves.login()
 
         this.account = address
+        this.publicKey = publicKey
       }
 
       if (!this.provider) {

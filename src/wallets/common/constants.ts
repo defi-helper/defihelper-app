@@ -7,7 +7,7 @@ import { ReactComponent as TrustIcon } from '~/assets/icons/wallets/trustwallet.
 import * as connectors from './connectors'
 import { config } from '~/config'
 import { ReactComponent as WavesKeeperIcon } from '~/assets/icons/wallets/waves-keeper-wallet.svg'
-import { ReactComponent as WavesExchangeIcon } from '~/assets/icons/wallets/waves-exchange-wallet.svg'
+// import { ReactComponent as WavesExchangeIcon } from '~/assets/icons/wallets/waves-exchange-wallet.svg'
 import { networksConfig } from '~/networks-config'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 // import { ReactComponent as LedgerIcon } from '~/assets/icons/wallets/ledger.svg'
@@ -101,13 +101,13 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     available: Boolean(window.WavesKeeper),
     extensionLink: WAVES_KEEPER_LINK,
   },
-  [ConnectorNames.WavesExchange]: {
-    connector: connectors.wavesExchange,
-    blockchain: 'waves',
-    logo: WavesExchangeIcon,
-    networks: wavesNetworks,
-    available: true,
-  },
+  // [ConnectorNames.WavesExchange]: {
+  //   connector: connectors.wavesExchange,
+  //   blockchain: 'waves',
+  //   logo: WavesExchangeIcon,
+  //   networks: wavesNetworks,
+  //   available: true,
+  // },
   // [ConnectorNames.Ledger]: {
   //   connector: connectors.ledger,
   //   blockchain: 'ethereum',

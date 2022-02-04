@@ -1,26 +1,27 @@
+/* eslint-disable no-unused-vars */
 import type { Provider } from '@waves/signer'
 import { Signer } from '@waves/signer'
 
-const isWavesExchangeSigner = (provider: unknown): provider is Signer => {
+const isWavesSigner = (provider: unknown): provider is Signer => {
   return (
     provider !== null && provider !== undefined && provider instanceof Signer
   )
 }
 
-const signWavesExchange = async (provider: Provider, message: string) => {
-  let publicKey: string
+const signWaves = async (provider: Provider, message: string) => {
   let signature: string
 
   try {
-    const loginPayload = await provider.login()
-
-    publicKey = loginPayload.publicKey
-
-    signature = await provider.signMessage(message)
+    signature = await provider.signTypedData([
+      {
+        type: 'string',
+        key: 'name',
+        value: message,
+      },
+    ])
 
     return {
       signature,
-      publicKey,
     }
   } catch (error) {
     if (typeof error === 'string') {
@@ -45,12 +46,11 @@ export const signMessageWaves = async (
   let signedData:
     | {
         signature: string
-        publicKey: string
       }
     | undefined
 
-  if (isWavesExchangeSigner(provider) && provider.currentProvider) {
-    signedData = await signWavesExchange(provider.currentProvider, message)
+  if (isWavesSigner(provider) && provider.currentProvider) {
+    signedData = await signWaves(provider.currentProvider, message)
   }
 
   if (!signedData) {

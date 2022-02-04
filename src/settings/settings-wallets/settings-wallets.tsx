@@ -177,6 +177,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
         chainId: String(wallet.chainId),
         provider: wallet.provider,
         account: wallet.account,
+        connector: wallet.connector,
       })
     } catch (error) {
       if (error instanceof Error) {
