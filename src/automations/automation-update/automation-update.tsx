@@ -118,12 +118,15 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     setType(automation ? 'ByTime' : 'ByEvent')
   }, [automation])
 
-  const names = {
-    ...normalize(props.contracts),
-    ...normalize(conditions),
-    ...normalize(contacts),
-    ...normalize(actions),
-  }
+  const names = useMemo(
+    () => ({
+      ...normalize(props.contracts),
+      ...normalize(conditions),
+      ...normalize(contacts),
+      ...normalize(actions),
+    }),
+    [props.contracts, conditions, contacts, actions]
+  )
 
   const handleAddCondition = async () => {
     if (!props.descriptions) return
