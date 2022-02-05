@@ -23,6 +23,7 @@ type FormValues = {
   icon?: string
   link?: string
   hidden?: boolean
+  previewPicture?: string
   adapter: string
   links: {
     social: ProtocolLinkInputType[]
@@ -194,6 +195,15 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
         disabled={props.loading}
         error={Boolean(formState.errors.icon)}
         helperText={formState.errors.icon?.message}
+        className={styles.input}
+      />
+      <Input
+        type="link"
+        label="OG:Image picture"
+        {...register('previewPicture')}
+        disabled={props.loading}
+        error={Boolean(formState.errors.previewPicture)}
+        helperText={formState.errors.previewPicture?.message}
         className={styles.input}
       />
       <Controller

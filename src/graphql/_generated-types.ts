@@ -1675,6 +1675,8 @@ export type ProtocolUpdateInputType = {
   description?: Maybe<Scalars['String']>
   /** Icon image URL */
   icon?: Maybe<Scalars['String']>
+  /** Preview picture URL */
+  previewPicture?: Maybe<Scalars['String']>
   /** Website URL */
   link?: Maybe<Scalars['String']>
   /** Links */
