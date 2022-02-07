@@ -6,8 +6,8 @@ import { dateUtils } from '~/common/date-utils'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import {
-  ProtocolQuery,
   ProtocolSocialPostProviderEnum,
+  ProtocolSocialPostsQuery,
 } from '~/graphql/_generated-types'
 import { Button } from '~/common/button'
 import * as styles from './protocol-media-activity.css'
@@ -15,7 +15,10 @@ import * as styles from './protocol-media-activity.css'
 export type ProtocolMediaActivityProps = {
   className?: string
   mediaActity: Exclude<
-    Exclude<ProtocolQuery['protocol'], null | undefined>['socialPosts']['list'],
+    Exclude<
+      ProtocolSocialPostsQuery['protocol'],
+      null | undefined
+    >['socialPosts']['list'],
     null | undefined
   >
   onReadMore: () => void

@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react'
+import { useMemo, useEffect, useRef } from 'react'
 import isEmpty from 'lodash.isempty'
 import { useMedia, useThrottle } from 'react-use'
 import {
@@ -81,15 +81,16 @@ export const ProtocolDetail: React.FC = () => {
   useGate(model.ProtocolDetailGate, params)
 
   const protocol = useStore(model.$protocol)
-  const loading = useStore(model.fetchProtocolFx.pending)
+  const loading = useStore(model.fetchSocialPostsFx.pending)
   const socialPosts = useStore(model.$socialPosts)
+  const socialPostsOffset = useRef(0)
 
   const match = useRouteMatch()
 
   const handleReadMore = () => {
-    model.fetchProtocolFx({
+    model.fetchSocialPostsFx({
       ...params,
-      offset: socialPosts.length + 3,
+      offset: (socialPostsOffset.current += 3),
     })
   }
 
@@ -161,7 +162,7 @@ export const ProtocolDetail: React.FC = () => {
         ogUrl={`https://app.defihelper.io/protocols/${params.protocolId}`}
         description={
           protocol?.name
-            ? `${protocol?.name} auto compound with our autostaking feature. Automate your DeFi strategies across chains, earn more - DeFiHelper`
+            ? `${protocol?.name} auto compound with our auto-staking feature. Automate your DeFi strategies across chains, earn more - DeFiHelper`
             : undefined
         }
       />

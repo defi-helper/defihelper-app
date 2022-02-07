@@ -135,7 +135,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
       {
         valueY: 'autostaking',
         format: 'autostakingFormat',
-        name: 'Autostaking',
+        name: 'Auto-staking',
         dateX: 'date',
         color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
       },

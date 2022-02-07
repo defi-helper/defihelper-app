@@ -2,7 +2,9 @@ import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
-export const root = style({})
+export const root = style({
+  width: '100%',
+})
 
 export const label = style({
   color: theme.colors.textColorGrey,
@@ -23,6 +25,7 @@ export const button = style({
   flexWrap: 'wrap',
   justifyContent: 'flex-start',
   textAlign: 'left',
+  width: '100%',
 })
 
 globalStyle(`${button} *`, {

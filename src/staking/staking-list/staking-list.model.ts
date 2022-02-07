@@ -446,6 +446,10 @@ export const $freshMetrics = stakingListDomain
   .createStore<Record<string, FreshMetrics>>({})
   .on(fetchMetricsFx.doneData, (_, payload) => payload)
 
+export const $freshMetricsError = stakingListDomain
+  .createStore<string | null>(null)
+  .on(fetchMetricsFx.failData, (_, payload) => payload.message)
+
 sample({
   source: [$contractsListCopies, settingsWalletModel.$wallets],
   clock: fetchMetrics,
@@ -485,3 +489,8 @@ toastsService.forwardErrors(
 
 $contractList.reset(StakingListGate.close)
 $connectedContracts.reset(StakingListGate.close)
+$freshMetricsError.reset(StakingListGate.close)
+$freshMetrics.reset(StakingListGate.close)
+$scanner.reset(StakingListGate.close)
+$contractAddresses.reset(StakingListGate.close)
+$openedContract.reset(StakingListGate.close)

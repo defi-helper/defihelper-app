@@ -24,7 +24,7 @@ export const StakingDescriptionDialog: React.VFC<StakingDescriptionDialogProps> 
     }
 
     return (
-      <AutomationDialog title="Enable autostaking" className={styles.root}>
+      <AutomationDialog title="Enable auto-staking" className={styles.root}>
         <div className={styles.content}>
           <Typography variant="body2" as="div">
             Austostaking is a special kind of automation which auto-compounds

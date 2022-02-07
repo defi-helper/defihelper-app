@@ -34,7 +34,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
       </Paper>
       <Paper radius={8} className={styles.totalItem}>
         <Typography variant="body2" className={styles.totalTitle}>
-          Autostaking Boost
+          Auto-Staking Boost
         </Typography>
         <Typography variant="h4">
           {props.hasAutostaking

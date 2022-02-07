@@ -37,7 +37,7 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
       {
         valueY: 'autostaking',
         format: 'autostakingFormat',
-        name: 'Autostaking',
+        name: 'Auto-staking',
         dateX: 'date',
         color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
       },

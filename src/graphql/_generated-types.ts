@@ -4029,23 +4029,11 @@ export type ProtocolMetricQuery = { __typename?: 'Query' } & {
 
 export type ProtocolQueryVariables = Exact<{
   filter: ProtocolFilterInputType
-  socialPostsPagination?: Maybe<ProtocolSocialPostListPaginationInputType>
 }>
 
 export type ProtocolQuery = { __typename?: 'Query' } & {
   protocol?: Maybe<
     { __typename?: 'ProtocolType' } & {
-      socialPosts: { __typename?: 'ProtocolSocialPostListType' } & {
-        list?: Maybe<
-          Array<
-            { __typename?: 'ProtocolSocialPostType' } & Pick<
-              ProtocolSocialPostType,
-              'id' | 'provider' | 'title' | 'content' | 'link' | 'createdAt'
-            >
-          >
-        >
-        pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-      }
       telegram: Array<
         { __typename?: 'MetricChartType' } & Pick<
           MetricChartType,
@@ -4165,6 +4153,29 @@ export type ProtocolResolveContractsMutationVariables = Exact<{
 export type ProtocolResolveContractsMutation = {
   __typename?: 'Mutation'
 } & Pick<Mutation, 'protocolResolveContracts'>
+
+export type ProtocolSocialPostsQueryVariables = Exact<{
+  filter: ProtocolFilterInputType
+  pagination?: Maybe<ProtocolSocialPostListPaginationInputType>
+}>
+
+export type ProtocolSocialPostsQuery = { __typename?: 'Query' } & {
+  protocol?: Maybe<
+    { __typename?: 'ProtocolType' } & {
+      socialPosts: { __typename?: 'ProtocolSocialPostListType' } & {
+        list?: Maybe<
+          Array<
+            { __typename?: 'ProtocolSocialPostType' } & Pick<
+              ProtocolSocialPostType,
+              'id' | 'provider' | 'title' | 'content' | 'link' | 'createdAt'
+            >
+          >
+        >
+        pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+      }
+    }
+  >
+}
 
 export type ProtocolStakedBalanceQueryVariables = Exact<{
   group: MetricGroupEnum
@@ -6419,31 +6430,9 @@ export function useProtocolMetricQuery(
   })
 }
 export const ProtocolDocument = gql`
-  query Protocol(
-    $filter: ProtocolFilterInputType!
-    $socialPostsPagination: ProtocolSocialPostListPaginationInputType = {
-      limit: 3
-      offset: 0
-    }
-  ) {
+  query Protocol($filter: ProtocolFilterInputType!) {
     protocol(filter: $filter) {
       ...protocolFragment
-      socialPosts(
-        sort: [{ column: createdAt, order: desc }]
-        pagination: $socialPostsPagination
-      ) {
-        list {
-          id
-          provider
-          title
-          content
-          link
-          createdAt
-        }
-        pagination {
-          count
-        }
-      }
       telegram: metricChart(
         metric: telegramFollowers
         group: day
@@ -6627,6 +6616,46 @@ export function useProtocolResolveContractsMutation() {
     ProtocolResolveContractsMutation,
     ProtocolResolveContractsMutationVariables
   >(ProtocolResolveContractsDocument)
+}
+export const ProtocolSocialPostsDocument = gql`
+  query ProtocolSocialPosts(
+    $filter: ProtocolFilterInputType!
+    $pagination: ProtocolSocialPostListPaginationInputType = {
+      limit: 3
+      offset: 0
+    }
+  ) {
+    protocol(filter: $filter) {
+      socialPosts(
+        sort: [{ column: createdAt, order: desc }]
+        pagination: $pagination
+      ) {
+        list {
+          id
+          provider
+          title
+          content
+          link
+          createdAt
+        }
+        pagination {
+          count
+        }
+      }
+    }
+  }
+`
+
+export function useProtocolSocialPostsQuery(
+  options: Omit<
+    Urql.UseQueryArgs<ProtocolSocialPostsQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<ProtocolSocialPostsQuery>({
+    query: ProtocolSocialPostsDocument,
+    ...options,
+  })
 }
 export const ProtocolStakedBalanceDocument = gql`
   query ProtocolStakedBalance(

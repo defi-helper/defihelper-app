@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { ButtonBase } from '~/common/button-base'
+
 import { Dialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
 import * as styles from './automation-dialog.css'
@@ -12,7 +12,10 @@ export type AutomationDialogProps = {
 
 export const AutomationDialog: React.FC<AutomationDialogProps> = (props) => {
   return (
-    <Dialog className={clsx(styles.root, props.className)}>
+    <Dialog
+      className={clsx(styles.root, props.className)}
+      onBack={props.onBack}
+    >
       <div className={styles.header}>
         <Typography
           variant="body3"
@@ -23,11 +26,6 @@ export const AutomationDialog: React.FC<AutomationDialogProps> = (props) => {
         >
           {props.title}
         </Typography>
-        {props.onBack && (
-          <ButtonBase className={styles.button} onClick={props.onBack}>
-            Back
-          </ButtonBase>
-        )}
       </div>
       {props.children}
     </Dialog>

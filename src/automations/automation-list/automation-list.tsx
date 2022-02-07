@@ -215,7 +215,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
             <Paper radius={8} className={styles.loader}>
               <Typography variant="body2">
                 Automate your DeFi strategy and earn higher rewards with
-                autostaking and other no-code tools.
+                auto-staking and other no-code tools.
               </Typography>
               <Button
                 onClick={handleAddAutomation}

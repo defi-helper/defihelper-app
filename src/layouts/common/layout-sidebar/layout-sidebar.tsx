@@ -49,15 +49,25 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
             className={styles.dropdown}
             placement="bottom-end"
             offset={[0, 28]}
-            trigger="hover"
+            trigger="click"
             control={
               <ButtonBase className={styles.betaIcon}>
                 <Icon icon="beta" />
               </ButtonBase>
             }
           >
-            Please note, we are currently in our Beta state. Some
-            functionalities may not work as expected
+            The DeFiHelper app is currently in the public beta stage. Though we
+            try our best, you may encounter some bugs or other issues. If you
+            find any errors or have difficulty in understanding any part of the
+            service, please write to us in Telegram, Discord or via email
+            <Link
+              href="mailto: hello@defihelper.io"
+              target="_blank"
+              underline="always"
+            >
+              hello@defihelper.io
+            </Link>
+            .
           </Dropdown>
         )}
       </div>

@@ -12,6 +12,7 @@ import * as styles from './dialog.css'
 
 export type DialogProps = {
   className?: string
+  onBack?: () => void
 }
 
 const AnimatedPaper = animated(Paper)
@@ -40,7 +41,10 @@ export const Dialog: React.FC<DialogProps> = (props) => {
       radius={8}
       ref={handleSetContent}
     >
-      <ButtonBase onClick={onClose} className={styles.closeButton}>
+      <ButtonBase
+        onClick={props.onBack ?? onClose}
+        className={styles.closeButton}
+      >
         <Icon icon="close" width="44" height="44" />
       </ButtonBase>
       {props.children}

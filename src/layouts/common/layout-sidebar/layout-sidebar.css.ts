@@ -35,6 +35,7 @@ export const betaIcon = style({
 export const dropdown = style({
   width: 295,
   padding: '24px 32px',
+  display: 'block',
 })
 
 export const logoIcon = style({

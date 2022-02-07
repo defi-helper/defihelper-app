@@ -118,12 +118,12 @@ export const $triggers = automationListDomain
         ...trigger,
         actions: {
           ...trigger.actions,
-          list: trigger.actions.list?.filter((action) => action.id === params),
+          list: trigger.actions.list?.filter((action) => action.id !== params),
         },
         conditions: {
           ...trigger.conditions,
           list: trigger.conditions.list?.filter(
-            (condition) => condition.id === params
+            (condition) => condition.id !== params
           ),
         },
       }))
