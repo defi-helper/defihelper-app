@@ -12,7 +12,7 @@ export type HeadProps = {
 const SITE_URL = 'https://app.defihelper.io'
 
 const SITE_DESCRIPTION =
-  'Automate your DeFi strategies across chains, earn more with autostaking feature'
+  'Automate your DeFi strategies across chains, earn more with auto-staking feature'
 
 export const Head: React.VFC<HeadProps> = (props) => {
   const siteTitle = ['DeFiHelper', props.title].filter(Boolean).join(' - ')

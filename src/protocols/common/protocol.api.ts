@@ -22,6 +22,8 @@ import {
   ProtocolStakedBalanceQueryVariables,
   ProtocolResolveContractsMutationVariables,
   ProtocolResolveContractsMutation,
+  ProtocolSocialPostsQueryVariables,
+  ProtocolSocialPostsQuery,
 } from '~/graphql/_generated-types'
 import {
   PROTOCOLS,
@@ -33,6 +35,7 @@ import {
   PROTOCOL_FAVORITE,
   PROTOCOL_OVERVIEW_METRIC,
   PROTOCOL_STAKED_BALANCE,
+  PROTOCOL_SOCIAL_POSTS,
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 import { PROTOCOL_RESOLVE_CONTRACTS } from '~/protocols/common/graphql/protocol-resolve-contracts.graphql'
@@ -56,6 +59,18 @@ export const protocolsApi = {
       .query<ProtocolQuery, ProtocolQueryVariables>(PROTOCOL_DETAIL, variables)
       .toPromise()
       .then(({ data }) => data?.protocol),
+
+  protocolSocialPosts: (variables: ProtocolSocialPostsQueryVariables) =>
+    getAPIClient()
+      .query<ProtocolSocialPostsQuery, ProtocolSocialPostsQueryVariables>(
+        PROTOCOL_SOCIAL_POSTS,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => ({
+        list: data?.protocol?.socialPosts.list ?? [],
+        count: data?.protocol?.socialPosts.pagination.count ?? 0,
+      })),
 
   protocolDetailMetric: (variables: ProtocolMetricQueryVariables) =>
     getAPIClient()

@@ -119,7 +119,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                   </ButtonBase>
                 }
               >
-                <Typography>Autostaking</Typography>
+                <Typography>Auto-staking</Typography>
               </Dropdown>
             </Typography>
             <Typography variant="body3" align="right">
