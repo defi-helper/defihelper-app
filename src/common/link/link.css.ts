@@ -10,7 +10,7 @@ export const root = style({
   fontFamily: 'inherit',
   fontWeight: 'normal',
   textUnderlineOffset: 3,
-  textDecorationColor: theme.colors.common.black5,
+  textDecorationColor: theme.colors.textColorGrey,
   ...transitions('opacity 0.3s ease'),
 })
 
