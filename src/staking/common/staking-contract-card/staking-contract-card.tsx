@@ -33,6 +33,7 @@ export type StakingContractCardProps = {
     contractId: string
   }
   hideAutostakingBoost: boolean
+  error?: React.ReactNode
 } & Contract
 
 export const StakingContractCard: React.VFC<StakingContractCardProps> = (
@@ -80,6 +81,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
               />
             </Can>
           )}
+          {props.error}
         </Typography>
       </div>
       <div>

@@ -388,67 +388,86 @@ export const fetchMetricsFx = stakingListDomain.createEffect(
       String(params.wallet.chainId)
     )
 
-    const contracts = params.contracts.map(async (contract) => {
-      const adapter = await loadAdapter(
-        buildAdaptersUrl(params.protocolAdapter)
-      )
+    const result = await params.contracts.reduce<
+      Promise<{
+        metrics: Record<string, FreshMetrics>
+        errors: Record<string, string>
+      }>
+    >(
+      async (acc, contract) => {
+        const previousAcc = await acc
 
-      const adapterObj = await adapter[
-        contract.adapter as keyof Omit<Adapters, 'automates'>
-      ](networkProvider, contract.address, {
-        blockNumber: 'latest',
-        signer: networkProvider?.getSigner(),
-      })
+        try {
+          const adapter = await loadAdapter(
+            buildAdaptersUrl(params.protocolAdapter)
+          )
 
-      const walletMetrics = (
-        await Promise.all(
-          params.wallets.map((wallet) => adapterObj.wallet(wallet.address))
-        )
-      ).reduce(
-        (acc, wallet) => {
-          return {
-            stakingUSD: bignumberUtils.plus(
-              acc.stakingUSD,
-              wallet.metrics.stakingUSD
-            ),
-            earnedUSD: bignumberUtils.plus(
-              acc.earnedUSD,
-              wallet.metrics.earnedUSD
-            ),
+          const adapterObj = await adapter[
+            contract.adapter as keyof Omit<Adapters, 'automates'>
+          ](networkProvider, contract.address, {
+            blockNumber: 'latest',
+            signer: networkProvider?.getSigner(),
+          })
+
+          const walletMetricsPromise = await Promise.all(
+            params.wallets.map((wallet) => adapterObj.wallet(wallet.address))
+          )
+
+          const walletMetrics = walletMetricsPromise.reduce(
+            (accum, wallet) => {
+              return {
+                stakingUSD: bignumberUtils.plus(
+                  accum.stakingUSD,
+                  wallet.metrics.stakingUSD
+                ),
+                earnedUSD: bignumberUtils.plus(
+                  accum.earnedUSD,
+                  wallet.metrics.earnedUSD
+                ),
+              }
+            },
+            {
+              stakingUSD: '0',
+              earnedUSD: '0',
+            }
+          )
+
+          previousAcc.metrics = {
+            ...previousAcc.metrics,
+            [contract.id]: {
+              contractId: contract.id,
+              tvl: adapterObj.metrics.tvl,
+              aprYear: adapterObj.metrics.aprYear,
+              myStaked: walletMetrics.stakingUSD,
+              myEarned: walletMetrics.earnedUSD,
+            },
           }
-        },
-        {
-          stakingUSD: '0',
-          earnedUSD: '0',
+        } catch (error) {
+          if (error instanceof Error)
+            previousAcc.errors = {
+              ...previousAcc.errors,
+              [contract.id]: `${error.name}: ${error.message}`,
+            }
         }
-      )
 
-      return {
-        contractId: contract.id,
-        tvl: adapterObj.metrics.tvl,
-        aprYear: adapterObj.metrics.aprYear,
-        myStaked: walletMetrics.stakingUSD,
-        myEarned: walletMetrics.earnedUSD,
-      }
-    })
+        return previousAcc
+      },
+      Promise.resolve({
+        errors: {},
+        metrics: {},
+      })
+    )
 
-    return (await Promise.all(contracts))
-      .filter((contract): contract is FreshMetrics => Boolean(contract))
-      .reduce<Record<string, FreshMetrics>>((acc, contract) => {
-        acc[contract.contractId] = contract
-
-        return acc
-      }, {})
+    return result
   }
 )
 
 export const $freshMetrics = stakingListDomain
-  .createStore<Record<string, FreshMetrics>>({})
+  .createStore<UnitValue<typeof fetchMetricsFx.doneData>>({
+    errors: {},
+    metrics: {},
+  })
   .on(fetchMetricsFx.doneData, (_, payload) => payload)
-
-export const $freshMetricsError = stakingListDomain
-  .createStore<string | null>(null)
-  .on(fetchMetricsFx.failData, (_, payload) => payload.message)
 
 sample({
   source: [$contractsListCopies, settingsWalletModel.$wallets],
@@ -489,7 +508,6 @@ toastsService.forwardErrors(
 
 $contractList.reset(StakingListGate.close)
 $connectedContracts.reset(StakingListGate.close)
-$freshMetricsError.reset(StakingListGate.close)
 $freshMetrics.reset(StakingListGate.close)
 $scanner.reset(StakingListGate.close)
 $contractAddresses.reset(StakingListGate.close)
