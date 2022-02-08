@@ -1,12 +1,12 @@
 import clsx from 'clsx'
-import React from 'react'
-import { useGate, useStore } from 'effector-react'
+import React, { useEffect } from 'react'
+import { useStore } from 'effector-react'
 
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import * as model from '~/portfolio/portfolio-exchanges/portfolio-exchanges.model'
 import * as styles from './portfolio-exchanges.css'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import * as model from '~/settings/settings-integrations/settings-integrations.model'
 
 export type PortfolioDeployedContractsProps = {
   className?: string
@@ -15,10 +15,12 @@ export type PortfolioDeployedContractsProps = {
 export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
   props
 ) => {
-  const exchangesList = useStore(model.$exchangesList)
-  useGate(model.PortfolioIntegrationsGate)
+  const integrations = useStore(model.$integrationsList)
+  useEffect(() => {
+    model.fetchEstablishedIntegrationsListFx()
+  }, [])
 
-  if (!exchangesList.length) return <></>
+  if (!integrations.length) return <></>
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -38,18 +40,16 @@ export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
             </Typography>
           </div>
           <div className={styles.tableBody}>
-            {exchangesList.map((exchange) => {
+            {integrations.map((exchange) => {
               return (
                 <React.Fragment key={exchange.id}>
                   <div className={styles.tableRow}>
                     <Typography variant="body2">Binance</Typography>
 
-                    <Typography variant="body3" align="right">
-                      {exchange.account}
-                    </Typography>
+                    <Typography variant="body3">{exchange.account}</Typography>
 
                     <Typography variant="body3" align="right">
-                      {bignumberUtils.format(exchange.balance, 2)}
+                      ${bignumberUtils.format(exchange.balance, 2)}
                     </Typography>
                   </div>
                 </React.Fragment>
