@@ -104,6 +104,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
     reset,
     formState,
     trigger,
+    watch,
   } = useForm<FormValues, { test: string }>({
     resolver: yupResolver(
       props.type === 'ByEvent'
@@ -117,7 +118,6 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
       const result = await openNetworksDialog()
 
       setValue('network', result)
-      trigger()
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -136,7 +136,6 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
       setValue('protocol', result)
       setValue('contract', undefined as unknown as Contract)
       setValue('event', '')
-      trigger()
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -158,7 +157,6 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
 
       setValue('contract', result)
       setValue('event', '')
-      trigger()
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -173,7 +171,6 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
 
       setValue('wallet', result)
       setValue('network', result.network)
-      trigger()
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -193,7 +190,6 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
       const result = await openEventsDialog({ events })
 
       setValue('event', result)
-      trigger()
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -237,6 +233,42 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValues, props.defaultValues])
+
+  const walletId = watch('wallet.id')
+  const network = watch('network')
+  const protocolId = watch('protocol.id')
+  const contractId = watch('contract.id')
+  const event = watch('event')
+
+  useEffect(() => {
+    if (!walletId) return
+
+    trigger('wallet')
+  }, [walletId, trigger])
+
+  useEffect(() => {
+    if (!network) return
+
+    trigger('network')
+  }, [network, trigger])
+
+  useEffect(() => {
+    if (!protocolId) return
+
+    trigger('protocol')
+  }, [protocolId, trigger])
+
+  useEffect(() => {
+    if (!contractId) return
+
+    trigger('contract')
+  }, [contractId, trigger])
+
+  useEffect(() => {
+    if (!event) return
+
+    trigger('event')
+  }, [event, trigger])
 
   return (
     <AutomationForm onSubmit={handleOnSubmit}>

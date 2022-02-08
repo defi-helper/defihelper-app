@@ -233,7 +233,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
                 key={trigger.id}
                 id={trigger.id}
                 name={trigger.name}
-                onEdit={handleEditTrigger(trigger)}
+                onEdit={wallet ? handleEditTrigger(trigger) : undefined}
                 onDelete={handleDeleteTrigger(trigger.id)}
                 active={trigger.active}
                 onActivate={handleActivate(trigger)}

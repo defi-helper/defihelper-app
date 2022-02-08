@@ -26,9 +26,9 @@ export const AutomationDeployContractDialog: React.VFC<AutomationDeployContractD
         onBack={props.onCancel}
       >
         <AutomationSelectList>
-          {props.contracts.map((contract) => (
+          {props.contracts.map((contract, index) => (
             <AutomationSelectListItem
-              key={contract.contract}
+              key={String(contract.contract + index)}
               onClick={handleOnChange(contract)}
             >
               <Typography variant="body2" as="div">

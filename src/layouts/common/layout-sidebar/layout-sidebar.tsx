@@ -49,7 +49,7 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
             className={styles.dropdown}
             placement="bottom-end"
             offset={[0, 28]}
-            trigger="click"
+            trigger="hover"
             control={
               <ButtonBase className={styles.betaIcon}>
                 <Icon icon="beta" />

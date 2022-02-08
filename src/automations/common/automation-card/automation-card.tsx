@@ -21,7 +21,7 @@ import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-card.css'
 
 export type AutomationCardProps = {
-  onEdit: () => void
+  onEdit?: () => void
   onDelete: () => void
   active: boolean
   onActivate: () => void
@@ -119,9 +119,11 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
           className={styles.dropdown}
           offset={[0, 4]}
         >
-          <ButtonBase className={styles.dropdownItem} onClick={props.onEdit}>
-            Edit
-          </ButtonBase>
+          {props.onEdit && (
+            <ButtonBase className={styles.dropdownItem} onClick={props.onEdit}>
+              Edit
+            </ButtonBase>
+          )}
           <ButtonBase
             as={ReactRouterLink}
             className={styles.dropdownItem}
