@@ -24,6 +24,7 @@ import {
 import { authModel } from '~/auth'
 import * as styles from './portfolio.css'
 import * as model from './portfolio.model'
+import { PortfolioExchanges } from '~/portfolio/portfolio-exchanges'
 
 export type PortfolioProps = unknown
 
@@ -90,7 +91,8 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           </div>
           <PortfolioAssets className={styles.section} />
           <PortfolioWallets className={styles.section} />
-          <PortfolioDeployedContracts />
+          <PortfolioDeployedContracts className={styles.section} />
+          <PortfolioExchanges />
         </>
       )}
       {!loading && !tokenAliasses && (
