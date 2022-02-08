@@ -402,12 +402,19 @@ export const fetchMetricsFx = stakingListDomain.createEffect(
             buildAdaptersUrl(params.protocolAdapter)
           )
 
-          const adapterObj = await adapter[
-            contract.adapter as keyof Omit<Adapters, 'automates'>
-          ](networkProvider, contract.address, {
-            blockNumber: 'latest',
-            signer: networkProvider?.getSigner(),
-          })
+          const adapterFn =
+            adapter[contract.adapter as keyof Omit<Adapters, 'automates'>]
+
+          if (!adapterFn) return previousAcc
+
+          const adapterObj = await adapterFn(
+            networkProvider,
+            contract.address,
+            {
+              blockNumber: 'latest',
+              signer: networkProvider?.getSigner(),
+            }
+          )
 
           const walletMetricsPromise = await Promise.all(
             params.wallets.map((wallet) => adapterObj.wallet(wallet.address))
@@ -443,11 +450,12 @@ export const fetchMetricsFx = stakingListDomain.createEffect(
             },
           }
         } catch (error) {
-          if (error instanceof Error)
-            previousAcc.errors = {
-              ...previousAcc.errors,
-              [contract.id]: `${error.name}: ${error.message}`,
-            }
+          if (!(error instanceof Error)) return previousAcc
+
+          previousAcc.errors = {
+            ...previousAcc.errors,
+            [contract.id]: `${error.name}: ${error.message}`,
+          }
         }
 
         return previousAcc
