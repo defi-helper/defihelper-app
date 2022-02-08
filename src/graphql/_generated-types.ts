@@ -3067,6 +3067,7 @@ export type WalletExchangeType = {
   name: Scalars['String']
   /** Exchange type */
   exchange: WalletExchangeTypeEnum
+  balance: Scalars['Float']
   /** Account */
   account: Scalars['String']
   /** Date of created account */
@@ -4652,7 +4653,7 @@ export type WalletDeleteMutation = { __typename?: 'Mutation' } & Pick<
 
 export type WalletExchangeFragmentFragment = {
   __typename?: 'WalletExchangeType'
-} & Pick<WalletExchangeType, 'id' | 'exchange' | 'account'>
+} & Pick<WalletExchangeType, 'id' | 'exchange' | 'balance' | 'account'>
 
 export type WalletListQueryVariables = Exact<{
   sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
@@ -5332,6 +5333,7 @@ export const WalletExchangeFragmentFragmentDoc = gql`
   fragment walletExchangeFragment on WalletExchangeType {
     id
     exchange
+    balance
     account
   }
 `

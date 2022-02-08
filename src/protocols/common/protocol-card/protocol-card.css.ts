@@ -52,6 +52,7 @@ export const link = style({
 
 export const logo = style({
   marginRight: 8,
+  borderRadius: 24,
 })
 
 export const label = style({
