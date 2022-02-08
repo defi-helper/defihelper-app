@@ -85,12 +85,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     : null
 
   const stakingList = useStore(model.$contractsListCopies)
-  const freshMetrics = useStore(model.$freshMetrics)
+  const { metrics: freshMetrics, errors: freshMetricsError } = useStore(
+    model.$freshMetrics
+  )
   const wallets = useStore(walletsModel.$wallets)
   const loading = useStore(model.fetchStakingListFx.pending)
   const scanner = useStore(model.$scanner)
   const contractPrototypeAddresses = useStore(model.$contractAddresses)
-  const freshMetricsError = useStore(model.$freshMetricsError)
 
   const openedContract = useStore(model.$openedContract)
 
@@ -385,9 +386,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           </Button>
         </Can>
       </div>
-      <Can I="create" a="Contract">
-        <div>Error: {freshMetricsError}</div>
-      </Can>
       <div className={styles.table}>
         <Paper radius={8} className={styles.tableInner}>
           <div className={clsx(styles.tableHeader, styles.row)}>
@@ -520,6 +518,15 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       onScannerRegister={handleScannerRegister(
                         stakingListItem.id
                       )}
+                      error={
+                        <>
+                          {freshMetricsError[stakingListItem.id] && (
+                            <Can I="create" a="Contract">
+                              <div>{freshMetricsError[stakingListItem.id]}</div>
+                            </Can>
+                          )}
+                        </>
+                      }
                     />
                     {opened && (
                       <StakingAdapters
