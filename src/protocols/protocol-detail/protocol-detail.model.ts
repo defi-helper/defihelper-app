@@ -108,5 +108,11 @@ sample({
   target: [fetchProtocolFx, fetchSocialPostsFx],
 })
 
+guard({
+  clock: ProtocolDetailGate.open,
+  filter: (clock): clock is GateState => Boolean(clock),
+  target: fetchSocialPostsFx,
+})
+
 $protocol.reset(ProtocolDetailGate.close)
 $socialPosts.reset(ProtocolDetailGate.close)

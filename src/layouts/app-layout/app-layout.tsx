@@ -109,7 +109,7 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
       <div className={styles.header}>
         <div className={styles.title}>
           <ButtonBase onClick={handleToggleSidebar}>
-            <Icon icon="burger" width="24" height="24" />
+            <Icon icon="burger" width="40" height="40" />
           </ButtonBase>
           {props.title}
         </div>
@@ -121,7 +121,7 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
             onClick={handleToggleSidebar}
             className={styles.closeButton}
           >
-            <Icon icon="close" width="24" height="24" />
+            <Icon icon="close" width="40" height="40" />
           </ButtonBase>
           <LayoutSidebar
             menu={menu}

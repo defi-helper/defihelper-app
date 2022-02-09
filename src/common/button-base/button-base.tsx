@@ -5,6 +5,7 @@ import * as styles from './button-base.css'
 
 type Props<C extends React.ElementType = 'button'> = {
   as?: C
+  disabled?: boolean
 }
 
 export type ButtonBaseProps<C extends React.ElementType = 'button'> = Props<C> &

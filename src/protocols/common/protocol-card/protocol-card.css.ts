@@ -7,6 +7,9 @@ export const card = style({
   alignItems: 'center',
   gridTemplateColumns: '1fr 1fr',
   padding: '9px 9px 12px',
+  cursor: 'pointer',
+  textDecoration: 'none',
+  color: 'currentcolor',
 
   '@media': {
     [theme.mediaQueries.md()]: {
@@ -17,8 +20,8 @@ export const card = style({
 })
 
 export const favorite = style({
-  width: 20,
-  height: 20,
+  width: 30,
+  height: 30,
   opacity: 0.24,
   padding: 2,
   transition: 'opacity .1s ease-in-out, color .1s ease-in-out',
@@ -34,8 +37,6 @@ export const favorite = style({
 })
 
 export const link = style({
-  textDecoration: 'none',
-  color: 'currentcolor',
   display: 'flex',
   alignItems: 'center',
   gridColumnStart: 1,
