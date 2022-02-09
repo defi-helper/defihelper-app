@@ -10,6 +10,7 @@ export const PROTOCOL_FRAGMENT = gql`
     link
     hidden
     createdAt
+    previewPicture
     favorite
     metric {
       tvl
