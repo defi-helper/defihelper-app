@@ -105,7 +105,7 @@ sample({
     },
   }),
   fn: ([{ protocolId }]) => ({ protocolId }),
-  target: [fetchProtocolFx, fetchSocialPostsFx],
+  target: fetchProtocolFx,
 })
 
 guard({
