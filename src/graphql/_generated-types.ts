@@ -1619,6 +1619,8 @@ export type ProtocolType = {
   links: ProtocolLinkMapType
   /** Is hidden */
   hidden: Scalars['Boolean']
+  /** Preview picture */
+  previewPicture?: Maybe<Scalars['String']>
   favorite: Scalars['Boolean']
   contracts: ContractListType
   metricChart: Array<MetricChartType>
@@ -3067,6 +3069,7 @@ export type WalletExchangeType = {
   name: Scalars['String']
   /** Exchange type */
   exchange: WalletExchangeTypeEnum
+  balance: Scalars['Float']
   /** Account */
   account: Scalars['String']
   /** Date of created account */
@@ -4215,6 +4218,7 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'link'
   | 'hidden'
   | 'createdAt'
+  | 'previewPicture'
   | 'favorite'
 > & {
     metric: { __typename?: 'ProtocolMetricType' } & Pick<
@@ -5224,6 +5228,7 @@ export const ProtocolFragmentFragmentDoc = gql`
     link
     hidden
     createdAt
+    previewPicture
     favorite
     metric {
       tvl

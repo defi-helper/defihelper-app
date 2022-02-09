@@ -198,7 +198,7 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
         className={styles.input}
       />
       <Input
-        type="link"
+        type="text"
         label="OG:Image picture"
         {...register('previewPicture')}
         disabled={props.loading}
