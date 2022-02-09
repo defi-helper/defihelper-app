@@ -31,6 +31,7 @@ export const title = style({
   display: 'flex',
   alignItems: 'center',
   gap: 16,
+  fontSize: 20,
 })
 
 export const action = style({

@@ -8,7 +8,7 @@ import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Dropdown } from '~/common/dropdown'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { Protocol } from '../protocol.types'
+import { Protocol } from '~/protocols/common/protocol.types'
 import { paths } from '~/paths'
 import * as styles from './protocol-card.css'
 
@@ -21,24 +21,31 @@ export type ProtocolCardProps = {
 export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
   const { protocol } = props
 
+  const handleOnFavorite = (event: React.MouseEvent<HTMLSpanElement>) => {
+    event.preventDefault()
+
+    props.onFavorite?.()
+  }
+
   return (
-    <Paper className={clsx(styles.card)} radius={8}>
+    <Paper
+      className={clsx(styles.card)}
+      radius={8}
+      as={ReactRouterLink}
+      to={paths.protocols.detail(protocol.id)}
+    >
       <ButtonBase
         className={clsx(
           styles.favorite,
           protocol.favorite && styles.favoriteActive
         )}
-        onClick={props.onFavorite}
+        onClick={handleOnFavorite}
         disabled={!props.onFavorite}
+        as="span"
       >
-        <Icon icon="star" />
+        <Icon icon="star" width="16" height="16" />
       </ButtonBase>
-      <Typography
-        as={ReactRouterLink}
-        to={paths.protocols.detail(protocol.id)}
-        variant="body2"
-        className={clsx(styles.link)}
-      >
+      <Typography as="span" variant="body2" className={clsx(styles.link)}>
         {protocol.icon && (
           <img
             src={protocol.icon}
@@ -101,7 +108,7 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
         <Can I="update" a="Protocol">
           <Dropdown
             control={
-              <ButtonBase className={styles.manage}>
+              <ButtonBase className={styles.manage} as="span">
                 <Icon icon="dots" />
               </ButtonBase>
             }
