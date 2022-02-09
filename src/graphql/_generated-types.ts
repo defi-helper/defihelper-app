@@ -1607,6 +1607,8 @@ export type ProtocolType = {
   id: Scalars['UuidType']
   /** Adapter name */
   adapter: Scalars['String']
+  /** Debank Identifier */
+  debankId?: Maybe<Scalars['String']>
   /** Name */
   name: Scalars['String']
   /** Description */
@@ -1619,6 +1621,8 @@ export type ProtocolType = {
   links: ProtocolLinkMapType
   /** Is hidden */
   hidden: Scalars['Boolean']
+  /** Preview picture */
+  previewPicture?: Maybe<Scalars['String']>
   favorite: Scalars['Boolean']
   contracts: ContractListType
   metricChart: Array<MetricChartType>
@@ -4223,6 +4227,7 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'adapter'
   | 'name'
   | 'description'
+  | 'debankId'
   | 'icon'
   | 'link'
   | 'hidden'
@@ -5232,6 +5237,7 @@ export const ProtocolFragmentFragmentDoc = gql`
     adapter
     name
     description
+    debankId
     icon
     link
     hidden
