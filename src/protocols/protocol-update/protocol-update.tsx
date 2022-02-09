@@ -31,6 +31,7 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
       icon: protocol?.icon ?? undefined,
       link: protocol?.link ?? undefined,
       adapter: protocol?.adapter ?? '',
+      previewPicture: protocol?.previewPicture ?? undefined,
       links: {
         social:
           protocol?.links.social.map((link) => omit(link, '__typename')) ?? [],

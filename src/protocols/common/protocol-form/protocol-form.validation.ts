@@ -17,6 +17,7 @@ export const protocolFormSchema = yup.object().shape({
   icon: yup.string().url('Must be url').optional(),
   link: yup.string().url('Must be url').optional(),
   description: yup.string().optional(),
+  previewPicture: yup.string().optional(),
   links: yup.object().shape({
     social: linkSchema,
     audit: linkSchema,
