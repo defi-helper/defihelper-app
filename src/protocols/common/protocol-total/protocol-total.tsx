@@ -11,6 +11,7 @@ export type ProtocolTotalProps = Exclude<
   null | undefined
 >['metric'] & {
   hasAutostaking: boolean
+  debankId?: string | null
 }
 
 export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
@@ -32,29 +33,31 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
           ${bignumberUtils.format(props.myEarned)}
         </Typography>
       </Paper>
-      <Paper radius={8} className={styles.totalItem}>
-        <Typography variant="body2" className={styles.totalTitle}>
-          Auto-Staking Boost
-        </Typography>
-        <Typography variant="h4">
-          {props.hasAutostaking
-            ? bignumberUtils.formatMax(
-                bignumberUtils.mul(props.myAPYBoost, 100),
-                10000
-              )
-            : 0}
-          %
-        </Typography>
-        {!props.hasAutostaking && (
-          <Typography
-            variant="body3"
-            as={Link}
-            href={config.MEDIUM_LINK}
-            target="_blank"
-            className={styles.link}
-          />
-        )}
-      </Paper>
+      {!props.debankId && (
+        <Paper radius={8} className={styles.totalItem}>
+          <Typography variant="body2" className={styles.totalTitle}>
+            Auto-Staking Boost
+          </Typography>
+          <Typography variant="h4">
+            {props.hasAutostaking
+              ? bignumberUtils.formatMax(
+                  bignumberUtils.mul(props.myAPYBoost, 100),
+                  10000
+                )
+              : 0}
+            %
+          </Typography>
+          {!props.hasAutostaking && (
+            <Typography
+              variant="body3"
+              as={Link}
+              href={config.MEDIUM_LINK}
+              target="_blank"
+              className={styles.link}
+            />
+          )}
+        </Paper>
+      )}
     </div>
   )
 }
