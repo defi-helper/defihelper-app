@@ -37,7 +37,8 @@ export const fetchProtocolFx = protocolDetailDomain.createEffect(
     return {
       ...protocol,
       hasAutostaking: Boolean(contract),
-      debankId: protocol.adapter !== 'debankByApiReadonly' ? null : protocol.debankId,
+      debankId:
+        protocol.adapter !== 'debankByApiReadonly' ? null : protocol.debankId,
     }
   }
 )
