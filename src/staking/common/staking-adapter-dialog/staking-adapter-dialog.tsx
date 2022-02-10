@@ -154,8 +154,8 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
                     key={input.placeholder}
                     name={`${currentStep?.name}.${index}`}
                     render={({ field }) => {
-                      if (isSelect) {
-                        return (
+                      const components = {
+                        select: (
                           <Select
                             {...field}
                             label={input.placeholder}
@@ -172,7 +172,7 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
                               </SelectOption>
                             ))}
                           </Select>
-                        )
+                        ),
                       }
 
                       return (
