@@ -1,4 +1,5 @@
 import { createDomain, restore } from 'effector-logger/macro'
+import networks from '@defihelper/networks/contracts.json'
 
 import { loadAdapter, AdapterActions, Adapters } from '~/common/load-adapter'
 import { toastsService } from '~/toasts'
@@ -73,6 +74,37 @@ export const $actionLoading = restore(action, null)
 
 export const stake = stakingAdaptersDomain.createEvent<ContractAction>()
 
+const MockTokens = [
+  {
+    address: '0x0a180a76e4466bf68a7f86fb029bed3cccfaaac5',
+    symbol: 'WETH',
+  },
+]
+
+export const buyLPFx = stakingAdaptersDomain.createEffect(
+  async (params: { account: string; chainId: string; provider: unknown }) => {
+    const networkProvider = walletNetworkModel.getNetwork(
+      params.provider,
+      params.chainId
+    )
+
+    if (!networkProvider) return
+
+    const adapterObj = await loadAdapter(buildAdaptersUrl('dfh'))
+
+    const result = await adapterObj.automates.buyLiquidity(
+      networkProvider.getSigner(),
+      networks[3].BuyLiquidity.address,
+      {
+        tokens: MockTokens,
+      }
+    )
+
+    return result.buy
+  }
+)
+
 toastsService.forwardErrors(
-  fetchContractAdapterFx.failData.map((error) => parseError(error))
+  fetchContractAdapterFx.failData.map(parseError),
+  buyLPFx.failData.map(parseError)
 )

@@ -98,6 +98,28 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const handleStake = createAdapterAction('stake')
   const handleUnStake = createAdapterAction('unstake')
 
+  const handleBuyLiquidity = async () => {
+    if (!wallet?.account || !wallet?.chainId) return
+
+    try {
+      const adapter = await model.buyLPFx({
+        account: wallet.account,
+        provider: wallet.provider,
+        chainId: wallet.chainId,
+      })
+
+      if (!adapter) return
+
+      await openAdapter({
+        steps: adapter,
+      })
+    } catch (error) {
+      if (error instanceof Error && !(error instanceof UserRejectionError)) {
+        console.error(error.message)
+      }
+    }
+  }
+
   return (
     <div className={styles.root}>
       <div className={styles.stake}>
@@ -121,6 +143,26 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             loading={actionLoading?.action === 'stake'}
           >
             Stake
+          </Button>
+        </WalletConnect>
+      </div>
+      <div className={styles.buyLP}>
+        <WalletConnect
+          fallback={
+            <Button type="submit" size="small" variant="outlined">
+              buy LP
+            </Button>
+          }
+          blockchain={props.blockchain}
+          network={props.network}
+        >
+          <Button
+            type="submit"
+            onClick={handleBuyLiquidity}
+            size="small"
+            variant="outlined"
+          >
+            buy LP
           </Button>
         </WalletConnect>
       </div>

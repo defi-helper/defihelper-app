@@ -8,6 +8,7 @@ import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
 import { AdapterStep } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
+import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
 import { Loader } from '~/common/loader'
 import { Input } from '~/common/input'
@@ -145,20 +146,45 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
               {currentStep.info.inputs.map((input, index) => {
                 const Component = !input.value ? Input : NumericalInput
 
+                const isSelect = input.type === 'select'
+
                 return (
                   <Controller
                     control={control}
                     key={input.placeholder}
                     name={`${currentStep?.name}.${index}`}
-                    render={({ field }) => (
-                      <Component
-                        label={input.placeholder}
-                        disabled={formState.isSubmitting}
-                        className={styles.input}
-                        {...field}
-                        value={field.value || input.value}
-                      />
-                    )}
+                    render={({ field }) => {
+                      if (isSelect) {
+                        return (
+                          <Select
+                            {...field}
+                            label={input.placeholder}
+                            value={field.value || input.value}
+                            className={styles.input}
+                            disabled={formState.isSubmitting}
+                          >
+                            {input.options?.map((option) => (
+                              <SelectOption
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectOption>
+                            ))}
+                          </Select>
+                        )
+                      }
+
+                      return (
+                        <Component
+                          label={input.placeholder}
+                          disabled={formState.isSubmitting}
+                          className={styles.input}
+                          {...field}
+                          value={field.value || input.value}
+                        />
+                      )
+                    }}
                   />
                 )
               })}

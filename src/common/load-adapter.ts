@@ -27,7 +27,15 @@ export type AdapterWallet = {
 
 export type AdapterInfo = {
   description: string
-  inputs?: { placeholder: string; value: string }[]
+  inputs?: {
+    placeholder: string
+    value: string
+    type: string
+    options?: {
+      label: string
+      value: string
+    }[]
+  }[]
 }
 
 export type AdapterStep = {
@@ -111,6 +119,11 @@ export type Adapters = {
         contractAddress?: unknown
       ) => Promise<DeployType>
     >
+    buyLiquidity: (
+      signer: unknown,
+      contractAddress: string,
+      payload: unknown
+    ) => Promise<{ buy: DeployStep[] }>
   }
 }
 
