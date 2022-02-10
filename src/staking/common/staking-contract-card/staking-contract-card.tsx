@@ -16,7 +16,7 @@ import * as styles from './staking-contract-card.css'
 
 export type StakingContractCardProps = {
   className?: string
-  onOpenContract: () => void
+  onOpenContract?: () => void
   onOpenApy: () => void
   opened: boolean
   onToggleContract: () => void
@@ -57,7 +57,13 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
 
   return (
     <div
-      className={clsx(styles.root, props.className)}
+      className={clsx(
+        styles.root,
+        {
+          [styles.clickable]: Boolean(props.onOpenContract),
+        },
+        props.className
+      )}
       onClick={props.onOpenContract}
       role="button"
       tabIndex={0}
@@ -195,16 +201,18 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             </Typography>
           )}
         </div>
-        <ButtonBase
-          className={styles.accorionButton}
-          onClick={props.onOpenContract}
-        >
-          <Icon
-            icon={props.opened ? 'arrowTop' : 'arrowDown'}
-            width="24"
-            height="24"
-          />
-        </ButtonBase>
+        {props.onOpenContract && (
+          <ButtonBase
+            className={styles.accorionButton}
+            onClick={props.onOpenContract}
+          >
+            <Icon
+              icon={props.opened ? 'arrowTop' : 'arrowDown'}
+              width="24"
+              height="24"
+            />
+          </ButtonBase>
+        )}
         <Can I="update" a="Contract">
           <Dropdown
             control={

@@ -6,6 +6,7 @@ export const PROTOCOL_FRAGMENT = gql`
     adapter
     name
     description
+    debankId
     icon
     link
     hidden

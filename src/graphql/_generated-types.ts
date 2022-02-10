@@ -1607,6 +1607,8 @@ export type ProtocolType = {
   id: Scalars['UuidType']
   /** Adapter name */
   adapter: Scalars['String']
+  /** Debank Identifier */
+  debankId?: Maybe<Scalars['String']>
   /** Name */
   name: Scalars['String']
   /** Description */
@@ -4225,6 +4227,7 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'adapter'
   | 'name'
   | 'description'
+  | 'debankId'
   | 'icon'
   | 'link'
   | 'hidden'
@@ -5235,6 +5238,7 @@ export const ProtocolFragmentFragmentDoc = gql`
     adapter
     name
     description
+    debankId
     icon
     link
     hidden
