@@ -54,6 +54,7 @@ export type ProtocolMetricEarningsProps = {
   className?: string
   metric: Exclude<ProtocolQuery['protocol'], null | undefined>['metric']
   myMinUpdatedAt?: string | null
+  debankId?: string | null
 }
 
 export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
@@ -97,7 +98,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
     const balance = Number(props.metric.myStaked)
     const apy = Number(props.metric.myAPY ?? 0)
 
-    if (!apy) return
+    if (!apy || props.debankId) return
 
     model.fetchEarningMetricFx({
       balance,
@@ -107,6 +108,7 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
     props.metric.myStaked,
     props.metric.myEarned,
     props.metric.myAPY,
+    props.debankId,
     metricUpdated,
   ])
 
@@ -179,42 +181,44 @@ export const ProtocolMetricEarnings: React.FC<ProtocolMetricEarningsProps> = (
             names={STAKED_FIELDS.map(({ name }) => name)}
           />
         </ProtocolChartWrap>
-        <ProtocolChartWrap
-          header={
-            <div>
-              <Typography className={styles.eastimatedTitle}>
-                Estimated Earnings in 3 months{' '}
-                <Dropdown
-                  control={
-                    <ButtonBase className={styles.question}>
-                      <Icon icon="question" width="24" height="24" />
-                    </ButtonBase>
-                  }
-                  trigger="hover"
-                  offset={[0, 8]}
+        {!props.debankId && (
+          <ProtocolChartWrap
+            header={
+              <div>
+                <Typography className={styles.eastimatedTitle}>
+                  Estimated Earnings in 3 months{' '}
+                  <Dropdown
+                    control={
+                      <ButtonBase className={styles.question}>
+                        <Icon icon="question" width="24" height="24" />
+                      </ButtonBase>
+                    }
+                    trigger="hover"
+                    offset={[0, 8]}
+                  >
+                    Extra income you may earn with auto-staking activated
+                  </Dropdown>
+                </Typography>
+                <Link
+                  href={config.MEDIUM_LINK}
+                  target="_blank"
+                  className={styles.link}
                 >
-                  Extra income you may earn with auto-staking activated
-                </Dropdown>
-              </Typography>
-              <Link
-                href={config.MEDIUM_LINK}
-                target="_blank"
-                className={styles.link}
-              >
-                How auto-staking works
-              </Link>
-            </div>
-          }
-        >
-          <Chart
-            dataFields={estimatedFields}
-            data={earningsMetric}
-            // eslint-disable-next-line no-template-curly-in-string
-            tooltipText="{name}: ${format}"
-            id="estimated"
-            names={estimatedFields.map(({ name }) => name)}
-          />
-        </ProtocolChartWrap>
+                  How auto-staking works
+                </Link>
+              </div>
+            }
+          >
+            <Chart
+              dataFields={estimatedFields}
+              data={earningsMetric}
+              // eslint-disable-next-line no-template-curly-in-string
+              tooltipText="{name}: ${format}"
+              id="estimated"
+              names={estimatedFields.map(({ name }) => name)}
+            />
+          </ProtocolChartWrap>
+        )}
       </div>
       {props.children}
     </div>

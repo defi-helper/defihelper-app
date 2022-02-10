@@ -1,6 +1,8 @@
-import { style } from '@vanilla-extract/css'
+import { createVar, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
+
+const width = createVar()
 
 export const root = style({})
 
@@ -19,9 +21,19 @@ export const charts = style({
 
   '@media': {
     [theme.mediaQueries.md()]: {
-      gridTemplateColumns: '1fr 1fr',
+      gridTemplateColumns: `repeat(auto-fit, minmax(${width}, 1fr))`,
       gap: 24,
       marginBottom: 24,
+
+      vars: {
+        [width]: '440px',
+      },
+    },
+
+    [theme.mediaQueries.lg()]: {
+      vars: {
+        [width]: '540px',
+      },
     },
   },
 })

@@ -1,6 +1,8 @@
-import { style } from '@vanilla-extract/css'
+import { createVar, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
+
+const width = createVar()
 
 export const total = style({
   display: 'grid',
@@ -8,8 +10,20 @@ export const total = style({
 
   '@media': {
     [theme.mediaQueries.md()]: {
-      gridTemplateColumns: '1fr 1fr 1fr',
+      gridTemplateColumns: `repeat(auto-fit, minmax(${width}, 1fr))`,
       gap: 24,
+    },
+
+    [theme.mediaQueries.up(1071)]: {
+      vars: {
+        [width]: '250px',
+      },
+    },
+
+    [theme.mediaQueries.lg()]: {
+      vars: {
+        [width]: '300px',
+      },
     },
   },
 })

@@ -200,24 +200,26 @@ export const ProtocolDetail: React.FC = () => {
             </Can>
           </div>
           <div>
-            <div className={styles.tabs}>
-              <Link
-                as={ReactRouterLink}
-                className={styles.tab}
-                activeClassName={styles.tabActive}
-                to={`${match.url}/earnings`}
-              >
-                Earnings
-              </Link>
-              <Link
-                as={ReactRouterLink}
-                className={styles.tab}
-                activeClassName={styles.tabActive}
-                to={`${match.url}/overview`}
-              >
-                Overview
-              </Link>
-            </div>
+            {!protocol.debankId && (
+              <div className={styles.tabs}>
+                <Link
+                  as={ReactRouterLink}
+                  className={styles.tab}
+                  activeClassName={styles.tabActive}
+                  to={`${match.url}/earnings`}
+                >
+                  Earnings
+                </Link>
+                <Link
+                  as={ReactRouterLink}
+                  className={styles.tab}
+                  activeClassName={styles.tabActive}
+                  to={`${match.url}/overview`}
+                >
+                  Overview
+                </Link>
+              </div>
+            )}
             <Switch>
               <Redirect exact from={match.path} to={`${match.path}/earnings`} />
               <Route path={`${match.path}/earnings`}>
@@ -243,19 +245,24 @@ export const ProtocolDetail: React.FC = () => {
                   className={styles.mb120}
                   metric={protocol.metric}
                   myMinUpdatedAt={protocol.metric.myMinUpdatedAt}
+                  debankId={protocol.debankId}
                 >
                   <ProtocolTotal
                     {...protocol.metric}
                     hasAutostaking={protocol.hasAutostaking}
+                    debankId={protocol.debankId}
                   />
                 </ProtocolMetricEarnings>
-                <StakingAutomates
-                  className={styles.automates}
-                  protocolId={params.protocolId}
-                />
+                {!protocol.debankId && (
+                  <StakingAutomates
+                    className={styles.automates}
+                    protocolId={params.protocolId}
+                  />
+                )}
                 <StakingList
                   protocolId={params.protocolId}
                   protocolAdapter={protocol.adapter}
+                  debankId={protocol.debankId}
                 />
               </Route>
               <Route path={`${match.path}/overview`}>

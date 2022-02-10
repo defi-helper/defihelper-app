@@ -46,6 +46,7 @@ import * as styles from './staking-list.css'
 export type StakingListProps = {
   protocolId: string
   protocolAdapter: string
+  debankId?: string | null
 }
 
 const sortIcon = (
@@ -340,18 +341,21 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         })
       }
     },
-    currentWallet ? 15000 : null
+    !props.debankId && currentWallet ? 15000 : null
   )
 
-  useInterval(async () => {
-    if (!networkProvider) return
+  useInterval(
+    async () => {
+      if (!networkProvider) return
 
-    try {
-      setCurrentBlock(await networkProvider.getBlockNumber())
-    } catch (e) {
-      console.error(e)
-    }
-  }, 3000)
+      try {
+        setCurrentBlock(await networkProvider.getBlockNumber())
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    !props.debankId && currentWallet ? 3000 : null
+  )
 
   return (
     <div className={styles.root}>
@@ -452,20 +456,22 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
               Unclaimed
             </Typography>
             <Typography variant="body2" className={styles.boostTooltipTHead}>
-              <Dropdown
-                control={
-                  <ButtonBase>
-                    <Icon icon="question" width="16" height="16" />
-                  </ButtonBase>
-                }
-                trigger="hover"
-                placement="top"
-                offset={[0, 8]}
-              >
-                <Typography variant="body3">
-                  Activate auto-staking to boost your yield
-                </Typography>
-              </Dropdown>
+              {!props.debankId && (
+                <Dropdown
+                  control={
+                    <ButtonBase>
+                      <Icon icon="question" width="16" height="16" />
+                    </ButtonBase>
+                  }
+                  trigger="hover"
+                  placement="top"
+                  offset={[0, 8]}
+                >
+                  <Typography variant="body3">
+                    Activate auto-staking to boost your yield
+                  </Typography>
+                </Dropdown>
+              )}
               Auto-Staking Boost
             </Typography>
           </div>
@@ -495,10 +501,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     <StakingContractCard
                       className={styles.row}
                       {...stakingListItem}
-                      onOpenContract={handleOpenContract(
-                        stakingListItem.address
-                      )}
-                      opened={opened}
+                      onOpenContract={
+                        !props.debankId
+                          ? handleOpenContract(stakingListItem.address)
+                          : undefined
+                      }
+                      opened={!props.debankId && opened}
                       freshMetrics={freshMetrics}
                       protocolAdapter={props.protocolAdapter}
                       protocolId={props.protocolId}
@@ -509,6 +517,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       onOpenApy={handleOpenApy(stakingListItem.metric)}
                       scannerData={scanner[stakingListItem.id]}
                       hideAutostakingBoost={
+                        Boolean(props.debankId) ||
                         !(
                           stakingListItem.automate.autorestake &&
                           contractPrototypeAddresses[stakingListItem.id]
@@ -528,7 +537,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         </>
                       }
                     />
-                    {opened && (
+                    {opened && !props.debankId && (
                       <StakingAdapters
                         protocolAdapter={props.protocolAdapter}
                         contractAdapter={stakingListItem.adapter}
