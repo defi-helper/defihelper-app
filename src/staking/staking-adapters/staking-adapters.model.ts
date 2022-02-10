@@ -97,6 +97,8 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
       networks[3].BuyLiquidity.address,
       {
         tokens: MockTokens,
+        router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+        pair: '0xffdeca9081a5627a95249a19bd5ff5eba94228cf',
       }
     )
 

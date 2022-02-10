@@ -60,3 +60,18 @@ export const activeTab = style({
     background: 'currentcolor',
   },
 })
+
+export const label = style({
+  color: theme.colors.textColorGrey,
+  marginBottom: 4,
+  fontSize: 14,
+  lineHeight: '20px',
+})
+
+export const radio = style({
+  selectors: {
+    '&:not(:last-child)': {
+      marginRight: 10,
+    },
+  },
+})
