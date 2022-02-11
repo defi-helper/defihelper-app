@@ -19,14 +19,15 @@ import { Link } from '~/common/link'
 import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
 import { StakingList } from '~/staking/staking-list'
-import { ProtocolMetricEarnings } from '~/protocols/protocol-metric-earnings'
-import { ProtocolMetricOverview } from '~/protocols/protocol-metric-overview'
+import { ProtocolCoinBalanceChart } from '~/protocols/protocol-coin-balance-chart'
 import {
   clearLink,
   ProtocolDemandMetrics,
   ProtocolMediaActivity,
   ProtocolOverview,
   ProtocolTotal,
+  ProtocolCharts,
+  ProtocolLastUpdated,
 } from '~/protocols/common'
 import { Head } from '~/common/head'
 import { Icon } from '~/common/icon'
@@ -39,6 +40,9 @@ import {
   useOnTokenMetricUpdatedSubscription,
   useOnWalletMetricUpdatedSubscription,
 } from '~/graphql/_generated-types'
+import { ProtocolEstimatedChart } from '~/protocols/protocol-estimated-chart'
+import { ProtocolTvlChart } from '~/protocols/protocol-tvl-chart'
+import { ProtocolUniqueWalletsChart } from '~/protocols/protocol-unique-wallets-chart'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
 
@@ -81,7 +85,7 @@ export const ProtocolDetail: React.FC = () => {
   useGate(model.ProtocolDetailGate, params)
 
   const protocol = useStore(model.$protocol)
-  const loading = useStore(model.fetchSocialPostsFx.pending)
+  const loading = useStore(model.fetchProtocolFx.pending)
   const socialPosts = useStore(model.$socialPosts)
   const socialPostsOffset = useRef(0)
 
@@ -200,26 +204,24 @@ export const ProtocolDetail: React.FC = () => {
             </Can>
           </div>
           <div>
-            {!protocol.debankId && (
-              <div className={styles.tabs}>
-                <Link
-                  as={ReactRouterLink}
-                  className={styles.tab}
-                  activeClassName={styles.tabActive}
-                  to={`${match.url}/earnings`}
-                >
-                  Earnings
-                </Link>
-                <Link
-                  as={ReactRouterLink}
-                  className={styles.tab}
-                  activeClassName={styles.tabActive}
-                  to={`${match.url}/overview`}
-                >
-                  Overview
-                </Link>
-              </div>
-            )}
+            <div className={styles.tabs}>
+              <Link
+                as={ReactRouterLink}
+                className={styles.tab}
+                activeClassName={styles.tabActive}
+                to={`${match.url}/earnings`}
+              >
+                Earnings
+              </Link>
+              <Link
+                as={ReactRouterLink}
+                className={styles.tab}
+                activeClassName={styles.tabActive}
+                to={`${match.url}/overview`}
+              >
+                Overview
+              </Link>
+            </div>
             <Switch>
               <Redirect exact from={match.path} to={`${match.path}/earnings`} />
               <Route path={`${match.path}/earnings`}>
@@ -241,28 +243,30 @@ export const ProtocolDetail: React.FC = () => {
                     ))}
                   </Grid>
                 )}
-                <ProtocolMetricEarnings
+                <ProtocolCharts>
+                  <ProtocolCharts.Header>
+                    <Typography variant="h3">Statistics</Typography>
+                    {protocol.metric.myMinUpdatedAt && (
+                      <ProtocolLastUpdated>
+                        {protocol.metric.myMinUpdatedAt}
+                      </ProtocolLastUpdated>
+                    )}
+                  </ProtocolCharts.Header>
+                  <ProtocolCoinBalanceChart />
+                  <ProtocolEstimatedChart metric={protocol.metric} />
+                </ProtocolCharts>
+                <ProtocolTotal
+                  {...protocol.metric}
+                  hasAutostaking={protocol.hasAutostaking}
                   className={styles.mb120}
-                  metric={protocol.metric}
-                  myMinUpdatedAt={protocol.metric.myMinUpdatedAt}
-                  debankId={protocol.debankId}
-                >
-                  <ProtocolTotal
-                    {...protocol.metric}
-                    hasAutostaking={protocol.hasAutostaking}
-                    debankId={protocol.debankId}
-                  />
-                </ProtocolMetricEarnings>
-                {!protocol.debankId && (
-                  <StakingAutomates
-                    className={styles.automates}
-                    protocolId={params.protocolId}
-                  />
-                )}
+                />
+                <StakingAutomates
+                  className={styles.automates}
+                  protocolId={params.protocolId}
+                />
                 <StakingList
                   protocolId={params.protocolId}
                   protocolAdapter={protocol.adapter}
-                  debankId={protocol.debankId}
                 />
               </Route>
               <Route path={`${match.path}/overview`}>
@@ -271,7 +275,18 @@ export const ProtocolDetail: React.FC = () => {
                   text={protocol.description}
                   links={protocol.links}
                 />
-                <ProtocolMetricOverview className={styles.mb120} />
+                <ProtocolCharts className={styles.mb120}>
+                  <ProtocolCharts.Header>
+                    <Typography variant="h3">Statistics</Typography>
+                    {protocol.metric.myMinUpdatedAt && (
+                      <ProtocolLastUpdated>
+                        {protocol.metric.myMinUpdatedAt}
+                      </ProtocolLastUpdated>
+                    )}
+                  </ProtocolCharts.Header>
+                  <ProtocolTvlChart />
+                  <ProtocolUniqueWalletsChart />
+                </ProtocolCharts>
                 {!isEmpty(socialPosts) && (
                   <ProtocolMediaActivity
                     className={styles.mb120}
