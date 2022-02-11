@@ -162,7 +162,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           </Typography>
         </div>
         <ul className={styles.protocols}>
-          {loading && (
+          {loading && !protocolList?.length && (
             <li>
               <div className={styles.loader}>
                 <Loader height="36" />
@@ -176,23 +176,21 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
               </Paper>
             </li>
           )}
-          {!loading &&
-            protocolList &&
-            protocolList.map((protocol) => (
-              <li
-                key={protocol.id}
-                className={clsx(
-                  styles.item,
-                  protocol.hidden && styles.hiddenItem
-                )}
-              >
-                <ProtocolCard
-                  protocol={protocol}
-                  onFavorite={user ? handleFavorite(protocol) : undefined}
-                  onDelete={handleOpenConfirm(protocol.id)}
-                />
-              </li>
-            ))}
+          {protocolList.map((protocol) => (
+            <li
+              key={protocol.id}
+              className={clsx(
+                styles.item,
+                protocol.hidden && styles.hiddenItem
+              )}
+            >
+              <ProtocolCard
+                protocol={protocol}
+                onFavorite={user ? handleFavorite(protocol) : undefined}
+                onDelete={handleOpenConfirm(protocol.id)}
+              />
+            </li>
+          ))}
         </ul>
         <model.ProtocolListPagination />
       </div>
