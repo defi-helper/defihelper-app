@@ -4,6 +4,8 @@ export const paths = {
   protocols: {
     list: '/protocols',
     detail: (id = ':protocolId') => `/protocols/${id}` as const,
+    detailReadonly: (id = ':protocolId') =>
+      `/protocols/readonly/${id}` as const,
     create: '/protocols/create',
     update: (id = ':protocolId') => `/protocols/update/${id}` as const,
   },

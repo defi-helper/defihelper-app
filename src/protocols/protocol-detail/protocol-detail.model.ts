@@ -30,15 +30,13 @@ export const fetchProtocolFx = protocolDetailDomain.createEffect(
       },
     })
 
-    const contract = automations.list.find(
+    const hasAutostaking = automations.list.some(
       (automation) => automation.contract !== null
     )
 
     return {
       ...protocol,
-      hasAutostaking: Boolean(contract),
-      debankId:
-        protocol.adapter !== 'debankByApiReadonly' ? null : protocol.debankId,
+      hasAutostaking,
     }
   }
 )

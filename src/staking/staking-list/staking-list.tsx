@@ -46,7 +46,6 @@ import * as styles from './staking-list.css'
 export type StakingListProps = {
   protocolId: string
   protocolAdapter: string
-  debankId?: string | null
 }
 
 const sortIcon = (
@@ -341,7 +340,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         })
       }
     },
-    !props.debankId && currentWallet ? 15000 : null
+    currentWallet ? 15000 : null
   )
 
   useInterval(
@@ -354,7 +353,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         console.error(e)
       }
     },
-    !props.debankId && currentWallet ? 3000 : null
+    currentWallet ? 3000 : null
   )
 
   return (
@@ -456,22 +455,20 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
               Unclaimed
             </Typography>
             <Typography variant="body2" className={styles.boostTooltipTHead}>
-              {!props.debankId && (
-                <Dropdown
-                  control={
-                    <ButtonBase>
-                      <Icon icon="question" width="16" height="16" />
-                    </ButtonBase>
-                  }
-                  trigger="hover"
-                  placement="top"
-                  offset={[0, 8]}
-                >
-                  <Typography variant="body3">
-                    Activate auto-staking to boost your yield
-                  </Typography>
-                </Dropdown>
-              )}
+              <Dropdown
+                control={
+                  <ButtonBase>
+                    <Icon icon="question" width="16" height="16" />
+                  </ButtonBase>
+                }
+                trigger="hover"
+                placement="top"
+                offset={[0, 8]}
+              >
+                <Typography variant="body3">
+                  Activate auto-staking to boost your yield
+                </Typography>
+              </Dropdown>
               Auto-Staking Boost
             </Typography>
           </div>
@@ -501,12 +498,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     <StakingContractCard
                       className={styles.row}
                       {...stakingListItem}
-                      onOpenContract={
-                        !props.debankId
-                          ? handleOpenContract(stakingListItem.address)
-                          : undefined
-                      }
-                      opened={!props.debankId && opened}
+                      onOpenContract={handleOpenContract(
+                        stakingListItem.address
+                      )}
+                      opened={opened}
                       freshMetrics={freshMetrics}
                       protocolAdapter={props.protocolAdapter}
                       protocolId={props.protocolId}
@@ -517,7 +512,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       onOpenApy={handleOpenApy(stakingListItem.metric)}
                       scannerData={scanner[stakingListItem.id]}
                       hideAutostakingBoost={
-                        Boolean(props.debankId) ||
                         !(
                           stakingListItem.automate.autorestake &&
                           contractPrototypeAddresses[stakingListItem.id]
@@ -537,7 +531,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         </>
                       }
                     />
-                    {opened && !props.debankId && (
+                    {opened && (
                       <StakingAdapters
                         protocolAdapter={props.protocolAdapter}
                         contractAdapter={stakingListItem.adapter}
