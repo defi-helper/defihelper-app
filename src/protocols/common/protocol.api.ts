@@ -81,17 +81,23 @@ export const protocolsApi = {
       .toPromise()
       .then(({ data }) => data?.protocol?.metricChartContracts ?? []),
 
-  protocolOverviewMetric: (variables: ProtocolOverviewMetricQueryVariables) =>
+  protocolTvl: (variables: ProtocolOverviewMetricQueryVariables) =>
     getAPIClient()
       .query<ProtocolOverviewMetricQuery, ProtocolOverviewMetricQueryVariables>(
         PROTOCOL_OVERVIEW_METRIC,
         variables
       )
       .toPromise()
-      .then(({ data }) => ({
-        tvl: data?.protocol?.tvl ?? [],
-        uniqueWalletsCount: data?.protocol?.uniqueWalletsCount ?? [],
-      })),
+      .then(({ data }) => data?.protocol?.tvl ?? []),
+
+  protocolUniqueWallets: (variables: ProtocolOverviewMetricQueryVariables) =>
+    getAPIClient()
+      .query<ProtocolOverviewMetricQuery, ProtocolOverviewMetricQueryVariables>(
+        PROTOCOL_OVERVIEW_METRIC,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.protocol?.uniqueWalletsCount ?? []),
 
   protocolCreate: (variables: ProtocolCreateMutationVariables) =>
     getAPIClient()

@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
@@ -11,12 +13,13 @@ export type ProtocolTotalProps = Exclude<
   null | undefined
 >['metric'] & {
   hasAutostaking: boolean
-  debankId?: string | null
+  hideBoost?: boolean
+  className?: string
 }
 
 export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
   return (
-    <div className={styles.total}>
+    <div className={clsx(styles.total, props.className)}>
       <Paper radius={8} className={styles.totalItem}>
         <Typography variant="body2" className={styles.totalTitle}>
           Staked
@@ -33,7 +36,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
           ${bignumberUtils.format(props.myEarned)}
         </Typography>
       </Paper>
-      {!props.debankId && (
+      {!props.hideBoost && (
         <Paper radius={8} className={styles.totalItem}>
           <Typography variant="body2" className={styles.totalTitle}>
             Auto-Staking Boost
