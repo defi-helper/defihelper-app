@@ -1,12 +1,14 @@
 import { createDomain, restore } from 'effector-logger/macro'
 import networks from '@defihelper/networks/contracts.json'
+import isEmpty from 'lodash.isempty'
 
 import { loadAdapter, AdapterActions, Adapters } from '~/common/load-adapter'
 import { toastsService } from '~/toasts'
-import { buildAdaptersUrl } from '~/staking/common'
+import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { parseError } from '~/common/parse-error'
 import { Wallet } from '~/wallets/common'
+import { BlockchainEnum } from '~/graphql/_generated-types'
 
 export type StakingAdapter = {
   actions: null | AdapterActions
@@ -29,6 +31,22 @@ type Params = {
 export type ContractAction = {
   contractId: string
   wallet: Wallet
+}
+
+export const isNetworkKey = (
+  network: string
+): network is keyof typeof networks => {
+  return network in networks
+}
+
+type BuyLiquidity = {
+  BuyLiquidity: { address: string; deployBlockNumber: number }
+}
+
+export const isBuyLiquidity = (
+  network: Record<string, unknown>
+): network is BuyLiquidity => {
+  return 'BuyLiquidity' in network
 }
 
 export const stakingAdaptersDomain = createDomain()
@@ -74,15 +92,31 @@ export const $actionLoading = restore(action, null)
 
 export const stake = stakingAdaptersDomain.createEvent<ContractAction>()
 
-const MockTokens = [
-  {
-    address: '0x0a180a76e4466bf68a7f86fb029bed3cccfaaac5',
-    symbol: 'WETH',
-  },
-]
+type BuyLiquidityParams = {
+  account: string
+  chainId: string
+  provider: unknown
+  router: string
+  pair: string
+  network: string
+  protocol: BlockchainEnum
+}
 
 export const buyLPFx = stakingAdaptersDomain.createEffect(
-  async (params: { account: string; chainId: string; provider: unknown }) => {
+  async (params: BuyLiquidityParams) => {
+    const { network } = params
+
+    const tokens = await stakingApi.tokensList({
+      network: params.network,
+      protocol: params.protocol,
+    })
+
+    if (!isNetworkKey(network) || isEmpty(tokens)) return
+
+    const currentNetwork = networks[network]
+
+    if (!isBuyLiquidity(currentNetwork)) return
+
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,
       params.chainId
@@ -94,11 +128,11 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     const result = await adapterObj.automates.buyLiquidity(
       networkProvider.getSigner(),
-      networks[3].BuyLiquidity.address,
+      currentNetwork.BuyLiquidity.address,
       {
-        tokens: MockTokens,
-        router: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
-        pair: '0xffdeca9081a5627a95249a19bd5ff5eba94228cf',
+        tokens,
+        router: params.router,
+        pair: params.pair,
       }
     )
 

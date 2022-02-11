@@ -572,12 +572,22 @@ export type BlockchainFilterInputType = {
   network?: Maybe<Scalars['String']>
 }
 
+export type ContractAutomatesBuyLiquidityType = {
+  __typename?: 'ContractAutomatesBuyLiquidityType'
+  /** Liquidity pool router address */
+  router: Scalars['String']
+  /** Target pool address */
+  pair: Scalars['String']
+}
+
 export type ContractAutomatesType = {
   __typename?: 'ContractAutomatesType'
   /** Usable automate adapters */
   adapters: Array<Scalars['String']>
   /** Autorestake adapter name */
   autorestake?: Maybe<Scalars['String']>
+  /** Buy liquidity automate config */
+  buyLiquidity?: Maybe<ContractAutomatesBuyLiquidityType>
 }
 
 export type ContractCreateInputType = {
@@ -4998,7 +5008,14 @@ export type StakingContractFragmentFragment = {
     automate: { __typename?: 'ContractAutomatesType' } & Pick<
       ContractAutomatesType,
       'adapters' | 'autorestake'
-    >
+    > & {
+        buyLiquidity?: Maybe<
+          { __typename?: 'ContractAutomatesBuyLiquidityType' } & Pick<
+            ContractAutomatesBuyLiquidityType,
+            'router' | 'pair'
+          >
+        >
+      }
     metric: { __typename?: 'ContractMetricType' } & Pick<
       ContractMetricType,
       | 'tvl'
@@ -5020,6 +5037,32 @@ export type StakingDisconnectWalletMutationVariables = Exact<{
 export type StakingDisconnectWalletMutation = {
   __typename?: 'Mutation'
 } & Pick<Mutation, 'contractWalletUnlink'>
+
+export type StakingTokensAliasQueryVariables = Exact<{
+  protocol: BlockchainEnum
+  network?: Maybe<Scalars['String']>
+}>
+
+export type StakingTokensAliasQuery = { __typename?: 'Query' } & {
+  tokensAlias: { __typename?: 'TokenAliasListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'TokenAlias' } & {
+          tokens: { __typename?: 'TokenListType' } & {
+            list?: Maybe<
+              Array<
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'symbol' | 'address'
+                >
+              >
+            >
+          }
+        }
+      >
+    >
+  }
+}
 
 export type StakingTokensQueryVariables = Exact<{
   filter?: Maybe<TokenListQueryFilterInputType>
@@ -5445,6 +5488,10 @@ export const StakingContractFragmentFragmentDoc = gql`
     automate {
       adapters
       autorestake
+      buyLiquidity {
+        router
+        pair
+      }
     }
     metric(filter: { wallet: { type: [wallet] } }) {
       tvl
@@ -7589,6 +7636,39 @@ export function useStakingDisconnectWalletMutation() {
     StakingDisconnectWalletMutation,
     StakingDisconnectWalletMutationVariables
   >(StakingDisconnectWalletDocument)
+}
+export const StakingTokensAliasDocument = gql`
+  query StakingTokensAlias($protocol: BlockchainEnum!, $network: String) {
+    tokensAlias(
+      filter: {
+        liquidity: stable
+        blockchain: { protocol: $protocol, network: $network }
+      }
+    ) {
+      list {
+        tokens(
+          filter: { blockchain: { protocol: $protocol, network: $network } }
+        ) {
+          list {
+            symbol
+            address
+          }
+        }
+      }
+    }
+  }
+`
+
+export function useStakingTokensAliasQuery(
+  options: Omit<
+    Urql.UseQueryArgs<StakingTokensAliasQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<StakingTokensAliasQuery>({
+    query: StakingTokensAliasDocument,
+    ...options,
+  })
 }
 export const StakingTokensDocument = gql`
   query StakingTokens($filter: TokenListQueryFilterInputType) {

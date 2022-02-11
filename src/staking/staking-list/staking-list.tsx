@@ -541,6 +541,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         network={stakingListItem.network}
                         onTurnOn={handleAutostake(stakingListItem)}
                         autostakingLoading={stakingListItem.autostakingLoading}
+                        buyLiquidity={stakingListItem.automate.buyLiquidity}
                         autorestake={
                           stakingListItem.automate.autorestake ?? undefined
                         }
