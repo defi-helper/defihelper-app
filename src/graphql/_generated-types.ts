@@ -426,6 +426,8 @@ export type AutomateTriggerType = {
   lastCallAt?: Maybe<Scalars['DateTimeType']>
   /** Created at date */
   createdAt: Scalars['DateTimeType']
+  /** Next restake date */
+  restakeAt?: Maybe<Scalars['DateTimeType']>
   conditions: AutomateConditionListType
   actions: AutomateActionListType
   callHistory: AutomateTriggerCallHistoryListQuery
@@ -3549,7 +3551,14 @@ export type AutomationTriggerFragmentFragment = {
   __typename?: 'AutomateTriggerType'
 } & Pick<
   AutomateTriggerType,
-  'id' | 'type' | 'params' | 'name' | 'active' | 'lastCallAt' | 'createdAt'
+  | 'id'
+  | 'type'
+  | 'params'
+  | 'name'
+  | 'active'
+  | 'lastCallAt'
+  | 'restakeAt'
+  | 'createdAt'
 > & {
     wallet: { __typename?: 'WalletBlockchainType' } & Pick<
       WalletBlockchainType,
@@ -5146,6 +5155,7 @@ export const AutomationTriggerFragmentFragmentDoc = gql`
     name
     active
     lastCallAt
+    restakeAt
     createdAt
     conditions(
       filter: $conditionsFilter
