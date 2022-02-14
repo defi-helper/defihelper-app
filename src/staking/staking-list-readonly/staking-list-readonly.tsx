@@ -118,7 +118,7 @@ export const StakingListReadonly: React.VFC<StakingListReadonlyProps> = (
             </Typography>
           </div>
           <ul className={styles.list}>
-            {loading && (
+            {loading && !stakingList.length && (
               <li className={clsx(styles.loader, styles.listItem)}>
                 <Loader height="24" />
               </li>
@@ -128,27 +128,26 @@ export const StakingListReadonly: React.VFC<StakingListReadonlyProps> = (
                 <div className={styles.empty}>no data</div>
               </li>
             )}
-            {!loading &&
-              stakingList.map((stakingListItem) => {
-                return (
-                  <li
-                    key={stakingListItem.id}
-                    className={clsx(
-                      styles.listItem,
-                      stakingListItem.hidden && styles.hiddenListItem
-                    )}
-                  >
-                    <StakingContractCardReadonly
-                      className={styles.row}
-                      {...stakingListItem}
-                      protocolAdapter={props.protocolAdapter}
-                      protocolId={props.protocolId}
-                      onToggleContract={handleToggleContract(stakingListItem)}
-                      onDelete={handleOpenConfirmDialog(stakingListItem.id)}
-                    />
-                  </li>
-                )
-              })}
+            {stakingList.map((stakingListItem) => {
+              return (
+                <li
+                  key={stakingListItem.id}
+                  className={clsx(
+                    styles.listItem,
+                    stakingListItem.hidden && styles.hiddenListItem
+                  )}
+                >
+                  <StakingContractCardReadonly
+                    className={styles.row}
+                    {...stakingListItem}
+                    protocolAdapter={props.protocolAdapter}
+                    protocolId={props.protocolId}
+                    onToggleContract={handleToggleContract(stakingListItem)}
+                    onDelete={handleOpenConfirmDialog(stakingListItem.id)}
+                  />
+                </li>
+              )
+            })}
           </ul>
         </Paper>
         <model.StakingListPagination />
