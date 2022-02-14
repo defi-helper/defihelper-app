@@ -17,6 +17,7 @@ import {
 } from '~/graphql/_generated-types'
 import { networksConfig } from '~/networks-config'
 import { paths } from '~/paths'
+import { pluralize } from '~/common/pluralize'
 import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-card.css'
 
@@ -144,7 +145,10 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
       </Typography>
       <Label
         title="Condition"
-        value={`${props.conditions.length} Conditions`}
+        value={`${props.conditions.length} ${pluralize(
+          props.conditions.length,
+          'Condition'
+        )}`}
         subtitle={networks}
         automation={automation}
       />

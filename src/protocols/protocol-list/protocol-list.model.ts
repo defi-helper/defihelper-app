@@ -1,6 +1,7 @@
 import { createDomain, guard, sample, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
+import { authModel } from '~/auth'
 import { createPagination } from '~/common/create-pagination'
 import { ProtocolFavoriteMutationVariables } from '~/graphql/_generated-types'
 import { protocolsApi, Protocol } from '~/protocols/common'
@@ -113,14 +114,20 @@ guard({
 sample({
   source: [ProtocolListPagination.state, ProtocolListGate.state],
   clock: guard({
-    source: [ProtocolListGate.status, ProtocolListGate.state],
+    source: [
+      ProtocolListGate.status,
+      ProtocolListGate.state,
+      authModel.$userReady,
+    ],
     clock: [
       ProtocolListGate.open,
       ProtocolListPagination.updates,
       ProtocolListGate.state.updates,
+      authModel.$userReady.updates,
     ],
-    filter: ([isOpen, { favorite, search }]) =>
-      isOpen || Boolean(favorite) || Boolean(search),
+    filter: ([isOpen, { favorite, search }, userReady]) => {
+      return (isOpen || Boolean(favorite) || Boolean(search)) && userReady
+    },
   }),
   fn: ([{ offset = 0, limit }, clock]): Params => ({
     offset,
