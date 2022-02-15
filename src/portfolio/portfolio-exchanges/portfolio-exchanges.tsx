@@ -20,8 +20,6 @@ export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
     model.fetchEstablishedIntegrationsListFx()
   }, [])
 
-  console.warn(integrations)
-
   if (!integrations.length) return <></>
 
   return (
