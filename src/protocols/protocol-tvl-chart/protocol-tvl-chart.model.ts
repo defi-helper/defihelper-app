@@ -27,9 +27,16 @@ export const fetchMetricFx = protocolTvlDomain.createEffect(
       metricPagination: {
         limit: DAYS_LIMITS[MetricGroupEnum.Day],
       },
+      metricDebankPagination: {
+        limit: DAYS_LIMITS[MetricGroupEnum.Day],
+      },
+      metricDebankFilter: {
+        dateBefore: dateUtils.now(),
+        dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[MetricGroupEnum.Day]),
+      },
     })
 
-    return data
+    return data.tvl.length ? data.tvl : data.debankTvl
   }
 )
 
