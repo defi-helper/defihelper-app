@@ -88,7 +88,10 @@ export const protocolsApi = {
         variables
       )
       .toPromise()
-      .then(({ data }) => data?.protocol?.tvl ?? []),
+      .then(({ data }) => ({
+        tvl: data?.protocol?.tvl ?? [],
+        debankTvl: data?.protocol?.tvlDebank ?? [],
+      })),
 
   protocolUniqueWallets: (variables: ProtocolOverviewMetricQueryVariables) =>
     getAPIClient()

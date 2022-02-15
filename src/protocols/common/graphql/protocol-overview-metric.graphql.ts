@@ -9,6 +9,9 @@ export const PROTOCOL_OVERVIEW_METRIC = gql`
     $metricFilter: ProtocolMetricChartContractsFilterInputType
     $metricSort: [ProtocolMetricChartContractsSortInputType!]
     $metricPagination: ProtocolMetricChartContractsPaginationInputType
+    $metricDebankPagination: ProtocolMetricChartProtocolsPaginationInputType
+    $metricDebankSort: [ProtocolMetricChartProtocolsSortInputType!]
+    $metricDebankFilter: ProtocolMetricChartProtocolsFilterInputType
   ) {
     protocol(filter: $filter) {
       tvl: metricChartContracts(
@@ -17,6 +20,15 @@ export const PROTOCOL_OVERVIEW_METRIC = gql`
         filter: $metricFilter
         sort: $metricSort
         pagination: $metricPagination
+      ) {
+        ...protocolMetricChart
+      }
+      tvlDebank: metricChartProtocols(
+        metric: tvl
+        group: $metricGroup
+        filter: $metricDebankFilter
+        sort: $metricDebankSort
+        pagination: $metricDebankPagination
       ) {
         ...protocolMetricChart
       }
