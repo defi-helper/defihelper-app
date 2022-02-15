@@ -111,7 +111,9 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
       protocol: params.protocol,
     })
 
-    if (!isNetworkKey(network) || isEmpty(tokens)) return
+    if (isEmpty(tokens)) throw new Error('tokens are empty')
+
+    if (!isNetworkKey(network)) throw new Error('wrong network')
 
     const currentNetwork = networks[network]
 
