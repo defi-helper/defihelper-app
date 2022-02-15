@@ -10,7 +10,6 @@ type State = Record<
   {
     data: {
       tvl: Unwrap<ReturnType<typeof protocolsApi.protocolDetailMetric>>
-      tvlDebank: Unwrap<ReturnType<typeof protocolsApi.protocolDetailMetric>>
       uniqueWalletsCount: Unwrap<
         ReturnType<typeof protocolsApi.protocolDetailMetric>
       >
@@ -46,15 +45,6 @@ export const fetchMetricFx = protocolMetricOverviewDomain.createEffect(
       metricPagination: {
         limit: DAYS_LIMITS[params.group],
       },
-
-      metricDebankFilter: {
-        dateBefore: dateUtils.now(),
-        dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[params.group]),
-      },
-
-      metricDebankPagination: {
-        limit: DAYS_LIMITS[params.group],
-      },
     })
 
     return {
@@ -71,7 +61,6 @@ const initialState = Object.values(MetricGroupEnum).reduce<State>(
     acc[metricGroup] = {
       data: {
         tvl: [],
-        tvlDebank: [],
         uniqueWalletsCount: [],
       },
       value: metricGroup,

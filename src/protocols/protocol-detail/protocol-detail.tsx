@@ -271,10 +271,7 @@ export const ProtocolDetail: React.FC = () => {
                   text={protocol.description}
                   links={protocol.links}
                 />
-                <ProtocolMetricOverview
-                  isDebank={protocol.adapter === 'debankByApiReadonly'}
-                  className={styles.mb120}
-                />
+                <ProtocolMetricOverview className={styles.mb120} />
                 {!isEmpty(socialPosts) && (
                   <ProtocolMediaActivity
                     className={styles.mb120}

@@ -572,22 +572,12 @@ export type BlockchainFilterInputType = {
   network?: Maybe<Scalars['String']>
 }
 
-export type ContractAutomatesBuyLiquidityType = {
-  __typename?: 'ContractAutomatesBuyLiquidityType'
-  /** Liquidity pool router address */
-  router: Scalars['String']
-  /** Target pool address */
-  pair: Scalars['String']
-}
-
 export type ContractAutomatesType = {
   __typename?: 'ContractAutomatesType'
   /** Usable automate adapters */
   adapters: Array<Scalars['String']>
   /** Autorestake adapter name */
   autorestake?: Maybe<Scalars['String']>
-  /** Buy liquidity automate config */
-  buyLiquidity?: Maybe<ContractAutomatesBuyLiquidityType>
 }
 
 export type ContractCreateInputType = {
@@ -1504,30 +1494,6 @@ export type ProtocolMetricChartPaginationInputType = {
   offset?: Maybe<Scalars['Int']>
 }
 
-export type ProtocolMetricChartProtocolsFilterInputType = {
-  /** Created at equals or greater */
-  dateAfter?: Maybe<Scalars['DateTimeType']>
-  /** Created at less */
-  dateBefore?: Maybe<Scalars['DateTimeType']>
-}
-
-export type ProtocolMetricChartProtocolsPaginationInputType = {
-  /** Limit */
-  limit?: Maybe<Scalars['Int']>
-  /** Offset */
-  offset?: Maybe<Scalars['Int']>
-}
-
-export type ProtocolMetricChartProtocolsSortInputType = {
-  column: ProtocolMetricChartProtocolsSortInputTypeColumnEnum
-  order?: Maybe<SortOrderEnum>
-}
-
-export enum ProtocolMetricChartProtocolsSortInputTypeColumnEnum {
-  Date = 'date',
-  Value = 'value',
-}
-
 export type ProtocolMetricChartSortInputType = {
   column: ProtocolMetricChartSortInputTypeColumnEnum
   order?: Maybe<SortOrderEnum>
@@ -1660,7 +1626,6 @@ export type ProtocolType = {
   favorite: Scalars['Boolean']
   contracts: ContractListType
   metricChart: Array<MetricChartType>
-  metricChartProtocols: Array<MetricChartType>
   metricChartContracts: Array<MetricChartType>
   metricChartUsers: Array<MetricChartType>
   metric: ProtocolMetricType
@@ -1681,14 +1646,6 @@ export type ProtocolTypeMetricChartArgs = {
   filter?: Maybe<ProtocolMetricChartFilterInputType>
   sort?: Maybe<Array<ProtocolMetricChartSortInputType>>
   pagination?: Maybe<ProtocolMetricChartPaginationInputType>
-}
-
-export type ProtocolTypeMetricChartProtocolsArgs = {
-  metric: Scalars['MetricColumnType']
-  group: MetricGroupEnum
-  filter?: Maybe<ProtocolMetricChartProtocolsFilterInputType>
-  sort?: Maybe<Array<ProtocolMetricChartProtocolsSortInputType>>
-  pagination?: Maybe<ProtocolMetricChartProtocolsPaginationInputType>
 }
 
 export type ProtocolTypeMetricChartContractsArgs = {
@@ -4178,21 +4135,12 @@ export type ProtocolOverviewMetricQueryVariables = Exact<{
     | ProtocolMetricChartContractsSortInputType
   >
   metricPagination?: Maybe<ProtocolMetricChartContractsPaginationInputType>
-  metricDebankPagination?: Maybe<ProtocolMetricChartProtocolsPaginationInputType>
-  metricDebankSort?: Maybe<
-    | Array<ProtocolMetricChartProtocolsSortInputType>
-    | ProtocolMetricChartProtocolsSortInputType
-  >
-  metricDebankFilter?: Maybe<ProtocolMetricChartProtocolsFilterInputType>
 }>
 
 export type ProtocolOverviewMetricQuery = { __typename?: 'Query' } & {
   protocol?: Maybe<
     { __typename?: 'ProtocolType' } & {
       tvl: Array<
-        { __typename?: 'MetricChartType' } & ProtocolMetricChartFragment
-      >
-      tvlDebank: Array<
         { __typename?: 'MetricChartType' } & ProtocolMetricChartFragment
       >
       uniqueWalletsCount: Array<
@@ -6628,9 +6576,6 @@ export const ProtocolOverviewMetricDocument = gql`
     $metricFilter: ProtocolMetricChartContractsFilterInputType
     $metricSort: [ProtocolMetricChartContractsSortInputType!]
     $metricPagination: ProtocolMetricChartContractsPaginationInputType
-    $metricDebankPagination: ProtocolMetricChartProtocolsPaginationInputType
-    $metricDebankSort: [ProtocolMetricChartProtocolsSortInputType!]
-    $metricDebankFilter: ProtocolMetricChartProtocolsFilterInputType
   ) {
     protocol(filter: $filter) {
       tvl: metricChartContracts(
@@ -6639,15 +6584,6 @@ export const ProtocolOverviewMetricDocument = gql`
         filter: $metricFilter
         sort: $metricSort
         pagination: $metricPagination
-      ) {
-        ...protocolMetricChart
-      }
-      tvlDebank: metricChartProtocols(
-        metric: tvl
-        group: $metricGroup
-        filter: $metricDebankFilter
-        sort: $metricDebankSort
-        pagination: $metricDebankPagination
       ) {
         ...protocolMetricChart
       }
