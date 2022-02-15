@@ -5056,18 +5056,18 @@ export type StakingTokensAliasQuery = { __typename?: 'Query' } & {
   tokensAlias: { __typename?: 'TokenAliasListQuery' } & {
     list?: Maybe<
       Array<
-        { __typename?: 'TokenAlias' } & {
-          tokens: { __typename?: 'TokenListType' } & {
-            list?: Maybe<
-              Array<
-                { __typename?: 'TokenType' } & Pick<
-                  TokenType,
-                  'symbol' | 'address'
+        { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'> & {
+            tokens: { __typename?: 'TokenListType' } & {
+              list?: Maybe<
+                Array<
+                  { __typename?: 'TokenType' } & Pick<
+                    TokenType,
+                    'symbol' | 'address'
+                  >
                 >
               >
-            >
+            }
           }
-        }
       >
     >
   }
@@ -7656,6 +7656,7 @@ export const StakingTokensAliasDocument = gql`
       }
     ) {
       list {
+        logoUrl
         tokens(
           filter: { blockchain: { protocol: $protocol, network: $network } }
         ) {

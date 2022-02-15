@@ -9,6 +9,7 @@ export const STAKING_TOKENS_ALIAS = gql`
       }
     ) {
       list {
+        logoUrl
         tokens(
           filter: { blockchain: { protocol: $protocol, network: $network } }
         ) {

@@ -37,6 +37,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const wallets = useStore(settingsWalletModel.$wallets)
 
   const actionLoading = useStore(model.$actionLoading)
+  const buyLpLoading = useStore(model.buyLPFx.pending)
 
   const createAdapterAction =
     (action?: keyof Exclude<model.StakingAdapter['actions'], null>) =>
@@ -111,7 +112,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
     })
 
     try {
-      const adapter = await model.buyLPFx({
+      const { adapter, images } = await model.buyLPFx({
         account: wallet.account,
         provider: wallet.provider,
         chainId: props.network,
@@ -125,6 +126,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
 
       await openAdapter({
         steps: adapter,
+        images,
       })
     } catch (error) {
       if (error instanceof Error && !(error instanceof UserRejectionError)) {
@@ -184,6 +186,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
               onClick={handleBuyLiquidity}
               size="small"
               variant="outlined"
+              loading={buyLpLoading}
             >
               buy LP
             </Button>
