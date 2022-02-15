@@ -73,7 +73,13 @@ export const stakingApi = {
       .toPromise()
       .then(
         ({ data }) =>
-          data?.tokensAlias.list?.flatMap(({ tokens }) => tokens.list) ?? []
+          data?.tokensAlias.list?.flatMap(
+            ({ tokens, logoUrl }) =>
+              tokens.list?.map((token) => ({
+                ...token,
+                logoUrl: logoUrl ?? '',
+              })) ?? []
+          ) ?? []
       ),
 
   contractDelete: (id: string) =>
