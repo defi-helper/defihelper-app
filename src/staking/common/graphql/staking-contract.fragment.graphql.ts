@@ -18,6 +18,10 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
     automate {
       adapters
       autorestake
+      buyLiquidity {
+        router
+        pair
+      }
     }
     metric(filter: { wallet: { type: [wallet] } }) {
       tvl
