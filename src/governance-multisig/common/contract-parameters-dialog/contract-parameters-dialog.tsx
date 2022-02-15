@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form'
 import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
 import { Input } from '~/common/input'
+import { isEthAddress } from '~/common/is-eth-address'
 import * as styles from './contract-parameters-dialog.css'
 
 export type ContractParametersDialogProps = {
@@ -23,7 +24,7 @@ export type ContractParametersDialogProps = {
 
 export const ContractParametersDialog: React.VFC<ContractParametersDialogProps> =
   (props) => {
-    const { register, handleSubmit } = useForm({
+    const { register, handleSubmit, formState } = useForm({
       defaultValues: props.method.inputs.reduce<
         Record<string, Record<string, string>>
       >((acc, param) => {
@@ -62,7 +63,17 @@ export const ContractParametersDialog: React.VFC<ContractParametersDialogProps> 
                 label={input.name}
                 placeholder={input.type}
                 className={styles.input}
-                {...register(`${input.name}.${input.type}`)}
+                error={Boolean(
+                  formState.errors?.[input.name]?.[input.type]?.message
+                )}
+                helperText={
+                  formState.errors?.[input.name]?.[input.type]?.message
+                }
+                {...register(`${input.name}.${input.type}`, {
+                  required: true,
+                  pattern:
+                    input.type === 'address' ? isEthAddress.regex : undefined,
+                })}
               />
             ))}
           </div>
