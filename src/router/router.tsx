@@ -29,6 +29,7 @@ import {
 import { AutomationList } from '~/automations/automation-list'
 import { Settings } from '~/settings'
 import { AutomationHistoryList } from '~/automations/automation-history-list'
+import { GovernanceMultisig } from '~/governance-multisig/governance-multisig'
 import { PrivateRoute } from './private-route'
 
 export type RouterProps = unknown
@@ -92,6 +93,9 @@ export const Router: React.VFC<RouterProps> = () => {
         </Route>
         <Route path={paths.governance.list}>
           <GovernanceList />
+        </Route>
+        <Route path={paths.governanceMultisig}>
+          <GovernanceMultisig />
         </Route>
         <PrivateRoute path={paths.automations.history()}>
           <AutomationHistoryList />

@@ -46,4 +46,6 @@ export const paths = {
   },
 
   users: '/users',
+
+  governanceMultisig: '/governance-multisig',
 } as const
