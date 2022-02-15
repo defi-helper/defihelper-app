@@ -11,6 +11,7 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
 import { toastsService } from '~/toasts'
+import { config } from '~/config'
 
 type Product = Exclude<
   AutomationProductsQuery['products']['list'],
@@ -24,7 +25,7 @@ type BuyProductParams = {
   product: Product
 }
 
-const contracts = networks[3].Store
+const contracts = networks[config.DEFAULT_CHAIN_ID].Store
 
 export const automationProductsDomain = createDomain()
 

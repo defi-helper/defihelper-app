@@ -10,6 +10,7 @@ import {
   GovernanceAction,
   GovernanceActionArguments,
 } from '../governance.types'
+import { config } from '~/config'
 
 export type GovernanceActionsManuallyProps = {
   onBack: () => void
@@ -17,13 +18,15 @@ export type GovernanceActionsManuallyProps = {
   initialAction?: GovernanceAction
 }
 
-const contractAddresses: Record<
+const contractAddresses = networks[
+  config.DEFAULT_CHAIN_ID
+] as unknown as Record<
   string,
   {
     address: string
     deployBlockNumber: number
   }
-> = networks[3]
+>
 
 const contractNames = Object.keys(abi).filter(
   (key) => key in contractAddresses

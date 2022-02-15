@@ -52,13 +52,13 @@ type FormValues = {
   description: string
 }
 
-const contracts: Record<
+const contracts = networks[config.DEFAULT_CHAIN_ID] as unknown as Record<
   string,
   {
     address: string
     deployBlockNumber: number
   }
-> = networks[3]
+>
 
 export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
   const [openGovernanceActionsDialog] = useDialog(GovernanceActionsDialog)
