@@ -32,7 +32,11 @@ export const ProtocolCard: React.VFC<ProtocolCardProps> = (props) => {
       className={clsx(styles.card)}
       radius={8}
       as={ReactRouterLink}
-      to={paths.protocols.detail(protocol.id)}
+      to={
+        protocol.adapter === 'debankByApiReadonly'
+          ? paths.protocols.detailReadonly(protocol.id)
+          : paths.protocols.detail(protocol.id)
+      }
     >
       <ButtonBase
         className={clsx(

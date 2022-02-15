@@ -62,8 +62,6 @@ globalStyle(`${error} ${input}`, {
 })
 
 export const label = style({
-  fontFamily: theme.fonts.mono,
-  textTransform: 'uppercase',
   color: theme.colors.textColorGrey,
   marginBottom: 4,
 })

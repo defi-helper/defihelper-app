@@ -20,13 +20,18 @@ export const CanRoute: React.FC<CanRouteProps> = (props) => {
 
   const { children, action, subject, ...restOfProps } = props
 
-  if (loading && !user) {
-    return <Route {...restOfProps}>loading...</Route>
-  }
-
-  return !loading && user && ability.can(action, subject) ? (
-    <Route {...restOfProps}>{children}</Route>
-  ) : (
-    <Redirect to={paths.main} />
+  return (
+    <>
+      {loading && 'loading...'}
+      {!loading && (
+        <>
+          {user && ability.can(action, subject) ? (
+            <Route {...restOfProps}>{children}</Route>
+          ) : (
+            <Redirect to={paths.main} />
+          )}
+        </>
+      )}
+    </>
   )
 }

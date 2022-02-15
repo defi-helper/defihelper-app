@@ -46,7 +46,6 @@ import * as styles from './staking-list.css'
 export type StakingListProps = {
   protocolId: string
   protocolAdapter: string
-  debankId?: string | null
 }
 
 const sortIcon = (
@@ -341,7 +340,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         })
       }
     },
-    !props.debankId && currentWallet ? 15000 : null
+    currentWallet ? 15000 : null
   )
 
   useInterval(
@@ -354,7 +353,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         console.error(e)
       }
     },
-    !props.debankId && currentWallet ? 3000 : null
+    currentWallet ? 3000 : null
   )
 
   return (
@@ -456,27 +455,25 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
               Unclaimed
             </Typography>
             <Typography variant="body2" className={styles.boostTooltipTHead}>
-              {!props.debankId && (
-                <Dropdown
-                  control={
-                    <ButtonBase>
-                      <Icon icon="question" width="16" height="16" />
-                    </ButtonBase>
-                  }
-                  trigger="hover"
-                  placement="top"
-                  offset={[0, 8]}
-                >
-                  <Typography variant="body3">
-                    Activate auto-staking to boost your yield
-                  </Typography>
-                </Dropdown>
-              )}
+              <Dropdown
+                control={
+                  <ButtonBase>
+                    <Icon icon="question" width="16" height="16" />
+                  </ButtonBase>
+                }
+                trigger="hover"
+                placement="top"
+                offset={[0, 8]}
+              >
+                <Typography variant="body3">
+                  Activate auto-staking to boost your yield
+                </Typography>
+              </Dropdown>
               Auto-Staking Boost
             </Typography>
           </div>
           <ul className={styles.list}>
-            {loading && (
+            {loading && !stakingList.length && (
               <li className={clsx(styles.loader, styles.listItem)}>
                 <Loader height="24" />
               </li>
@@ -486,79 +483,74 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                 <div className={styles.empty}>no data</div>
               </li>
             )}
-            {!loading &&
-              stakingList.map((stakingListItem) => {
-                const opened = stakingListItem.address === openedContract
+            {stakingList.map((stakingListItem) => {
+              const opened = stakingListItem.address === openedContract
 
-                return (
-                  <li
-                    key={stakingListItem.id}
-                    className={clsx(
-                      styles.listItem,
-                      stakingListItem.hidden && styles.hiddenListItem
+              return (
+                <li
+                  key={stakingListItem.id}
+                  className={clsx(
+                    styles.listItem,
+                    stakingListItem.hidden && styles.hiddenListItem
+                  )}
+                >
+                  <StakingContractCard
+                    className={styles.row}
+                    {...stakingListItem}
+                    onOpenContract={handleOpenContract(stakingListItem.address)}
+                    opened={opened}
+                    freshMetrics={freshMetrics}
+                    protocolAdapter={props.protocolAdapter}
+                    protocolId={props.protocolId}
+                    onToggleContract={handleToggleContract(stakingListItem)}
+                    onDelete={handleOpenConfirmDialog(stakingListItem.id)}
+                    currentBlock={currentBlock}
+                    currentNetwork={currentWallet?.chainId}
+                    onOpenApy={handleOpenApy(stakingListItem.metric)}
+                    scannerData={scanner[stakingListItem.id]}
+                    hideAutostakingBoost={
+                      !(
+                        stakingListItem.automate.autorestake &&
+                        contractPrototypeAddresses[stakingListItem.id]
+                          ?.prototypeAddress
+                      )
+                    }
+                    onScannerRegister={handleScannerRegister(
+                      stakingListItem.id
                     )}
-                  >
-                    <StakingContractCard
-                      className={styles.row}
-                      {...stakingListItem}
-                      onOpenContract={
-                        !props.debankId
-                          ? handleOpenContract(stakingListItem.address)
-                          : undefined
-                      }
-                      opened={!props.debankId && opened}
-                      freshMetrics={freshMetrics}
+                    error={
+                      <>
+                        {freshMetricsError[stakingListItem.id] && (
+                          <Can I="create" a="Contract">
+                            <div>{freshMetricsError[stakingListItem.id]}</div>
+                          </Can>
+                        )}
+                      </>
+                    }
+                  />
+                  {opened && (
+                    <StakingAdapters
                       protocolAdapter={props.protocolAdapter}
-                      protocolId={props.protocolId}
-                      onToggleContract={handleToggleContract(stakingListItem)}
-                      onDelete={handleOpenConfirmDialog(stakingListItem.id)}
-                      currentBlock={currentBlock}
-                      currentNetwork={currentWallet?.chainId}
-                      onOpenApy={handleOpenApy(stakingListItem.metric)}
-                      scannerData={scanner[stakingListItem.id]}
-                      hideAutostakingBoost={
-                        Boolean(props.debankId) ||
-                        !(
-                          stakingListItem.automate.autorestake &&
-                          contractPrototypeAddresses[stakingListItem.id]
-                            ?.prototypeAddress
-                        )
+                      contractAdapter={stakingListItem.adapter}
+                      contractAddress={stakingListItem.address}
+                      contractId={stakingListItem.id}
+                      blockchain={stakingListItem.blockchain}
+                      network={stakingListItem.network}
+                      onTurnOn={handleAutostake(stakingListItem)}
+                      buyLiquidity={stakingListItem.automate.buyLiquidity}
+                      autostakingLoading={stakingListItem.autostakingLoading}
+                      autorestake={
+                        stakingListItem.automate.autorestake ?? undefined
                       }
-                      onScannerRegister={handleScannerRegister(
-                        stakingListItem.id
-                      )}
-                      error={
-                        <>
-                          {freshMetricsError[stakingListItem.id] && (
-                            <Can I="create" a="Contract">
-                              <div>{freshMetricsError[stakingListItem.id]}</div>
-                            </Can>
-                          )}
-                        </>
+                      prototypeAddress={
+                        contractPrototypeAddresses[stakingListItem.id]
+                          ?.prototypeAddress
                       }
                     />
-                    {opened && !props.debankId && (
-                      <StakingAdapters
-                        protocolAdapter={props.protocolAdapter}
-                        contractAdapter={stakingListItem.adapter}
-                        contractAddress={stakingListItem.address}
-                        contractId={stakingListItem.id}
-                        blockchain={stakingListItem.blockchain}
-                        network={stakingListItem.network}
-                        onTurnOn={handleAutostake(stakingListItem)}
-                        autostakingLoading={stakingListItem.autostakingLoading}
-                        autorestake={
-                          stakingListItem.automate.autorestake ?? undefined
-                        }
-                        prototypeAddress={
-                          contractPrototypeAddresses[stakingListItem.id]
-                            ?.prototypeAddress
-                        }
-                      />
-                    )}
-                  </li>
-                )
-              })}
+                  )}
+                </li>
+              )
+            })}
           </ul>
         </Paper>
         <model.StakingListPagination />

@@ -60,3 +60,32 @@ export const activeTab = style({
     background: 'currentcolor',
   },
 })
+
+export const label = style({
+  color: theme.colors.textColorGrey,
+  marginBottom: 4,
+  fontSize: 14,
+  lineHeight: '20px',
+})
+
+export const radio = style({
+  selectors: {
+    '&:not(:last-child)': {
+      marginRight: 10,
+    },
+  },
+})
+
+export const img = style({
+  width: 24,
+  height: 24,
+  marginRight: 5,
+})
+
+export const imgPlaceHolder = style([
+  img,
+  {
+    background: theme.colors.border,
+    borderRadius: '50%',
+  },
+])

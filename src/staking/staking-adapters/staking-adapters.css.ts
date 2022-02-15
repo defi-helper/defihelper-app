@@ -18,6 +18,13 @@ export const stake = style([
   },
 ])
 
+export const buyLP = style([
+  button,
+  {
+    gridColumnStart: 3,
+  },
+])
+
 export const input = style([
   button,
   {

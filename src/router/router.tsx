@@ -10,6 +10,7 @@ import { paths } from '~/paths'
 import { history } from '~/common/history'
 import { ProtocolList } from '~/protocols/protocol-list'
 import { ProtocolDetail } from '~/protocols/protocol-detail'
+import { ProtocolDetailReadonly } from '~/protocols/protocol-detail-readonly'
 import { ProtocolCreate } from '~/protocols/protocol-create'
 import { ProtocolUpdate } from '~/protocols/protocol-update'
 import { StakingCreate } from '~/staking/staking-create'
@@ -65,6 +66,9 @@ export const Router: React.VFC<RouterProps> = () => {
         >
           <StakingUpdate />
         </CanRoute>
+        <Route path={paths.protocols.detailReadonly()}>
+          <ProtocolDetailReadonly />
+        </Route>
         <Route path={paths.protocols.detail()}>
           <ProtocolDetail />
         </Route>

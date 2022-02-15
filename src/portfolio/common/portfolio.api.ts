@@ -100,7 +100,9 @@ export const portfolioApi = {
 
   myMetric: (variables?: MyMetricQueryVariables) =>
     getAPIClient()
-      .query<MyMetricQuery, MyMetricQueryVariables>(MY_METRIC, variables)
+      .query<MyMetricQuery, MyMetricQueryVariables>(MY_METRIC, variables, {
+        requestPolicy: 'cache-and-network',
+      })
       .toPromise()
       .then(({ data }) => data?.me?.metric),
 

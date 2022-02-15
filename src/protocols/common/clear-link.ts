@@ -1,5 +1,7 @@
-// eslint-disable-next-line no-useless-escape
-const REGEX = /\/\/(.*?)\//
+/* eslint-disable no-useless-escape */
+/* eslint-disable prettier/prettier */
+
+const REGEX = new RegExp('.*://(?:www.)?([^/]+)')
 
 export const clearLink = (link: string) => {
   const [, domain] = link.match(REGEX) ?? []

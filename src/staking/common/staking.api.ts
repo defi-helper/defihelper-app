@@ -28,6 +28,8 @@ import {
   AutomationContractDeleteMutationVariables,
   ContractScannerRegisterMutationVariables,
   ContractScannerRegisterMutation,
+  StakingTokensAliasQueryVariables,
+  StakingTokensAliasQuery,
 } from '~/graphql/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -43,6 +45,7 @@ import {
   AUTOMATION_CONTRACT_CREATE,
   AUTOMATION_CONTRACT_UPDATE,
   AUTOMATION_CONTRACT_DELETE,
+  STAKING_TOKENS_ALIAS,
 } from './graphql'
 import { config } from '~/config'
 import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-scanner-register.graphql'
@@ -60,6 +63,24 @@ export const stakingApi = {
         contracts: data?.protocol?.contracts.list ?? [],
         pagination: data?.protocol?.contracts.pagination.count ?? 0,
       })),
+
+  tokensList: (variables: StakingTokensAliasQueryVariables) =>
+    getAPIClient()
+      .query<StakingTokensAliasQuery, StakingTokensAliasQueryVariables>(
+        STAKING_TOKENS_ALIAS,
+        variables
+      )
+      .toPromise()
+      .then(
+        ({ data }) =>
+          data?.tokensAlias.list?.flatMap(
+            ({ tokens, logoUrl }) =>
+              tokens.list?.map((token) => ({
+                ...token,
+                logoUrl: logoUrl ?? '',
+              })) ?? []
+          ) ?? []
+      ),
 
   contractDelete: (id: string) =>
     getAPIClient()
