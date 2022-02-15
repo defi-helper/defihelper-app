@@ -54,6 +54,8 @@ export const Input = createComponent<HTMLInputElement, InputProps>(
             as="label"
             id={restOfProps.id}
             variant="body2"
+            family="mono"
+            transform="uppercase"
             className={clsx(styles.fs14, styles.label)}
           >
             {label}
