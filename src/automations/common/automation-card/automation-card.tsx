@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
-import dayjs from 'dayjs'
 import { ButtonBase } from '~/common/button-base'
 import { Chip } from '~/common/chip'
 import { CircularProgress } from '~/common/circular-progress'
@@ -28,7 +27,6 @@ export type AutomationCardProps = {
   onActivate: () => void
   deleting?: boolean
   editing?: boolean
-  restakeIn: string | null
   id: string
   className?: string
   type: AutomateTriggerTypeEnum
@@ -150,18 +148,6 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
         subtitle={networks}
         automation={automation}
       />
-      {props.conditions.some(
-        (v) => v.type === 'ethereumOptimalAutomateRun'
-      ) && (
-        <Label
-          title="Restake"
-          value={
-            props.restakeIn ? dayjs().to(props.restakeIn) : 'in near future'
-          }
-          subtitle={networks}
-          automation={automation}
-        />
-      )}
       {Boolean(props.actions.length) && (
         <Label title="Action" value={actions} automation={automation} />
       )}
