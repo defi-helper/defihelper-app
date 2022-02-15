@@ -117,14 +117,15 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     const currentNetwork = networks[network]
 
-    if (!isBuyLiquidity(currentNetwork)) return
+    if (!isBuyLiquidity(currentNetwork))
+      throw new Error('does not have a BuyLiquidity contract')
 
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,
       params.chainId
     )
 
-    if (!networkProvider) return
+    if (!networkProvider) throw new Error('invalid provider')
 
     const adapterObj = await loadAdapter(buildAdaptersUrl('dfh'))
 
@@ -138,7 +139,14 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
       }
     )
 
-    return result.buy
+    return {
+      adapter: result.buy,
+      images: tokens.reduce<Record<string, string>>((acc, token) => {
+        acc[token.symbol] = token.logoUrl
+
+        return acc
+      }, {}),
+    }
   }
 )
 

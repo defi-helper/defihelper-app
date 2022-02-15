@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Children,
   isValidElement,
@@ -7,10 +8,11 @@ import {
 } from 'react'
 import clsx from 'clsx'
 
-import { Input, InputProps } from '~/common/input'
+import { InputProps } from '~/common/input'
 import { Dropdown } from '~/common/dropdown'
 import { createComponent } from '~/common/create-component'
 import * as styles from './select.css'
+import { Typography } from '../typography'
 
 export type SelectProps = Omit<InputProps, 'value' | 'defaultValue'> & {
   sameWidth?: boolean
@@ -49,7 +51,7 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
         props.onChange?.(event)
       }
 
-    const valueMap = children.reduce<Map<string | number, unknown>>(
+    const valueMap = children.reduce<Map<string | number, any>>(
       (acc, child) => {
         if (isValidElement(child)) {
           acc.set(child.props.value, child.props.children)
@@ -57,7 +59,7 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
 
         return acc
       },
-      new Map<string, unknown>()
+      new Map<string, any>()
     )
 
     const renderValue = valueMap.get(localValue)
@@ -79,20 +81,42 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
         />
         <Dropdown
           control={
-            <Input
+            <div
               placeholder={props.placeholder}
-              label={props.label}
-              value={
-                typeof renderValue === 'number' ||
-                typeof renderValue === 'string'
-                  ? renderValue
-                  : ''
-              }
-              readOnly
-              disabled={props.disabled}
-              error={props.error}
-              helperText={props.helperText}
-            />
+              className={clsx(
+                {
+                  [styles.error]: props.error,
+                  [styles.disabled]: props.disabled,
+                },
+                className
+              )}
+            >
+              {props.label && (
+                <Typography
+                  as="span"
+                  variant="body2"
+                  family="mono"
+                  transform="uppercase"
+                  className={clsx(styles.fs14, styles.label)}
+                >
+                  {props.label}
+                </Typography>
+              )}
+              <div className={styles.input}>{renderValue}</div>
+              {props.helperText && (
+                <Typography
+                  variant="body2"
+                  className={clsx(
+                    styles.helperText,
+                    styles.fs14,
+                    !props.error && styles.helperTextColor
+                  )}
+                  as="span"
+                >
+                  {props.helperText}
+                </Typography>
+              )}
+            </div>
           }
           className={styles.dropdown}
           placement="bottom-start"
