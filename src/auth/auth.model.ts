@@ -80,6 +80,12 @@ export const authEthereumFx = authDomain.createEffect(
   }
 )
 
+const userReady = delay({ source: fetchUserFx.finally, timeout: 500 })
+
+export const $userReady = authDomain
+  .createStore(false)
+  .on(userReady, () => true)
+
 sample({
   clock: walletNetworkModel.signMessageEthereumFx.doneData,
   fn: (clock) => ({

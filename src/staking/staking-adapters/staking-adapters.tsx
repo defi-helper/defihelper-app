@@ -102,13 +102,19 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const handleUnStake = createAdapterAction('unstake')
 
   const handleBuyLiquidity = async () => {
-    if (!wallet?.account || !wallet?.chainId || !props.buyLiquidity) return
+    if (!wallet?.account || !props.buyLiquidity) return
+
+    await switchNetwork(props.network).catch((error) => {
+      if (error instanceof Error) {
+        toastsService.error(error.message)
+      }
+    })
 
     try {
       const adapter = await model.buyLPFx({
         account: wallet.account,
         provider: wallet.provider,
-        chainId: wallet.chainId,
+        chainId: props.network,
         router: props.buyLiquidity.router,
         pair: props.buyLiquidity.pair,
         network: props.network,
