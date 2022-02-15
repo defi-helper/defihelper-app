@@ -1,6 +1,7 @@
 import { useStore } from 'effector-react'
+import networks from '@defihelper/networks/contracts.json'
 
-import { StakingAdapterDialog } from '~/staking/common'
+import { Contract, StakingAdapterDialog } from '~/staking/common'
 import { Button } from '~/common/button'
 import { useDialog, UserRejectionError } from '~/common/dialog'
 import { switchNetwork } from '~/wallets/common'
@@ -9,6 +10,7 @@ import { WalletConnect } from '~/wallets/wallet-connect'
 import { authModel } from '~/auth'
 import { toastsService } from '~/toasts'
 import { settingsWalletModel } from '~/settings/settings-wallets'
+import { BlockchainEnum } from '~/graphql/_generated-types'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
@@ -19,12 +21,13 @@ export type StakingAdaptersProps = {
   contractAdapter: string
   protocolAdapter: string
   contractId: string
-  blockchain: string
+  blockchain: BlockchainEnum
   network: string
   onTurnOn: () => void
   autostakingLoading?: boolean
   autorestake?: string
   prototypeAddress?: string
+  buyLiquidity: Contract['automate']['buyLiquidity']
 }
 
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
@@ -98,6 +101,47 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const handleStake = createAdapterAction('stake')
   const handleUnStake = createAdapterAction('unstake')
 
+  const handleBuyLiquidity = async () => {
+    if (!wallet?.account || !props.buyLiquidity) return
+
+    await switchNetwork(props.network).catch((error) => {
+      if (error instanceof Error) {
+        toastsService.error(error.message)
+      }
+    })
+
+    try {
+      const adapter = await model.buyLPFx({
+        account: wallet.account,
+        provider: wallet.provider,
+        chainId: props.network,
+        router: props.buyLiquidity.router,
+        pair: props.buyLiquidity.pair,
+        network: props.network,
+        protocol: props.blockchain,
+      })
+
+      if (!adapter) return
+
+      await openAdapter({
+        steps: adapter,
+      })
+    } catch (error) {
+      if (error instanceof Error && !(error instanceof UserRejectionError)) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const currentNetworkConfig = model.isNetworkKey(props.network)
+    ? networks[props.network]
+    : {}
+
+  const hasBuyLiquidity =
+    model.isNetworkKey(props.network) &&
+    model.isBuyLiquidity(currentNetworkConfig) &&
+    Boolean(props.buyLiquidity)
+
   return (
     <div className={styles.root}>
       <div className={styles.stake}>
@@ -124,6 +168,28 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           </Button>
         </WalletConnect>
       </div>
+      {hasBuyLiquidity && (
+        <div className={styles.buyLP}>
+          <WalletConnect
+            fallback={
+              <Button type="submit" size="small" variant="outlined">
+                buy LP
+              </Button>
+            }
+            blockchain={props.blockchain}
+            network={props.network}
+          >
+            <Button
+              type="submit"
+              onClick={handleBuyLiquidity}
+              size="small"
+              variant="outlined"
+            >
+              buy LP
+            </Button>
+          </WalletConnect>
+        </div>
+      )}
       <div className={styles.unstake}>
         <WalletConnect
           fallback={

@@ -537,6 +537,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       blockchain={stakingListItem.blockchain}
                       network={stakingListItem.network}
                       onTurnOn={handleAutostake(stakingListItem)}
+                      buyLiquidity={stakingListItem.automate.buyLiquidity}
                       autostakingLoading={stakingListItem.autostakingLoading}
                       autorestake={
                         stakingListItem.automate.autorestake ?? undefined

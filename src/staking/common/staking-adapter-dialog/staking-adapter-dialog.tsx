@@ -8,11 +8,13 @@ import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
 import { AdapterStep } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
+import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
 import { Loader } from '~/common/loader'
 import { Input } from '~/common/input'
 import { MarkdownRender } from '~/common/markdown-render'
 import { toastsService } from '~/toasts'
+import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
 import * as styles from './staking-adapter-dialog.css'
 
 export type StakingAdapterDialogProps = {
@@ -150,15 +152,64 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
                     control={control}
                     key={input.placeholder}
                     name={`${currentStep?.name}.${index}`}
-                    render={({ field }) => (
-                      <Component
-                        label={input.placeholder}
-                        disabled={formState.isSubmitting}
-                        className={styles.input}
-                        {...field}
-                        value={field.value || input.value}
-                      />
-                    )}
+                    render={({ field }) => {
+                      const components: Record<string, JSX.Element> = {
+                        select: (
+                          <Select
+                            {...field}
+                            label={input.placeholder}
+                            value={field.value || input.value}
+                            className={styles.input}
+                            disabled={formState.isSubmitting}
+                          >
+                            {input.options?.map((option) => (
+                              <SelectOption
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectOption>
+                            ))}
+                          </Select>
+                        ),
+                        radio: (
+                          <div>
+                            <Typography
+                              as="div"
+                              variant="body2"
+                              family="mono"
+                              transform="uppercase"
+                              className={styles.label}
+                            >
+                              {input.placeholder}
+                            </Typography>
+                            {input.options?.map((option) => (
+                              <StakingAdapterRadio
+                                key={option.value}
+                                {...field}
+                                value={option.value}
+                                className={styles.radio}
+                                disabled={formState.isSubmitting}
+                              >
+                                {option.label}
+                              </StakingAdapterRadio>
+                            ))}
+                          </div>
+                        ),
+                      }
+
+                      return (
+                        components[input.type] ?? (
+                          <Component
+                            label={input.placeholder}
+                            disabled={formState.isSubmitting}
+                            className={styles.input}
+                            {...field}
+                            value={field.value || input.value}
+                          />
+                        )
+                      )
+                    }}
                   />
                 )
               })}
