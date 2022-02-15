@@ -90,6 +90,7 @@ export const protocolsApi = {
       .toPromise()
       .then(({ data }) => ({
         tvl: data?.protocol?.tvl ?? [],
+        tvlDebank: data?.protocol?.tvlDebank ?? [],
         uniqueWalletsCount: data?.protocol?.uniqueWalletsCount ?? [],
       })),
 

@@ -24,9 +24,10 @@ const TVL_FIELDS = [
 
 const currentGroup = MetricGroupEnum.Day
 
-export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
-  props
-) => {
+export const ProtocolMetricOverview: React.VFC<{
+  className?: string
+  isDebank: boolean
+}> = (props) => {
   const params = useParams<{ protocolId: string }>()
 
   const metric = useStore(model.$metric)
@@ -38,9 +39,12 @@ export const ProtocolMetricOverview: React.VFC<{ className?: string }> = (
     })
   }, [params.protocolId])
 
-  const [tvlSum = undefined] = metric[currentGroup]?.data.tvl?.slice(-1)
+  const [tvlSum = undefined] =
+    metric[currentGroup]?.data[props.isDebank ? 'tvlDebank' : 'tvl']?.slice(-1)
 
-  const tvlData = metric[currentGroup]?.data.tvl?.map((metricItem) => {
+  const tvlData = metric[currentGroup]?.data[
+    props.isDebank ? 'tvlDebank' : 'tvl'
+  ]?.map((metricItem) => {
     return {
       ...metricItem,
       date: dateUtils.toDate(metricItem.date),
