@@ -203,6 +203,7 @@ export enum AutomateConditionTypeEnum {
   EthereumAvgGasPrice = 'ethereumAvgGasPrice',
   EthereumBalance = 'ethereumBalance',
   EthereumOptimalAutomateRun = 'ethereumOptimalAutomateRun',
+  ContractMetric = 'contractMetric',
 }
 
 export type AutomateConditionUpdateInputType = {
@@ -220,6 +221,7 @@ export type AutomateConditionsDescriptionType = {
   ethereumAvgGasPrice: AutomateDescriptionType
   ethereumBalance: AutomateDescriptionType
   ethereumOptimalAutomateRun: AutomateDescriptionType
+  contractMetric: AutomateDescriptionType
 }
 
 export type AutomateContractCreateInputType = {
@@ -1439,6 +1441,7 @@ export type ProtocolListFilterInputType = {
   favorite?: Maybe<Scalars['Boolean']>
   hidden?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
+  isDebank?: Maybe<Scalars['Boolean']>
 }
 
 export type ProtocolListPaginationInputType = {
@@ -2844,6 +2847,7 @@ export type UserTypeWalletsArgs = {
 }
 
 export type UserTypeExchangesArgs = {
+  filter?: Maybe<WalletExchangeListFilterInputType>
   sort?: Maybe<Array<WalletExchangeListSortInputType>>
   pagination?: Maybe<WalletExchangeListPaginationInputType>
 }
@@ -3084,6 +3088,10 @@ export type WalletContractListType = {
   pagination: Pagination
 }
 
+export type WalletExchangeListFilterInputType = {
+  id?: Maybe<Scalars['UuidType']>
+}
+
 export type WalletExchangeListPaginationInputType = {
   /** Limit */
   limit?: Maybe<Scalars['Int']>
@@ -3108,6 +3116,25 @@ export type WalletExchangeListType = {
   pagination: Pagination
 }
 
+export type WalletExchangeTokenAliasListFilterInputType = {
+  /** Liquidity token */
+  liquidity?: Maybe<Array<TokenAliasLiquidityEnum>>
+}
+
+export type WalletExchangeTokenAliasListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type WalletExchangeTokenAliasListType = {
+  __typename?: 'WalletExchangeTokenAliasListType'
+  /** Elements */
+  list?: Maybe<Array<WalletTokenAliasType>>
+  pagination: Pagination
+}
+
 export type WalletExchangeType = {
   __typename?: 'WalletExchangeType'
   /** Identifier */
@@ -3116,11 +3143,17 @@ export type WalletExchangeType = {
   name: Scalars['String']
   /** Exchange type */
   exchange: WalletExchangeTypeEnum
-  balance: Scalars['Float']
+  tokenAliases: WalletExchangeTokenAliasListType
+  balance: Scalars['String']
   /** Account */
   account: Scalars['String']
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
+}
+
+export type WalletExchangeTypeTokenAliasesArgs = {
+  filter?: Maybe<WalletExchangeTokenAliasListFilterInputType>
+  pagination?: Maybe<WalletExchangeTokenAliasListPaginationInputType>
 }
 
 export enum WalletExchangeTypeEnum {
@@ -3773,6 +3806,36 @@ export type AddWalletMutation = { __typename?: 'Mutation' } & {
     { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
         user: { __typename?: 'UserType' } & Pick<UserType, 'id'>
       }
+  >
+}
+
+export type AssetsListByExchangeQueryVariables = Exact<{
+  exchangeId?: Maybe<Scalars['UuidType']>
+}>
+
+export type AssetsListByExchangeQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      exchanges: { __typename?: 'WalletExchangeListType' } & {
+        list?: Maybe<
+          Array<
+            { __typename?: 'WalletExchangeType' } & {
+              tokenAliases: {
+                __typename?: 'WalletExchangeTokenAliasListType'
+              } & {
+                list?: Maybe<
+                  Array<
+                    {
+                      __typename?: 'WalletTokenAliasType'
+                    } & PortfolioAssetByWalletFragment
+                  >
+                >
+              }
+            }
+          >
+        >
+      }
+    }
   >
 }
 
@@ -6129,6 +6192,37 @@ export function useAddWalletMutation() {
   return Urql.useMutation<AddWalletMutation, AddWalletMutationVariables>(
     AddWalletDocument
   )
+}
+export const AssetsListByExchangeDocument = gql`
+  query AssetsListByExchange($exchangeId: UuidType) {
+    me {
+      exchanges(filter: { id: $exchangeId }) {
+        list {
+          tokenAliases(
+            filter: { liquidity: [stable, unstable] }
+            pagination: { limit: 100, offset: 0 }
+          ) {
+            list {
+              ...portfolioAssetByWallet
+            }
+          }
+        }
+      }
+    }
+  }
+  ${PortfolioAssetByWalletFragmentDoc}
+`
+
+export function useAssetsListByExchangeQuery(
+  options: Omit<
+    Urql.UseQueryArgs<AssetsListByExchangeQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<AssetsListByExchangeQuery>({
+    query: AssetsListByExchangeDocument,
+    ...options,
+  })
 }
 export const AssetListByProtocolDocument = gql`
   query AssetListByProtocol($protocolId: UuidType) {

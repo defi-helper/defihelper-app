@@ -2,11 +2,16 @@ import clsx from 'clsx'
 import React, { useEffect } from 'react'
 import { useStore } from 'effector-react'
 
+import isEmpty from 'lodash.isempty'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as styles from './portfolio-exchanges.css'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import * as model from '~/settings/settings-integrations/settings-integrations.model'
+import { ButtonBase } from '~/common/button-base'
+import { Icon } from '~/common/icon'
+import { Loader } from '~/common/loader'
+import { PortfolioAssetCard, PortfolioAssetsHeader } from '~/portfolio/common'
 
 export type PortfolioDeployedContractsProps = {
   className?: string
@@ -16,11 +21,19 @@ export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
   props
 ) => {
   const integrations = useStore(model.$integrationsList)
+  const assetsByWallet = useStore(model.$assetsByWallet)
+  const assetsLoading = useStore(model.fetchAssetsByWalletFx.pending)
+  const openedWallet = useStore(model.$openedWallet)
+
   useEffect(() => {
     model.fetchEstablishedIntegrationsListFx()
   }, [])
 
   if (!integrations.length) return <></>
+
+  const handleToggleRow = (exchangeId: string) => {
+    model.openWallet(openedWallet === exchangeId ? null : exchangeId)
+  }
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -51,7 +64,48 @@ export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
                     <Typography variant="body3" align="right">
                       ${bignumberUtils.format(exchange.balance, 2)}
                     </Typography>
+
+                    <ButtonBase onClick={() => handleToggleRow(exchange.id)}>
+                      <Icon
+                        icon={`arrow${
+                          openedWallet === exchange.id ? 'Top' : 'Down'
+                        }`}
+                        width="24"
+                        height="24"
+                      />
+                    </ButtonBase>
                   </div>
+
+                  {openedWallet === exchange.id && assetsLoading ? (
+                    <div className={clsx(styles.loader, styles.mb)}>
+                      <Loader height="16" />
+                    </div>
+                  ) : (
+                    <>
+                      {openedWallet === exchange.id &&
+                        !isEmpty(assetsByWallet) && (
+                          <>
+                            <PortfolioAssetsHeader />
+                            {assetsByWallet.map((asset, index) => (
+                              <PortfolioAssetCard
+                                row={asset}
+                                key={String(index)}
+                              />
+                            ))}
+                          </>
+                        )}
+                      {openedWallet === exchange.id && isEmpty(assetsByWallet) && (
+                        <Typography
+                          className={styles.mb}
+                          variant="body2"
+                          as="div"
+                          align="center"
+                        >
+                          No assets found
+                        </Typography>
+                      )}
+                    </>
+                  )}
                 </React.Fragment>
               )
             })}

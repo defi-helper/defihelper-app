@@ -1,4 +1,4 @@
-import { createDomain, combine } from 'effector-logger/macro'
+import { createDomain, combine, restore, guard } from 'effector-logger/macro'
 import omit from 'lodash.omit'
 
 import {
@@ -8,6 +8,10 @@ import {
 } from '~/graphql/_generated-types'
 import { settingsApi } from '~/settings/common'
 import { toastsService } from '~/toasts'
+import { portfolioApi, portfolioSortAssetsByWallet } from '~/portfolio/common'
+import { portfolioAssetsDomain } from '~/portfolio/portfolio-assets/portfolio-assets.model'
+import { authModel } from '~/auth'
+import { portfolioWalletsDomain } from '~/portfolio/portfolio-wallets/portfolio-wallets.model'
 
 export type Integrations = Record<
   string,
@@ -41,6 +45,28 @@ export const connectIntegrationBinanceFx = integrationListDomain.createEffect(
     return data
   }
 )
+
+export const fetchAssetsByWallet = (exchangeId: string) =>
+  portfolioApi
+    .getAssetsListByExchange({ exchangeId })
+    .then(portfolioSortAssetsByWallet)
+
+export const fetchAssetsByWalletFx =
+  portfolioAssetsDomain.createEffect(fetchAssetsByWallet)
+
+export const $assetsByWallet = restore(fetchAssetsByWalletFx.doneData, [])
+
+export const openWallet = portfolioWalletsDomain.createEvent<string | null>()
+
+export const $openedWallet = portfolioWalletsDomain
+  .createStore<string | null>(null)
+  .on(openWallet, (_, payload) => payload)
+
+guard({
+  clock: $openedWallet.updates,
+  filter: (walletId): walletId is string => Boolean(walletId),
+  target: fetchAssetsByWalletFx,
+})
 
 export const disconnectIntegrationFx = integrationListDomain.createEffect(
   async (integrationId: string) => {
@@ -87,6 +113,8 @@ export const $integrations = combine($integrationsList, (integrations) => {
     return acc
   }, {})
 })
+
+$assetsByWallet.reset(authModel.logoutFx.done)
 
 toastsService.forwardErrors(
   fetchEstablishedIntegrationsListFx.failData,
