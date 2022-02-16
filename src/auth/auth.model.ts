@@ -31,7 +31,11 @@ export const authDomain = createDomain()
 
 export const fetchUserFx = authDomain.createEffect(() => authApi.me())
 
-export const logoutFx = authDomain.createEffect(() => sidUtils.remove())
+export const logoutFx = authDomain.createEffect(() => {
+  sidUtils.remove()
+
+  window.location.reload()
+})
 
 logoutFx.done.watch(() => history.push(paths.portfolio))
 

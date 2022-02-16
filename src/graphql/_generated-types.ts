@@ -203,6 +203,7 @@ export enum AutomateConditionTypeEnum {
   EthereumAvgGasPrice = 'ethereumAvgGasPrice',
   EthereumBalance = 'ethereumBalance',
   EthereumOptimalAutomateRun = 'ethereumOptimalAutomateRun',
+  ContractMetric = 'contractMetric',
 }
 
 export type AutomateConditionUpdateInputType = {
@@ -220,6 +221,7 @@ export type AutomateConditionsDescriptionType = {
   ethereumAvgGasPrice: AutomateDescriptionType
   ethereumBalance: AutomateDescriptionType
   ethereumOptimalAutomateRun: AutomateDescriptionType
+  contractMetric: AutomateDescriptionType
 }
 
 export type AutomateContractCreateInputType = {
@@ -3419,6 +3421,9 @@ export type AutomationDescriptionQuery = { __typename?: 'Query' } & {
       ethereumOptimalAutomateRun: {
         __typename?: 'AutomateDescriptionType'
       } & AutomationDescriptionFragmentFragment
+      contractMetric: {
+        __typename?: 'AutomateDescriptionType'
+      } & AutomationDescriptionFragmentFragment
     }
     actions: { __typename?: 'AutomateActionsDescriptionType' } & {
       notification: {
@@ -3507,6 +3512,7 @@ export type AutomationProductsQuery = { __typename?: 'Query' } & {
 }
 
 export type AutomationProtocolsQueryVariables = Exact<{
+  filter?: Maybe<ProtocolListFilterInputType>
   pagination?: Maybe<ProtocolListPaginationInputType>
   contractPagination?: Maybe<ContractListPaginationInputType>
 }>
@@ -3517,7 +3523,7 @@ export type AutomationProtocolsQuery = { __typename?: 'Query' } & {
       Array<
         { __typename?: 'ProtocolType' } & Pick<
           ProtocolType,
-          'name' | 'id' | 'icon'
+          'id' | 'name' | 'icon'
         > & {
             contracts: { __typename?: 'ContractListType' } & {
               list?: Maybe<
@@ -5743,6 +5749,9 @@ export const AutomationDescriptionDocument = gql`
         ethereumOptimalAutomateRun {
           ...automationDescriptionFragment
         }
+        contractMetric {
+          ...automationDescriptionFragment
+        }
       }
       actions {
         notification {
@@ -5868,16 +5877,17 @@ export function useAutomationProductsQuery(
 }
 export const AutomationProtocolsDocument = gql`
   query AutomationProtocols(
+    $filter: ProtocolListFilterInputType
     $pagination: ProtocolListPaginationInputType = { limit: 100, offset: 0 }
     $contractPagination: ContractListPaginationInputType = {
       limit: 100
       offset: 0
     }
   ) {
-    protocols(pagination: $pagination) {
+    protocols(filter: $filter, pagination: $pagination) {
       list {
-        name
         id
+        name
         icon
         contracts(pagination: $contractPagination) {
           list {

@@ -12,7 +12,7 @@ import {
   AutomateConditionType,
 } from '~/graphql/_generated-types'
 import { automationApi } from '~/automations/common/automation.api'
-import { Trigger, Protocol } from '../common/automation.types'
+import { Trigger } from '../common/automation.types'
 import { toastsService } from '~/toasts'
 
 export const automationUpdateDomain = createDomain()
@@ -93,12 +93,12 @@ export const updateConditionFx = automationUpdateDomain.createEffect(
 )
 
 export const fetchProtocolsFx = automationUpdateDomain.createEffect(() =>
-  automationApi.getProtocols({})
+  automationApi.getProtocols({
+    filter: {
+      hidden: false,
+    },
+  })
 )
-
-export const $protocols = automationUpdateDomain
-  .createStore<Protocol[]>([])
-  .on(fetchProtocolsFx.doneData, (_, payload) => payload)
 
 export const AutomationUpdateGate = createGate<Trigger | null>({
   domain: automationUpdateDomain,
@@ -177,7 +177,6 @@ $actions.reset(AutomationUpdateGate.close)
 $actionsPriority.reset(AutomationUpdateGate.close)
 $conditions.reset(AutomationUpdateGate.close)
 $conditionsPriority.reset(AutomationUpdateGate.close)
-$protocols.reset(AutomationUpdateGate.close)
 $createdTrigger.reset(AutomationUpdateGate.close)
 $updatedTrigger.reset(AutomationUpdateGate.close)
 

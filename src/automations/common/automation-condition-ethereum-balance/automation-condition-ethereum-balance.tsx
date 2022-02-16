@@ -12,9 +12,10 @@ import { Icon } from '~/common/icon'
 import { AutomationNetworksDialog } from '../automation-networks-dialog'
 import { useDialog } from '~/common/dialog'
 import { Wallet } from '../automation.types'
-import * as styles from './automation-condition-ethereum-balance.css'
 import { networksConfig } from '~/networks-config'
 import { Input } from '~/common/input'
+import { ConditionTypes } from '../automation.constants'
+import * as styles from './automation-condition-ethereum-balance.css'
 
 type FormValues = {
   wallet: string
@@ -27,15 +28,6 @@ export type AutomationConditionEthereumBalanceProps = {
   onSubmit: (formValues: string) => void
   wallets: Wallet[]
   defaultValues?: Omit<FormValues, 'wallet'> & { wallet: string }
-}
-
-enum ConditionTypes {
-  greater = '>',
-  greaterOrEqual = '>=',
-  less = '<',
-  lessOrEqual = '<=',
-  notEqual = '!=',
-  equal = '==',
 }
 
 export const AutomationConditionEthereumBalance: React.VFC<AutomationConditionEthereumBalanceProps> =

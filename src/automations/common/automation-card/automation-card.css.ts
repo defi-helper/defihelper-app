@@ -9,6 +9,7 @@ export const root = style({
   flexDirection: 'column',
   position: 'relative',
   justifyContent: 'space-between',
+  gap: 20,
 })
 
 export const type = style({

@@ -22,7 +22,7 @@ import { Wallet } from '~/wallets/common'
 export type AutomationDeployContractProps = {
   onConfirm: (contract: StakingAutomatesContractFragmentFragment) => void
   onCancel: (error?: unknown) => void
-  protocols: Protocol[]
+  getProtocols: () => Promise<Protocol[]>
   wallet: Wallet
 }
 
@@ -86,8 +86,10 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
 
     const handleChooseProtocol = async () => {
       try {
+        const protocols = await props.getProtocols()
+
         const result = await openProtocolDialog({
-          protocols: props.protocols,
+          protocols,
         })
 
         setProtocol(result)
