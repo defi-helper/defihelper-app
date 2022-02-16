@@ -40,6 +40,9 @@ export const AUTOMATION_DESCRIPTION = gql`
         ethereumOptimalAutomateRun {
           ...automationDescriptionFragment
         }
+        contractMetric {
+          ...automationDescriptionFragment
+        }
       }
       actions {
         notification {

@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm, Controller } from 'react-hook-form'
 import { useEffect, useMemo } from 'react'
+import { useAsync } from 'react-use'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
@@ -40,7 +41,7 @@ import * as styles from './automation-trigger-form.css'
 export type AutomationTriggerFormProps = {
   type: 'ByTime' | 'ByEvent'
   wallets: Wallet[]
-  protocols: Protocol[]
+  getProtocols: () => Promise<Protocol[]>
   onCreate: (formValues: AutomateTriggerCreateInputType) => void
   onUpdate: (formValues: AutomateTriggerUpdateInputType) => void
   defaultValues?: AutomateTriggerCreateInputType & { id: string }
@@ -71,12 +72,14 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
   const [openWalletsDialog] = useDialog(AutomationWalletsDialog)
   const [openEventsDialog] = useDialog(AutomationEventsDialog)
 
+  const protocols = useAsync(props.getProtocols, [])
+
   const defaultValues = useMemo((): FormValues => {
     const { params, wallet, ...restOfDefaultValues } = props.defaultValues ?? {}
 
     const { address, ...parsedParams } = safeJsonParse(params)
 
-    const findedProtocol = props.protocols.find((protocol) =>
+    const findedProtocol = protocols.value?.find((protocol) =>
       protocol.contracts.list?.some((contract) => contract.address === address)
     )
 
@@ -93,7 +96,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
       ),
       wallet: findedWallet,
     }
-  }, [props.defaultValues, props.protocols, props.wallets])
+  }, [props.defaultValues, protocols.value, props.wallets])
 
   const {
     handleSubmit,
@@ -126,11 +129,11 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
   }
 
   const handleChooseProtocol = async () => {
-    if (isEmpty(props.protocols)) return
+    if (isEmpty(protocols.value) || !protocols.value) return
 
     try {
       const result = await openProtocolDialog({
-        protocols: props.protocols,
+        protocols: protocols.value,
       })
 
       setValue('protocol', result)

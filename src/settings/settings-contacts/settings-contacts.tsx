@@ -122,7 +122,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
         {!loading && !contactList.length && (
           <SettingsInitialCard>
             <Typography variant="body2">
-              Add contact so you can recieve notifications about any actions.
+              Add your contact details to receive notifications from DeFiHelper.
             </Typography>
             <Button onClick={handleOpenContactForm} size="small">
               + Add Contact

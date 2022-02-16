@@ -7,6 +7,7 @@ import {
   AutomateConditionTypeEnum,
   AutomationDescriptionQuery,
 } from '~/graphql/_generated-types'
+import { AutomationConditionContractMetric } from '../automation-condition-contract-metric'
 import { AutomationConditionEthereumBalance } from '../automation-condition-ethereum-balance'
 import { AutomationConditionEthereumGasPrice } from '../automation-condition-ethereum-gas-price'
 import { AutomationConditionEthereumOptimal } from '../automation-condition-ethereum-optimal'
@@ -16,7 +17,7 @@ import {
   AutomationSelectList,
   AutomationSelectListItem,
 } from '../automation-select-list'
-import { FormItem, Wallet } from '../automation.types'
+import { FormItem, Protocol, Wallet } from '../automation.types'
 import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-conditions-dialog.css'
 
@@ -34,6 +35,7 @@ export type AutomationConditionsDialogProps = {
   >
   priority: number
   names: Record<string, string>
+  getProtocols: () => Promise<Protocol[]>
 }
 
 export const AutomationConditionsDialog: React.VFC<AutomationConditionsDialogProps> =
@@ -60,6 +62,17 @@ export const AutomationConditionsDialog: React.VFC<AutomationConditionsDialogPro
     const params = props.params ? safeJsonParse(props.params) : undefined
 
     const Forms: Record<string, FormItem> = {
+      [AutomateConditionTypeEnum.ContractMetric]: {
+        title: props.descriptions.conditions.contractMetric.name,
+        description: props.descriptions.conditions.contractMetric.description,
+        component: (
+          <AutomationConditionContractMetric
+            onSubmit={handleSubmit}
+            defaultValues={params}
+            getProtocols={props.getProtocols}
+          />
+        ),
+      },
       [AutomateConditionTypeEnum.EthereumBalance]: {
         title: props.descriptions.conditions.ethereumBalance.name,
         description: props.descriptions.conditions.ethereumBalance.description,

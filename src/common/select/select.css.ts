@@ -38,6 +38,7 @@ export const input = style({
   padding: '8px 16px',
   color: 'currentcolor',
   transition: 'border .2s ease-in-out',
+  minHeight: 42,
 
   '::placeholder': {
     color: 'inherit',

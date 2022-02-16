@@ -186,6 +186,7 @@ export const stakingApi = {
         list: data?.automateContracts.list ?? [],
         count: data?.automateContracts.pagination.count ?? 0,
       })),
+
   createAutomatesContract: (
     variables: AutomationContractCreateMutationVariables
   ) =>

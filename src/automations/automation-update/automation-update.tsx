@@ -60,7 +60,6 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const wallets = useStore(settingsWalletModel.$wallets)
   const [currentType, setType] = useState<Types | null>(null)
   const [currentTab, setTab] = useState<Tabs>(Tabs.Trigger)
-  const protocols = useStore(model.$protocols)
   const creating = useStore(model.createTriggerFx.pending)
   const createdTrigger = useStore(model.$createdTrigger)
   const updatedTrigger = useStore(model.$updatedTrigger)
@@ -141,6 +140,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
         triggerId: trigger?.id,
         descriptions: props.descriptions,
         priority: conditionsPriority + 1,
+        getProtocols: model.fetchProtocolsFx,
       })
 
       model.createConditionFx(result)
@@ -154,7 +154,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const handleDeploy = async () => {
     try {
       return await openDeployContract({
-        protocols,
+        getProtocols: model.fetchProtocolsFx,
         wallet: props.wallet,
       })
     } catch (error) {
@@ -221,6 +221,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
           params: condition.params,
           descriptions: props.descriptions,
           priority: condition.priority,
+          getProtocols: model.fetchProtocolsFx,
         })
 
         model.updateConditionFx({
@@ -327,7 +328,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
             <AutomationTriggerForm
               wallets={wallets}
               type={currentType}
-              protocols={protocols}
+              getProtocols={model.fetchProtocolsFx}
               onCreate={handleCreateTrigger}
               onUpdate={model.updateTriggerFx}
               defaultValues={defaultValues}
