@@ -21,9 +21,9 @@ export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
   props
 ) => {
   const integrations = useStore(model.$integrationsList)
-  const assetsByWallet = useStore(model.$assetsByWallet)
-  const assetsLoading = useStore(model.fetchAssetsByWalletFx.pending)
-  const openedWallet = useStore(model.$openedWallet)
+  const assetsByWallet = useStore(model.$assetsByIntegration)
+  const assetsLoading = useStore(model.fetchAssetsByIntegrationFx.pending)
+  const openedWallet = useStore(model.$openedIntegration)
 
   useEffect(() => {
     model.fetchEstablishedIntegrationsListFx()
@@ -32,7 +32,7 @@ export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
   if (!integrations.length) return <></>
 
   const handleToggleRow = (exchangeId: string) => {
-    model.openWallet(openedWallet === exchangeId ? null : exchangeId)
+    model.openIntegration(openedWallet === exchangeId ? null : exchangeId)
   }
 
   return (

@@ -9,9 +9,7 @@ import {
 import { settingsApi } from '~/settings/common'
 import { toastsService } from '~/toasts'
 import { portfolioApi, portfolioSortAssetsByWallet } from '~/portfolio/common'
-import { portfolioAssetsDomain } from '~/portfolio/portfolio-assets/portfolio-assets.model'
 import { authModel } from '~/auth'
-import { portfolioWalletsDomain } from '~/portfolio/portfolio-wallets/portfolio-wallets.model'
 
 export type Integrations = Record<
   string,
@@ -46,26 +44,32 @@ export const connectIntegrationBinanceFx = integrationListDomain.createEffect(
   }
 )
 
-export const fetchAssetsByWallet = (exchangeId: string) =>
+export const fetchAssetsByIntegration = (exchangeId: string) =>
   portfolioApi
     .getAssetsListByExchange({ exchangeId })
     .then(portfolioSortAssetsByWallet)
 
-export const fetchAssetsByWalletFx =
-  portfolioAssetsDomain.createEffect(fetchAssetsByWallet)
+export const fetchAssetsByIntegrationFx = integrationListDomain.createEffect(
+  fetchAssetsByIntegration
+)
 
-export const $assetsByWallet = restore(fetchAssetsByWalletFx.doneData, [])
+export const $assetsByIntegration = restore(
+  fetchAssetsByIntegrationFx.doneData,
+  []
+)
 
-export const openWallet = portfolioWalletsDomain.createEvent<string | null>()
+export const openIntegration = integrationListDomain.createEvent<
+  string | null
+>()
 
-export const $openedWallet = portfolioWalletsDomain
+export const $openedIntegration = integrationListDomain
   .createStore<string | null>(null)
-  .on(openWallet, (_, payload) => payload)
+  .on(openIntegration, (_, payload) => payload)
 
 guard({
-  clock: $openedWallet.updates,
-  filter: (walletId): walletId is string => Boolean(walletId),
-  target: fetchAssetsByWalletFx,
+  clock: $openedIntegration.updates,
+  filter: (integrationId): integrationId is string => Boolean(integrationId),
+  target: fetchAssetsByIntegrationFx,
 })
 
 export const disconnectIntegrationFx = integrationListDomain.createEffect(
@@ -114,8 +118,7 @@ export const $integrations = combine($integrationsList, (integrations) => {
   }, {})
 })
 
-$assetsByWallet.reset(authModel.logoutFx.done)
-
+$assetsByIntegration.reset(authModel.logoutFx.done)
 toastsService.forwardErrors(
   fetchEstablishedIntegrationsListFx.failData,
   connectIntegrationBinanceFx.failData,
