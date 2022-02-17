@@ -9,7 +9,7 @@ export const list = style({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  minHeight: 'calc(100% - 40px)',
+  minHeight: 'calc(100% - 70px)',
 })
 
 export const listItem = style({

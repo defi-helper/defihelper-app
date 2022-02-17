@@ -190,7 +190,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   return (
     <div className={clsx(styles.root, props.className)}>
       <Typography variant="h3" className={styles.title}>
-        Deployed automations
+        Deployed Automations
       </Typography>
       <div className={styles.list}>
         {automatesContracts.map((automatesContract) => {

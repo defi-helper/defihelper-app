@@ -4,7 +4,7 @@ export const root = style({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  minHeight: 'calc(100% - 43px)',
+  minHeight: 'calc(100% - 70px)',
 })
 
 globalStyle(`${root} > button:first-of-type`, {
