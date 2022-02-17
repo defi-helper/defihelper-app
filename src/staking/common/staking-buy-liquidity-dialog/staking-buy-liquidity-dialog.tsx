@@ -173,7 +173,7 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
                 family="mono"
                 className={styles.title}
               >
-                {props.buyLiquidityAdapter.name}
+                BUY LP TOKENS
               </Typography>
             </div>
             <div className={styles.description}>some description</div>
