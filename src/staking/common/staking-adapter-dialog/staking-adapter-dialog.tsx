@@ -22,7 +22,6 @@ export type StakingAdapterDialogProps = {
   steps: AdapterStep[]
   onSubmit?: () => void
   onLastStep?: () => void
-  images?: Record<string, string>
 }
 
 export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
@@ -168,15 +167,6 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
                                 key={option.value}
                                 value={option.value}
                               >
-                                {props.images?.[option.label] ? (
-                                  <img
-                                    src={props.images?.[option.label]}
-                                    className={styles.img}
-                                    alt=""
-                                  />
-                                ) : (
-                                  <span className={styles.imgPlaceHolder} />
-                                )}
                                 {option.label}
                               </SelectOption>
                             ))}

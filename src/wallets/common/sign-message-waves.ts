@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import type { Provider } from '@waves/signer'
 import { Signer } from '@waves/signer'
 

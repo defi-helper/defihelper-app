@@ -2267,7 +2267,6 @@ export type TokenUpdateInputType = {
 
 export type TreasuryType = {
   __typename?: 'TreasuryType'
-  balanceUSD: Scalars['Float']
   portfoliosCount: Scalars['Int']
   protocolsCount: Scalars['Int']
   trackedUSD: Scalars['Float']

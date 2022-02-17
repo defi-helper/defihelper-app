@@ -82,7 +82,6 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
         <Dropdown
           control={
             <div
-              placeholder={props.placeholder}
               className={clsx(
                 {
                   [styles.error]: props.error,
@@ -102,7 +101,12 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                   {props.label}
                 </Typography>
               )}
-              <div className={styles.input}>{renderValue}</div>
+              <div
+                className={styles.input}
+                data-placeholder={props.placeholder}
+              >
+                {renderValue}
+              </div>
               {props.helperText && (
                 <Typography
                   variant="body2"
