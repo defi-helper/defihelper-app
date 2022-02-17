@@ -177,7 +177,7 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
                 {props.buyLiquidityAdapter.name}
               </Typography>
             </div>
-            <div className={styles.description}>some description</div>
+            <div className={styles.description}>1-click convert tokens to LP tokens.</div>
             <form
               noValidate
               autoComplete="off"
