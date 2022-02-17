@@ -8,7 +8,7 @@ import { createComponent } from '~/common/create-component'
 import * as styles from './input.css'
 
 export type InputProps = Omit<React.ComponentProps<'input'>, 'type'> & {
-  label?: string
+  label?: React.ReactNode
   helperText?: React.ReactNode
   error?: boolean
   type?: React.ComponentProps<'input'>['type'] | 'textarea'

@@ -1,8 +1,6 @@
-/* eslint-disable no-unused-vars */
 import { useEffect } from 'react'
 import { useAsyncFn, useAsyncRetry } from 'react-use'
 import { useForm, Controller } from 'react-hook-form'
-import clsx from 'clsx'
 
 import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
@@ -13,6 +11,7 @@ import { Typography } from '~/common/typography'
 import { Loader } from '~/common/loader'
 import { toastsService } from '~/toasts'
 import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
+import { ButtonBase } from '~/common/button-base'
 import * as styles from './staking-buy-liquidity-dialog.css'
 
 export type StakingBuyLiquidityDialogProps = {
@@ -172,7 +171,7 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
                 variant="body3"
                 transform="uppercase"
                 family="mono"
-                className={clsx(styles.title, styles.activeTab)}
+                className={styles.title}
               >
                 {props.buyLiquidityAdapter.name}
               </Typography>
@@ -211,7 +210,6 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
                           <span className={styles.imgPlaceHolder} />
                         )}
                         {option.symbol}
-                        <span className={styles.balance}>{option.balance}</span>
                       </SelectOption>
                     ))}
                   </Select>
@@ -221,19 +219,36 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
                 control={control}
                 name="amount"
                 render={({ field }) => (
-                  <NumericalInput
-                    {...field}
-                    label="Amount"
-                    value={field.value}
-                    className={styles.input}
-                    disabled={formState.isSubmitting}
-                    error={isApproved.value instanceof Error}
-                    helperText={
-                      isApproved.value instanceof Error
-                        ? isApproved.value.message
-                        : undefined
-                    }
-                  />
+                  <>
+                    <NumericalInput
+                      {...field}
+                      label={
+                        <>
+                          Amount{' '}
+                          <ButtonBase
+                            className={styles.balance}
+                            onClick={() =>
+                              setValue(
+                                'amount',
+                                tokens.value?.[tokenAddress]?.balance ?? '0'
+                              )
+                            }
+                          >
+                            {tokens.value?.[tokenAddress]?.balance} MAX
+                          </ButtonBase>
+                        </>
+                      }
+                      value={field.value}
+                      className={styles.input}
+                      disabled={formState.isSubmitting}
+                      error={isApproved.value instanceof Error}
+                      helperText={
+                        isApproved.value instanceof Error
+                          ? isApproved.value.message
+                          : undefined
+                      }
+                    />
+                  </>
                 )}
               />
               <Controller

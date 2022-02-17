@@ -64,6 +64,8 @@ globalStyle(`${error} ${input}`, {
 export const label = style({
   color: theme.colors.textColorGrey,
   marginBottom: 4,
+  display: 'flex',
+  alignItems: 'center',
 })
 
 export const helperText = style({})

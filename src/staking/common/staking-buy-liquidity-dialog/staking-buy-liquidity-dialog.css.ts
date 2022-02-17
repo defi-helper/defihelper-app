@@ -47,20 +47,6 @@ export const input = style({
   marginBottom: 16,
 })
 
-export const activeTab = style({
-  position: 'relative',
-
-  ':after': {
-    content: '""',
-    position: 'absolute',
-    bottom: -6,
-    left: -6,
-    right: -6,
-    height: 1,
-    background: 'currentcolor',
-  },
-})
-
 export const label = style({
   color: theme.colors.textColorGrey,
   marginBottom: 4,
@@ -91,6 +77,6 @@ export const imgPlaceHolder = style([
 ])
 
 export const balance = style({
-  color: theme.colors.textColorGrey,
+  color: theme.colors.common.blue1,
   marginLeft: 'auto',
 })

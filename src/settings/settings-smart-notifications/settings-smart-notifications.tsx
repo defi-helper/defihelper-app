@@ -48,11 +48,10 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
 
         {!loading && (
           <SettingsNotificationsCard
-            title="Portfolio statistics"
+            title="Portfolio Status"
             description={
               <>
-                We will send you your portfolio value and how much you have
-                earned every day
+                Get daily notifications on your portfolio valuation and earnings
               </>
             }
             onSwitch={(state) =>
@@ -69,11 +68,11 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
 
         {!loading && (
           <SettingsNotificationsCard
-            title="Unable to execute automations"
+            title="Account Balance Status"
             description={
               <>
-                We will send you an alert when you don&apos;t have enough money
-                to pay the blockchain and service fee to complete the automation
+                Get notified about balance insufficiency to pay for automated
+                transactions
               </>
             }
             onSwitch={(state) =>
