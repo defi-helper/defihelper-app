@@ -18,6 +18,8 @@ import {
   AssetsListByWalletQueryVariables,
   AssetListByProtocolQueryVariables,
   AssetListByProtocolQuery,
+  AssetsListByExchangeQueryVariables,
+  AssetsListByExchangeQuery,
 } from '~/graphql/_generated-types'
 import {
   ADD_WALLET,
@@ -30,6 +32,7 @@ import {
   ASSETS_LIST_BY_WALLET,
 } from './graphql'
 import { ASSETS_LIST_BY_PROTOCOL } from '~/portfolio/common/graphql/assets-list-by-protocol.graphql'
+import { ASSETS_LIST_BY_EXCHANGE } from '~/portfolio/common/graphql/assets-list-by-exchange.graphql'
 
 export const portfolioApi = {
   getTokenMetricChart: (variables: TokenMetricChartQueryVariables) =>
@@ -67,6 +70,19 @@ export const portfolioApi = {
         const [wallet = undefined] = data?.me?.wallets.list ?? []
 
         return wallet?.tokenAliases.list ?? []
+      }),
+
+  getAssetsListByExchange: (variables: AssetsListByExchangeQueryVariables) =>
+    getAPIClient()
+      .query<AssetsListByExchangeQuery, AssetsListByExchangeQueryVariables>(
+        ASSETS_LIST_BY_EXCHANGE,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => {
+        const [exchange = undefined] = data?.me?.exchanges.list ?? []
+
+        return exchange?.tokenAliases.list ?? []
       }),
 
   getAssetsListByProtocol: (variables: AssetListByProtocolQueryVariables) =>

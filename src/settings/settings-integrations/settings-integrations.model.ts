@@ -1,4 +1,4 @@
-import { createDomain, combine } from 'effector-logger/macro'
+import { createDomain, combine, restore, guard } from 'effector-logger/macro'
 import omit from 'lodash.omit'
 
 import {
@@ -8,6 +8,8 @@ import {
 } from '~/graphql/_generated-types'
 import { settingsApi } from '~/settings/common'
 import { toastsService } from '~/toasts'
+import { portfolioApi, portfolioSortAssetsByWallet } from '~/portfolio/common'
+import { authModel } from '~/auth'
 
 export type Integrations = Record<
   string,
@@ -41,6 +43,34 @@ export const connectIntegrationBinanceFx = integrationListDomain.createEffect(
     return data
   }
 )
+
+export const fetchAssetsByIntegration = (exchangeId: string) =>
+  portfolioApi
+    .getAssetsListByExchange({ exchangeId })
+    .then(portfolioSortAssetsByWallet)
+
+export const fetchAssetsByIntegrationFx = integrationListDomain.createEffect(
+  fetchAssetsByIntegration
+)
+
+export const $assetsByIntegration = restore(
+  fetchAssetsByIntegrationFx.doneData,
+  []
+)
+
+export const openIntegration = integrationListDomain.createEvent<
+  string | null
+>()
+
+export const $openedIntegration = integrationListDomain
+  .createStore<string | null>(null)
+  .on(openIntegration, (_, payload) => payload)
+
+guard({
+  clock: $openedIntegration.updates,
+  filter: (integrationId): integrationId is string => Boolean(integrationId),
+  target: fetchAssetsByIntegrationFx,
+})
 
 export const disconnectIntegrationFx = integrationListDomain.createEffect(
   async (integrationId: string) => {
@@ -88,6 +118,7 @@ export const $integrations = combine($integrationsList, (integrations) => {
   }, {})
 })
 
+$assetsByIntegration.reset(authModel.logoutFx.done)
 toastsService.forwardErrors(
   fetchEstablishedIntegrationsListFx.failData,
   connectIntegrationBinanceFx.failData,
