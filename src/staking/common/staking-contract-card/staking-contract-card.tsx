@@ -12,6 +12,7 @@ import { networksConfig } from '~/networks-config'
 import { paths } from '~/paths'
 import { StakingListRowSyncIndicator } from '~/staking/common/staking-list-row-sync-indicator'
 import { FreshMetrics, Contract } from '~/staking/common/staking.types'
+import { isExcludedAdapter } from '../constants'
 import * as styles from './staking-contract-card.css'
 
 export type StakingContractCardProps = {
@@ -54,6 +55,8 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
     bignumberUtils.gt(apyboostDifference, '0.001')
 
   const currentNetwork = networksConfig[props.network]
+
+  const isExcludedContract = isExcludedAdapter(props.adapter)
 
   return (
     <div
@@ -110,10 +113,19 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           align="right"
           className={styles.apy}
         >
-          {bignumberUtils.formatMax(apy, 10000)}%{' '}
-          <ButtonBase onClick={props.onOpenApy} className={styles.apyButton}>
-            <Icon icon="calculator" width="20" height="20" />
-          </ButtonBase>
+          {isExcludedContract ? (
+            '-'
+          ) : (
+            <>
+              {bignumberUtils.formatMax(apy, 10000)}%{' '}
+              <ButtonBase
+                onClick={props.onOpenApy}
+                className={styles.apyButton}
+              >
+                <Icon icon="calculator" width="20" height="20" />
+              </ButtonBase>
+            </>
+          )}
         </Typography>
       </div>
       <div>
@@ -135,13 +147,15 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           transform="uppercase"
           align="right"
         >
-          {bignumberUtils.format(
-            bignumberUtils.mul(
-              bignumberUtils.div(metric.myStaked, metric.tvl),
-              100
-            )
-          )}
-          %
+          {isExcludedContract
+            ? '-'
+            : `${bignumberUtils.format(
+                bignumberUtils.mul(
+                  bignumberUtils.div(metric.myStaked, metric.tvl),
+                  100
+                )
+              )}
+          %`}
         </Typography>
       </div>
       <div>
@@ -152,7 +166,9 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           transform="uppercase"
           align="right"
         >
-          ${bignumberUtils.format(metric.myEarned)}
+          {isExcludedContract
+            ? '-'
+            : `$${bignumberUtils.format(metric.myEarned)}`}
         </Typography>
       </div>
       <div className={clsx(styles.tableCol)}>
@@ -164,7 +180,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             transform="uppercase"
             align="right"
           >
-            {props.hideAutostakingBoost ? (
+            {props.hideAutostakingBoost || isExcludedContract ? (
               '-'
             ) : (
               <>
@@ -178,27 +194,31 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
               </>
             )}
           </Typography>
-          {!props.hideAutostakingBoost && validDiff && (
-            <Typography
-              variant="body2"
-              as="div"
-              family="mono"
-              transform="uppercase"
-              align="right"
-              className={clsx({
-                [styles.positive]: bignumberUtils.gt(
-                  apyboostDifference,
-                  '0.001'
-                ),
-              })}
-            >
-              {bignumberUtils.gt(apyboostDifference, 0) && '+'}
-              {bignumberUtils.formatMax(
-                bignumberUtils.mul(apyboostDifference, 100),
-                10000
+          {!isExcludedContract && (
+            <>
+              {!props.hideAutostakingBoost && validDiff && (
+                <Typography
+                  variant="body2"
+                  as="div"
+                  family="mono"
+                  transform="uppercase"
+                  align="right"
+                  className={clsx({
+                    [styles.positive]: bignumberUtils.gt(
+                      apyboostDifference,
+                      '0.001'
+                    ),
+                  })}
+                >
+                  {bignumberUtils.gt(apyboostDifference, 0) && '+'}
+                  {bignumberUtils.formatMax(
+                    bignumberUtils.mul(apyboostDifference, 100),
+                    10000
+                  )}
+                  %
+                </Typography>
               )}
-              %
-            </Typography>
+            </>
           )}
         </div>
         {props.onOpenContract && (
