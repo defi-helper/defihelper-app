@@ -1,4 +1,4 @@
-import { composeStyles, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -10,10 +10,10 @@ export const title = style({
   color: theme.colors.common.pink1,
 })
 
-export const balance = composeStyles(title, style({}))
+export const balance = style([title, style({})])
 
 export const selectList = style({
-  minHeight: 'calc(100% - 65px)',
+  minHeight: 'calc(100% - 70px)',
 })
 
 export const grey = style({

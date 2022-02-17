@@ -19,18 +19,18 @@ import { AutomationContractDialog } from '../automation-contract-dialog'
 import { toastsService } from '~/toasts'
 import { bignumberUtils } from '~/common/bignumber-utils'
 
-enum MetricTypes {
-  Tvl = 'tvl',
-  AprYear = 'aprYear',
-  AprMonth = 'aprMonth',
-  AprWeek = 'aprWeek',
-  AprDay = 'aprDay',
-}
+const MetricTypes = {
+  TVL: 'tvl',
+  'Yearly APR': 'aprYear',
+  'Monthly APR': 'aprMonth',
+  'Weekly APR': 'aprWeek',
+  'Daily APR': 'aprDay',
+} as const
 
 type FormValues = {
   contract: string
   protocol: Protocol
-  metric: MetricTypes
+  metric: typeof MetricTypes[keyof typeof MetricTypes]
   op: '>' | '>=' | '<' | '<=' | '!=' | '=='
   value: string
 }
@@ -47,10 +47,10 @@ const isError = (object: unknown): object is { message: string } => {
 
 const isApr = (value: string) => {
   const arr: string[] = [
-    MetricTypes.AprDay,
-    MetricTypes.AprMonth,
-    MetricTypes.AprWeek,
-    MetricTypes.AprYear,
+    MetricTypes['Daily APR'],
+    MetricTypes['Monthly APR'],
+    MetricTypes['Weekly APR'],
+    MetricTypes['Yearly APR'],
   ]
 
   return arr.includes(value)
