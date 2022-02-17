@@ -96,6 +96,7 @@ export const fetchProtocolsFx = automationUpdateDomain.createEffect(() =>
   automationApi.getProtocols({
     filter: {
       hidden: false,
+      isDebank: false,
     },
   })
 )

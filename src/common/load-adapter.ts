@@ -102,6 +102,24 @@ export type DeployType = {
   deploy: DeployStep[]
 }
 
+export type BuyLiquidity = {
+  name: string
+  methods: {
+    balanceOf(tokenAddress: string): Promise<string>
+    isApprove(tokenAddress: string, amount: string): Promise<boolean | Error>
+    approve(
+      tokenAddress: string,
+      amount: string
+    ): Promise<{ tx?: { wait: () => Promise<unknown> } }>
+    canBuy(tokenAddress: string, amount: string): Promise<boolean | Error>
+    buy(
+      tokenAddress: string,
+      amount: string,
+      slippage: string
+    ): Promise<{ tx?: { wait: () => Promise<unknown> } }>
+  }
+}
+
 export type Adapters = {
   staking: AdapterFn
   swopfiStaking: AdapterFn
@@ -123,7 +141,7 @@ export type Adapters = {
       signer: unknown,
       contractAddress: string,
       payload: unknown
-    ) => Promise<{ buy: DeployStep[] }>
+    ) => Promise<BuyLiquidity>
   }
 }
 

@@ -1441,6 +1441,7 @@ export type ProtocolListFilterInputType = {
   favorite?: Maybe<Scalars['Boolean']>
   hidden?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
+  isDebank?: Maybe<Scalars['Boolean']>
 }
 
 export type ProtocolListPaginationInputType = {
@@ -2266,7 +2267,6 @@ export type TokenUpdateInputType = {
 
 export type TreasuryType = {
   __typename?: 'TreasuryType'
-  balanceUSD: Scalars['Float']
   portfoliosCount: Scalars['Int']
   protocolsCount: Scalars['Int']
   trackedUSD: Scalars['Float']

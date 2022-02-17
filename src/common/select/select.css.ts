@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -40,10 +40,6 @@ export const input = style({
   transition: 'border .2s ease-in-out',
   minHeight: 42,
 
-  '::placeholder': {
-    color: 'inherit',
-  },
-
   '@media': {
     [theme.mediaQueries.hover()]: {
       ':hover': {
@@ -55,6 +51,11 @@ export const input = style({
   ':focus': {
     borderColor: theme.colors.textColorPrimary,
   },
+})
+
+globalStyle(`${input}:empty:not(:focus):before`, {
+  content: 'attr(data-placeholder)',
+  color: 'inherit',
 })
 
 export const disabled = style({

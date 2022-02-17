@@ -75,3 +75,22 @@ export const radio = style({
     },
   },
 })
+
+export const img = style({
+  width: 24,
+  height: 24,
+  marginRight: 5,
+})
+
+export const imgPlaceHolder = style([
+  img,
+  {
+    background: theme.colors.border,
+    borderRadius: '50%',
+  },
+])
+
+export const balance = style({
+  color: theme.colors.textColorGrey,
+  marginLeft: 'auto',
+})

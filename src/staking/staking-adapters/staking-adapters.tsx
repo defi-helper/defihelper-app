@@ -1,7 +1,11 @@
 import { useStore } from 'effector-react'
 import networks from '@defihelper/networks/contracts.json'
 
-import { Contract, StakingAdapterDialog } from '~/staking/common'
+import {
+  Contract,
+  StakingAdapterDialog,
+  StakingBuyLiquidityDialog,
+} from '~/staking/common'
 import { Button } from '~/common/button'
 import { useDialog, UserRejectionError } from '~/common/dialog'
 import { switchNetwork } from '~/wallets/common'
@@ -32,6 +36,7 @@ export type StakingAdaptersProps = {
 
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const [openAdapter] = useDialog(StakingAdapterDialog)
+  const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
 
   const wallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
@@ -112,7 +117,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
     })
 
     try {
-      const { adapter, images } = await model.buyLPFx({
+      const { adapter, tokens } = await model.buyLPFx({
         account: wallet.account,
         provider: wallet.provider,
         chainId: props.network,
@@ -122,11 +127,9 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         protocol: props.blockchain,
       })
 
-      if (!adapter) return
-
-      await openAdapter({
-        steps: adapter,
-        images,
+      await openBuyLiquidity({
+        buyLiquidityAdapter: adapter,
+        tokens,
       })
     } catch (error) {
       if (error instanceof Error && !(error instanceof UserRejectionError)) {

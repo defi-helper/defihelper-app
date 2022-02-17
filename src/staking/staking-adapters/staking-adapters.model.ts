@@ -133,19 +133,14 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
       networkProvider.getSigner(),
       currentNetwork.BuyLiquidity.address,
       {
-        tokens,
         router: params.router,
         pair: params.pair,
       }
     )
 
     return {
-      adapter: result.buy,
-      images: tokens.reduce<Record<string, string>>((acc, token) => {
-        acc[token.symbol] = token.logoUrl
-
-        return acc
-      }, {}),
+      adapter: result,
+      tokens,
     }
   }
 )
