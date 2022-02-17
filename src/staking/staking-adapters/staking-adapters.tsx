@@ -5,6 +5,7 @@ import {
   Contract,
   StakingAdapterDialog,
   StakingBuyLiquidityDialog,
+  isExcludedAdapter,
 } from '~/staking/common'
 import { Button } from '~/common/button'
 import { useDialog, UserRejectionError } from '~/common/dialog'
@@ -24,6 +25,7 @@ export type StakingAdaptersProps = {
   contractAddress: string
   contractAdapter: string
   protocolAdapter: string
+  protocolId: string
   contractId: string
   blockchain: BlockchainEnum
   network: string
@@ -221,51 +223,57 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         </WalletConnect>
       </div>
       <div className={styles.claim}>
-        <WalletConnect
-          fallback={
-            <Button size="small" variant="outlined">
+        {!isExcludedAdapter(props.contractAdapter) && (
+          <WalletConnect
+            fallback={
+              <Button size="small" variant="outlined">
+                Claim
+              </Button>
+            }
+            blockchain={props.blockchain}
+            network={props.network}
+          >
+            <Button
+              onClick={handleClaim}
+              size="small"
+              variant="outlined"
+              disabled={Boolean(
+                actionLoading && actionLoading.action !== 'claim'
+              )}
+              loading={actionLoading?.action === 'claim'}
+            >
               Claim
             </Button>
-          }
-          blockchain={props.blockchain}
-          network={props.network}
-        >
-          <Button
-            onClick={handleClaim}
-            size="small"
-            variant="outlined"
-            disabled={Boolean(
-              actionLoading && actionLoading.action !== 'claim'
-            )}
-            loading={actionLoading?.action === 'claim'}
-          >
-            Claim
-          </Button>
-        </WalletConnect>
+          </WalletConnect>
+        )}
       </div>
       <div>
         <div className={styles.turnOn}>
-          {!(props.autorestake && props.prototypeAddress) && user ? (
-            <>-</>
-          ) : (
-            <WalletConnect
-              fallback={
-                <Button size="small" variant="outlined">
-                  Auto-Stake
-                </Button>
-              }
-              blockchain={props.blockchain}
-              network={props.network}
-            >
-              <Button
-                size="small"
-                variant="outlined"
-                onClick={props.onTurnOn}
-                loading={props.autostakingLoading}
-              >
-                Auto-Stake
-              </Button>
-            </WalletConnect>
+          {!isExcludedAdapter(props.contractAdapter) && (
+            <>
+              {!(props.autorestake && props.prototypeAddress) && user ? (
+                <>-</>
+              ) : (
+                <WalletConnect
+                  fallback={
+                    <Button size="small" variant="outlined">
+                      Auto-Stake
+                    </Button>
+                  }
+                  blockchain={props.blockchain}
+                  network={props.network}
+                >
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={props.onTurnOn}
+                    loading={props.autostakingLoading}
+                  >
+                    Auto-Stake
+                  </Button>
+                </WalletConnect>
+              )}
+            </>
           )}
         </div>
       </div>

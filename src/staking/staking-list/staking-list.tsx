@@ -530,6 +530,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   />
                   {opened && (
                     <StakingAdapters
+                      protocolId={props.protocolId}
                       protocolAdapter={props.protocolAdapter}
                       contractAdapter={stakingListItem.adapter}
                       contractAddress={stakingListItem.address}
