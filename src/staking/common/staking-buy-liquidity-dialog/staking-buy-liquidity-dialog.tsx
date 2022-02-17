@@ -111,10 +111,14 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
           const { tx } = await approve(formValues.token, formValues.amount)
 
           await tx?.wait()
+
+          return true
         } catch (error) {
           if (error instanceof Error) {
             toastsService.error(error.message)
           }
+
+          return false
         }
       },
       []
@@ -133,15 +137,11 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
     })
 
     useEffect(() => {
-      if (
-        typeof isApproved.value === 'boolean' &&
-        isApproved.value &&
-        formState.isSubmitSuccessful
-      ) {
+      if (typeof isApproved.value === 'boolean' && !approveState.value) {
         isApproved.retry()
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isApproved.value, formState.isSubmitSuccessful])
+    }, [isApproved.value, approveState.value, amount])
 
     useEffect(() => {
       if (!buyState.value) return
@@ -155,6 +155,8 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
       if (!message) return
 
       toastsService.error(message)
+      tokens.retry()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [approveState.error, buyState.error])
 
     return (
