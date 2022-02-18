@@ -81,9 +81,14 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
     )
 
     const [buyState, onBuy] = useAsyncFn(async (formValues: FormValues) => {
-      const { buy } = props.buyLiquidityAdapter.methods
+      const { buy, canBuy } = props.buyLiquidityAdapter.methods
 
       try {
+        const can = await canBuy(formValues.token, formValues.amount)
+
+        if (can instanceof Error) throw can
+        if (!can) throw new Error("can't buy")
+
         const { tx } = await buy(
           formValues.token,
           formValues.amount,
