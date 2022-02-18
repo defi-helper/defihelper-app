@@ -1,7 +1,8 @@
 import { useStore } from 'effector-react'
-import { useEffect, useState } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { ethers } from 'ethers'
 import type { JsonFragment } from '@ethersproject/abi'
+import { useAsync } from 'react-use'
 
 import { AppLayout } from '~/layouts'
 import { Button } from '~/common/button'
@@ -10,9 +11,10 @@ import { ContractParametersDialog, ContractsDialog } from './common'
 import { ButtonBase } from '~/common/button-base'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import * as model from './governance-multisig.model'
 import { useQueryParams } from '~/common/hooks'
 import { Input } from '~/common/input'
+import * as model from './governance-multisig.model'
+import { switchNetwork } from '~/wallets/common'
 
 export type GovernanceMultisigProps = unknown
 
@@ -22,16 +24,28 @@ type Action = {
   contract: string
 }
 
+const safeJsonParse = (
+  value: string
+): Partial<{ network: string; actions: Action[] }> => {
+  try {
+    return JSON.parse(value)
+  } catch {
+    return {}
+  }
+}
+
 export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
   const [openContractsDialog] = useDialog(ContractsDialog)
   const [openParametersDialog] = useDialog(ContractParametersDialog)
   const contracts = useStore(model.$contracts)
   const query = useQueryParams()
 
-  const actionsQuery = query.get('actions')
-
-  const strJsonObj = actionsQuery ? JSON.parse(atob(actionsQuery)) : []
-  const [actions, setActions] = useState<Action[]>(strJsonObj)
+  const stateQuery = query.get('state')
+  const queryObj = useMemo(
+    () => (stateQuery ? safeJsonParse(atob(stateQuery)) : {}),
+    [stateQuery]
+  )
+  const [actions, setActions] = useState<Action[]>(queryObj?.actions ?? [])
   const [url, setUrl] = useState('')
 
   const wallet = walletNetworkModel.useWalletNetwork()
@@ -126,6 +140,29 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
     }
   }
 
+  const handleDelete = (index: number) => () => {
+    setActions(actions.filter((_, ind) => ind !== index))
+  }
+
+  const getContract = useCallback(() => {
+    if (!wallet?.chainId || !contracts.GovernorMultisig) return null
+
+    const networkProvider = walletNetworkModel.getNetwork(
+      wallet.provider,
+      wallet.chainId
+    )
+
+    if (!networkProvider) return null
+
+    const governor = new ethers.Contract(
+      contracts.GovernorMultisig.address,
+      contracts.GovernorMultisig.abi,
+      networkProvider.getSigner()
+    )
+
+    return governor
+  }, [contracts.GovernorMultisig, wallet])
+
   const handleExecute = async () => {
     if (!wallet?.chainId || !wallet?.provider) return
 
@@ -157,18 +194,9 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
       .map((action) => contracts[action.contract]?.address)
       .filter(Boolean)
 
-    const networkProvider = walletNetworkModel.getNetwork(
-      wallet.provider,
-      wallet.chainId
-    )
+    const governor = getContract()
 
-    if (!networkProvider) return
-
-    const governor = new ethers.Contract(
-      contracts.GovernorMultisig.address,
-      contracts.GovernorMultisig.abi,
-      networkProvider.getSigner()
-    )
+    if (!governor) return
 
     try {
       const gasLimit = bignumberUtils.estimateGas(
@@ -199,31 +227,66 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
   }
 
   const handleShare = async () => {
-    const objJsonStr = JSON.stringify(actions)
+    if (!wallet?.chainId) return
+
+    const objJsonStr = JSON.stringify({
+      actions,
+      network: wallet.chainId,
+    })
+
     const objJsonB64 = btoa(objJsonStr)
 
-    setUrl(`${window.location.href}?actions=${objJsonB64}`)
+    setUrl(`${window.location.href}?state=${objJsonB64}`)
   }
 
+  const isOwner = useAsync(async () => {
+    const contract = getContract()
+
+    if (!contract || !wallet?.account) return
+
+    return contract.isOwner(wallet.account)
+  }, [getContract, wallet])
+
   useEffect(() => {
-    model.fetchAbiFx()
-  }, [])
+    if (!wallet?.chainId) return
+
+    if (!queryObj.network || queryObj.network !== wallet.chainId) return
+
+    switchNetwork(queryObj.network).catch(console.error)
+  }, [queryObj.network, wallet])
 
   return (
     <AppLayout>
-      <Button onClick={createTransaction}>Create transaction</Button>
-      <div>
-        {actions.map((action, index) => (
-          <div key={String(index)}>
-            {action.contract}.{action.name}(
-            {action.params.map((param) => param.value).join(', ')})
-            <ButtonBase onClick={handleEdit(action, index)}>Edit</ButtonBase>
-          </div>
-        ))}
-      </div>
-      <Button onClick={handleExecute}>Execute</Button>
-      <Button onClick={handleShare}>Share</Button>
-      {url && <Input type="textarea" defaultValue={url} />}
+      {isOwner.loading ? (
+        'loading...'
+      ) : (
+        <>
+          {isOwner.value ? (
+            <>
+              <Button onClick={createTransaction}>Create transaction</Button>
+              <div>
+                {actions.map((action, index) => (
+                  <div key={String(index)}>
+                    {action.contract}.{action.name}(
+                    {action.params.map((param) => param.value).join(', ')})
+                    <ButtonBase onClick={handleEdit(action, index)}>
+                      Edit
+                    </ButtonBase>
+                    <ButtonBase onClick={handleDelete(index)}>
+                      Delete
+                    </ButtonBase>
+                  </div>
+                ))}
+              </div>
+              <Button onClick={handleExecute}>Execute</Button>
+              <Button onClick={handleShare}>Share</Button>
+              {url && <Input type="textarea" defaultValue={url} />}
+            </>
+          ) : (
+            <>you&apos;re not owner</>
+          )}
+        </>
+      )}
     </AppLayout>
   )
 }

@@ -3,6 +3,7 @@ import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
 import { Input } from '~/common/input'
 import { isEthAddress } from '~/common/is-eth-address'
+import { GovernancePowOptions } from '~/governance/common'
 import * as styles from './contract-parameters-dialog.css'
 
 export type ContractParametersDialogProps = {
@@ -24,17 +25,18 @@ export type ContractParametersDialogProps = {
 
 export const ContractParametersDialog: React.VFC<ContractParametersDialogProps> =
   (props) => {
-    const { register, handleSubmit, formState } = useForm({
-      defaultValues: props.method.inputs.reduce<
-        Record<string, Record<string, string>>
-      >((acc, param) => {
-        acc[param.name] = {
-          [param.type]: param.value ?? '',
-        }
+    const { register, handleSubmit, formState, setValue, getValues, trigger } =
+      useForm({
+        defaultValues: props.method.inputs.reduce<
+          Record<string, Record<string, string>>
+        >((acc, param) => {
+          acc[param.name] = {
+            [param.type]: param.value ?? '',
+          }
 
-        return acc
-      }, {}),
-    })
+          return acc
+        }, {}),
+      })
 
     const handleOnSubmit = handleSubmit((formValues) => {
       props.onConfirm({
@@ -52,29 +54,48 @@ export const ContractParametersDialog: React.VFC<ContractParametersDialogProps> 
       })
     })
 
+    const handleChangeUintValue = (name: string) => async (pow: string) => {
+      await trigger(name, { shouldFocus: true })
+
+      const values = getValues(name)
+
+      setValue(name, {
+        ...values,
+        value: (values.value || 1) + pow,
+      })
+    }
+
     return (
       <Dialog className={styles.root}>
         <form onSubmit={handleOnSubmit}>
           <div className={styles.fn}>
             {props.method.name}
             {props.method.inputs.map((input) => (
-              <Input
-                key={input.id}
-                label={input.name}
-                placeholder={input.type}
-                className={styles.input}
-                error={Boolean(
-                  formState.errors?.[input.name]?.[input.type]?.message
+              <div key={input.id}>
+                {input.type === 'uint256' && (
+                  <GovernancePowOptions
+                    onClick={handleChangeUintValue(
+                      `${input.name}.${input.type}`
+                    )}
+                  />
                 )}
-                helperText={
-                  formState.errors?.[input.name]?.[input.type]?.message
-                }
-                {...register(`${input.name}.${input.type}`, {
-                  required: true,
-                  pattern:
-                    input.type === 'address' ? isEthAddress.regex : undefined,
-                })}
-              />
+                <Input
+                  label={input.name}
+                  placeholder={input.type}
+                  className={styles.input}
+                  error={Boolean(
+                    formState.errors?.[input.name]?.[input.type]?.message
+                  )}
+                  helperText={
+                    formState.errors?.[input.name]?.[input.type]?.message
+                  }
+                  {...register(`${input.name}.${input.type}`, {
+                    required: true,
+                    pattern:
+                      input.type === 'address' ? isEthAddress.regex : undefined,
+                  })}
+                />
+              </div>
             ))}
           </div>
           <Button type="submit">Submit</Button>

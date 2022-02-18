@@ -33,11 +33,12 @@ export const fetchUserFx = authDomain.createEffect(() => authApi.me())
 
 export const logoutFx = authDomain.createEffect(() => {
   sidUtils.remove()
-
-  window.location.reload()
 })
 
-logoutFx.done.watch(() => history.push(paths.portfolio))
+logoutFx.done.watch(() => {
+  history.push(paths.portfolio)
+  window.location.reload()
+})
 
 export const saveUserFx = authDomain.createEffect(async (data: AuthData) => {
   sidUtils.set(data.sid)

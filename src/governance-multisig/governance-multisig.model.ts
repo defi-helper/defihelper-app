@@ -1,37 +1,70 @@
-import { createDomain, UnitValue } from 'effector-logger/macro'
+import { createDomain, UnitValue, guard } from 'effector-logger/macro'
 import contractsConfig from '@defihelper/networks/contracts.json'
+import { createGate } from 'effector-react'
 import type { ContractInterface } from 'ethers'
+
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { Wallet } from '~/wallets/common'
+import { toastsService } from '~/toasts'
 
 export const governanceMultisig = createDomain()
 
-export const fetchAbiFx = governanceMultisig.createEffect(async () => {
-  const networks = Object.fromEntries(
-    Object.entries(contractsConfig).filter(([, contracts]) =>
-      Object.keys(contracts).some((contract) => contract === 'GovernorMultisig')
-    )
-  ) as Record<
-    string,
-    { [key: string]: { address: string; deployBlockNumber: number } }
-  >
+type NonNullable<T> = Exclude<T, null | undefined>
 
-  const currentChainId = '56'
+// eslint-disable-next-line @typescript-eslint/ban-types
+type RequiredNonNullableObject<T extends object> = {
+  [P in keyof Required<T>]: NonNullable<T[P]>
+}
 
-  const currentNetwork = networks[currentChainId]
+export const fetchAbiFx = governanceMultisig.createEffect(
+  async (wallet: RequiredNonNullableObject<Wallet>) => {
+    const networks = Object.fromEntries(
+      Object.entries(contractsConfig).filter(([, contracts]) =>
+        Object.keys(contracts).some(
+          (contract) => contract === 'GovernorMultisig'
+        )
+      )
+    ) as Record<
+      string,
+      { [key: string]: { address: string; deployBlockNumber: number } }
+    >
 
-  return Object.entries(currentNetwork).reduce<
-    Promise<Record<string, { abi: ContractInterface; address: string }>>
-  >(async (acc, [contractName, { address }]) => {
-    const previousAcc = await acc
+    const currentNetwork = networks[wallet.chainId]
 
-    previousAcc[contractName] = {
-      abi: (await import(`@defihelper/networks/abi/${contractName}.json`)).abi,
-      address,
-    }
+    if (!currentNetwork)
+      throw new Error(
+        'current network does not have a GovernorMulisig contract'
+      )
 
-    return acc
-  }, Promise.resolve({}))
-})
+    return Object.entries(currentNetwork).reduce<
+      Promise<Record<string, { abi: ContractInterface; address: string }>>
+    >(async (acc, [contractName, { address }]) => {
+      const previousAcc = await acc
+
+      previousAcc[contractName] = {
+        abi: (await import(`@defihelper/networks/abi/${contractName}.json`))
+          .abi,
+        address,
+      }
+
+      return acc
+    }, Promise.resolve({}))
+  }
+)
 
 export const $contracts = governanceMultisig
   .createStore<UnitValue<typeof fetchAbiFx.doneData>>({})
   .on(fetchAbiFx.doneData, (_, payload) => payload)
+
+export const GovernanceMultisigGate = createGate('GovernanceMultisigGate')
+
+guard({
+  source: walletNetworkModel.$wallet,
+  clock: [walletNetworkModel.$wallet.updates, GovernanceMultisigGate.open],
+  filter: (wallet): wallet is RequiredNonNullableObject<Wallet> =>
+    Boolean(wallet?.chainId && wallet.account && wallet.connector),
+  target: fetchAbiFx,
+})
+
+$contracts.reset(GovernanceMultisigGate.close)
+toastsService.forwardErrors(fetchAbiFx.failData)
