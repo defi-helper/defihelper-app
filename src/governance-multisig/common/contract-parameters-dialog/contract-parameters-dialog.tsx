@@ -59,10 +59,7 @@ export const ContractParametersDialog: React.VFC<ContractParametersDialogProps> 
 
       const values = getValues(name)
 
-      setValue(name, {
-        ...values,
-        value: (values.value || 1) + pow,
-      })
+      setValue(name, ((values || 1) + pow) as unknown as Record<string, string>)
     }
 
     return (
@@ -71,31 +68,35 @@ export const ContractParametersDialog: React.VFC<ContractParametersDialogProps> 
           <div className={styles.fn}>
             {props.method.name}
             {props.method.inputs.map((input) => (
-              <div key={input.id}>
-                {input.type === 'uint256' && (
-                  <GovernancePowOptions
-                    onClick={handleChangeUintValue(
-                      `${input.name}.${input.type}`
+              <Input
+                key={input.id}
+                label={
+                  <>
+                    {input.name}{' '}
+                    {input.type === 'uint256' && (
+                      <GovernancePowOptions
+                        onClick={handleChangeUintValue(
+                          `${input.name}.${input.type}`
+                        )}
+                        className={styles.pow}
+                      />
                     )}
-                  />
+                  </>
+                }
+                placeholder={input.type}
+                className={styles.input}
+                error={Boolean(
+                  formState.errors?.[input.name]?.[input.type]?.message
                 )}
-                <Input
-                  label={input.name}
-                  placeholder={input.type}
-                  className={styles.input}
-                  error={Boolean(
-                    formState.errors?.[input.name]?.[input.type]?.message
-                  )}
-                  helperText={
-                    formState.errors?.[input.name]?.[input.type]?.message
-                  }
-                  {...register(`${input.name}.${input.type}`, {
-                    required: true,
-                    pattern:
-                      input.type === 'address' ? isEthAddress.regex : undefined,
-                  })}
-                />
-              </div>
+                helperText={
+                  formState.errors?.[input.name]?.[input.type]?.message
+                }
+                {...register(`${input.name}.${input.type}`, {
+                  required: true,
+                  pattern:
+                    input.type === 'address' ? isEthAddress.regex : undefined,
+                })}
+              />
             ))}
           </div>
           <Button type="submit">Submit</Button>

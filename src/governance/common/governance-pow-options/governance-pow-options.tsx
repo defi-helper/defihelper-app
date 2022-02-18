@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+
 import { ButtonBase } from '~/common/button-base'
 import * as styles from './governance-pow-options.css'
 
@@ -5,6 +7,7 @@ const powOptions = [6, 8, 18]
 
 export const GovernancePowOptions: React.VFC<{
   onClick: (option: string) => void
+  className?: string
 }> = (props) => {
   const handleOnClick = (option: number | string) => () => {
     if (typeof option === 'number') {
@@ -32,7 +35,7 @@ export const GovernancePowOptions: React.VFC<{
   }
 
   return (
-    <div className={styles.pow}>
+    <div className={clsx(styles.pow, props.className)}>
       {powOptions.map((option) => (
         <ButtonBase
           className={styles.powOption}

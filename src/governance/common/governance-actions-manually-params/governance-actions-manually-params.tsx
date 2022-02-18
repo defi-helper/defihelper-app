@@ -53,7 +53,10 @@ export const GovernanceActionsManuallyParams: React.FC<GovernanceActionsManually
             return (
               <div key={name} className={styles.input}>
                 {input.type === 'uint256' && (
-                  <GovernancePowOptions onClick={handleChangeUintValue(name)} />
+                  <GovernancePowOptions
+                    onClick={handleChangeUintValue(name)}
+                    className={styles.pow}
+                  />
                 )}
                 <Controller
                   render={({ field }) => (

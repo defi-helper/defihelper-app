@@ -1,5 +1,5 @@
 import { useStore } from 'effector-react'
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { ethers } from 'ethers'
 import type { JsonFragment } from '@ethersproject/abi'
 import { useAsync } from 'react-use'
@@ -15,6 +15,7 @@ import { useQueryParams } from '~/common/hooks'
 import { Input } from '~/common/input'
 import * as model from './governance-multisig.model'
 import { switchNetwork } from '~/wallets/common'
+import { networksConfig } from '~/networks-config'
 
 export type GovernanceMultisigProps = unknown
 
@@ -247,16 +248,23 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
     return contract.isOwner(wallet.account)
   }, [getContract, wallet])
 
-  useEffect(() => {
+  const changeNetwork = useAsync(async () => {
     if (!wallet?.chainId) return
 
-    if (!queryObj.network || queryObj.network !== wallet.chainId) return
+    if (!queryObj.network || queryObj.network === wallet.chainId) return
 
-    switchNetwork(queryObj.network).catch(console.error)
+    try {
+      return await switchNetwork(queryObj.network)
+    } catch {
+      throw new Error(
+        `please change network to ${networksConfig[queryObj.network]?.title}`
+      )
+    }
   }, [queryObj.network, wallet])
 
   return (
     <AppLayout>
+      {changeNetwork.error?.message}
       {isOwner.loading ? (
         'loading...'
       ) : (
@@ -280,7 +288,7 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
               </div>
               <Button onClick={handleExecute}>Execute</Button>
               <Button onClick={handleShare}>Share</Button>
-              {url && <Input type="textarea" defaultValue={url} />}
+              {url && <Input type="textarea" defaultValue={url} key={url} />}
             </>
           ) : (
             <>you&apos;re not owner</>

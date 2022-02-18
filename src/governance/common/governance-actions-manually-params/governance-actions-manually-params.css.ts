@@ -30,3 +30,9 @@ export const button = style({
 export const error = style({
   color: theme.colors.common.red1,
 })
+
+export const pow = style({
+  position: 'absolute',
+  bottom: 'calc(100% + 5px)',
+  right: 0,
+})
