@@ -106,7 +106,7 @@ export type BuyLiquidity = {
   name: string
   methods: {
     balanceOf(tokenAddress: string): Promise<string>
-    isApprove(tokenAddress: string, amount: string): Promise<boolean | Error>
+    isApproved(tokenAddress: string, amount: string): Promise<boolean | Error>
     approve(
       tokenAddress: string,
       amount: string
