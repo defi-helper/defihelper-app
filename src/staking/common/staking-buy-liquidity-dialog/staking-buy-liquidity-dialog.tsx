@@ -134,7 +134,7 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
     })
 
     useEffect(() => {
-      if (approveState.value === false) {
+      if (isApproved.value === false) {
         isApproved.retry()
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
