@@ -265,36 +265,28 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
   return (
     <AppLayout>
       {changeNetwork.error?.message}
-      {isOwner.loading ? (
-        'loading...'
-      ) : (
+      {isOwner.loading && 'loading...'}
+      {isOwner.value === true && !changeNetwork.error?.message && (
         <>
-          {isOwner.value ? (
-            <>
-              <Button onClick={createTransaction}>Create transaction</Button>
-              <div>
-                {actions.map((action, index) => (
-                  <div key={String(index)}>
-                    {action.contract}.{action.name}(
-                    {action.params.map((param) => param.value).join(', ')})
-                    <ButtonBase onClick={handleEdit(action, index)}>
-                      Edit
-                    </ButtonBase>
-                    <ButtonBase onClick={handleDelete(index)}>
-                      Delete
-                    </ButtonBase>
-                  </div>
-                ))}
+          <Button onClick={createTransaction}>Create transaction</Button>
+          <div>
+            {actions.map((action, index) => (
+              <div key={String(index)}>
+                {action.contract}.{action.name}(
+                {action.params.map((param) => param.value).join(', ')})
+                <ButtonBase onClick={handleEdit(action, index)}>
+                  Edit
+                </ButtonBase>
+                <ButtonBase onClick={handleDelete(index)}>Delete</ButtonBase>
               </div>
-              <Button onClick={handleExecute}>Execute</Button>
-              <Button onClick={handleShare}>Share</Button>
-              {url && <Input type="textarea" defaultValue={url} key={url} />}
-            </>
-          ) : (
-            <>you&apos;re not owner</>
-          )}
+            ))}
+          </div>
+          <Button onClick={handleExecute}>Execute</Button>
+          <Button onClick={handleShare}>Share</Button>
+          {url && <Input type="textarea" defaultValue={url} key={url} />}
         </>
       )}
+      {isOwner.value === false && <>you&apos;re not owner</>}
     </AppLayout>
   )
 }
