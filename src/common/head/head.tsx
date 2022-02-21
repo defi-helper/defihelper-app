@@ -26,6 +26,7 @@ export const Head: React.VFC<HeadProps> = (props) => {
   return (
     <Helmet>
       <title>{siteTitle}</title>
+      <meta property="description" content={description} />
       <meta property="og:title" content={siteTitle} />
       <meta name="twitter:description" content={description} />
       <meta property="og:description" content={description} />
