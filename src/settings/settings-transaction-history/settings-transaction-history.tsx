@@ -86,7 +86,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                       <ButtonBase>
                         {currentWallet?.name ?? 'All wallets'}
                         <Icon
-                          icon={active ? 'arrowTop' : 'arrowDown'}
+                          icon={active ? 'arrowUp' : 'arrowDown'}
                           width="16"
                           className={styles.selectArrow}
                         />

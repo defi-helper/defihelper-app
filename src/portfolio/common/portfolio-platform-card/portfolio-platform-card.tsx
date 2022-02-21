@@ -58,7 +58,7 @@ export const PortfolioPlatformCard: React.VFC<PortfolioAssetCardProps> = (
 
           <ButtonBase onClick={() => props.onToggle()}>
             <Icon
-              icon={`arrow${props.isCollapsed ? 'Top' : 'Down'}`}
+              icon={`arrow${props.isCollapsed ? 'Up' : 'Down'}`}
               width="24"
               height="24"
             />

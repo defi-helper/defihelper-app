@@ -37,7 +37,7 @@ export const RoadmapDetail: React.VFC<RoadmapDetailProps> = () => {
   }
 
   return (
-    <AppLayout>
+    <AppLayout title={loading ? 'loading...' : proposal?.title}>
       <Head title={loading ? 'loading...' : proposal?.title} />
       <Typography variant="h3" className={styles.title}>
         Vote

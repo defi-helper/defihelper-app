@@ -55,7 +55,7 @@ const sortIcon = (
   },
   column: ContractListSortInputTypeColumnEnum
 ) => {
-  let icon: 'arrowDown' | 'arrowTop' = 'arrowTop'
+  let icon: 'arrowDown' | 'arrowUp' = 'arrowUp'
 
   if (sort.column === column && column && sort.order === SortOrderEnum.Desc) {
     icon = 'arrowDown'
@@ -372,7 +372,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         {false && (
           <Paper radius={8} className={styles.select}>
             Daily
-            <Icon icon="arrowTop" className={styles.selectArrow} />
+            <Icon icon="arrowUp" className={styles.selectArrow} />
           </Paper>
         )}
         <Can I="create" a="Contract">

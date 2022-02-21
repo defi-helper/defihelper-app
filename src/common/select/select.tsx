@@ -10,9 +10,10 @@ import clsx from 'clsx'
 
 import { InputProps } from '~/common/input'
 import { Dropdown } from '~/common/dropdown'
+import { Icon } from '~/common/icon'
+import { Typography } from '~/common/typography'
 import { createComponent } from '~/common/create-component'
 import * as styles from './select.css'
-import { Typography } from '../typography'
 
 export type SelectProps = Omit<InputProps, 'value' | 'defaultValue'> & {
   sameWidth?: boolean
@@ -80,7 +81,7 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
           onChange={props.onChange}
         />
         <Dropdown
-          control={
+          control={(isOpen) => (
             <div
               className={clsx(
                 {
@@ -105,7 +106,13 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                 className={styles.input}
                 data-placeholder={props.placeholder}
               >
-                {renderValue}
+                {renderValue}{' '}
+                <Icon
+                  icon={isOpen ? 'arrowUp' : 'arrowDown'}
+                  height="1em"
+                  width="1em"
+                  className={styles.arrow}
+                />
               </div>
               {props.helperText && (
                 <Typography
@@ -121,7 +128,7 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                 </Typography>
               )}
             </div>
-          }
+          )}
           className={styles.dropdown}
           placement="bottom-start"
           offset={[0, 8]}

@@ -227,7 +227,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             onClick={props.onOpenContract}
           >
             <Icon
-              icon={props.opened ? 'arrowTop' : 'arrowDown'}
+              icon={props.opened ? 'arrowUp' : 'arrowDown'}
               width="24"
               height="24"
             />

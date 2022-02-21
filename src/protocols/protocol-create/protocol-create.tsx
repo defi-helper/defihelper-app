@@ -15,7 +15,7 @@ export const ProtocolCreate: React.VFC<ProtocolCreateProps> = () => {
   useGate(model.ProtocolCreateGate)
 
   return (
-    <AppLayout>
+    <AppLayout title="Protocol create">
       <Head title="Protocol create" />
       <ProtocolForm
         onSubmit={model.protocolCreateFx}

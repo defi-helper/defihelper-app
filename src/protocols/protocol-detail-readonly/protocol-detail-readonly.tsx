@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useParams, NavLink as ReactRouterLink } from 'react-router-dom'
 
@@ -22,6 +23,7 @@ import { ProtocolCoinBalanceChart } from '../protocol-coin-balance-chart'
 import { ProtocolTvlChart } from '../protocol-tvl-chart'
 import * as model from './protocol-detail-readonly.model'
 import * as styles from './protocol-detail-readonly.css'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type ProtocolDetailReadonlyProps = unknown
 
@@ -125,13 +127,31 @@ export const ProtocolDetailReadonly: React.FC<ProtocolDetailReadonlyProps> =
               <ProtocolTotal
                 {...protocol.metric}
                 hasAutostaking={false}
-                hideBoost
-                className={styles.mb120}
+                readonly
               />
-              <StakingListReadonly
-                protocolId={params.protocolId}
-                protocolAdapter={protocol.adapter}
-              />
+              <Typography
+                align="right"
+                variant="body3"
+                className={clsx(styles.copyright, styles.mb120)}
+              >
+                Powered by
+                <Link
+                  target="_blank"
+                  href="https://debank.com/"
+                  underline="always"
+                  className={styles.copyrightLink}
+                >
+                  <Icon icon="debank" className={styles.copyrightIcon} />
+                  Debank.com
+                </Link>
+              </Typography>
+              {(bignumberUtils.gt(protocol.metric.myEarned, 0) ||
+                bignumberUtils.gt(protocol.metric.myStaked, 0)) && (
+                <StakingListReadonly
+                  protocolId={params.protocolId}
+                  protocolAdapter={protocol.adapter}
+                />
+              )}
             </div>
           </>
         )}

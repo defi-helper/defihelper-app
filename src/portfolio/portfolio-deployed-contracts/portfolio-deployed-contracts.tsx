@@ -153,7 +153,7 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
                         <Icon
                           icon={
                             openedWallet?.contractId === automateContract.id
-                              ? 'arrowTop'
+                              ? 'arrowUp'
                               : 'arrowDown'
                           }
                           width="24"
