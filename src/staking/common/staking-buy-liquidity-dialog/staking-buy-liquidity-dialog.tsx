@@ -74,16 +74,21 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
       setValue('amount', currentToken.balance)
     }, [tokenAddress, tokens.value, setValue])
 
-    const isApproved = useAsyncRetry(async () => {
-      const { isApprove } = props.buyLiquidityAdapter.methods
-
-      return isApprove(tokenAddress, amount)
-    }, [props.buyLiquidityAdapter.methods.isApprove, tokenAddress, amount])
+    const isApproved = useAsyncRetry(
+      async () =>
+        props.buyLiquidityAdapter.methods.isApproved(tokenAddress, amount),
+      [props.buyLiquidityAdapter.methods.isApproved, tokenAddress, amount]
+    )
 
     const [buyState, onBuy] = useAsyncFn(async (formValues: FormValues) => {
-      const { buy } = props.buyLiquidityAdapter.methods
+      const { buy, canBuy } = props.buyLiquidityAdapter.methods
 
       try {
+        const can = await canBuy(formValues.token, formValues.amount)
+
+        if (can instanceof Error) throw can
+        if (!can) throw new Error("can't buy")
+
         const { tx } = await buy(
           formValues.token,
           formValues.amount,
@@ -124,19 +129,17 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
     )
 
     const handleOnSubmit = handleSubmit(async (formValues) => {
-      const isApproveBool = typeof isApproved.value === 'boolean'
-
-      if (isApproveBool && isApproved.value) {
+      if (isApproved.value === true) {
         await onBuy(formValues)
       }
 
-      if (!isApproved.value) {
+      if (isApproved.value === false || isApproved.error instanceof Error) {
         await onApprove(formValues)
       }
     })
 
     useEffect(() => {
-      if (typeof isApproved.value === 'boolean' && !approveState.value) {
+      if (isApproved.value === false) {
         isApproved.retry()
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -146,6 +149,8 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
       if (!buyState.value) return
 
       toastsService.success('success!')
+      tokens.retry()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [buyState.value])
 
     useEffect(() => {
@@ -154,8 +159,6 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
       if (!message) return
 
       toastsService.error(message)
-      tokens.retry()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [approveState.error, buyState.error])
 
     return (
@@ -173,7 +176,7 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
                 family="mono"
                 className={styles.title}
               >
-                {props.buyLiquidityAdapter.name}
+                BUY LP TOKENS
               </Typography>
             </div>
             <div className={styles.description}>
@@ -284,7 +287,9 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
                 loading={formState.isSubmitting}
                 className={styles.button}
               >
-                {typeof isApproved.value === 'boolean' ? 'Buy' : 'Approve'}
+                {isApproved.value === true && 'Buy'}
+                {isApproved.value === false && 'Approve'}
+                {isApproved.value instanceof Error && 'Approve'}
               </Button>
             </form>
           </>
