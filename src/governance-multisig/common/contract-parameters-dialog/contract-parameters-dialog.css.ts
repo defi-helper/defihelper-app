@@ -15,4 +15,9 @@ export const fn = style({
 
 export const input = style({
   margin: '10px 0',
+  position: 'relative',
+})
+
+export const pow = style({
+  marginLeft: 'auto',
 })

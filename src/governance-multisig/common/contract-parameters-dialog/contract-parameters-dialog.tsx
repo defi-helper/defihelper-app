@@ -3,6 +3,7 @@ import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
 import { Input } from '~/common/input'
 import { isEthAddress } from '~/common/is-eth-address'
+import { GovernancePowOptions } from '~/governance/common'
 import * as styles from './contract-parameters-dialog.css'
 
 export type ContractParametersDialogProps = {
@@ -24,17 +25,18 @@ export type ContractParametersDialogProps = {
 
 export const ContractParametersDialog: React.VFC<ContractParametersDialogProps> =
   (props) => {
-    const { register, handleSubmit, formState } = useForm({
-      defaultValues: props.method.inputs.reduce<
-        Record<string, Record<string, string>>
-      >((acc, param) => {
-        acc[param.name] = {
-          [param.type]: param.value ?? '',
-        }
+    const { register, handleSubmit, formState, setValue, getValues, trigger } =
+      useForm({
+        defaultValues: props.method.inputs.reduce<
+          Record<string, Record<string, string>>
+        >((acc, param) => {
+          acc[param.name] = {
+            [param.type]: param.value ?? '',
+          }
 
-        return acc
-      }, {}),
-    })
+          return acc
+        }, {}),
+      })
 
     const handleOnSubmit = handleSubmit((formValues) => {
       props.onConfirm({
@@ -52,6 +54,14 @@ export const ContractParametersDialog: React.VFC<ContractParametersDialogProps> 
       })
     })
 
+    const handleChangeUintValue = (name: string) => async (pow: string) => {
+      await trigger(name, { shouldFocus: true })
+
+      const values = getValues(name)
+
+      setValue(name, ((values || 1) + pow) as unknown as Record<string, string>)
+    }
+
     return (
       <Dialog className={styles.root}>
         <form onSubmit={handleOnSubmit}>
@@ -60,7 +70,19 @@ export const ContractParametersDialog: React.VFC<ContractParametersDialogProps> 
             {props.method.inputs.map((input) => (
               <Input
                 key={input.id}
-                label={input.name}
+                label={
+                  <>
+                    {input.name}{' '}
+                    {input.type === 'uint256' && (
+                      <GovernancePowOptions
+                        onClick={handleChangeUintValue(
+                          `${input.name}.${input.type}`
+                        )}
+                        className={styles.pow}
+                      />
+                    )}
+                  </>
+                }
                 placeholder={input.type}
                 className={styles.input}
                 error={Boolean(

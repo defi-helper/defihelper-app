@@ -1,11 +1,11 @@
 import { useForm, Controller } from 'react-hook-form'
 
-import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import { Typography } from '~/common/typography'
 import { Input } from '~/common/input'
 import { isEthAddress } from '~/common/is-eth-address'
 import { GovernanceActionArguments } from '../governance.types'
+import { GovernancePowOptions } from '../governance-pow-options'
 import * as styles from './governance-actions-manually-params.css'
 
 export type GovernanceActionsManuallyParamsProps = {
@@ -13,57 +13,6 @@ export type GovernanceActionsManuallyParamsProps = {
   methodName: string
   inputs: GovernanceActionArguments
   onSubmit: (value: GovernanceActionArguments) => void
-}
-
-const powOptions = [6, 8, 18]
-
-const PowOptions: React.VFC<{ onClick: (option: string) => void }> = (
-  props
-) => {
-  const handleOnClick = (option: number | string) => () => {
-    if (typeof option === 'number') {
-      return props.onClick(Array(option).fill(0).join(''))
-    }
-
-    const propmtValue = Number(
-      // eslint-disable-next-line no-alert
-      window.prompt('please! enter custom format')
-    )
-
-    if (!propmtValue) {
-      // eslint-disable-next-line no-alert
-      return window.alert('please! enter value')
-    }
-
-    if (Number.isNaN(propmtValue)) {
-      // eslint-disable-next-line no-alert
-      return window.alert('only numeric values are allowed')
-    }
-
-    const value = Array(propmtValue).fill(0).join('')
-
-    props.onClick(value)
-  }
-
-  return (
-    <div className={styles.pow}>
-      {powOptions.map((option) => (
-        <ButtonBase
-          className={styles.powOption}
-          key={option}
-          onClick={handleOnClick(option)}
-        >
-          10<sup>{option}</sup>
-        </ButtonBase>
-      ))}
-      <ButtonBase
-        className={styles.powOption}
-        onClick={handleOnClick('custom')}
-      >
-        custom
-      </ButtonBase>
-    </div>
-  )
 }
 
 export const GovernanceActionsManuallyParams: React.FC<GovernanceActionsManuallyParamsProps> =
@@ -104,7 +53,10 @@ export const GovernanceActionsManuallyParams: React.FC<GovernanceActionsManually
             return (
               <div key={name} className={styles.input}>
                 {input.type === 'uint256' && (
-                  <PowOptions onClick={handleChangeUintValue(name)} />
+                  <GovernancePowOptions
+                    onClick={handleChangeUintValue(name)}
+                    className={styles.pow}
+                  />
                 )}
                 <Controller
                   render={({ field }) => (
