@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { useState } from 'react'
 
 import { paths } from '~/paths'
-import { LayoutSidebar, LayoutContainer } from '../common'
+import { LayoutSidebar, LayoutContainer, LayoutBreadcrumbs } from '../common'
 import { authModel, useAbility } from '~/auth'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
@@ -131,7 +131,12 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
           />
         </div>
       )}
-      <LayoutContainer>{props.children}</LayoutContainer>
+      <LayoutContainer>
+        <LayoutBreadcrumbs className={styles.breadcrumbs}>
+          {props.title}
+        </LayoutBreadcrumbs>
+        {props.children}
+      </LayoutContainer>
     </div>
   )
 }

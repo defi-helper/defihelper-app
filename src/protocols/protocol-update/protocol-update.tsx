@@ -49,7 +49,9 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
   const formLoading = useStore(model.protocolUpdateFx.pending)
 
   return (
-    <AppLayout>
+    <AppLayout
+      title={loading ? 'loading...' : `${protocol?.name ?? ''} update`}
+    >
       <Head title={loading ? 'loading...' : `${protocol?.name ?? ''} update`} />
       {!loading && (
         <ProtocolForm

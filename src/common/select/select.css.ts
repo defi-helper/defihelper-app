@@ -78,3 +78,7 @@ export const fs14 = style({
 export const helperTextColor = style({
   color: theme.colors.textColorGrey,
 })
+
+export const arrow = style({
+  marginLeft: 'auto',
+})

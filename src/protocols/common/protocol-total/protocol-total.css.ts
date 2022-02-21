@@ -40,3 +40,14 @@ export const totalItem = style({
 export const link = style({
   color: theme.colors.textColorGreen,
 })
+
+export const more = style([
+  totalItem,
+  {
+    gridColumnStart: 1,
+    gridColumnEnd: 3,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+])

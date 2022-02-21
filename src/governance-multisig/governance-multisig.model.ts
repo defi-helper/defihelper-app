@@ -1,4 +1,4 @@
-import { createDomain, UnitValue, guard } from 'effector-logger/macro'
+import { createDomain, UnitValue, guard, sample } from 'effector-logger/macro'
 import contractsConfig from '@defihelper/networks/contracts.json'
 import { createGate } from 'effector-react'
 import type { ContractInterface } from 'ethers'
@@ -58,11 +58,21 @@ export const $contracts = governanceMultisig
 
 export const GovernanceMultisigGate = createGate('GovernanceMultisigGate')
 
-guard({
-  source: walletNetworkModel.$wallet,
-  clock: [walletNetworkModel.$wallet.updates, GovernanceMultisigGate.open],
-  filter: (wallet): wallet is RequiredNonNullableObject<Wallet> =>
-    Boolean(wallet?.chainId && wallet.account && wallet.connector),
+sample({
+  clock: guard({
+    source: [walletNetworkModel.$wallet, GovernanceMultisigGate.status],
+    clock: [walletNetworkModel.$wallet.updates, GovernanceMultisigGate.open],
+    filter: (
+      source
+    ): source is [RequiredNonNullableObject<Wallet>, boolean] => {
+      const [wallet, isOpen] = source
+
+      return (
+        Boolean(wallet?.chainId && wallet.account && wallet.connector) && isOpen
+      )
+    },
+  }),
+  fn: ([wallet]) => wallet,
   target: fetchAbiFx,
 })
 

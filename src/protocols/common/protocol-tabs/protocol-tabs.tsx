@@ -29,7 +29,7 @@ export const ProtocolTabs: React.VFC<ProtocolTabsProps> = (props) => {
         <ButtonBase className={styles.select}>
           All{' '}
           <Icon
-            icon={active ? 'arrowTop' : 'arrowDown'}
+            icon={active ? 'arrowUp' : 'arrowDown'}
             width="12"
             height="12"
           />

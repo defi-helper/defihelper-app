@@ -168,7 +168,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                   >
                     <Icon
                       icon={
-                        openedWallet === wallet.id ? 'arrowTop' : 'arrowDown'
+                        openedWallet === wallet.id ? 'arrowUp' : 'arrowDown'
                       }
                       width="24"
                       height="24"

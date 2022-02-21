@@ -348,12 +348,16 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
                   <Typography className={styles.itemTitle}>
                     {props.descriptions?.conditions[condition.type]?.name}
                   </Typography>
-                  <Typography variant="body3" className={styles.itemSubtitle}>
-                    {condition.paramsDescription
-                      .split(' ')
-                      .map((str) => (names[str] ? names[str] : str))
-                      .join(' ')}
-                  </Typography>
+                  <Typography
+                    variant="body3"
+                    className={styles.itemSubtitle}
+                    dangerouslySetInnerHTML={{
+                      __html: condition.paramsDescription
+                        .split(' ')
+                        .map((str) => (names[str] ? names[str] : str))
+                        .join(' '),
+                    }}
+                  />
                 </AutomationChooseButton>
               ))}
               <ButtonBase
@@ -377,12 +381,16 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
                   <Typography className={styles.itemTitle}>
                     {props.descriptions?.actions[action.type]?.name}
                   </Typography>
-                  <Typography variant="body3" className={styles.itemSubtitle}>
-                    {action.paramsDescription
-                      .split(' ')
-                      .map((str) => (names[str] ? names[str] : str))
-                      .join(' ')}
-                  </Typography>
+                  <Typography
+                    variant="body3"
+                    className={styles.itemSubtitle}
+                    dangerouslySetInnerHTML={{
+                      __html: action.paramsDescription
+                        .split(' ')
+                        .map((str) => (names[str] ? names[str] : str))
+                        .join(' '),
+                    }}
+                  />
                 </AutomationChooseButton>
               ))}
               <ButtonBase

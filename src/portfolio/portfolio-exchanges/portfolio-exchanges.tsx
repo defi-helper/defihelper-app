@@ -68,7 +68,7 @@ export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
                     <ButtonBase onClick={() => handleToggleRow(exchange.id)}>
                       <Icon
                         icon={`arrow${
-                          openedWallet === exchange.id ? 'Top' : 'Down'
+                          openedWallet === exchange.id ? 'Up' : 'Down'
                         }`}
                         width="24"
                         height="24"

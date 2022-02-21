@@ -92,3 +92,7 @@ export const doubleArrow = style({
 export const doubleArrowReverted = style({
   transform: 'rotate(180deg)',
 })
+
+export const breadcrumbs = style({
+  marginBottom: 10,
+})

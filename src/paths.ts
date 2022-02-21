@@ -39,8 +39,6 @@ export const paths = {
 
   automations: {
     list: '/automations',
-    update: (automationId = ':automationId') =>
-      `/automations/update/${automationId}` as const,
     history: (automationId = ':automationId') =>
       `/automations/history/${automationId}` as const,
   },

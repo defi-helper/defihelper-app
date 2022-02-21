@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Link } from '~/common/link'
@@ -6,6 +7,7 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { config } from '~/config'
 import { ProtocolQuery } from '~/graphql/_generated-types'
+import { paths } from '~/paths'
 import * as styles from './protocol-total.css'
 
 export type ProtocolTotalProps = Exclude<
@@ -13,8 +15,8 @@ export type ProtocolTotalProps = Exclude<
   null | undefined
 >['metric'] & {
   hasAutostaking: boolean
-  hideBoost?: boolean
   className?: string
+  readonly?: boolean
 }
 
 export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
@@ -36,7 +38,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
           ${bignumberUtils.format(props.myEarned)}
         </Typography>
       </Paper>
-      {!props.hideBoost && (
+      {!props.readonly ? (
         <Paper radius={8} className={styles.totalItem}>
           <Typography variant="body2" className={styles.totalTitle}>
             Auto-Staking Boost
@@ -59,6 +61,19 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
               className={styles.link}
             />
           )}
+        </Paper>
+      ) : (
+        <Paper radius={8} className={styles.more}>
+          <Typography variant="body2">
+            Current protocol support only balances, if you need more click{' '}
+            <Link
+              as={ReactRouterLink}
+              to={paths.roadmap.list}
+              underline="always"
+            >
+              here
+            </Link>
+          </Typography>
         </Paper>
       )}
     </div>

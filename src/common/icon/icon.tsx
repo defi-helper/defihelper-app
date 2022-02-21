@@ -34,7 +34,7 @@ import { ReactComponent as EthereumIcon } from '~/assets/icons/blockchains/ether
 import { ReactComponent as BscIcon } from '~/assets/icons/blockchains/bsc.svg'
 import { ReactComponent as WavesIcon } from '~/assets/icons/blockchains/waves.svg'
 import { ReactComponent as SolanaIcon } from '~/assets/icons/blockchains/solana.svg'
-import { ReactComponent as ArrowTopIcon } from '~/assets/icons/arrow-top.svg'
+import { ReactComponent as arrowUpIcon } from '~/assets/icons/arrow-top.svg'
 import { ReactComponent as CheckedIcon } from '~/assets/icons/checked.svg'
 import { ReactComponent as ArrowDownIcon } from '~/assets/icons/arrow-down.svg'
 import { ReactComponent as EmailIcon } from '~/assets/icons/socials/email.svg'
@@ -60,6 +60,7 @@ import { ReactComponent as UniIcon } from '~/assets/icons/coins/uni.svg'
 import { ReactComponent as BetaIcon } from '~/assets/icons/beta.svg'
 import { ReactComponent as CalculatorIcon } from '~/assets/icons/calculator.svg'
 import { ReactComponent as MoralisIcon } from '~/assets/icons/moralis-logo.svg'
+import { ReactComponent as DebankIcon } from '~/assets/icons/debank-logo.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -103,7 +104,7 @@ const ICONS = {
   binance: BscIcon,
   waves: WavesIcon,
   solana: SolanaIcon,
-  arrowTop: ArrowTopIcon,
+  arrowUp: arrowUpIcon,
   checked: CheckedIcon,
   arrowDown: ArrowDownIcon,
   question: QuestionIcon,
@@ -127,6 +128,7 @@ const ICONS = {
   beta: BetaIcon,
   calculator: CalculatorIcon,
   moralis: MoralisIcon,
+  debank: DebankIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

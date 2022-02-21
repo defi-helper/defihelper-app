@@ -13,6 +13,7 @@ import { toastsService } from '~/toasts'
 import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
 import { ButtonBase } from '~/common/button-base'
 import * as styles from './staking-buy-liquidity-dialog.css'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type StakingBuyLiquidityDialogProps = {
   onConfirm: () => void
@@ -74,11 +75,11 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
       setValue('amount', currentToken.balance)
     }, [tokenAddress, tokens.value, setValue])
 
-    const isApproved = useAsyncRetry(
-      async () =>
-        props.buyLiquidityAdapter.methods.isApproved(tokenAddress, amount),
-      [props.buyLiquidityAdapter.methods.isApproved, tokenAddress, amount]
-    )
+    const isApproved = useAsyncRetry(async () => {
+      if (bignumberUtils.eq(amount, 0)) return true
+
+      return props.buyLiquidityAdapter.methods.isApproved(tokenAddress, amount)
+    }, [props.buyLiquidityAdapter.methods.isApproved, tokenAddress, amount])
 
     const [buyState, onBuy] = useAsyncFn(async (formValues: FormValues) => {
       const { buy, canBuy } = props.buyLiquidityAdapter.methods
