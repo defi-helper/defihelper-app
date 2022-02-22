@@ -159,9 +159,7 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
       ) && (
         <Label
           title="Next Auto-Stake"
-          value={
-            props.restakeIn ? dayjs().to(props.restakeIn) : '-'
-          }
+          value={props.restakeIn ? dayjs().to(props.restakeIn) : '-'}
           subtitle={networks}
           automation={automation}
         />
