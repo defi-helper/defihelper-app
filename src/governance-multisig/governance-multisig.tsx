@@ -1,4 +1,4 @@
-import { useStore } from 'effector-react'
+import { useGate, useStore } from 'effector-react'
 import { useState, useMemo, useCallback } from 'react'
 import { ethers } from 'ethers'
 import type { JsonFragment } from '@ethersproject/abi'
@@ -263,6 +263,8 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
     }
   }, [queryObj.network, wallet])
 
+  useGate(model.GovernanceMultisigGate)
+
   return (
     <AppLayout>
       <WalletConnect fallback={<Button>Connect</Button>} />
@@ -288,7 +290,7 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
           {url && <Input type="textarea" defaultValue={url} key={url} />}
         </>
       )}
-      {!isOwner.value && <>you&apos;re not owner</>}
+      {isOwner.value === false && <>you&apos;re not owner</>}
     </AppLayout>
   )
 }
