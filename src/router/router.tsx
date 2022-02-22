@@ -94,9 +94,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.governance.list}>
           <GovernanceList />
         </Route>
-        <Route path={paths.governanceMultisig}>
+        <PrivateRoute path={paths.governanceMultisig}>
           <GovernanceMultisig />
-        </Route>
+        </PrivateRoute>
         <PrivateRoute path={paths.automations.history()}>
           <AutomationHistoryList />
         </PrivateRoute>
