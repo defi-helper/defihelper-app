@@ -36,8 +36,8 @@ export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationBina
           className={styles.form}
         >
           <Typography className={styles.apiHint}>
-            Please create API key (with read permission only) in your Binance
-            account and fill the fields below.
+            Please create AN API key (with read permission only) in your Binance
+            account, and fill in the fields below
             <br />
             <br />
             <Link
