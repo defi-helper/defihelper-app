@@ -92,20 +92,26 @@ export const AutomationActionNotification: React.VFC<AutomationActionNotificatio
         <Controller
           render={({ field }) => (
             <AutomationChooseButton
-              onClick={handleAddContact}
+              onClick={props.contacts.length ? handleAddContact : undefined}
               label="contact"
               className={styles.input}
               error={formState.errors.contact?.id?.message}
             >
-              {field.value && (
+              {props.contacts.length ? (
                 <>
-                  <Icon icon={field.value.broker} width="24" height="24" />
-                  {field.value?.name.length
-                    ? field.value?.name
-                    : field.value?.address || 'Untitled'}
+                  {field.value && (
+                    <>
+                      <Icon icon={field.value.broker} width="24" height="24" />
+                      {field.value?.name.length
+                        ? field.value?.name
+                        : field.value?.address || 'Untitled'}
+                    </>
+                  )}
+                  {!field.value && 'Choose contact'}
                 </>
+              ) : (
+                'Please add your contact in settings first'
               )}
-              {!field.value && 'Choose contact'}
             </AutomationChooseButton>
           )}
           name="contact"
@@ -114,6 +120,7 @@ export const AutomationActionNotification: React.VFC<AutomationActionNotificatio
         <Input
           label="Message"
           {...register('message', { required: true })}
+          type="textarea"
           error={Boolean(formState.errors.message?.message)}
           helperText={formState.errors.message?.message}
           defaultValue={props.defaultValues?.message}
