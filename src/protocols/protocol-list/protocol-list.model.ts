@@ -14,23 +14,27 @@ type Params = {
   search?: string
   favorite?: boolean
   hidden: boolean | null
+  debank?: boolean
 }
 
 export const fetchProtocolListFx = protocolListDomain.createEffect(
   (params: Params) => {
+    const filter = {
+      hidden: params.hidden,
+      isDebank: params.debank,
+    }
+
     return protocolsApi.protocolList({
       ...(params?.search || typeof params?.favorite === 'boolean'
         ? {
             filter: {
               search: params.search,
               favorite: params.favorite,
-              hidden: params.hidden,
+              ...filter,
             },
           }
         : {
-            filter: {
-              hidden: params.hidden,
-            },
+            filter,
           }),
       pagination: {
         offset: params?.offset,
@@ -100,6 +104,7 @@ export const ProtocolListGate = createGate<{
   search: string
   favorite?: boolean
   hidden: boolean | null
+  debank?: boolean
 }>({
   domain: protocolListDomain,
   name: 'ProtocolListGate',

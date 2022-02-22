@@ -1,6 +1,6 @@
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 
 import { Head } from '~/common/head'
@@ -19,14 +19,22 @@ import { Protocol, ProtocolCard, ProtocolTabs, Tabs } from '../common'
 import { Paper } from '~/common/paper'
 import { ButtonBase } from '~/common/button-base'
 import { Loader } from '~/common/loader'
+import { Select, SelectOption } from '~/common/select'
 import * as model from './protocol-list.model'
 import * as styles from './protocol-list.css'
 
 export type ProtocolListProps = unknown
 
+const options = {
+  all: 'All',
+  full: 'Full support',
+  balances: 'Only balances',
+}
+
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const [search, setSearch] = useState('')
   const [currentTab, setCurrentTab] = useState(Tabs.All)
+  const [currentOption, setOption] = useState(options.all)
 
   const [openSearchDialog] = useDialog(SearchDialog)
 
@@ -54,11 +62,18 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
 
   const searchDebounced = useDebounce(search, 1000)
 
+  const debank = useMemo(() => {
+    if (currentOption === options.all) return undefined
+
+    return currentOption === options.balances
+  }, [currentOption])
+
   useGate(model.ProtocolListGate, {
     favorite:
       currentTab === Tabs.All ? undefined : currentTab === Tabs.Favourite,
     search: searchDebounced,
     hidden: ability.can('update', 'Protocol') ? null : false,
+    debank,
   })
 
   const handleFavorite = (protocol: Protocol) => () => {
@@ -145,6 +160,17 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
             </Button>
           </Can>
         </div>
+        <Select
+          value={currentOption}
+          onChange={({ target }) => setOption(target.value)}
+          className={styles.select}
+        >
+          {Object.entries(options).map(([key, value]) => (
+            <SelectOption key={key} value={value}>
+              {value}
+            </SelectOption>
+          ))}
+        </Select>
         <div className={styles.proposalsHeader}>
           <Typography variant="body2" className={styles.name}>
             Name

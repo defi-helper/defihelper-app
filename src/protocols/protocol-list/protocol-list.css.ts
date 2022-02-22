@@ -22,6 +22,10 @@ export const header = style([
   },
 ])
 
+export const select = style({
+  marginBottom: 28,
+})
+
 export const empty = style({
   display: 'flex',
   padding: '9px 9px 9px 18px',

@@ -13,9 +13,10 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { useQueryParams } from '~/common/hooks'
 import { Input } from '~/common/input'
-import * as model from './governance-multisig.model'
 import { switchNetwork } from '~/wallets/common'
 import { networksConfig } from '~/networks-config'
+import { WalletConnect } from '~/wallets/wallet-connect'
+import * as model from './governance-multisig.model'
 
 export type GovernanceMultisigProps = unknown
 
@@ -264,6 +265,7 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
 
   return (
     <AppLayout>
+      <WalletConnect fallback={<Button>Connect</Button>} />
       {changeNetwork.error?.message}
       {isOwner.loading && 'loading...'}
       {isOwner.value === true && !changeNetwork.error?.message && (
@@ -286,7 +288,7 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
           {url && <Input type="textarea" defaultValue={url} key={url} />}
         </>
       )}
-      {isOwner.value === false && <>you&apos;re not owner</>}
+      {!isOwner.value && <>you&apos;re not owner</>}
     </AppLayout>
   )
 }
