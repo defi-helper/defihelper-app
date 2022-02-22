@@ -65,7 +65,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
       ) : (
         <Paper radius={8} className={styles.more}>
           <Typography variant="body2">
-            In need of automation? {' '}
+            In need of automation?{' '}
             <Link
               as={ReactRouterLink}
               to={paths.roadmap.list}
