@@ -158,9 +158,9 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
         (v) => v.type === 'ethereumOptimalAutomateRun'
       ) && (
         <Label
-          title="Restake"
+          title="Next Auto-Stake"
           value={
-            props.restakeIn ? dayjs().to(props.restakeIn) : 'in near future'
+            props.restakeIn ? dayjs().to(props.restakeIn) : '-'
           }
           subtitle={networks}
           automation={automation}
