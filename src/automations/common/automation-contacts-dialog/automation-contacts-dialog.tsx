@@ -20,7 +20,7 @@ export const AutomationContactsDialog: React.VFC<AutomationContactsDialogProps> 
     }
 
     return (
-      <AutomationDialog title="Choose contract" onBack={props.onCancel}>
+      <AutomationDialog title="Choose contact" onBack={props.onCancel}>
         <AutomationSelectList>
           {props.contacts.map((contact) => (
             <AutomationSelectListItem

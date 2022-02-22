@@ -204,7 +204,7 @@ export const AutomationDeployContract: React.VFC<AutomationDeployContractProps> 
               </Typography>
             </>
           )) ||
-            'Choose contract'}
+            'Choose contact'}
         </AutomationChooseButton>
         <AutomationChooseButton
           label="adapter"
