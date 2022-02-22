@@ -1,4 +1,6 @@
 import { useGate, useStore } from 'effector-react'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { pluralize } from '~/common/pluralize'
 import { Typography } from '~/common/typography'
 
 import { AutomationDialog } from '../common/automation-dialog'
@@ -16,6 +18,8 @@ export type AutomationProductsProps = {
   provider: unknown
   onConfirm: () => void
 }
+
+const numFromString = (str: string) => str.match(/(\d+)/)?.[0] ?? ''
 
 export const AutomationProducts: React.VFC<AutomationProductsProps> = (
   props
@@ -47,18 +51,26 @@ export const AutomationProducts: React.VFC<AutomationProductsProps> = (
       className={styles.root}
     >
       <AutomationSelectList className={styles.selectList}>
-        {products.map((product) => (
-          <AutomationSelectListItem
-            key={product.id}
-            onClick={handleBuyProduct(product)}
-            loading={product.buying}
-          >
-            <Typography as="div">{product.name}</Typography>
-            <Typography as="div" variant="body3" className={styles.grey}>
-              ${product.priceUSD}
-            </Typography>
-          </AutomationSelectListItem>
-        ))}
+        {products.map((product) => {
+          const num = numFromString(product.name)
+          const title = product.name.replace(num, '')
+
+          return (
+            <AutomationSelectListItem
+              key={product.id}
+              onClick={handleBuyProduct(product)}
+              loading={product.buying}
+            >
+              <Typography as="div">
+                {bignumberUtils.format(num)}
+                {title}
+              </Typography>
+              <Typography as="div" variant="body3" className={styles.grey}>
+                ${bignumberUtils.format(product.priceUSD)}
+              </Typography>
+            </AutomationSelectListItem>
+          )
+        })}
       </AutomationSelectList>
       <Typography
         variant="body3"
@@ -67,7 +79,8 @@ export const AutomationProducts: React.VFC<AutomationProductsProps> = (
         family="mono"
         className={styles.balance}
       >
-        balance: {props.balance} notifications
+        balance: {bignumberUtils.format(props.balance)}{' '}
+        {pluralize(props.balance, 'notification')}
       </Typography>
     </AutomationDialog>
   )
