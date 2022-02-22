@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { cloneElement, useEffect, useRef } from 'react'
+import { cloneElement, useEffect, useState } from 'react'
 import autosize from 'autosize'
 
 import { Typography } from '~/common/typography'
@@ -18,11 +18,13 @@ export const Input = createComponent<HTMLInputElement, InputProps>(
   function Input(props, ref) {
     const { className, label, type, error, helperText, ...restOfProps } = props
 
-    const textareaRef = useRef<HTMLTextAreaElement>(null)
+    const [textareaRef, setTextareaRef] = useState<HTMLTextAreaElement | null>(
+      null
+    )
 
     const localRef = useForkRef(
       ref as React.ForwardedRef<HTMLElement>,
-      textareaRef
+      setTextareaRef as React.ForwardedRef<HTMLElement>
     )
 
     const component =
@@ -33,10 +35,10 @@ export const Input = createComponent<HTMLInputElement, InputProps>(
       )
 
     useEffect(() => {
-      if (textareaRef.current) {
-        autosize(textareaRef.current)
+      if (textareaRef) {
+        autosize(textareaRef)
       }
-    }, [])
+    }, [textareaRef])
 
     return (
       <div

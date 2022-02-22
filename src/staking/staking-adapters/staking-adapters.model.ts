@@ -106,7 +106,7 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
   async (params: BuyLiquidityParams) => {
     const { network } = params
 
-    const tokens = await stakingApi.tokensList({
+    const tokens = await stakingApi.tokens({
       network: params.network,
       protocol: params.protocol,
     })

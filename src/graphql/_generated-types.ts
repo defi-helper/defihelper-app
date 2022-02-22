@@ -2184,6 +2184,7 @@ export type TokenListQuery = {
 export type TokenListQueryFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   address?: Maybe<Array<Scalars['String']>>
+  tradable?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
 
@@ -2239,7 +2240,7 @@ export type TokenType = {
   /** Identificator */
   id: Scalars['UuidType']
   /** Token alias id */
-  alias: Scalars['String']
+  alias?: Maybe<TokenAlias>
   /** Blockchain type */
   blockchain: BlockchainEnum
   /** Blockchain network id */
@@ -2269,6 +2270,7 @@ export type TreasuryType = {
   __typename?: 'TreasuryType'
   portfoliosCount: Scalars['Int']
   protocolsCount: Scalars['Int']
+  contractsCount: Scalars['Int']
   trackedUSD: Scalars['Float']
 }
 
@@ -2846,7 +2848,7 @@ export type UserTypeWalletsArgs = {
 }
 
 export type UserTypeExchangesArgs = {
-  filter?: Maybe<WalletExchangeListFilterInputType>
+  filter?: Maybe<WalletExchangexListFilterInputType>
   sort?: Maybe<Array<WalletExchangeListSortInputType>>
   pagination?: Maybe<WalletExchangeListPaginationInputType>
 }
@@ -3087,10 +3089,6 @@ export type WalletContractListType = {
   pagination: Pagination
 }
 
-export type WalletExchangeListFilterInputType = {
-  id?: Maybe<Scalars['UuidType']>
-}
-
 export type WalletExchangeListPaginationInputType = {
   /** Limit */
   limit?: Maybe<Scalars['Int']>
@@ -3157,6 +3155,10 @@ export type WalletExchangeTypeTokenAliasesArgs = {
 
 export enum WalletExchangeTypeEnum {
   Binance = 'binance',
+}
+
+export type WalletExchangexListFilterInputType = {
+  id?: Maybe<Scalars['UuidType']>
 }
 
 export type WalletListFilterInputType = {
@@ -5155,34 +5157,9 @@ export type StakingDisconnectWalletMutation = {
   __typename?: 'Mutation'
 } & Pick<Mutation, 'contractWalletUnlink'>
 
-export type StakingTokensAliasQueryVariables = Exact<{
+export type StakingTokensQueryVariables = Exact<{
   protocol: BlockchainEnum
   network?: Maybe<Scalars['String']>
-}>
-
-export type StakingTokensAliasQuery = { __typename?: 'Query' } & {
-  tokensAlias: { __typename?: 'TokenAliasListQuery' } & {
-    list?: Maybe<
-      Array<
-        { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'> & {
-            tokens: { __typename?: 'TokenListType' } & {
-              list?: Maybe<
-                Array<
-                  { __typename?: 'TokenType' } & Pick<
-                    TokenType,
-                    'symbol' | 'address'
-                  >
-                >
-              >
-            }
-          }
-      >
-    >
-  }
-}
-
-export type StakingTokensQueryVariables = Exact<{
-  filter?: Maybe<TokenListQueryFilterInputType>
 }>
 
 export type StakingTokensQuery = { __typename?: 'Query' } & {
@@ -5191,15 +5168,12 @@ export type StakingTokensQuery = { __typename?: 'Query' } & {
       Array<
         { __typename?: 'TokenType' } & Pick<
           TokenType,
-          | 'id'
-          | 'alias'
-          | 'blockchain'
-          | 'network'
-          | 'address'
-          | 'name'
-          | 'symbol'
-          | 'decimals'
-        >
+          'id' | 'symbol' | 'address'
+        > & {
+            alias?: Maybe<
+              { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
+            >
+          }
       >
     >
   }
@@ -7802,52 +7776,21 @@ export function useStakingDisconnectWalletMutation() {
     StakingDisconnectWalletMutationVariables
   >(StakingDisconnectWalletDocument)
 }
-export const StakingTokensAliasDocument = gql`
-  query StakingTokensAlias($protocol: BlockchainEnum!, $network: String) {
-    tokensAlias(
+export const StakingTokensDocument = gql`
+  query StakingTokens($protocol: BlockchainEnum!, $network: String) {
+    tokens(
       filter: {
-        liquidity: stable
+        tradable: true
         blockchain: { protocol: $protocol, network: $network }
       }
     ) {
       list {
-        logoUrl
-        tokens(
-          filter: { blockchain: { protocol: $protocol, network: $network } }
-        ) {
-          list {
-            symbol
-            address
-          }
-        }
-      }
-    }
-  }
-`
-
-export function useStakingTokensAliasQuery(
-  options: Omit<
-    Urql.UseQueryArgs<StakingTokensAliasQueryVariables>,
-    'query'
-  > = {}
-) {
-  return Urql.useQuery<StakingTokensAliasQuery>({
-    query: StakingTokensAliasDocument,
-    ...options,
-  })
-}
-export const StakingTokensDocument = gql`
-  query StakingTokens($filter: TokenListQueryFilterInputType) {
-    tokens(filter: $filter) {
-      list {
         id
-        alias
-        blockchain
-        network
-        address
-        name
+        alias {
+          logoUrl
+        }
         symbol
-        decimals
+        address
       }
     }
   }

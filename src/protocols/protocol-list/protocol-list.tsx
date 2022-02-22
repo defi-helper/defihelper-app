@@ -36,6 +36,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const [openConfirm] = useDialog(ConfirmDialog)
 
   const loading = useStore(model.fetchProtocolListFx.pending)
+  const userReady = useStore(authModel.$userReady)
   const protocolList = useStore(model.$protocolList)
   const tabsCount = useStore(model.$tabsCount)
 
@@ -162,14 +163,14 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           </Typography>
         </div>
         <ul className={styles.protocols}>
-          {loading && !protocolList?.length && (
+          {(!userReady || (loading && !protocolList?.length)) && (
             <li>
               <div className={styles.loader}>
                 <Loader height="36" />
               </div>
             </li>
           )}
-          {!loading && !protocolList?.length && (
+          {!loading && !protocolList?.length && userReady && (
             <li>
               <Paper radius={8} className={styles.empty}>
                 No protocols found
