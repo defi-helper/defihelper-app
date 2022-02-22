@@ -36,8 +36,6 @@ export const fetchAbiFx = governanceMultisig.createEffect(
         'current network does not have a GovernorMulisig contract'
       )
 
-    console.log(currentNetwork, 'currentNetwork')
-
     return Object.entries(currentNetwork).reduce<
       Promise<Record<string, { abi: ContractInterface; address: string }>>
     >(async (acc, [contractName, { address }]) => {
