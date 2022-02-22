@@ -65,14 +65,15 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
       ) : (
         <Paper radius={8} className={styles.more}>
           <Typography variant="body2">
-            Current protocol support only balances, if you need more click{' '}
+            In need of automation? {' '}
             <Link
               as={ReactRouterLink}
               to={paths.roadmap.list}
               underline="always"
             >
-              here
+              Create a proposal
             </Link>
+            and we will connect auto-staking for the protocol in no time.
           </Typography>
         </Paper>
       )}
