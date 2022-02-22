@@ -142,7 +142,7 @@ export const ProtocolDetailReadonly: React.FC<ProtocolDetailReadonlyProps> =
                   className={styles.copyrightLink}
                 >
                   <Icon icon="debank" className={styles.copyrightIcon} />
-                  Debank.com
+                  DeBank
                 </Link>
               </Typography>
               {(bignumberUtils.gt(protocol.metric.myEarned, 0) ||
