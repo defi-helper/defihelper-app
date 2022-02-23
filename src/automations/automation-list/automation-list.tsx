@@ -22,8 +22,10 @@ import { Loader } from '~/common/loader'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { SearchDialog } from '~/common/search-dialog'
+import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
+import { pluralize } from '~/common/pluralize'
 
 export type AutomationListProps = unknown
 
@@ -169,7 +171,8 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           </Typography>
           <Paper radius={8} className={styles.countDesktop}>
             <Typography variant="body2">
-              {balanceLoading ? '...' : balance} Notifications
+              {balanceLoading ? '...' : bignumberUtils.format(balance)}{' '}
+              {pluralize(balance, 'Notification')}
               <Typography variant="inherit" className={styles.left}>
                 left
               </Typography>
