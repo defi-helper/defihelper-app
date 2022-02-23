@@ -7,7 +7,6 @@ import {
 } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { shallowEqual } from 'fast-equals'
-// import { combineEvents } from 'patronum/combine-events'
 import { delay } from 'patronum/delay'
 
 import {
