@@ -1,7 +1,9 @@
+import { useStore } from 'effector-react'
 import { isValidElement, cloneElement } from 'react'
 
+import { settingsWalletModel } from '~/settings/settings-wallets'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { useWalletConnect } from './wallet-connect.hook'
+import { useWalletConnect, useWalletSign } from './wallet-connect.hook'
 
 export type WalletConnectProps = {
   fallback: React.ReactNode
@@ -12,9 +14,11 @@ export type WalletConnectProps = {
 export const WalletConnect: React.FC<WalletConnectProps> = (props) => {
   if (!isValidElement(props.fallback)) throw new Error('fallback is not valid')
 
-  const wallet = walletNetworkModel.useWalletNetwork()
+  const activeWallet = walletNetworkModel.useWalletNetwork()
+  const wallets = useStore(settingsWalletModel.$wallets)
 
   const handleConnect = useWalletConnect()
+  const handleSign = useWalletSign()
 
   const fallback = cloneElement(props.fallback, {
     ...props.fallback.props,
@@ -24,10 +28,34 @@ export const WalletConnect: React.FC<WalletConnectProps> = (props) => {
     }),
   })
 
-  if (!wallet) return fallback
+  if (!activeWallet) return fallback
 
-  if (props.blockchain && wallet.blockchain !== props.blockchain)
+  if (props.blockchain && activeWallet.blockchain !== props.blockchain) {
     return fallback
+  }
+
+  const currentWallet = wallets.find((wallet) => {
+    return (
+      (wallet.network === 'main'
+        ? wallet.address === activeWallet?.account
+        : wallet.address === activeWallet?.account?.toLowerCase()) &&
+      wallet.network === activeWallet?.chainId
+    )
+  })
+
+  const newFallback = cloneElement(fallback, {
+    ...fallback.props,
+    onClick: handleSign.bind(null, {
+      blockchain: props.blockchain,
+      network: props.network,
+    }),
+  })
+
+  if (!currentWallet) return newFallback
+
+  if (props.blockchain && currentWallet.blockchain !== props.blockchain) {
+    return newFallback
+  }
 
   return <>{props.children}</>
 }

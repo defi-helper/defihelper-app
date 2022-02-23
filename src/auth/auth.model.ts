@@ -7,7 +7,7 @@ import {
 } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { shallowEqual } from 'fast-equals'
-import { combineEvents } from 'patronum/combine-events'
+// import { combineEvents } from 'patronum/combine-events'
 import { delay } from 'patronum/delay'
 
 import {
@@ -277,28 +277,9 @@ sample({
   target: openBetaDialogFx,
 })
 
-const mergedEthereum = combineEvents({
-  events: [
-    mergeWalletsDialogFx.done,
-    delay({
-      source: authEthereumFx.done,
-      timeout: 3000,
-    }),
-  ],
-})
-const mergedWaves = combineEvents({
-  events: [
-    mergeWalletsDialogFx.done,
-    delay({
-      source: authWavesFx.done,
-      timeout: 3000,
-    }),
-  ],
-})
-
 guard({
   source: $user,
-  clock: [$user.updates, mergedWaves, mergedEthereum],
+  clock: [$user.updates, saveUserFx.doneData],
   filter: (user) => Boolean(user),
   target: settingsWalletModel.fetchWalletListFx,
 })
