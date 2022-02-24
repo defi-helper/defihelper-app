@@ -282,6 +282,8 @@ export const ProposalListGate = createGate<Gate>({
 
 export const ProposalListPagination = createPagination({
   domain: proposalListDomain,
+  store: $proposalList,
+  loading: fetchProposalListFx.pending,
 })
 
 guard({

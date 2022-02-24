@@ -99,6 +99,8 @@ export const StakingListGate = createGate<StakingListPayload>({
 export const StakingListPagination = createPagination({
   domain: stakingListDomain,
   limit: 20,
+  store: $contractsListCopies,
+  loading: fetchStakingListFx.pending,
 })
 
 guard({

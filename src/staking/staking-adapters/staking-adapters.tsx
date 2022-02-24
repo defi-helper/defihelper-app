@@ -6,6 +6,7 @@ import {
   StakingAdapterDialog,
   StakingBuyLiquidityDialog,
   isExcludedAdapter,
+  StakingSuccessDialog,
 } from '~/staking/common'
 import { Button } from '~/common/button'
 import { useDialog, UserRejectionError } from '~/common/dialog'
@@ -39,6 +40,7 @@ export type StakingAdaptersProps = {
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
+  const [openSuccessDialog] = useDialog(StakingSuccessDialog)
 
   const wallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
@@ -101,6 +103,12 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           contractId: props.contractId,
         })
         .catch(console.error)
+
+      if (!action || action === 'exit') return
+
+      openSuccessDialog({
+        type: action,
+      }).catch(console.error)
     }
 
   const user = useStore(authModel.$user)
@@ -132,6 +140,10 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       await openBuyLiquidity({
         buyLiquidityAdapter: adapter,
         tokens,
+      })
+
+      await openSuccessDialog({
+        type: 'buyLiquidity',
       })
     } catch (error) {
       if (error instanceof Error && !(error instanceof UserRejectionError)) {

@@ -356,6 +356,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     currentWallet ? 3000 : null
   )
 
+  const [sentryRef] = model.useInfiniteScroll()
+  const hasNetPage = useStore(model.useInfiniteScroll.hasNextPage)
+
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -473,11 +476,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             </Typography>
           </div>
           <ul className={styles.list}>
-            {loading && !stakingList.length && (
-              <li className={clsx(styles.loader, styles.listItem)}>
-                <Loader height="24" />
-              </li>
-            )}
             {!loading && !stakingList.length && (
               <li className={clsx(styles.listItem)}>
                 <div className={styles.empty}>no data</div>
@@ -552,9 +550,16 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                 </li>
               )
             })}
+            {hasNetPage && (
+              <li
+                ref={sentryRef}
+                className={clsx(styles.loader, styles.listItem)}
+              >
+                <Loader height="24" />
+              </li>
+            )}
           </ul>
         </Paper>
-        <model.StakingListPagination />
       </div>
     </div>
   )

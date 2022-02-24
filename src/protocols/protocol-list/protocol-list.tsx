@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
 import { useMemo, useState } from 'react'
@@ -99,6 +100,9 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     setSearch(event.currentTarget.value)
   }
 
+  const [sentryRef] = model.useInfiniteScroll()
+  const hasNetPage = useStore(model.useInfiniteScroll.hasNextPage)
+
   const tabs = (
     <ProtocolTabs
       className={styles.tabs}
@@ -189,13 +193,6 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           </Typography>
         </div>
         <ul className={styles.protocols}>
-          {(!userReady || (loading && !protocolList?.length)) && (
-            <li>
-              <div className={styles.loader}>
-                <Loader height="36" />
-              </div>
-            </li>
-          )}
           {!loading && !protocolList?.length && userReady && (
             <li>
               <Paper radius={8} className={styles.empty}>
@@ -218,8 +215,14 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
               />
             </li>
           ))}
+          {(hasNetPage || !userReady) && (
+            <li>
+              <div className={styles.loader} ref={sentryRef}>
+                <Loader height="36" />
+              </div>
+            </li>
+          )}
         </ul>
-        <model.ProtocolListPagination />
       </div>
     </AppLayout>
   )

@@ -2,9 +2,9 @@ import { createDomain, guard, sample, restore } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'
-import { createPagination } from '~/common/create-pagination'
 import { ProtocolFavoriteMutationVariables } from '~/graphql/_generated-types'
 import { protocolsApi, Protocol } from '~/protocols/common'
+import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
 
 const protocolListDomain = createDomain()
 
@@ -73,12 +73,14 @@ export const protocolFavoriteFx = protocolListDomain.createEffect(
 
 export const $protocolList = protocolListDomain
   .createStore<Protocol[]>([])
-  .on(fetchProtocolListFx.doneData, (_, payload) =>
-    payload.list.map((protocol) => ({
-      ...protocol,
-      deleting: false,
-      type: 'Protocol',
-    }))
+  .on(fetchProtocolListFx.doneData, (state, payload) =>
+    state.concat(
+      payload.list.map((protocol) => ({
+        ...protocol,
+        deleting: false,
+        type: 'Protocol',
+      }))
+    )
   )
   .on(deleteProtocolFx, (state, payload) =>
     state.map((protocol) =>
@@ -96,9 +98,12 @@ export const $protocolList = protocolListDomain
     )
   )
 
-export const ProtocolListPagination = createPagination({
+export const useInfiniteScroll = createUseInfiniteScroll({
   domain: protocolListDomain,
+  loading: fetchProtocolListFx.pending,
+  items: $protocolList,
 })
+$protocolList.reset(useInfiniteScroll.reset)
 
 export const ProtocolListGate = createGate<{
   search: string
@@ -110,14 +115,8 @@ export const ProtocolListGate = createGate<{
   name: 'ProtocolListGate',
 })
 
-guard({
-  clock: ProtocolListGate.state,
-  filter: ({ search }) => Boolean(search),
-  target: ProtocolListPagination.reset,
-})
-
 sample({
-  source: [ProtocolListPagination.state, ProtocolListGate.state],
+  source: [useInfiniteScroll.state, ProtocolListGate.state],
   clock: guard({
     source: [
       ProtocolListGate.status,
@@ -125,8 +124,7 @@ sample({
       authModel.$userReady,
     ],
     clock: [
-      ProtocolListGate.open,
-      ProtocolListPagination.updates,
+      useInfiniteScroll.updates,
       ProtocolListGate.state.updates,
       authModel.$userReady.updates,
     ],
@@ -145,7 +143,12 @@ sample({
 sample({
   clock: fetchProtocolListFx.doneData,
   fn: (clock) => clock.count,
-  target: ProtocolListPagination.totalElements,
+  target: useInfiniteScroll.totalElements,
+})
+
+sample({
+  clock: ProtocolListGate.state.updates,
+  target: useInfiniteScroll.reset,
 })
 
 export const $tabsCount = restore(
