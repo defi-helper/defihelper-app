@@ -4,11 +4,12 @@ import { PROPOSAL_FRAGMENT } from './proposal.fragment.graphql'
 
 export const PROPOSAL_LIST_BY_STATUS = gql`
   query ProposalsByStatus(
+    $tag: [ProposalTagEnum!]
     $sort: [ProposalListSortInputType!]
     $pagination: ProposalListPaginationInputType
   ) {
     open: proposals(
-      filter: { status: open }
+      filter: { status: open, tag: $tag }
       sort: $sort
       pagination: $pagination
     ) {
@@ -20,7 +21,7 @@ export const PROPOSAL_LIST_BY_STATUS = gql`
       }
     }
     in_process: proposals(
-      filter: { status: in_process }
+      filter: { status: in_process, tag: $tag }
       sort: $sort
       pagination: $pagination
     ) {
@@ -32,7 +33,7 @@ export const PROPOSAL_LIST_BY_STATUS = gql`
       }
     }
     executed: proposals(
-      filter: { status: executed }
+      filter: { status: executed, tag: $tag }
       sort: $sort
       pagination: $pagination
     ) {
@@ -44,7 +45,7 @@ export const PROPOSAL_LIST_BY_STATUS = gql`
       }
     }
     defeated: proposals(
-      filter: { status: defeated }
+      filter: { status: defeated, tag: $tag }
       sort: $sort
       pagination: $pagination
     ) {

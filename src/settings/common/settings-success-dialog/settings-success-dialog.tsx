@@ -35,12 +35,15 @@ export const SettingsSuccessDialog: React.VFC<SettingsSuccessDialogProps> = (
         {TITLES[props.type]}
       </Typography>
       <div className={styles.actions}>
-        <Button onClick={props.onConfirm}>Ok</Button>
+        <Button onClick={props.onConfirm} className={styles.button}>
+          Continue
+        </Button>
         {props.type === UserContactBrokerEnum.Telegram && (
           <Button
             as="a"
             href={`https://t.me/${config.TELEGRAM_BOT_USERNAME}?start=${props.confirmationCode}`}
             target="_blank"
+            className={styles.button}
           >
             Open telegram
           </Button>

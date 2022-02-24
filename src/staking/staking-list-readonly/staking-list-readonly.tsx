@@ -77,6 +77,9 @@ export const StakingListReadonly: React.VFC<StakingListReadonlyProps> = (
     setSearch(event.currentTarget.value)
   }
 
+  const [sentryRef] = model.useInfiniteScroll()
+  const hasNetPage = useStore(model.useInfiniteScroll.hasNextPage)
+
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -118,11 +121,6 @@ export const StakingListReadonly: React.VFC<StakingListReadonlyProps> = (
             </Typography>
           </div>
           <ul className={styles.list}>
-            {loading && !stakingList.length && (
-              <li className={clsx(styles.loader, styles.listItem)}>
-                <Loader height="24" />
-              </li>
-            )}
             {!loading && !stakingList.length && (
               <li className={clsx(styles.listItem)}>
                 <div className={styles.empty}>no data</div>
@@ -148,9 +146,16 @@ export const StakingListReadonly: React.VFC<StakingListReadonlyProps> = (
                 </li>
               )
             })}
+            {hasNetPage && (
+              <li
+                ref={sentryRef}
+                className={clsx(styles.loader, styles.listItem)}
+              >
+                <Loader height="24" />
+              </li>
+            )}
           </ul>
         </Paper>
-        <model.StakingListPagination />
       </div>
     </div>
   )

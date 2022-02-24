@@ -13,6 +13,8 @@ import {
   RoadmapGrid,
   RoadmapGroupedByStatus,
   RoadmapSuccessDialog,
+  RoadmapTag,
+  TAGS,
 } from '~/roadmap/common'
 import { Typography } from '~/common/typography'
 import { Input } from '~/common/input'
@@ -24,6 +26,8 @@ import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { Loader } from '~/common/loader'
 import { SearchDialog } from '~/common/search-dialog'
+import { ProposalTagEnum } from '~/graphql/_generated-types'
+import { Select, SelectOption } from '~/common/select'
 import * as model from './roadmap-list.model'
 import * as styles from './roadmap-list.css'
 
@@ -37,6 +41,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
   const searchParams = useQueryParams()
 
   const [search, setSearch] = useState('')
+  const [currentOption, setOption] = useState<string>('')
   const [openSearchDialog] = useDialog(SearchDialog)
 
   const user = useStore(authModel.$user)
@@ -45,6 +50,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
   const [openRoadmapForm] = useDialog(RoadmapForm)
   const [openRoadmapSuccess] = useDialog(RoadmapSuccessDialog)
   const [openRoadmapAttention] = useDialog(RoadmapAttentionDialog)
+  const [openRoadmapTag] = useDialog(RoadmapTag)
 
   const status = searchParams.get('status')
 
@@ -64,7 +70,11 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
     setSearch(event.currentTarget.value)
   }
 
-  useGate(model.ProposalListGate, { status, search })
+  useGate(model.ProposalListGate, {
+    status,
+    search,
+    tag: currentOption as ProposalTagEnum,
+  })
 
   const handleVote = (proposal: Proposal) => {
     model.voteProposalFx(proposal)
@@ -126,6 +136,42 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
     Boolean(group?.list?.length)
   )
 
+  const handleAddTag = async (proposal: Proposal) => {
+    try {
+      const result = await openRoadmapTag()
+
+      model.tagProposalFx({
+        proposal: proposal.id,
+        tag: result.tag,
+        status: proposal.status,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const handleRemoveTag = async (proposal: Proposal) => {
+    try {
+      const result = await openRoadmapTag({
+        defaultValues: {
+          tag: proposal.tags[0],
+        },
+      })
+
+      model.untagProposalFx({
+        proposal: proposal.id,
+        tag: result.tag,
+        status: proposal.status,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
   return (
     <AppLayout
       title="Vote"
@@ -168,22 +214,38 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           + New Request
         </Button>
       </div>
+      <Select
+        value={currentOption}
+        onChange={({ target }) => setOption(target.value)}
+        className={styles.select}
+      >
+        <SelectOption value="">All</SelectOption>
+        {Object.entries(TAGS).map(([key, title]) => (
+          <SelectOption key={key} value={key}>
+            {title}
+          </SelectOption>
+        ))}
+      </Select>
       {loading && (
         <Paper radius={8} className={styles.loader}>
           <Loader height="36" />
         </Paper>
       )}
-      {!loading && hasGroupedProposals && !(status || search) && (
-        <RoadmapGroupedByStatus
-          proposals={groupedProposals}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onVote={handleVote}
-          onUnvote={handleUnvote}
-          user={user}
-        />
-      )}
-      {!loading && (status || search) && (
+      {!loading &&
+        hasGroupedProposals &&
+        !(status || search || currentOption) && (
+          <RoadmapGroupedByStatus
+            proposals={groupedProposals}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onVote={handleVote}
+            onUnvote={handleUnvote}
+            onAddTag={handleAddTag}
+            onRemoveTag={handleRemoveTag}
+            user={user}
+          />
+        )}
+      {!loading && (status || search || currentOption) && (
         <RoadmapGrid
           proposals={proposals}
           onEdit={handleEdit}
@@ -192,6 +254,8 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           onUnvote={handleUnvote}
           user={user}
           status={status}
+          onAddTag={handleAddTag}
+          onRemoveTag={handleRemoveTag}
         />
       )}
       {(status || search) && <model.ProposalListPagination />}

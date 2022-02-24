@@ -47,3 +47,8 @@ export const loader = style({
   alignItems: 'center',
   justifyContent: 'center',
 })
+
+export const select = style({
+  marginBottom: 28,
+  maxWidth: 200,
+})

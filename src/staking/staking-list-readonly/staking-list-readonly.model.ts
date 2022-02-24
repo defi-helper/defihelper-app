@@ -6,10 +6,11 @@ import {
   SortOrderEnum,
 } from '~/graphql/_generated-types'
 import { Contract, stakingApi, StakingListPayload } from '~/staking/common'
-import { createPagination, PaginationState } from '~/common/create-pagination'
+import { PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as stakingUpdateModel from '~/staking/staking-update/staking-update.model'
+import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
 
 export const stakingListDomain = createDomain()
 
@@ -70,11 +71,13 @@ export const deleteStakingFx = stakingListDomain.createEffect(
 
 export const $contractList = stakingListDomain
   .createStore<Contract[]>([])
-  .on(fetchStakingListFx.doneData, (_, payload) =>
-    payload.contracts.map((contract) => ({
-      ...contract,
-      type: 'Contract',
-    }))
+  .on(fetchStakingListFx.doneData, (state, payload) =>
+    state.concat(
+      payload.contracts.map((contract) => ({
+        ...contract,
+        type: 'Contract',
+      }))
+    )
   )
   .on(deleteStakingFx.doneData, (state, payload) => {
     return state.filter(({ id }) => id !== payload)
@@ -96,28 +99,29 @@ export const StakingListGate = createGate<StakingListPayload>({
   domain: stakingListDomain,
 })
 
-export const StakingListPagination = createPagination({
+export const useInfiniteScroll = createUseInfiniteScroll({
   domain: stakingListDomain,
   limit: 20,
+  items: $contractsListCopies,
+  loading: fetchStakingListFx.pending,
 })
+$contractList.reset(useInfiniteScroll.reset)
 
-guard({
-  clock: StakingListGate.state,
-  filter: ({ search }) => Boolean(search),
-  target: StakingListPagination.reset,
+sample({
+  clock: StakingListGate.state.updates,
+  target: useInfiniteScroll.reset,
 })
 
 guard({
   clock: sample({
     source: [
-      StakingListPagination.state,
+      useInfiniteScroll.state,
       StakingListGate.state,
       StakingListGate.status,
     ],
     clock: [
-      StakingListGate.open,
       StakingListGate.state.updates,
-      StakingListPagination.updates,
+      useInfiniteScroll.updates,
       stakingAutomatesModel.updated,
     ],
     fn: ([pagination, gate, opened]) => ({
@@ -133,7 +137,7 @@ guard({
 sample({
   clock: fetchStakingListFx.doneData,
   fn: (clock) => clock.pagination,
-  target: StakingListPagination.totalElements,
+  target: useInfiniteScroll.totalElements,
 })
 
 toastsService.forwardErrors(

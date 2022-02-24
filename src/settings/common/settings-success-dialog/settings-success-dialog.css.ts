@@ -16,3 +16,7 @@ export const actions = style({
   display: 'flex',
   gap: 8,
 })
+
+export const button = style({
+  width: '100%',
+})

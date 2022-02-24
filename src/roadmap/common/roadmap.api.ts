@@ -16,6 +16,10 @@ import {
   ProposalUnvoteMutationVariables,
   ProposalsByStatusQuery,
   ProposalsByStatusQueryVariables,
+  ProposalTagMutationVariables,
+  ProposalTagMutation,
+  ProposalUntagMutation,
+  ProposalUntagMutationVariables,
 } from '~/graphql/_generated-types'
 import {
   PROPOSAL_CREATE,
@@ -26,6 +30,8 @@ import {
   PROPOSAL_UPDATE,
   PROPOSAL_VOTE,
   PROPOSAL_LIST_BY_STATUS,
+  PROPOSAL_TAG,
+  PROPOSAL_UNTAG,
 } from './graphql'
 
 export const roadmapApi = {
@@ -71,6 +77,24 @@ export const roadmapApi = {
       )
       .toPromise()
       .then(({ data }) => data?.proposalCreate),
+
+  proposalTag: (variables: ProposalTagMutationVariables) =>
+    getAPIClient()
+      .mutation<ProposalTagMutation, ProposalTagMutationVariables>(
+        PROPOSAL_TAG,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.proposalTag),
+
+  proposalUntag: (variables: ProposalUntagMutationVariables) =>
+    getAPIClient()
+      .mutation<ProposalUntagMutation, ProposalUntagMutationVariables>(
+        PROPOSAL_UNTAG,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.proposalUntag),
 
   proposalUpdate: (variables: ProposalUpdateMutationVariables) =>
     getAPIClient()

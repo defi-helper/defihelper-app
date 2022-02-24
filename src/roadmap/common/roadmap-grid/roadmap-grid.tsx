@@ -13,6 +13,8 @@ export type RoadmapGridProps = {
   onVote: (proposal: Proposal) => void
   onUnvote: (proposal: Proposal) => void
   onDelete: (proposal: Proposal) => void
+  onAddTag: (proposal: Proposal) => void
+  onRemoveTag: (proposal: Proposal) => void
   status: string | null
 }
 
@@ -30,6 +32,14 @@ export const RoadmapGrid: React.VFC<RoadmapGridProps> = (props) => {
 
   const handleEdit = (proposal: Proposal) => () => {
     props.onEdit(proposal)
+  }
+
+  const handleAddTag = (proposal: Proposal) => () => {
+    props.onAddTag(proposal)
+  }
+
+  const handleRemoveTag = (proposal: Proposal) => () => {
+    props.onRemoveTag(proposal)
   }
 
   return (
@@ -59,6 +69,8 @@ export const RoadmapGrid: React.VFC<RoadmapGridProps> = (props) => {
               onUnvote={handleUnvote(proposal)}
               onDelete={handleDelete(proposal)}
               onEdit={handleEdit(proposal)}
+              onAddTag={handleAddTag(proposal)}
+              onRemoveTag={handleRemoveTag(proposal)}
             />
           )
         })}
