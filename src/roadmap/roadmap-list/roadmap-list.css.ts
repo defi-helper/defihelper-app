@@ -50,4 +50,5 @@ export const loader = style({
 
 export const select = style({
   marginBottom: 28,
+  maxWidth: 200,
 })

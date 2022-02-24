@@ -24,6 +24,7 @@ export const header = style([
 
 export const select = style({
   marginBottom: 28,
+  maxWidth: 200,
 })
 
 export const empty = style({
