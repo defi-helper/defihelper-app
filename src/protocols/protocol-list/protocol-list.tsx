@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
 import { useMemo, useState } from 'react'

@@ -14,6 +14,7 @@ export const PROPOSAL_FRAGMENT = gql`
       id
       createdAt
     }
+    tags
     updatedAt
     createdAt
     votes {

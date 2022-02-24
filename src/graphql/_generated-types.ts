@@ -694,6 +694,7 @@ export type ContractMetricType = {
   aprWeek: Scalars['String']
   aprMonth: Scalars['String']
   aprYear: Scalars['String']
+  aprWeekReal?: Maybe<Scalars['String']>
   myStaked: Scalars['String']
   myEarned: Scalars['String']
   myAPYBoost: Scalars['String']
@@ -994,6 +995,8 @@ export type Mutation = {
   proposalDelete: Scalars['Boolean']
   vote: VoteType
   unvote: Scalars['Boolean']
+  proposalTag: Array<ProposalTagType>
+  proposalUntag: Scalars['Boolean']
   userContactCreate: UserContactType
   userContactUpdate: UserContactType
   userContactEmailConfirm: Scalars['Boolean']
@@ -1152,6 +1155,16 @@ export type MutationUnvoteArgs = {
   proposal: Scalars['UuidType']
 }
 
+export type MutationProposalTagArgs = {
+  proposal: Scalars['UuidType']
+  tag: Array<ProposalTagEnum>
+}
+
+export type MutationProposalUntagArgs = {
+  proposal: Scalars['UuidType']
+  tag: Array<ProposalTagEnum>
+}
+
 export type MutationUserContactCreateArgs = {
   input: UserContactCreateInputType
 }
@@ -1289,6 +1302,7 @@ export type ProposalFilterInputType = {
 export type ProposalListFilterInputType = {
   author?: Maybe<Scalars['UuidType']>
   status?: Maybe<ProposalStatusEnum>
+  tag?: Maybe<Array<ProposalTagEnum>>
   search?: Maybe<Scalars['String']>
 }
 
@@ -1328,6 +1342,26 @@ export enum ProposalStatusEnum {
   Defeated = 'defeated',
 }
 
+export enum ProposalTagEnum {
+  TokenRequest = 'tokenRequest',
+  ProtocolRequest = 'protocolRequest',
+  BlockchainRequest = 'blockchainRequest',
+  FeatureRequest = 'featureRequest',
+  BugReport = 'bugReport',
+}
+
+export type ProposalTagType = {
+  __typename?: 'ProposalTagType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Voting user */
+  user: UserType
+  /** Tag value */
+  tag: ProposalTagEnum
+  /** Date of created */
+  createdAt: Scalars['DateTimeType']
+}
+
 export type ProposalType = {
   __typename?: 'ProposalType'
   /** Identificator */
@@ -1341,6 +1375,7 @@ export type ProposalType = {
   /** Author */
   author?: Maybe<UserType>
   votes: VoteListType
+  tags: Array<ProposalTagEnum>
   /** Planned date */
   plannedAt?: Maybe<Scalars['DateTimeType']>
   /** Released date */
@@ -4427,6 +4462,7 @@ export type ProposalQuery = { __typename?: 'Query' } & {
 }
 
 export type ProposalsByStatusQueryVariables = Exact<{
+  tag?: Maybe<Array<ProposalTagEnum> | ProposalTagEnum>
   sort?: Maybe<Array<ProposalListSortInputType> | ProposalListSortInputType>
   pagination?: Maybe<ProposalListPaginationInputType>
 }>
@@ -4472,6 +4508,30 @@ export type ProposalsQuery = { __typename?: 'Query' } & {
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
 }
+
+export type ProposalTagMutationVariables = Exact<{
+  proposal: Scalars['UuidType']
+  tag: Array<ProposalTagEnum> | ProposalTagEnum
+}>
+
+export type ProposalTagMutation = { __typename?: 'Mutation' } & {
+  proposalTag: Array<
+    { __typename?: 'ProposalTagType' } & Pick<
+      ProposalTagType,
+      'id' | 'tag' | 'createdAt'
+    >
+  >
+}
+
+export type ProposalUntagMutationVariables = Exact<{
+  proposal: Scalars['UuidType']
+  tag: Array<ProposalTagEnum> | ProposalTagEnum
+}>
+
+export type ProposalUntagMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'proposalUntag'
+>
 
 export type ProposalUnvoteMutationVariables = Exact<{
   proposal: Scalars['UuidType']
@@ -4530,6 +4590,7 @@ export type ProposalFragmentFragment = { __typename?: 'ProposalType' } & Pick<
   | 'status'
   | 'releasedAt'
   | 'plannedAt'
+  | 'tags'
   | 'updatedAt'
   | 'createdAt'
 > & {
@@ -5445,6 +5506,7 @@ export const ProposalFragmentFragmentDoc = gql`
       id
       createdAt
     }
+    tags
     updatedAt
     createdAt
     votes {
@@ -6966,11 +7028,12 @@ export function useProposalQuery(
 }
 export const ProposalsByStatusDocument = gql`
   query ProposalsByStatus(
+    $tag: [ProposalTagEnum!]
     $sort: [ProposalListSortInputType!]
     $pagination: ProposalListPaginationInputType
   ) {
     open: proposals(
-      filter: { status: open }
+      filter: { status: open, tag: $tag }
       sort: $sort
       pagination: $pagination
     ) {
@@ -6982,7 +7045,7 @@ export const ProposalsByStatusDocument = gql`
       }
     }
     in_process: proposals(
-      filter: { status: in_process }
+      filter: { status: in_process, tag: $tag }
       sort: $sort
       pagination: $pagination
     ) {
@@ -6994,7 +7057,7 @@ export const ProposalsByStatusDocument = gql`
       }
     }
     executed: proposals(
-      filter: { status: executed }
+      filter: { status: executed, tag: $tag }
       sort: $sort
       pagination: $pagination
     ) {
@@ -7006,7 +7069,7 @@ export const ProposalsByStatusDocument = gql`
       }
     }
     defeated: proposals(
-      filter: { status: defeated }
+      filter: { status: defeated, tag: $tag }
       sort: $sort
       pagination: $pagination
     ) {
@@ -7054,6 +7117,33 @@ export function useProposalsQuery(
   options: Omit<Urql.UseQueryArgs<ProposalsQueryVariables>, 'query'> = {}
 ) {
   return Urql.useQuery<ProposalsQuery>({ query: ProposalsDocument, ...options })
+}
+export const ProposalTagDocument = gql`
+  mutation ProposalTag($proposal: UuidType!, $tag: [ProposalTagEnum!]!) {
+    proposalTag(proposal: $proposal, tag: $tag) {
+      id
+      tag
+      createdAt
+    }
+  }
+`
+
+export function useProposalTagMutation() {
+  return Urql.useMutation<ProposalTagMutation, ProposalTagMutationVariables>(
+    ProposalTagDocument
+  )
+}
+export const ProposalUntagDocument = gql`
+  mutation ProposalUntag($proposal: UuidType!, $tag: [ProposalTagEnum!]!) {
+    proposalUntag(proposal: $proposal, tag: $tag)
+  }
+`
+
+export function useProposalUntagMutation() {
+  return Urql.useMutation<
+    ProposalUntagMutation,
+    ProposalUntagMutationVariables
+  >(ProposalUntagDocument)
 }
 export const ProposalUnvoteDocument = gql`
   mutation ProposalUnvote($proposal: UuidType!) {

@@ -19,6 +19,8 @@ export type RoadmapGroupedByStatusProps = {
   onVote: (proposal: Proposal) => void
   onUnvote: (proposal: Proposal) => void
   onDelete: (proposal: Proposal) => void
+  onAddTag: (proposal: Proposal) => void
+  onRemoveTag: (proposal: Proposal) => void
 }
 
 export const RoadmapGroupedByStatus: React.VFC<RoadmapGroupedByStatusProps> = (
@@ -37,6 +39,14 @@ export const RoadmapGroupedByStatus: React.VFC<RoadmapGroupedByStatusProps> = (
 
   const handleEdit = (proposal: Proposal) => () => {
     props.onEdit(proposal)
+  }
+
+  const handleAddTag = (proposal: Proposal) => () => {
+    props.onAddTag(proposal)
+  }
+
+  const handleRemoveTag = (proposal: Proposal) => () => {
+    props.onRemoveTag(proposal)
   }
 
   return (
@@ -72,6 +82,8 @@ export const RoadmapGroupedByStatus: React.VFC<RoadmapGroupedByStatusProps> = (
                       onUnvote={handleUnvote(proposal)}
                       onDelete={handleDelete(proposal)}
                       onEdit={handleEdit(proposal)}
+                      onAddTag={handleAddTag(proposal)}
+                      onRemoveTag={handleRemoveTag(proposal)}
                     />
                   </li>
                 )

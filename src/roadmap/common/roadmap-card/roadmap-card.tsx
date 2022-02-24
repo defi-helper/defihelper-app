@@ -15,6 +15,8 @@ import * as styles from './roadmap-card.css'
 
 export type RoadmapCardProps = Proposal & {
   onEdit?: () => void
+  onAddTag?: () => void
+  onRemoveTag?: () => void
   onDelete?: () => void
   onUnvote: () => void
   onVote: () => void
@@ -52,6 +54,24 @@ export const RoadmapCard: React.VFC<RoadmapCardProps> = (props) => {
                   className={styles.manageButtonItem}
                 >
                   Edit
+                </ButtonBase>
+              </Can>
+              <Can I="update" a="Proposal">
+                <ButtonBase
+                  onClick={props.onAddTag}
+                  disabled={props.updating}
+                  className={styles.manageButtonItem}
+                >
+                  Add tag
+                </ButtonBase>
+              </Can>
+              <Can I="update" a="Proposal">
+                <ButtonBase
+                  onClick={props.onRemoveTag}
+                  disabled={props.updating}
+                  className={styles.manageButtonItem}
+                >
+                  Remove tag
                 </ButtonBase>
               </Can>
               <Can I="delete" a="Proposal">

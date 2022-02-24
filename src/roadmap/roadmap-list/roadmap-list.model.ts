@@ -6,6 +6,9 @@ import { createPagination, PaginationState } from '~/common/create-pagination'
 import {
   ProposalCreateInputType,
   ProposalStatusEnum,
+  ProposalTagEnum,
+  ProposalTagMutationVariables,
+  ProposalUntagMutationVariables,
   ProposalUpdateMutationVariables,
 } from '~/graphql/_generated-types'
 import { roadmapApi, Proposal, ProposalsByStatus } from '~/roadmap/common'
@@ -13,22 +16,30 @@ import { roadmapApi, Proposal, ProposalsByStatus } from '~/roadmap/common'
 type Gate = {
   status: string | null
   search: string
+  tag?: ProposalTagEnum
 }
 
 const proposalListDomain = createDomain()
 
+type Params = [
+  PaginationState,
+  {
+    status: ProposalStatusEnum | undefined
+    search: string
+    tag?: ProposalTagEnum
+  }
+]
+
 export const fetchProposalListFx = proposalListDomain.createEffect(
-  ([pagination, gate]: [
-    PaginationState,
-    { status: ProposalStatusEnum | undefined; search: string }
-  ]) =>
+  ([pagination, gate]: Params) =>
     roadmapApi.proposalList({
       pagination,
-      ...(gate.status || gate.search
+      ...(gate.status || gate.search || gate.tag
         ? {
             filter: {
               status: gate.status || undefined,
               search: gate.search,
+              tag: gate.tag ? [gate.tag] : undefined,
             },
           }
         : undefined),
@@ -105,6 +116,26 @@ export const unvoteProposalFx = proposalListDomain.createEffect(
   }
 )
 
+export const tagProposalFx = proposalListDomain.createEffect(
+  async (
+    params: ProposalTagMutationVariables & { status: ProposalStatusEnum }
+  ) => {
+    const data = await roadmapApi.proposalTag(omit(params, 'status'))
+
+    if (!data) throw new Error('something went wrong')
+  }
+)
+
+export const untagProposalFx = proposalListDomain.createEffect(
+  async (
+    params: ProposalUntagMutationVariables & { status: ProposalStatusEnum }
+  ) => {
+    const data = await roadmapApi.proposalUntag(omit(params, 'status'))
+
+    if (!data) throw new Error('something went wrong')
+  }
+)
+
 export const $proposalList = proposalListDomain
   .createStore<Proposal[]>([])
   .on(fetchProposalListFx.doneData, (_, payload) => payload.list)
@@ -160,6 +191,44 @@ export const $proposalList = proposalListDomain
 
     return (updatedProposalStatus ? newState : state).map((proposal) =>
       proposal.id === payload.id ? payload : proposal
+    )
+  })
+  .on(tagProposalFx, (state, payload) =>
+    state.map((proposal) =>
+      proposal.id === payload.proposal
+        ? { ...proposal, updating: true }
+        : proposal
+    )
+  )
+  .on(tagProposalFx.done, (state, { params }) =>
+    state.map((proposal) =>
+      proposal.id === params.proposal
+        ? {
+            ...proposal,
+            updating: false,
+            tags: Array.isArray(params.tag) ? params.tag : [params.tag],
+          }
+        : proposal
+    )
+  )
+  .on(untagProposalFx, (state, payload) =>
+    state.map((proposal) =>
+      proposal.id === payload.proposal
+        ? { ...proposal, updating: true }
+        : proposal
+    )
+  )
+  .on(untagProposalFx.done, (state, { params }) => {
+    const tags = Array.isArray(params.tag) ? params.tag : [params.tag]
+
+    return state.map((proposal) =>
+      proposal.id === params.proposal
+        ? {
+            ...proposal,
+            updating: false,
+            tags: proposal.tags.filter((tag) => !tags.includes(tag)),
+          }
+        : proposal
     )
   })
 
@@ -274,6 +343,62 @@ export const $groupedProposals = proposalListDomain
       ),
     },
   }))
+  .on(tagProposalFx, (state, payload) => ({
+    ...state,
+    [payload.status]: {
+      ...state[payload.status],
+      list: state[payload.status]?.list?.map((proposal) =>
+        proposal.id === payload.proposal
+          ? { ...proposal, updating: true }
+          : proposal
+      ),
+    },
+  }))
+  .on(tagProposalFx.done, (state, { params }) => ({
+    ...state,
+    [params.status]: {
+      ...state[params.status],
+      list: state[params.status]?.list?.map((proposal) =>
+        proposal.id === params.proposal
+          ? {
+              ...proposal,
+              updating: false,
+              tags: Array.isArray(params.tag) ? params.tag : [params.tag],
+            }
+          : proposal
+      ),
+    },
+  }))
+  .on(untagProposalFx, (state, payload) => ({
+    ...state,
+    [payload.status]: {
+      ...state[payload.status],
+      list: state[payload.status]?.list?.map((proposal) =>
+        proposal.id === payload.proposal
+          ? { ...proposal, updating: true }
+          : proposal
+      ),
+    },
+  }))
+  .on(untagProposalFx.done, (state, { params }) => {
+    const tags = Array.isArray(params.tag) ? params.tag : [params.tag]
+
+    return {
+      ...state,
+      [params.status]: {
+        ...state[params.status],
+        list: state[params.status]?.list?.map((proposal) =>
+          proposal.id === params.proposal
+            ? {
+                ...proposal,
+                updating: false,
+                tags: proposal.tags.filter((tag) => !tags.includes(tag)),
+              }
+            : proposal
+        ),
+      },
+    }
+  })
 
 export const ProposalListGate = createGate<Gate>({
   name: 'ProposalListGate',
@@ -282,8 +407,6 @@ export const ProposalListGate = createGate<Gate>({
 
 export const ProposalListPagination = createPagination({
   domain: proposalListDomain,
-  store: $proposalList,
-  loading: fetchProposalListFx.pending,
 })
 
 guard({
@@ -310,7 +433,8 @@ guard({
 
     return (
       Boolean(gate.status && statuses.includes(gate.status)) ||
-      Boolean(gate.search)
+      Boolean(gate.search) ||
+      Boolean(gate.tag)
     )
   },
   target: fetchProposalListFx,
@@ -318,7 +442,7 @@ guard({
 
 guard({
   clock: [ProposalListGate.open, ProposalListGate.state.updates],
-  filter: (gate) => !gate.status && !gate.search,
+  filter: (gate) => !gate.status && !gate.search && !gate.tag,
   target: fetchProposalGroupedListByStatusFx,
 })
 

@@ -14,7 +14,7 @@ const MarkdownEditor = lazy(() =>
   }))
 )
 
-export type FormValues = {
+type FormValues = {
   title: string
   description: string
   status: ProposalStatusEnum
