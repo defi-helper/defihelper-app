@@ -39,24 +39,12 @@ export class WavesKeeperConnector extends AbstractConnector {
       /* webpackChunkName: "waves-signer" */ '@waves/signer'
     ).then((m) => m.Signer)
     const Provider = await import(
-      /* webpackChunkName: "waves-provider-keeper" */ '@defihelper/provider-keeper'
+      /* webpackChunkName: "waves-provider-keeper" */ '@waves/provider-keeper'
     ).then((m) => m.ProviderKeeper)
 
-    waves =
-      waves ??
-      new Signer(
-        this.options.nodeUrl
-          ? { NODE_URL: this.options.nodeUrl }
-          : { LOG_LEVEL: 'verbose' }
-      )
+    waves = waves ?? new Signer({ LOG_LEVEL: 'verbose' })
 
-    keeper = keeper ?? new Provider(this.options.authData)
-
-    await keeper.connect({
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      NODE_URL: this.options.nodeUrl!,
-      NETWORK_BYTE: 'W'.charCodeAt(0),
-    })
+    keeper = keeper ?? new Provider()
 
     waves.setProvider(keeper)
 
