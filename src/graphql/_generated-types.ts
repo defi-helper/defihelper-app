@@ -649,6 +649,7 @@ export enum ContractListSortInputTypeColumnEnum {
   CreatedAt = 'createdAt',
   Tvl = 'tvl',
   AprYear = 'aprYear',
+  AprWeekReal = 'aprWeekReal',
   MyStaked = 'myStaked',
 }
 
@@ -5203,6 +5204,7 @@ export type StakingContractFragmentFragment = {
       | 'aprWeek'
       | 'aprMonth'
       | 'aprYear'
+      | 'aprWeekReal'
       | 'myStaked'
       | 'myEarned'
       | 'myAPYBoost'
@@ -5653,6 +5655,7 @@ export const StakingContractFragmentFragmentDoc = gql`
       aprWeek
       aprMonth
       aprYear
+      aprWeekReal
       myStaked
       myEarned
       myAPYBoost

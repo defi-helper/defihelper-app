@@ -29,6 +29,7 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
       aprWeek
       aprMonth
       aprYear
+      aprWeekReal
       myStaked
       myEarned
       myAPYBoost

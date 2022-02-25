@@ -433,6 +433,27 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             <Typography variant="body2" align="right">
               <ButtonBase
                 onClick={handleSort({
+                  column: ContractListSortInputTypeColumnEnum.AprWeekReal,
+                  order:
+                    sortBy.column ===
+                      ContractListSortInputTypeColumnEnum.AprWeekReal &&
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
+                })}
+              >
+                Real APY{' '}
+                {sortBy.column ===
+                  ContractListSortInputTypeColumnEnum.AprWeekReal &&
+                  sortIcon(
+                    sortBy,
+                    ContractListSortInputTypeColumnEnum.AprWeekReal
+                  )}
+              </ButtonBase>
+            </Typography>
+            <Typography variant="body2" align="right">
+              <ButtonBase
+                onClick={handleSort({
                   column: ContractListSortInputTypeColumnEnum.MyStaked,
                   order:
                     sortBy.column ===

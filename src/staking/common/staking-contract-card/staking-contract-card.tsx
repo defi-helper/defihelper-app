@@ -45,6 +45,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
     : props.metric
 
   const apy = bignumberUtils.mul(metric.aprYear, 100)
+  const realApy = bignumberUtils.mul(props.metric.aprWeekReal, 100)
 
   const apyboostDifference = bignumberUtils.minus(
     props.metric.myAPYBoost,
@@ -125,6 +126,21 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
                 <Icon icon="calculator" width="20" height="20" />
               </ButtonBase>
             </>
+          )}
+        </Typography>
+      </div>
+      <div>
+        <Typography
+          variant="body2"
+          as="div"
+          family="mono"
+          transform="uppercase"
+          align="right"
+        >
+          {isExcludedContract || !props.metric.aprWeekReal ? (
+            '-'
+          ) : (
+            <>{bignumberUtils.formatMax(realApy, 10000)}% </>
           )}
         </Typography>
       </div>
