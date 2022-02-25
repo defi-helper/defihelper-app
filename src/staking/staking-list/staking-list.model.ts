@@ -345,6 +345,7 @@ guard({
     ],
     clock: [
       StakingListGate.state.updates,
+      StakingListGate.status.updates,
       useInfiniteScroll.updates,
       stakingAutomatesModel.updated,
     ],

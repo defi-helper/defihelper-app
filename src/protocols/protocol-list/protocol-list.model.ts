@@ -126,10 +126,11 @@ sample({
     clock: [
       useInfiniteScroll.updates,
       ProtocolListGate.state.updates,
+      ProtocolListGate.status.updates,
       authModel.$userReady.updates,
     ],
-    filter: ([isOpen, { favorite, search }, userReady]) => {
-      return (isOpen || Boolean(favorite) || Boolean(search)) && userReady
+    filter: ([isOpen, , userReady]) => {
+      return isOpen && userReady
     },
   }),
   fn: ([{ offset = 0, limit }, clock]): Params => ({
