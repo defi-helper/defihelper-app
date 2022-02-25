@@ -214,7 +214,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
               />
             </li>
           ))}
-          {(hasNetPage || !userReady) && (
+          {(hasNetPage || !userReady || loading) && (
             <li>
               <div className={styles.loader} ref={sentryRef}>
                 <Loader height="36" />

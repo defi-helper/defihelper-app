@@ -29,7 +29,7 @@ export const createUseInfiniteScroll = (options: Options) => {
 
   const $limit = domain.createStore(optLimit)
   const $offset = domain.createStore(0)
-  const $totalElements = domain.createStore(100) // sorry first loading
+  const $totalElements = domain.createStore(0)
 
   const changeOffset = domain.createEvent<number>()
   const totalElements = domain.createEvent<number>()
