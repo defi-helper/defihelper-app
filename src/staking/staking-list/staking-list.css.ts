@@ -100,7 +100,7 @@ export const createIcon = style({
 
 export const row = style({
   display: 'grid',
-  gridTemplateColumns: '15% 14% 13% 13% 13% 13% 1fr',
+  gridTemplateColumns: '14% 13% 12% 11% 11% 11% 11% 1fr',
   padding: '16px 24px',
   alignItems: 'center',
 })

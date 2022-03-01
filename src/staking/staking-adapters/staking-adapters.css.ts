@@ -2,7 +2,7 @@ import { style } from '@vanilla-extract/css'
 
 export const root = style({
   display: 'grid',
-  gridTemplateColumns: '15% 14% 13% 13% 13% 13% 1fr',
+  gridTemplateColumns: '14% 13% 12% 11% 11% 11% 11% 1fr',
   padding: '0 0 16px 24px',
 })
 
@@ -35,20 +35,20 @@ export const input = style([
 export const claim = style([
   button,
   {
-    gridColumnStart: 6,
+    gridColumnStart: 7,
   },
 ])
 
 export const unstake = style([
   button,
   {
-    gridColumnStart: 4,
+    gridColumnStart: 5,
   },
 ])
 
 export const turnOn = style([
   button,
   {
-    width: '60%',
+    marginRight: 24,
   },
 ])
