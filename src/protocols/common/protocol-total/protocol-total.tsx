@@ -72,7 +72,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
               underline="always"
             >
               Create a proposal
-            </Link>
+            </Link>{' '}
             and we will connect auto-staking for the protocol in no time.
           </Typography>
         </Paper>
