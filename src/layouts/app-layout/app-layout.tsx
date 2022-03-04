@@ -19,7 +19,14 @@ export type AppLayoutProps = {
 type MenuItem = {
   title: string
   path: string
-  icon: 'home' | 'grid' | 'energy' | 'check' | 'settings'
+  icon:
+    | 'home'
+    | 'grid'
+    | 'energy'
+    | 'check'
+    | 'settings'
+    | 'affilate'
+    | 'notification'
   subject?: 'User'
   can?: 'read'
 }
@@ -51,9 +58,14 @@ const MENU: MenuItem[] = [
     icon: 'settings',
   },
   {
+    title: 'Referral Program',
+    path: paths.referral,
+    icon: 'affilate',
+  },
+  {
     title: 'Users',
     path: paths.users,
-    icon: 'settings',
+    icon: 'notification',
     subject: 'User',
     can: 'read',
   },

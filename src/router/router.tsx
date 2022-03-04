@@ -30,6 +30,7 @@ import { AutomationList } from '~/automations/automation-list'
 import { Settings } from '~/settings'
 import { AutomationHistoryList } from '~/automations/automation-history-list'
 import { GovernanceMultisig } from '~/governance-multisig/governance-multisig'
+import { Referral } from '~/referral'
 import { PrivateRoute } from './private-route'
 
 export type RouterProps = unknown
@@ -108,6 +109,9 @@ export const Router: React.VFC<RouterProps> = () => {
         </PrivateRoute>
         <PrivateRoute path={paths.settings.list}>
           <Settings />
+        </PrivateRoute>
+        <PrivateRoute path={paths.referral}>
+          <Referral />
         </PrivateRoute>
         <CanRoute action="read" subject="User" path={paths.users}>
           <Users />
