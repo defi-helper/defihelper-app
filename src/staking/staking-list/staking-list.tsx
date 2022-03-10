@@ -430,7 +430,11 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   sortIcon(sortBy, ContractListSortInputTypeColumnEnum.AprYear)}
               </ButtonBase>
             </Typography>
-            <Typography variant="body2" align="right">
+            <Typography
+              variant="body2"
+              align="right"
+              className={styles.realApr}
+            >
               <ButtonBase
                 onClick={handleSort({
                   column: ContractListSortInputTypeColumnEnum.AprWeekReal,
@@ -442,7 +446,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       : SortOrderEnum.Desc,
                 })}
               >
-                Real APY{' '}
+                REAL APR (7d){' '}
                 {sortBy.column ===
                   ContractListSortInputTypeColumnEnum.AprWeekReal &&
                   sortIcon(
@@ -450,6 +454,18 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     ContractListSortInputTypeColumnEnum.AprWeekReal
                   )}
               </ButtonBase>
+              <Dropdown
+                control={
+                  <ButtonBase>
+                    <Icon icon="question" width="16" height="16" />
+                  </ButtonBase>
+                }
+                trigger="hover"
+                placement="top"
+                offset={[0, 8]}
+              >
+                <Typography variant="body3">some text</Typography>
+              </Dropdown>
             </Typography>
             <Typography variant="body2" align="right">
               <ButtonBase
@@ -471,9 +487,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     ContractListSortInputTypeColumnEnum.MyStaked
                   )}
               </ButtonBase>
-            </Typography>
-            <Typography variant="body2" align="right">
-              Pool share
             </Typography>
             <Typography variant="body2" align="right">
               Unclaimed

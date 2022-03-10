@@ -165,25 +165,6 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
         >
           {isExcludedContract
             ? '-'
-            : `${bignumberUtils.format(
-                bignumberUtils.mul(
-                  bignumberUtils.div(metric.myStaked, metric.tvl),
-                  100
-                )
-              )}
-          %`}
-        </Typography>
-      </div>
-      <div>
-        <Typography
-          variant="body2"
-          as="div"
-          family="mono"
-          transform="uppercase"
-          align="right"
-        >
-          {isExcludedContract
-            ? '-'
             : `$${bignumberUtils.format(metric.myEarned)}`}
         </Typography>
       </div>
