@@ -100,7 +100,7 @@ export const createIcon = style({
 
 export const row = style({
   display: 'grid',
-  gridTemplateColumns: '14% 13% 12% 11% 11% 11% 11% 1fr',
+  gridTemplateColumns: '14% 13% 12% 16% 14% 14% 1fr',
   padding: '16px 24px',
   alignItems: 'center',
 })
@@ -170,4 +170,11 @@ export const loader = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+})
+
+export const realApr = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  gap: 5,
 })
