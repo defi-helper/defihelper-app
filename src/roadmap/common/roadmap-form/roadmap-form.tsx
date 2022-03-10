@@ -1,12 +1,13 @@
 import { Controller, useForm } from 'react-hook-form'
 import { lazy, Suspense } from 'react'
 
-import { ProposalStatusEnum } from '~/graphql/_generated-types'
+import { ProposalStatusEnum, ProposalTagEnum } from '~/graphql/_generated-types'
 import { Input } from '~/common/input'
 import { Dialog } from '~/common/dialog'
 import { Button } from '~/common/button'
 import { Select, SelectOption } from '~/common/select'
 import * as styles from './roadmap-form.css'
+import { TAGS } from '~/roadmap/common'
 
 const MarkdownEditor = lazy(() =>
   import('~/common/markdown-editor').then((c) => ({
@@ -17,6 +18,7 @@ const MarkdownEditor = lazy(() =>
 type FormValues = {
   title: string
   description: string
+  tags: ProposalTagEnum[]
   status: ProposalStatusEnum
   plannedAt?: string | null
   releasedAt?: string | null
@@ -58,6 +60,20 @@ export const RoadmapForm: React.VFC<RoadmapFormProps> = (props) => {
           helperText={formState.errors.title?.message}
           className={styles.input}
         />
+        <Select
+          label="Request tag"
+          value={props.defaultValues?.tags[0]}
+          onChange={({ target }) =>
+            setValue('tags', [target.value as ProposalTagEnum])
+          }
+          className={styles.input}
+        >
+          {Object.entries(TAGS).map(([key, title]) => (
+            <SelectOption key={key} value={key}>
+              {title}
+            </SelectOption>
+          ))}
+        </Select>
         <Suspense fallback="loading...">
           <MarkdownEditor
             value={props.defaultValues?.description ?? ''}

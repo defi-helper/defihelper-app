@@ -107,7 +107,14 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
 
       const result = await openRoadmapForm()
 
-      await model.createProposalFx(omit(result, ['plannedAt', 'releasedAt']))
+      const createdProposal = await model.createProposalFx(
+        omit(result, ['plannedAt', 'releasedAt', 'tags'])
+      )
+      await model.tagProposalFx({
+        proposal: createdProposal.id,
+        status: createdProposal.status,
+        tag: result.tags,
+      })
 
       await openRoadmapSuccess()
     } catch (error) {
@@ -119,8 +126,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
   const handleEdit = async (proposal: Proposal) => {
     try {
       const result = await openRoadmapForm({ defaultValues: proposal })
-
-      model.updateProposalFx({
+      await model.updateProposalFx({
         id: proposal.id,
         input: result,
         proposal,
