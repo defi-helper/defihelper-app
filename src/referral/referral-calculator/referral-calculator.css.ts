@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -159,3 +159,81 @@ export const separator = style({
     },
   },
 })
+
+export const schema = style({
+  display: 'grid',
+  gridTemplateColumns: '34px 1fr 60px',
+  padding: '24px 16px',
+
+  '@media': {
+    [theme.mediaQueries.lg()]: {
+      padding: '32px 32px 38px',
+      gridTemplateColumns: '38px 1fr 75px',
+    },
+  },
+})
+
+export const schemaImg = style({
+  margin: 'auto',
+  maxWidth: 224,
+  display: 'block',
+
+  '@media': {
+    [theme.mediaQueries.lg()]: {
+      maxWidth: 444,
+    },
+  },
+})
+
+globalStyle(`${schemaImg} img`, {
+  maxWidth: '100%',
+})
+
+export const schemaText = style([
+  grey,
+  {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: 10,
+    gridColumnStart: 1,
+    gridColumnEnd: 4,
+    marginTop: 'auto',
+  },
+])
+
+export const schemaTextCol1 = style({
+  maxWidth: 232,
+})
+
+export const schemaTextCol2 = style({
+  maxWidth: 199,
+})
+
+export const inputWrap = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
+  justifyContent: 'center',
+  paddingLeft: 31,
+})
+
+export const input = style({
+  maxWidth: 144,
+})
+
+export const schemaValue = style([
+  value,
+  {
+    selectors: {
+      '&:not(:last-child)': {
+        marginBottom: 24,
+
+        '@media': {
+          [theme.mediaQueries.md()]: {
+            marginBottom: 16,
+          },
+        },
+      },
+    },
+  },
+])
