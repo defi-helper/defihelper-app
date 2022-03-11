@@ -26,11 +26,7 @@ export const bignumberUtils = {
 
     if (result.lt('1000000')) return result.toFormat(0)
 
-    if (result.isGreaterThanOrEqualTo('1000000000')) {
-      return `${result.div('1000000000').toFormat(0)}B`
-    }
-
-    return `${result.div('1000000').toFormat(0)}M`
+    return result.toFormat(0)
   },
 
   formatMax: (
