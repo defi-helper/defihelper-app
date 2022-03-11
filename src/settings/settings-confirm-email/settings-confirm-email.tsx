@@ -1,11 +1,12 @@
 import { useStore, useStoreMap } from 'effector-react'
-import { useParams } from 'react-router-dom'
+import { NavLink as ReactRouterLink, useParams } from 'react-router-dom'
 import { useEffect } from 'react'
 
 import { AppLayout } from '~/layouts'
-import { Paper } from '~/common/paper'
 import * as model from './settings-confirm-email.model'
 import * as styles from './settings-confirm-email.css'
+import { Typography } from '~/common/typography'
+import { Link } from '~/common/link'
 
 export type SettingsConfirmEmailProps = unknown
 
@@ -23,7 +24,7 @@ export const SettingsConfirmEmail: React.VFC<SettingsConfirmEmailProps> =
     const loading = useStore(model.confirmEmailFx.pending)
 
     useEffect(() => {
-      if (confirmEmail === undefined) {
+      if (!confirmEmail) {
         model.confirmEmailFx({
           confirmationCode: params.confirmationCode,
         })
@@ -32,13 +33,42 @@ export const SettingsConfirmEmail: React.VFC<SettingsConfirmEmailProps> =
 
     return (
       <AppLayout>
-        {loading && <Paper className={styles.card}>Confirming email...</Paper>}
-        {!loading && confirmEmail && confirmEmail.status === true && (
-          <Paper className={styles.card}>Email has been confirmed</Paper>
-        )}
-        {!loading && confirmEmail && !confirmEmail.status && (
-          <Paper className={styles.card}>Email has not been confirmed</Paper>
-        )}
+        <Typography variant="body2" as="div" className={styles.textBoxWrapper}>
+          {loading && <p>Confirming email...</p>}
+          {!loading && confirmEmail && confirmEmail.status === true && (
+            <>
+              <p>Thank you for verifying your E-Mail address.</p>
+              <p>
+                Now you can turn the notifications on in the{' '}
+                <Link
+                  as={ReactRouterLink}
+                  to="/settings"
+                  className={styles.link}
+                >
+                  Settings
+                </Link>
+                .
+              </p>
+            </>
+          )}
+          {!loading && confirmEmail && !confirmEmail.status && (
+            <>
+              <p>
+                Your E-Mail is already verified or your confirmation link is
+                corrupted.
+              </p>
+              <p>
+                <Link
+                  as={ReactRouterLink}
+                  to="/portfolio"
+                  className={styles.link}
+                >
+                  Continue using Application
+                </Link>
+              </p>
+            </>
+          )}
+        </Typography>
       </AppLayout>
     )
   }

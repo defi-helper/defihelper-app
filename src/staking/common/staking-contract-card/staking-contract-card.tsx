@@ -31,6 +31,7 @@ export type StakingContractCardProps = {
   scannerData: {
     scannerId?: string | undefined
     syncedBlock: number
+    callbacks: { callbackUrl: string }[]
     contractId: string
   }
   hideAutostakingBoost: boolean
@@ -136,6 +137,10 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           family="mono"
           transform="uppercase"
           align="right"
+          className={clsx({
+            [styles.positive]: bignumberUtils.gt(realApy, '0'),
+            [styles.negative]: bignumberUtils.lt(realApy, '0'),
+          })}
         >
           {isExcludedContract || !props.metric.aprWeekReal ? (
             '-'
@@ -153,25 +158,6 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           align="right"
         >
           ${bignumberUtils.format(metric.myStaked)}
-        </Typography>
-      </div>
-      <div>
-        <Typography
-          variant="body2"
-          as="div"
-          family="mono"
-          transform="uppercase"
-          align="right"
-        >
-          {isExcludedContract
-            ? '-'
-            : `${bignumberUtils.format(
-                bignumberUtils.mul(
-                  bignumberUtils.div(metric.myStaked, metric.tvl),
-                  100
-                )
-              )}
-          %`}
         </Typography>
       </div>
       <div>

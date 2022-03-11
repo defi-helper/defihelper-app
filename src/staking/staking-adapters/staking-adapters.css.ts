@@ -2,7 +2,7 @@ import { style } from '@vanilla-extract/css'
 
 export const root = style({
   display: 'grid',
-  gridTemplateColumns: '14% 13% 12% 11% 11% 11% 11% 1fr',
+  gridTemplateColumns: '14% 13% 12% 16% 14% 14% 1fr',
   padding: '0 0 16px 24px',
 })
 
@@ -21,7 +21,7 @@ export const stake = style([
 export const buyLP = style([
   button,
   {
-    gridColumnStart: 3,
+    gridColumnStart: 2,
   },
 ])
 
@@ -35,7 +35,7 @@ export const input = style([
 export const claim = style([
   button,
   {
-    gridColumnStart: 7,
+    gridColumnStart: 6,
   },
 ])
 
