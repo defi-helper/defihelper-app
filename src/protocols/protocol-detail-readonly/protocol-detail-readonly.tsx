@@ -141,7 +141,12 @@ export const ProtocolDetailReadonly: React.FC<ProtocolDetailReadonlyProps> =
                   underline="always"
                   className={styles.copyrightLink}
                 >
-                  <Icon icon="debank" className={styles.copyrightIcon} />
+                  <Icon
+                    icon="debank"
+                    width={17}
+                    height={20}
+                    className={styles.copyrightIcon}
+                  />
                   DeBank
                 </Link>
               </Typography>

@@ -103,12 +103,8 @@ export const incomeTitle = style({
 })
 
 export const incomeValue = style({
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      fontSize: 40,
-      lineHeight: '48px',
-    },
-  },
+  fontSize: 40,
+  lineHeight: '48px',
 })
 
 export const incomeForecastTitle = style([
@@ -152,6 +148,32 @@ export const results = style({})
 
 export const resultsPaper = style({
   minHeight: 'calc(100% - 56px)',
+})
+
+export const resultsAllTransactions = style({
+  gridColumnStart: 1,
+  gridColumnEnd: 3,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gridColumnStart: 'unset',
+      gridColumnEnd: 'unset',
+    },
+  },
+})
+
+globalStyle(`${resultsAllTransactions} button`, {
+  width: '100%',
+})
+
+export const resultsActiveReferrals = style({
+  gridRowStart: 3,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gridRowStart: 'unset',
+    },
+  },
 })
 
 export const levels = style({})
@@ -216,90 +238,4 @@ export const levelsTableRowCell = style({
       paddingRight: 32,
     },
   },
-})
-
-export const socialMedia = style({
-  padding: 24,
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%',
-  overflow: 'hidden',
-
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      padding: '32px 32px 40px',
-    },
-  },
-})
-
-export const socialCarousel = style({
-  maxWidth: '100%',
-})
-
-export const socialText = style({
-  marginBottom: 24,
-})
-
-export const socialButton = style({
-  padding: 12,
-})
-
-export const socialActions = style({
-  display: 'flex',
-  justifyContent: 'space-between',
-  gap: 10,
-  marginTop: 'auto',
-})
-
-export const socailLinksWrap = style({
-  display: 'flex',
-  gap: 20,
-  alignItems: 'center',
-})
-
-export const socialLabel = style({
-  display: 'none',
-
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      display: 'block',
-    },
-  },
-})
-
-export const socialLinks = style({
-  display: 'flex',
-  gap: 8,
-})
-
-export const socialMediaDesktopRow = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 16,
-  marginBottom: 8,
-
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      justifyContent: 'space-between',
-      flexDirection: 'row',
-      marginBottom: 12,
-    },
-  },
-})
-
-export const dots = style({
-  listStyle: 'none',
-  margin: '16px 0 0',
-  padding: 0,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-})
-
-export const dot = style({
-  width: 8,
-  height: 8,
-  borderRadius: '50%',
-  border: `1px solid ${theme.colors.textColorGrey}`,
-  margin: '0 4px',
 })

@@ -47,5 +47,9 @@ export const paths = {
 
   governanceMultisig: '/governance-multisig',
 
-  referral: '/referral',
+  referral: {
+    list: '/referral',
+    transactions: '/referral/transactions',
+    calculator: '/referral/calculator',
+  },
 } as const

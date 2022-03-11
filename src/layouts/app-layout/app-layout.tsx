@@ -59,8 +59,10 @@ const MENU: MenuItem[] = [
   },
   {
     title: 'Referral Program',
-    path: paths.referral,
+    path: paths.referral.list,
     icon: 'affilate',
+    subject: 'User',
+    can: 'read',
   },
   {
     title: 'Users',
