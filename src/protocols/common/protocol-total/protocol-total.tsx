@@ -68,7 +68,7 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
             In need of automation?{' '}
             <Link
               as={ReactRouterLink}
-              to={paths.roadmap.list}
+              to={`${paths.roadmap.list}?tag=protocolRequest`}
               underline="always"
             >
               Create a proposal

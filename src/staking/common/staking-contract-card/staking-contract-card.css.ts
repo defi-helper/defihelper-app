@@ -48,6 +48,10 @@ export const positive = style({
   color: theme.colors.textColorGreen,
 })
 
+export const negative = style({
+  color: theme.colors.common.red1,
+})
+
 export const accorionButton = style({
   color: theme.colors.textColorGrey,
   marginLeft: 'auto',

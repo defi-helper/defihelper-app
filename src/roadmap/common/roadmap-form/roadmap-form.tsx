@@ -28,12 +28,20 @@ export type RoadmapFormProps = {
   loading?: boolean
   onConfirm: (formValues: FormValues) => void
   onCancel: () => void
-  defaultValues?: FormValues
+  defaultValues?: Partial<FormValues>
+  defaultTag?: string
 }
 
 export const RoadmapForm: React.VFC<RoadmapFormProps> = (props) => {
   const { register, handleSubmit, formState, setValue, control } =
-    useForm<FormValues>()
+    useForm<FormValues>({
+      defaultValues: {
+        ...props.defaultValues,
+        tags: props.defaultTag
+          ? [props.defaultTag as ProposalTagEnum]
+          : undefined,
+      },
+    })
 
   const handleOnSubmit = (formValues: FormValues) => {
     props.onConfirm({
@@ -62,7 +70,7 @@ export const RoadmapForm: React.VFC<RoadmapFormProps> = (props) => {
         />
         <Select
           label="Request tag"
-          value={props.defaultValues?.tags[0]}
+          value={props.defaultValues?.tags?.[0] ?? props.defaultTag}
           onChange={({ target }) =>
             setValue('tags', [target.value as ProposalTagEnum])
           }
