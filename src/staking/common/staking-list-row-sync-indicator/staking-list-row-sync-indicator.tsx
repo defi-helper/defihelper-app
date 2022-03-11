@@ -7,10 +7,13 @@ import {
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Link } from '~/common/link'
 import { ButtonBase } from '~/common/button-base'
+import { Typography } from '~/common/typography'
+import { Dropdown } from '~/common/dropdown'
 
 export type StakingListRowSyncIndicatorProps = {
   row: StakingContractFragmentFragment & {
     syncedBlock: number
+    callbacks: { callbackUrl: string }[]
     scannerId?: string
   }
   currentBlock: number
@@ -39,22 +42,41 @@ export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorP
       return <>not deployed</>
     }
 
-    if (!row.scannerId) {
+    if (!row.scannerId || !row.callbacks?.length) {
       return (
-        <ButtonBase onClick={onContractRegister}>register scanner</ButtonBase>
+        <ButtonBase as={Link} onClick={onContractRegister}>
+          register scanner({row.callbacks?.length} callbacks)
+        </ButtonBase>
       )
     }
 
     return (
-      <Link
-        href={`${SCANNER_URL}/${row.scannerId}`}
-        target="_blank"
-        rel="noreferrer"
-        style={{
-          color: seemsUnusual ? '#ff0000' : '#3eab3a',
-        }}
+      <Dropdown
+        control={
+          <Link
+            href={`${SCANNER_URL}/${row.scannerId}`}
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              color: seemsUnusual ? '#ff0000' : '#3eab3a',
+            }}
+          >
+            {row.syncedBlock}/{currentBlock}
+          </Link>
+        }
+        trigger="hover"
+        placement="top"
+        offset={[0, 8]}
       >
-        {row.syncedBlock}/{currentBlock}
-      </Link>
+        <Typography variant="body3">
+          <ul>
+            {!row.callbacks.length && <li>no callbacks found</li>}
+
+            {row.callbacks.map(({ callbackUrl }) => (
+              <li>{callbackUrl}</li>
+            ))}
+          </ul>
+        </Typography>
+      </Dropdown>
     )
   }
