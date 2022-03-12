@@ -10,6 +10,13 @@ export const root = style({
   position: 'relative',
   verticalAlign: 'middle',
   overflow: 'hidden',
+  transitionProperty: 'transform,opacity',
+  transitionDuration: '.2s',
+  transitionTimingFunction: 'cubic-bezier(.4,0,.2,1)',
+
+  ':active': {
+    transform: 'scale(.95)',
+  },
 })
 
 export const colors = styleVariants({
