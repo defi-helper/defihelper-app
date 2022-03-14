@@ -1,8 +1,4 @@
-import {
-  Link as ReactRouterLink,
-  useHistory,
-  useLocation,
-} from 'react-router-dom'
+import { Link as ReactRouterLink, useHistory } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
 import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
@@ -17,7 +13,7 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
-import { useDebounce } from '~/common/hooks'
+import { useDebounce, useQueryParams } from '~/common/hooks'
 import { SearchDialog } from '~/common/search-dialog'
 import { Protocol, ProtocolCard, ProtocolTabs, Tabs } from '../common'
 import { Paper } from '~/common/paper'
@@ -39,15 +35,11 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const [search, setSearch] = useState('')
   const [currentTab, setCurrentTab] = useState(Tabs.All)
 
-  const { search: searchQuery } = useLocation()
   const history = useHistory()
-  const searchParams = useMemo(
-    () => new URLSearchParams(searchQuery),
-    [searchQuery]
-  )
+  const searchParams = useQueryParams()
 
   const [currentOption, setOption] = useState(
-    searchParams.get('type') ?? options.all
+    searchParams.get('filter') ?? options.all
   )
 
   const [openSearchDialog] = useDialog(SearchDialog)
@@ -91,7 +83,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   })
 
   useEffect(() => {
-    history.push({ search: `filter=${currentOption}` })
+    history.replace({ search: `filter=${currentOption}` })
   }, [currentOption, history])
 
   const handleFavorite = (protocol: Protocol) => () => {
