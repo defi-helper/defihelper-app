@@ -1,6 +1,10 @@
-import { Link as ReactRouterLink } from 'react-router-dom'
+import {
+  Link as ReactRouterLink,
+  useHistory,
+  useLocation,
+} from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 
 import { Head } from '~/common/head'
@@ -34,7 +38,17 @@ const options = {
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const [search, setSearch] = useState('')
   const [currentTab, setCurrentTab] = useState(Tabs.All)
-  const [currentOption, setOption] = useState(options.all)
+
+  const { search: searchQuery } = useLocation()
+  const history = useHistory()
+  const searchParams = useMemo(
+    () => new URLSearchParams(searchQuery),
+    [searchQuery]
+  )
+
+  const [currentOption, setOption] = useState(
+    searchParams.get('type') ?? options.all
+  )
 
   const [openSearchDialog] = useDialog(SearchDialog)
 
@@ -75,6 +89,10 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     hidden: ability.can('update', 'Protocol') ? null : false,
     debank,
   })
+
+  useEffect(() => {
+    history.push({ search: `filter=${currentOption}` })
+  }, [currentOption, history])
 
   const handleFavorite = (protocol: Protocol) => () => {
     model.protocolFavoriteFx({
