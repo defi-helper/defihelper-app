@@ -22,7 +22,7 @@ export const StakingSuccessDialog: React.VFC<StakingSuccessDialogProps> = (
   return (
     <Dialog className={styles.root}>
       <Typography align="center" className={styles.title}>
-        {MESSAGES[props.type]} successful
+        {MESSAGES[props.type]} successfully
       </Typography>
       <Button className={styles.button} onClick={props.onConfirm}>
         Continue
