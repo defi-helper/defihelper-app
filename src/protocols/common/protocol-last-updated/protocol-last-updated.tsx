@@ -11,7 +11,7 @@ export type ProtocolLastUpdatedProps = {
 export const ProtocolLastUpdated = (props: ProtocolLastUpdatedProps) => {
   const isDesktop = useMedia('(min-width: 960px)')
 
-  const format = isDesktop ? 'DD MMMM YYYY HH:mm' : 'DD MMM YY'
+  const format = isDesktop ? 'HH:mm on MMMM DD, YYYY' : 'DD MMM YY'
 
   return (
     <Typography className={styles.root} variant="body2">

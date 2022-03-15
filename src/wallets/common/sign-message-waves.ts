@@ -11,13 +11,7 @@ const signWaves = async (provider: Provider, message: string) => {
   let signature: string
 
   try {
-    signature = await provider.signTypedData([
-      {
-        type: 'string',
-        key: 'name',
-        value: message,
-      },
-    ])
+    signature = await provider.signMessage(message)
 
     return {
       signature,

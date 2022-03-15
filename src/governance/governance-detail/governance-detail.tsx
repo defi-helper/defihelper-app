@@ -155,8 +155,8 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   }
 
   return (
-    <AppLayout>
-      <Head title={governanceDetail?.title} />
+    <AppLayout title={loading ? 'loading...' : governanceDetail?.title}>
+      <Head title={loading ? 'loading...' : governanceDetail?.title} />
       {loading && (
         <div className={styles.loader}>
           <Loader height="36" />
@@ -321,14 +321,17 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               Voting will end on{' '}
               {dateUtils.format(
                 governanceDetail.endVoteDate,
-                'DD MMMM YYYY HH:mm'
+                'HH:mm on MMMM DD, YYYY'
               )}
             </Typography>
           )}
           {governanceDetail.state === GovProposalStateEnum.Queued && (
             <Typography align="center" className={styles.mb32}>
               Can be executed on{' '}
-              {dateUtils.formatUnix(governanceDetail.eta, 'DD MMMM YYYY HH:mm')}
+              {dateUtils.formatUnix(
+                governanceDetail.eta,
+                'HH:mm on MMMM DD, YYYY'
+              )}
             </Typography>
           )}
           <Paper className={clsx(styles.actions, styles.mb32)}>

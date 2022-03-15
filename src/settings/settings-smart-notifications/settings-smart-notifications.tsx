@@ -1,11 +1,19 @@
 import { useGate, useStore } from 'effector-react'
 
 import { Typography } from '~/common/typography'
-import { SettingsHeader, SettingsPaper, SettingsGrid } from '~/settings/common'
-import { SettingsNotificationsCard } from '~/settings/common/settings-notifications-card/settings-notifications-card'
+import {
+  SettingsHeader,
+  SettingsPaper,
+  SettingsGrid,
+  SettingsContactFormDialog,
+  SettingsSuccessDialog,
+} from '~/settings/common'
+import { SettingsNotificationsCard } from '~/settings/common/settings-notifications-card'
 import { Paper } from '~/common/paper'
 import { Loader } from '~/common/loader'
 import { UserNotificationTypeEnum } from '~/graphql/_generated-types'
+import { useDialog } from '~/common/dialog'
+import * as settingsContact from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './settings-smart-notifications.css'
 import * as model from './settings-smart-notifications.model'
 
@@ -19,12 +27,32 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
   const loading = useStore(model.fetchUserNotificationsListFx.pending)
   const notificationsList = useStore(model.$userNotificationsList)
 
+  const [openContactForm] = useDialog(SettingsContactFormDialog)
+  const [openSuccess] = useDialog(SettingsSuccessDialog)
+
+  const contacts = useStore(settingsContact.$userContactList)
+
   useGate(model.SettingsNotificationsGate)
 
   const handleSwitchNotification = async (
     type: UserNotificationTypeEnum,
     state: boolean
   ) => {
+    if (
+      type === UserNotificationTypeEnum.PortfolioMetrics &&
+      !contacts.length &&
+      state
+    ) {
+      const result = await openContactForm()
+
+      const data = await settingsContact.createUserContactFx(result)
+
+      await openSuccess({
+        type: result.broker,
+        confirmationCode: data.confirmationCode,
+      }).catch((error: Error) => console.error(error.message))
+    }
+
     try {
       await model.toggleUserNotificationFx({ type, state })
     } catch (error) {

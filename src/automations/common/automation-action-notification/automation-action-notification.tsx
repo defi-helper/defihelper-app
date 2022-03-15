@@ -122,7 +122,6 @@ export const AutomationActionNotification: React.VFC<AutomationActionNotificatio
           {...register('message', { required: true })}
           type="textarea"
           error={Boolean(formState.errors.message?.message)}
-          helperText={formState.errors.message?.message}
           defaultValue={props.defaultValues?.message}
           className={styles.input}
         />
