@@ -49,10 +49,11 @@ export const StakingBillingFormDialog: React.VFC<StakingBillingFormDialogProps> 
         >
           <div className={styles.title}>
             <Typography as="div" variant="body3">
-              In order to run automations you need to top up your balance.
+              Top up your balance to run automations
             </Typography>
+            <br />
             <Typography as="div" variant="body3">
-              Your current balance: {bignumberUtils.format(props.balance)}{' '}
+              Current balance: {bignumberUtils.format(props.balance)}{' '}
               {networksConfig[props.network]?.coin}
             </Typography>
           </div>

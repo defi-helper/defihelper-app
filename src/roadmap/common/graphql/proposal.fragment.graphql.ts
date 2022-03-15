@@ -17,7 +17,7 @@ export const PROPOSAL_FRAGMENT = gql`
     tags
     updatedAt
     createdAt
-    votes {
+    votes(pagination: { limit: 1000, offset: 0 }) {
       list {
         ...proposalVoteFragment
       }

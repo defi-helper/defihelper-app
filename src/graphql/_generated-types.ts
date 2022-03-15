@@ -66,6 +66,8 @@ export type AuthWavesInputType = {
   message: Scalars['String']
   /** Signed message */
   signature: Scalars['String']
+  /** Merged target account to current account */
+  merge?: Maybe<Scalars['Boolean']>
 }
 
 export type AutomateActionCreateInputType = {
@@ -126,6 +128,7 @@ export type AutomateActionType = {
 export enum AutomateActionTypeEnum {
   Notification = 'notification',
   EthereumAutomateRun = 'ethereumAutomateRun',
+  WavesAutomateRun = 'wavesAutomateRun',
 }
 
 export type AutomateActionUpdateInputType = {
@@ -141,6 +144,7 @@ export type AutomateActionsDescriptionType = {
   __typename?: 'AutomateActionsDescriptionType'
   notification: AutomateDescriptionType
   ethereumAutomateRun: AutomateDescriptionType
+  wavesAutomateRun: AutomateDescriptionType
 }
 
 export type AutomateConditionCreateInputType = {
@@ -5511,7 +5515,7 @@ export const ProposalFragmentFragmentDoc = gql`
     tags
     updatedAt
     createdAt
-    votes {
+    votes(pagination: { limit: 1000, offset: 0 }) {
       list {
         ...proposalVoteFragment
       }

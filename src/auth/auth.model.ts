@@ -61,7 +61,10 @@ export const $userWallets = settingsWalletModel.$wallets.reset(
 
 export const authWavesFx = authDomain.createEffect(
   async (params: AuthWavesInputType) => {
-    const data = await authApi.authWaves(params)
+    const data = await authApi.authWaves({
+      ...params,
+      merge: params.merge ?? false,
+    })
 
     if (!data) {
       throw new Error(ERROR_MESSAGE)
@@ -260,9 +263,14 @@ guard({
 })
 
 guard({
-  source: $signedMessageWaves,
+  source: $signedMessageWaves.map((store) =>
+    store ? { ...store, merge: true } : null
+  ),
   clock: mergeWalletsDialogFx.done,
-  filter: (source): source is AuthWavesInputType => Boolean(source),
+  filter: (
+    source
+  ): source is Omit<AuthWavesInputType, 'merge'> & { merge: boolean } =>
+    Boolean(source),
   target: authWavesFx,
 })
 
