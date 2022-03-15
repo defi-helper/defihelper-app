@@ -1,6 +1,6 @@
-import { Link as ReactRouterLink } from 'react-router-dom'
+import { Link as ReactRouterLink, useHistory } from 'react-router-dom'
 import { useStore, useGate } from 'effector-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 
 import { Head } from '~/common/head'
@@ -13,7 +13,7 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
-import { useDebounce } from '~/common/hooks'
+import { useDebounce, useQueryParams } from '~/common/hooks'
 import { SearchDialog } from '~/common/search-dialog'
 import { Protocol, ProtocolCard, ProtocolTabs, Tabs } from '../common'
 import { Paper } from '~/common/paper'
@@ -34,7 +34,13 @@ const options = {
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const [search, setSearch] = useState('')
   const [currentTab, setCurrentTab] = useState(Tabs.All)
-  const [currentOption, setOption] = useState(options.all)
+
+  const history = useHistory()
+  const searchParams = useQueryParams()
+
+  const [currentOption, setOption] = useState(
+    searchParams.get('filter') ?? options.all
+  )
 
   const [openSearchDialog] = useDialog(SearchDialog)
 
@@ -75,6 +81,10 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     hidden: ability.can('update', 'Protocol') ? null : false,
     debank,
   })
+
+  useEffect(() => {
+    history.replace({ search: `filter=${currentOption}` })
+  }, [currentOption, history])
 
   const handleFavorite = (protocol: Protocol) => () => {
     model.protocolFavoriteFx({
