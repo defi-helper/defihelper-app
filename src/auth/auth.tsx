@@ -7,8 +7,11 @@ import { Typography } from '~/common/typography'
 import { useWalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { toastsService } from '~/toasts'
-import * as styles from './auth.css'
 import { Head } from '~/common/head'
+import { useDialog } from '~/common/dialog'
+import { AuthChangeNetworkDialog } from './common'
+import { UnsupportedChainError } from '~/wallets/common/unsupported-chain'
+import * as styles from './auth.css'
 
 export type AuthProps = {
   className?: string
@@ -16,6 +19,7 @@ export type AuthProps = {
 
 export const Auth: React.VFC<AuthProps> = (props) => {
   const [openWalletList] = useWalletList()
+  const [openChangeNetworkDialog] = useDialog(AuthChangeNetworkDialog)
 
   const handleConnect = async () => {
     try {
@@ -27,6 +31,12 @@ export const Auth: React.VFC<AuthProps> = (props) => {
         connector: wallet.connector,
       })
     } catch (error) {
+      if (error instanceof UnsupportedChainError) {
+        openChangeNetworkDialog().catch((err) => console.error(err.message))
+
+        return
+      }
+
       if (error instanceof Error) {
         toastsService.error(error.message)
       }
