@@ -2,6 +2,7 @@ import { ConnectorUpdate } from '@web3-react/types'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { normalizeChainId } from './normalize-chain-id'
+import { UnsupportedChainError } from './unsupported-chain'
 
 export async function augmentConnectorUpdate(
   connector: AbstractConnector,
@@ -26,7 +27,7 @@ export async function augmentConnectorUpdate(
     !!connector.supportedChainIds &&
     !connector.supportedChainIds.includes(Number(normalizedChainId))
   ) {
-    throw new Error('Unsupported chainId')
+    throw new UnsupportedChainError()
   }
 
   return {
