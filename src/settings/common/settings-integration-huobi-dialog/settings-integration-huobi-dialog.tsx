@@ -19,7 +19,8 @@ export type SettingsIntegrationBinanceDialogProps = {
   defaultValues?: FormValues
 }
 
-const HOW_TO_CREATE_API = 'https://www.binance.com/en/support/faq/360002502072'
+const HOW_TO_CREATE_API =
+  'https://www.huobi.com/support/en-us/detail/360000203002'
 
 export const SettingsIntegrationHuobiDialog: React.VFC<SettingsIntegrationBinanceDialogProps> =
   (props) => {
@@ -36,7 +37,7 @@ export const SettingsIntegrationHuobiDialog: React.VFC<SettingsIntegrationBinanc
           className={styles.form}
         >
           <Typography className={styles.apiHint}>
-            Please create an API key (with read permission only) in your Binance
+            Please create an API key (with read permission only) in your Houbi
             account, and fill in the fields below
             <br />
             <br />
