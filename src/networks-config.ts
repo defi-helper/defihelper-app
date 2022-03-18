@@ -17,6 +17,9 @@ type Network = {
     | 'solana'
     | 'polygon'
     | 'moonriver'
+    | 'fantom'
+    | 'cronos'
+    | 'arbitrum'
 }
 
 const prodNetworks: Record<string, Network> = {
@@ -96,6 +99,46 @@ const prodNetworks: Record<string, Network> = {
       'https://api.avax.network/ext/bc/C/rpc',
       'https://api.avax.network/ext/bc/C/rpc',
     ],
+  },
+  250: {
+    chainId: 250,
+    title: 'Fantom',
+    explorerUrl: 'https://ftmscan.com',
+    coin: 'FTM',
+    decimals: 18,
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'fantom',
+    rpcUrls: ['https://rpc.ftm.tools'],
+  },
+  25: {
+    chainId: 25,
+    title: 'Cronos',
+    explorerUrl: 'https://cronoscan.com',
+    coin: 'CRO',
+    decimals: 18,
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'cronos',
+    rpcUrls: ['https://evm.cronos.org'],
+  },
+  42161: {
+    chainId: 42161,
+    title: 'Arbitrum',
+    explorerUrl: 'https://arbiscan.io',
+    coin: 'ETH',
+    decimals: 18,
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'arbitrum',
+    rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+  },
+  10: {
+    chainId: 10,
+    title: 'Optimistic Ethereum',
+    explorerUrl: 'https://optimistic.etherscan.io',
+    coin: 'ETH',
+    decimals: 18,
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'ethereumRegular',
+    rpcUrls: ['https://mainnet.optimism.io'],
   },
   main: {
     chainId: 'main',

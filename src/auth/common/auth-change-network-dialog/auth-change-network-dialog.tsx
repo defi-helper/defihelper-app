@@ -12,7 +12,7 @@ export const AuthChangeNetworkDialog: React.VFC<AuthChangeNetworkDialogProps> =
     return (
       <Dialog className={styles.root}>
         <Typography variant="h4" className={styles.title}>
-          Switch network manually in your Wallet
+          This chain is not supported Change to Ethereum
         </Typography>
         <img src={MetamaskScreen} alt="" className={styles.img} />
       </Dialog>
