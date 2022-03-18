@@ -19,8 +19,8 @@ export type SettingsSuccessDialogProps = {
 
 const TITLES = {
   [UserContactBrokerEnum.Email]:
-    'Please confirm your email by clicking the link in the email',
-  [UserContactBrokerEnum.Telegram]: 'Please click to the button and enable bot',
+    'Please check your email and confirm your subscription',
+  [UserContactBrokerEnum.Telegram]: 'Please confirm your Telegram username',
   [TransactionEnum.refund]: 'Refund successful',
   [TransactionEnum.deposit]:
     'Deposit successful. Please wait 3-5 minutes until the money appears on your balance',
@@ -35,9 +35,11 @@ export const SettingsSuccessDialog: React.VFC<SettingsSuccessDialogProps> = (
         {TITLES[props.type]}
       </Typography>
       <div className={styles.actions}>
-        <Button onClick={props.onConfirm} className={styles.button}>
-          Continue
-        </Button>
+        {props.type === UserContactBrokerEnum.Email && (
+          <Button onClick={props.onConfirm} className={styles.button}>
+            Continue
+          </Button>
+        )}
         {props.type === UserContactBrokerEnum.Telegram && (
           <Button
             as="a"

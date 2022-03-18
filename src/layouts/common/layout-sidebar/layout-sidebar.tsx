@@ -15,7 +15,14 @@ import * as styles from './layout-sidebar.css'
 type MenuItem = {
   title: string
   path: string
-  icon: 'home' | 'grid' | 'energy' | 'notification' | 'check' | 'settings'
+  icon:
+    | 'home'
+    | 'grid'
+    | 'energy'
+    | 'notification'
+    | 'check'
+    | 'settings'
+    | 'affilate'
   exact?: boolean
 }
 

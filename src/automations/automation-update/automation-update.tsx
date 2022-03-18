@@ -370,29 +370,33 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
           )}
           {currentTab === Tabs.Actions && (
             <>
-              {actions.map((action, index) => (
-                <AutomationChooseButton
-                  label={`action ${index + 1}`}
-                  className={styles.item}
-                  onDelete={handleDeleteAction(action.id)}
-                  onClick={handleUpdateAction(action)}
-                  key={action.id}
-                >
-                  <Typography className={styles.itemTitle}>
-                    {props.descriptions?.actions[action.type]?.name}
-                  </Typography>
-                  <Typography
-                    variant="body3"
-                    className={styles.itemSubtitle}
-                    dangerouslySetInnerHTML={{
-                      __html: action.paramsDescription
-                        .split(' ')
-                        .map((str) => (names[str] ? names[str] : str))
-                        .join(' '),
-                    }}
-                  />
-                </AutomationChooseButton>
-              ))}
+              {actions.map((action, index) => {
+                return (
+                  <AutomationChooseButton
+                    label={`action ${index + 1}`}
+                    className={styles.item}
+                    onDelete={handleDeleteAction(action.id)}
+                    onClick={handleUpdateAction(action)}
+                    key={action.id}
+                  >
+                    <Typography className={styles.itemTitle}>
+                      {action.type !== AutomateActionTypeEnum.WavesAutomateRun
+                        ? props.descriptions?.actions[action.type]?.name
+                        : undefined}
+                    </Typography>
+                    <Typography
+                      variant="body3"
+                      className={styles.itemSubtitle}
+                      dangerouslySetInnerHTML={{
+                        __html: action.paramsDescription
+                          .split(' ')
+                          .map((str) => (names[str] ? names[str] : str))
+                          .join(' '),
+                      }}
+                    />
+                  </AutomationChooseButton>
+                )
+              })}
               <ButtonBase
                 className={styles.addButton}
                 onClick={handleAddAction}

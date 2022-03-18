@@ -137,6 +137,10 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           family="mono"
           transform="uppercase"
           align="right"
+          className={clsx({
+            [styles.positive]: bignumberUtils.gt(realApy, '0'),
+            [styles.negative]: bignumberUtils.lt(realApy, '0'),
+          })}
         >
           {isExcludedContract || !props.metric.aprWeekReal ? (
             '-'

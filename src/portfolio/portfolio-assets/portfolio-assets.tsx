@@ -203,12 +203,17 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
         Powered by
         <Link
           target="_blank"
-          href="https://moralis.io/"
+          href="https://debank.com/"
           underline="always"
           className={styles.copyrightLink}
         >
-          <Icon icon="moralis" className={styles.copyrightIcon} />
-          Moralis.io
+          <Icon
+            icon="debank"
+            width={17}
+            height={20}
+            className={styles.copyrightIcon}
+          />
+          DeBank
         </Link>
       </Typography>
     </div>

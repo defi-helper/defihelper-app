@@ -14,7 +14,7 @@ export const SettingsConfirmDialog: React.VFC<ConfirmDialogProps> = (props) => {
     <ConfirmDialog
       title={
         <>
-          Are you shure you want to delete{' '}
+          Are you sure you want to delete{' '}
           <Typography variant="inherit" className={styles.name}>
             {props.name}
           </Typography>

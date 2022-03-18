@@ -46,4 +46,10 @@ export const paths = {
   users: '/users',
 
   governanceMultisig: '/governance-multisig',
+
+  referral: {
+    list: '/referral',
+    transactions: '/referral/transactions',
+    calculator: '/referral/calculator',
+  },
 } as const

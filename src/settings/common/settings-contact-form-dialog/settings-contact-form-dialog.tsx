@@ -95,7 +95,7 @@ export const SettingsContactFormDialog: React.VFC<SettingsContactFormDialogProps
               size="small"
               disabled={formState.isSubmitting}
             >
-              {props.defaultValues ? 'Edit' : 'Create'}
+              {props.defaultValues ? 'Save' : 'Create'}
             </Button>
             <Button
               onClick={props.onCancel}

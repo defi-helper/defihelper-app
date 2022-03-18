@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useGate, useStore } from 'effector-react'
 import omit from 'lodash.omit'
 
@@ -53,6 +53,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
   const [openRoadmapTag] = useDialog(RoadmapTag)
 
   const status = searchParams.get('status')
+  const tag = searchParams.get('tag')
 
   const handleSearchMobile = async () => {
     try {
@@ -105,7 +106,9 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
         return
       }
 
-      const result = await openRoadmapForm()
+      const result = await openRoadmapForm({
+        defaultTag: tag ?? undefined,
+      })
 
       const createdProposal = await model.createProposalFx(
         omit(result, ['plannedAt', 'releasedAt', 'tags'])
@@ -177,6 +180,13 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
       }
     }
   }
+
+  useEffect(() => {
+    if (!tag || !user) return
+
+    handleAdd()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tag, user])
 
   return (
     <AppLayout

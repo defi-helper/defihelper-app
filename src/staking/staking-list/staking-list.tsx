@@ -464,7 +464,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                 placement="top"
                 offset={[0, 8]}
               >
-                <Typography variant="body3">some text</Typography>
+                <Typography variant="body3">
+                  Actual 7-day annualized percentage rate
+                </Typography>
               </Dropdown>
             </Typography>
             <Typography variant="body2" align="right">

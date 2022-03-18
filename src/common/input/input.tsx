@@ -16,7 +16,15 @@ export type InputProps = Omit<React.ComponentProps<'input'>, 'type'> & {
 
 export const Input = createComponent<HTMLInputElement, InputProps>(
   function Input(props, ref) {
-    const { className, label, type, error, helperText, ...restOfProps } = props
+    const {
+      className,
+      label,
+      type,
+      error,
+      helperText,
+      disabled,
+      ...restOfProps
+    } = props
 
     const [textareaRef, setTextareaRef] = useState<HTMLTextAreaElement | null>(
       null
@@ -46,7 +54,7 @@ export const Input = createComponent<HTMLInputElement, InputProps>(
           styles.root,
           {
             [styles.error]: error,
-            [styles.disabled]: restOfProps.disabled,
+            [styles.disabled]: disabled,
           },
           className
         )}

@@ -12,6 +12,7 @@ import { Switch } from '~/common/switch'
 import { Typography } from '~/common/typography'
 import {
   AutomateActionType,
+  AutomateActionTypeEnum,
   AutomateConditionType,
   AutomateTriggerTypeEnum,
   AutomationDescriptionQuery,
@@ -83,7 +84,11 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
     .join(', ')
 
   const actions = props.actions
-    .map((action) => props.descriptions?.actions[action.type]?.name)
+    .map((action) =>
+      action.type !== AutomateActionTypeEnum.WavesAutomateRun
+        ? props.descriptions?.actions[action.type]?.name
+        : undefined
+    )
     .filter(Boolean)
     .join(', ')
 
