@@ -65,6 +65,9 @@ import { ReactComponent as AffilateIcon } from '~/assets/icons/affilate.svg'
 import { ReactComponent as CupIcon } from '~/assets/icons/cup.svg'
 import { ReactComponent as LinkedinIcon } from '~/assets/icons/linkedin.svg'
 import { ReactComponent as FacebookIcon } from '~/assets/icons/facebook.svg'
+import { ReactComponent as FantomIcon } from '~/assets/icons/blockchains/fantom.svg'
+import { ReactComponent as CronosIcon } from '~/assets/icons/blockchains/cronos.svg'
+import { ReactComponent as ArbitrumIcon } from '~/assets/icons/blockchains/arbitrum.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -137,6 +140,11 @@ const ICONS = {
   cup: CupIcon,
   linkedin: LinkedinIcon,
   facebook: FacebookIcon,
+  fantom: FantomIcon,
+  FTM: FantomIcon,
+  cronos: CronosIcon,
+  CRO: CronosIcon,
+  arbitrum: ArbitrumIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {
