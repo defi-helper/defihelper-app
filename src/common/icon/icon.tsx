@@ -61,6 +61,7 @@ import { ReactComponent as BetaIcon } from '~/assets/icons/beta.svg'
 import { ReactComponent as CalculatorIcon } from '~/assets/icons/calculator.svg'
 import { ReactComponent as MoralisIcon } from '~/assets/icons/moralis-logo.svg'
 import { ReactComponent as DebankIcon } from '~/assets/icons/debank-logo.svg'
+import { ReactComponent as HuobiIcon } from '~/assets/icons/exchange/huobi.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -129,6 +130,7 @@ const ICONS = {
   calculator: CalculatorIcon,
   moralis: MoralisIcon,
   debank: DebankIcon,
+  huobi: HuobiIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

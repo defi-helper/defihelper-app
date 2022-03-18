@@ -12,6 +12,7 @@ import { WalletExchangeTypeEnum } from '~/graphql/_generated-types'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './settings-integrations.css'
 import * as model from './settings-integrations.model'
+import { SettingsIntegrationHuobiDialog } from '~/settings/common/settings-integration-huobi-dialog'
 
 export type SettingsIntegrationsProps = {
   className?: string
@@ -29,12 +30,18 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
   const connectAdding = useStore(model.$connectAdding)
 
   const [openConnectBinance] = useDialog(SettingsIntegrationBinanceDialog)
+  const [openConnectHuobi] = useDialog(SettingsIntegrationHuobiDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   const handlers = {
     [WalletExchangeTypeEnum.Binance]: {
       dialog: openConnectBinance,
-      effect: model.connectIntegrationBinanceFx,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Huobi]: {
+      dialog: openConnectHuobi,
+      effect: model.connectIntegrationApiExchangeFx,
     },
   }
 
@@ -45,7 +52,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
 
         handlers[integrationType].effect({
           ...apiKeyPair,
-          exchange: integrationType,
+          type: integrationType,
         })
       } catch (error) {
         if (error instanceof Error) {

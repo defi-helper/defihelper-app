@@ -26,10 +26,10 @@ import {
   BillingTransferCreateMutation,
   IntegrationListQuery,
   IntegrationListQueryVariables,
-  IntegrationBinanceConnectMutation,
-  IntegrationBinanceConnectMutationVariables,
   IntegrationDisconnectMutation,
   IntegrationDisconnectMutationVariables,
+  IntegrationExchangeApiConnectMutationVariables,
+  IntegrationExchangeApiConnectMutation,
 } from '~/graphql/_generated-types'
 import {
   USER_CONTACTS,
@@ -44,7 +44,7 @@ import {
   USER_NOTIFICATION_LIST,
   USER_NOTIFICATION_TOGGLE,
   WALLET_EXCHANGE_LIST,
-  INTEGRATION_BINANCE_CONNECT,
+  INTEGRATION_API_CONNECT,
   INTEGRATION_DISCONNECT,
 } from './graphql'
 import { BILLING_TRANSFER_CREATE } from '~/settings/common/graphql/billing-transfer-create.graphql'
@@ -153,16 +153,16 @@ export const settingsApi = {
       .toPromise()
       .then(({ data }) => data?.me?.exchanges.list ?? []),
 
-  integrationBinanceConnect: (
-    variables: IntegrationBinanceConnectMutationVariables
+  integrationExchangeApiConnect: (
+    variables: IntegrationExchangeApiConnectMutationVariables
   ) =>
     getAPIClient()
       .mutation<
-        IntegrationBinanceConnectMutation,
-        IntegrationBinanceConnectMutationVariables
-      >(INTEGRATION_BINANCE_CONNECT, variables)
+        IntegrationExchangeApiConnectMutation,
+        IntegrationExchangeApiConnectMutationVariables
+      >(INTEGRATION_API_CONNECT, variables)
       .toPromise()
-      .then(({ data }) => data?.integrationBinanceConnect),
+      .then(({ data }) => data?.integrationExchangeApiConnect),
 
   integrationDisconnect: (id: string) =>
     getAPIClient()

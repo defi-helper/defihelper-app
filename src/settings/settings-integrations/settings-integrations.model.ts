@@ -1,10 +1,8 @@
 import { createDomain, combine, restore, guard } from 'effector-logger/macro'
-import omit from 'lodash.omit'
 
 import {
-  IntegrationBinanceConnectMutationVariables,
+  IntegrationExchangeApiConnectMutationVariables,
   WalletExchangeFragmentFragment,
-  WalletExchangeTypeEnum,
 } from '~/graphql/_generated-types'
 import { settingsApi } from '~/settings/common'
 import { toastsService } from '~/toasts'
@@ -25,24 +23,21 @@ export const integrationListDomain = createDomain()
 export const fetchEstablishedIntegrationsListFx =
   integrationListDomain.createEffect(async () => settingsApi.integrationList())
 
-export const connectIntegrationBinanceFx = integrationListDomain.createEffect(
-  async (
-    input: IntegrationBinanceConnectMutationVariables['input'] & {
-      exchange: WalletExchangeTypeEnum
+export const connectIntegrationApiExchangeFx =
+  integrationListDomain.createEffect(
+    async (input: IntegrationExchangeApiConnectMutationVariables['input']) => {
+      const data = await settingsApi.integrationExchangeApiConnect({
+        input,
+      })
+
+      if (!data)
+        throw new Error(
+          'Please, verify your keys pair, the pair is expired or wrong'
+        )
+
+      return data
     }
-  ) => {
-    const data = await settingsApi.integrationBinanceConnect({
-      input: omit(input, 'exchange'),
-    })
-
-    if (!data)
-      throw new Error(
-        'Please, verify your keys pair, the pair is expired or wrong'
-      )
-
-    return data
-  }
-)
+  )
 
 export const fetchAssetsByIntegration = (exchangeId: string) =>
   portfolioApi
@@ -101,14 +96,14 @@ export const $integrationsList = integrationListDomain
       (integration) => integration.id !== payload.params && payload.result
     )
   })
-  .on(connectIntegrationBinanceFx.done, (state, payload) => {
+  .on(connectIntegrationApiExchangeFx.done, (state, payload) => {
     return [...state, payload.result]
   })
 
 export const $connectAdding = integrationListDomain
   .createStore<WalletExchangeFragmentFragment['exchange'] | null>(null)
-  .on(connectIntegrationBinanceFx, (_, { exchange }) => exchange)
-  .on(connectIntegrationBinanceFx.finally, () => null)
+  .on(connectIntegrationApiExchangeFx, (_, { type }) => type)
+  .on(connectIntegrationApiExchangeFx.finally, () => null)
 
 export const $integrations = combine($integrationsList, (integrations) => {
   return integrations.reduce<Integrations>((acc, integration) => {
@@ -121,6 +116,6 @@ export const $integrations = combine($integrationsList, (integrations) => {
 $assetsByIntegration.reset(authModel.logoutFx.done)
 toastsService.forwardErrors(
   fetchEstablishedIntegrationsListFx.failData,
-  connectIntegrationBinanceFx.failData,
+  connectIntegrationApiExchangeFx.failData,
   disconnectIntegrationFx.failData
 )

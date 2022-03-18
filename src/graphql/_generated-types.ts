@@ -66,6 +66,8 @@ export type AuthWavesInputType = {
   message: Scalars['String']
   /** Signed message */
   signature: Scalars['String']
+  /** Merged target account to current account */
+  merge?: Maybe<Scalars['Boolean']>
 }
 
 export type AutomateActionCreateInputType = {
@@ -126,6 +128,7 @@ export type AutomateActionType = {
 export enum AutomateActionTypeEnum {
   Notification = 'notification',
   EthereumAutomateRun = 'ethereumAutomateRun',
+  WavesAutomateRun = 'wavesAutomateRun',
 }
 
 export type AutomateActionUpdateInputType = {
@@ -141,6 +144,7 @@ export type AutomateActionsDescriptionType = {
   __typename?: 'AutomateActionsDescriptionType'
   notification: AutomateDescriptionType
   ethereumAutomateRun: AutomateDescriptionType
+  wavesAutomateRun: AutomateDescriptionType
 }
 
 export type AutomateConditionCreateInputType = {
@@ -932,11 +936,25 @@ export type GovVotesFilterInputType = {
   wallet: Scalars['String']
 }
 
-export type IntegrationBinanceConnectInputType = {
+export type IntegrationExchangeApiConnectInputType = {
   /** Api key */
   apiKey: Scalars['String']
   /** Api secret */
   apiSecret: Scalars['String']
+  /** Exchange */
+  type: WalletExchangeTypeEnum
+}
+
+export type LandingMediumPostType = {
+  __typename?: 'LandingMediumPostType'
+  /** Title */
+  title: Scalars['String']
+  /** Text */
+  text: Scalars['String']
+  /** Link */
+  link: Scalars['String']
+  /** Posted at */
+  createdAt: Scalars['DateTimeType']
 }
 
 export enum LocaleEnum {
@@ -973,7 +991,7 @@ export type Mutation = {
   walletUpdate: WalletBlockchainType
   walletDelete: Scalars['Boolean']
   walletMetricScan: Scalars['Boolean']
-  integrationBinanceConnect: WalletExchangeType
+  integrationExchangeApiConnect: WalletExchangeType
   integrationDisconnect: Scalars['Boolean']
   protocolCreate: ProtocolType
   protocolUpdate: ProtocolType
@@ -1053,8 +1071,8 @@ export type MutationWalletMetricScanArgs = {
   contract: Scalars['UuidType']
 }
 
-export type MutationIntegrationBinanceConnectArgs = {
-  input: IntegrationBinanceConnectInputType
+export type MutationIntegrationExchangeApiConnectArgs = {
+  input: IntegrationExchangeApiConnectInputType
 }
 
 export type MutationIntegrationDisconnectArgs = {
@@ -1782,6 +1800,7 @@ export type Query = {
   protocols: ProtocolListQuery
   proposal?: Maybe<ProposalType>
   proposals: ProposalListQuery
+  landingMediumPosts: Array<LandingMediumPostType>
   userContact?: Maybe<UserContactType>
   userContacts: UserContactListQuery
   userNotifications: Array<UserNotificationType>
@@ -3191,6 +3210,7 @@ export type WalletExchangeTypeTokenAliasesArgs = {
 
 export enum WalletExchangeTypeEnum {
   Binance = 'binance',
+  Huobi = 'huobi',
 }
 
 export type WalletExchangexListFilterInputType = {
@@ -4672,12 +4692,14 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
   >
 }
 
-export type IntegrationBinanceConnectMutationVariables = Exact<{
-  input: IntegrationBinanceConnectInputType
+export type IntegrationExchangeApiConnectMutationVariables = Exact<{
+  input: IntegrationExchangeApiConnectInputType
 }>
 
-export type IntegrationBinanceConnectMutation = { __typename?: 'Mutation' } & {
-  integrationBinanceConnect: {
+export type IntegrationExchangeApiConnectMutation = {
+  __typename?: 'Mutation'
+} & {
+  integrationExchangeApiConnect: {
     __typename?: 'WalletExchangeType'
   } & WalletExchangeFragmentFragment
 }
@@ -7257,22 +7279,22 @@ export function useBillingHistoryQuery(
     ...options,
   })
 }
-export const IntegrationBinanceConnectDocument = gql`
-  mutation IntegrationBinanceConnect(
-    $input: IntegrationBinanceConnectInputType!
+export const IntegrationExchangeApiConnectDocument = gql`
+  mutation integrationExchangeApiConnect(
+    $input: IntegrationExchangeApiConnectInputType!
   ) {
-    integrationBinanceConnect(input: $input) {
+    integrationExchangeApiConnect(input: $input) {
       ...walletExchangeFragment
     }
   }
   ${WalletExchangeFragmentFragmentDoc}
 `
 
-export function useIntegrationBinanceConnectMutation() {
+export function useIntegrationExchangeApiConnectMutation() {
   return Urql.useMutation<
-    IntegrationBinanceConnectMutation,
-    IntegrationBinanceConnectMutationVariables
-  >(IntegrationBinanceConnectDocument)
+    IntegrationExchangeApiConnectMutation,
+    IntegrationExchangeApiConnectMutationVariables
+  >(IntegrationExchangeApiConnectDocument)
 }
 export const IntegrationDisconnectDocument = gql`
   mutation IntegrationDisconnect($id: UuidType!) {
