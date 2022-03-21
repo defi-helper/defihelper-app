@@ -3212,6 +3212,9 @@ export enum WalletExchangeTypeEnum {
   Binance = 'binance',
   Huobi = 'huobi',
   Okex = 'okex',
+  Ascendex = 'ascendex',
+  Mexc = 'mexc',
+  Aax = 'aax',
 }
 
 export type WalletExchangexListFilterInputType = {

@@ -14,6 +14,9 @@ import * as styles from './settings-integrations.css'
 import * as model from './settings-integrations.model'
 import { SettingsIntegrationHuobiDialog } from '~/settings/common/settings-integration-huobi-dialog'
 import { SettingsIntegrationOkexDialog } from '~/settings/common/settings-integration-okex-dialog'
+import { SettingsIntegrationAscendexDialog } from '~/settings/common/settings-integration-ascendex-dialog'
+import { SettingsIntegrationMexcDialog } from '~/settings/common/settings-integration-mexc-dialog'
+import { SettingsIntegrationAaxDialog } from '~/settings/common/settings-integration-aax-dialog/settings-integration-aax-dialog'
 
 export type SettingsIntegrationsProps = {
   className?: string
@@ -30,9 +33,21 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
   const loading = useStore(model.fetchEstablishedIntegrationsListFx.pending)
   const connectAdding = useStore(model.$connectAdding)
 
-  const [openConnectBinance] = useDialog(SettingsIntegrationBinanceDialog)
-  const [openConnectHuobi] = useDialog(SettingsIntegrationHuobiDialog)
-  const [openConnectOkex] = useDialog(SettingsIntegrationOkexDialog)
+  const [
+    [openConnectBinance],
+    [openConnectHuobi],
+    [openConnectOkex],
+    [openConnectAscendex],
+    [openConnectMexc],
+    [openConnectAax],
+  ] = [
+    useDialog(SettingsIntegrationBinanceDialog),
+    useDialog(SettingsIntegrationHuobiDialog),
+    useDialog(SettingsIntegrationOkexDialog),
+    useDialog(SettingsIntegrationAscendexDialog),
+    useDialog(SettingsIntegrationMexcDialog),
+    useDialog(SettingsIntegrationAaxDialog),
+  ]
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   const handlers = {
@@ -48,6 +63,21 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
 
     [WalletExchangeTypeEnum.Okex]: {
       dialog: openConnectOkex,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Ascendex]: {
+      dialog: openConnectAscendex,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Mexc]: {
+      dialog: openConnectMexc,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Aax]: {
+      dialog: openConnectAax,
       effect: model.connectIntegrationApiExchangeFx,
     },
   }
