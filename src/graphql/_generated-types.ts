@@ -937,10 +937,10 @@ export type GovVotesFilterInputType = {
 }
 
 export type IntegrationExchangeApiConnectInputType = {
-  /** Api key */
-  apiKey: Scalars['String']
-  /** Api secret */
-  apiSecret: Scalars['String']
+  /** Exchange object keys */
+  objectKeys: Array<Scalars['String']>
+  /** Exchange object values */
+  objectValues: Array<Scalars['String']>
   /** Exchange */
   type: WalletExchangeTypeEnum
 }
@@ -3211,6 +3211,7 @@ export type WalletExchangeTypeTokenAliasesArgs = {
 export enum WalletExchangeTypeEnum {
   Binance = 'binance',
   Huobi = 'huobi',
+  Okex = 'okex',
 }
 
 export type WalletExchangexListFilterInputType = {

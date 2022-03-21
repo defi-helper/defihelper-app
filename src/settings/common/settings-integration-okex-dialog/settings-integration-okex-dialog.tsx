@@ -6,12 +6,13 @@ import { Dialog } from '~/common/dialog'
 import { Input } from '~/common/input'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
-import { settingsIntegrationHuobiSchema } from './settings-integration-huobi-dialog.validation'
-import * as styles from './settings-integration-huobi-dialog.css'
+import { settingsIntegrationHuobiSchema } from './settings-integration-okex-dialog.validation'
+import * as styles from './settings-integration-okex-dialog.css'
 
 type FormValues = {
   apiKey: string
   secret: string
+  password: string
 }
 
 export type SettingsIntegrationDialogProps = {
@@ -20,9 +21,9 @@ export type SettingsIntegrationDialogProps = {
 }
 
 const HOW_TO_CREATE_API =
-  'https://www.huobi.com/support/en-us/detail/360000203002'
+  'https://cryptopro.app/help/automatic-import/okex-api-key/'
 
-export const SettingsIntegrationHuobiDialog: React.VFC<SettingsIntegrationDialogProps> =
+export const SettingsIntegrationOkexDialog: React.VFC<SettingsIntegrationDialogProps> =
   (props) => {
     const { register, handleSubmit, formState } = useForm<FormValues>({
       defaultValues: props.defaultValues,
@@ -37,7 +38,7 @@ export const SettingsIntegrationHuobiDialog: React.VFC<SettingsIntegrationDialog
           className={styles.form}
         >
           <Typography className={styles.apiHint}>
-            Please create an API key (with read permission only) in your Houbi
+            Please create an API key (with read permission only) in your OKEx
             account, and fill in the fields below
             <br />
             <br />
@@ -65,6 +66,17 @@ export const SettingsIntegrationHuobiDialog: React.VFC<SettingsIntegrationDialog
             defaultValue={props.defaultValues?.secret}
             helperText={formState.errors.secret?.message}
             error={Boolean(formState.errors.secret?.message)}
+          />
+          <Input
+            {...register('password')}
+            className={styles.input}
+            placeholder="Password"
+            defaultValue={props.defaultValues?.password}
+            helperText={
+              formState.errors.password?.message ??
+              'Password for api keys pair(not for account!)'
+            }
+            error={Boolean(formState.errors.password?.message)}
           />
           <div className={styles.buttons}>
             <Button type="submit">Connect</Button>

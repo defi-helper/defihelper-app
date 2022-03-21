@@ -13,6 +13,7 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './settings-integrations.css'
 import * as model from './settings-integrations.model'
 import { SettingsIntegrationHuobiDialog } from '~/settings/common/settings-integration-huobi-dialog'
+import { SettingsIntegrationOkexDialog } from '~/settings/common/settings-integration-okex-dialog'
 
 export type SettingsIntegrationsProps = {
   className?: string
@@ -31,6 +32,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
 
   const [openConnectBinance] = useDialog(SettingsIntegrationBinanceDialog)
   const [openConnectHuobi] = useDialog(SettingsIntegrationHuobiDialog)
+  const [openConnectOkex] = useDialog(SettingsIntegrationOkexDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   const handlers = {
@@ -43,15 +45,26 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
       dialog: openConnectHuobi,
       effect: model.connectIntegrationApiExchangeFx,
     },
+
+    [WalletExchangeTypeEnum.Okex]: {
+      dialog: openConnectOkex,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
   }
 
   const handleConnectIntegration =
     (integrationType: WalletExchangeTypeEnum) => async () => {
       try {
-        const apiKeyPair = await handlers[integrationType].dialog()
+        const objectKeys: string[] = []
+        const objectValues: string[] = []
 
-        handlers[integrationType].effect({
-          ...apiKeyPair,
+        Object.entries(await handlers[integrationType].dialog()).map(([i, v]) =>
+          Promise.all([objectKeys.push(i), objectValues.push(v)])
+        )
+
+        await handlers[integrationType].effect({
+          objectKeys,
+          objectValues,
           type: integrationType,
         })
       } catch (error) {

@@ -11,17 +11,17 @@ import * as styles from './settings-integration-binance-dialog.css'
 
 type FormValues = {
   apiKey: string
-  apiSecret: string
+  secret: string
 }
 
-export type SettingsIntegrationBinanceDialogProps = {
+export type SettingsIntegrationDialogProps = {
   onConfirm: (formValues: FormValues) => void
   defaultValues?: FormValues
 }
 
 const HOW_TO_CREATE_API = 'https://www.binance.com/en/support/faq/360002502072'
 
-export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationBinanceDialogProps> =
+export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationDialogProps> =
   (props) => {
     const { register, handleSubmit, formState } = useForm<FormValues>({
       defaultValues: props.defaultValues,
@@ -58,12 +58,12 @@ export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationBina
             error={Boolean(formState.errors.apiKey?.message)}
           />
           <Input
-            {...register('apiSecret')}
+            {...register('secret')}
             className={styles.input}
             placeholder="Secret key"
-            defaultValue={props.defaultValues?.apiSecret}
-            helperText={formState.errors.apiSecret?.message}
-            error={Boolean(formState.errors.apiSecret?.message)}
+            defaultValue={props.defaultValues?.secret}
+            helperText={formState.errors.secret?.message}
+            error={Boolean(formState.errors.secret?.message)}
           />
           <div className={styles.buttons}>
             <Button type="submit">Connect</Button>
