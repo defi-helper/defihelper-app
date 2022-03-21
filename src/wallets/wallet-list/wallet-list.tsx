@@ -51,7 +51,7 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
                 wallet.networks.includes(props.network))
           )
           .map(([walletName, wallet]) => {
-            const buttonProps = wallet.available
+            const buttonProps = wallet.available()
               ? {
                   onClick: handleActivate(wallet.connector, wallet.blockchain),
                 }
@@ -72,7 +72,7 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
                 >
                   <wallet.logo className={styles.icon} />
                   <Typography as="span">
-                    {wallet.available ? walletName : `Install ${walletName}`}
+                    {wallet.available() ? walletName : `Install ${walletName}`}
                   </Typography>
                 </ButtonBase>
               </li>
