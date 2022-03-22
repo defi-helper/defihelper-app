@@ -17,6 +17,7 @@ import { SettingsIntegrationOkexDialog } from '~/settings/common/settings-integr
 import { SettingsIntegrationAscendexDialog } from '~/settings/common/settings-integration-ascendex-dialog'
 import { SettingsIntegrationMexcDialog } from '~/settings/common/settings-integration-mexc-dialog'
 import { SettingsIntegrationAaxDialog } from '~/settings/common/settings-integration-aax-dialog/settings-integration-aax-dialog'
+import { SettingsIntegrationBitmartDialog } from '~/settings/common/settings-integration-bitmart-dialog'
 
 export type SettingsIntegrationsProps = {
   className?: string
@@ -40,6 +41,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
     [openConnectAscendex],
     [openConnectMexc],
     [openConnectAax],
+    [openConnectBitmart],
   ] = [
     useDialog(SettingsIntegrationBinanceDialog),
     useDialog(SettingsIntegrationHuobiDialog),
@@ -47,6 +49,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
     useDialog(SettingsIntegrationAscendexDialog),
     useDialog(SettingsIntegrationMexcDialog),
     useDialog(SettingsIntegrationAaxDialog),
+    useDialog(SettingsIntegrationBitmartDialog),
   ]
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
@@ -78,6 +81,11 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
 
     [WalletExchangeTypeEnum.Aax]: {
       dialog: openConnectAax,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Bitmart]: {
+      dialog: openConnectBitmart,
       effect: model.connectIntegrationApiExchangeFx,
     },
   }

@@ -62,6 +62,7 @@ import { ReactComponent as CalculatorIcon } from '~/assets/icons/calculator.svg'
 import { ReactComponent as MoralisIcon } from '~/assets/icons/moralis-logo.svg'
 import { ReactComponent as DebankIcon } from '~/assets/icons/debank-logo.svg'
 import { ReactComponent as HuobiIcon } from '~/assets/icons/exchange/huobi.svg'
+import { ReactComponent as BitmartIcon } from '~/assets/icons/exchange/bitmart.svg'
 import { ReactComponent as OkexIcon } from '~/assets/icons/exchange/okex.svg'
 import { ReactComponent as AaxIcon } from '~/assets/icons/exchange/aax.svg'
 import { ReactComponent as AscendexIcon } from '~/assets/icons/exchange/ascendex.svg'
@@ -139,6 +140,7 @@ const ICONS = {
   moralis: MoralisIcon,
   debank: DebankIcon,
   huobi: HuobiIcon,
+  bitmart: BitmartIcon,
   okex: OkexIcon,
   aax: AaxIcon,
   ascendex: AscendexIcon,
