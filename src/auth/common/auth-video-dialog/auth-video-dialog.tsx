@@ -13,7 +13,7 @@ export type AuthVideoDialogProps = {
   onConfirm: (value: boolean) => void
 }
 
-const VIDEO_UD = 'eHe9xVU1pqs'
+const VIDEO_UD = 'qqN_JMrNxO4'
 
 export const AuthVideoDialog: React.VFC<AuthVideoDialogProps> = (props) => {
   const [checked, setChecked] = useState(false)
