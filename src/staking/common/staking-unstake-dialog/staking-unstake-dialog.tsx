@@ -9,10 +9,12 @@ import { Loader } from '~/common/loader'
 import { Input } from '~/common/input'
 import { MarkdownRender } from '~/common/markdown-render'
 import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
+import { AdapterActions } from '~/common/load-adapter'
 import * as styles from './staking-unstake-dialog.css'
 
 export type StakingUnstakeDialogProps = {
   onConfirm: () => void
+  methods?: AdapterActions['unstake']['methods']
 }
 
 export const StakingUnstakeDialog: React.FC<StakingUnstakeDialogProps> = () => {

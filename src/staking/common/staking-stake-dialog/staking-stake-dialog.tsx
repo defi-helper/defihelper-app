@@ -9,14 +9,20 @@ import { Loader } from '~/common/loader'
 import { Input } from '~/common/input'
 import { MarkdownRender } from '~/common/markdown-render'
 import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
+import { AdapterActions } from '~/common/load-adapter'
 import * as styles from './staking-stake-dialog.css'
 
 export type StakingStakeDialogProps = {
   onConfirm: () => void
+  methods?: AdapterActions['stake']['methods']
 }
 
-export const StakingStakeDialog: React.FC<StakingStakeDialogProps> = () => {
+export const StakingStakeDialog: React.VFC<StakingStakeDialogProps> = (
+  props
+) => {
   const { control, formState } = useForm()
+
+  console.log(props.methods)
 
   const loading = false
 

@@ -80,15 +80,16 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         if (!contract.actions || !contract.actions[action]) return
 
         const dialogs = {
-          stake: openStakeDialog,
-          unstake: openUnstakeDialog,
-          claim: openClaimDialog,
+          stake: () =>
+            openStakeDialog({ methods: contract.actions?.stake.methods }),
+          unstake: () =>
+            openUnstakeDialog({ methods: contract.actions?.unstake.methods }),
+          claim: () =>
+            openClaimDialog({ methods: contract.actions?.claim.methods }),
           exit: null,
         } as const
 
-        await dialogs[action]?.({
-          methods: contract.actions[action].methods,
-        })
+        await dialogs[action]?.()
 
         const findedWallet = wallets.find(
           ({ address, network }) =>

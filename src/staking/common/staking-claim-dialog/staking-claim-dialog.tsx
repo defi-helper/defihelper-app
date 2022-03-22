@@ -9,10 +9,12 @@ import { Loader } from '~/common/loader'
 import { Input } from '~/common/input'
 import { MarkdownRender } from '~/common/markdown-render'
 import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
+import { AdapterActions } from '~/common/load-adapter'
 import * as styles from './staking-claim-dialog.css'
 
 export type StakingClaimDialogProps = {
   onConfirm: () => void
+  methods?: AdapterActions['claim']['methods']
 }
 
 export const StakingClaimDialog: React.FC<StakingClaimDialogProps> = () => {
