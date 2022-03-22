@@ -217,12 +217,12 @@ guard({
   target: toastsService.info.prepend(() => 'Wallet already added!'),
 })
 
-export const openBetaDialogFx = authDomain.createEffect(
+export const openVideoDialogFx = authDomain.createEffect(
   (fn: () => Promise<unknown>) => fn()
 )
 
 export const UserGate = createGate<{
-  openBetaDialog: () => Promise<unknown>
+  openVideoDialog: () => Promise<unknown>
   openMergeWalletsDialog: () => Promise<unknown>
 }>({
   name: 'UserGate',
@@ -280,8 +280,8 @@ sample({
     clock: saveUser,
     filter: ([, prevUser]) => prevUser === null,
   }),
-  fn: ([{ openBetaDialog }]) => openBetaDialog,
-  target: openBetaDialogFx,
+  fn: ([{ openVideoDialog }]) => openVideoDialog,
+  target: openVideoDialogFx,
 })
 
 guard({
