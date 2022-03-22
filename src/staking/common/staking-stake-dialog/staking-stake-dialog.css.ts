@@ -28,15 +28,7 @@ export const form = style({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  minHeight: 'calc(100% - 91px)',
-})
-
-export const loader = style({
-  padding: 10,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  margin: 'auto',
+  flex: '1 0 auto',
 })
 
 export const button = style({
@@ -74,4 +66,9 @@ export const radio = style({
       marginRight: 10,
     },
   },
+})
+
+export const balance = style({
+  color: theme.colors.common.blue1,
+  marginLeft: 'auto',
 })

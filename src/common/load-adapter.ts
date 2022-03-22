@@ -54,6 +54,7 @@ type Claim = {
     balanceOf: () => Promise<string>
     can: (amount: string) => Promise<boolean | Error>
     claim: (amount: string) => Promise<{ tx: Transaction }>
+    symbol: () => string
   }
 }
 
@@ -74,6 +75,7 @@ type Stake = {
     approve: (amount: string) => Promise<{ tx: Transaction }>
     can: (amount: string) => Promise<boolean | Error>
     stake: (amount: string) => Promise<{ tx: Transaction }>
+    symbol: () => string
   }
 }
 
@@ -84,6 +86,7 @@ type Unstake = {
     balanceOf: () => Promise<string>
     can: (amount: string) => Promise<boolean | Error>
     unstake: (amount: string) => Promise<{ tx: Transaction }>
+    symbol: () => string
   }
 }
 

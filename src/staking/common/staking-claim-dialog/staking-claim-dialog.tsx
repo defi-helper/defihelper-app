@@ -1,118 +1,116 @@
-import { useForm, Controller } from 'react-hook-form'
+import clsx from 'clsx'
+import { useForm } from 'react-hook-form'
+import { useAsyncRetry, useAsyncFn } from 'react-use'
+import { useEffect } from 'react'
 
 import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
-import { NumericalInput } from '~/common/numerical-input'
-import { Select, SelectOption } from '~/common/select'
-import { Typography } from '~/common/typography'
-import { Loader } from '~/common/loader'
-import { Input } from '~/common/input'
-import { MarkdownRender } from '~/common/markdown-render'
-import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
 import { AdapterActions } from '~/common/load-adapter'
+import { Typography } from '~/common/typography'
+import { Link } from '~/common/link'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { toastsService } from '~/toasts'
 import * as styles from './staking-claim-dialog.css'
+
+type FormValues = {
+  amount: string
+}
 
 export type StakingClaimDialogProps = {
   onConfirm: () => void
   methods?: AdapterActions['claim']['methods']
 }
 
-export const StakingClaimDialog: React.FC<StakingClaimDialogProps> = () => {
-  const { control, formState } = useForm()
+export const StakingClaimDialog: React.FC<StakingClaimDialogProps> = (
+  props
+) => {
+  const { formState, setValue, watch, handleSubmit } = useForm<FormValues>()
 
-  const loading = false
+  const amount = watch('amount')
+
+  const can = useAsyncRetry(async () => {
+    if (bignumberUtils.eq(amount, 0)) return true
+
+    return props.methods?.can(amount)
+  }, [props.methods, amount])
+
+  const [claimState, onClaim] = useAsyncFn(async (formValues: FormValues) => {
+    if (!props.methods) return false
+
+    const { can: canClaimMethod, claim } = props.methods
+
+    try {
+      const canClaim = await canClaimMethod(formValues.amount)
+
+      if (canClaim instanceof Error) throw canClaim
+      if (!canClaim) throw new Error("can't claim")
+
+      const { tx } = await claim(formValues.amount)
+
+      await tx?.wait()
+
+      return true
+    } catch (error) {
+      if (error instanceof Error) {
+        toastsService.error(error.message)
+      }
+
+      return false
+    }
+  }, [])
+
+  const balanceOf = useAsyncRetry(async () => {
+    return props.methods?.balanceOf()
+  }, [props.methods])
+
+  useEffect(() => {
+    if (!balanceOf.value) return
+
+    setValue('amount', balanceOf.value)
+  }, [balanceOf.value, setValue])
+
+  useEffect(() => {
+    if (claimState.value) {
+      props.onConfirm()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claimState.value])
+
+  const handleOnSubmit = handleSubmit(onClaim)
 
   return (
     <Dialog className={styles.root}>
-      {loading ? (
-        <div className={styles.loader}>
-          <Loader height="36" />
-        </div>
-      ) : (
-        <>
-          <div className={styles.description}>
-            <MarkdownRender>description</MarkdownRender>
-          </div>
-          <form noValidate autoComplete="off" className={styles.form}>
-            {([] as any[]).map((input, index) => {
-              const Component = !input.value ? Input : NumericalInput
-
-              return (
-                <Controller
-                  control={control}
-                  key={input.placeholder}
-                  name={`stake.${index}`}
-                  render={({ field }) => {
-                    const components: Record<string, JSX.Element> = {
-                      select: (
-                        <Select
-                          {...field}
-                          label={input.placeholder}
-                          value={field.value || input.value}
-                          className={styles.input}
-                          disabled={formState.isSubmitting}
-                        >
-                          {input.options?.map((option: any) => (
-                            <SelectOption
-                              key={option.value}
-                              value={option.value}
-                            >
-                              {option.label}
-                            </SelectOption>
-                          ))}
-                        </Select>
-                      ),
-                      radio: (
-                        <div>
-                          <Typography
-                            as="div"
-                            variant="body2"
-                            family="mono"
-                            transform="uppercase"
-                            className={styles.label}
-                          >
-                            {input.placeholder}
-                          </Typography>
-                          {input.options?.map((option: any) => (
-                            <StakingAdapterRadio
-                              key={option.value}
-                              {...field}
-                              value={option.value}
-                              className={styles.radio}
-                              disabled={formState.isSubmitting}
-                            >
-                              {option.label}
-                            </StakingAdapterRadio>
-                          ))}
-                        </div>
-                      ),
-                    }
-
-                    return (
-                      components[input.type] ?? (
-                        <Component
-                          label={input.placeholder}
-                          disabled={formState.isSubmitting}
-                          className={styles.input}
-                          {...field}
-                          value={field.value || input.value}
-                        />
-                      )
-                    )
-                  }}
-                />
-              )
-            })}
-            <Button
-              type="submit"
-              loading={formState.isSubmitting}
-              className={styles.button}
-            >
-              stake
-            </Button>
-          </form>
-        </>
-      )}
+      <div className={styles.tabs}>
+        <Typography
+          variant="body3"
+          transform="uppercase"
+          family="mono"
+          className={clsx(styles.title, styles.activeTab)}
+        >
+          Claim
+        </Typography>
+      </div>
+      <div className={styles.description}>
+        Claim your{' '}
+        <Link href={props.methods?.link()} target="_blank" color="blue">
+          {props.methods?.symbol()}
+        </Link>{' '}
+        reward
+      </div>
+      <form
+        noValidate
+        autoComplete="off"
+        className={styles.form}
+        onSubmit={handleOnSubmit}
+      >
+        <Button
+          type="submit"
+          loading={formState.isSubmitting}
+          className={styles.button}
+        >
+          {can.value instanceof Error ? can.value.message : 'claim'}
+        </Button>
+      </form>
     </Dialog>
   )
 }

@@ -67,7 +67,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         })
 
         const contract = await model.fetchContractAdapterFx({
-          protocolAdapter: 'bscApeSwap2' ?? props.protocolAdapter,
+          protocolAdapter: props.protocolAdapter,
           contract: {
             address: props.contractAddress,
             adapter: props.contractAdapter,
