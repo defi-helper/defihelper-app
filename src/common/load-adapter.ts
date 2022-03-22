@@ -38,31 +38,73 @@ export type AdapterInfo = {
   }[]
 }
 
+type Transaction = { wait: () => Promise<unknown> }
+
 export type AdapterStep = {
   can: (...args: unknown[]) => Promise<boolean | Error>
   info: () => Promise<AdapterInfo>
   name: string
-  send: (
-    ...args: unknown[]
-  ) => Promise<{ tx: { wait: () => Promise<unknown> } }>
+  send: (...args: unknown[]) => Promise<{ tx: Transaction }>
+}
+
+type Claim = {
+  name: 'staking-claim'
+  methods: {
+    link: () => string
+    balanceOf: () => Promise<string>
+    can: (amount: string) => Promise<boolean | Error>
+    claim: (amount: string) => Promise<{ tx: Transaction }>
+  }
+}
+
+type Exit = {
+  name: 'staking-exit'
+  methods: {
+    can: (amount: string) => Promise<boolean | Error>
+    exit: (amount: string) => Promise<{ tx: Transaction }>
+  }
+}
+
+type Stake = {
+  name: 'staking-stake'
+  methods: {
+    link: () => string
+    balanceOf: () => Promise<string>
+    isApproved: (amount: string) => Promise<boolean>
+    approve: (amount: string) => Promise<{ tx: Transaction }>
+    can: (amount: string) => Promise<boolean | Error>
+    stake: (amount: string) => Promise<{ tx: Transaction }>
+  }
+}
+
+type Unstake = {
+  name: 'staking-unstake'
+  methods: {
+    link: () => string
+    balanceOf: () => Promise<string>
+    can: (amount: string) => Promise<boolean | Error>
+    unstake: (amount: string) => Promise<{ tx: Transaction }>
+  }
 }
 
 export type AdapterActions = {
-  stake: AdapterStep[]
-  unstake: AdapterStep[]
-  claim: AdapterStep[]
-  exit: AdapterStep[]
+  stake: Stake
+  unstake: Unstake
+  claim: Claim
+  exit: Exit
+}
+
+type Part = {
+  address: string
+  decimals: number
+  priceUSD: string
 }
 
 export type Adapter = {
-  staking: {
-    token: string
-    decimals: number
-  }
-  reward: {
-    token: string
-    decimals: number
-  }
+  stakeToken: {
+    parts: Part[]
+  } & Part
+  rewardToken: Part
   metrics: {
     tvl: string
     aprDay: string

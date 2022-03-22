@@ -3,10 +3,12 @@ import networks from '@defihelper/networks/contracts.json'
 
 import {
   Contract,
-  StakingAdapterDialog,
   StakingBuyLiquidityDialog,
   isExcludedAdapter,
   StakingSuccessDialog,
+  StakingStakeDialog,
+  StakingUnstakeDialog,
+  StakingClaimDialog,
 } from '~/staking/common'
 import { Button } from '~/common/button'
 import { useDialog, UserRejectionError } from '~/common/dialog'
@@ -38,9 +40,11 @@ export type StakingAdaptersProps = {
 }
 
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
-  const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
+  const [openStakeDialog] = useDialog(StakingStakeDialog)
+  const [openUnstakeDialog] = useDialog(StakingUnstakeDialog)
+  const [openClaimDialog] = useDialog(StakingClaimDialog)
 
   const wallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
@@ -63,7 +67,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         })
 
         const contract = await model.fetchContractAdapterFx({
-          protocolAdapter: props.protocolAdapter,
+          protocolAdapter: 'bscApeSwap2' ?? props.protocolAdapter,
           contract: {
             address: props.contractAddress,
             adapter: props.contractAdapter,
@@ -73,15 +77,38 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           provider: wallet.provider,
         })
 
-        if (!contract.actions) return
+        if (!contract.actions || !contract.actions[action]) return
 
-        await openAdapter({
-          steps: contract.actions[action],
-          onSubmit:
-            action === 'stake'
-              ? () => model.stake({ wallet, contractId: props.contractId })
-              : undefined,
+        const dialogs = {
+          stake: openStakeDialog,
+          unstake: openUnstakeDialog,
+          claim: openClaimDialog,
+          exit: null,
+        } as const
+
+        await dialogs[action]?.({
+          methods: contract.actions[action].methods,
         })
+
+        const findedWallet = wallets.find(
+          ({ address, network }) =>
+            address === wallet?.account && network === wallet.chainId
+        )
+
+        if (!findedWallet) return
+
+        stakingAutomatesModel
+          .scanWalletMetricFx({
+            walletId: findedWallet.id,
+            contractId: props.contractId,
+          })
+          .catch(console.error)
+
+        if (!action || action === 'exit') return
+
+        openSuccessDialog({
+          type: action,
+        }).catch((error) => console.error(error.message))
       } catch (error) {
         if (error instanceof Error && !(error instanceof UserRejectionError)) {
           console.error(error.message)
@@ -89,26 +116,6 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       } finally {
         model.action(null)
       }
-
-      const findedWallet = wallets.find(
-        ({ address, network }) =>
-          address === wallet?.account && network === wallet.chainId
-      )
-
-      if (!findedWallet) return
-
-      stakingAutomatesModel
-        .scanWalletMetricFx({
-          walletId: findedWallet.id,
-          contractId: props.contractId,
-        })
-        .catch(console.error)
-
-      if (!action || action === 'exit') return
-
-      openSuccessDialog({
-        type: action,
-      }).catch(console.error)
     }
 
   const user = useStore(authModel.$user)
