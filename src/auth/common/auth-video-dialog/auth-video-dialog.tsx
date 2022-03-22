@@ -42,14 +42,16 @@ export const AuthVideoDialog: React.VFC<AuthVideoDialogProps> = (props) => {
           allowFullScreen
         />
       </div>
-      <Link
-        href="youtube.com"
-        target="_blank"
-        underline="always"
-        className={styles.title}
-      >
-        More videos
-      </Link>
+      {false && (
+        <Link
+          href="youtube.com"
+          target="_blank"
+          underline="always"
+          className={styles.title}
+        >
+          More videos
+        </Link>
+      )}
       <Typography variant="body2" weight="semibold" className={styles.title}>
         Important Notice
       </Typography>
