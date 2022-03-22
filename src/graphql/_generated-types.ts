@@ -3216,6 +3216,7 @@ export enum WalletExchangeTypeEnum {
   Mexc = 'mexc',
   Aax = 'aax',
   Bitmart = 'bitmart',
+  Coinex = 'coinex',
 }
 
 export type WalletExchangexListFilterInputType = {
