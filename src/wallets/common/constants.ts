@@ -11,7 +11,7 @@ import { ReactComponent as WavesExchangeIcon } from '~/assets/icons/wallets/wave
 import { networksConfig } from '~/networks-config'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 // import { ReactComponent as LedgerIcon } from '~/assets/icons/wallets/ledger.svg'
-// import { ReactComponent as WalletConnectIcon } from '~/assets/icons/wallets/wallet-connect.svg'
+import { ReactComponent as WalletConnectIcon } from '~/assets/icons/wallets/wallet-connect.svg'
 // import { ReactComponent as PortisIcon } from '~/assets/icons/wallets/portis-wallet.svg'
 // import { ReactComponent as TrezorIcon } from '~/assets/icons/wallets/trezor-wallet.svg'
 // import { ReactComponent as BinanceIcon } from '~/assets/icons/wallets/binance-wallet.svg'
@@ -58,7 +58,7 @@ type ConnectorByName = {
     }
   >
   networks: string[]
-  available: boolean
+  available: () => boolean
   extensionLink?: string
 }
 
@@ -68,7 +68,7 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     blockchain: 'ethereum',
     logo: MetaMaskIcon,
     networks: ethereumNetworks,
-    available: Boolean(window.ethereum),
+    available: () => Boolean(window.ethereum),
     extensionLink: IS_MOBILE ? METAMASK_MOBILE : METAMASK_LINK,
   },
   [ConnectorNames.TrustWallet]: {
@@ -76,7 +76,7 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     blockchain: 'ethereum',
     logo: TrustIcon,
     networks: ethereumNetworks,
-    available: Boolean(window.ethereum),
+    available: () => Boolean(window.ethereum),
     extensionLink: IS_MOBILE ? TRUST_MOBILE : METAMASK_LINK,
   },
   [ConnectorNames.CoinBase]: {
@@ -84,21 +84,21 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     blockchain: 'ethereum',
     logo: CoinBaseIcon,
     networks: [String(config.DEFAULT_CHAIN_ID)],
-    available: true,
+    available: () => true,
   },
   [ConnectorNames.Fortmatic]: {
     connector: connectors.fortmatic,
     blockchain: 'ethereum',
     logo: FortmaticIcon,
     networks: [String(config.DEFAULT_CHAIN_ID)],
-    available: true,
+    available: () => true,
   },
   [ConnectorNames.WavesKeeper]: {
     connector: connectors.wavesKepper,
     blockchain: 'waves',
     logo: WavesKeeperIcon,
     networks: wavesNetworks,
-    available: Boolean(window.WavesKeeper),
+    available: () => Boolean(window.WavesKeeper),
     extensionLink: WAVES_KEEPER_LINK,
   },
   [ConnectorNames.WavesExchange]: {
@@ -106,8 +106,22 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     blockchain: 'waves',
     logo: WavesExchangeIcon,
     networks: wavesNetworks,
-    available: true,
+    available: () => true,
   },
+  [ConnectorNames.WalletConnect]: {
+    connector: connectors.walletconnect,
+    blockchain: 'ethereum',
+    logo: WalletConnectIcon,
+    networks: [String(config.DEFAULT_CHAIN_ID)],
+    available: () => true,
+  },
+  // [ConnectorNames.Portis]: {
+  //   connector: connectors.portis,
+  //   blockchain: 'ethereum',
+  //   logo: PortisIcon,
+  //   networks: [String(config.DEFAULT_CHAIN_ID)],
+  //   available: () => true,
+  // },
   // [ConnectorNames.Ledger]: {
   //   connector: connectors.ledger,
   //   blockchain: 'ethereum',
@@ -122,13 +136,6 @@ export const connectorsByName: Record<string, ConnectorByName> = {
   //   networks: [String(config.DEFAULT_CHAIN_ID)],
   //   available: true,
   // },
-  // [ConnectorNames.WalletConnect]: {
-  //   connector: connectors.walletconnect,
-  //   blockchain: 'ethereum',
-  //   logo: WalletConnectIcon,
-  //   networks: [String(config.DEFAULT_CHAIN_ID)],
-  //   available: true,
-  // },
   // [ConnectorNames.Binance]: {
   //   connector: connectors.binance,
   //   blockchain: 'ethereum',
@@ -136,13 +143,6 @@ export const connectorsByName: Record<string, ConnectorByName> = {
   //   networks: ethereumNetworks,
   //   available: Boolean(window.BinanceChain),
   //   extensionLink: BINANCE_LINK,
-  // },
-  // [ConnectorNames.Portis]: {
-  //   connector: connectors.portis,
-  //   blockchain: 'ethereum',
-  //   logo: PortisIcon,
-  //   networks: [String(config.DEFAULT_CHAIN_ID)],
-  //   available: true,
   // },
 }
 
@@ -154,7 +154,6 @@ export const SIGN_MESSAGE =
   'agree that you are not a citizen or entity of; (ii) formed in; (iii) ' +
   'do not reside in; (iv) located in; (v) do not have a place of business ' +
   'in; and (vi) conducting business in the USA, any jurisdictions which ' +
-  'have restrictions/prohibitions on the use of virtual currencies or ' +
-  'any other state, country or region that is subject to sanctions ' +
-  'enforced by the US, the UK or the EU. If you do not agree with any ' +
-  'statement given above, then you must refrain from any further actions.'
+  'have restrictions/prohibitions on the use of virtual currencies. If you ' +
+  'do not agree with any statement given above, then you must refrain from ' +
+  'any further actions.'
