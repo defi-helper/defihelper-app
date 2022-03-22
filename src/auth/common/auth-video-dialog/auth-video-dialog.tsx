@@ -1,27 +1,63 @@
+import { useState } from 'react'
+
 import { Button } from '~/common/button'
+import { Checkbox } from '~/common/checkbox'
 import { Dialog } from '~/common/dialog'
 import { Link } from '~/common/link'
 import { Typography } from '~/common/typography'
 import { config } from '~/config'
-import * as styles from './auth-beta-dialog.css'
+import * as styles from './auth-video-dialog.css'
 
-export type AuthBetaDialogProps = {
+export type AuthVideoDialogProps = {
   onCancel: () => void
-  onConfirm: () => void
+  onConfirm: (value: boolean) => void
 }
 
-export const AuthBetaDialog: React.VFC<AuthBetaDialogProps> = (props) => {
+const VIDEO_UD = 'qqN_JMrNxO4'
+
+export const AuthVideoDialog: React.VFC<AuthVideoDialogProps> = (props) => {
+  const [checked, setChecked] = useState(false)
+
+  const handleToggle = () => {
+    setChecked(!checked)
+  }
+
+  const handleConfirm = () => {
+    props.onConfirm(checked)
+  }
+
   return (
     <Dialog className={styles.root}>
+      <Typography variant="body2" weight="semibold" className={styles.title}>
+        What is DeFiHelper?
+      </Typography>
+      <div className={styles.videoWrap}>
+        <iframe
+          className={styles.video}
+          scrolling="no"
+          title="This is a unique title"
+          src={`https://www.youtube.com/embed/${VIDEO_UD}?autoplay=1`}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+      {false && (
+        <Link
+          href="youtube.com"
+          target="_blank"
+          underline="always"
+          className={styles.title}
+        >
+          More videos
+        </Link>
+      )}
       <Typography variant="body2" weight="semibold" className={styles.title}>
         Important Notice
       </Typography>
       <Typography variant="body2" className={styles.title}>
-        The DeFiHelper app is at the MVP stage. Though we try our best, you may
-        encounter bugs or other issues. Only the basic set of functionality is
-        currently available, including automations, and auto-staking, portfolio
-        management and notifications. In the nearest future, we will expand the
-        functionality of the service and will connect 100+ more protocols.
+        DeFiHelper is at the MVP stage. Though we try our best, you may
+        encounter bugs or other issues.
       </Typography>
       <Typography variant="body2" className={styles.title}>
         If you encounter any errors or want to propose a new feature/protocol,
@@ -75,7 +111,11 @@ export const AuthBetaDialog: React.VFC<AuthBetaDialogProps> = (props) => {
           </Link>
         </div>
       </Typography>
-      <Button onClick={props.onConfirm} className={styles.button} size="small">
+      <Typography as="label" variant="body2" className={styles.checkbox}>
+        <Checkbox checked={checked} onChange={handleToggle} />
+        <Typography variant="inherit">Don&apos;t show this again</Typography>
+      </Typography>
+      <Button onClick={handleConfirm} className={styles.button} size="small">
         Continue
       </Button>
     </Dialog>
