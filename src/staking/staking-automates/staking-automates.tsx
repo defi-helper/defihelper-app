@@ -57,17 +57,16 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   }
 
   const handleChangeNetwork =
-    (contract: typeof automatesContracts[number]) => () => {
-      const changeNetwork = () =>
-        switchNetwork(contract.wallet.network).catch(console.error)
-
-      openErrorDialog({
-        contractName: contract.contract?.name ?? '',
-        address: contract.wallet.address,
-        network: contract.wallet.network,
-      })
-        .then(changeNetwork)
-        .catch(changeNetwork)
+    (contract: typeof automatesContracts[number]) => async () => {
+      try {
+        await switchNetwork(contract.wallet.network)
+      } catch {
+        openErrorDialog({
+          contractName: contract.contract?.name ?? '',
+          address: contract.wallet.address,
+          network: contract.wallet.network,
+        }).catch(console.error)
+      }
     }
 
   const handleAction =

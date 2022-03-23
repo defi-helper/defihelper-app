@@ -47,7 +47,7 @@ export const bignumberUtils = {
       .div(total ?? 1)
       .multipliedBy(100)
 
-    return percentageBN.isFinite() ? percentageBN.integerValue().toNumber() : 0
+    return percentageBN.isFinite() ? percentageBN.toNumber() : 0
   },
 
   total: (...numbers: Array<string | number | null>) =>
