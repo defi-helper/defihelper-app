@@ -21,6 +21,7 @@ type FormValues = {
 export type StakingStakeDialogProps = {
   onConfirm: () => void
   methods?: AdapterActions['stake']['methods']
+  onSubmit: () => void
 }
 
 export const StakingStakeDialog: React.VFC<StakingStakeDialogProps> = (
@@ -61,6 +62,8 @@ export const StakingStakeDialog: React.VFC<StakingStakeDialogProps> = (
       const { tx } = await stake(formValues.amount)
 
       await tx?.wait()
+
+      props.onSubmit()
 
       return true
     } catch (error) {

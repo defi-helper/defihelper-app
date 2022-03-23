@@ -9,6 +9,7 @@ import {
   StakingStakeDialog,
   StakingUnstakeDialog,
   StakingClaimDialog,
+  StakingAdapterDialog,
 } from '~/staking/common'
 import { Button } from '~/common/button'
 import { useDialog, UserRejectionError } from '~/common/dialog'
@@ -39,12 +40,15 @@ export type StakingAdaptersProps = {
   buyLiquidity: Contract['automate']['buyLiquidity']
 }
 
+const APESWAP_ID = '7ec556f7-68fd-4ccb-a5f9-35e13aa1fb7b'
+
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
   const [openStakeDialog] = useDialog(StakingStakeDialog)
   const [openUnstakeDialog] = useDialog(StakingUnstakeDialog)
   const [openClaimDialog] = useDialog(StakingClaimDialog)
+  const [openAdapter] = useDialog(StakingAdapterDialog)
 
   const wallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
@@ -67,7 +71,10 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         })
 
         const contract = await model.fetchContractAdapterFx({
-          protocolAdapter: props.protocolAdapter,
+          protocolAdapter:
+            props.protocolId === APESWAP_ID
+              ? 'bscApeSwap2'
+              : props.protocolAdapter,
           contract: {
             address: props.contractAddress,
             adapter: props.contractAdapter,
@@ -79,17 +86,33 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
 
         if (!contract.actions || !contract.actions[action]) return
 
-        const dialogs = {
-          stake: () =>
-            openStakeDialog({ methods: contract.actions?.stake.methods }),
-          unstake: () =>
-            openUnstakeDialog({ methods: contract.actions?.unstake.methods }),
-          claim: () =>
-            openClaimDialog({ methods: contract.actions?.claim.methods }),
-          exit: null,
-        } as const
+        if (props.protocolId === APESWAP_ID) {
+          const dialogs = {
+            stake: () =>
+              openStakeDialog({
+                methods: contract.actions?.stake.methods,
+                onSubmit: () =>
+                  model.stake({ wallet, contractId: props.contractId }),
+              }),
+            unstake: () =>
+              openUnstakeDialog({ methods: contract.actions?.unstake.methods }),
+            claim: () =>
+              openClaimDialog({ methods: contract.actions?.claim.methods }),
+            exit: null,
+          } as const
 
-        await dialogs[action]?.()
+          await dialogs[action]?.()
+        } else {
+          await openAdapter({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            steps: contract.actions[action],
+            onSubmit:
+              action === 'stake'
+                ? () => model.stake({ wallet, contractId: props.contractId })
+                : undefined,
+          })
+        }
 
         const findedWallet = wallets.find(
           ({ address, network }) =>
