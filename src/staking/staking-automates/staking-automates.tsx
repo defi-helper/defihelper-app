@@ -56,17 +56,17 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     }
   }
 
-  const handleChangeNetwork =
+  const handleSwitchNetwork =
+    (contract: typeof automatesContracts[number]) => () =>
+      switchNetwork(contract.wallet.network).catch(console.error)
+
+  const handleWrongAddress =
     (contract: typeof automatesContracts[number]) => async () => {
-      try {
-        await switchNetwork(contract.wallet.network)
-      } catch {
-        openErrorDialog({
-          contractName: contract.contract?.name ?? '',
-          address: contract.wallet.address,
-          network: contract.wallet.network,
-        }).catch(console.error)
-      }
+      openErrorDialog({
+        contractName: contract.contract?.name ?? '',
+        address: contract.wallet.address,
+        network: contract.wallet.network,
+      }).catch(console.error)
     }
 
   const handleAction =
@@ -198,31 +198,39 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             network: automatesContract.contract?.network,
           })
 
-          const isNotSameAddresses =
+          const isNotSameAddresses = (
             String(wallet?.chainId) === 'main'
               ? wallet?.account !== automatesContract.wallet.address
               : wallet?.account?.toLowerCase() !==
                 automatesContract.wallet.address
+          )
+            ? handleWrongAddress(automatesContract)
+            : null
 
-          const wrongAddressesOrNetworks =
-            isNotSameAddresses ||
+          const wrongNetwork =
             String(wallet?.chainId) !== automatesContract.wallet.network
+              ? handleSwitchNetwork(automatesContract)
+              : null
 
-          const migrate = wrongAddressesOrNetworks
-            ? handleChangeNetwork(automatesContract)
-            : handleAction(automatesContract, 'migrate')
+          const migrate =
+            wrongNetwork ??
+            isNotSameAddresses ??
+            handleAction(automatesContract, 'migrate')
 
-          const deposit = wrongAddressesOrNetworks
-            ? handleChangeNetwork(automatesContract)
-            : handleAction(automatesContract, 'deposit')
+          const deposit =
+            wrongNetwork ??
+            isNotSameAddresses ??
+            handleAction(automatesContract, 'deposit')
 
-          const refund = wrongAddressesOrNetworks
-            ? handleChangeNetwork(automatesContract)
-            : handleAction(automatesContract, 'refund')
+          const refund =
+            wrongNetwork ??
+            isNotSameAddresses ??
+            handleAction(automatesContract, 'refund')
 
-          const run = wrongAddressesOrNetworks
-            ? handleChangeNetwork(automatesContract)
-            : handleRunManually(automatesContract)
+          const run =
+            wrongNetwork ??
+            isNotSameAddresses ??
+            handleRunManually(automatesContract)
 
           return (
             <StakingAutomatesContractCard
