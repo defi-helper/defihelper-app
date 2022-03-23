@@ -61,6 +61,13 @@ import { ReactComponent as BetaIcon } from '~/assets/icons/beta.svg'
 import { ReactComponent as CalculatorIcon } from '~/assets/icons/calculator.svg'
 import { ReactComponent as MoralisIcon } from '~/assets/icons/moralis-logo.svg'
 import { ReactComponent as DebankIcon } from '~/assets/icons/debank-logo.svg'
+import { ReactComponent as HuobiIcon } from '~/assets/icons/exchange/huobi.svg'
+import { ReactComponent as BitmartIcon } from '~/assets/icons/exchange/bitmart.svg'
+import { ReactComponent as OkexIcon } from '~/assets/icons/exchange/okex.svg'
+import { ReactComponent as AaxIcon } from '~/assets/icons/exchange/aax.svg'
+import { ReactComponent as CoinexIcon } from '~/assets/icons/exchange/coinex.svg'
+import { ReactComponent as AscendexIcon } from '~/assets/icons/exchange/ascendex.svg'
+import { ReactComponent as MexcIcon } from '~/assets/icons/exchange/mexc.svg'
 import { ReactComponent as AffilateIcon } from '~/assets/icons/affilate.svg'
 import { ReactComponent as CupIcon } from '~/assets/icons/cup.svg'
 import { ReactComponent as LinkedinIcon } from '~/assets/icons/linkedin.svg'
@@ -136,6 +143,13 @@ const ICONS = {
   calculator: CalculatorIcon,
   moralis: MoralisIcon,
   debank: DebankIcon,
+  huobi: HuobiIcon,
+  bitmart: BitmartIcon,
+  okex: OkexIcon,
+  aax: AaxIcon,
+  ascendex: AscendexIcon,
+  coinex: CoinexIcon,
+  mexc: MexcIcon,
   affilate: AffilateIcon,
   cup: CupIcon,
   linkedin: LinkedinIcon,

@@ -6,8 +6,8 @@ import { Dialog } from '~/common/dialog'
 import { Input } from '~/common/input'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
-import { settingsIntegrationBinanceSchema } from './settings-integration-binance-dialog.validation'
-import * as styles from './settings-integration-binance-dialog.css'
+import { settingsIntegrationSchema } from './settings-integration-aax-dialog.validation'
+import * as styles from './settings-integration-aax-dialog.css'
 
 type FormValues = {
   apiKey: string
@@ -19,13 +19,14 @@ export type SettingsIntegrationDialogProps = {
   defaultValues?: FormValues
 }
 
-const HOW_TO_CREATE_API = 'https://www.binance.com/en/support/faq/360002502072'
+const HOW_TO_CREATE_API = // todo PUT CORRECT LINK HERE
+  'https://ascendex.com/en/support/articles/36231-how-to-create-an-api'
 
-export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationDialogProps> =
+export const SettingsIntegrationAaxDialog: React.VFC<SettingsIntegrationDialogProps> =
   (props) => {
     const { register, handleSubmit, formState } = useForm<FormValues>({
       defaultValues: props.defaultValues,
-      resolver: yupResolver(settingsIntegrationBinanceSchema),
+      resolver: yupResolver(settingsIntegrationSchema),
     })
 
     return (
@@ -36,7 +37,7 @@ export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationDial
           className={styles.form}
         >
           <Typography className={styles.apiHint}>
-            Please create an API key (with read permission only) in your Binance
+            Please create an API key (with read permission only) in your AAX
             account, and fill in the fields below
             <br />
             <br />
@@ -60,7 +61,7 @@ export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationDial
           <Input
             {...register('secret')}
             className={styles.input}
-            placeholder="Secret key"
+            placeholder="API Secret"
             defaultValue={props.defaultValues?.secret}
             helperText={formState.errors.secret?.message}
             error={Boolean(formState.errors.secret?.message)}

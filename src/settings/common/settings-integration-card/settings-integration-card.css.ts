@@ -16,6 +16,7 @@ export const icon = style({
   marginRight: 8,
   display: 'flex',
   alignItems: 'center',
+  borderRadius: 24,
 })
 
 export const platform = style({

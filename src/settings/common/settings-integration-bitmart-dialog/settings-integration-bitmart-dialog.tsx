@@ -6,12 +6,13 @@ import { Dialog } from '~/common/dialog'
 import { Input } from '~/common/input'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
-import { settingsIntegrationBinanceSchema } from './settings-integration-binance-dialog.validation'
-import * as styles from './settings-integration-binance-dialog.css'
+import { settingsIntegrationSchema } from './settings-integration-bitmart-dialog.validation'
+import * as styles from './settings-integration-bitmart-dialog.css'
 
 type FormValues = {
   apiKey: string
   secret: string
+  uid: string
 }
 
 export type SettingsIntegrationDialogProps = {
@@ -19,13 +20,14 @@ export type SettingsIntegrationDialogProps = {
   defaultValues?: FormValues
 }
 
-const HOW_TO_CREATE_API = 'https://www.binance.com/en/support/faq/360002502072'
+const HOW_TO_CREATE_API = // todo PUT CORRECT LINK HERE
+  'https://support.bmx.fund/hc/en-us/articles/360016076854-How-to-Create-An-API'
 
-export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationDialogProps> =
+export const SettingsIntegrationBitmartDialog: React.VFC<SettingsIntegrationDialogProps> =
   (props) => {
     const { register, handleSubmit, formState } = useForm<FormValues>({
       defaultValues: props.defaultValues,
-      resolver: yupResolver(settingsIntegrationBinanceSchema),
+      resolver: yupResolver(settingsIntegrationSchema),
     })
 
     return (
@@ -36,7 +38,7 @@ export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationDial
           className={styles.form}
         >
           <Typography className={styles.apiHint}>
-            Please create an API key (with read permission only) in your Binance
+            Please create an API key (with read permission only) in your BitMart
             account, and fill in the fields below
             <br />
             <br />
@@ -52,7 +54,7 @@ export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationDial
           <Input
             {...register('apiKey')}
             className={styles.input}
-            placeholder="API Key"
+            placeholder="Access Key"
             defaultValue={props.defaultValues?.apiKey}
             helperText={formState.errors.apiKey?.message}
             error={Boolean(formState.errors.apiKey?.message)}
@@ -60,10 +62,18 @@ export const SettingsIntegrationBinanceDialog: React.VFC<SettingsIntegrationDial
           <Input
             {...register('secret')}
             className={styles.input}
-            placeholder="Secret key"
+            placeholder="Secret Key"
             defaultValue={props.defaultValues?.secret}
             helperText={formState.errors.secret?.message}
             error={Boolean(formState.errors.secret?.message)}
+          />
+          <Input
+            {...register('uid')}
+            className={styles.input}
+            placeholder="Memo"
+            defaultValue={props.defaultValues?.uid}
+            helperText={formState.errors.uid?.message}
+            error={Boolean(formState.errors.uid?.message)}
           />
           <div className={styles.buttons}>
             <Button type="submit">Connect</Button>

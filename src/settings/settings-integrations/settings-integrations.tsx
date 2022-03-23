@@ -12,6 +12,13 @@ import { WalletExchangeTypeEnum } from '~/graphql/_generated-types'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './settings-integrations.css'
 import * as model from './settings-integrations.model'
+import { SettingsIntegrationHuobiDialog } from '~/settings/common/settings-integration-huobi-dialog'
+import { SettingsIntegrationOkexDialog } from '~/settings/common/settings-integration-okex-dialog'
+import { SettingsIntegrationAscendexDialog } from '~/settings/common/settings-integration-ascendex-dialog'
+import { SettingsIntegrationMexcDialog } from '~/settings/common/settings-integration-mexc-dialog'
+import { SettingsIntegrationAaxDialog } from '~/settings/common/settings-integration-aax-dialog/settings-integration-aax-dialog'
+import { SettingsIntegrationBitmartDialog } from '~/settings/common/settings-integration-bitmart-dialog'
+import { SettingsIntegrationCoinexDialog } from '~/settings/common/settings-integration-coinex-dialog'
 
 export type SettingsIntegrationsProps = {
   className?: string
@@ -28,24 +35,83 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
   const loading = useStore(model.fetchEstablishedIntegrationsListFx.pending)
   const connectAdding = useStore(model.$connectAdding)
 
-  const [openConnectBinance] = useDialog(SettingsIntegrationBinanceDialog)
+  const [
+    [openConnectBinance],
+    [openConnectHuobi],
+    [openConnectOkex],
+    [openConnectAscendex],
+    [openConnectMexc],
+    [openConnectAax],
+    [openConnectBitmart],
+    [openConnectCoinex],
+  ] = [
+    useDialog(SettingsIntegrationBinanceDialog),
+    useDialog(SettingsIntegrationHuobiDialog),
+    useDialog(SettingsIntegrationOkexDialog),
+    useDialog(SettingsIntegrationAscendexDialog),
+    useDialog(SettingsIntegrationMexcDialog),
+    useDialog(SettingsIntegrationAaxDialog),
+    useDialog(SettingsIntegrationBitmartDialog),
+    useDialog(SettingsIntegrationCoinexDialog),
+  ]
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   const handlers = {
     [WalletExchangeTypeEnum.Binance]: {
       dialog: openConnectBinance,
-      effect: model.connectIntegrationBinanceFx,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Huobi]: {
+      dialog: openConnectHuobi,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Okex]: {
+      dialog: openConnectOkex,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Ascendex]: {
+      dialog: openConnectAscendex,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Mexc]: {
+      dialog: openConnectMexc,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Aax]: {
+      dialog: openConnectAax,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Bitmart]: {
+      dialog: openConnectBitmart,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Coinex]: {
+      dialog: openConnectCoinex,
+      effect: model.connectIntegrationApiExchangeFx,
     },
   }
 
   const handleConnectIntegration =
     (integrationType: WalletExchangeTypeEnum) => async () => {
       try {
-        const apiKeyPair = await handlers[integrationType].dialog()
+        const objectKeys: string[] = []
+        const objectValues: string[] = []
 
-        handlers[integrationType].effect({
-          ...apiKeyPair,
-          exchange: integrationType,
+        Object.entries(await handlers[integrationType].dialog()).map(([i, v]) =>
+          Promise.all([objectKeys.push(i), objectValues.push(v)])
+        )
+
+        await handlers[integrationType].effect({
+          objectKeys,
+          objectValues,
+          type: integrationType,
         })
       } catch (error) {
         if (error instanceof Error) {
