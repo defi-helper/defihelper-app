@@ -68,12 +68,12 @@ export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorP
         placement="top"
         offset={[0, 8]}
       >
-        <Typography variant="body3">
+        <Typography variant="body3" as="div">
           <ul>
             {!row.callbacks.length && <li>no callbacks found</li>}
 
-            {row.callbacks.map(({ callbackUrl }) => (
-              <li>{callbackUrl}</li>
+            {row.callbacks.map(({ callbackUrl }, index) => (
+              <li key={String(index)}>{callbackUrl}</li>
             ))}
           </ul>
         </Typography>

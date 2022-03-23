@@ -3,10 +3,13 @@ import networks from '@defihelper/networks/contracts.json'
 
 import {
   Contract,
-  StakingAdapterDialog,
   StakingBuyLiquidityDialog,
   isExcludedAdapter,
   StakingSuccessDialog,
+  StakingStakeDialog,
+  StakingUnstakeDialog,
+  StakingClaimDialog,
+  StakingAdapterDialog,
 } from '~/staking/common'
 import { Button } from '~/common/button'
 import { useDialog, UserRejectionError } from '~/common/dialog'
@@ -37,10 +40,15 @@ export type StakingAdaptersProps = {
   buyLiquidity: Contract['automate']['buyLiquidity']
 }
 
+const APESWAP_ID = '7ec556f7-68fd-4ccb-a5f9-35e13aa1fb7b'
+
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
-  const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
+  const [openStakeDialog] = useDialog(StakingStakeDialog)
+  const [openUnstakeDialog] = useDialog(StakingUnstakeDialog)
+  const [openClaimDialog] = useDialog(StakingClaimDialog)
+  const [openAdapter] = useDialog(StakingAdapterDialog)
 
   const wallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
@@ -63,7 +71,10 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         })
 
         const contract = await model.fetchContractAdapterFx({
-          protocolAdapter: props.protocolAdapter,
+          protocolAdapter:
+            props.protocolId === APESWAP_ID
+              ? 'bscApeSwap2'
+              : props.protocolAdapter,
           contract: {
             address: props.contractAddress,
             adapter: props.contractAdapter,
@@ -73,15 +84,55 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           provider: wallet.provider,
         })
 
-        if (!contract.actions) return
+        if (!contract.actions || !contract.actions[action]) return
 
-        await openAdapter({
-          steps: contract.actions[action],
-          onSubmit:
-            action === 'stake'
-              ? () => model.stake({ wallet, contractId: props.contractId })
-              : undefined,
-        })
+        if (props.protocolId === APESWAP_ID) {
+          const dialogs = {
+            stake: () =>
+              openStakeDialog({
+                methods: contract.actions?.stake.methods,
+                onSubmit: () =>
+                  model.stake({ wallet, contractId: props.contractId }),
+              }),
+            unstake: () =>
+              openUnstakeDialog({ methods: contract.actions?.unstake.methods }),
+            claim: () =>
+              openClaimDialog({ methods: contract.actions?.claim.methods }),
+            exit: null,
+          } as const
+
+          await dialogs[action]?.()
+        } else {
+          await openAdapter({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            steps: contract.actions[action],
+            onSubmit:
+              action === 'stake'
+                ? () => model.stake({ wallet, contractId: props.contractId })
+                : undefined,
+          })
+        }
+
+        const findedWallet = wallets.find(
+          ({ address, network }) =>
+            address === wallet?.account && network === wallet.chainId
+        )
+
+        if (!findedWallet) return
+
+        stakingAutomatesModel
+          .scanWalletMetricFx({
+            walletId: findedWallet.id,
+            contractId: props.contractId,
+          })
+          .catch(console.error)
+
+        if (!action || action === 'exit') return
+
+        openSuccessDialog({
+          type: action,
+        }).catch((error) => console.error(error.message))
       } catch (error) {
         if (error instanceof Error && !(error instanceof UserRejectionError)) {
           console.error(error.message)
@@ -89,26 +140,6 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       } finally {
         model.action(null)
       }
-
-      const findedWallet = wallets.find(
-        ({ address, network }) =>
-          address === wallet?.account && network === wallet.chainId
-      )
-
-      if (!findedWallet) return
-
-      stakingAutomatesModel
-        .scanWalletMetricFx({
-          walletId: findedWallet.id,
-          contractId: props.contractId,
-        })
-        .catch(console.error)
-
-      if (!action || action === 'exit') return
-
-      openSuccessDialog({
-        type: action,
-      }).catch(console.error)
     }
 
   const user = useStore(authModel.$user)
