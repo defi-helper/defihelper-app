@@ -166,7 +166,11 @@ export const $wallets = walletListDomain
       refunding?: boolean
     })[]
   >([])
-  .on(fetchWalletListFx.doneData, (_, { list }) => list)
+  .on(fetchWalletListFx.doneData, (_, { list }) =>
+    list.sort((a, b) =>
+      Number(bignumberUtils.minus(b.metric.worth, a.metric.worth))
+    )
+  )
   .on(updateWalletFx, (state, payload) =>
     state.map((wallet) =>
       wallet.id === payload.walletId ? { ...wallet, editing: true } : wallet
