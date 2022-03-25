@@ -68,6 +68,8 @@ import { ReactComponent as AaxIcon } from '~/assets/icons/exchange/aax.svg'
 import { ReactComponent as CoinexIcon } from '~/assets/icons/exchange/coinex.svg'
 import { ReactComponent as AscendexIcon } from '~/assets/icons/exchange/ascendex.svg'
 import { ReactComponent as MexcIcon } from '~/assets/icons/exchange/mexc.svg'
+import { ReactComponent as PoloniexIcon } from '~/assets/icons/exchange/poloniex.svg'
+import { ReactComponent as FtxIcon } from '~/assets/icons/exchange/ftx.svg'
 import { ReactComponent as AffilateIcon } from '~/assets/icons/affilate.svg'
 import { ReactComponent as CupIcon } from '~/assets/icons/cup.svg'
 import { ReactComponent as LinkedinIcon } from '~/assets/icons/linkedin.svg'
@@ -147,10 +149,12 @@ const ICONS = {
   bitmart: BitmartIcon,
   okex: OkexIcon,
   aax: AaxIcon,
+  ftx: FtxIcon,
   ascendex: AscendexIcon,
   coinex: CoinexIcon,
   mexc: MexcIcon,
   affilate: AffilateIcon,
+  poloniex: PoloniexIcon,
   cup: CupIcon,
   linkedin: LinkedinIcon,
   facebook: FacebookIcon,
