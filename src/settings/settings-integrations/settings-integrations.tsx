@@ -19,6 +19,8 @@ import { SettingsIntegrationMexcDialog } from '~/settings/common/settings-integr
 import { SettingsIntegrationAaxDialog } from '~/settings/common/settings-integration-aax-dialog/settings-integration-aax-dialog'
 import { SettingsIntegrationBitmartDialog } from '~/settings/common/settings-integration-bitmart-dialog'
 import { SettingsIntegrationCoinexDialog } from '~/settings/common/settings-integration-coinex-dialog'
+import { SettingsIntegrationPoloniexDialog } from '../common/settings-integration-poloniex-dialog'
+import { SettingsIntegrationFtxDialog } from '../common/settings-integration-ftx-dialog'
 
 export type SettingsIntegrationsProps = {
   className?: string
@@ -44,6 +46,8 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
     [openConnectAax],
     [openConnectBitmart],
     [openConnectCoinex],
+    [openConnectPoloniex],
+    [openConnectFtx],
   ] = [
     useDialog(SettingsIntegrationBinanceDialog),
     useDialog(SettingsIntegrationHuobiDialog),
@@ -53,6 +57,8 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
     useDialog(SettingsIntegrationAaxDialog),
     useDialog(SettingsIntegrationBitmartDialog),
     useDialog(SettingsIntegrationCoinexDialog),
+    useDialog(SettingsIntegrationPoloniexDialog),
+    useDialog(SettingsIntegrationFtxDialog),
   ]
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
@@ -94,6 +100,16 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
 
     [WalletExchangeTypeEnum.Coinex]: {
       dialog: openConnectCoinex,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Poloniex]: {
+      dialog: openConnectPoloniex,
+      effect: model.connectIntegrationApiExchangeFx,
+    },
+
+    [WalletExchangeTypeEnum.Ftx]: {
+      dialog: openConnectFtx,
       effect: model.connectIntegrationApiExchangeFx,
     },
   }
