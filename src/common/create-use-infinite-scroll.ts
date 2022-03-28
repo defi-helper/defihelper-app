@@ -19,7 +19,7 @@ type Options = Omit<
 
 export const createUseInfiniteScroll = (options: Options) => {
   const {
-    rootMargin = '0px 0px 400px 0px',
+    rootMargin = '0px 0px 40% 0px',
     domain,
     limit: optLimit = DEFAULT_LIMIT,
     loading: optLoading,
