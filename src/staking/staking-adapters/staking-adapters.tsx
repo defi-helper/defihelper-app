@@ -40,8 +40,6 @@ export type StakingAdaptersProps = {
   buyLiquidity: Contract['automate']['buyLiquidity']
 }
 
-const APESWAP_ID = '7ec556f7-68fd-4ccb-a5f9-35e13aa1fb7b'
-
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
@@ -71,10 +69,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         })
 
         const contract = await model.fetchContractAdapterFx({
-          protocolAdapter:
-            props.protocolId === APESWAP_ID
-              ? 'bscApeSwap2'
-              : props.protocolAdapter,
+          protocolAdapter: props.protocolAdapter,
           contract: {
             address: props.contractAddress,
             adapter: props.contractAdapter,
@@ -86,7 +81,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
 
         if (!contract.actions || !contract.actions[action]) return
 
-        if (props.protocolId === APESWAP_ID) {
+        if ('methods' in contract.actions[action]) {
           const dialogs = {
             stake: () =>
               openStakeDialog({

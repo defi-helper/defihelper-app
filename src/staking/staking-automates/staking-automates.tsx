@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useEffect, useMemo } from 'react'
@@ -63,18 +62,17 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     }
   }
 
-  const handleChangeNetwork =
-    (contract: typeof automatesContracts[number]) => () => {
-      const changeNetwork = () =>
-        switchNetwork(contract.wallet.network).catch(console.error)
+  const handleSwitchNetwork =
+    (contract: typeof automatesContracts[number]) => () =>
+      switchNetwork(contract.wallet.network).catch(console.error)
 
+  const handleWrongAddress =
+    (contract: typeof automatesContracts[number]) => async () => {
       openErrorDialog({
         contractName: contract.contract?.name ?? '',
         address: contract.wallet.address,
         network: contract.wallet.network,
-      })
-        .then(changeNetwork)
-        .catch(changeNetwork)
+      }).catch(console.error)
     }
 
   const handleAction =
@@ -234,33 +232,39 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             network: automatesContract.contract?.network,
           })
 
-          // const isNotSameAddresses =
-          //   String(wallet?.chainId) === 'main'
-          //     ? wallet?.account !== automatesContract.wallet.address
-          //     : wallet?.account?.toLowerCase() !==
-          //       automatesContract.wallet.address
+          const isNotSameAddresses = (
+            String(wallet?.chainId) === 'main'
+              ? wallet?.account !== automatesContract.wallet.address
+              : wallet?.account?.toLowerCase() !==
+                automatesContract.wallet.address
+          )
+            ? handleWrongAddress(automatesContract)
+            : null
 
-          // const wrongAddressesOrNetworks =
-          //   isNotSameAddresses ||
-          //   String(wallet?.chainId) !== automatesContract.wallet.network
+          const wrongNetwork =
+            String(wallet?.chainId) !== automatesContract.wallet.network
+              ? handleSwitchNetwork(automatesContract)
+              : null
 
-          const wrongAddressesOrNetworks = false
+          const migrate =
+            wrongNetwork ??
+            isNotSameAddresses ??
+            handleAction(automatesContract, 'migrate')
 
-          const migrate = wrongAddressesOrNetworks
-            ? handleChangeNetwork(automatesContract)
-            : handleAction(automatesContract, 'migrate')
+          const deposit =
+            wrongNetwork ??
+            isNotSameAddresses ??
+            handleAction(automatesContract, 'deposit')
 
-          const deposit = wrongAddressesOrNetworks
-            ? handleChangeNetwork(automatesContract)
-            : handleAction(automatesContract, 'deposit')
+          const refund =
+            wrongNetwork ??
+            isNotSameAddresses ??
+            handleAction(automatesContract, 'refund')
 
-          const refund = wrongAddressesOrNetworks
-            ? handleChangeNetwork(automatesContract)
-            : handleAction(automatesContract, 'refund')
-
-          const run = wrongAddressesOrNetworks
-            ? handleChangeNetwork(automatesContract)
-            : handleRunManually(automatesContract)
+          const run =
+            wrongNetwork ??
+            isNotSameAddresses ??
+            handleRunManually(automatesContract)
 
           return (
             <StakingAutomatesContractCard

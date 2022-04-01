@@ -43,7 +43,7 @@ export const WalletConnect: React.FC<WalletConnectProps> = (props) => {
     )
   })
 
-  const newFallback = cloneElement(fallback, {
+  const newFallback = cloneElement(props.fallback, {
     ...fallback.props,
     onClick: handleSign.bind(null, {
       blockchain: props.blockchain,

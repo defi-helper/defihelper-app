@@ -457,7 +457,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       : SortOrderEnum.Desc,
                 })}
               >
-                REAL APR (7d){' '}
+                Real APR (7d){' '}
                 {sortBy.column ===
                   ContractListSortInputTypeColumnEnum.AprWeekReal &&
                   sortIcon(

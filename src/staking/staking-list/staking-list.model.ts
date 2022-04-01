@@ -237,12 +237,16 @@ export const autostakingEnd = stakingListDomain.createEvent<string>()
 export const $contractList = stakingListDomain
   .createStore<Contract[]>([])
   .on(fetchStakingListFx.doneData, (state, payload) =>
-    state.concat(
-      payload.contracts.map((contract) => ({
-        ...contract,
-        type: 'Contract',
-      }))
-    )
+    state
+      .filter(
+        ({ id }) => !payload.contracts.some((contract) => id === contract.id)
+      )
+      .concat(
+        payload.contracts.map((contract) => ({
+          ...contract,
+          type: 'Contract',
+        }))
+      )
   )
   .on(deleteStakingFx.doneData, (state, payload) => {
     return state.filter(({ id }) => id !== payload)
