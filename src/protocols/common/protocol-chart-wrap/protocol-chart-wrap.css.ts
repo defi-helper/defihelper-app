@@ -4,6 +4,7 @@ import { theme } from '~/common/theme'
 
 export const root = style({
   padding: 16,
+  minHeight: '100%',
 
   '@media': {
     [theme.mediaQueries.md()]: {
