@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useEffect, useMemo } from 'react'
@@ -11,6 +12,9 @@ import {
   StakingAutomatesContractCard,
   StakingAdapterDialog,
   StakingErrorDialog,
+  StakingDepositDialog,
+  StakingMigrateDialog,
+  StakingRefundDialog,
 } from '~/staking/common'
 import { switchNetwork } from '~/wallets/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -41,6 +45,9 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const user = useStore(authModel.$user)
   const handleConnect = useWalletConnect()
   const [openConfirmDialog] = useDialog(ConfirmDialog)
+  const [openDepositDialog] = useDialog(StakingDepositDialog)
+  const [openMigrateDialog] = useDialog(StakingMigrateDialog)
+  const [openRefundDialog] = useDialog(StakingRefundDialog)
 
   const automatesContracts = useStore(model.$automatesContracts)
 
@@ -88,21 +95,49 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
         if (!adapter || action === 'run') return
 
-        await openAdapter({
-          steps: adapter[action],
-          onLastStep: () => {
-            if (!contract.contract || !contract.contractWallet) return
+        const onLastStep = () => {
+          if (!contract.contract || !contract.contractWallet) return
 
-            model
-              .scanWalletMetricFx({
-                walletId: contract.contractWallet.id,
-                contractId: contract.contract.id,
-              })
-              .catch(console.error)
-          },
-        })
-          .then(() => model.reset())
-          .catch(() => model.reset())
+          model
+            .scanWalletMetricFx({
+              walletId: contract.contractWallet.id,
+              contractId: contract.contract.id,
+            })
+            .catch(console.error)
+        }
+
+        const dialogs = {
+          deposit: () =>
+            openDepositDialog({
+              methods: adapter.deposit.methods,
+              onLastStep,
+            }),
+          migrate: () =>
+            openMigrateDialog({
+              methods: adapter.migrate.methods,
+              onLastStep,
+            }),
+          refund: () =>
+            openRefundDialog({
+              methods: adapter.refund.methods,
+              onLastStep,
+            }),
+        }
+
+        if ('methods' in adapter[action]) {
+          await dialogs[action]()
+            .then(() => model.reset())
+            .catch(() => model.reset())
+        } else {
+          await openAdapter({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            steps: adapter[action],
+            onLastStep,
+          })
+            .then(() => model.reset())
+            .catch(() => model.reset())
+        }
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
@@ -199,15 +234,17 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             network: automatesContract.contract?.network,
           })
 
-          const isNotSameAddresses =
-            String(wallet?.chainId) === 'main'
-              ? wallet?.account !== automatesContract.wallet.address
-              : wallet?.account?.toLowerCase() !==
-                automatesContract.wallet.address
+          // const isNotSameAddresses =
+          //   String(wallet?.chainId) === 'main'
+          //     ? wallet?.account !== automatesContract.wallet.address
+          //     : wallet?.account?.toLowerCase() !==
+          //       automatesContract.wallet.address
 
-          const wrongAddressesOrNetworks =
-            isNotSameAddresses ||
-            String(wallet?.chainId) !== automatesContract.wallet.network
+          // const wrongAddressesOrNetworks =
+          //   isNotSameAddresses ||
+          //   String(wallet?.chainId) !== automatesContract.wallet.network
+
+          const wrongAddressesOrNetworks = false
 
           const migrate = wrongAddressesOrNetworks
             ? handleChangeNetwork(automatesContract)

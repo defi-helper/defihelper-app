@@ -14,6 +14,7 @@ import {
   StakingContractCard,
   StakingDescriptionDialog,
   StakingTabs,
+  StakingMigrateDialog,
 } from '../common'
 import { Paper } from '~/common/paper'
 import { useDialog, UserRejectionError } from '~/common/dialog'
@@ -101,6 +102,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openDeployStepsDialog] = useDialog(AutomationDeployStepsDialog)
   const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openApyDialog] = useDialog(StakingApyDialog)
+  const [openMigrateDialog] = useDialog(StakingMigrateDialog)
 
   const searchDebounced = useDebounce(search, 1000)
 
@@ -267,11 +269,20 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             .catch(console.error)
         }
 
-        await openAdapter({
-          steps: stakingAutomatesAdapter.migrate,
-        })
-          .catch(cb)
-          .then(cb)
+        if ('methods' in stakingAutomatesAdapter.migrate) {
+          await openMigrateDialog({
+            methods: stakingAutomatesAdapter.migrate.methods,
+            onLastStep: cb,
+          })
+        } else {
+          await openAdapter({
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            steps: stakingAutomatesAdapter.migrate,
+          })
+            .catch(cb)
+            .then(cb)
+        }
 
         toastsService.success('success!')
       } catch (error) {
