@@ -38,6 +38,36 @@ export type AdapterInfo = {
   }[]
 }
 
+export interface AutomationAdapterActions {
+  deposit: {
+    name: 'automateRestake-deposit'
+    methods: {
+      balanceOf: () => Promise<string>
+      canTransfer: (amount: string) => Promise<true | Error>
+      transfer: (amount: string) => Promise<{ tx: Transaction }>
+      transferred: () => Promise<string>
+      canDeposit: () => Promise<true | Error>
+      deposit: () => Promise<{ tx: Transaction }>
+    }
+  }
+  refund: {
+    name: 'automateRestake-refund'
+    methods: {
+      staked: () => Promise<string>
+      can: () => Promise<true | Error>
+      refund: () => Promise<{ tx: Transaction }>
+    }
+  }
+  migrate: {
+    name: 'automateRestake-migrate'
+    methods: {
+      staked: () => Promise<string>
+      canWithdraw: () => Promise<true | Error>
+      withdraw: () => Promise<{ tx: Transaction }>
+    } & AutomationAdapterActions['deposit']['methods']
+  }
+}
+
 type Transaction = { wait: () => Promise<unknown> }
 
 export type AdapterStep = {
@@ -127,11 +157,8 @@ export type AdapterFn = (
 
 export type AutomatesType = {
   contract: string
-  deposit: AdapterStep[]
-  refund: AdapterStep[]
-  migrate: AdapterStep[]
   run: () => Promise<{ wait: () => Promise<unknown> }>
-}
+} & AutomationAdapterActions
 
 export type DeployStep = {
   can: (...args: unknown[]) => Promise<boolean | Error>
