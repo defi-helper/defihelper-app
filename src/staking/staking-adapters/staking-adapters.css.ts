@@ -21,7 +21,7 @@ export const stake = style([
 export const buyLP = style([
   button,
   {
-    gridColumnStart: 2,
+    gridColumnStart: 3,
   },
 ])
 
