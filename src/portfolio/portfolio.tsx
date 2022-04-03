@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useThrottle } from 'react-use'
+import LazyLoad from 'react-lazyload'
 
 import { AppLayout } from '~/layouts'
 import { PortfolioEarnings } from '~/portfolio/portfolio-earnings'
@@ -29,6 +30,8 @@ import { PortfolioExchanges } from '~/portfolio/portfolio-exchanges'
 export type PortfolioProps = unknown
 
 const TIME = 15000
+
+const HEIGHT = 300
 
 export const Portfolio: React.VFC<PortfolioProps> = () => {
   const tokenAliasses = useStore(model.$tokenAliasses)
@@ -83,16 +86,32 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           <Typography variant="h3" className={styles.title}>
             Portfolio
           </Typography>
-          <PortfolioMetricCards className={styles.cards} />
+          <LazyLoad height={HEIGHT}>
+            <PortfolioMetricCards className={styles.cards} />
+          </LazyLoad>
           <div className={clsx(styles.grid, styles.section)}>
-            <PortfolioTotalWorth className={styles.mainChart} />
-            <PortfolioEarnings />
-            <PortfolioCoinBalance />
+            <LazyLoad height={HEIGHT} className={styles.mainChart}>
+              <PortfolioTotalWorth />
+            </LazyLoad>
+            <LazyLoad height={HEIGHT}>
+              <PortfolioEarnings />
+            </LazyLoad>
+            <LazyLoad height={HEIGHT}>
+              <PortfolioCoinBalance />
+            </LazyLoad>
           </div>
-          <PortfolioAssets className={styles.section} />
-          <PortfolioWallets className={styles.section} />
-          <PortfolioDeployedContracts className={styles.section} />
-          <PortfolioExchanges />
+          <LazyLoad height={HEIGHT} className={styles.section}>
+            <PortfolioAssets />
+          </LazyLoad>
+          <LazyLoad height={HEIGHT} className={styles.section}>
+            <PortfolioWallets />
+          </LazyLoad>
+          <LazyLoad height={HEIGHT} className={styles.section}>
+            <PortfolioDeployedContracts />
+          </LazyLoad>
+          <LazyLoad height={HEIGHT}>
+            <PortfolioExchanges />
+          </LazyLoad>
         </>
       )}
       {!loading && !tokenAliasses && (
@@ -114,7 +133,9 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
             when portfolio is ready. You will be able to change it any time in
             settings.
           </Typography>
-          <SettingsContacts withHeader={false} />
+          <LazyLoad height={HEIGHT}>
+            <SettingsContacts withHeader={false} />
+          </LazyLoad>
         </>
       )}
     </AppLayout>

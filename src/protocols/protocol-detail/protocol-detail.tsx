@@ -11,6 +11,7 @@ import {
 } from 'react-router-dom'
 import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
+import LazyLoad from 'react-lazyload'
 
 import { AppLayout } from '~/layouts'
 import { authModel, Can } from '~/auth'
@@ -78,6 +79,8 @@ const EARNINGS = [
     activity and demand.
   </>,
 ]
+
+const HEIGHT = 300
 
 export const ProtocolDetail: React.FC = () => {
   const params = useParams<{ protocolId: string }>()
@@ -252,29 +255,37 @@ export const ProtocolDetail: React.FC = () => {
                       </ProtocolLastUpdated>
                     )}
                   </ProtocolCharts.Header>
-                  <ProtocolCoinBalanceChart />
-                  <ProtocolEstimatedChart metric={protocol.metric} />
+                  <LazyLoad height={HEIGHT}>
+                    <ProtocolCoinBalanceChart />
+                  </LazyLoad>
+                  <LazyLoad height={HEIGHT}>
+                    <ProtocolEstimatedChart metric={protocol.metric} />
+                  </LazyLoad>
                 </ProtocolCharts>
-                <ProtocolTotal
-                  {...protocol.metric}
-                  hasAutostaking={protocol.hasAutostaking}
-                  className={styles.mb120}
-                />
-                <StakingAutomates
-                  className={styles.automates}
-                  protocolId={params.protocolId}
-                />
-                <StakingList
-                  protocolId={params.protocolId}
-                  protocolAdapter={protocol.adapter}
-                />
+                <LazyLoad height={HEIGHT} className={styles.mb120}>
+                  <ProtocolTotal
+                    {...protocol.metric}
+                    hasAutostaking={protocol.hasAutostaking}
+                  />
+                </LazyLoad>
+                <LazyLoad height={HEIGHT} className={styles.automates}>
+                  <StakingAutomates protocolId={params.protocolId} />
+                </LazyLoad>
+                <LazyLoad height={HEIGHT}>
+                  <StakingList
+                    protocolId={params.protocolId}
+                    protocolAdapter={protocol.adapter}
+                  />
+                </LazyLoad>
               </Route>
               <Route path={`${match.path}/overview`}>
-                <ProtocolOverview
-                  className={clsx(styles.card, styles.mb120)}
-                  text={protocol.description}
-                  links={protocol.links}
-                />
+                <LazyLoad height={HEIGHT} className={styles.mb120}>
+                  <ProtocolOverview
+                    text={protocol.description}
+                    links={protocol.links}
+                    className={styles.card}
+                  />
+                </LazyLoad>
                 <ProtocolCharts className={styles.mb120}>
                   <ProtocolCharts.Header>
                     <Typography variant="h3">Statistics</Typography>
@@ -284,23 +295,30 @@ export const ProtocolDetail: React.FC = () => {
                       </ProtocolLastUpdated>
                     )}
                   </ProtocolCharts.Header>
-                  <ProtocolTvlChart />
-                  <ProtocolUniqueWalletsChart />
+                  <LazyLoad height={HEIGHT}>
+                    <ProtocolTvlChart />
+                  </LazyLoad>
+                  <LazyLoad>
+                    <ProtocolUniqueWalletsChart />
+                  </LazyLoad>
                 </ProtocolCharts>
                 {!isEmpty(socialPosts) && (
-                  <ProtocolMediaActivity
-                    className={styles.mb120}
-                    mediaActity={socialPosts}
-                    onReadMore={handleReadMore}
-                    loading={loading}
-                  />
+                  <LazyLoad height={HEIGHT} className={styles.mb120}>
+                    <ProtocolMediaActivity
+                      mediaActity={socialPosts}
+                      onReadMore={handleReadMore}
+                      loading={loading}
+                    />
+                  </LazyLoad>
                 )}
-                <ProtocolDemandMetrics
-                  telegram={protocol.telegram}
-                  coingecko={protocol.coingecko}
-                  coinmarketcap={protocol.coinmarketcap}
-                  links={protocol.links}
-                />
+                <LazyLoad height={HEIGHT}>
+                  <ProtocolDemandMetrics
+                    telegram={protocol.telegram}
+                    coingecko={protocol.coingecko}
+                    coinmarketcap={protocol.coinmarketcap}
+                    links={protocol.links}
+                  />
+                </LazyLoad>
               </Route>
             </Switch>
           </div>

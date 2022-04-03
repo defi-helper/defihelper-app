@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useParams, NavLink as ReactRouterLink } from 'react-router-dom'
+import LazyLoad from 'react-lazyload'
 
 import { AppLayout } from '~/layouts'
 import { Paper } from '~/common/paper'
@@ -21,11 +22,13 @@ import { paths } from '~/paths'
 import { StakingListReadonly } from '~/staking/staking-list-readonly'
 import { ProtocolCoinBalanceChart } from '../protocol-coin-balance-chart'
 import { ProtocolTvlChart } from '../protocol-tvl-chart'
+import { bignumberUtils } from '~/common/bignumber-utils'
 import * as model from './protocol-detail-readonly.model'
 import * as styles from './protocol-detail-readonly.css'
-import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type ProtocolDetailReadonlyProps = unknown
+
+const HEIGHT = 300
 
 export const ProtocolDetailReadonly: React.FC<ProtocolDetailReadonlyProps> =
   () => {
@@ -121,14 +124,20 @@ export const ProtocolDetailReadonly: React.FC<ProtocolDetailReadonlyProps> =
                     </ProtocolLastUpdated>
                   )}
                 </ProtocolCharts.Header>
-                <ProtocolCoinBalanceChart />
-                <ProtocolTvlChart />
+                <LazyLoad height={HEIGHT}>
+                  <ProtocolCoinBalanceChart />
+                </LazyLoad>
+                <LazyLoad height={HEIGHT}>
+                  <ProtocolTvlChart />
+                </LazyLoad>
               </ProtocolCharts>
-              <ProtocolTotal
-                {...protocol.metric}
-                hasAutostaking={false}
-                readonly
-              />
+              <LazyLoad height={HEIGHT}>
+                <ProtocolTotal
+                  {...protocol.metric}
+                  hasAutostaking={false}
+                  readonly
+                />
+              </LazyLoad>
               <Typography
                 align="right"
                 variant="body3"
@@ -152,10 +161,12 @@ export const ProtocolDetailReadonly: React.FC<ProtocolDetailReadonlyProps> =
               </Typography>
               {(bignumberUtils.gt(protocol.metric.myEarned, 0) ||
                 bignumberUtils.gt(protocol.metric.myStaked, 0)) && (
-                <StakingListReadonly
-                  protocolId={params.protocolId}
-                  protocolAdapter={protocol.adapter}
-                />
+                <LazyLoad height={HEIGHT}>
+                  <StakingListReadonly
+                    protocolId={params.protocolId}
+                    protocolAdapter={protocol.adapter}
+                  />
+                </LazyLoad>
               )}
             </div>
           </>
