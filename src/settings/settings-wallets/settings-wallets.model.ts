@@ -1,4 +1,4 @@
-import { createDomain, sample } from 'effector-logger/macro'
+import { createDomain, sample, UnitValue, combine } from 'effector-logger/macro'
 import contracts from '@defihelper/networks/contracts.json'
 import { ethers } from 'ethers'
 import Balance from '@defihelper/networks/abi/Balance.json'
@@ -25,14 +25,24 @@ type Params = {
 
 export const walletListDomain = createDomain()
 
+const pagination = {
+  limit: 100,
+  offset: 0,
+}
+
 export const fetchWalletListFx = walletListDomain.createEffect(async () => {
   return settingsApi.walletList({
-    pagination: {
-      limit: 100,
-      offset: 0,
-    },
+    pagination,
   })
 })
+
+export const fetchWalletListMetricsFx = walletListDomain.createEffect(
+  async () => {
+    return settingsApi.walletListMetrics({
+      pagination,
+    })
+  }
+)
 
 export const updateWalletFx = walletListDomain.createEffect(
   async (params: { walletId: string; name: string }) => {
@@ -166,11 +176,7 @@ export const $wallets = walletListDomain
       refunding?: boolean
     })[]
   >([])
-  .on(fetchWalletListFx.doneData, (_, { list }) =>
-    list.sort((a, b) =>
-      Number(bignumberUtils.minus(b.metric.worth, a.metric.worth))
-    )
-  )
+  .on(fetchWalletListFx.doneData, (_, { list }) => list)
   .on(updateWalletFx, (state, payload) =>
     state.map((wallet) =>
       wallet.id === payload.walletId ? { ...wallet, editing: true } : wallet
@@ -221,16 +227,32 @@ export const $wallets = walletListDomain
     )
   )
 
+export const $walletMetrics = walletListDomain
+  .createStore<UnitValue<typeof fetchWalletListMetricsFx.doneData>>({})
+  .on(fetchWalletListMetricsFx.doneData, (payload) => payload)
+
+export const $walletsWithMetrics = combine(
+  $wallets,
+  $walletMetrics,
+  (wallets, walletMetrics) =>
+    wallets
+      .map((wallet) => ({ ...wallet, ...walletMetrics[wallet.id] }))
+      .sort((a, b) =>
+        Number(bignumberUtils.minus(b.metric.worth, a.metric.worth))
+      )
+)
+
 export const updated = walletListDomain.createEvent()
 
 sample({
   clock: updated,
-  target: fetchWalletListFx,
+  target: [fetchWalletListFx, fetchWalletListMetricsFx],
 })
 
 toastsService.forwardErrors(
   depositFx.failData,
   fetchWalletListFx.failData,
+  fetchWalletListMetricsFx.failData,
   refundFx.failData,
   updateWalletFx.failData
 )

@@ -4882,6 +4882,39 @@ export type WalletExchangeFragmentFragment = {
   __typename?: 'WalletExchangeType'
 } & Pick<WalletExchangeType, 'id' | 'exchange' | 'balance' | 'account'>
 
+export type WalletListMetricsQueryVariables = Exact<{
+  sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
+  pagination?: Maybe<WalletListPaginationInputType>
+}>
+
+export type WalletListMetricsQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      wallets: { __typename?: 'WalletListType' } & {
+        list?: Maybe<
+          Array<
+            { __typename?: 'WalletBlockchainType' } & Pick<
+              WalletBlockchainType,
+              'id' | 'triggersCount'
+            > & {
+                metric: { __typename?: 'WalletMetricType' } & Pick<
+                  WalletMetricType,
+                  'stakedUSD' | 'earnedUSD' | 'usd' | 'worth'
+                >
+                billing: { __typename?: 'WalletBillingType' } & {
+                  balance: { __typename?: 'BillingBalanceType' } & Pick<
+                    BillingBalanceType,
+                    'lowFeeFunds' | 'balance' | 'netBalance' | 'claim'
+                  >
+                }
+              }
+          >
+        >
+      }
+    }
+  >
+}
+
 export type WalletListQueryVariables = Exact<{
   sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
   pagination?: Maybe<WalletListPaginationInputType>
@@ -4922,19 +4955,7 @@ export type WalletFragmentFragment = {
   | 'publicKey'
   | 'name'
   | 'createdAt'
-  | 'triggersCount'
-> & {
-    metric: { __typename?: 'WalletMetricType' } & Pick<
-      WalletMetricType,
-      'stakedUSD' | 'earnedUSD' | 'usd' | 'worth'
-    >
-    billing: { __typename?: 'WalletBillingType' } & {
-      balance: { __typename?: 'BillingBalanceType' } & Pick<
-        BillingBalanceType,
-        'lowFeeFunds' | 'balance' | 'netBalance' | 'claim'
-      >
-    }
-  }
+>
 
 export type AutomationContractCreateMutationVariables = Exact<{
   input: AutomateContractCreateInputType
@@ -5583,21 +5604,6 @@ export const WalletFragmentFragmentDoc = gql`
     publicKey
     name
     createdAt
-    triggersCount
-    metric(filter: { tokenAlias: { liquidity: [stable, unstable] } }) {
-      stakedUSD
-      earnedUSD
-      usd
-      worth
-    }
-    billing {
-      balance {
-        lowFeeFunds
-        balance
-        netBalance
-        claim
-      }
-    }
   }
 `
 export const StakingAutomatesContractFragmentFragmentDoc = gql`
@@ -7544,6 +7550,47 @@ export function useWalletDeleteMutation() {
   return Urql.useMutation<WalletDeleteMutation, WalletDeleteMutationVariables>(
     WalletDeleteDocument
   )
+}
+export const WalletListMetricsDocument = gql`
+  query WalletListMetrics(
+    $sort: [WalletListSortInputType!]
+    $pagination: WalletListPaginationInputType
+  ) {
+    me {
+      wallets(filter: { type: wallet }, sort: $sort, pagination: $pagination) {
+        list {
+          id
+          triggersCount
+          metric(filter: { tokenAlias: { liquidity: [stable, unstable] } }) {
+            stakedUSD
+            earnedUSD
+            usd
+            worth
+          }
+          billing {
+            balance {
+              lowFeeFunds
+              balance
+              netBalance
+              claim
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+export function useWalletListMetricsQuery(
+  options: Omit<
+    Urql.UseQueryArgs<WalletListMetricsQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<WalletListMetricsQuery>({
+    query: WalletListMetricsDocument,
+    ...options,
+  })
 }
 export const WalletListDocument = gql`
   query WalletList(

@@ -30,6 +30,8 @@ import {
   IntegrationDisconnectMutationVariables,
   IntegrationExchangeApiConnectMutationVariables,
   IntegrationExchangeApiConnectMutation,
+  WalletListMetricsQueryVariables,
+  WalletListMetricsQuery,
 } from '~/graphql/_generated-types'
 import {
   USER_CONTACTS,
@@ -46,6 +48,7 @@ import {
   WALLET_EXCHANGE_LIST,
   INTEGRATION_API_CONNECT,
   INTEGRATION_DISCONNECT,
+  WALLET_LIST_METRICS,
 } from './graphql'
 import { BILLING_TRANSFER_CREATE } from '~/settings/common/graphql/billing-transfer-create.graphql'
 
@@ -142,6 +145,35 @@ export const settingsApi = {
         list: data?.me?.wallets.list ?? [],
         count: data?.me?.wallets.pagination.count ?? 0,
       })),
+
+  walletListMetrics: (variables?: WalletListMetricsQueryVariables) =>
+    getAPIClient()
+      .query<WalletListMetricsQuery, WalletListMetricsQueryVariables>(
+        WALLET_LIST_METRICS,
+        variables,
+        { requestPolicy: 'cache-and-network' }
+      )
+      .toPromise()
+      .then(({ data }) =>
+        (data?.me?.wallets.list ?? []).reduce<
+          Record<
+            string,
+            Exclude<
+              Exclude<
+                WalletListMetricsQuery['me'],
+                null | undefined
+              >['wallets']['list'],
+              null | undefined
+            >[number]
+          >
+        >(
+          (acc, wallet) => ({
+            ...acc,
+            [wallet.id]: wallet,
+          }),
+          {}
+        )
+      ),
 
   integrationList: (variables?: IntegrationListQueryVariables) =>
     getAPIClient()

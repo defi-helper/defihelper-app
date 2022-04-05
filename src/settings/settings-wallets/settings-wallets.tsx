@@ -37,7 +37,7 @@ export type SettingsWalletsProps = {
 }
 
 export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
-  const wallets = useStore(model.$wallets)
+  const wallets = useStore(model.$walletsWithMetrics)
   const loading = useStore(model.fetchWalletListFx.pending)
 
   const [openRenameWallet] = useDialog(SettingsRenameWalletDialog)
@@ -185,6 +185,10 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
       }
     }
   }
+
+  useEffect(() => {
+    model.fetchWalletListMetricsFx()
+  }, [])
 
   const paperCount = (wallets.length ? 3 : 2) - wallets.length
 

@@ -1,6 +1,6 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
 import isEmpty from 'lodash.isempty'
 
@@ -37,7 +37,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   const [openAddWalletDialog] = useDialog(PortfolioAddWalletDialog)
   const [openWalletList] = useWalletList()
   const openedWallet = useStore(model.$openedWallet)
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const wallets = useStore(settingsWalletModel.$walletsWithMetrics)
   const assetsByWallet = useStore(model.$assetsByWallet)
   const assetsLoading = useStore(model.fetchAssetsByWalletFx.pending)
 
@@ -75,6 +75,10 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   const handleOpenWallet = (walletId: string | null) => () => {
     model.openWallet(walletId)
   }
+
+  useEffect(() => {
+    settingsWalletModel.fetchWalletListMetricsFx()
+  }, [])
 
   return (
     <div className={clsx(styles.root, props.className)}>
