@@ -186,10 +186,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         const metrics = await walletsModel.fetchWalletListMetricsFx()
 
-        if (!metrics[findedWallet.id]) throw Error('wallet is not connected')
+        const metric = metrics[findedWallet.id]
+
+        if (!metric || !metric?.billing.balance.netBalance)
+          throw Error('wallet is not connected')
 
         await openBillingForm({
-          balance: String(metrics[findedWallet.id].billing.balance.netBalance),
+          balance: String(metric.billing.balance.netBalance),
           network: findedWallet.network,
           onSubmit: (result) =>
             walletsModel.depositFx({

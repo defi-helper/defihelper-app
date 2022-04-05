@@ -163,7 +163,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                     {wallet.triggersCount}
                   </Typography>
                   <Typography variant="body2" as="div" align="right">
-                    ${bignumberUtils.format(wallet.metric.worth)}
+                    ${bignumberUtils.format(wallet.metric?.worth)}
                   </Typography>
                   <ButtonBase
                     onClick={handleOpenWallet(

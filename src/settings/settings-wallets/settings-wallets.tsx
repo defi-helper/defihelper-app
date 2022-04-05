@@ -239,8 +239,8 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
                 onRefund={currentWallet ? handleRefund(wallet) : connect}
                 onRename={currentWallet ? handleRename(wallet) : connect}
                 onDelete={handleDelete(wallet)}
-                feeFunds={wallet.billing?.balance?.netBalance}
-                locked={wallet.billing?.balance?.claim}
+                feeFunds={wallet.billing?.balance?.netBalance ?? 0}
+                locked={wallet.billing?.balance?.claim ?? 0}
                 editing={wallet.editing}
                 deleting={wallet.deleting}
                 depositing={wallet.depositing}

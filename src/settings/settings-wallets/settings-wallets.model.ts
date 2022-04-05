@@ -238,7 +238,7 @@ export const $walletsWithMetrics = combine(
     wallets
       .map((wallet) => ({ ...wallet, ...walletMetrics[wallet.id] }))
       .sort((a, b) =>
-        Number(bignumberUtils.minus(b.metric.worth, a.metric.worth))
+        Number(bignumberUtils.minus(b.metric?.worth, a.metric?.worth))
       )
 )
 
