@@ -229,14 +229,14 @@ export const $wallets = walletListDomain
 
 export const $walletMetrics = walletListDomain
   .createStore<UnitValue<typeof fetchWalletListMetricsFx.doneData>>({})
-  .on(fetchWalletListMetricsFx.doneData, (payload) => payload)
+  .on(fetchWalletListMetricsFx.doneData, (_, payload) => payload)
 
 export const $walletsWithMetrics = combine(
   $wallets,
   $walletMetrics,
   (wallets, walletMetrics) =>
     wallets
-      .map((wallet) => ({ ...wallet, ...walletMetrics[wallet.id] }))
+      .map((wallet) => ({ ...wallet, ...walletMetrics?.[wallet.id] }))
       .sort((a, b) =>
         Number(bignumberUtils.minus(b.metric?.worth, a.metric?.worth))
       )

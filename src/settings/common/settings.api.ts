@@ -158,19 +158,22 @@ export const settingsApi = {
         (data?.me?.wallets.list ?? []).reduce<
           Record<
             string,
-            | Exclude<
+            | Omit<
                 Exclude<
-                  WalletListMetricsQuery['me'],
+                  Exclude<
+                    WalletListMetricsQuery['me'],
+                    null | undefined
+                  >['wallets']['list'],
                   null | undefined
-                >['wallets']['list'],
-                null | undefined
-              >[number]
+                >[number],
+                'id'
+              >
             | undefined
           >
         >(
-          (acc, wallet) => ({
+          (acc, { id, ...wallet }) => ({
             ...acc,
-            [wallet.id]: wallet,
+            [id]: wallet,
           }),
           {}
         )

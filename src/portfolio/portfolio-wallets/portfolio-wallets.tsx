@@ -160,7 +160,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                     </Link>
                   </Typography>
                   <Typography variant="body2" as="div" align="right">
-                    {wallet.triggersCount}
+                    {wallet.triggersCount ?? 0}
                   </Typography>
                   <Typography variant="body2" as="div" align="right">
                     ${bignumberUtils.format(wallet.metric?.worth)}
