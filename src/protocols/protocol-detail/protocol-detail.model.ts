@@ -1,10 +1,7 @@
 import { createDomain, guard, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
-import {
-  ProtocolQuery,
-  ProtocolSocialPostsQuery,
-} from '~/graphql/_generated-types'
+import { ProtocolQuery } from '~/graphql/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 import { stakingApi } from '~/staking/common'
 
@@ -45,45 +42,6 @@ export const $protocol = protocolDetailDomain
   .createStore<Protocol | null>(null)
   .on(fetchProtocolFx.doneData, (_, payload) => payload)
 
-const LIMIT = 3
-
-export const fetchSocialPostsFx = protocolDetailDomain.createEffect(
-  async (params: { protocolId: string; offset?: number }) => {
-    const filter = {
-      id: params.protocolId,
-    }
-
-    const pagination = {
-      offset: params.offset ?? 0,
-      limit: LIMIT,
-    }
-
-    return protocolsApi.protocolSocialPosts({
-      filter,
-      pagination,
-    })
-  }
-)
-
-export const $socialPosts = protocolDetailDomain
-  .createStore<
-    Exclude<
-      Exclude<
-        ProtocolSocialPostsQuery['protocol'],
-        null | undefined
-      >['socialPosts']['list'],
-      null | undefined
-    >
-  >([])
-  .on(fetchSocialPostsFx.doneData, (state, payload) => [
-    ...state,
-    ...payload.list,
-  ])
-
-export const $socialCount = protocolDetailDomain
-  .createStore(0)
-  .on(fetchSocialPostsFx.doneData, (_, { count }) => count)
-
 type GateState = { protocolId: string }
 
 export const ProtocolDetailGate = createGate<GateState | null>({
@@ -109,4 +67,3 @@ sample({
 })
 
 $protocol.reset(ProtocolDetailGate.close)
-$socialPosts.reset(ProtocolDetailGate.close)
