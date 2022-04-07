@@ -40,7 +40,14 @@ export const fetchProtocolListFx = protocolListDomain.createEffect(
         offset: params?.offset,
         limit: params?.limit,
       },
-      hidden: params.hidden,
+    })
+  }
+)
+
+export const fetchProtocolListCountFx = protocolListDomain.createEffect(
+  (hidden: boolean | null) => {
+    return protocolsApi.protocolListCount({
+      hidden,
     })
   }
 )
@@ -142,6 +149,27 @@ sample({
 })
 
 sample({
+  source: ProtocolListGate.state,
+  clock: guard({
+    source: [
+      ProtocolListGate.status,
+      ProtocolListGate.state,
+      authModel.$userReady,
+    ],
+    clock: [
+      ProtocolListGate.state.updates,
+      ProtocolListGate.status.updates,
+      authModel.$userReady.updates,
+    ],
+    filter: ([isOpen, , userReady]) => {
+      return isOpen && userReady
+    },
+  }),
+  fn: ({ hidden }) => hidden,
+  target: fetchProtocolListCountFx,
+})
+
+sample({
   clock: fetchProtocolListFx.doneData,
   fn: (clock) => clock.count,
   target: useInfiniteScroll.totalElements,
@@ -152,16 +180,10 @@ sample({
   target: useInfiniteScroll.reset,
 })
 
-export const $tabsCount = restore(
-  fetchProtocolListFx.doneData.map(({ all, favorites }) => ({
-    all,
-    favorites,
-  })),
-  {
-    all: 0,
-    favorites: 0,
-  }
-).on(protocolFavoriteFx.done, (state, { params }) => ({
+export const $tabsCount = restore(fetchProtocolListCountFx.doneData, {
+  all: 0,
+  favorites: 0,
+}).on(protocolFavoriteFx.done, (state, { params }) => ({
   ...state,
   favorites: params.favorite ? state.favorites + 1 : state.favorites - 1,
 }))

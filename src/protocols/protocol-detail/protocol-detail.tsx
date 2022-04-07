@@ -25,11 +25,12 @@ import {
   clearLink,
   ProtocolDemandMetrics,
   ProtocolMediaActivity,
-  ProtocolOverview,
   ProtocolTotal,
   ProtocolCharts,
   ProtocolLastUpdated,
 } from '~/protocols/common'
+import { ProtocolOverview } from '~/protocols/protocol-overview'
+import * as protocolOverviewModel from '~/protocols/protocol-overview/protocol-overview.model'
 import { Head } from '~/common/head'
 import { Icon } from '~/common/icon'
 import { Carousel } from '~/common/carousel'
@@ -91,6 +92,7 @@ export const ProtocolDetail: React.FC = () => {
   const loading = useStore(model.fetchProtocolFx.pending)
   const socialPosts = useStore(model.$socialPosts)
   const socialPostsOffset = useRef(0)
+  const overview = useStore(protocolOverviewModel.$overview)
 
   const match = useRouteMatch()
 
@@ -281,8 +283,7 @@ export const ProtocolDetail: React.FC = () => {
               <Route path={`${match.path}/overview`}>
                 <LazyLoad height={HEIGHT} className={styles.mb120}>
                   <ProtocolOverview
-                    text={protocol.description}
-                    links={protocol.links}
+                    protocolId={params.protocolId}
                     className={styles.card}
                   />
                 </LazyLoad>
@@ -316,7 +317,7 @@ export const ProtocolDetail: React.FC = () => {
                     telegram={protocol.telegram}
                     coingecko={protocol.coingecko}
                     coinmarketcap={protocol.coinmarketcap}
-                    links={protocol.links}
+                    links={overview?.links}
                   />
                 </LazyLoad>
               </Route>

@@ -4216,32 +4216,69 @@ export type ProtocolMetricQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type ProtocolOverviewQueryVariables = Exact<{
+  filter: ProtocolFilterInputType
+}>
+
+export type ProtocolOverviewQuery = { __typename?: 'Query' } & {
+  protocol?: Maybe<
+    { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'description'> & {
+        links: { __typename?: 'ProtocolLinkMapType' } & {
+          social: Array<
+            { __typename?: 'ProtocolLinkType' } & Pick<
+              ProtocolLinkType,
+              'id' | 'name' | 'value'
+            >
+          >
+          listing: Array<
+            { __typename?: 'ProtocolLinkType' } & Pick<
+              ProtocolLinkType,
+              'id' | 'name' | 'value'
+            >
+          >
+          audit: Array<
+            { __typename?: 'ProtocolLinkType' } & Pick<
+              ProtocolLinkType,
+              'id' | 'name' | 'value'
+            >
+          >
+          other: Array<
+            { __typename?: 'ProtocolLinkType' } & Pick<
+              ProtocolLinkType,
+              'id' | 'name' | 'value'
+            >
+          >
+        }
+      }
+  >
+}
+
 export type ProtocolQueryVariables = Exact<{
   filter: ProtocolFilterInputType
 }>
 
 export type ProtocolQuery = { __typename?: 'Query' } & {
   protocol?: Maybe<
-    { __typename?: 'ProtocolType' } & {
-      telegram: Array<
-        { __typename?: 'MetricChartType' } & Pick<
-          MetricChartType,
-          'date' | 'sum' | 'provider' | 'entityIdentifier'
+    { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'previewPicture'> & {
+        telegram: Array<
+          { __typename?: 'MetricChartType' } & Pick<
+            MetricChartType,
+            'date' | 'sum' | 'provider' | 'entityIdentifier'
+          >
         >
-      >
-      coingecko: Array<
-        { __typename?: 'MetricChartType' } & Pick<
-          MetricChartType,
-          'date' | 'sum' | 'provider' | 'entityIdentifier'
+        coingecko: Array<
+          { __typename?: 'MetricChartType' } & Pick<
+            MetricChartType,
+            'date' | 'sum' | 'provider' | 'entityIdentifier'
+          >
         >
-      >
-      coinmarketcap: Array<
-        { __typename?: 'MetricChartType' } & Pick<
-          MetricChartType,
-          'date' | 'sum' | 'provider' | 'entityIdentifier'
+        coinmarketcap: Array<
+          { __typename?: 'MetricChartType' } & Pick<
+            MetricChartType,
+            'date' | 'sum' | 'provider' | 'entityIdentifier'
+          >
         >
-      >
-    } & ProtocolFragmentFragment
+      } & ProtocolFragmentFragment
   >
 }
 
@@ -4284,11 +4321,23 @@ export type ProtocolFavoriteMutation = { __typename?: 'Mutation' } & Pick<
   'protocolFavorite'
 >
 
+export type ProtocolsCountQueryVariables = Exact<{
+  hidden?: Maybe<Scalars['Boolean']>
+}>
+
+export type ProtocolsCountQuery = { __typename?: 'Query' } & {
+  favorites: { __typename?: 'ProtocolListQuery' } & {
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+  all: { __typename?: 'ProtocolListQuery' } & {
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
 export type ProtocolsQueryVariables = Exact<{
   filter?: Maybe<ProtocolListFilterInputType>
   sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
   pagination?: Maybe<ProtocolListPaginationInputType>
-  hidden?: Maybe<Scalars['Boolean']>
 }>
 
 export type ProtocolsQuery = { __typename?: 'Query' } & {
@@ -4296,12 +4345,6 @@ export type ProtocolsQuery = { __typename?: 'Query' } & {
     list?: Maybe<
       Array<{ __typename?: 'ProtocolType' } & ProtocolFragmentFragment>
     >
-    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-  }
-  favorites: { __typename?: 'ProtocolListQuery' } & {
-    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-  }
-  all: { __typename?: 'ProtocolListQuery' } & {
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
 }
@@ -4419,13 +4462,11 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'id'
   | 'adapter'
   | 'name'
-  | 'description'
   | 'debankId'
   | 'icon'
   | 'link'
   | 'hidden'
   | 'createdAt'
-  | 'previewPicture'
   | 'favorite'
 > & {
     metric: { __typename?: 'ProtocolMetricType' } & Pick<
@@ -4437,32 +4478,6 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
       | 'myMinUpdatedAt'
       | 'myAPYBoost'
     >
-    links: { __typename?: 'ProtocolLinkMapType' } & {
-      social: Array<
-        { __typename?: 'ProtocolLinkType' } & Pick<
-          ProtocolLinkType,
-          'id' | 'name' | 'value'
-        >
-      >
-      listing: Array<
-        { __typename?: 'ProtocolLinkType' } & Pick<
-          ProtocolLinkType,
-          'id' | 'name' | 'value'
-        >
-      >
-      audit: Array<
-        { __typename?: 'ProtocolLinkType' } & Pick<
-          ProtocolLinkType,
-          'id' | 'name' | 'value'
-        >
-      >
-      other: Array<
-        { __typename?: 'ProtocolLinkType' } & Pick<
-          ProtocolLinkType,
-          'id' | 'name' | 'value'
-        >
-      >
-    }
   }
 
 export type ProposalCreateMutationVariables = Exact<{
@@ -5486,13 +5501,11 @@ export const ProtocolFragmentFragmentDoc = gql`
     id
     adapter
     name
-    description
     debankId
     icon
     link
     hidden
     createdAt
-    previewPicture
     favorite
     metric {
       tvl
@@ -5501,28 +5514,6 @@ export const ProtocolFragmentFragmentDoc = gql`
       myEarned
       myMinUpdatedAt
       myAPYBoost
-    }
-    links {
-      social {
-        id
-        name
-        value
-      }
-      listing {
-        id
-        name
-        value
-      }
-      audit {
-        id
-        name
-        value
-      }
-      other {
-        id
-        name
-        value
-      }
     }
   }
 `
@@ -6714,10 +6705,49 @@ export function useProtocolMetricQuery(
     ...options,
   })
 }
+export const ProtocolOverviewDocument = gql`
+  query ProtocolOverview($filter: ProtocolFilterInputType!) {
+    protocol(filter: $filter) {
+      description
+      links {
+        social {
+          id
+          name
+          value
+        }
+        listing {
+          id
+          name
+          value
+        }
+        audit {
+          id
+          name
+          value
+        }
+        other {
+          id
+          name
+          value
+        }
+      }
+    }
+  }
+`
+
+export function useProtocolOverviewQuery(
+  options: Omit<Urql.UseQueryArgs<ProtocolOverviewQueryVariables>, 'query'> = {}
+) {
+  return Urql.useQuery<ProtocolOverviewQuery>({
+    query: ProtocolOverviewDocument,
+    ...options,
+  })
+}
 export const ProtocolDocument = gql`
   query Protocol($filter: ProtocolFilterInputType!) {
     protocol(filter: $filter) {
       ...protocolFragment
+      previewPicture
       telegram: metricChart(
         metric: telegramFollowers
         group: day
@@ -6810,27 +6840,39 @@ export function useProtocolFavoriteMutation() {
     ProtocolFavoriteMutationVariables
   >(ProtocolFavoriteDocument)
 }
-export const ProtocolsDocument = gql`
-  query Protocols(
-    $filter: ProtocolListFilterInputType
-    $sort: [ProtocolListSortInputType!]
-    $pagination: ProtocolListPaginationInputType
-    $hidden: Boolean
-  ) {
-    protocols(filter: $filter, sort: $sort, pagination: $pagination) {
-      list {
-        ...protocolFragment
-      }
-      pagination {
-        count
-      }
-    }
+export const ProtocolsCountDocument = gql`
+  query ProtocolsCount($hidden: Boolean) {
     favorites: protocols(filter: { hidden: $hidden, favorite: true }) {
       pagination {
         count
       }
     }
     all: protocols(filter: { hidden: $hidden }) {
+      pagination {
+        count
+      }
+    }
+  }
+`
+
+export function useProtocolsCountQuery(
+  options: Omit<Urql.UseQueryArgs<ProtocolsCountQueryVariables>, 'query'> = {}
+) {
+  return Urql.useQuery<ProtocolsCountQuery>({
+    query: ProtocolsCountDocument,
+    ...options,
+  })
+}
+export const ProtocolsDocument = gql`
+  query Protocols(
+    $filter: ProtocolListFilterInputType
+    $sort: [ProtocolListSortInputType!]
+    $pagination: ProtocolListPaginationInputType
+  ) {
+    protocols(filter: $filter, sort: $sort, pagination: $pagination) {
+      list {
+        ...protocolFragment
+      }
       pagination {
         count
       }

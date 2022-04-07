@@ -5,7 +5,10 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
-import { ProtocolQuery } from '~/graphql/_generated-types'
+import {
+  ProtocolQuery,
+  ProtocolOverviewQuery,
+} from '~/graphql/_generated-types'
 import { ProtocolLastMonthChart } from '../protocol-last-month-chart'
 import * as styles from './protocol-demand-metrics.css'
 
@@ -17,7 +20,7 @@ export type ProtocolDemandMetricsProps = {
     ProtocolQuery['protocol'],
     undefined | null
   >['coinmarketcap']
-  links: Exclude<ProtocolQuery['protocol'], undefined | null>['links']
+  links?: Exclude<ProtocolOverviewQuery['protocol'], undefined | null>['links']
 }
 
 const STAKED_FIELDS = [
@@ -73,9 +76,10 @@ export const ProtocolDemandMetrics: React.FC<ProtocolDemandMetricsProps> = (
         .map((v) => {
           return {
             identifier: v,
-            link: [...props.links.social, ...props.links.listing].find(
-              (link) => link.id === v
-            ),
+            link: [
+              ...(props.links?.social ?? []),
+              ...(props.links?.listing ?? []),
+            ].find((link) => link.id === v),
             points: target.filter((tg) => tg.entityIdentifier === v),
           }
         })

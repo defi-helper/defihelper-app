@@ -6,6 +6,7 @@ export const PROTOCOL_DETAIL = gql`
   query Protocol($filter: ProtocolFilterInputType!) {
     protocol(filter: $filter) {
       ...protocolFragment
+      previewPicture
       telegram: metricChart(
         metric: telegramFollowers
         group: day

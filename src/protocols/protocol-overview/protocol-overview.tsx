@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { useState } from 'react'
+import { useStore, useGate } from 'effector-react'
 
 import { ButtonBase } from '~/common/button-base'
 import { Typography } from '~/common/typography'
@@ -8,16 +9,11 @@ import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { ProtocolLinkType } from '~/graphql/_generated-types'
 import * as styles from './protocol-overview.css'
+import * as model from './protocol-overview.model'
 
 export type ProtocolOverviewProps = {
   className?: string
-  text?: string
-  links?: {
-    social: ProtocolLinkType[]
-    listing: ProtocolLinkType[]
-    audit: ProtocolLinkType[]
-    other: ProtocolLinkType[]
-  }
+  protocolId: string
 }
 
 const LinkSection: React.VFC<{ title: string; links?: ProtocolLinkType[] }> = (
@@ -46,35 +42,40 @@ const MAX_CHARS = 596
 
 export const ProtocolOverview: React.VFC<ProtocolOverviewProps> = (props) => {
   const [more, setMore] = useState(false)
+  const overview = useStore(model.$overview)
 
   const handleSetMore = () => {
     setMore(!more)
   }
 
+  useGate(model.ProtocolDetailOverviewGate, props.protocolId)
+
   return (
     <Paper radius={8} className={clsx(styles.overview, props.className)}>
       <div>
         <Typography variant="body2" className={styles.description}>
-          {!more ? props.text?.substring(0, MAX_CHARS) : props.text}
+          {!more
+            ? overview?.description?.substring(0, MAX_CHARS)
+            : overview?.description}
         </Typography>
-        {Number(props.text?.length) > MAX_CHARS && (
+        {Number(overview?.description?.length) > MAX_CHARS && (
           <ButtonBase className={styles.grey} onClick={handleSetMore}>
             {!more ? 'Show more' : 'Show less'}
           </ButtonBase>
         )}
       </div>
       <div>
-        {!isEmpty(props.links?.other) && (
-          <LinkSection title="Links" links={props.links?.other} />
+        {!isEmpty(overview?.links?.other) && (
+          <LinkSection title="Links" links={overview?.links?.other} />
         )}
-        {!isEmpty(props.links?.social) && (
-          <LinkSection title="Socials" links={props.links?.social} />
+        {!isEmpty(overview?.links?.social) && (
+          <LinkSection title="Socials" links={overview?.links?.social} />
         )}
-        {!isEmpty(props.links?.listing) && (
-          <LinkSection title="Listings" links={props.links?.listing} />
+        {!isEmpty(overview?.links?.listing) && (
+          <LinkSection title="Listings" links={overview?.links?.listing} />
         )}
-        {!isEmpty(props.links?.audit) && (
-          <LinkSection title="Audits" links={props.links?.audit} />
+        {!isEmpty(overview?.links?.audit) && (
+          <LinkSection title="Audits" links={overview?.links?.audit} />
         )}
       </div>
     </Paper>
