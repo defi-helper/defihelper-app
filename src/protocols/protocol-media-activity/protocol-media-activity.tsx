@@ -1,42 +1,49 @@
 import clsx from 'clsx'
+import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
-
-import { Icon } from '~/common/icon'
+import { useEffect, useRef } from 'react'
+import { useParams } from 'react-router-dom'
+import { Button } from '~/common/button'
 import { dateUtils } from '~/common/date-utils'
+import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import {
-  ProtocolSocialPostProviderEnum,
-  ProtocolSocialPostsQuery,
-} from '~/graphql/_generated-types'
-import { Button } from '~/common/button'
+import { ProtocolSocialPostProviderEnum } from '~/graphql/_generated-types'
+import * as model from './protocol-media-activity.model'
 import * as styles from './protocol-media-activity.css'
 
-export type ProtocolMediaActivityProps = {
-  className?: string
-  mediaActity: Exclude<
-    Exclude<
-      ProtocolSocialPostsQuery['protocol'],
-      null | undefined
-    >['socialPosts']['list'],
-    null | undefined
-  >
-  onReadMore: () => void
-  loading: boolean
-}
+export const ProtocolMediaActivity: React.VFC = () => {
+  const mediaActity = useStore(model.$socialPosts)
+  const loading = useStore(model.fetchSocialPostsFx.pending)
 
-export const ProtocolMediaActivity: React.VFC<ProtocolMediaActivityProps> = (
-  props
-) => {
+  const socialPostsOffset = useRef(0)
+  const params = useParams<{ protocolId: string }>()
+
+  const handleReadMore = () => {
+    model.fetchSocialPostsFx({
+      ...params,
+      offset: (socialPostsOffset.current += 3),
+    })
+  }
+
+  useEffect(() => {
+    if (mediaActity.length) return
+
+    model.fetchSocialPostsFx({
+      ...params,
+      offset: 0,
+    })
+  }, [params, mediaActity])
+
   return (
-    <div className={clsx(styles.root, props.className)}>
+    <div className={clsx(styles.root)}>
       <Typography variant="h3" className={styles.title}>
         Recent Media Activity
       </Typography>
-      {!isEmpty(props.mediaActity) && (
+      {!isEmpty(mediaActity) && (
         <>
           <div className={styles.grid}>
-            {props.mediaActity.map((activity) => (
+            {mediaActity.map((activity) => (
               <Paper
                 radius={8}
                 key={activity.id}
@@ -67,9 +74,9 @@ export const ProtocolMediaActivity: React.VFC<ProtocolMediaActivityProps> = (
               </Paper>
             ))}
           </div>
-          {!(props.mediaActity.length % 3) && (
+          {!(mediaActity.length % 3) && (
             <div className={styles.more}>
-              <Button onClick={props.onReadMore} loading={props.loading}>
+              <Button onClick={handleReadMore} loading={loading}>
                 Read more
               </Button>
             </div>

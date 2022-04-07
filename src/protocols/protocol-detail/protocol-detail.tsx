@@ -1,5 +1,4 @@
-import { useMemo, useEffect, useRef } from 'react'
-import isEmpty from 'lodash.isempty'
+import { useMemo, useEffect } from 'react'
 import { useMedia, useThrottle } from 'react-use'
 import {
   useParams,
@@ -24,7 +23,6 @@ import { ProtocolCoinBalanceChart } from '~/protocols/protocol-coin-balance-char
 import {
   clearLink,
   ProtocolDemandMetrics,
-  ProtocolMediaActivity,
   ProtocolTotal,
   ProtocolCharts,
   ProtocolLastUpdated,
@@ -45,6 +43,7 @@ import {
 import { ProtocolEstimatedChart } from '~/protocols/protocol-estimated-chart'
 import { ProtocolTvlChart } from '~/protocols/protocol-tvl-chart'
 import { ProtocolUniqueWalletsChart } from '~/protocols/protocol-unique-wallets-chart'
+import { ProtocolMediaActivity } from '../protocol-media-activity'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
 
@@ -90,19 +89,9 @@ export const ProtocolDetail: React.FC = () => {
 
   const protocol = useStore(model.$protocol)
   const loading = useStore(model.fetchProtocolFx.pending)
-  const socialPosts = useStore(model.$socialPosts)
-  const socialPostsOffset = useRef(0)
   const overview = useStore(protocolOverviewModel.$overview)
 
   const match = useRouteMatch()
-
-  const handleReadMore = () => {
-    model.fetchSocialPostsFx({
-      ...params,
-      offset: (socialPostsOffset.current += 3),
-    })
-  }
-
   const user = useStore(authModel.$user)
 
   const subscriptionOptions = useMemo(() => {
@@ -303,15 +292,9 @@ export const ProtocolDetail: React.FC = () => {
                     <ProtocolUniqueWalletsChart />
                   </LazyLoad>
                 </ProtocolCharts>
-                {!isEmpty(socialPosts) && (
-                  <LazyLoad height={HEIGHT} className={styles.mb120}>
-                    <ProtocolMediaActivity
-                      mediaActity={socialPosts}
-                      onReadMore={handleReadMore}
-                      loading={loading}
-                    />
-                  </LazyLoad>
-                )}
+                <LazyLoad height={HEIGHT} className={styles.mb120}>
+                  <ProtocolMediaActivity />
+                </LazyLoad>
                 <LazyLoad height={HEIGHT}>
                   <ProtocolDemandMetrics
                     telegram={protocol.telegram}
