@@ -1,4 +1,10 @@
-import { createDomain, sample, guard, restore } from 'effector-logger/macro'
+import {
+  createDomain,
+  sample,
+  guard,
+  restore,
+  UnitValue,
+} from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import {
@@ -7,7 +13,6 @@ import {
   portfolioSortAssetsByWallet,
 } from '~/portfolio/common'
 import { PortfolioAssetFragment, UserType } from '~/graphql/_generated-types'
-import { Protocol, protocolsApi } from '~/protocols/common'
 import { authModel } from '~/auth'
 
 export const portfolioAssetsDomain = createDomain()
@@ -39,7 +44,7 @@ export const PortfolioAssetsGate = createGate<string | null>({
 
 export const fetchUserInteractedProtocolsListFx =
   portfolioAssetsDomain.createEffect((userId: string) =>
-    protocolsApi.protocolList({
+    portfolioApi.getProtocolList({
       filter: {
         linked: userId,
       },
@@ -69,14 +74,10 @@ const closePlatform = guard({
 })
 
 export const $protocols = portfolioAssetsDomain
-  .createStore<Protocol[]>([])
-  .on(
-    fetchUserInteractedProtocolsListFx.doneData,
-    (_, payload) =>
-      payload.list
-        .filter((v) => v.metric.myStaked !== '0')
-        .sort((v) => Number(v.metric.myStaked)) as Protocol[]
-  )
+  .createStore<
+    UnitValue<typeof fetchUserInteractedProtocolsListFx.doneData>['list']
+  >([])
+  .on(fetchUserInteractedProtocolsListFx.doneData, (_, payload) => payload.list)
 
 export const $assetsByPlatform = restore(
   fetchAssetsByPlatformFx.doneData,

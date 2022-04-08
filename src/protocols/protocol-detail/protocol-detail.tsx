@@ -22,12 +22,12 @@ import { StakingList } from '~/staking/staking-list'
 import { ProtocolCoinBalanceChart } from '~/protocols/protocol-coin-balance-chart'
 import {
   clearLink,
-  ProtocolDemandMetrics,
   ProtocolTotal,
   ProtocolCharts,
   ProtocolLastUpdated,
 } from '~/protocols/common'
 import { ProtocolOverview } from '~/protocols/protocol-overview'
+import { ProtocolDemandMetrics } from '~/protocols/protocol-demand-metrics'
 import * as protocolOverviewModel from '~/protocols/protocol-overview/protocol-overview.model'
 import { Head } from '~/common/head'
 import { Icon } from '~/common/icon'
@@ -297,10 +297,8 @@ export const ProtocolDetail: React.FC = () => {
                 </LazyLoad>
                 <LazyLoad height={HEIGHT}>
                   <ProtocolDemandMetrics
-                    telegram={protocol.telegram}
-                    coingecko={protocol.coingecko}
-                    coinmarketcap={protocol.coinmarketcap}
                     links={overview?.links}
+                    protocolId={params.protocolId}
                   />
                 </LazyLoad>
               </Route>

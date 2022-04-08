@@ -2,18 +2,23 @@ import clsx from 'clsx'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
-import { Protocol } from '~/protocols/common'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { PortfolioAssetCard } from '~/portfolio/common'
 import { Loader } from '~/common/loader'
-import { PortfolioAssetFragment } from '~/graphql/_generated-types'
+import {
+  PortfolioAssetFragment,
+  PortfolioProtocolsQuery,
+} from '~/graphql/_generated-types'
 import { PortfolioAssetsHeader } from '../portfolio-assets-header'
 import * as styles from './portfolio-platform-card.css'
 
 export type PortfolioAssetCardProps = {
   className?: string
-  protocol: Protocol
+  protocol: Exclude<
+    PortfolioProtocolsQuery['protocols']['list'],
+    null | undefined
+  >[number]
   assets: PortfolioAssetFragment[]
   loading: boolean
   isCollapsed: boolean

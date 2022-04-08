@@ -12,8 +12,10 @@ import {
   TokenMetricQueryVariables,
   AssetListQueryVariables,
   AssetListQuery,
-  TokenAliasesQuery,
-  TokenAliasesQueryVariables,
+  IsPorfolioCollectedQuery,
+  IsPorfolioCollectedQueryVariables,
+  PortfolioProtocolsQuery,
+  PortfolioProtocolsQueryVariables,
   AssetsListByWalletQuery,
   AssetsListByWalletQueryVariables,
   AssetListByProtocolQueryVariables,
@@ -27,7 +29,8 @@ import {
   MY_METRIC,
   TOKEN_METRIC,
   TOKEN_METRIC_CHART,
-  TOKEN_ALIASSES,
+  IS_PORTFOLIO_COLLECTED,
+  PORTFOLIO_PROTOCOLS,
   ASSETS_LIST,
   ASSETS_LIST_BY_WALLET,
 } from './graphql'
@@ -122,13 +125,28 @@ export const portfolioApi = {
       .toPromise()
       .then(({ data }) => data?.me?.metric),
 
-  tokenAliases: (variables?: TokenAliasesQueryVariables) =>
+  isPorfolioCollected: (variables?: IsPorfolioCollectedQueryVariables) =>
     getAPIClient()
-      .query<TokenAliasesQuery, TokenAliasesQueryVariables>(
-        TOKEN_ALIASSES,
+      .query<IsPorfolioCollectedQuery, IsPorfolioCollectedQueryVariables>(
+        IS_PORTFOLIO_COLLECTED,
         variables,
         { requestPolicy: 'cache-and-network' }
       )
       .toPromise()
-      .then(({ data }) => data?.me?.tokenAliases.pagination.count ?? 0),
+      .then(({ data }) => Boolean(data?.me?.isPorfolioCollected)),
+
+  getProtocolList: (variables: PortfolioProtocolsQueryVariables) =>
+    getAPIClient()
+      .query<PortfolioProtocolsQuery, PortfolioProtocolsQueryVariables>(
+        PORTFOLIO_PROTOCOLS,
+        variables,
+        { requestPolicy: 'cache-and-network' }
+      )
+      .toPromise()
+      .then(({ data }) => ({
+        list: (data?.protocols.list ?? [])
+          .filter((v) => v.metric.myStaked !== '0')
+          .sort((v) => Number(v.metric.myStaked)),
+        count: data?.protocols.pagination.count ?? 0,
+      })),
 }

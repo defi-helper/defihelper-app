@@ -52,6 +52,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const loading = useStore(model.fetchProtocolListFx.pending)
   const userReady = useStore(authModel.$userReady)
   const protocolList = useStore(model.$protocolList)
+  const protocolListMetrics = useStore(model.$protocolListMetrics)
   const tabsCount = useStore(model.$tabsCount)
 
   const handleOpenConfirm = (protocolId: string) => async () => {
@@ -219,6 +220,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
             >
               <ProtocolCard
                 protocol={protocol}
+                metrics={protocolListMetrics?.[protocol.id]}
                 onFavorite={user ? handleFavorite(protocol) : undefined}
                 onDelete={handleOpenConfirm(protocol.id)}
               />

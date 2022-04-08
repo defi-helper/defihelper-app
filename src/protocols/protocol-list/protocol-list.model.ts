@@ -1,4 +1,10 @@
-import { createDomain, guard, sample, restore } from 'effector-logger/macro'
+import {
+  createDomain,
+  guard,
+  sample,
+  restore,
+  UnitValue,
+} from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'
@@ -25,6 +31,33 @@ export const fetchProtocolListFx = protocolListDomain.createEffect(
     }
 
     return protocolsApi.protocolList({
+      ...(params?.search || typeof params?.favorite === 'boolean'
+        ? {
+            filter: {
+              search: params.search,
+              favorite: params.favorite,
+              ...filter,
+            },
+          }
+        : {
+            filter,
+          }),
+      pagination: {
+        offset: params?.offset,
+        limit: params?.limit,
+      },
+    })
+  }
+)
+
+export const fetchProtocolListMetricsFx = protocolListDomain.createEffect(
+  (params: Params) => {
+    const filter = {
+      hidden: params.hidden,
+      isDebank: params.debank,
+    }
+
+    return protocolsApi.protocolListMetrics({
       ...(params?.search || typeof params?.favorite === 'boolean'
         ? {
             filter: {
@@ -105,12 +138,20 @@ export const $protocolList = protocolListDomain
     )
   )
 
+export const $protocolListMetrics = protocolListDomain
+  .createStore<UnitValue<typeof fetchProtocolListMetricsFx.doneData> | null>(
+    null
+  )
+  .on(fetchProtocolListMetricsFx.doneData, (state, payload) => ({
+    ...state,
+    ...payload,
+  }))
+
 export const useInfiniteScroll = createUseInfiniteScroll({
   domain: protocolListDomain,
   loading: fetchProtocolListFx.pending,
   items: $protocolList,
 })
-$protocolList.reset(useInfiniteScroll.reset)
 
 export const ProtocolListGate = createGate<{
   search: string
@@ -145,7 +186,7 @@ sample({
     limit,
     ...clock,
   }),
-  target: fetchProtocolListFx,
+  target: [fetchProtocolListFx, fetchProtocolListMetricsFx],
 })
 
 sample({
@@ -188,5 +229,6 @@ export const $tabsCount = restore(fetchProtocolListCountFx.doneData, {
   favorites: params.favorite ? state.favorites + 1 : state.favorites - 1,
 }))
 
-$protocolList.reset(ProtocolListGate.close)
+$protocolListMetrics.reset(ProtocolListGate.close)
+$protocolList.reset(ProtocolListGate.close, useInfiniteScroll.reset)
 $tabsCount.reset(ProtocolListGate.close)

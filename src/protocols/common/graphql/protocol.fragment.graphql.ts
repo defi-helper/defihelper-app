@@ -11,13 +11,5 @@ export const PROTOCOL_FRAGMENT = gql`
     hidden
     createdAt
     favorite
-    metric {
-      tvl
-      myAPY
-      myStaked
-      myEarned
-      myMinUpdatedAt
-      myAPYBoost
-    }
   }
 `

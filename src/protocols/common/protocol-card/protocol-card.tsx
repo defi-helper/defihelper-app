@@ -12,11 +12,17 @@ import { Protocol } from '~/protocols/common/protocol.types'
 import { paths } from '~/paths'
 import { createComponent } from '~/common/create-component'
 import * as styles from './protocol-card.css'
+import { ProtocolListMetricsQuery } from '~/graphql/_generated-types'
+import { Loader } from '~/common/loader'
 
 export type ProtocolCardProps = {
   onFavorite?: () => void
   onDelete: () => void
   protocol: Protocol
+  metrics?: Exclude<
+    ProtocolListMetricsQuery['protocols']['list'],
+    null | undefined
+  >[number]['metric']
 }
 
 export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
@@ -74,7 +80,11 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
           className={styles.value}
           align="right"
         >
-          ${bignumberUtils.format(protocol.metric.tvl)}
+          {props.metrics ? (
+            <>${bignumberUtils.format(props.metrics.tvl)}</>
+          ) : (
+            <Loader height="1em" />
+          )}
         </Typography>
         <Typography variant="body2" as="span" className={styles.label}>
           My APY
@@ -86,11 +96,17 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
           className={styles.value}
           align="right"
         >
-          {bignumberUtils.formatMax(
-            bignumberUtils.mul(protocol.metric.myAPY, 100),
-            10000
+          {props.metrics ? (
+            <>
+              {bignumberUtils.formatMax(
+                bignumberUtils.mul(props.metrics.myAPY, 100),
+                10000
+              )}
+              %
+            </>
+          ) : (
+            <Loader height="1em" />
           )}
-          %
         </Typography>
         <Typography variant="body2" as="span" className={styles.label}>
           My position
@@ -102,7 +118,11 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
           className={styles.value}
           align="right"
         >
-          ${bignumberUtils.format(protocol.metric.myStaked)}
+          {props.metrics ? (
+            <>${bignumberUtils.format(props.metrics.myStaked)}</>
+          ) : (
+            <Loader height="1em" />
+          )}
         </Typography>
         <Typography
           variant="body2"
@@ -111,7 +131,11 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
           family="mono"
           align="right"
         >
-          ${bignumberUtils.format(protocol.metric.myEarned)}
+          {props.metrics ? (
+            <>${bignumberUtils.format(props.metrics.myEarned)}</>
+          ) : (
+            <Loader height="1em" />
+          )}
           <Can I="update" a="Protocol">
             <Dropdown
               control={

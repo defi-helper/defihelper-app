@@ -7,35 +7,13 @@ export const PROTOCOL_DETAIL = gql`
     protocol(filter: $filter) {
       ...protocolFragment
       previewPicture
-      telegram: metricChart(
-        metric: telegramFollowers
-        group: day
-        pagination: { limit: 30, offset: 0 }
-      ) {
-        date
-        sum
-        provider
-        entityIdentifier
-      }
-      coingecko: metricChart(
-        metric: coingeckoWatchers
-        group: day
-        pagination: { limit: 30, offset: 0 }
-      ) {
-        date
-        sum
-        provider
-        entityIdentifier
-      }
-      coinmarketcap: metricChart(
-        metric: coinmarketcapWatchers
-        group: day
-        pagination: { limit: 30, offset: 0 }
-      ) {
-        date
-        sum
-        provider
-        entityIdentifier
+      metric {
+        tvl
+        myAPY
+        myStaked
+        myEarned
+        myMinUpdatedAt
+        myAPYBoost
       }
     }
   }
