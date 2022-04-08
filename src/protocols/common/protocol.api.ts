@@ -80,7 +80,15 @@ export const protocolsApi = {
     getAPIClient()
       .query<ProtocolQuery, ProtocolQueryVariables>(PROTOCOL_DETAIL, variables)
       .toPromise()
-      .then(({ data }) => data?.protocol),
+      .then(({ data }) =>
+        data?.protocol
+          ? {
+              ...data.protocol,
+              contracts:
+                data.protocol.contracts.list?.map(({ id }) => id) ?? [],
+            }
+          : undefined
+      ),
 
   protocolDetailOverview: (variables: ProtocolOverviewQueryVariables) =>
     getAPIClient()

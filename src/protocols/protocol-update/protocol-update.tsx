@@ -18,7 +18,10 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
 
   const adapters = useStore(model.$adapters)
 
-  useGate(detailModel.ProtocolDetailGate, params)
+  useGate(detailModel.ProtocolDetailGate, {
+    ...params,
+    hidden: null,
+  })
   useGate(model.ProtocolUpdateGate)
 
   const protocol = useStore(detailModel.$protocol)
