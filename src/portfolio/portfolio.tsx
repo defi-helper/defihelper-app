@@ -34,8 +34,8 @@ const TIME = 15000
 const HEIGHT = 300
 
 export const Portfolio: React.VFC<PortfolioProps> = () => {
-  const tokenAliasses = useStore(model.$tokenAliasses)
-  const loading = useStore(model.fetchTokenAliassesFx.pending)
+  const portfolioCollected = useStore(model.$portfolioCollected)
+  const loading = useStore(model.fetchPortfolioCollectedFx.pending)
 
   const user = useStore(authModel.$user)
 
@@ -75,13 +75,13 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
   return (
     <AppLayout title="Portfolio">
       <Head title="Portfolio" />
-      {loading && !tokenAliasses && (
+      {loading && !portfolioCollected && (
         <div className={styles.loader}>
           <Loader height="36" />
         </div>
       )}
 
-      {Boolean(tokenAliasses) && (
+      {portfolioCollected && (
         <>
           <Typography variant="h3" className={styles.title}>
             Portfolio
@@ -114,7 +114,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           </LazyLoad>
         </>
       )}
-      {!loading && !tokenAliasses && (
+      {!loading && !portfolioCollected && (
         <>
           <Typography variant="h3" className={styles.title}>
             Portfolio

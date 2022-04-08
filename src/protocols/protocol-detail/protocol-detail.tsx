@@ -22,13 +22,13 @@ import { StakingList } from '~/staking/staking-list'
 import { ProtocolCoinBalanceChart } from '~/protocols/protocol-coin-balance-chart'
 import {
   clearLink,
-  ProtocolDemandMetrics,
-  ProtocolMediaActivity,
-  ProtocolOverview,
   ProtocolTotal,
   ProtocolCharts,
   ProtocolLastUpdated,
 } from '~/protocols/common'
+import { ProtocolOverview } from '~/protocols/protocol-overview'
+import { ProtocolDemandMetrics } from '~/protocols/protocol-demand-metrics'
+import * as protocolOverviewModel from '~/protocols/protocol-overview/protocol-overview.model'
 import { Head } from '~/common/head'
 import { Icon } from '~/common/icon'
 import { Carousel } from '~/common/carousel'
@@ -43,6 +43,7 @@ import {
 import { ProtocolEstimatedChart } from '~/protocols/protocol-estimated-chart'
 import { ProtocolTvlChart } from '~/protocols/protocol-tvl-chart'
 import { ProtocolUniqueWalletsChart } from '~/protocols/protocol-unique-wallets-chart'
+import { ProtocolMediaActivity } from '../protocol-media-activity'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
 
@@ -88,6 +89,8 @@ export const ProtocolDetail: React.FC = () => {
 
   const protocol = useStore(model.$protocol)
   const loading = useStore(model.fetchProtocolFx.pending)
+  const overview = useStore(protocolOverviewModel.$overview)
+
   const match = useRouteMatch()
   const user = useStore(authModel.$user)
 
@@ -269,8 +272,7 @@ export const ProtocolDetail: React.FC = () => {
               <Route path={`${match.path}/overview`}>
                 <LazyLoad height={HEIGHT} className={styles.mb120}>
                   <ProtocolOverview
-                    text={protocol.description}
-                    links={protocol.links}
+                    protocolId={params.protocolId}
                     className={styles.card}
                   />
                 </LazyLoad>
@@ -295,10 +297,8 @@ export const ProtocolDetail: React.FC = () => {
                 </LazyLoad>
                 <LazyLoad height={HEIGHT}>
                   <ProtocolDemandMetrics
-                    telegram={protocol.telegram}
-                    coingecko={protocol.coingecko}
-                    coinmarketcap={protocol.coinmarketcap}
-                    links={protocol.links}
+                    links={overview?.links}
+                    protocolId={params.protocolId}
                   />
                 </LazyLoad>
               </Route>

@@ -8,6 +8,7 @@ import { AppLayout } from '~/layouts'
 import { ProtocolForm } from '~/protocols/common'
 import { detailModel } from '~/protocols/protocol-detail'
 import * as model from './protocol-update.model'
+import * as protocolOverviewModel from '~/protocols/protocol-overview/protocol-overview.model'
 import { BlockchainEnum } from '~/graphql/_generated-types'
 
 export type ProtocolUpdateProps = unknown
@@ -21,12 +22,13 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
   useGate(model.ProtocolUpdateGate)
 
   const protocol = useStore(detailModel.$protocol)
+  const overview = useStore(protocolOverviewModel.$overview)
   const loading = useStore(detailModel.fetchProtocolFx.pending)
 
   const defaultValues = useMemo(
     () => ({
       name: protocol?.name ?? '',
-      description: protocol?.description ?? undefined,
+      description: overview?.description ?? undefined,
       hidden: protocol?.hidden ?? undefined,
       icon: protocol?.icon ?? undefined,
       link: protocol?.link ?? undefined,
@@ -34,16 +36,16 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
       previewPicture: protocol?.previewPicture ?? undefined,
       links: {
         social:
-          protocol?.links.social.map((link) => omit(link, '__typename')) ?? [],
+          overview?.links.social.map((link) => omit(link, '__typename')) ?? [],
         listing:
-          protocol?.links.listing.map((link) => omit(link, '__typename')) ?? [],
+          overview?.links.listing.map((link) => omit(link, '__typename')) ?? [],
         audit:
-          protocol?.links.audit.map((link) => omit(link, '__typename')) ?? [],
+          overview?.links.audit.map((link) => omit(link, '__typename')) ?? [],
         other:
-          protocol?.links.other.map((link) => omit(link, '__typename')) ?? [],
+          overview?.links.other.map((link) => omit(link, '__typename')) ?? [],
       },
     }),
-    [protocol]
+    [protocol, overview]
   )
 
   const formLoading = useStore(model.protocolUpdateFx.pending)
@@ -53,7 +55,7 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
       title={loading ? 'loading...' : `${protocol?.name ?? ''} update`}
     >
       <Head title={loading ? 'loading...' : `${protocol?.name ?? ''} update`} />
-      {!loading && (
+      {!loading && protocol && overview && (
         <ProtocolForm
           onSubmit={(formValues) =>
             model.protocolUpdateFx({ id: params.protocolId, input: formValues })

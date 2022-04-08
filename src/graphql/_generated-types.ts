@@ -2878,6 +2878,8 @@ export type UserType = {
   role: UserRoleEnum
   /** Current user locale */
   locale: LocaleEnum
+  /** Is portfolio collected */
+  isPorfolioCollected: Scalars['Boolean']
   tokenAliases: UserTokenAliasListType
   wallets: WalletListType
   exchanges: WalletExchangeListType
@@ -4020,6 +4022,14 @@ export type BlockChainsQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type IsPorfolioCollectedQueryVariables = Exact<{ [key: string]: never }>
+
+export type IsPorfolioCollectedQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & Pick<UserType, 'isPorfolioCollected'>
+  >
+}
+
 export type MyMetricQueryVariables = Exact<{ [key: string]: never }>
 
 export type MyMetricQuery = { __typename?: 'Query' } & {
@@ -4082,16 +4092,42 @@ export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
     >
   }
 
-export type TokenAliasesQueryVariables = Exact<{ [key: string]: never }>
+export type PortfolioProtocolsQueryVariables = Exact<{
+  filter?: Maybe<ProtocolListFilterInputType>
+  sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
+  pagination?: Maybe<ProtocolListPaginationInputType>
+}>
 
-export type TokenAliasesQuery = { __typename?: 'Query' } & {
-  me?: Maybe<
-    { __typename?: 'UserType' } & {
-      tokenAliases: { __typename?: 'UserTokenAliasListType' } & {
-        pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-      }
-    }
-  >
+export type PortfolioProtocolsQuery = { __typename?: 'Query' } & {
+  protocols: { __typename?: 'ProtocolListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'ProtocolType' } & Pick<
+          ProtocolType,
+          | 'id'
+          | 'adapter'
+          | 'name'
+          | 'debankId'
+          | 'icon'
+          | 'link'
+          | 'hidden'
+          | 'createdAt'
+          | 'favorite'
+        > & {
+            metric: { __typename?: 'ProtocolMetricType' } & Pick<
+              ProtocolMetricType,
+              | 'tvl'
+              | 'myAPY'
+              | 'myStaked'
+              | 'myEarned'
+              | 'myMinUpdatedAt'
+              | 'myAPYBoost'
+            >
+          }
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
 }
 
 export type TokenMetricChartQueryVariables = Exact<{
@@ -4194,6 +4230,35 @@ export type ProtocolDeleteMutation = { __typename?: 'Mutation' } & Pick<
   'protocolDelete'
 >
 
+export type ProtocolDemandMetricsQueryVariables = Exact<{
+  filter: ProtocolFilterInputType
+}>
+
+export type ProtocolDemandMetricsQuery = { __typename?: 'Query' } & {
+  protocol?: Maybe<
+    { __typename?: 'ProtocolType' } & {
+      telegram: Array<
+        { __typename?: 'MetricChartType' } & Pick<
+          MetricChartType,
+          'date' | 'sum' | 'provider' | 'entityIdentifier'
+        >
+      >
+      coingecko: Array<
+        { __typename?: 'MetricChartType' } & Pick<
+          MetricChartType,
+          'date' | 'sum' | 'provider' | 'entityIdentifier'
+        >
+      >
+      coinmarketcap: Array<
+        { __typename?: 'MetricChartType' } & Pick<
+          MetricChartType,
+          'date' | 'sum' | 'provider' | 'entityIdentifier'
+        >
+      >
+    }
+  >
+}
+
 export type ProtocolMetricQueryVariables = Exact<{
   filter: ProtocolFilterInputType
   metric: Scalars['MetricColumnType']
@@ -4216,32 +4281,60 @@ export type ProtocolMetricQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type ProtocolOverviewQueryVariables = Exact<{
+  filter: ProtocolFilterInputType
+}>
+
+export type ProtocolOverviewQuery = { __typename?: 'Query' } & {
+  protocol?: Maybe<
+    { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'description'> & {
+        links: { __typename?: 'ProtocolLinkMapType' } & {
+          social: Array<
+            { __typename?: 'ProtocolLinkType' } & Pick<
+              ProtocolLinkType,
+              'id' | 'name' | 'value'
+            >
+          >
+          listing: Array<
+            { __typename?: 'ProtocolLinkType' } & Pick<
+              ProtocolLinkType,
+              'id' | 'name' | 'value'
+            >
+          >
+          audit: Array<
+            { __typename?: 'ProtocolLinkType' } & Pick<
+              ProtocolLinkType,
+              'id' | 'name' | 'value'
+            >
+          >
+          other: Array<
+            { __typename?: 'ProtocolLinkType' } & Pick<
+              ProtocolLinkType,
+              'id' | 'name' | 'value'
+            >
+          >
+        }
+      }
+  >
+}
+
 export type ProtocolQueryVariables = Exact<{
   filter: ProtocolFilterInputType
 }>
 
 export type ProtocolQuery = { __typename?: 'Query' } & {
   protocol?: Maybe<
-    { __typename?: 'ProtocolType' } & {
-      telegram: Array<
-        { __typename?: 'MetricChartType' } & Pick<
-          MetricChartType,
-          'date' | 'sum' | 'provider' | 'entityIdentifier'
+    { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'previewPicture'> & {
+        metric: { __typename?: 'ProtocolMetricType' } & Pick<
+          ProtocolMetricType,
+          | 'tvl'
+          | 'myAPY'
+          | 'myStaked'
+          | 'myEarned'
+          | 'myMinUpdatedAt'
+          | 'myAPYBoost'
         >
-      >
-      coingecko: Array<
-        { __typename?: 'MetricChartType' } & Pick<
-          MetricChartType,
-          'date' | 'sum' | 'provider' | 'entityIdentifier'
-        >
-      >
-      coinmarketcap: Array<
-        { __typename?: 'MetricChartType' } & Pick<
-          MetricChartType,
-          'date' | 'sum' | 'provider' | 'entityIdentifier'
-        >
-      >
-    } & ProtocolFragmentFragment
+      } & ProtocolFragmentFragment
   >
 }
 
@@ -4284,11 +4377,49 @@ export type ProtocolFavoriteMutation = { __typename?: 'Mutation' } & Pick<
   'protocolFavorite'
 >
 
+export type ProtocolsCountQueryVariables = Exact<{
+  hidden?: Maybe<Scalars['Boolean']>
+}>
+
+export type ProtocolsCountQuery = { __typename?: 'Query' } & {
+  favorites: { __typename?: 'ProtocolListQuery' } & {
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+  all: { __typename?: 'ProtocolListQuery' } & {
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type ProtocolListMetricsQueryVariables = Exact<{
+  filter?: Maybe<ProtocolListFilterInputType>
+  sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
+  pagination?: Maybe<ProtocolListPaginationInputType>
+}>
+
+export type ProtocolListMetricsQuery = { __typename?: 'Query' } & {
+  protocols: { __typename?: 'ProtocolListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'id'> & {
+            metric: { __typename?: 'ProtocolMetricType' } & Pick<
+              ProtocolMetricType,
+              | 'tvl'
+              | 'myAPY'
+              | 'myStaked'
+              | 'myEarned'
+              | 'myMinUpdatedAt'
+              | 'myAPYBoost'
+            >
+          }
+      >
+    >
+  }
+}
+
 export type ProtocolsQueryVariables = Exact<{
   filter?: Maybe<ProtocolListFilterInputType>
   sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
   pagination?: Maybe<ProtocolListPaginationInputType>
-  hidden?: Maybe<Scalars['Boolean']>
 }>
 
 export type ProtocolsQuery = { __typename?: 'Query' } & {
@@ -4296,12 +4427,6 @@ export type ProtocolsQuery = { __typename?: 'Query' } & {
     list?: Maybe<
       Array<{ __typename?: 'ProtocolType' } & ProtocolFragmentFragment>
     >
-    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-  }
-  favorites: { __typename?: 'ProtocolListQuery' } & {
-    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-  }
-  all: { __typename?: 'ProtocolListQuery' } & {
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
 }
@@ -4419,51 +4544,13 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'id'
   | 'adapter'
   | 'name'
-  | 'description'
   | 'debankId'
   | 'icon'
   | 'link'
   | 'hidden'
   | 'createdAt'
-  | 'previewPicture'
   | 'favorite'
-> & {
-    metric: { __typename?: 'ProtocolMetricType' } & Pick<
-      ProtocolMetricType,
-      | 'tvl'
-      | 'myAPY'
-      | 'myStaked'
-      | 'myEarned'
-      | 'myMinUpdatedAt'
-      | 'myAPYBoost'
-    >
-    links: { __typename?: 'ProtocolLinkMapType' } & {
-      social: Array<
-        { __typename?: 'ProtocolLinkType' } & Pick<
-          ProtocolLinkType,
-          'id' | 'name' | 'value'
-        >
-      >
-      listing: Array<
-        { __typename?: 'ProtocolLinkType' } & Pick<
-          ProtocolLinkType,
-          'id' | 'name' | 'value'
-        >
-      >
-      audit: Array<
-        { __typename?: 'ProtocolLinkType' } & Pick<
-          ProtocolLinkType,
-          'id' | 'name' | 'value'
-        >
-      >
-      other: Array<
-        { __typename?: 'ProtocolLinkType' } & Pick<
-          ProtocolLinkType,
-          'id' | 'name' | 'value'
-        >
-      >
-    }
-  }
+>
 
 export type ProposalCreateMutationVariables = Exact<{
   input: ProposalCreateInputType
@@ -5486,44 +5573,12 @@ export const ProtocolFragmentFragmentDoc = gql`
     id
     adapter
     name
-    description
     debankId
     icon
     link
     hidden
     createdAt
-    previewPicture
     favorite
-    metric {
-      tvl
-      myAPY
-      myStaked
-      myEarned
-      myMinUpdatedAt
-      myAPYBoost
-    }
-    links {
-      social {
-        id
-        name
-        value
-      }
-      listing {
-        id
-        name
-        value
-      }
-      audit {
-        id
-        name
-        value
-      }
-      other {
-        id
-        name
-        value
-      }
-    }
   }
 `
 export const ProposalVoteFragmentFragmentDoc = gql`
@@ -6440,6 +6495,25 @@ export function useBlockChainsQuery(
     ...options,
   })
 }
+export const IsPorfolioCollectedDocument = gql`
+  query IsPorfolioCollected {
+    me {
+      isPorfolioCollected
+    }
+  }
+`
+
+export function useIsPorfolioCollectedQuery(
+  options: Omit<
+    Urql.UseQueryArgs<IsPorfolioCollectedQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<IsPorfolioCollectedQuery>({
+    query: IsPorfolioCollectedDocument,
+    ...options,
+  })
+}
 export const MyMetricDocument = gql`
   query MyMetric {
     me {
@@ -6504,23 +6578,47 @@ export function useOnWalletMetricUpdatedSubscription<
     OnWalletMetricUpdatedSubscriptionVariables
   >({ query: OnWalletMetricUpdatedDocument, ...options }, handler)
 }
-export const TokenAliasesDocument = gql`
-  query TokenAliases {
-    me {
-      tokenAliases(filter: {}, pagination: { limit: 1, offset: 0 }) {
-        pagination {
-          count
+export const PortfolioProtocolsDocument = gql`
+  query PortfolioProtocols(
+    $filter: ProtocolListFilterInputType
+    $sort: [ProtocolListSortInputType!]
+    $pagination: ProtocolListPaginationInputType
+  ) {
+    protocols(filter: $filter, sort: $sort, pagination: $pagination) {
+      list {
+        id
+        adapter
+        name
+        debankId
+        icon
+        link
+        hidden
+        createdAt
+        favorite
+        metric {
+          tvl
+          myAPY
+          myStaked
+          myEarned
+          myMinUpdatedAt
+          myAPYBoost
         }
+      }
+      pagination {
+        count
       }
     }
   }
 `
 
-export function useTokenAliasesQuery(
-  options: Omit<Urql.UseQueryArgs<TokenAliasesQueryVariables>, 'query'> = {}
+export function usePortfolioProtocolsQuery(
+  options: Omit<
+    Urql.UseQueryArgs<PortfolioProtocolsQueryVariables>,
+    'query'
+  > = {}
 ) {
-  return Urql.useQuery<TokenAliasesQuery>({
-    query: TokenAliasesDocument,
+  return Urql.useQuery<PortfolioProtocolsQuery>({
+    query: PortfolioProtocolsDocument,
     ...options,
   })
 }
@@ -6682,6 +6780,54 @@ export function useProtocolDeleteMutation() {
     ProtocolDeleteMutationVariables
   >(ProtocolDeleteDocument)
 }
+export const ProtocolDemandMetricsDocument = gql`
+  query ProtocolDemandMetrics($filter: ProtocolFilterInputType!) {
+    protocol(filter: $filter) {
+      telegram: metricChart(
+        metric: telegramFollowers
+        group: day
+        pagination: { limit: 30, offset: 0 }
+      ) {
+        date
+        sum
+        provider
+        entityIdentifier
+      }
+      coingecko: metricChart(
+        metric: coingeckoWatchers
+        group: day
+        pagination: { limit: 30, offset: 0 }
+      ) {
+        date
+        sum
+        provider
+        entityIdentifier
+      }
+      coinmarketcap: metricChart(
+        metric: coinmarketcapWatchers
+        group: day
+        pagination: { limit: 30, offset: 0 }
+      ) {
+        date
+        sum
+        provider
+        entityIdentifier
+      }
+    }
+  }
+`
+
+export function useProtocolDemandMetricsQuery(
+  options: Omit<
+    Urql.UseQueryArgs<ProtocolDemandMetricsQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<ProtocolDemandMetricsQuery>({
+    query: ProtocolDemandMetricsDocument,
+    ...options,
+  })
+}
 export const ProtocolMetricDocument = gql`
   query ProtocolMetric(
     $filter: ProtocolFilterInputType!
@@ -6714,39 +6860,56 @@ export function useProtocolMetricQuery(
     ...options,
   })
 }
+export const ProtocolOverviewDocument = gql`
+  query ProtocolOverview($filter: ProtocolFilterInputType!) {
+    protocol(filter: $filter) {
+      description
+      links {
+        social {
+          id
+          name
+          value
+        }
+        listing {
+          id
+          name
+          value
+        }
+        audit {
+          id
+          name
+          value
+        }
+        other {
+          id
+          name
+          value
+        }
+      }
+    }
+  }
+`
+
+export function useProtocolOverviewQuery(
+  options: Omit<Urql.UseQueryArgs<ProtocolOverviewQueryVariables>, 'query'> = {}
+) {
+  return Urql.useQuery<ProtocolOverviewQuery>({
+    query: ProtocolOverviewDocument,
+    ...options,
+  })
+}
 export const ProtocolDocument = gql`
   query Protocol($filter: ProtocolFilterInputType!) {
     protocol(filter: $filter) {
       ...protocolFragment
-      telegram: metricChart(
-        metric: telegramFollowers
-        group: day
-        pagination: { limit: 30, offset: 0 }
-      ) {
-        date
-        sum
-        provider
-        entityIdentifier
-      }
-      coingecko: metricChart(
-        metric: coingeckoWatchers
-        group: day
-        pagination: { limit: 30, offset: 0 }
-      ) {
-        date
-        sum
-        provider
-        entityIdentifier
-      }
-      coinmarketcap: metricChart(
-        metric: coinmarketcapWatchers
-        group: day
-        pagination: { limit: 30, offset: 0 }
-      ) {
-        date
-        sum
-        provider
-        entityIdentifier
+      previewPicture
+      metric {
+        tvl
+        myAPY
+        myStaked
+        myEarned
+        myMinUpdatedAt
+        myAPYBoost
       }
     }
   }
@@ -6810,27 +6973,72 @@ export function useProtocolFavoriteMutation() {
     ProtocolFavoriteMutationVariables
   >(ProtocolFavoriteDocument)
 }
-export const ProtocolsDocument = gql`
-  query Protocols(
-    $filter: ProtocolListFilterInputType
-    $sort: [ProtocolListSortInputType!]
-    $pagination: ProtocolListPaginationInputType
-    $hidden: Boolean
-  ) {
-    protocols(filter: $filter, sort: $sort, pagination: $pagination) {
-      list {
-        ...protocolFragment
-      }
-      pagination {
-        count
-      }
-    }
+export const ProtocolsCountDocument = gql`
+  query ProtocolsCount($hidden: Boolean) {
     favorites: protocols(filter: { hidden: $hidden, favorite: true }) {
       pagination {
         count
       }
     }
     all: protocols(filter: { hidden: $hidden }) {
+      pagination {
+        count
+      }
+    }
+  }
+`
+
+export function useProtocolsCountQuery(
+  options: Omit<Urql.UseQueryArgs<ProtocolsCountQueryVariables>, 'query'> = {}
+) {
+  return Urql.useQuery<ProtocolsCountQuery>({
+    query: ProtocolsCountDocument,
+    ...options,
+  })
+}
+export const ProtocolListMetricsDocument = gql`
+  query ProtocolListMetrics(
+    $filter: ProtocolListFilterInputType
+    $sort: [ProtocolListSortInputType!]
+    $pagination: ProtocolListPaginationInputType
+  ) {
+    protocols(filter: $filter, sort: $sort, pagination: $pagination) {
+      list {
+        id
+        metric {
+          tvl
+          myAPY
+          myStaked
+          myEarned
+          myMinUpdatedAt
+          myAPYBoost
+        }
+      }
+    }
+  }
+`
+
+export function useProtocolListMetricsQuery(
+  options: Omit<
+    Urql.UseQueryArgs<ProtocolListMetricsQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<ProtocolListMetricsQuery>({
+    query: ProtocolListMetricsDocument,
+    ...options,
+  })
+}
+export const ProtocolsDocument = gql`
+  query Protocols(
+    $filter: ProtocolListFilterInputType
+    $sort: [ProtocolListSortInputType!]
+    $pagination: ProtocolListPaginationInputType
+  ) {
+    protocols(filter: $filter, sort: $sort, pagination: $pagination) {
+      list {
+        ...protocolFragment
+      }
       pagination {
         count
       }

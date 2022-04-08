@@ -24,6 +24,14 @@ import {
   ProtocolResolveContractsMutation,
   ProtocolSocialPostsQueryVariables,
   ProtocolSocialPostsQuery,
+  ProtocolsCountQueryVariables,
+  ProtocolsCountQuery,
+  ProtocolOverviewQuery,
+  ProtocolOverviewQueryVariables,
+  ProtocolDemandMetricsQuery,
+  ProtocolDemandMetricsQueryVariables,
+  ProtocolListMetricsQuery,
+  ProtocolListMetricsQueryVariables,
 } from '~/graphql/_generated-types'
 import {
   PROTOCOLS,
@@ -36,6 +44,10 @@ import {
   PROTOCOL_OVERVIEW_METRIC,
   PROTOCOL_STAKED_BALANCE,
   PROTOCOL_SOCIAL_POSTS,
+  PROTOCOL_LIST_COUNT,
+  PROTOCOL_DETAIL_OVERVIEW,
+  PROTOCOL_DEMAND_METRICS,
+  PROTOCOL_LIST_METRICS,
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 import { PROTOCOL_RESOLVE_CONTRACTS } from '~/protocols/common/graphql/protocol-resolve-contracts.graphql'
@@ -50,6 +62,16 @@ export const protocolsApi = {
       .then(({ data }) => ({
         list: data?.protocols.list ?? [],
         count: data?.protocols.pagination.count ?? 0,
+      })),
+
+  protocolListCount: (variables: ProtocolsCountQueryVariables) =>
+    getAPIClient()
+      .query<ProtocolsCountQuery, ProtocolsCountQueryVariables>(
+        PROTOCOL_LIST_COUNT,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => ({
         favorites: data?.favorites.pagination.count ?? 0,
         all: data?.all.pagination.count ?? 0,
       })),
@@ -57,6 +79,24 @@ export const protocolsApi = {
   protocolDetail: (variables: ProtocolQueryVariables) =>
     getAPIClient()
       .query<ProtocolQuery, ProtocolQueryVariables>(PROTOCOL_DETAIL, variables)
+      .toPromise()
+      .then(({ data }) => data?.protocol),
+
+  protocolDetailOverview: (variables: ProtocolOverviewQueryVariables) =>
+    getAPIClient()
+      .query<ProtocolOverviewQuery, ProtocolOverviewQueryVariables>(
+        PROTOCOL_DETAIL_OVERVIEW,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => data?.protocol),
+
+  protocolDemandMetrics: (variables: ProtocolDemandMetricsQueryVariables) =>
+    getAPIClient()
+      .query<ProtocolDemandMetricsQuery, ProtocolDemandMetricsQueryVariables>(
+        PROTOCOL_DEMAND_METRICS,
+        variables
+      )
       .toPromise()
       .then(({ data }) => data?.protocol),
 
@@ -169,4 +209,30 @@ export const protocolsApi = {
         altCoin: data?.me?.altCoin ?? [],
         stableCoin: data?.me?.stableCoin ?? [],
       })),
+
+  protocolListMetrics: (variables: ProtocolListMetricsQueryVariables) =>
+    getAPIClient()
+      .query<ProtocolListMetricsQuery, ProtocolListMetricsQueryVariables>(
+        PROTOCOL_LIST_METRICS,
+        variables,
+        {
+          requestPolicy: 'cache-and-network',
+        }
+      )
+      .toPromise()
+      .then(({ data }) =>
+        (data?.protocols.list ?? []).reduce<
+          Record<
+            string,
+            Exclude<
+              ProtocolListMetricsQuery['protocols']['list'],
+              null | undefined
+            >[number]['metric']
+          >
+        >((acc, protocol) => {
+          acc[protocol.id] = protocol.metric
+
+          return acc
+        }, {})
+      ),
 }

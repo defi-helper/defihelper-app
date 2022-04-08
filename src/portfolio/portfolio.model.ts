@@ -9,15 +9,15 @@ import * as portfolioMetricCardsModel from './portfolio-metric-cards/portfolio-m
 
 export const portfolio = createDomain()
 
-export const fetchTokenAliassesFx = portfolio.createEffect(() =>
-  portfolioApi.tokenAliases()
+export const fetchPortfolioCollectedFx = portfolio.createEffect(() =>
+  portfolioApi.isPorfolioCollected()
 )
 
 export const portfolioUpdated = portfolio.createEvent()
 
-export const $tokenAliasses = portfolio
-  .createStore<number>(0)
-  .on(fetchTokenAliassesFx.doneData, (_, payload) => payload)
+export const $portfolioCollected = portfolio
+  .createStore(false)
+  .on(fetchPortfolioCollectedFx.doneData, (_, payload) => payload)
 
 export const PortfolioGate = createGate({
   domain: portfolio,
@@ -28,13 +28,13 @@ guard({
   source: PortfolioGate.status,
   clock: [PortfolioGate.open, authModel.$user.updates],
   filter: (isOpened) => isOpened,
-  target: fetchTokenAliassesFx,
+  target: fetchPortfolioCollectedFx,
 })
 
 sample({
   clock: portfolioUpdated,
   target: [
-    fetchTokenAliassesFx,
+    fetchPortfolioCollectedFx,
     portfolioAssetsModel.fetchAssetsListFx,
     portfolioCoinModel.fetchChartDataFx.prepend(() =>
       portfolioCoinModel.$currentGroup.getState()
@@ -43,4 +43,4 @@ sample({
   ],
 })
 
-$tokenAliasses.reset(PortfolioGate.close, authModel.logoutFx.done)
+$portfolioCollected.reset(PortfolioGate.close, authModel.logoutFx.done)

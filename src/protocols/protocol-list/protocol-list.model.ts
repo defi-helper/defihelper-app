@@ -1,4 +1,10 @@
-import { createDomain, guard, sample, restore } from 'effector-logger/macro'
+import {
+  createDomain,
+  guard,
+  sample,
+  restore,
+  UnitValue,
+} from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'
@@ -40,7 +46,41 @@ export const fetchProtocolListFx = protocolListDomain.createEffect(
         offset: params?.offset,
         limit: params?.limit,
       },
+    })
+  }
+)
+
+export const fetchProtocolListMetricsFx = protocolListDomain.createEffect(
+  (params: Params) => {
+    const filter = {
       hidden: params.hidden,
+      isDebank: params.debank,
+    }
+
+    return protocolsApi.protocolListMetrics({
+      ...(params?.search || typeof params?.favorite === 'boolean'
+        ? {
+            filter: {
+              search: params.search,
+              favorite: params.favorite,
+              ...filter,
+            },
+          }
+        : {
+            filter,
+          }),
+      pagination: {
+        offset: params?.offset,
+        limit: params?.limit,
+      },
+    })
+  }
+)
+
+export const fetchProtocolListCountFx = protocolListDomain.createEffect(
+  (hidden: boolean | null) => {
+    return protocolsApi.protocolListCount({
+      hidden,
     })
   }
 )
@@ -98,12 +138,20 @@ export const $protocolList = protocolListDomain
     )
   )
 
+export const $protocolListMetrics = protocolListDomain
+  .createStore<UnitValue<typeof fetchProtocolListMetricsFx.doneData> | null>(
+    null
+  )
+  .on(fetchProtocolListMetricsFx.doneData, (state, payload) => ({
+    ...state,
+    ...payload,
+  }))
+
 export const useInfiniteScroll = createUseInfiniteScroll({
   domain: protocolListDomain,
   loading: fetchProtocolListFx.pending,
   items: $protocolList,
 })
-$protocolList.reset(useInfiniteScroll.reset)
 
 export const ProtocolListGate = createGate<{
   search: string
@@ -138,7 +186,28 @@ sample({
     limit,
     ...clock,
   }),
-  target: fetchProtocolListFx,
+  target: [fetchProtocolListFx, fetchProtocolListMetricsFx],
+})
+
+sample({
+  source: ProtocolListGate.state,
+  clock: guard({
+    source: [
+      ProtocolListGate.status,
+      ProtocolListGate.state,
+      authModel.$userReady,
+    ],
+    clock: [
+      ProtocolListGate.state.updates,
+      ProtocolListGate.status.updates,
+      authModel.$userReady.updates,
+    ],
+    filter: ([isOpen, , userReady]) => {
+      return isOpen && userReady
+    },
+  }),
+  fn: ({ hidden }) => hidden,
+  target: fetchProtocolListCountFx,
 })
 
 sample({
@@ -152,19 +221,14 @@ sample({
   target: useInfiniteScroll.reset,
 })
 
-export const $tabsCount = restore(
-  fetchProtocolListFx.doneData.map(({ all, favorites }) => ({
-    all,
-    favorites,
-  })),
-  {
-    all: 0,
-    favorites: 0,
-  }
-).on(protocolFavoriteFx.done, (state, { params }) => ({
+export const $tabsCount = restore(fetchProtocolListCountFx.doneData, {
+  all: 0,
+  favorites: 0,
+}).on(protocolFavoriteFx.done, (state, { params }) => ({
   ...state,
   favorites: params.favorite ? state.favorites + 1 : state.favorites - 1,
 }))
 
-$protocolList.reset(ProtocolListGate.close)
+$protocolListMetrics.reset(ProtocolListGate.close)
+$protocolList.reset(ProtocolListGate.close, useInfiniteScroll.reset)
 $tabsCount.reset(ProtocolListGate.close)
