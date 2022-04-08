@@ -1,22 +1,19 @@
-import { createDomain, guard, sample } from 'effector-logger/macro'
+import { createDomain, guard, sample, UnitValue } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
-import { ProtocolQuery } from '~/graphql/_generated-types'
+import { authModel } from '~/auth'
 import { protocolsApi } from '~/protocols/common'
 import { stakingApi } from '~/staking/common'
-
-type Protocol = Exclude<ProtocolQuery['protocol'], undefined | null> & {
-  hasAutostaking: boolean
-}
 
 export const protocolDetailDomain = createDomain()
 
 export const fetchProtocolFx = protocolDetailDomain.createEffect(
-  async (params: { protocolId: string; offset?: number }) => {
+  async (params: { protocolId: string; hidden?: null | boolean }) => {
     const protocol = await protocolsApi.protocolDetail({
       filter: {
         id: params.protocolId,
       },
+      hidden: params.hidden,
     })
 
     if (!protocol) throw new Error('something went wrong')
@@ -39,10 +36,13 @@ export const fetchProtocolFx = protocolDetailDomain.createEffect(
 )
 
 export const $protocol = protocolDetailDomain
-  .createStore<Protocol | null>(null)
+  .createStore<UnitValue<typeof fetchProtocolFx.doneData> | null>(null)
   .on(fetchProtocolFx.doneData, (_, payload) => payload)
 
-type GateState = { protocolId: string }
+type GateState = {
+  protocolId: string
+  hidden: null | boolean
+}
 
 export const ProtocolDetailGate = createGate<GateState | null>({
   name: 'ProtocolDetailGate',
@@ -54,15 +54,24 @@ export const updated = protocolDetailDomain.createEvent()
 
 sample({
   clock: guard({
-    source: [ProtocolDetailGate.state, ProtocolDetailGate.status],
-    clock: [ProtocolDetailGate.open, ProtocolDetailGate.state.updates, updated],
-    filter: (payload): payload is [GateState, boolean] => {
-      const [gateState, opened] = payload
+    source: [
+      ProtocolDetailGate.state,
+      ProtocolDetailGate.status,
+      authModel.$userReady,
+    ],
+    clock: [
+      ProtocolDetailGate.open,
+      ProtocolDetailGate.state.updates,
+      authModel.$userReady.updates,
+      updated,
+    ],
+    filter: (payload): payload is [GateState, boolean, boolean] => {
+      const [gateState, opened, userReady] = payload
 
-      return Boolean(gateState) && opened
+      return Boolean(gateState) && opened && userReady
     },
   }),
-  fn: ([{ protocolId }]) => ({ protocolId }),
+  fn: ([gate]) => gate,
   target: fetchProtocolFx,
 })
 

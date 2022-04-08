@@ -13,7 +13,7 @@ import clsx from 'clsx'
 import LazyLoad from 'react-lazyload'
 
 import { AppLayout } from '~/layouts'
-import { authModel, Can } from '~/auth'
+import { authModel, Can, useAbility } from '~/auth'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
 import { Button } from '~/common/button'
@@ -85,7 +85,12 @@ const HEIGHT = 300
 export const ProtocolDetail: React.FC = () => {
   const params = useParams<{ protocolId: string }>()
 
-  useGate(model.ProtocolDetailGate, params)
+  const ability = useAbility()
+
+  useGate(model.ProtocolDetailGate, {
+    ...params,
+    hidden: ability.can('update', 'Contract') ? null : false,
+  })
 
   const protocol = useStore(model.$protocol)
   const loading = useStore(model.fetchProtocolFx.pending)
@@ -247,7 +252,7 @@ export const ProtocolDetail: React.FC = () => {
                     )}
                   </ProtocolCharts.Header>
                   <LazyLoad height={HEIGHT}>
-                    <ProtocolCoinBalanceChart />
+                    <ProtocolCoinBalanceChart contracts={protocol.contracts} />
                   </LazyLoad>
                   <LazyLoad height={HEIGHT}>
                     <ProtocolEstimatedChart metric={protocol.metric} />

@@ -125,7 +125,7 @@ export const ProtocolDetailReadonly: React.FC<ProtocolDetailReadonlyProps> =
                   )}
                 </ProtocolCharts.Header>
                 <LazyLoad height={HEIGHT}>
-                  <ProtocolCoinBalanceChart />
+                  <ProtocolCoinBalanceChart contracts={protocol.contracts} />
                 </LazyLoad>
                 <LazyLoad height={HEIGHT}>
                   <ProtocolTvlChart />

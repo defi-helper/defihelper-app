@@ -4320,6 +4320,7 @@ export type ProtocolOverviewQuery = { __typename?: 'Query' } & {
 
 export type ProtocolQueryVariables = Exact<{
   filter: ProtocolFilterInputType
+  hidden?: Maybe<Scalars['Boolean']>
 }>
 
 export type ProtocolQuery = { __typename?: 'Query' } & {
@@ -4334,6 +4335,11 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
           | 'myMinUpdatedAt'
           | 'myAPYBoost'
         >
+        contracts: { __typename?: 'ContractListType' } & {
+          list?: Maybe<
+            Array<{ __typename?: 'ContractType' } & Pick<ContractType, 'id'>>
+          >
+        }
       } & ProtocolFragmentFragment
   >
 }
@@ -6899,7 +6905,7 @@ export function useProtocolOverviewQuery(
   })
 }
 export const ProtocolDocument = gql`
-  query Protocol($filter: ProtocolFilterInputType!) {
+  query Protocol($filter: ProtocolFilterInputType!, $hidden: Boolean) {
     protocol(filter: $filter) {
       ...protocolFragment
       previewPicture
@@ -6910,6 +6916,14 @@ export const ProtocolDocument = gql`
         myEarned
         myMinUpdatedAt
         myAPYBoost
+      }
+      contracts(
+        filter: { hidden: $hidden }
+        pagination: { limit: 1000, offset: 0 }
+      ) {
+        list {
+          id
+        }
       }
     }
   }

@@ -9,7 +9,6 @@ import {
 } from '~/graphql/_generated-types'
 import { Typography } from '~/common/typography'
 import { ProtocolChartWrap } from '../common'
-import * as stakingListModel from '~/staking/staking-list/staking-list.model'
 import { authModel } from '~/auth'
 import * as model from './protocol-coin-balance.model'
 
@@ -32,15 +31,15 @@ const STAKED_FIELDS = [
 
 export type ProtocolCoinBalanceChartProps = {
   className?: string
+  contracts: string[]
 }
 
 export const ProtocolCoinBalanceChart: React.VFC<ProtocolCoinBalanceChartProps> =
-  () => {
+  (props) => {
     const [currentStakedGroup, setCurrentStakedGroup] = useState<string>(
       CHART_GROUP_VALUES.month
     )
 
-    const contracts = useStore(stakingListModel.$contractList)
     const stakedMetric = useStore(model.$stakedMetric)
 
     const user = useStore(authModel.$user)
@@ -68,13 +67,13 @@ export const ProtocolCoinBalanceChart: React.VFC<ProtocolCoinBalanceChartProps> 
     )
 
     useEffect(() => {
-      if (!contracts.length) return
+      if (!props.contracts.length) return
 
       model.fetchStakedMetricFx({
         group: currentStakedGroup,
-        contracts: contracts.map(({ id }) => id),
+        contracts: props.contracts,
       })
-    }, [currentStakedGroup, contracts, metricUpdated])
+    }, [currentStakedGroup, props.contracts, metricUpdated])
 
     useEffect(() => {
       return () => model.reset()
