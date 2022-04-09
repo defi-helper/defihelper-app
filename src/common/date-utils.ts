@@ -44,6 +44,9 @@ export const dateUtils = {
   addDate: (value: number, unit?: OpUnitType) =>
     dayjs().add(value, unit).toISOString(),
 
+  addDate2: (kek: number, value: number, unit?: OpUnitType) =>
+    dayjs(kek).add(value, unit).toISOString(),
+
   after: (from: string | number | Date, to: string | number | Date) =>
     dayjs(from).isAfter(to),
 }
