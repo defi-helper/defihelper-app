@@ -51,12 +51,16 @@ import {
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 import { PROTOCOL_RESOLVE_CONTRACTS } from '~/protocols/common/graphql/protocol-resolve-contracts.graphql'
+import { config } from '~/config'
 
 export const protocolsApi = {
-  protocolList: (variables: ProtocolsQueryVariables) =>
+  protocolList: (variables: ProtocolsQueryVariables, signal?: AbortSignal) =>
     getAPIClient()
       .query<ProtocolsQuery, ProtocolsQueryVariables>(PROTOCOLS, variables, {
         requestPolicy: 'network-only',
+        fetchOptions: {
+          signal,
+        },
       })
       .toPromise()
       .then(({ data }) => ({
@@ -64,11 +68,19 @@ export const protocolsApi = {
         count: data?.protocols.pagination.count ?? 0,
       })),
 
-  protocolListCount: (variables: ProtocolsCountQueryVariables) =>
+  protocolListCount: (
+    variables: ProtocolsCountQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .query<ProtocolsCountQuery, ProtocolsCountQueryVariables>(
         PROTOCOL_LIST_COUNT,
-        variables
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
       )
       .toPromise()
       .then(({ data }) => ({
@@ -76,9 +88,17 @@ export const protocolsApi = {
         all: data?.all.pagination.count ?? 0,
       })),
 
-  protocolDetail: (variables: ProtocolQueryVariables) =>
+  protocolDetail: (variables: ProtocolQueryVariables, signal?: AbortSignal) =>
     getAPIClient()
-      .query<ProtocolQuery, ProtocolQueryVariables>(PROTOCOL_DETAIL, variables)
+      .query<ProtocolQuery, ProtocolQueryVariables>(
+        PROTOCOL_DETAIL,
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
+      )
       .toPromise()
       .then(({ data }) =>
         data?.protocol
@@ -90,29 +110,53 @@ export const protocolsApi = {
           : undefined
       ),
 
-  protocolDetailOverview: (variables: ProtocolOverviewQueryVariables) =>
+  protocolDetailOverview: (
+    variables: ProtocolOverviewQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .query<ProtocolOverviewQuery, ProtocolOverviewQueryVariables>(
         PROTOCOL_DETAIL_OVERVIEW,
-        variables
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
       )
       .toPromise()
       .then(({ data }) => data?.protocol),
 
-  protocolDemandMetrics: (variables: ProtocolDemandMetricsQueryVariables) =>
+  protocolDemandMetrics: (
+    variables: ProtocolDemandMetricsQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .query<ProtocolDemandMetricsQuery, ProtocolDemandMetricsQueryVariables>(
         PROTOCOL_DEMAND_METRICS,
-        variables
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
       )
       .toPromise()
       .then(({ data }) => data?.protocol),
 
-  protocolSocialPosts: (variables: ProtocolSocialPostsQueryVariables) =>
+  protocolSocialPosts: (
+    variables: ProtocolSocialPostsQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .query<ProtocolSocialPostsQuery, ProtocolSocialPostsQueryVariables>(
         PROTOCOL_SOCIAL_POSTS,
-        variables
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
       )
       .toPromise()
       .then(({ data }) => ({
@@ -120,20 +164,36 @@ export const protocolsApi = {
         count: data?.protocol?.socialPosts.pagination.count ?? 0,
       })),
 
-  protocolDetailMetric: (variables: ProtocolMetricQueryVariables) =>
+  protocolDetailMetric: (
+    variables: ProtocolMetricQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .query<ProtocolMetricQuery, ProtocolMetricQueryVariables>(
         PROTOCOL_DETAIL_METRIC,
-        variables
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
       )
       .toPromise()
       .then(({ data }) => data?.protocol?.metricChartContracts ?? []),
 
-  protocolTvl: (variables: ProtocolOverviewMetricQueryVariables) =>
+  protocolTvl: (
+    variables: ProtocolOverviewMetricQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .query<ProtocolOverviewMetricQuery, ProtocolOverviewMetricQueryVariables>(
         PROTOCOL_OVERVIEW_METRIC,
-        variables
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
       )
       .toPromise()
       .then(({ data }) => ({
@@ -141,11 +201,19 @@ export const protocolsApi = {
         debankTvl: data?.protocol?.tvlDebank ?? [],
       })),
 
-  protocolUniqueWallets: (variables: ProtocolOverviewMetricQueryVariables) =>
+  protocolUniqueWallets: (
+    variables: ProtocolOverviewMetricQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .query<ProtocolOverviewMetricQuery, ProtocolOverviewMetricQueryVariables>(
         PROTOCOL_OVERVIEW_METRIC,
-        variables
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
       )
       .toPromise()
       .then(({ data }) => data?.protocol?.uniqueWalletsCount ?? []),
@@ -169,13 +237,18 @@ export const protocolsApi = {
       .then(({ data }) => data?.protocolUpdate),
 
   protocolResolveContracts: (
-    variables: ProtocolResolveContractsMutationVariables
+    variables: ProtocolResolveContractsMutationVariables,
+    signal?: AbortSignal
   ) =>
     getAPIClient()
       .mutation<
         ProtocolResolveContractsMutation,
         ProtocolResolveContractsMutationVariables
-      >(PROTOCOL_RESOLVE_CONTRACTS, variables)
+      >(PROTOCOL_RESOLVE_CONTRACTS, variables, {
+        fetchOptions: {
+          signal,
+        },
+      })
       .toPromise()
       .then(({ data }) => data?.protocolResolveContracts),
 
@@ -188,29 +261,53 @@ export const protocolsApi = {
       .toPromise()
       .then(({ data }) => data?.protocolDelete),
 
-  protocolFavorite: (variables: ProtocolFavoriteMutationVariables) =>
+  protocolFavorite: (
+    variables: ProtocolFavoriteMutationVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .mutation<ProtocolFavoriteMutation, ProtocolFavoriteMutationVariables>(
         PROTOCOL_FAVORITE,
-        variables
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
       )
       .toPromise()
       .then(({ data }) => data?.protocolFavorite),
 
-  earnings: (variables: ProtocolEstimatedQueryVariables) =>
+  earnings: (
+    variables: ProtocolEstimatedQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .query<ProtocolEstimatedQuery, ProtocolEstimatedQueryVariables>(
         PROTOCOL_ESTIMATED,
-        variables
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
       )
       .toPromise()
       .then(({ data }) => data?.restakeStrategy),
 
-  protocolStaked: (variables: ProtocolStakedBalanceQueryVariables) =>
+  protocolStaked: (
+    variables: ProtocolStakedBalanceQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .query<ProtocolStakedBalanceQuery, ProtocolStakedBalanceQueryVariables>(
         PROTOCOL_STAKED_BALANCE,
-        variables
+        variables,
+        {
+          fetchOptions: {
+            signal,
+          },
+        }
       )
       .toPromise()
       .then(({ data }) => ({
@@ -218,13 +315,19 @@ export const protocolsApi = {
         stableCoin: data?.me?.stableCoin ?? [],
       })),
 
-  protocolListMetrics: (variables: ProtocolListMetricsQueryVariables) =>
+  protocolListMetrics: (
+    variables: ProtocolListMetricsQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .query<ProtocolListMetricsQuery, ProtocolListMetricsQueryVariables>(
         PROTOCOL_LIST_METRICS,
         variables,
         {
           requestPolicy: 'cache-and-network',
+          fetchOptions: {
+            signal,
+          },
         }
       )
       .toPromise()
@@ -243,4 +346,7 @@ export const protocolsApi = {
           return acc
         }, {})
       ),
+
+  protocolAdapters: () =>
+    fetch(config.ADAPTERS_HOST).then((res) => res.json()) as Promise<string[]>,
 }

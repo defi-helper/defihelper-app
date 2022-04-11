@@ -17,7 +17,10 @@ export const fetchStakedMetricFx = protocolCoinBalanceDomain.createEffect(
         params.group === CHART_GROUP_VALUES.day
           ? MetricGroupEnum.Hour
           : MetricGroupEnum.Day,
-      dateBefore: dateUtils.now(),
+      dateBefore:
+        params.group === CHART_GROUP_VALUES.day
+          ? dateUtils.now()
+          : dateUtils.yesterday(),
       dateAfter: dateUtils.addDate(
         -CHART_DAYS_LIMITS[params.group],
         params.group === CHART_GROUP_VALUES.day ? 'hours' : 'days'

@@ -8,6 +8,7 @@ import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import * as model from './portfolio-metric-cards.model'
 import * as styles from './portfolio-metric-cards.css'
+import { Loader } from '~/common/loader'
 
 export type PortfolioMetricCardsProps = {
   className?: string
@@ -42,7 +43,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
         }
         value={
           loading && !metric ? (
-            'loading...'
+            <Loader height="1em" />
           ) : (
             <>${bignumberUtils.format(metric?.worth)}</>
           )
@@ -67,7 +68,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
         }
         value={
           loading && !metric ? (
-            'loading...'
+            <Loader height="1em" />
           ) : (
             <>
               {bignumberUtils.formatMax(
@@ -83,7 +84,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
         title="Total Unclaimed"
         value={
           loading && !metric ? (
-            'loading...'
+            <Loader height="1em" />
           ) : (
             <>${bignumberUtils.format(metric?.earnedUSD)}</>
           )

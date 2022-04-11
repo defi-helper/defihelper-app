@@ -10,6 +10,7 @@ import { Typography } from '~/common/typography'
 import { TablePagination } from '~/common/table-pagination'
 import * as styles from './automation-history-list.css'
 import * as model from './automation-history-list.model'
+import { Loader } from '~/common/loader'
 
 export type AutomationHistoryListProps = unknown
 
@@ -59,7 +60,11 @@ export const AutomationHistoryList: React.VFC<AutomationHistoryListProps> =
               value={page}
             />
           </div>
-          {loading && <div className={styles.label}>loading...</div>}
+          {loading && (
+            <div className={styles.label}>
+              <Loader height="1em" />
+            </div>
+          )}
           {!loading && isEmpty(history) && (
             <div className={styles.label}>Empty</div>
           )}

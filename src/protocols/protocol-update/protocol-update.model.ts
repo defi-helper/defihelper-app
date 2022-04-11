@@ -9,7 +9,6 @@ import {
 import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
 import { protocolsApi } from '../common/protocol.api'
-import { config } from '~/config'
 
 const protocolUpdate = createDomain()
 
@@ -23,9 +22,8 @@ export const protocolResolveContractsFx = protocolUpdate.createEffect(
     protocolsApi.protocolResolveContracts(variables)
 )
 
-export const fetchAdaptersFx = protocolUpdate.createEffect(
-  () =>
-    fetch(config.ADAPTERS_HOST).then((res) => res.json()) as Promise<string[]>
+export const fetchAdaptersFx = protocolUpdate.createEffect(() =>
+  protocolsApi.protocolAdapters()
 )
 
 export const $adapters = restore(fetchAdaptersFx.doneData, [])

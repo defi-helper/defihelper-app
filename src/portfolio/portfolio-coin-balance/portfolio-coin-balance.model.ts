@@ -33,7 +33,10 @@ export const fetchChartDataFx = portfolioCoinBalance.createEffect(
           ? MetricGroupEnum.Hour
           : MetricGroupEnum.Day,
       ...defaultVariables,
-      dateBefore: dateUtils.now(),
+      dateBefore:
+        params === CHART_GROUP_VALUES.day
+          ? dateUtils.now()
+          : dateUtils.yesterday(),
       dateAfter: dateUtils.addDate(
         -CHART_DAYS_LIMITS[params],
         params === CHART_GROUP_VALUES.day ? 'hours' : 'days'

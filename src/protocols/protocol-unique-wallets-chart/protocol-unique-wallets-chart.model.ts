@@ -21,7 +21,7 @@ export const fetchMetricFx = protocolMetricOverviewDomain.createEffect(
       },
       metricGroup: MetricGroupEnum.Day,
       metricFilter: {
-        dateBefore: dateUtils.now(),
+        dateBefore: dateUtils.yesterday(),
         dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[MetricGroupEnum.Day]),
       },
       metricPagination: {

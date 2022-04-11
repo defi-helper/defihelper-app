@@ -29,6 +29,8 @@ export const dateUtils = {
 
   now: () => dayjs().toISOString(),
 
+  yesterday: () => dayjs().subtract(1, 'day').toISOString(),
+
   formatUnix: (timestamp: number | string, format = 'hh:mm:ss') => {
     const date = dayjs.unix(Number(timestamp))
 
