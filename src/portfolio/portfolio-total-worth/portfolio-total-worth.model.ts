@@ -36,6 +36,10 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
   async (params: { group: string }) => {
     const data = await portfolioApi.getTokenMetric({
       ...defaultVariables,
+      metricDateBefore:
+        params.group === CHART_GROUP_VALUES.day
+          ? dateUtils.now()
+          : dateUtils.yesterday(),
       metricDateAfter: dateUtils.addDate(
         -CHART_DAYS_LIMITS[params.group],
         params.group === CHART_GROUP_VALUES.day ? 'hours' : 'days'

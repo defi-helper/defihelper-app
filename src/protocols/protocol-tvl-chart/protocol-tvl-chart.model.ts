@@ -21,7 +21,7 @@ export const fetchMetricFx = protocolTvlDomain.createEffect(
       },
       metricGroup: MetricGroupEnum.Day,
       metricFilter: {
-        dateBefore: dateUtils.now(),
+        dateBefore: dateUtils.yesterday(),
         dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[MetricGroupEnum.Day]),
       },
       metricPagination: {
@@ -31,7 +31,7 @@ export const fetchMetricFx = protocolTvlDomain.createEffect(
         limit: DAYS_LIMITS[MetricGroupEnum.Day],
       },
       metricDebankFilter: {
-        dateBefore: dateUtils.now(),
+        dateBefore: dateUtils.yesterday(),
         dateAfter: dateUtils.fromNowTo(DAYS_LIMITS[MetricGroupEnum.Day]),
       },
     })

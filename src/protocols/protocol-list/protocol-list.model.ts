@@ -23,6 +23,8 @@ type Params = {
   debank?: boolean
 }
 
+const abortController = new AbortController()
+
 export const fetchProtocolListFx = protocolListDomain.createEffect(
   (params: Params) => {
     const filter = {
@@ -30,23 +32,26 @@ export const fetchProtocolListFx = protocolListDomain.createEffect(
       isDebank: params.debank,
     }
 
-    return protocolsApi.protocolList({
-      ...(params?.search || typeof params?.favorite === 'boolean'
-        ? {
-            filter: {
-              search: params.search,
-              favorite: params.favorite,
-              ...filter,
-            },
-          }
-        : {
-            filter,
-          }),
-      pagination: {
-        offset: params?.offset,
-        limit: params?.limit,
+    return protocolsApi.protocolList(
+      {
+        ...(params?.search || typeof params?.favorite === 'boolean'
+          ? {
+              filter: {
+                search: params.search,
+                favorite: params.favorite,
+                ...filter,
+              },
+            }
+          : {
+              filter,
+            }),
+        pagination: {
+          offset: params?.offset,
+          limit: params?.limit,
+        },
       },
-    })
+      abortController.signal
+    )
   }
 )
 
@@ -57,23 +62,26 @@ export const fetchProtocolListMetricsFx = protocolListDomain.createEffect(
       isDebank: params.debank,
     }
 
-    return protocolsApi.protocolListMetrics({
-      ...(params?.search || typeof params?.favorite === 'boolean'
-        ? {
-            filter: {
-              search: params.search,
-              favorite: params.favorite,
-              ...filter,
-            },
-          }
-        : {
-            filter,
-          }),
-      pagination: {
-        offset: params?.offset,
-        limit: params?.limit,
+    return protocolsApi.protocolListMetrics(
+      {
+        ...(params?.search || typeof params?.favorite === 'boolean'
+          ? {
+              filter: {
+                search: params.search,
+                favorite: params.favorite,
+                ...filter,
+              },
+            }
+          : {
+              filter,
+            }),
+        pagination: {
+          offset: params?.offset,
+          limit: params?.limit,
+        },
       },
-    })
+      abortController.signal
+    )
   }
 )
 
@@ -101,7 +109,10 @@ export const deleteProtocolFx = protocolListDomain.createEffect(
 
 export const protocolFavoriteFx = protocolListDomain.createEffect(
   async (input: ProtocolFavoriteMutationVariables['input']) => {
-    const isFavorite = await protocolsApi.protocolFavorite({ input })
+    const isFavorite = await protocolsApi.protocolFavorite(
+      { input },
+      abortController.signal
+    )
 
     if (typeof isFavorite === 'boolean') {
       return isFavorite
@@ -229,6 +240,16 @@ export const $tabsCount = restore(fetchProtocolListCountFx.doneData, {
   favorites: params.favorite ? state.favorites + 1 : state.favorites - 1,
 }))
 
-$protocolListMetrics.reset(ProtocolListGate.close)
-$protocolList.reset(ProtocolListGate.close, useInfiniteScroll.reset)
+ProtocolListGate.state.watch(() => abortController.abort())
+
+$protocolListMetrics.reset(
+  ProtocolListGate.close,
+  ProtocolListGate.state.updates
+)
+$protocolList.reset(
+  ProtocolListGate.close,
+  useInfiniteScroll.reset,
+  ProtocolListGate.state.updates
+)
 $tabsCount.reset(ProtocolListGate.close)
+ProtocolListGate.close.watch(() => abortController.abort())
