@@ -11,6 +11,9 @@ export const PROTOCOLS = gql`
     protocols(filter: $filter, sort: $sort, pagination: $pagination) {
       list {
         ...protocolFragment
+        metric {
+          tvl
+        }
       }
       pagination {
         count

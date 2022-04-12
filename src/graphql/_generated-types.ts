@@ -4431,7 +4431,14 @@ export type ProtocolsQueryVariables = Exact<{
 export type ProtocolsQuery = { __typename?: 'Query' } & {
   protocols: { __typename?: 'ProtocolListQuery' } & {
     list?: Maybe<
-      Array<{ __typename?: 'ProtocolType' } & ProtocolFragmentFragment>
+      Array<
+        { __typename?: 'ProtocolType' } & {
+          metric: { __typename?: 'ProtocolMetricType' } & Pick<
+            ProtocolMetricType,
+            'tvl'
+          >
+        } & ProtocolFragmentFragment
+      >
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
@@ -7052,6 +7059,9 @@ export const ProtocolsDocument = gql`
     protocols(filter: $filter, sort: $sort, pagination: $pagination) {
       list {
         ...protocolFragment
+        metric {
+          tvl
+        }
       }
       pagination {
         count
