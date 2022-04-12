@@ -123,7 +123,7 @@ export const protocolFavoriteFx = protocolListDomain.createEffect(
 )
 
 export const $protocolList = protocolListDomain
-  .createStore<Protocol[]>([])
+  .createStore<(Protocol & { metric?: { tvl?: string } })[]>([])
   .on(fetchProtocolListFx.doneData, (state, payload) =>
     state.concat(
       payload.list.map((protocol) => ({

@@ -36,7 +36,7 @@ export const AuthVideoDialog: React.VFC<AuthVideoDialogProps> = (props) => {
           className={styles.video}
           scrolling="no"
           title="This is a unique title"
-          src={`https://www.youtube.com/embed/${VIDEO_UD}?autoplay=1`}
+          src={`https://www.youtube.com/embed/${VIDEO_UD}?autoplay=0`}
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen

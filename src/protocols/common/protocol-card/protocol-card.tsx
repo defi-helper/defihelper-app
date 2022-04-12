@@ -23,6 +23,7 @@ export type ProtocolCardProps = {
     ProtocolListMetricsQuery['protocols']['list'],
     null | undefined
   >[number]['metric']
+  tvl?: string
 }
 
 export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
@@ -34,6 +35,11 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
 
       props.onFavorite?.()
     }
+
+    const tvl =
+      props.tvl && bignumberUtils.gt(props.tvl, 0)
+        ? props.tvl
+        : props.metrics?.tvl
 
     return (
       <Paper
@@ -80,11 +86,7 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
           className={styles.value}
           align="right"
         >
-          {props.metrics ? (
-            <>${bignumberUtils.format(props.metrics.tvl)}</>
-          ) : (
-            <Loader height="1em" />
-          )}
+          {tvl ? `$${bignumberUtils.format(tvl)}` : <Loader height="1em" />}
         </Typography>
         <Typography variant="body2" as="span" className={styles.label}>
           My APY

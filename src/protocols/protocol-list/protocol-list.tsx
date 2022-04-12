@@ -221,6 +221,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
               <ProtocolCard
                 protocol={protocol}
                 metrics={protocolListMetrics?.[protocol.id]}
+                tvl={protocol.metric?.tvl}
                 onFavorite={user ? handleFavorite(protocol) : undefined}
                 onDelete={handleOpenConfirm(protocol.id)}
               />
