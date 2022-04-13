@@ -81,18 +81,43 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
 
         if (!contract.actions || !contract.actions[action]) return
 
+        const scanHandler = () => {
+          const findedWallet = wallets.find(
+            ({ address, network }) =>
+              address === wallet?.account && network === wallet.chainId
+          )
+
+          if (!findedWallet) return
+
+          stakingAutomatesModel
+            .scanWalletMetricFx({
+              walletId: findedWallet.id,
+              contractId: props.contractId,
+            })
+            .catch(console.error)
+        }
+
         if ('methods' in contract.actions[action]) {
           const dialogs = {
             stake: () =>
               openStakeDialog({
                 methods: contract.actions?.stake.methods,
-                onSubmit: () =>
-                  model.stake({ wallet, contractId: props.contractId }),
+                onSubmit: () => {
+                  model.stake({ wallet, contractId: props.contractId })
+
+                  scanHandler()
+                },
               }),
             unstake: () =>
-              openUnstakeDialog({ methods: contract.actions?.unstake.methods }),
+              openUnstakeDialog({
+                methods: contract.actions?.unstake.methods,
+                onSubmit: scanHandler,
+              }),
             claim: () =>
-              openClaimDialog({ methods: contract.actions?.claim.methods }),
+              openClaimDialog({
+                methods: contract.actions?.claim.methods,
+                onSubmit: scanHandler,
+              }),
             exit: null,
           } as const
 
@@ -102,26 +127,15 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             steps: contract.actions[action],
-            onSubmit:
-              action === 'stake'
-                ? () => model.stake({ wallet, contractId: props.contractId })
-                : undefined,
+            onSubmit: () => {
+              if (action === 'stake') {
+                model.stake({ wallet, contractId: props.contractId })
+              }
+
+              scanHandler()
+            },
           })
         }
-
-        const findedWallet = wallets.find(
-          ({ address, network }) =>
-            address === wallet?.account && network === wallet.chainId
-        )
-
-        if (!findedWallet) return
-
-        stakingAutomatesModel
-          .scanWalletMetricFx({
-            walletId: findedWallet.id,
-            contractId: props.contractId,
-          })
-          .catch(console.error)
 
         if (!action || action === 'exit') return
 

@@ -19,6 +19,7 @@ type FormValues = {
 export type StakingClaimDialogProps = {
   onConfirm: () => void
   methods?: AdapterActions['claim']['methods']
+  onSubmit: () => void
 }
 
 export const StakingClaimDialog: React.FC<StakingClaimDialogProps> = (
@@ -48,6 +49,8 @@ export const StakingClaimDialog: React.FC<StakingClaimDialogProps> = (
       const { tx } = await claim(formValues.amount)
 
       await tx?.wait()
+
+      props.onSubmit()
 
       return true
     } catch (error) {
