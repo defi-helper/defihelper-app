@@ -33,7 +33,7 @@ export type LayoutHeaderProps = {
   className?: string
 }
 
-export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
+export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
   return (
     <aside
       className={clsx(
@@ -99,6 +99,7 @@ export const LayoutSidebar: React.VFC<LayoutHeaderProps> = (props) => {
           </li>
         ))}
       </ul>
+      {props.children}
       <div className={styles.spacer} />
       {!props.hidden && (
         <div className={styles.switchers}>
