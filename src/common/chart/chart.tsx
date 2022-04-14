@@ -22,6 +22,7 @@ import clsx from 'clsx'
 import { useTheme } from '~/common/theme'
 import { config } from '~/config'
 import * as styles from './chart.css'
+import { Loader } from '../loader'
 
 export type ChartProps = {
   dataFields: Array<IXYSeriesDataFields & { color?: string; format?: string }>
@@ -29,6 +30,7 @@ export type ChartProps = {
   data?: Array<unknown>
   id?: string
   names?: Array<string>
+  loading: boolean
 }
 
 if (config.AMCHARTS_LICENCE) {
@@ -149,9 +151,17 @@ export const Chart: React.VFC<ChartProps> = (props) => {
     }
   }, [props.data, id, themeMode, props.tooltipText, props.dataFields])
 
-  return props.data?.length ? (
-    <div id={id} className={styles.root} />
+  return props.loading ? (
+    <div className={styles.loader}>
+      <Loader height={36} />
+    </div>
   ) : (
-    <div className={clsx(styles.root, styles.flex)}>no data</div>
+    <>
+      {props.data?.length ? (
+        <div id={id} className={styles.root} />
+      ) : (
+        <div className={clsx(styles.root, styles.flex)}>no data</div>
+      )}
+    </>
   )
 }

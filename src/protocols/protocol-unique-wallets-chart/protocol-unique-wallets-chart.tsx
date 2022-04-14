@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useStore } from 'effector-react'
+import isEmpty from 'lodash.isempty'
 
 import { Chart } from '~/common/chart'
 import { Typography } from '~/common/typography'
@@ -17,6 +18,7 @@ export const ProtocolUniqueWalletsChart: React.FC<ProtocolUniqueWalletsChartProp
     const params = useParams<{ protocolId: string }>()
 
     const metric = useStore(model.$metric)
+    const loading = useStore(model.fetchMetricFx.pending)
 
     useEffect(() => {
       model.fetchMetricFx({
@@ -63,6 +65,7 @@ export const ProtocolUniqueWalletsChart: React.FC<ProtocolUniqueWalletsChartProp
           tooltipText="{format}"
           id="unique_wallets"
           names={walletFields.map(({ name }) => name)}
+          loading={loading && isEmpty(walletData)}
         />
       </ProtocolChartWrap>
     )

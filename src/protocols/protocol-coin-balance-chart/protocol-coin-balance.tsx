@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useStore } from 'effector-react'
 import { useThrottle } from 'react-use'
+import isEmpty from 'lodash.isempty'
 
 import { Chart, CHART_GROUP_VALUES, ChartGroups } from '~/common/chart'
 import {
@@ -43,6 +44,7 @@ export const ProtocolCoinBalanceChart: React.VFC<ProtocolCoinBalanceChartProps> 
     const stakedMetric = useStore(model.$stakedMetric)
 
     const user = useStore(authModel.$user)
+    const loading = useStore(model.fetchStakedMetricFx.pending)
 
     const subscriptionOptions = useMemo(() => {
       if (!user) return undefined
@@ -104,6 +106,7 @@ export const ProtocolCoinBalanceChart: React.VFC<ProtocolCoinBalanceChartProps> 
           tooltipText="{name}: ${format}"
           id="staked"
           names={STAKED_FIELDS.map(({ name }) => name)}
+          loading={loading && isEmpty(stakedMetric[currentStakedGroup]?.data)}
         />
       </ProtocolChartWrap>
     )

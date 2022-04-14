@@ -1,5 +1,6 @@
 import { useThrottle } from 'react-use'
 import { useEffect, useMemo } from 'react'
+import isEmpty from 'lodash.isempty'
 import { useStore } from 'effector-react'
 
 import { Chart } from '~/common/chart'
@@ -39,6 +40,7 @@ export const ProtocolEstimatedChart: React.FC<ProtocolEstimatedChartProps> = (
   props
 ) => {
   const earningsMetric = useStore(model.$earningsMetric)
+  const loading = useStore(model.fetchEarningMetricFx.pending)
 
   const [themeMode] = useTheme()
 
@@ -129,6 +131,7 @@ export const ProtocolEstimatedChart: React.FC<ProtocolEstimatedChartProps> = (
       }
     >
       <Chart
+        loading={loading && isEmpty(earningsMetric)}
         dataFields={estimatedFields}
         data={earningsMetric}
         // eslint-disable-next-line no-template-curly-in-string

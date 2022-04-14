@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useStore } from 'effector-react'
+import isEmpty from 'lodash.isempty'
 
 import { Chart } from '~/common/chart'
 import { Typography } from '~/common/typography'
@@ -22,6 +23,7 @@ export const ProtocolTvlChart: React.VFC = () => {
   const params = useParams<{ protocolId: string }>()
 
   const metric = useStore(model.$metric)
+  const loading = useStore(model.fetchMetricFx.pending)
 
   useEffect(() => {
     model.fetchMetricFx({
@@ -57,6 +59,7 @@ export const ProtocolTvlChart: React.VFC = () => {
         tooltipText={['$', '{format}'].join('')}
         id="tvl"
         names={TVL_FIELDS.map(({ name }) => name)}
+        loading={loading && isEmpty(tvlData)}
       />
     </ProtocolChartWrap>
   )

@@ -20,6 +20,8 @@ import {
   StakingContractMetricQuery,
   StakingAutomatesContractsQueryVariables,
   StakingAutomatesContractsQuery,
+  StakingUpdateMetricsMutationVariables,
+  StakingUpdateMetricsMutation,
   AutomationContractCreateMutation,
   AutomationContractCreateMutationVariables,
   AutomationContractUpdateMutation,
@@ -43,6 +45,7 @@ import {
   AUTOMATION_CONTRACT_CREATE,
   AUTOMATION_CONTRACT_UPDATE,
   AUTOMATION_CONTRACT_DELETE,
+  STAKING_UPDATE_METRICS,
 } from './graphql'
 import { config } from '~/config'
 import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-scanner-register.graphql'
@@ -96,6 +99,15 @@ export const stakingApi = {
       >(STAKING_CONNECT_WALLET, variables)
       .toPromise()
       .then(({ data }) => data?.contractWalletLink),
+
+  updateMetrics: (contract: string) =>
+    getAPIClient()
+      .mutation<
+        StakingUpdateMetricsMutation,
+        StakingUpdateMetricsMutationVariables
+      >(STAKING_UPDATE_METRICS, { contract })
+      .toPromise()
+      .then(({ data }) => data?.contractMetricScan),
 
   disconnectWallet: (variables: StakingDisconnectWalletMutationVariables) =>
     getAPIClient()

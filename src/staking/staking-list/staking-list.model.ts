@@ -216,6 +216,16 @@ export const connectWalletFx = stakingListDomain.createEffect(
   }
 )
 
+export const updateMetricsFx = stakingListDomain.createEffect(
+  async (params: string) => {
+    const data = await stakingApi.updateMetrics(params)
+
+    if (data === null || data === undefined) throw new Error('not updated')
+
+    return data
+  }
+)
+
 export const disconnectWalletFx = stakingListDomain.createEffect(
   async (params: ConnectParams) => {
     const isDisconnected = await stakingApi.disconnectWallet(params)
@@ -538,12 +548,19 @@ sample({
   target: fetchContractAddressesFx,
 })
 
+guard({
+  clock: updateMetricsFx.doneData,
+  filter: (clock) => clock,
+  target: toastsService.success.prepend(() => 'Update page!'),
+})
+
 toastsService.forwardErrors(
   fetchStakingListFx.failData,
   fetchConnectedContractsFx.failData,
   disconnectWalletFx.failData,
   connectWalletFx.failData,
-  deleteStakingFx.failData
+  deleteStakingFx.failData,
+  updateMetricsFx.failData
 )
 
 $contractList.reset(StakingListGate.close)

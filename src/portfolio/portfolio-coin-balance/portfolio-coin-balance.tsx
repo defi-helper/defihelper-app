@@ -1,6 +1,7 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import { useEffect } from 'react'
+import isEmpty from 'lodash.isempty'
 
 import { Chart, ChartGroups } from '~/common/chart'
 import { Paper } from '~/common/paper'
@@ -34,6 +35,7 @@ export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
 ) => {
   const currentGroup = useStore(model.$currentGroup)
   const portfolioCoinBalance = useStore(model.$portfolioCoinBalance)
+  const loading = useStore(model.fetchChartDataFx.pending)
 
   useEffect(() => {
     model.fetchChartDataFx(currentGroup)
@@ -60,6 +62,7 @@ export const PortfolioCoinBalance: React.VFC<PortfolioCoinBalanceProps> = (
       <Chart
         dataFields={BALANCE}
         id="coin_balance"
+        loading={loading && isEmpty(portfolioCoinBalance[currentGroup].data)}
         data={portfolioCoinBalance[currentGroup].data}
         names={BALANCE.map(({ name }) => name)}
         // eslint-disable-next-line no-template-curly-in-string
