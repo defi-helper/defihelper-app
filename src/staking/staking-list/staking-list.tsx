@@ -132,6 +132,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     model.openContract(address)
   }
 
+  const handleUpdateMetrics = (contract: string) => () => {
+    model.updateMetricsFx(contract)
+  }
+
   const handleScannerRegister = (contractId: string) => async () => {
     // eslint-disable-next-line no-alert
     const events = prompt(
@@ -571,6 +575,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     currentNetwork={currentWallet?.chainId}
                     onOpenApy={handleOpenApy(stakingListItem.metric)}
                     scannerData={scanner[stakingListItem.id]}
+                    onUpdate={handleUpdateMetrics(stakingListItem.id)}
                     hideAutostakingBoost={
                       !(
                         stakingListItem.automate.autorestake &&

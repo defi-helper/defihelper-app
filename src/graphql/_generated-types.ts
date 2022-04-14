@@ -1004,6 +1004,7 @@ export type Mutation = {
   contractDelete: Scalars['Boolean']
   contractWalletLink: Scalars['Boolean']
   contractWalletUnlink: Scalars['Boolean']
+  contractMetricScan: Scalars['Boolean']
   userNotificationToggle: Scalars['Boolean']
   tokenUpdate: TokenType
   tokenAliasCreate: TokenAlias
@@ -1128,6 +1129,10 @@ export type MutationContractWalletLinkArgs = {
 export type MutationContractWalletUnlinkArgs = {
   contract: Scalars['UuidType']
   wallet: Scalars['UuidType']
+}
+
+export type MutationContractMetricScanArgs = {
+  contract: Scalars['UuidType']
 }
 
 export type MutationUserNotificationToggleArgs = {
@@ -5393,6 +5398,15 @@ export type StakingTokensQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type StakingUpdateMetricsMutationVariables = Exact<{
+  contract: Scalars['UuidType']
+}>
+
+export type StakingUpdateMetricsMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'contractMetricScan'
+>
+
 export type UsersQueryVariables = Exact<{
   filter?: Maybe<UserListFilterInputType>
   sort?: Maybe<Array<UserListSortInputType> | UserListSortInputType>
@@ -8205,6 +8219,18 @@ export function useStakingTokensQuery(
     query: StakingTokensDocument,
     ...options,
   })
+}
+export const StakingUpdateMetricsDocument = gql`
+  mutation StakingUpdateMetrics($contract: UuidType!) {
+    contractMetricScan(contract: $contract)
+  }
+`
+
+export function useStakingUpdateMetricsMutation() {
+  return Urql.useMutation<
+    StakingUpdateMetricsMutation,
+    StakingUpdateMetricsMutationVariables
+  >(StakingUpdateMetricsDocument)
 }
 export const UsersDocument = gql`
   query Users(

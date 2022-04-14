@@ -27,3 +27,13 @@ globalStyle(
     fill: theme.colors.textColorGrey,
   }
 )
+
+export const loader = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '100%',
+  height: '100%',
+  minHeight: 300,
+})

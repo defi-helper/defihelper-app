@@ -1,6 +1,7 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import { useMemo } from 'react'
+import isEmpty from 'lodash.isempty'
 
 import { Chart } from '~/common/chart'
 import { Paper } from '~/common/paper'
@@ -28,6 +29,7 @@ const ESTIMATED_FIELDS = [
 
 export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
   const portfolioEarnings = useStore(model.$portfolioEarnings)
+  const loading = useStore(model.fetchChartDataFx.pending)
 
   const [themeMode] = useTheme()
 
@@ -69,6 +71,7 @@ export const PortfolioEarnings: React.VFC<PortfolioEarningsProps> = (props) => {
         names={estimatedFields.map(({ name }) => name)}
         // eslint-disable-next-line no-template-curly-in-string
         tooltipText="{name}: [bold]${format}[/]"
+        loading={loading && isEmpty(portfolioEarnings.data)}
       />
     </Paper>
   )

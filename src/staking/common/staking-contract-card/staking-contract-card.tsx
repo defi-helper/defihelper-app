@@ -22,6 +22,7 @@ export type StakingContractCardProps = {
   opened: boolean
   onToggleContract: () => void
   onDelete: () => void
+  onUpdate: () => void
   onScannerRegister: () => void
   protocolId: string
   protocolAdapter: string
@@ -258,6 +259,9 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
               <ButtonBase onClick={props.onToggleContract}>
                 {props.hidden ? 'Show' : 'Hide'}
               </ButtonBase>
+            </Can>
+            <Can I="update" a="Contract">
+              <ButtonBase onClick={props.onUpdate}>Update Metrics</ButtonBase>
             </Can>
             <Can I="delete" a="Contract">
               <ButtonBase onClick={props.onDelete}>Delete</ButtonBase>
