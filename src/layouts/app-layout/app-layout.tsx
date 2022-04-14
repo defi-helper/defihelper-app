@@ -10,6 +10,7 @@ import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { useBodyScrollLock } from '~/common/hooks'
 import * as styles from './app-layout.css'
+import { SettingsTelegram } from '~/settings/settings-telegram'
 
 export type AppLayoutProps = {
   title?: React.ReactNode
@@ -110,7 +111,9 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
           menu={menu}
           onLogout={user ? handleLogout : undefined}
           hidden={hidden}
-        />
+        >
+          <SettingsTelegram />
+        </LayoutSidebar>
         <ButtonBase onClick={handleHideSidebar} className={styles.hideButton}>
           <Icon
             icon="doubleArrowLeft"
@@ -142,7 +145,9 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
             onLogout={user ? handleLogout : undefined}
             hidden={false}
             className={styles.sidebarMobileInner}
-          />
+          >
+            <SettingsTelegram />
+          </LayoutSidebar>
         </div>
       )}
       <LayoutContainer>
