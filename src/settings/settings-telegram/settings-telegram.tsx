@@ -3,7 +3,6 @@ import { useMemo } from 'react'
 import { useLocalStorage } from 'react-use'
 
 import { Button } from '~/common/button'
-import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { UserContactBrokerEnum } from '~/graphql/_generated-types'
@@ -37,13 +36,13 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
     <Paper radius={8} className={styles.root}>
       <Typography variant="body2" as="div" className={styles.text}>
         Never miss your{' '}
-        <Link href="/" target="_blank" color="blue">
+        <Typography className={styles.blue} variant="inherit">
           income
-        </Link>{' '}
+        </Typography>{' '}
         again with our smart{' '}
-        <Link href="/" target="_blank" color="blue">
+        <Typography className={styles.blue} variant="inherit">
           telegram notifications
-        </Link>
+        </Typography>
       </Typography>
       <div className={styles.buttons}>
         <Button

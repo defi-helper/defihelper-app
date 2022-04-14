@@ -1,11 +1,10 @@
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 import { Button } from '~/common/button'
 import { Input } from '~/common/input'
 import { Dialog } from '~/common/dialog'
 import { UserContactBrokerEnum } from '~/graphql/_generated-types'
-import { Select, SelectOption } from '~/common/select'
 import * as styles from './settings-contact-form-dialog.css'
 import { settingsContactFormSchame } from './settings-contact-form-dialog.schema'
 
@@ -18,7 +17,7 @@ export type FormValues = {
 export type SettingsContactFormDialogProps = {
   onConfirm: (formValues: FormValues) => void
   onCancel: () => void
-  defaultValues?: FormValues
+  defaultValues?: Partial<FormValues>
 }
 
 export const SettingsContactFormDialog: React.VFC<SettingsContactFormDialogProps> =
@@ -27,7 +26,6 @@ export const SettingsContactFormDialog: React.VFC<SettingsContactFormDialogProps
       handleSubmit: hookFormSubmit,
       register,
       formState,
-      control,
       watch,
     } = useForm<FormValues>({
       defaultValues: props.defaultValues,
@@ -55,28 +53,6 @@ export const SettingsContactFormDialog: React.VFC<SettingsContactFormDialogProps
             disabled={formState.isSubmitting}
             helperText={formState.errors.name?.message}
             error={Boolean(formState.errors.name?.message)}
-          />
-          <Controller
-            control={control}
-            name="broker"
-            render={({ field }) => (
-              <Select
-                {...field}
-                label="Type"
-                disabled={
-                  formState.isSubmitting || Boolean(props.defaultValues)
-                }
-                className={styles.input}
-                helperText={formState.errors.broker?.message}
-                error={Boolean(formState.errors.broker?.message)}
-              >
-                {Object.entries(UserContactBrokerEnum).map(([label, value]) => (
-                  <SelectOption key={value} value={value}>
-                    {label}
-                  </SelectOption>
-                ))}
-              </Select>
-            )}
           />
           {broker === UserContactBrokerEnum.Email && (
             <Input
