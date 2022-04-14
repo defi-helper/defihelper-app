@@ -282,7 +282,9 @@ export const openContract = stakingListDomain.createEvent<string | null>()
 export const $openedContract = stakingListDomain
   .createStore<string | null>(null)
   .on(openContract, (_, payload) => payload)
-  .on($contractList.updates, (_, contracts) => contracts?.[0]?.address)
+  .on($contractList.updates, (state, contracts) =>
+    state !== null ? undefined : contracts?.[0]?.address
+  )
 
 export const $connectedContracts = stakingListDomain
   .createStore<Record<string, boolean>>({})

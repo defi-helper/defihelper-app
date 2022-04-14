@@ -17,6 +17,7 @@ import { toastsService } from '~/toasts'
 export type StakingUnstakeDialogProps = {
   onConfirm: () => void
   methods?: AdapterActions['unstake']['methods']
+  onSubmit: () => void
 }
 
 type FormValues = {
@@ -56,6 +57,8 @@ export const StakingUnstakeDialog: React.VFC<StakingUnstakeDialogProps> = (
         const { tx } = await unstake(formValues.amount)
 
         await tx?.wait()
+
+        props.onSubmit()
 
         return true
       } catch (error) {

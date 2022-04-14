@@ -140,8 +140,6 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
       await tx?.wait()
 
-      balanceOf.retry()
-
       return true
     } catch (error) {
       if (error instanceof Error) {
@@ -167,6 +165,7 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
   useEffect(() => {
     if (transferState.value) {
       setCurrentTab(Tabs.deposit)
+      balanceOf.retry()
       transferred.retry()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -175,6 +174,8 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
   useEffect(() => {
     if (withdrawState.value) {
       setCurrentTab(Tabs.transfer)
+      balanceOf.retry()
+      transferred.retry()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [withdrawState.value])
