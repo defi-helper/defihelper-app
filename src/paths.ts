@@ -52,4 +52,6 @@ export const paths = {
     transactions: '/referral/transactions',
     calculator: '/referral/calculator',
   },
+
+  vesting: '/vesting',
 } as const
