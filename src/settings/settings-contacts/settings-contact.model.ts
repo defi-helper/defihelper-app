@@ -1,4 +1,4 @@
-import { createDomain, sample } from 'effector-logger/macro'
+import { createDomain, sample, UnitValue } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { settingsApi } from '~/settings/common'
@@ -25,6 +25,11 @@ export const createUserContactFx = settingsContactsDomain.createEffect(
     throw new Error('Not created')
   }
 )
+
+export const $creatingUserParams = settingsContactsDomain
+  .createStore<UnitValue<typeof createUserContactFx> | null>(null)
+  .on(createUserContactFx, (_, payload) => payload)
+  .reset(createUserContactFx.finally)
 
 export const updateUserContactFx = settingsContactsDomain.createEffect(
   async (params: { id: string; name: string }) => {
@@ -112,6 +117,6 @@ export const SettingsContactsGate = createGate({
 })
 
 sample({
-  clock: [SettingsContactsGate.open],
+  clock: SettingsContactsGate.open,
   target: fetchUserContactListFx,
 })

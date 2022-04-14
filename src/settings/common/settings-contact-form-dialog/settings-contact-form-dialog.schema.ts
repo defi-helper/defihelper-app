@@ -9,8 +9,7 @@ export const settingsContactFormSchame = yup.object().shape({
     .oneOf(
       Object.values(UserContactBrokerEnum),
       'Type must be one of the following values: Email, Telegram'
-    )
-    .required('Required'),
+    ),
   address: yup.string().when('broker', {
     is: UserContactBrokerEnum.Email,
     then: yup

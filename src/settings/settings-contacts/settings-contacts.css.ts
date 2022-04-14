@@ -11,31 +11,3 @@ export const header = style({
     },
   },
 })
-
-export const addButton = style({
-  '@media': {
-    [theme.mediaQueries.down(959)]: {
-      padding: 6,
-      width: 24,
-      height: 24,
-    },
-  },
-})
-
-export const addButtonTitle = style({
-  display: 'none',
-  marginLeft: 11,
-
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      display: 'inline',
-    },
-  },
-})
-
-export const loader = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '100%',
-})

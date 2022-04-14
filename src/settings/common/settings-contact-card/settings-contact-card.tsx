@@ -10,13 +10,12 @@ import * as styles from './settings-contact-card.css'
 
 export type SettingsContactCardProps = {
   title: string
-  address: string
+  address?: string
   type: string
-  status: UserContactStatusEnum
-  onEdit: () => void
-  onDelete: () => void
-  deleting?: boolean
-  editing?: boolean
+  status?: UserContactStatusEnum
+  onEdit?: () => void
+  onDelete?: () => void
+  loading?: boolean
   className?: string
 }
 
@@ -41,26 +40,27 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
         </Typography>
       </div>
       <div className={styles.buttons}>
-        <Button
-          size="small"
-          variant="light"
-          color="primary"
-          onClick={props.onEdit}
-          loading={props.editing}
-          disabled={props.deleting}
-        >
-          Edit
-        </Button>
-        <Button
-          size="small"
-          variant="light"
-          color="red"
-          onClick={props.onDelete}
-          disabled={props.editing}
-          loading={props.deleting}
-        >
-          Delete
-        </Button>
+        {!props.status ? (
+          <Button
+            size="small"
+            variant="light"
+            color="primary"
+            onClick={props.onEdit}
+            loading={props.loading}
+          >
+            Connect
+          </Button>
+        ) : (
+          <Button
+            size="small"
+            variant="light"
+            color="red"
+            onClick={props.onDelete}
+            loading={props.loading}
+          >
+            Disconnect
+          </Button>
+        )}
       </div>
     </Paper>
   )
