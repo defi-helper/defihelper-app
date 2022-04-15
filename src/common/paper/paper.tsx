@@ -5,7 +5,7 @@ import * as styles from './paper.css'
 
 type Props<C extends React.ElementType = 'div'> = {
   as?: C
-  radius?: 8 | 24
+  radius?: keyof typeof styles.radius
 }
 
 export type PaperProps<C extends React.ElementType = 'div'> = Props<C> &

@@ -99,7 +99,7 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
           </li>
         ))}
       </ul>
-      {props.children}
+      {!props.hidden && props.children}
       <div className={styles.spacer} />
       {!props.hidden && (
         <div className={styles.switchers}>

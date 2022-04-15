@@ -8,6 +8,10 @@ export const root = style({
 })
 
 export const radius = styleVariants({
+  4: {
+    borderRadius: 4,
+  },
+
   8: {
     borderRadius: 8,
   },
