@@ -20,6 +20,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   const userContacts = useStore(settingsContacts.$userContactList)
   const [noThanks, setNoThanks] = useLocalStorage('telegram', false)
   const user = useStore(authModel.$user)
+  const loading = useStore(settingsContacts.fetchUserContactListFx.pending)
 
   const contacts = useMemo(
     () => (userContact ? [...userContacts, userContact] : userContacts),
@@ -34,7 +35,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
 
   const handleHandleNoThanks = () => setNoThanks(true)
 
-  if (hasTelegram || noThanks || !user) return <></>
+  if (hasTelegram || noThanks || !user || loading) return <></>
 
   return (
     <Paper radius={4} className={styles.root}>
