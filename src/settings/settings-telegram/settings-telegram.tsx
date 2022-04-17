@@ -67,16 +67,15 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
         </Typography>
         <div className={styles.alertText}>
           <Typography variant="inherit" as="div">
-            Tracked Balance $30.41,
+            Tracked Balance $3000.41,
           </Typography>
           <Typography variant="inherit" as="div">
-            Total unclaimed $6.05
+            Total unclaimed $65.05
           </Typography>
         </div>
       </div>
       <Typography variant="body3" as="div" className={styles.text}>
-        Do you want to do the same? Our users with connected notifications earn
-        MUCH MORE!
+        Do you want to do the same? Daily updates on your portfolio’s balance
       </Typography>
       <div className={styles.buttons}>
         <Button
