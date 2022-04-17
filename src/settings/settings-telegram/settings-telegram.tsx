@@ -4,6 +4,8 @@ import { useLocalStorage } from 'react-use'
 import { authModel } from '~/auth'
 
 import { Button } from '~/common/button'
+import { ButtonBase } from '~/common/button-base'
+import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { UserContactBrokerEnum } from '~/graphql/_generated-types'
@@ -35,35 +37,56 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   if (hasTelegram || noThanks || !user) return <></>
 
   return (
-    <Paper radius={8} className={styles.root}>
-      <Typography variant="body2" as="div" className={styles.text}>
-        Never miss your{' '}
-        <Typography className={styles.blue} variant="inherit">
-          income
-        </Typography>{' '}
-        again with our smart{' '}
-        <Typography className={styles.blue} variant="inherit">
-          telegram notifications
+    <Paper radius={4} className={styles.root}>
+      <ButtonBase onClick={handleHandleNoThanks} className={styles.close}>
+        <Icon icon="close" />
+      </ButtonBase>
+      <div className={styles.alert}>
+        <div className={styles.alertHeader}>
+          <div className={styles.alertIcon}>
+            <Icon icon="logoMini" width={6} height={5} />
+          </div>
+          <Typography
+            variant="inherit"
+            transform="uppercase"
+            className={styles.alertTitle}
+          >
+            DEFIHELPER.IO
+          </Typography>
+          <Typography variant="inherit" className={styles.alertTime}>
+            now
+          </Typography>
+        </div>
+        <Typography
+          variant="body2"
+          as="div"
+          weight="bold"
+          className={styles.alertSubtitle}
+        >
+          Auto-stake notifications
         </Typography>
+        <div className={styles.alertText}>
+          <Typography variant="inherit" as="div">
+            Tracked Balance $30.41,
+          </Typography>
+          <Typography variant="inherit" as="div">
+            Total unclaimed $6.05
+          </Typography>
+        </div>
+      </div>
+      <Typography variant="body3" as="div" className={styles.text}>
+        Do you want to do the same? Our users with connected notifications earn
+        MUCH MORE!
       </Typography>
       <div className={styles.buttons}>
         <Button
           size="small"
-          color="blue"
+          color="primary"
           variant="contained"
           className={styles.button}
           onClick={model.openTelegram}
         >
-          Turn on
-        </Button>
-        <Button
-          size="small"
-          color="blue"
-          variant="outlined"
-          className={styles.button}
-          onClick={handleHandleNoThanks}
-        >
-          No Thanks
+          Turn on Notifications
         </Button>
       </div>
     </Paper>
