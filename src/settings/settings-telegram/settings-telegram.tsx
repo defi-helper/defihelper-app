@@ -76,7 +76,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
         </div>
       </div>
       <Typography variant="body3" as="div" className={styles.text}>
-        Do you want to receive daily updates on your portfolio's balance?
+        Do you want to receive daily updates on your portfolio&apos;s balance?
       </Typography>
       <div className={styles.buttons}>
         <Button
