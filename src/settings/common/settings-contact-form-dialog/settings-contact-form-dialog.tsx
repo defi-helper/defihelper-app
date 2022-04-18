@@ -9,7 +9,6 @@ import * as styles from './settings-contact-form-dialog.css'
 import { settingsContactFormSchame } from './settings-contact-form-dialog.schema'
 
 export type FormValues = {
-  name: string
   address: string
   broker: UserContactBrokerEnum
 }
@@ -32,9 +31,8 @@ export const SettingsContactFormDialog: React.VFC<SettingsContactFormDialogProps
       resolver: yupResolver(settingsContactFormSchame),
     })
 
-    const handleOnSubmit = ({ broker, address, name }: FormValues) => {
+    const handleOnSubmit = ({ broker, address }: FormValues) => {
       props.onConfirm({
-        name,
         broker,
         address: broker === UserContactBrokerEnum.Email ? address : '',
       })
@@ -45,15 +43,6 @@ export const SettingsContactFormDialog: React.VFC<SettingsContactFormDialogProps
     return (
       <Dialog className={styles.root}>
         <form noValidate onSubmit={hookFormSubmit(handleOnSubmit)}>
-          <Input
-            {...register('name')}
-            label="Name"
-            placeholder="Contact Name"
-            className={styles.input}
-            disabled={formState.isSubmitting}
-            helperText={formState.errors.name?.message}
-            error={Boolean(formState.errors.name?.message)}
-          />
           {broker === UserContactBrokerEnum.Email && (
             <Input
               {...register('address')}

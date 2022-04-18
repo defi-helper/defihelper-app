@@ -13,8 +13,8 @@ export type SettingsContactCardProps = {
   address?: string
   type: string
   status?: UserContactStatusEnum
-  onEdit?: () => void
-  onDelete?: () => void
+  onConnect?: () => void
+  onDisconnect?: () => void
   loading?: boolean
   className?: string
 }
@@ -24,17 +24,19 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
 ) => {
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
-      <div className={styles.title}>
-        <Typography>{props.title}</Typography>
-        {props.status === UserContactStatusEnum.Inactive && (
-          <Chip color="grey">{props.status}</Chip>
-        )}
-      </div>
-      <div className={styles.subtitle}>
+      <Typography className={styles.title}>
         <Icon
           icon={props.type === 'email' ? 'email' : 'telegram'}
           className={styles.icon}
         />
+        <Typography variant="inherit">{props.title}</Typography>
+        {props.status === UserContactStatusEnum.Inactive && (
+          <Chip color="grey" className={styles.status}>
+            {props.status}
+          </Chip>
+        )}
+      </Typography>
+      <div className={styles.subtitle}>
         <Typography variant="body2" as="span">
           {props.address}
         </Typography>
@@ -45,7 +47,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
             size="small"
             variant="light"
             color="primary"
-            onClick={props.onEdit}
+            onClick={props.onConnect}
             loading={props.loading}
           >
             Connect
@@ -55,7 +57,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
             size="small"
             variant="light"
             color="red"
-            onClick={props.onDelete}
+            onClick={props.onDisconnect}
             loading={props.loading}
           >
             Disconnect
