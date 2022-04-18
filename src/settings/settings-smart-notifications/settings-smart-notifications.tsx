@@ -5,13 +5,15 @@ import {
   SettingsHeader,
   SettingsPaper,
   SettingsGrid,
-  SettingsContactFormDialog,
   SettingsSuccessDialog,
 } from '~/settings/common'
 import { SettingsNotificationsCard } from '~/settings/common/settings-notifications-card'
 import { Paper } from '~/common/paper'
 import { Loader } from '~/common/loader'
-import { UserNotificationTypeEnum } from '~/graphql/_generated-types'
+import {
+  UserContactBrokerEnum,
+  UserNotificationTypeEnum,
+} from '~/graphql/_generated-types'
 import { useDialog } from '~/common/dialog'
 import * as settingsContact from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './settings-smart-notifications.css'
@@ -27,7 +29,6 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
   const loading = useStore(model.fetchUserNotificationsListFx.pending)
   const notificationsList = useStore(model.$userNotificationsList)
 
-  const [openContactForm] = useDialog(SettingsContactFormDialog)
   const [openSuccess] = useDialog(SettingsSuccessDialog)
 
   const contacts = useStore(settingsContact.$userContactList)
@@ -43,12 +44,14 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
       !contacts.length &&
       state
     ) {
-      const result = await openContactForm()
-
-      const data = await settingsContact.createUserContactFx(result)
+      const data = await settingsContact.createUserContactFx({
+        broker: UserContactBrokerEnum.Telegram,
+        name: 'telegram',
+        address: '',
+      })
 
       await openSuccess({
-        type: result.broker,
+        type: UserContactBrokerEnum.Telegram,
         confirmationCode: data.confirmationCode,
       }).catch((error: Error) => console.error(error.message))
     }

@@ -3,7 +3,6 @@ import * as yup from 'yup'
 import { UserContactBrokerEnum } from '~/graphql/_generated-types'
 
 export const settingsContactFormSchame = yup.object().shape({
-  name: yup.string().required('Required'),
   broker: yup
     .string()
     .oneOf(

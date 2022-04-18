@@ -16,8 +16,11 @@ export const root = style({
 
 export const title = style({
   display: 'flex',
-  justifyContent: 'space-between',
   alignItems: 'center',
+})
+
+export const status = style({
+  marginLeft: 'auto',
 })
 
 export const subtitle = style({
@@ -26,8 +29,8 @@ export const subtitle = style({
 })
 
 export const icon = style({
-  width: 20,
-  height: 20,
+  width: '1em',
+  height: '1em',
   verticalAlign: 'middle',
   marginRight: 4,
 })
