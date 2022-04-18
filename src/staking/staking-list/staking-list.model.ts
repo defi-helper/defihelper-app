@@ -88,7 +88,6 @@ export const fetchScannerFx = stakingListDomain.createEffect(
   async (contracts: Contract[]) => {
     const stakingListWithAutostaking = contracts.map(async (contract) => {
       let syncedBlock = -1
-      let callbacks: { callbackUrl: string }[] = []
 
       const scannerContract = await stakingApi.scannerGetContract({
         network: contract.network,
@@ -100,20 +99,6 @@ export const fetchScannerFx = stakingListDomain.createEffect(
           id: scannerContract.id,
         })
 
-        callbacks = [
-          ...callbacks,
-          ...(
-            await Promise.all(
-              listenedPools.map((v) =>
-                stakingApi.scannerGetEventListenerCallback({
-                  contract: v.contract,
-                  listener: v.id,
-                })
-              )
-            )
-          ).flat(),
-        ]
-
         syncedBlock =
           Math.min(...listenedPools.map(({ syncHeight }) => syncHeight)) || 0
       }
@@ -121,7 +106,6 @@ export const fetchScannerFx = stakingListDomain.createEffect(
       return {
         scannerId: scannerContract?.id,
         syncedBlock,
-        callbacks,
         contractId: contract.id,
       }
     })
@@ -133,12 +117,10 @@ export const fetchScannerFx = stakingListDomain.createEffect(
           scannerId?: string
           syncedBlock: number
           contractId: string
-          callbacks: { callbackUrl: string }[]
         }
       >
     >((acc, scannerItem) => {
       acc[scannerItem.contractId] = scannerItem
-
       return acc
     }, {})
   }
