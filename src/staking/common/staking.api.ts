@@ -227,14 +227,6 @@ export const stakingApi = {
       `${config.SCANNER_HOST}/contract/${variables.id}/event-listener`
     ).then((res) => res.json()),
 
-  scannerGetEventListenerCallback: (variables: {
-    contract: string
-    listener: string
-  }): Promise<{ callbackUrl: string }[]> =>
-    fetch(
-      `${config.SCANNER_HOST}/contract/${variables.contract}/event-listener/${variables.listener}/call-back`
-    ).then((res) => res.json()),
-
   scannerGetContract: (variables: {
     network: string
     address: string

@@ -32,7 +32,6 @@ export type StakingContractCardProps = {
   scannerData: {
     scannerId?: string | undefined
     syncedBlock: number
-    callbacks: { callbackUrl: string }[]
     contractId: string
   }
   hideAutostakingBoost: boolean
