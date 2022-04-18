@@ -41,18 +41,35 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
     try {
       if (!user) return
 
-      const result = await openContactForm({
-        defaultValues: {
+      if (broker === UserContactBrokerEnum.Telegram) {
+        const data = await model.createUserContactFx({
+          address: '',
           broker,
-        },
-      })
+          name: 'telegram',
+        })
 
-      const data = await model.createUserContactFx(result)
+        await openSuccess({
+          type: broker,
+          confirmationCode: data.confirmationCode,
+        })
+      } else {
+        const result = await openContactForm({
+          defaultValues: {
+            broker,
+          },
+        })
 
-      await openSuccess({
-        type: broker,
-        confirmationCode: data.confirmationCode,
-      })
+        const data = await model.createUserContactFx({
+          ...result,
+          broker,
+          name: result.address ?? 'telegram',
+        })
+
+        await openSuccess({
+          type: broker,
+          confirmationCode: data.confirmationCode,
+        })
+      }
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -66,28 +83,6 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
         await openConfirm({ name: contact.name })
 
         model.deleteUserContactFx(contact.id)
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message)
-        }
-      }
-    }
-
-  const handleUpdateContact =
-    (contact: typeof contactList[number]) => async () => {
-      try {
-        const defaultValues = {
-          name: contact.name,
-          address: contact.address,
-          broker: contact.broker,
-        }
-
-        const result = await openContactForm({ defaultValues })
-
-        model.updateUserContactFx({
-          id: contact.id,
-          name: result.name,
-        })
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
@@ -114,7 +109,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
       <SettingsGrid>
         <SettingsContactCard
           address={telegram?.address}
-          title={telegram?.name || telegram?.address || 'Telegram'}
+          title="Telegram"
           type={UserContactBrokerEnum.Telegram}
           loading={
             telegram?.editing ||
@@ -123,16 +118,12 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
               creatingParams?.broker === UserContactBrokerEnum.Telegram)
           }
           status={telegram?.status}
-          onEdit={
-            telegram
-              ? handleUpdateContact(telegram)
-              : handleOpenContactForm(UserContactBrokerEnum.Telegram)
-          }
-          onDelete={telegram ? handleDeleteContact(telegram) : undefined}
+          onConnect={handleOpenContactForm(UserContactBrokerEnum.Telegram)}
+          onDisconnect={telegram ? handleDeleteContact(telegram) : undefined}
         />
         <SettingsContactCard
           address={email?.address}
-          title={email?.name || email?.address || 'Email'}
+          title="Email"
           type={UserContactBrokerEnum.Email}
           loading={
             email?.editing ||
@@ -141,12 +132,8 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
               creatingParams?.broker === UserContactBrokerEnum.Email)
           }
           status={email?.status}
-          onEdit={
-            email
-              ? handleUpdateContact(email)
-              : handleOpenContactForm(UserContactBrokerEnum.Email)
-          }
-          onDelete={email ? handleDeleteContact(email) : undefined}
+          onConnect={handleOpenContactForm(UserContactBrokerEnum.Email)}
+          onDisconnect={email ? handleDeleteContact(email) : undefined}
         />
         <SettingsPaper />
       </SettingsGrid>
