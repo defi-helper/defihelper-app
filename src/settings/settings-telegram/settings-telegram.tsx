@@ -71,12 +71,12 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
             Tracked Balance $3000.41,
           </Typography>
           <Typography variant="inherit" as="div">
-            Total unclaimed $65.05
+            Total unclaimed $652.05
           </Typography>
         </div>
       </div>
       <Typography variant="body3" as="div" className={styles.text}>
-        Do you want to do the same? Daily updates on your portfolio’s balance
+        Do you want to receive daily updates on your portfolio's balance?
       </Typography>
       <div className={styles.buttons}>
         <Button
@@ -86,7 +86,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
           className={styles.button}
           onClick={model.openTelegram}
         >
-          Turn on Notifications
+          CONNECT TELEGRAM
         </Button>
       </div>
     </Paper>
