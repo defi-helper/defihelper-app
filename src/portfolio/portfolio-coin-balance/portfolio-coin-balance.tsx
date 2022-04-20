@@ -17,7 +17,7 @@ const BALANCE = [
   {
     valueY: 'stableCoin',
     format: 'stableCoinFormat',
-    name: 'Stable coins',
+    name: 'Stablecoins',
     dateX: 'date',
     color: '#4463EE',
   },

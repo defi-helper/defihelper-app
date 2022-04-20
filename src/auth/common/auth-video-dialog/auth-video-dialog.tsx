@@ -98,11 +98,11 @@ export const AuthVideoDialog: React.VFC<AuthVideoDialogProps> = (props) => {
         </div>
         <div>
           <Link
-            href="https://defihelper.io/static/media/Math_Behind_DeFiHelper.pdf"
+            href="https://www.youtube.com/watch?v=pVTxnp0qujw"
             target="_blank"
             underline="always"
           >
-            Math behind DFH
+            What Is DeFiHelper? A Complete Overview
           </Link>
         </div>
         <div>
