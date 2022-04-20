@@ -62,53 +62,73 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
   ]
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
+  //   Huobi
+  // OKEx
+  // AscendEX
+  // MEXC
+  // AAX
+  // Bitmart
+  // Coinex
+  // Poloniex
+  // FTX
+
   const handlers = {
     [WalletExchangeTypeEnum.Binance]: {
+      title: 'Binance',
       dialog: openConnectBinance,
       effect: model.connectIntegrationApiExchangeFx,
     },
 
     [WalletExchangeTypeEnum.Huobi]: {
+      title: 'Huobi',
       dialog: openConnectHuobi,
       effect: model.connectIntegrationApiExchangeFx,
     },
 
     [WalletExchangeTypeEnum.Okex]: {
+      title: 'OKEx',
       dialog: openConnectOkex,
       effect: model.connectIntegrationApiExchangeFx,
     },
 
     [WalletExchangeTypeEnum.Ascendex]: {
+      title: 'AscendEX',
       dialog: openConnectAscendex,
       effect: model.connectIntegrationApiExchangeFx,
     },
 
     [WalletExchangeTypeEnum.Mexc]: {
+      title: 'MEXC',
       dialog: openConnectMexc,
       effect: model.connectIntegrationApiExchangeFx,
     },
 
     [WalletExchangeTypeEnum.Aax]: {
+      title: 'AAX',
       dialog: openConnectAax,
       effect: model.connectIntegrationApiExchangeFx,
     },
 
     [WalletExchangeTypeEnum.Bitmart]: {
+      title: 'Bitmart',
       dialog: openConnectBitmart,
       effect: model.connectIntegrationApiExchangeFx,
     },
 
     [WalletExchangeTypeEnum.Coinex]: {
+      title: 'Coinex',
       dialog: openConnectCoinex,
       effect: model.connectIntegrationApiExchangeFx,
     },
 
     [WalletExchangeTypeEnum.Poloniex]: {
+      title: 'Poloniex',
       dialog: openConnectPoloniex,
       effect: model.connectIntegrationApiExchangeFx,
     },
 
     [WalletExchangeTypeEnum.Ftx]: {
+      title: 'FTX',
       dialog: openConnectFtx,
       effect: model.connectIntegrationApiExchangeFx,
     },
@@ -171,7 +191,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
             <SettingsIntegrationCard
               key={integration?.id ?? integrationType}
               icon={<Icon icon={integrationType} width={28} height={28} />}
-              platform={integrationType}
+              platform={handlers[integrationType].title}
               account={integration?.account}
               onConnect={handleConnectIntegration(integrationType)}
               onDisconnect={handleDisconnect(integration?.id)}
