@@ -2212,6 +2212,28 @@ export type TokenAliasMetricType = {
   myPortfolioPercent: Scalars['String']
 }
 
+export type TokenAliasStakedStatistics = {
+  __typename?: 'TokenAliasStakedStatistics'
+  /** Identificator */
+  id: Scalars['UuidType']
+  /** Name */
+  name: Scalars['String']
+  /** Symbol */
+  symbol: Scalars['String']
+  /** Logo url */
+  logoUrl?: Maybe<Scalars['String']>
+  /** Token liquidity */
+  liquidity: TokenAliasLiquidityEnum
+  metric: TokenAliasMetricType
+  tokens: TokenListInteractedType
+}
+
+export type TokenAliasStakedStatisticsTokensArgs = {
+  filter?: Maybe<TokenListInteractedFilterInputType>
+  sort?: Maybe<Array<TokenListInteractedSortInputType>>
+  pagination?: Maybe<TokenListInteractedPaginationInputType>
+}
+
 export type TokenAliasUpdateInputType = {
   /** Name */
   name?: Maybe<Scalars['String']>
@@ -2225,6 +2247,39 @@ export type TokenListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   address?: Maybe<Array<Scalars['String']>>
   search?: Maybe<Scalars['String']>
+}
+
+export type TokenListInteractedFilterInputType = {
+  blockchain?: Maybe<BlockchainFilterInputType>
+  address?: Maybe<Array<Scalars['String']>>
+  search?: Maybe<Scalars['String']>
+}
+
+export type TokenListInteractedPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type TokenListInteractedSortInputType = {
+  column: TokenListInteractedSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum TokenListInteractedSortInputTypeColumnEnum {
+  Id = 'id',
+  Name = 'name',
+  Symbol = 'symbol',
+  Address = 'address',
+  CreatedAt = 'createdAt',
+}
+
+export type TokenListInteractedType = {
+  __typename?: 'TokenListInteractedType'
+  /** Elements */
+  list?: Maybe<Array<TokenType>>
+  pagination: Pagination
 }
 
 export type TokenListPaginationInputType = {
@@ -2844,6 +2899,27 @@ export type UserTokenAliasListType = {
   pagination: Pagination
 }
 
+export type UserTokenAliasesStakedMetricsListFilterInputType = {
+  /** Liquidity token */
+  liquidity?: Maybe<Array<TokenAliasLiquidityEnum>>
+  /** Target protocol */
+  protocol: Scalars['UuidType']
+}
+
+export type UserTokenAliasesStakedMetricsListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserTokenAliasesStakedMetricsListType = {
+  __typename?: 'UserTokenAliasesStakedMetricsListType'
+  /** Elements */
+  list?: Maybe<Array<TokenAliasStakedStatistics>>
+  pagination: Pagination
+}
+
 export type UserTokenMetricChartFilterInputType = {
   /** Target token alias */
   tokenAlias?: Maybe<UserMetricsTokenAliasFilterInputType>
@@ -2885,6 +2961,7 @@ export type UserType = {
   locale: LocaleEnum
   /** Is portfolio collected */
   isPorfolioCollected: Scalars['Boolean']
+  tokenAliasesStakedMetrics: UserTokenAliasesStakedMetricsListType
   tokenAliases: UserTokenAliasListType
   wallets: WalletListType
   exchanges: WalletExchangeListType
@@ -2896,6 +2973,11 @@ export type UserType = {
   store: UserStoreType
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
+}
+
+export type UserTypeTokenAliasesStakedMetricsArgs = {
+  filter?: Maybe<UserTokenAliasesStakedMetricsListFilterInputType>
+  pagination?: Maybe<UserTokenAliasesStakedMetricsListPaginationInputType>
 }
 
 export type UserTypeTokenAliasesArgs = {
@@ -3916,15 +3998,21 @@ export type AssetsListByExchangeQuery = { __typename?: 'Query' } & {
 }
 
 export type AssetListByProtocolQueryVariables = Exact<{
-  protocolId?: Maybe<Scalars['UuidType']>
+  protocolId: Scalars['UuidType']
 }>
 
 export type AssetListByProtocolQuery = { __typename?: 'Query' } & {
   me?: Maybe<
     { __typename?: 'UserType' } & {
-      tokenAliases: { __typename?: 'UserTokenAliasListType' } & {
+      tokenAliasesStakedMetrics: {
+        __typename?: 'UserTokenAliasesStakedMetricsListType'
+      } & {
         list?: Maybe<
-          Array<{ __typename?: 'TokenAlias' } & PortfolioAssetFragment>
+          Array<
+            {
+              __typename?: 'TokenAliasStakedStatistics'
+            } & PortfolioAssetByProtocolFragment
+          >
         >
       }
     }
@@ -4073,6 +4161,15 @@ export type OnWalletMetricUpdatedSubscription = {
     'id'
   >
 }
+
+export type PortfolioAssetByProtocolFragment = {
+  __typename?: 'TokenAliasStakedStatistics'
+} & Pick<TokenAliasStakedStatistics, 'symbol' | 'name' | 'logoUrl'> & {
+    metric: { __typename?: 'TokenAliasMetricType' } & Pick<
+      TokenAliasMetricType,
+      'myPortfolioPercent' | 'myUSD' | 'myBalance'
+    >
+  }
 
 export type PortfolioAssetByWalletFragment = {
   __typename?: 'WalletTokenAliasType'
@@ -5559,6 +5656,18 @@ export const GovernanceProposalFragmentFragmentDoc = gql`
     endVoteDate
   }
 `
+export const PortfolioAssetByProtocolFragmentDoc = gql`
+  fragment portfolioAssetByProtocol on TokenAliasStakedStatistics {
+    symbol
+    name
+    logoUrl
+    metric {
+      myPortfolioPercent
+      myUSD
+      myBalance
+    }
+  }
+`
 export const PortfolioAssetByWalletFragmentDoc = gql`
   fragment portfolioAssetByWallet on WalletTokenAliasType {
     tokenAlias {
@@ -6389,19 +6498,19 @@ export function useAssetsListByExchangeQuery(
   })
 }
 export const AssetListByProtocolDocument = gql`
-  query AssetListByProtocol($protocolId: UuidType) {
+  query AssetListByProtocol($protocolId: UuidType!) {
     me {
-      tokenAliases(
+      tokenAliasesStakedMetrics(
         pagination: { limit: 50 }
         filter: { liquidity: [stable, unstable], protocol: $protocolId }
       ) {
         list {
-          ...portfolioAsset
+          ...portfolioAssetByProtocol
         }
       }
     }
   }
-  ${PortfolioAssetFragmentDoc}
+  ${PortfolioAssetByProtocolFragmentDoc}
 `
 
 export function useAssetListByProtocolQuery(

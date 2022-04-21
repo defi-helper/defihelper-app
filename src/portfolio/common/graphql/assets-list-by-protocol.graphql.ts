@@ -1,19 +1,18 @@
 import { gql } from 'urql'
-
-import { PORTFOLIO_ASSET_FRAGMENT } from './portfolio-asset.fragment.graphql'
+import { PORTFOLIO_ASSET_BY_PROTOCOL_FRAGMENT } from './portfolio-asset-by-protocol.fragment.graphql'
 
 export const ASSETS_LIST_BY_PROTOCOL = gql`
-  query AssetListByProtocol($protocolId: UuidType) {
+  query AssetListByProtocol($protocolId: UuidType!) {
     me {
-      tokenAliases(
+      tokenAliasesStakedMetrics(
         pagination: { limit: 50 }
         filter: { liquidity: [stable, unstable], protocol: $protocolId }
       ) {
         list {
-          ...portfolioAsset
+          ...portfolioAssetByProtocol
         }
       }
     }
   }
-  ${PORTFOLIO_ASSET_FRAGMENT}
+  ${PORTFOLIO_ASSET_BY_PROTOCOL_FRAGMENT}
 `

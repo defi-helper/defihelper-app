@@ -10,6 +10,7 @@ import { createGate } from 'effector-react'
 import {
   portfolioApi,
   portfolioSortAssets,
+  portfolioSortAssetsByPlatform,
   portfolioSortAssetsByWallet,
 } from '~/portfolio/common'
 import { PortfolioAssetFragment, UserType } from '~/graphql/_generated-types'
@@ -33,7 +34,7 @@ export const fetchAssetsByPlatformFx = portfolioAssetsDomain.createEffect(
   (protocolId: string) =>
     portfolioApi
       .getAssetsListByProtocol({ protocolId })
-      .then(portfolioSortAssets)
+      .then(portfolioSortAssetsByPlatform)
 )
 
 export const PortfolioAssetsGate = createGate<string | null>({
