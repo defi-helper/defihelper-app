@@ -1,5 +1,6 @@
 import { bignumberUtils } from '~/common/bignumber-utils'
 import {
+  PortfolioAssetByProtocolFragment,
   PortfolioAssetByWalletFragment,
   PortfolioAssetFragment,
 } from '~/graphql/_generated-types'
@@ -50,4 +51,30 @@ export const portfolioSortAssetsByWallet = (
       }
     })
     .sort((a, b) => Number(bignumberUtils.minus(b.metric.usd, a.metric.usd)))
+}
+
+export const portfolioSortAssetsByPlatform = (
+  list: PortfolioAssetByProtocolFragment[]
+) => {
+  const l = list.filter((v) => v.metric.myUSD !== '0')
+  const totalValue = l.reduce(
+    (prev, v) => bignumberUtils.plus(prev, v.metric.myUSD),
+    '0'
+  )
+
+  return l
+    .map((v) => {
+      return {
+        ...v,
+        metric: {
+          ...v.metric,
+          portfolioPercent: bignumberUtils
+            .getPercentage(v.metric.myUSD, totalValue)
+            .toString(),
+        },
+      }
+    })
+    .sort((a, b) =>
+      Number(bignumberUtils.minus(b.metric.myUSD, a.metric.myUSD))
+    )
 }

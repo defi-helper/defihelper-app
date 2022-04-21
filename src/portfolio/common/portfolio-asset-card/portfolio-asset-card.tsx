@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
 import {
+  PortfolioAssetByProtocolFragment,
   PortfolioAssetByWalletFragment,
   PortfolioAssetFragment,
 } from '~/graphql/_generated-types'
@@ -10,7 +11,10 @@ import * as styles from './portfolio-asset-card.css'
 
 export type PortfolioAssetCardProps = {
   className?: string
-  row: PortfolioAssetByWalletFragment | PortfolioAssetFragment
+  row:
+    | PortfolioAssetByWalletFragment
+    | PortfolioAssetFragment
+    | PortfolioAssetByProtocolFragment
 }
 
 export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (

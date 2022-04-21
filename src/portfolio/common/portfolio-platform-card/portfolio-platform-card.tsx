@@ -7,7 +7,7 @@ import { Icon } from '~/common/icon'
 import { PortfolioAssetCard } from '~/portfolio/common'
 import { Loader } from '~/common/loader'
 import {
-  PortfolioAssetFragment,
+  PortfolioAssetByProtocolFragment,
   PortfolioProtocolsQuery,
 } from '~/graphql/_generated-types'
 import { PortfolioAssetsHeader } from '../portfolio-assets-header'
@@ -19,7 +19,7 @@ export type PortfolioAssetCardProps = {
     PortfolioProtocolsQuery['protocols']['list'],
     null | undefined
   >[number]
-  assets: PortfolioAssetFragment[]
+  assets: PortfolioAssetByProtocolFragment[]
   loading: boolean
   isCollapsed: boolean
   onToggle: () => void

@@ -96,7 +96,7 @@ export const portfolioApi = {
       )
       .toPromise()
       .then(({ data }) => {
-        return data?.me?.tokenAliases.list ?? []
+        return data?.me?.tokenAliasesStakedMetrics.list ?? []
       }),
 
   addWallet: (variables: AddWalletMutationVariables) =>
