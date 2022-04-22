@@ -39,6 +39,7 @@ export type ProtocolFormProps = {
   onResolveContracts?: (
     blockchain: BlockchainEnum,
     network: string,
+    resolver: string,
     events: string[]
   ) => void
   defaultValues?: FormValues
@@ -104,18 +105,21 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
     // eslint-disable-next-line no-alert
     const network = prompt('network number, ex.: 1')
     // eslint-disable-next-line no-alert
+    const resolver = prompt('pools resolver', 'default')
+    // eslint-disable-next-line no-alert
     const events = prompt(
       'events list comma separated, ex.: Deposit,Approval,Withdraw',
       'Deposit'
     )
 
-    if (!blockchain || !network || !events || !props.onResolveContracts) {
+    if (!blockchain || !network || !events || !resolver || !props.onResolveContracts) {
       return
     }
 
     props.onResolveContracts(
       blockchain,
       network,
+      resolver,
       events.split(',').map((e) => e.trim())
     )
   }
