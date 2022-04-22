@@ -64,11 +64,12 @@ export const ProtocolUpdate: React.VFC<ProtocolUpdateProps> = () => {
           onResolveContracts={(
             blockchain: BlockchainEnum,
             network: string,
+            resolver: string,
             events: string[]
           ) =>
             model.protocolResolveContractsFx({
               id: params.protocolId,
-              input: { blockchain, network, events },
+              input: { blockchain, network, events, resolver },
             })
           }
           adapters={adapters}
