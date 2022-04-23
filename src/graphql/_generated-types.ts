@@ -1641,6 +1641,8 @@ export type ProtocolMetricType = {
 }
 
 export type ProtocolResolveContractsInputType = {
+  /** Contracts resolver */
+  resolver?: Scalars['String']
   /** Blockchain type */
   blockchain: BlockchainEnum
   /** Blockchain network id */

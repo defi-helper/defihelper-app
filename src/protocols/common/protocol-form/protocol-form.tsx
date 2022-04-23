@@ -112,7 +112,13 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
       'Deposit'
     )
 
-    if (!blockchain || !network || !events || !resolver || !props.onResolveContracts) {
+    if (
+      !blockchain ||
+      !network ||
+      !events ||
+      !resolver ||
+      !props.onResolveContracts
+    ) {
       return
     }
 
