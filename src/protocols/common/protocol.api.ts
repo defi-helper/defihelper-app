@@ -53,6 +53,13 @@ import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 import { PROTOCOL_RESOLVE_CONTRACTS } from '~/protocols/common/graphql/protocol-resolve-contracts.graphql'
 import { config } from '~/config'
 
+const client = getAPIClient()
+
+const fetchOptions =
+  typeof client.fetchOptions === 'function'
+    ? client.fetchOptions?.()
+    : client.fetchOptions
+
 export const protocolsApi = {
   protocolList: (variables: ProtocolsQueryVariables, signal?: AbortSignal) =>
     getAPIClient()
@@ -60,6 +67,7 @@ export const protocolsApi = {
         requestPolicy: 'network-only',
         fetchOptions: {
           signal,
+          ...fetchOptions,
         },
       })
       .toPromise()
@@ -79,6 +87,7 @@ export const protocolsApi = {
         {
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
@@ -96,6 +105,7 @@ export const protocolsApi = {
         {
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
@@ -121,6 +131,7 @@ export const protocolsApi = {
         {
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
@@ -138,6 +149,7 @@ export const protocolsApi = {
         {
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
@@ -175,6 +187,7 @@ export const protocolsApi = {
         {
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
@@ -192,6 +205,7 @@ export const protocolsApi = {
         {
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
@@ -212,6 +226,7 @@ export const protocolsApi = {
         {
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
@@ -247,6 +262,7 @@ export const protocolsApi = {
       >(PROTOCOL_RESOLVE_CONTRACTS, variables, {
         fetchOptions: {
           signal,
+          ...fetchOptions,
         },
       })
       .toPromise()
@@ -272,6 +288,7 @@ export const protocolsApi = {
         {
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
@@ -289,6 +306,7 @@ export const protocolsApi = {
         {
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
@@ -306,6 +324,7 @@ export const protocolsApi = {
         {
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
@@ -327,6 +346,7 @@ export const protocolsApi = {
           requestPolicy: 'cache-and-network',
           fetchOptions: {
             signal,
+            ...fetchOptions,
           },
         }
       )
