@@ -117,7 +117,8 @@ export const ProtocolForm: React.VFC<ProtocolFormProps> = (props) => {
       !network ||
       !events ||
       !resolver ||
-      !props.onResolveContracts) {
+      !props.onResolveContracts
+    ) {
       return
     }
 
