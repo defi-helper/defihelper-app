@@ -23,9 +23,7 @@ ENV REACT_APP_ADAPTERS_HOST ${REACT_APP_ADAPTERS_HOST:-https://adapters.defihelp
 ARG REACT_APP_WS_API_URL
 ENV REACT_APP_WS_API_URL ${REACT_APP_WS_API_URL:-wss://backend.defihelper.io/api}
 
-RUN apk --update add git
 COPY package*.json ./
-RUN npm install -g husky cross-env
 RUN npm ci
 COPY . .
 RUN npm run build
