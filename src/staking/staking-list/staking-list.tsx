@@ -47,6 +47,7 @@ import * as styles from './staking-list.css'
 export type StakingListProps = {
   protocolId: string
   protocolAdapter: string
+  className?: string
 }
 
 const sortIcon = (
@@ -414,7 +415,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           </Button>
         </Can>
       </div>
-      <div className={styles.table}>
+      <div className={clsx(styles.table, props.className)}>
         <Paper radius={8} className={styles.tableInner}>
           {loading && !stakingList.length && (
             <div className={clsx(styles.loader, styles.listItem)}>

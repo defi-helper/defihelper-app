@@ -11,6 +11,7 @@ import {
 import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
 import LazyLoad from 'react-lazyload'
+import Joyride from 'react-joyride'
 
 import { AppLayout } from '~/layouts'
 import { authModel, Can, useAbility } from '~/auth'
@@ -44,6 +45,7 @@ import { ProtocolEstimatedChart } from '~/protocols/protocol-estimated-chart'
 import { ProtocolTvlChart } from '~/protocols/protocol-tvl-chart'
 import { ProtocolUniqueWalletsChart } from '~/protocols/protocol-unique-wallets-chart'
 import { ProtocolMediaActivity } from '../protocol-media-activity'
+import { OnboardTooltip } from '~/common/onboard-tooltip'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
 
@@ -81,6 +83,19 @@ const EARNINGS = [
 ]
 
 const HEIGHT = 300
+
+const STEPS = [
+  {
+    target: `.${styles.charts}`,
+    content:
+      "Now it looks quiet empty, but once you connect your wallet we'll provide you with awesome statistics, wich help you earn more. you can do it right now!",
+  },
+  {
+    target: `.${styles.staking}`,
+    content:
+      'THERE YOU CAN CHOOSE ONE OF STAKING CONTRACTS WICH SUPPORT AUTO-STAKING. iN GENERAL, AUTO-STAKING evaluates the efficiency therein, collects the reward, transfers it through an exchange, and then returns it to the bulk of the deposit. YOU CAN LEARN MORE ABOUT IT AT THIS ARTICLE ON MEDIUM.',
+  },
+]
 
 export const ProtocolDetail: React.FC = () => {
   const params = useParams<{ protocolId: string }>()
@@ -176,6 +191,13 @@ export const ProtocolDetail: React.FC = () => {
       )}
       {protocol && (
         <>
+          <Joyride
+            run
+            steps={STEPS}
+            showSkipButton
+            continuous
+            tooltipComponent={OnboardTooltip}
+          />
           <div className={styles.header}>
             {protocol.icon && (
               <img src={protocol.icon} alt="" className={styles.icon} />
@@ -242,7 +264,7 @@ export const ProtocolDetail: React.FC = () => {
                     ))}
                   </Grid>
                 )}
-                <ProtocolCharts>
+                <div className={styles.mb120}>
                   <ProtocolCharts.Header>
                     <Typography variant="h3">Statistics</Typography>
                     {protocol.metric.myMinUpdatedAt && (
@@ -251,19 +273,25 @@ export const ProtocolDetail: React.FC = () => {
                       </ProtocolLastUpdated>
                     )}
                   </ProtocolCharts.Header>
-                  <LazyLoad height={HEIGHT}>
-                    <ProtocolCoinBalanceChart contracts={protocol.contracts} />
-                  </LazyLoad>
-                  <LazyLoad height={HEIGHT}>
-                    <ProtocolEstimatedChart metric={protocol.metric} />
-                  </LazyLoad>
-                </ProtocolCharts>
-                <LazyLoad height={HEIGHT} className={styles.mb120}>
-                  <ProtocolTotal
-                    {...protocol.metric}
-                    hasAutostaking={protocol.hasAutostaking}
-                  />
-                </LazyLoad>
+                  <div className={styles.charts}>
+                    <ProtocolCharts>
+                      <LazyLoad height={HEIGHT}>
+                        <ProtocolCoinBalanceChart
+                          contracts={protocol.contracts}
+                        />
+                      </LazyLoad>
+                      <LazyLoad height={HEIGHT}>
+                        <ProtocolEstimatedChart metric={protocol.metric} />
+                      </LazyLoad>
+                    </ProtocolCharts>
+                    <LazyLoad height={HEIGHT}>
+                      <ProtocolTotal
+                        {...protocol.metric}
+                        hasAutostaking={protocol.hasAutostaking}
+                      />
+                    </LazyLoad>
+                  </div>
+                </div>
                 <LazyLoad height={HEIGHT} className={styles.automates}>
                   <StakingAutomates protocolId={params.protocolId} />
                 </LazyLoad>
@@ -271,6 +299,7 @@ export const ProtocolDetail: React.FC = () => {
                   <StakingList
                     protocolId={params.protocolId}
                     protocolAdapter={protocol.adapter}
+                    className={styles.staking}
                   />
                 </LazyLoad>
               </Route>

@@ -135,3 +135,7 @@ export const automates = style({
 export const edit = style({
   marginLeft: 10,
 })
+
+export const charts = style({})
+
+export const staking = style({})
