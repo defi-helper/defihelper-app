@@ -13,7 +13,7 @@ jobs:
         args: "https://adcorn-prod.gitlab.yandexcloud.net/defihelper/app"
       env:
         GITLAB_HOSTNAME: "adcorn-prod.gitlab.yandexcloud.net"
-        GITLAB_USERNAME: "belaytzev"
+        GITLAB_USERNAME: "vkomissarov"
         GITLAB_PASSWORD: ${{ secrets.GITLAB_ADCORN_PROD_PASSWORD }}
-        GITLAB_PROJECT_ID: "3"
+        GITLAB_PROJECT_ID: "7"
         GITHUB_TOKEN: ${{ secrets.GTHUB_TOKEN }}
