@@ -108,6 +108,26 @@ export const row = style({
 export const tableHeader = style({
   color: theme.colors.textColorGrey,
   borderBottom: `1px solid ${theme.colors.border}`,
+  zIndex: 1,
+
+  ':before': {
+    content: '""',
+    background: `${theme.colors.textColorGrey}`,
+    opacity: 0,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
+    transition: 'opacity .3s ease-in-out',
+  },
+})
+
+export const fixedTableHeader = style({
+  ':before': {
+    opacity: 0.3,
+  },
 })
 
 export const listItem = style({
