@@ -22,13 +22,13 @@ export const injected = new InjectedConnector({
 })
 
 export const ledger = new LedgerConnector({
-  chainId: config.DEFAULT_CHAIN_ID,
+  chainId: Number(config.DEFAULT_CHAIN_ID),
   url: config.ETH_URL,
   pollingInterval: config.POLLING_INTERVAL,
 })
 
 export const trezor = new TrezorConnector({
-  chainId: config.DEFAULT_CHAIN_ID,
+  chainId: Number(config.DEFAULT_CHAIN_ID),
   url: config.ETH_URL,
   pollingInterval: config.POLLING_INTERVAL,
   manifestEmail: config.TREZOR_EMAIL,
@@ -50,12 +50,12 @@ export const walletconnect = new WalletConnectConnector({
 
 export const fortmatic = new FortmaticConnector({
   apiKey: config.FORTMATIC_KEY ?? '',
-  chainId: config.DEFAULT_CHAIN_ID,
+  chainId: Number(config.DEFAULT_CHAIN_ID),
 })
 
 export const portis = new PortisConnector({
   dAppId: config.PORTIS_ID ?? '',
-  networks: [config.DEFAULT_CHAIN_ID],
+  networks: [Number(config.DEFAULT_CHAIN_ID)],
 })
 
 export const binance = new BscConnector({

@@ -14,8 +14,7 @@ import {
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { GovReceiptFilterInputType } from '~/graphql/_generated-types'
 
-const GOVERNOR_BRAVO =
-  contracts[config.IS_DEV ? '3' : '1'].GovernorBravo.address
+const GOVERNOR_BRAVO = contracts[config.DEFAULT_CHAIN_ID].GovernorBravo.address
 
 export enum CastVotes {
   against,
@@ -40,7 +39,7 @@ export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect(
       .detail({
         filter: {
           proposalId,
-          network: config.IS_DEV ? '3' : '1',
+          network: config.DEFAULT_CHAIN_ID,
           contract: GOVERNOR_BRAVO,
           cache: true,
         },
