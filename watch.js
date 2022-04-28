@@ -16,7 +16,7 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 
 config.resolve.alias = {
   ...config.resolve.alias,
-  '~': path.resolve(__dirname, './src')
+  '~': path.resolve(__dirname, './src'),
 }
 
 config.output.path = configProd.output.path
@@ -35,7 +35,7 @@ config.resolve.plugins = []
 function copyPublicFolder() {
   fs.copySync(paths.appPublic, paths.appBuild, {
     dereference: true,
-    filter: (file) => file !== paths.appHtml
+    filter: (file) => file !== paths.appHtml,
   })
 }
 
@@ -48,7 +48,7 @@ webpack(config).watch({}, (err, stats) => {
   console.error(
     stats.toString({
       chunks: false,
-      colors: true
+      colors: true,
     })
   )
 })
