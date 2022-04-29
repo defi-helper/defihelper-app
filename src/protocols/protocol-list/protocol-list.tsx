@@ -84,7 +84,9 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   })
 
   useEffect(() => {
-    history.replace({ search: `filter=${currentOption}` })
+    history.replace({
+      search: `filter=${currentOption}`,
+    })
   }, [currentOption, history])
 
   const handleFavorite = (protocol: Protocol) => () => {

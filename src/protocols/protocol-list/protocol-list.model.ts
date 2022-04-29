@@ -23,7 +23,7 @@ type Params = {
   debank?: boolean
 }
 
-const abortController = new AbortController()
+export const abortController = new AbortController()
 
 export const fetchProtocolListFx = protocolListDomain.createEffect(
   (params: Params) => {
@@ -240,8 +240,6 @@ export const $tabsCount = restore(fetchProtocolListCountFx.doneData, {
   favorites: params.favorite ? state.favorites + 1 : state.favorites - 1,
 }))
 
-ProtocolListGate.state.watch(() => abortController.abort())
-
 $protocolListMetrics.reset(
   ProtocolListGate.close,
   ProtocolListGate.state.updates
@@ -252,4 +250,3 @@ $protocolList.reset(
   ProtocolListGate.state.updates
 )
 $tabsCount.reset(ProtocolListGate.close)
-ProtocolListGate.close.watch(() => abortController.abort())

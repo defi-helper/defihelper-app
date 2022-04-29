@@ -40,6 +40,9 @@ export const fetchMetricFx = protocolTvlDomain.createEffect(
   }
 )
 
+export const reset = protocolTvlDomain.createEvent()
+
 export const $metric = protocolTvlDomain
   .createStore<UnitValue<typeof fetchMetricFx.doneData>>([])
   .on(fetchMetricFx.doneData, (_, payload) => payload)
+  .reset(reset)
