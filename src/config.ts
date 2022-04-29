@@ -1,10 +1,12 @@
+const isDev =
+  process.env.NODE_ENV === 'development' ||
+  process.env.REACT_APP_ENV === 'development'
+
 export const config = {
   ENV: process.env.NODE_ENV,
   SENTRY: process.env.REACT_APP_SENTRY,
-  IS_DEV:
-    process.env.NODE_ENV === 'development' ||
-    process.env.REACT_APP_ENV === 'development',
-  DEFAULT_CHAIN_ID: 1,
+  IS_DEV: isDev,
+  DEFAULT_CHAIN_ID: isDev ? '3' : '1',
   PORTIS_ID: process.env.REACT_APP_PORTIS_ID,
   FORTMATIC_KEY: process.env.REACT_APP_FORTMATIC_KEY,
   ETH_URL: '',

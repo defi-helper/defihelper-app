@@ -13,9 +13,9 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 export const governanceListDomain = createDomain()
 
 export const GOVERNOR_TOKEN =
-  contracts[config.IS_DEV ? '3' : '1'].GovernanceToken.address
+  contracts[config.DEFAULT_CHAIN_ID].GovernanceToken.address
 export const GOVERNOR_BRAVO =
-  contracts[config.IS_DEV ? '3' : '1'].GovernorBravo.address
+  contracts[config.DEFAULT_CHAIN_ID].GovernorBravo.address
 
 export const fetchGovernanceListFx = governanceListDomain.createEffect(
   ({ network, ...pagination }: PaginationState & { network: string }) =>
@@ -90,7 +90,7 @@ sample({
   clock: [GovernanceListGate.open, GovernanceListPagination.updates],
   fn: ([pagination]) => ({
     ...pagination,
-    network: config.IS_DEV ? '3' : '1',
+    network: config.DEFAULT_CHAIN_ID,
   }),
   target: fetchGovernanceListFx,
 })
