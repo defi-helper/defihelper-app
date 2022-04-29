@@ -20,8 +20,7 @@ export type ProposeParams = {
   provider: unknown
 }
 
-const GOVERNOR_BRAVO =
-  contracts[config.IS_DEV ? '3' : '1'].GovernorBravo.address
+const GOVERNOR_BRAVO = contracts[config.DEFAULT_CHAIN_ID].GovernorBravo.address
 
 export const governanceCreateDomain = createDomain()
 
