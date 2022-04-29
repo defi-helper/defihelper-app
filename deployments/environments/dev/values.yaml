@@ -4,11 +4,9 @@
 
 replicaCount: 1
 
-image:
-  repository: app
-  pullPolicy: IfNotPresent
-  tag: ""
-  dockerconfigjson: ""
+images:
+  app:
+    name: app
 
 service:
   type: ClusterIP
