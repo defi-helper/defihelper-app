@@ -32,6 +32,12 @@ import {
   AutomationProductsQueryVariables,
   AutomationProductsBalanceQuery,
   AutomationProductsBalanceQueryVariables,
+  AutomationsCreationHistoryQuery,
+  AutomationsCreationHistoryQueryVariables,
+  AutomationsAutorestakeCreationHistoryQuery,
+  AutomationsAutorestakeCreationHistoryQueryVariables,
+  AutomationsRunsHistoryQuery,
+  AutomationsRunsHistoryQueryVariables,
 } from '~/graphql/_generated-types'
 import { Automates } from './automation.types'
 import {
@@ -52,6 +58,9 @@ import {
   AUTOMATION_PRODUCTS,
   AUTOMATION_PRODUCTS_BALANCE,
 } from './graphql'
+import { AUTOMATION_AUTORESTAKE_CREATION_HISTORY } from './graphql/automation-autorestake-creation-history.graphql'
+import { AUTOMATION_CREATION_HISTORY } from './graphql/automation-creation-history.graphql'
+import { AUTOMATION_RUN_HISTORY } from './graphql/automation-runs-history.graphql'
 
 export const automationApi = {
   getTriggers: (variables: AutomationTriggersQueryVariables) =>
@@ -204,6 +213,37 @@ export const automationApi = {
       )
       .toPromise()
       .then(({ data }) => data?.automateDescription),
+
+  getAutomationsCreationHistory: () =>
+    getAPIClient()
+      .query<
+        AutomationsCreationHistoryQuery,
+        AutomationsCreationHistoryQueryVariables
+      >(AUTOMATION_CREATION_HISTORY)
+      .toPromise()
+      .then(({ data }) => data?.automatesCreationHistory),
+
+  getAutomationsAutorestakeCreationHistory: () =>
+    getAPIClient()
+      .query<
+        AutomationsAutorestakeCreationHistoryQuery,
+        AutomationsAutorestakeCreationHistoryQueryVariables
+      >(AUTOMATION_AUTORESTAKE_CREATION_HISTORY)
+      .toPromise()
+      .then(({ data }) => data?.autoRestakeAutomatesCreationHistory),
+
+  getAutomationsRunsHistory: (
+    variables?: AutomationsRunsHistoryQueryVariables
+  ) =>
+    getAPIClient()
+      .query<AutomationsRunsHistoryQuery, AutomationsRunsHistoryQueryVariables>(
+        AUTOMATION_RUN_HISTORY,
+        variables
+      )
+      .toPromise()
+      .then(({ data }) => ({
+        list: data?.automateRunHistory ?? [],
+      })),
 
   getProducts: (variables?: AutomationProductsQueryVariables) =>
     getAPIClient()
