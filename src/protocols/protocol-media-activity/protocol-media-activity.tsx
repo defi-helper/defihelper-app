@@ -35,6 +35,10 @@ export const ProtocolMediaActivity: React.VFC = () => {
     })
   }, [params, mediaActity])
 
+  useEffect(() => {
+    return () => model.reset()
+  }, [])
+
   return (
     <div className={clsx(styles.root)}>
       <Typography variant="h3" className={styles.title}>

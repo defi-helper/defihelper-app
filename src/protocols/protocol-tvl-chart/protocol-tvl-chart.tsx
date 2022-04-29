@@ -29,6 +29,8 @@ export const ProtocolTvlChart: React.VFC = () => {
     model.fetchMetricFx({
       protocolId: params.protocolId,
     })
+
+    return () => model.reset()
   }, [params.protocolId])
 
   const [tvlSum = undefined] = metric.slice(-1)
