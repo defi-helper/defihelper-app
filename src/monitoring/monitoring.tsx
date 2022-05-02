@@ -1,5 +1,5 @@
 import { useStore, useGate } from 'effector-react'
-import { useMemo } from 'react'
+import { useEffect } from 'react'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { AppLayout } from '~/layouts'
@@ -27,7 +27,7 @@ export const Monitoring: React.VFC = () => {
 
   const dfhProfitsPerNetwork = useStore(model.$dfhEarningsHistory)
 
-  useMemo(() => {
+  useEffect(() => {
     Promise.all(
       Object.values(networksConfig).map((network) =>
         model.fetchDfhProtocolEarningsHistoryFx(network.chainId.toString())
@@ -193,39 +193,45 @@ export const Monitoring: React.VFC = () => {
           />
         </Paper>
 
-        {Object.keys(dfhProfitsPerNetwork).map((network) =>
-          dfhProfitsPerNetwork[network].length ? (
-            <Paper radius={8} className={styles.root}>
-              <div className={styles.titleWrapper}>
-                <Typography variant="h5" className={styles.title}>
-                  {networksConfig[network].title} - comissions earned
-                </Typography>
+        {Object.keys(dfhProfitsPerNetwork).map((network) => (
+          <Paper radius={8} className={styles.root}>
+            <div className={styles.titleWrapper}>
+              <Typography variant="h5" className={styles.title}>
+                {networksConfig[network].title} - comissions earned
+              </Typography>
 
-                <Typography variant="h5" className={styles.total}>
-                  {dfhProfitsPerNetwork[network].pop()?.number ?? 0}
-                </Typography>
-              </div>
+              <Typography variant="h5" className={styles.total}>
+                {dfhProfitsPerNetwork[network].pop()?.number ?? 0}
+              </Typography>
+            </div>
 
-              <Chart
-                dataFields={[
-                  {
-                    valueY: 'number',
-                    dateX: 'date',
-                    color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
-                  },
-                ]}
-                data={dfhProfitsPerNetwork[network].map((point) => ({
-                  date: dateUtils.toDate(point.date),
-                  number: bignumberUtils.floor(point.number),
-                  format: bignumberUtils.format(point.number),
-                }))}
-                tooltipText="{format}"
-                id={`dfh_profits_${network}`}
-                loading={false}
-              />
-            </Paper>
-          ) : null
-        )}
+            {JSON.stringify(
+              dfhProfitsPerNetwork[network].map((point) => ({
+                date: point.date,
+                number: bignumberUtils.floor(point.number),
+                format: bignumberUtils.format(point.number),
+              }))
+            )}
+
+            <Chart
+              dataFields={[
+                {
+                  valueY: 'number',
+                  dateX: 'date',
+                  color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
+                },
+              ]}
+              data={dfhProfitsPerNetwork[network].map((point) => ({
+                date: dateUtils.toDate(point.date),
+                number: bignumberUtils.floor(point.number),
+                format: bignumberUtils.format(point.number),
+              }))}
+              tooltipText="{format}"
+              id={`dfh_profits_${network}`}
+              loading={false}
+            />
+          </Paper>
+        ))}
       </div>
     </AppLayout>
   )
