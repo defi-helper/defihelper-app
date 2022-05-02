@@ -2,7 +2,7 @@ import {
   AutomationTriggerFragmentFragment,
   WalletBlockchainType,
   AutomationProtocolsQuery,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 
 export type Trigger = AutomationTriggerFragmentFragment & { deleting?: boolean }
 

@@ -8,7 +8,7 @@ import {
   ProposalsByStatus,
 } from '~/roadmap/common'
 import { Typography } from '~/common/typography'
-import { UserType } from '~/graphql/_generated-types'
+import { UserType } from '~/api/_generated-types'
 import * as styles from './roadmap-grouped-by-status.css'
 import { paths } from '~/paths'
 

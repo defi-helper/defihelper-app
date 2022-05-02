@@ -12,7 +12,7 @@ import {
   TokenMetricQueryVariables,
   UserMetricChartSortInputTypeColumnEnum,
   UserTokenMetricChartSortInputTypeColumnEnum,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { portfolioApi } from '../common'
 
 const portfolioTotalWorth = createDomain()

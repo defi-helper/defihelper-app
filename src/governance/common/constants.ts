@@ -1,4 +1,4 @@
-import { GovProposalStateEnum } from '~/graphql/_generated-types'
+import { GovProposalStateEnum } from '~/api/_generated-types'
 
 export const GovProposalStateEnumColors = {
   [GovProposalStateEnum.Pending]: 'grey',

@@ -8,7 +8,7 @@ import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { parseError } from '~/common/parse-error'
 import { Wallet } from '~/wallets/common'
-import { BlockchainEnum } from '~/graphql/_generated-types'
+import { BlockchainEnum } from '~/api/_generated-types'
 
 export type StakingAdapter = {
   actions: null | AdapterActions

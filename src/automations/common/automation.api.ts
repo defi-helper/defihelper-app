@@ -32,7 +32,7 @@ import {
   AutomationProductsQueryVariables,
   AutomationProductsBalanceQuery,
   AutomationProductsBalanceQueryVariables,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { Automates } from './automation.types'
 import {
   AUTOMATION_ACTION_CREATE,
@@ -56,11 +56,14 @@ import {
 export const automationApi = {
   getTriggers: (variables: AutomationTriggersQueryVariables) =>
     getAPIClient()
-      .query<AutomationTriggersQuery, AutomationTriggersQueryVariables>(
-        AUTOMATION_TRIGGERS,
-        variables
-      )
-      .toPromise()
+      .request<
+        AutomationTriggersQuery,
+        unknown,
+        AutomationTriggersQueryVariables
+      >({
+        query: AUTOMATION_TRIGGERS.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => ({
         list: data?.automateTriggers.list ?? [],
         count: data?.automateTriggers.pagination.count ?? 0,
@@ -68,92 +71,122 @@ export const automationApi = {
 
   getTrigger: (variables: AutomationTriggerQueryVariables) =>
     getAPIClient()
-      .query<AutomationTriggerQuery, AutomationTriggerQueryVariables>(
-        AUTOMATION_TRIGGER,
-        variables
-      )
-      .toPromise()
+      .request<
+        AutomationTriggerQuery,
+        unknown,
+        AutomationTriggerQueryVariables
+      >({
+        query: AUTOMATION_TRIGGER.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateTrigger),
 
   createTrigger: (variables: AutomationTriggerCreateMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationTriggerCreateMutation,
+        unknown,
         AutomationTriggerCreateMutationVariables
-      >(AUTOMATION_TRIGGER_CREATE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_TRIGGER_CREATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateTriggerCreate),
 
   updateTrigger: (variables: AutomationTriggerUpdateMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationTriggerUpdateMutation,
+        unknown,
         AutomationTriggerUpdateMutationVariables
-      >(AUTOMATION_TRIGGER_UPDATE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_TRIGGER_UPDATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateTriggerUpdate),
 
   deleteTrigger: (variables: AutomationTriggerDeleteMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationTriggerDeleteMutation,
+        unknown,
         AutomationTriggerDeleteMutationVariables
-      >(AUTOMATION_TRIGGER_DELETE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_TRIGGER_DELETE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateTriggerDelete),
 
   createCondition: (variables: AutomationConditionCreateMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationConditionCreateMutation,
+        unknown,
         AutomationConditionCreateMutationVariables
-      >(AUTOMATION_CONDITION_CREATE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_CONDITION_CREATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateConditionCreate),
 
   updateCondition: (variables: AutomationConditionUpdateMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationConditionUpdateMutation,
+        unknown,
         AutomationConditionUpdateMutationVariables
-      >(AUTOMATION_CONDITION_UPDATE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_CONDITION_UPDATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateConditionUpdate),
 
   deleteCondition: (variables: AutomationConditionDeleteMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationConditionDeleteMutation,
+        unknown,
         AutomationConditionDeleteMutationVariables
-      >(AUTOMATION_CONDITION_DELETE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_CONDITION_DELETE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateConditionDelete),
 
   createAction: (variables: AutomationActionCreateMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationActionCreateMutation,
+        unknown,
         AutomationActionCreateMutationVariables
-      >(AUTOMATION_ACTION_CREATE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_ACTION_CREATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateActionCreate),
 
   updateAction: (variables: AutomationActionUpdateMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationActionUpdateMutation,
+        unknown,
         AutomationActionUpdateMutationVariables
-      >(AUTOMATION_ACTION_UPDATE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_ACTION_UPDATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateActionUpdate),
 
   deleteAction: (variables: AutomationActionDeleteMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationActionDeleteMutation,
+        unknown,
         AutomationActionDeleteMutationVariables
-      >(AUTOMATION_ACTION_DELETE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_ACTION_DELETE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateActionDelete),
 
   getAutomationsContracts: (
@@ -178,11 +211,14 @@ export const automationApi = {
 
   getHistory: (variables: AutomationHistoryQueryVariables) =>
     getAPIClient()
-      .query<AutomationHistoryQuery, AutomationHistoryQueryVariables>(
-        AUTOMATION_HISTORY,
-        variables
-      )
-      .toPromise()
+      .request<
+        AutomationHistoryQuery,
+        unknown,
+        AutomationHistoryQueryVariables
+      >({
+        query: AUTOMATION_HISTORY.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => ({
         list: data?.automateTrigger?.callHistory.list ?? [],
         count: data?.automateTrigger?.callHistory.pagination.count ?? 0,
@@ -190,38 +226,48 @@ export const automationApi = {
 
   getProtocols: (variables: AutomationProtocolsQueryVariables) =>
     getAPIClient()
-      .query<AutomationProtocolsQuery, AutomationProtocolsQueryVariables>(
-        AUTOMATION_PROTOCOLS,
-        variables
-      )
-      .toPromise()
+      .request<
+        AutomationProtocolsQuery,
+        unknown,
+        AutomationProtocolsQueryVariables
+      >({
+        query: AUTOMATION_PROTOCOLS.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.protocols.list ?? []),
 
   getDescription: () =>
     getAPIClient()
-      .query<AutomationDescriptionQuery, AutomationDescriptionQuery>(
-        AUTOMATION_DESCRIPTION
+      .request<AutomationDescriptionQuery, unknown, AutomationDescriptionQuery>(
+        {
+          query: AUTOMATION_DESCRIPTION.loc?.source.body ?? '',
+        }
       )
-      .toPromise()
       .then(({ data }) => data?.automateDescription),
 
   getProducts: (variables?: AutomationProductsQueryVariables) =>
     getAPIClient()
-      .query<AutomationProductsQuery, AutomationProductsQueryVariables>(
-        AUTOMATION_PRODUCTS,
-        variables
-      )
-      .toPromise()
+      .request<
+        AutomationProductsQuery,
+        unknown,
+        AutomationProductsQueryVariables
+      >({
+        query: AUTOMATION_PRODUCTS.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => ({
         list: data?.products.list ?? [],
       })),
 
   getBalance: (variables?: AutomationProductsBalanceQueryVariables) =>
     getAPIClient()
-      .query<
+      .request<
         AutomationProductsBalanceQuery,
+        unknown,
         AutomationProductsBalanceQueryVariables
-      >(AUTOMATION_PRODUCTS_BALANCE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_PRODUCTS_BALANCE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.me?.store.balance.notifications ?? 0),
 }

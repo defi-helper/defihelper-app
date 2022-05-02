@@ -13,7 +13,7 @@ import { config } from '~/config'
 import {
   GovProposalStateEnum,
   GovReceiptSupportEnum,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { dateUtils } from '~/common/date-utils'
 import {
   GovernanceReasonDialog,

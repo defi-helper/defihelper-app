@@ -32,7 +32,7 @@ import {
   IntegrationExchangeApiConnectMutation,
   WalletListMetricsQueryVariables,
   WalletListMetricsQuery,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import {
   USER_CONTACTS,
   USER_CONTACT_CREATE,
@@ -55,92 +55,104 @@ import { BILLING_TRANSFER_CREATE } from '~/settings/common/graphql/billing-trans
 export const settingsApi = {
   userNotificationsList: () =>
     getAPIClient()
-      .query<UserNotificationsListQuery, UserNotificationsListQueryVariables>(
-        USER_NOTIFICATION_LIST,
-        {},
-        { requestPolicy: 'network-only' }
-      )
-      .toPromise()
+      .request<
+        UserNotificationsListQuery,
+        unknown,
+        UserNotificationsListQueryVariables
+      >({
+        query: USER_NOTIFICATION_LIST.loc?.source.body ?? '',
+      })
       .then(({ data }) => data?.userNotifications ?? []),
 
   billingTransferCreate: (variables: BillingTransferCreateMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         BillingTransferCreateMutation,
         BillingTransferCreateMutationVariables
-      >(BILLING_TRANSFER_CREATE, variables)
-      .toPromise()
+      >({
+        query: BILLING_TRANSFER_CREATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.billingTransferCreate),
 
   userNotificationToggle: (
     variables: UserNotificationToggleMutationVariables
   ) =>
     getAPIClient()
-      .mutation<
+      .request<
         UserNotificationToggleMutation,
+        unknown,
         UserNotificationToggleMutationVariables
-      >(USER_NOTIFICATION_TOGGLE, variables)
-      .toPromise()
+      >({
+        query: USER_NOTIFICATION_TOGGLE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.userNotificationToggle),
 
   userContactList: (variables: UserContactsQueryVariables) =>
     getAPIClient()
-      .query<UserContactsQuery, UserContactsQueryVariables>(
-        USER_CONTACTS,
+      .request<UserContactsQuery, unknown, UserContactsQueryVariables>({
+        query: USER_CONTACTS.loc?.source.body ?? '',
         variables,
-        {
-          requestPolicy: 'cache-and-network',
-        }
-      )
-      .toPromise()
+      })
       .then(({ data }) => data?.userContacts.list ?? []),
 
   userContactCreate: (variables: UserContactCreateMutationVariables) =>
     getAPIClient()
-      .mutation<UserContactCreateMutation, UserContactCreateMutationVariables>(
-        USER_CONTACT_CREATE,
-        variables
-      )
-      .toPromise()
+      .request<
+        UserContactCreateMutation,
+        unknown,
+        UserContactCreateMutationVariables
+      >({
+        query: USER_CONTACT_CREATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.userContactCreate),
 
   userContactDelete: (variables: UserContactDeleteMutationVariables) =>
     getAPIClient()
-      .mutation<UserContactDeleteMutation, UserContactDeleteMutationVariables>(
-        USER_CONTACT_DELETE,
-        variables
-      )
-      .toPromise()
+      .request<
+        UserContactDeleteMutation,
+        unknown,
+        UserContactDeleteMutationVariables
+      >({
+        query: USER_CONTACT_DELETE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.userContactDelete),
 
   userContactConfirmEmail: (
     variables: UserContactEmailConfirmMutationVariables
   ) =>
     getAPIClient()
-      .mutation<
+      .request<
         UserContactEmailConfirmMutation,
+        unknown,
         UserContactEmailConfirmMutationVariables
-      >(USER_CONTACT_CONFIRM_EMAIL, variables)
-      .toPromise()
+      >({
+        query: USER_CONTACT_CONFIRM_EMAIL.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.userContactEmailConfirm),
 
   userContactUpdate: (variables: UserContactUpdateMutationVariables) =>
     getAPIClient()
-      .mutation<UserContactUpdateMutation, UserContactUpdateMutationVariables>(
-        USER_CONTACT_UPDATE,
-        variables
-      )
-      .toPromise()
+      .request<
+        UserContactUpdateMutation,
+        unknown,
+        UserContactUpdateMutationVariables
+      >({
+        query: USER_CONTACT_UPDATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.userContactUpdate),
 
   walletList: (variables?: WalletListQueryVariables) =>
     getAPIClient()
-      .query<WalletListQuery, WalletListQueryVariables>(
-        WALLET_LIST,
+      .request<WalletListQuery, unknown, WalletListQueryVariables>({
+        query: WALLET_LIST.loc?.source.body ?? '',
         variables,
-        { requestPolicy: 'cache-and-network' }
-      )
-      .toPromise()
+      })
       .then(({ data }) => ({
         list: data?.me?.wallets.list ?? [],
         count: data?.me?.wallets.pagination.count ?? 0,
@@ -148,12 +160,14 @@ export const settingsApi = {
 
   walletListMetrics: (variables?: WalletListMetricsQueryVariables) =>
     getAPIClient()
-      .query<WalletListMetricsQuery, WalletListMetricsQueryVariables>(
-        WALLET_LIST_METRICS,
+      .request<
+        WalletListMetricsQuery,
+        unknown,
+        WalletListMetricsQueryVariables
+      >({
+        query: WALLET_LIST_METRICS.loc?.source.body ?? '',
         variables,
-        { requestPolicy: 'cache-and-network' }
-      )
-      .toPromise()
+      })
       .then(({ data }) =>
         (data?.me?.wallets.list ?? []).reduce<
           Record<
@@ -181,59 +195,60 @@ export const settingsApi = {
 
   integrationList: (variables?: IntegrationListQueryVariables) =>
     getAPIClient()
-      .query<IntegrationListQuery, IntegrationListQueryVariables>(
-        WALLET_EXCHANGE_LIST,
+      .request<IntegrationListQuery, unknown, IntegrationListQueryVariables>({
+        query: WALLET_EXCHANGE_LIST.loc?.source.body ?? '',
         variables,
-        { requestPolicy: 'cache-and-network' }
-      )
-      .toPromise()
+      })
       .then(({ data }) => data?.me?.exchanges.list ?? []),
 
   integrationExchangeApiConnect: (
     variables: IntegrationExchangeApiConnectMutationVariables
   ) =>
     getAPIClient()
-      .mutation<
+      .request<
         IntegrationExchangeApiConnectMutation,
+        unknown,
         IntegrationExchangeApiConnectMutationVariables
-      >(INTEGRATION_API_CONNECT, variables)
-      .toPromise()
+      >({
+        query: INTEGRATION_API_CONNECT.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.integrationExchangeApiConnect),
 
   integrationDisconnect: (id: string) =>
     getAPIClient()
-      .mutation<
+      .request<
         IntegrationDisconnectMutation,
+        unknown,
         IntegrationDisconnectMutationVariables
-      >(INTEGRATION_DISCONNECT, { id })
-      .toPromise()
+      >({
+        query: INTEGRATION_DISCONNECT.loc?.source.body ?? '',
+        variables: { id },
+      })
       .then(({ data }) => data?.integrationDisconnect),
 
   walletUpdate: (variables: WalletUpdateMutationVariables) =>
     getAPIClient()
-      .query<WalletUpdateMutation, WalletUpdateMutationVariables>(
-        WALLET_UPDATE,
-        variables
-      )
-      .toPromise()
+      .request<WalletUpdateMutation, unknown, WalletUpdateMutationVariables>({
+        query: WALLET_UPDATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.walletUpdate),
 
   walletDelete: (variables: WalletDeleteMutationVariables) =>
     getAPIClient()
-      .mutation<WalletDeleteMutation, WalletDeleteMutationVariables>(
-        WALLET_DELETE,
-        variables
-      )
-      .toPromise()
+      .request<WalletDeleteMutation, unknown, WalletDeleteMutationVariables>({
+        query: WALLET_DELETE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.walletDelete),
 
   history: (variables?: BillingHistoryQueryVariables) =>
     getAPIClient()
-      .query<BillingHistoryQuery, BillingHistoryQueryVariables>(
-        BILLING_HISTORY,
-        variables
-      )
-      .toPromise()
+      .request<BillingHistoryQuery, unknown, BillingHistoryQueryVariables>({
+        query: BILLING_HISTORY.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => ({
         list: data?.me?.billing.transfers.list ?? [],
         count: data?.me?.billing.transfers.pagination.count ?? 0,

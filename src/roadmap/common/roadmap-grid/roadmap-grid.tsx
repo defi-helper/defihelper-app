@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 
 import { RoadmapCard, Proposal } from '~/roadmap/common'
-import { UserType } from '~/graphql/_generated-types'
+import { UserType } from '~/api/_generated-types'
 import { Typography } from '~/common/typography'
 import * as styles from './roadmap-grid.css'
 import { STATUSES } from '../constants'

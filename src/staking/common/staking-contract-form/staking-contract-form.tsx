@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import ReactSelect from 'react-select'
 
-import { BlockchainEnum } from '~/graphql/_generated-types'
+import { BlockchainEnum } from '~/api/_generated-types'
 import { Button } from '~/common/button'
 import { stakingContractFormSchema } from './staking-contract-form.validation'
 import { networksConfig } from '~/networks-config'

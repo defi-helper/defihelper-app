@@ -3,7 +3,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
 import { Select, SelectOption } from '~/common/select'
-import { UserRoleEnum } from '~/graphql/_generated-types'
+import { UserRoleEnum } from '~/api/_generated-types'
 import * as styles from './user-role-dialog.css'
 
 type FormValues = {

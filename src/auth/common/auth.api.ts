@@ -6,37 +6,34 @@ import {
   AuthEthMutation,
   AuthWavesMutationVariables,
   AuthWavesMutation,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { ME, AUTH_ETH, AUTH_WAVES } from './graphql'
 
 export const authApi = {
   me: () =>
     getAPIClient()
-      .query<MeQuery, MeQueryVariables>(ME)
-      .toPromise()
+      .request<MeQuery, unknown, MeQueryVariables>({
+        query: ME.loc?.source.body ?? '',
+      })
       .then(({ data }) => data?.me),
 
   authEth: (input: AuthEthMutationVariables['input']) =>
     getAPIClient()
-      .mutation<AuthEthMutation, AuthEthMutationVariables>(
-        AUTH_ETH,
-        {
+      .request<AuthEthMutation, unknown, AuthEthMutationVariables>({
+        query: AUTH_ETH.loc?.source.body ?? '',
+        variables: {
           input,
         },
-        { requestPolicy: 'network-only' }
-      )
-      .toPromise()
+      })
       .then(({ data }) => data?.authEth),
 
   authWaves: (input: AuthWavesMutationVariables['input']) =>
     getAPIClient()
-      .mutation<AuthWavesMutation, AuthWavesMutationVariables>(
-        AUTH_WAVES,
-        {
+      .request<AuthWavesMutation, unknown, AuthWavesMutationVariables>({
+        query: AUTH_WAVES.loc?.source.body ?? '',
+        variables: {
           input,
         },
-        { requestPolicy: 'network-only' }
-      )
-      .toPromise()
+      })
       .then(({ data }) => data?.authWaves),
 }

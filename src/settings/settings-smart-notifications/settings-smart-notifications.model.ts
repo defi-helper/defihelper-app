@@ -4,7 +4,7 @@ import { settingsApi } from '~/settings/common'
 import {
   UserNotificationTypeFragment,
   UserNotificationTypeEnum,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { authModel } from '~/auth'
 
 export const settingsNotificationsDomain = createDomain()

@@ -5,7 +5,7 @@ import { ethers } from 'ethers'
 
 import { abi } from '~/abi'
 import { parseError } from '~/common/parse-error'
-import { AutomationProductsQuery } from '~/graphql/_generated-types'
+import { AutomationProductsQuery } from '~/api/_generated-types'
 import { automationApi } from '../common/automation.api'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'

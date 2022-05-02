@@ -6,7 +6,7 @@ import {
   PortfolioAssetByProtocolFragment,
   PortfolioAssetByWalletFragment,
   PortfolioAssetFragment,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import * as styles from './portfolio-asset-card.css'
 
 export type PortfolioAssetCardProps = {

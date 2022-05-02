@@ -12,7 +12,7 @@ import {
   parseActions,
 } from '~/governance/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { GovReceiptFilterInputType } from '~/graphql/_generated-types'
+import { GovReceiptFilterInputType } from '~/api/_generated-types'
 
 const GOVERNOR_BRAVO = contracts[config.DEFAULT_CHAIN_ID].GovernorBravo.address
 

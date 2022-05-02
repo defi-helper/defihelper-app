@@ -21,7 +21,7 @@ import {
   AutomateTriggerCreateInputType,
   AutomateTriggerTypeEnum,
   AutomateTriggerUpdateInputType,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { AutomationChooseButton } from '../automation-choose-button/automation-choose-button'
 import { AutomationContractDialog } from '../automation-contract-dialog'
 import { AutomationNetworksDialog } from '../automation-networks-dialog'

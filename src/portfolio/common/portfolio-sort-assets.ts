@@ -3,7 +3,7 @@ import {
   PortfolioAssetByProtocolFragment,
   PortfolioAssetByWalletFragment,
   PortfolioAssetFragment,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 
 export const portfolioSortAssets = (list: PortfolioAssetFragment[]) => {
   const l = list.filter((v) => v.metric.myUSD !== '0')

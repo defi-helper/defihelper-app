@@ -4,7 +4,7 @@ import { createGate } from 'effector-react'
 import {
   StakingAutomatesContractFragmentFragment,
   UserType,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { authModel } from '~/auth'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as automationDeployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'

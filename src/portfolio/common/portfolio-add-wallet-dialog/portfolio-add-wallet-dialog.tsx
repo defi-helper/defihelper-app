@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { Dialog } from '~/common/dialog'
 import { Input } from '~/common/input'
 import { Button } from '~/common/button'
-import { AddWalletInputType, BlockchainEnum } from '~/graphql/_generated-types'
+import { AddWalletInputType, BlockchainEnum } from '~/api/_generated-types'
 import { Select, SelectOption } from '~/common/select'
 import * as styles from './portfolio-add-wallet-dialog.css'
 

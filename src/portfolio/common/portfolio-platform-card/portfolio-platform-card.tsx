@@ -9,7 +9,7 @@ import { Loader } from '~/common/loader'
 import {
   PortfolioAssetByProtocolFragment,
   PortfolioProtocolsQuery,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { PortfolioAssetsHeader } from '../portfolio-assets-header'
 import * as styles from './portfolio-platform-card.css'
 

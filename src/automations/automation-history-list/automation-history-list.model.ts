@@ -3,7 +3,7 @@ import { createGate } from 'effector-react'
 
 import { automationApi } from '~/automations/common/automation.api'
 import { PaginationState } from '~/common/create-pagination'
-import { AutomateTriggerCallHistoryType } from '~/graphql/_generated-types'
+import { AutomateTriggerCallHistoryType } from '~/api/_generated-types'
 
 export const automationHistoryListDomain = createDomain()
 

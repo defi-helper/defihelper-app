@@ -2,7 +2,7 @@ import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'
-import { MyMetricQuery } from '~/graphql/_generated-types'
+import { MyMetricQuery } from '~/api/_generated-types'
 import { portfolioApi } from '~/portfolio/common'
 
 type MyMetric = Exclude<

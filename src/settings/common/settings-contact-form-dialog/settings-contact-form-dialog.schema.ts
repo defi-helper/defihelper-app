@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import { UserContactBrokerEnum } from '~/graphql/_generated-types'
+import { UserContactBrokerEnum } from '~/api/_generated-types'
 
 export const settingsContactFormSchame = yup.object().shape({
   broker: yup

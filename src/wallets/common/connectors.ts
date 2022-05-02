@@ -11,7 +11,7 @@ import { config } from '~/config'
 import { WavesKeeperConnector } from './waves-keeper-connector'
 import { WavesExchangeConnector } from './waves-exchange-connector'
 import { networksConfig } from '~/networks-config'
-import { BlockchainEnum } from '~/graphql/_generated-types'
+import { BlockchainEnum } from '~/api/_generated-types'
 
 export const supportedChainIds = Object.values(networksConfig)
   .filter(({ blockchain }) => blockchain === BlockchainEnum.Ethereum)

@@ -1,7 +1,7 @@
 import { Controller, useForm } from 'react-hook-form'
 import { lazy, Suspense } from 'react'
 
-import { ProposalStatusEnum, ProposalTagEnum } from '~/graphql/_generated-types'
+import { ProposalStatusEnum, ProposalTagEnum } from '~/api/_generated-types'
 import { Input } from '~/common/input'
 import { Dialog } from '~/common/dialog'
 import { Button } from '~/common/button'

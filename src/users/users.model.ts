@@ -3,7 +3,7 @@ import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'
 import { PaginationState } from '~/common/create-pagination'
-import { UsersQuery } from '~/graphql/_generated-types'
+import { UsersQuery } from '~/api/_generated-types'
 import { usersApi } from './common/users.api'
 
 type User = Exclude<UsersQuery['users']['list'], null | undefined>[number]

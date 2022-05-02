@@ -7,7 +7,7 @@ import { abi } from '~/abi'
 import { createPagination, PaginationState } from '~/common/create-pagination'
 import { config } from '~/config'
 import { governanceApi, parseDescription } from '~/governance/common'
-import { GovVotesFilterInputType } from '~/graphql/_generated-types'
+import { GovVotesFilterInputType } from '~/api/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export const governanceListDomain = createDomain()

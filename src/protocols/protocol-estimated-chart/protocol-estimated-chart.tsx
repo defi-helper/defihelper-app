@@ -1,5 +1,4 @@
-import { useThrottle } from 'react-use'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import isEmpty from 'lodash.isempty'
 import { useStore } from 'effector-react'
 
@@ -13,13 +12,13 @@ import { Dropdown } from '~/common/dropdown'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { authModel } from '~/auth'
-import {
-  ProtocolQuery,
-  useOnTokenMetricUpdatedSubscription,
-  useOnWalletMetricUpdatedSubscription,
-} from '~/graphql/_generated-types'
+import { ProtocolQuery } from '~/api/_generated-types'
 import * as model from './protocol-estimated-chart.model'
 import * as styles from './protocol-estimated-chart.css'
+import {
+  useOnTokenMetricUpdatedSubscription,
+  useOnWalletMetricUpdatedSubscription,
+} from '~/portfolio/common'
 
 export type ProtocolEstimatedChartProps = {
   className?: string
@@ -59,27 +58,26 @@ export const ProtocolEstimatedChart: React.FC<ProtocolEstimatedChartProps> = (
 
   const user = useStore(authModel.$user)
 
-  const subscriptionOptions = useMemo(() => {
+  const variables = useMemo(() => {
     if (!user) return undefined
 
     return {
-      variables: {
-        user: [user.id],
-      },
+      user: [user.id],
     }
   }, [user])
 
-  const [walletUpdated] =
-    useOnWalletMetricUpdatedSubscription(subscriptionOptions)
-  const [tokenMetricUpdated] =
-    useOnTokenMetricUpdatedSubscription(subscriptionOptions)
+  const [metricUpdated, setMetricUpdated] = useState('')
 
-  const metricUpdated = useThrottle(
-    walletUpdated.data?.onWalletMetricUpdated.id ||
-      tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
-      '',
-    15000
-  )
+  useOnWalletMetricUpdatedSubscription(({ data }) => {
+    if (data?.onWalletMetricUpdated.id) {
+      setMetricUpdated(data.onWalletMetricUpdated.id)
+    }
+  }, variables)
+  useOnTokenMetricUpdatedSubscription(({ data }) => {
+    if (data?.onTokenMetricUpdated.id) {
+      setMetricUpdated(data.onTokenMetricUpdated.id)
+    }
+  }, variables)
 
   useEffect(() => {
     const balance = Number(props.metric.myStaked)
