@@ -979,6 +979,27 @@ export enum MetricGroupEnum {
   Year = 'year',
 }
 
+export enum MonitoringAutomateRunHistoryFilterEnum {
+  /** Only successful */
+  OnlySuccessful = 'onlySuccessful',
+  /** Only failed */
+  OnlyFailed = 'onlyFailed',
+  /** All */
+  All = 'all',
+}
+
+export type MonitoringStatisticsEarningsPointType = {
+  __typename?: 'MonitoringStatisticsEarningsPointType'
+  date: Scalars['DateTimeType']
+  number: Scalars['Float']
+}
+
+export type MonitoringStatisticsPointType = {
+  __typename?: 'MonitoringStatisticsPointType'
+  date: Scalars['DateTimeType']
+  number: Scalars['Int']
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
   userUpdate: UserType
@@ -1825,6 +1846,11 @@ export type Query = {
   govToken: GovTokenType
   restakeStrategy: RestakeStrategyType
   treasury: TreasuryType
+  monitoringUsersRegisteringHistory: Array<MonitoringStatisticsPointType>
+  monitoringAutomateRunHistory: Array<MonitoringStatisticsPointType>
+  monitoringAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
+  monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
+  monitoringProtocolEarningsHistory: Array<MonitoringStatisticsEarningsPointType>
 }
 
 export type QueryUsersArgs = {
@@ -1938,6 +1964,14 @@ export type QueryRestakeStrategyArgs = {
   network?: Maybe<Scalars['String']>
   balance: Scalars['Float']
   apy: Scalars['Float']
+}
+
+export type QueryMonitoringAutomateRunHistoryArgs = {
+  filter: MonitoringAutomateRunHistoryFilterEnum
+}
+
+export type QueryMonitoringProtocolEarningsHistoryArgs = {
+  network: Scalars['String']
 }
 
 export type RestakeStrategyPointType = {
@@ -3530,6 +3564,20 @@ export type AutomationActionFragmentFragment = {
   'id' | 'type' | 'params' | 'paramsDescription' | 'priority' | 'createdAt'
 >
 
+export type MonitoringAutomationsAutorestakeCreationHistoryQueryVariables =
+  Exact<{ [key: string]: never }>
+
+export type MonitoringAutomationsAutorestakeCreationHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringAutoRestakeAutomatesCreationHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
+}
+
 export type AutomationConditionCreateMutationVariables = Exact<{
   input: AutomateConditionCreateInputType
 }>
@@ -3564,6 +3612,21 @@ export type AutomationConditionFragmentFragment = {
   AutomateConditionType,
   'id' | 'type' | 'params' | 'paramsDescription' | 'priority' | 'createdAt'
 >
+
+export type MonitoringAutomationsCreationHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringAutomationsCreationHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringAutomatesCreationHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
+}
 
 export type AutomationDescriptionFragmentFragment = {
   __typename?: 'AutomateDescriptionType'
@@ -3728,6 +3791,19 @@ export type AutomationProtocolsQuery = { __typename?: 'Query' } & {
       >
     >
   }
+}
+
+export type MonitoringAutomationsRunsHistoryQueryVariables = Exact<{
+  filter: MonitoringAutomateRunHistoryFilterEnum
+}>
+
+export type MonitoringAutomationsRunsHistoryQuery = { __typename?: 'Query' } & {
+  monitoringAutomateRunHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
 }
 
 export type AutomationTriggerCreateMutationVariables = Exact<{
@@ -4442,6 +4518,21 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
           >
         }
       } & ProtocolFragmentFragment
+  >
+}
+
+export type MonitoringProtocolDfhEarningsHistoryQueryVariables = Exact<{
+  network: Scalars['String']
+}>
+
+export type MonitoringProtocolDfhEarningsHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringProtocolEarningsHistory: Array<
+    { __typename?: 'MonitoringStatisticsEarningsPointType' } & Pick<
+      MonitoringStatisticsEarningsPointType,
+      'date' | 'number'
+    >
   >
 }
 
@@ -5514,6 +5605,21 @@ export type UsersQuery = { __typename?: 'Query' } & {
     list?: Maybe<Array<{ __typename?: 'UserType' } & UserFragment>>
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
+}
+
+export type MonitoringUsersRegisteringHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringUsersRegisteringHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringUsersRegisteringHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
 }
 
 export type UserUpdateMutationVariables = Exact<{

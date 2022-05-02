@@ -35,6 +35,7 @@ import { PrivateRoute } from './private-route'
 import { ReferralTransactions } from '~/referral/referral-transactions'
 import { ReferralCalculator } from '~/referral/referral-calculator'
 import { Vesting } from '~/vesting'
+import { Monitoring } from '~/monitoring'
 
 export type RouterProps = unknown
 
@@ -127,6 +128,9 @@ export const Router: React.VFC<RouterProps> = () => {
         </CanRoute>
         <PrivateRoute path={paths.vesting}>
           <Vesting />
+        </PrivateRoute>
+        <PrivateRoute path={paths.monitoring}>
+          <Monitoring />
         </PrivateRoute>
         <Route>
           <NotFound />

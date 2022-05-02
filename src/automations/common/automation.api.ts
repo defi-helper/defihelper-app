@@ -32,6 +32,12 @@ import {
   AutomationProductsQueryVariables,
   AutomationProductsBalanceQuery,
   AutomationProductsBalanceQueryVariables,
+  MonitoringAutomationsCreationHistoryQuery,
+  MonitoringAutomationsCreationHistoryQueryVariables,
+  MonitoringAutomationsAutorestakeCreationHistoryQuery,
+  MonitoringAutomationsAutorestakeCreationHistoryQueryVariables,
+  MonitoringAutomationsRunsHistoryQuery,
+  MonitoringAutomationsRunsHistoryQueryVariables,
 } from '~/api/_generated-types'
 import { Automates } from './automation.types'
 import {
@@ -52,6 +58,9 @@ import {
   AUTOMATION_PRODUCTS,
   AUTOMATION_PRODUCTS_BALANCE,
 } from './graphql'
+import { AUTOMATION_AUTORESTAKE_CREATION_HISTORY } from './graphql/automation-autorestake-creation-history.graphql'
+import { AUTOMATION_CREATION_HISTORY } from './graphql/automation-creation-history.graphql'
+import { AUTOMATION_RUN_HISTORY } from './graphql/automation-runs-history.graphql'
 
 export const automationApi = {
   getTriggers: (variables: AutomationTriggersQueryVariables) =>
@@ -244,6 +253,44 @@ export const automationApi = {
         }
       )
       .then(({ data }) => data?.automateDescription),
+
+  getAutomationsCreationHistory: () =>
+    getAPIClient()
+      .request<
+        MonitoringAutomationsCreationHistoryQuery,
+        unknown,
+        MonitoringAutomationsCreationHistoryQueryVariables
+      >({
+        query: AUTOMATION_CREATION_HISTORY.loc?.source.body ?? '',
+      })
+      .then(({ data }) => data?.monitoringAutomatesCreationHistory),
+
+  getAutomationsAutorestakeCreationHistory: () =>
+    getAPIClient()
+      .request<
+        MonitoringAutomationsAutorestakeCreationHistoryQuery,
+        unknown,
+        MonitoringAutomationsAutorestakeCreationHistoryQueryVariables
+      >({
+        query: AUTOMATION_AUTORESTAKE_CREATION_HISTORY.loc?.source.body ?? '',
+      })
+      .then(({ data }) => data?.monitoringAutoRestakeAutomatesCreationHistory),
+
+  getAutomationsRunsHistory: (
+    variables?: MonitoringAutomationsRunsHistoryQueryVariables
+  ) =>
+    getAPIClient()
+      .request<
+        MonitoringAutomationsRunsHistoryQuery,
+        unknown,
+        MonitoringAutomationsRunsHistoryQueryVariables
+      >({
+        query: AUTOMATION_RUN_HISTORY.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => ({
+        list: data?.monitoringAutomateRunHistory ?? [],
+      })),
 
   getProducts: (variables?: AutomationProductsQueryVariables) =>
     getAPIClient()

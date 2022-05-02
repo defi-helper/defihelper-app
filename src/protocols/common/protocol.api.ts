@@ -32,6 +32,8 @@ import {
   ProtocolDemandMetricsQueryVariables,
   ProtocolListMetricsQuery,
   ProtocolListMetricsQueryVariables,
+  MonitoringProtocolDfhEarningsHistoryQueryVariables,
+  MonitoringProtocolDfhEarningsHistoryQuery,
 } from '~/api/_generated-types'
 import {
   PROTOCOLS,
@@ -48,6 +50,7 @@ import {
   PROTOCOL_DETAIL_OVERVIEW,
   PROTOCOL_DEMAND_METRICS,
   PROTOCOL_LIST_METRICS,
+  PROTOCOL_DFH_EARNING_HISTORY,
 } from './graphql'
 import { PROTOCOL_UPDATE } from './graphql/protocol-update.graphql'
 import { PROTOCOL_RESOLVE_CONTRACTS } from '~/protocols/common/graphql/protocol-resolve-contracts.graphql'
@@ -71,6 +74,20 @@ export const protocolsApi = {
         list: data?.protocols.list ?? [],
         count: data?.protocols.pagination.count ?? 0,
       })),
+
+  dfhProtocolEarningHistory: (
+    variables: MonitoringProtocolDfhEarningsHistoryQueryVariables
+  ) =>
+    getAPIClient()
+      .request<
+        MonitoringProtocolDfhEarningsHistoryQuery,
+        unknown,
+        MonitoringProtocolDfhEarningsHistoryQueryVariables
+      >({
+        query: PROTOCOL_DFH_EARNING_HISTORY.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.monitoringProtocolEarningsHistory),
 
   protocolListCount: (
     variables: ProtocolsCountQueryVariables,
