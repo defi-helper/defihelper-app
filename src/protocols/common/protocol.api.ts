@@ -32,8 +32,8 @@ import {
   ProtocolDemandMetricsQueryVariables,
   ProtocolListMetricsQuery,
   ProtocolListMetricsQueryVariables,
-  ProtocolDfhEarningsHistoryQueryVariables,
-  ProtocolDfhEarningsHistoryQuery,
+  MonitoringProtocolDfhEarningsHistoryQueryVariables,
+  MonitoringProtocolDfhEarningsHistoryQuery,
 } from '~/graphql/_generated-types'
 import {
   PROTOCOLS,
@@ -80,15 +80,15 @@ export const protocolsApi = {
       })),
 
   dfhProtocolEarningHistory: (
-    variables: ProtocolDfhEarningsHistoryQueryVariables
+    variables: MonitoringProtocolDfhEarningsHistoryQueryVariables
   ) =>
     getAPIClient()
       .query<
-        ProtocolDfhEarningsHistoryQuery,
-        ProtocolDfhEarningsHistoryQueryVariables
+        MonitoringProtocolDfhEarningsHistoryQuery,
+        MonitoringProtocolDfhEarningsHistoryQueryVariables
       >(PROTOCOL_DFH_EARNING_HISTORY, variables)
       .toPromise()
-      .then(({ data }) => data?.protocolEarningsHistory),
+      .then(({ data }) => data?.monitoringProtocolEarningsHistory),
 
   protocolListCount: (
     variables: ProtocolsCountQueryVariables,

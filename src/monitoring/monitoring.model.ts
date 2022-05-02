@@ -1,7 +1,8 @@
 import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { automationApi } from '~/automations/common/automation.api'
-import { AutomateRunHistoryFilterEnum } from '~/graphql/_generated-types'
+import { MonitoringAutomateRunHistoryFilterEnum } from '~/graphql/_generated-types'
+import { networksConfig } from '~/networks-config'
 import { protocolsApi } from '~/protocols/common'
 import { usersApi } from '~/users/common/users.api'
 
@@ -10,7 +11,7 @@ const monitoringDomain = createDomain()
 export const fetchAutomationsSuccessfulRunsHistoryFx =
   monitoringDomain.createEffect(() => {
     return automationApi.getAutomationsRunsHistory({
-      filter: AutomateRunHistoryFilterEnum.OnlySuccessful,
+      filter: MonitoringAutomateRunHistoryFilterEnum.OnlySuccessful,
     })
   })
 
@@ -26,7 +27,7 @@ export const fetchDfhProtocolEarningsHistoryFx = monitoringDomain.createEffect(
 export const fetchAutomationsFailedRunsHistoryFx =
   monitoringDomain.createEffect(() => {
     return automationApi.getAutomationsRunsHistory({
-      filter: AutomateRunHistoryFilterEnum.OnlyFailed,
+      filter: MonitoringAutomateRunHistoryFilterEnum.OnlyFailed,
     })
   })
 
@@ -41,6 +42,14 @@ export const fetchAutomationsCreationHistoryFx = monitoringDomain.createEffect(
     return automationApi.getAutomationsCreationHistory()
   }
 )
+
+export const fetchDfhNetworksEarningsFx = monitoringDomain.createEffect(() => {
+  return Promise.all(
+    Object.values(networksConfig).map((network) =>
+      fetchDfhProtocolEarningsHistoryFx(network.chainId.toString())
+    )
+  )
+})
 
 export const fetchAutomationsAutorestakeCreationHistoryFx =
   monitoringDomain.createEffect(() => {
@@ -98,5 +107,6 @@ sample({
     fetchAutomationsAutorestakeCreationHistoryFx,
     fetchAutomationsSuccessfulRunsHistoryFx,
     fetchAutomationsFailedRunsHistoryFx,
+    fetchDfhNetworksEarningsFx,
   ],
 })

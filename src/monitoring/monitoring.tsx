@@ -1,5 +1,4 @@
 import { useStore, useGate } from 'effector-react'
-import { useEffect } from 'react'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { AppLayout } from '~/layouts'
@@ -15,6 +14,7 @@ export const Monitoring: React.VFC = () => {
   const [themeMode] = useTheme()
   const usersRegisteringHistory = useStore(model.$usersRegisteringHistory)
   const automationsCreationHistory = useStore(model.$automationsCreationHistory)
+  const dfhProfitsPerNetwork = useStore(model.$dfhEarningsHistory)
   const automationsAutorestakeCreationHistory = useStore(
     model.$automationsAutorestakeCreationHistory
   )
@@ -24,16 +24,6 @@ export const Monitoring: React.VFC = () => {
   const automationsFailedRunsHistory = useStore(
     model.$automationsFailedRunsHistory
   )
-
-  const dfhProfitsPerNetwork = useStore(model.$dfhEarningsHistory)
-
-  useEffect(() => {
-    Promise.all(
-      Object.values(networksConfig).map((network) =>
-        model.fetchDfhProtocolEarningsHistoryFx(network.chainId.toString())
-      )
-    )
-  }, [])
 
   useGate(model.MonitoringGate)
 
@@ -204,14 +194,6 @@ export const Monitoring: React.VFC = () => {
                 {dfhProfitsPerNetwork[network].pop()?.number ?? 0}
               </Typography>
             </div>
-
-            {JSON.stringify(
-              dfhProfitsPerNetwork[network].map((point) => ({
-                date: point.date,
-                number: bignumberUtils.floor(point.number),
-                format: bignumberUtils.format(point.number),
-              }))
-            )}
 
             <Chart
               dataFields={[

@@ -2,8 +2,8 @@ import { getAPIClient } from '~/api'
 import {
   UsersQuery,
   UsersQueryVariables,
-  UsersRegisteringHistoryQuery,
-  UsersRegisteringHistoryQueryVariables,
+  MonitoringUsersRegisteringHistoryQuery,
+  MonitoringUsersRegisteringHistoryQueryVariables,
   UserUpdateMutation,
   UserUpdateMutationVariables,
 } from '~/graphql/_generated-types'
@@ -29,13 +29,13 @@ export const usersApi = {
       .then(({ data }) => data?.userUpdate),
 
   getUsersRegisteringHistory: (
-    variables: UsersRegisteringHistoryQueryVariables
+    variables: MonitoringUsersRegisteringHistoryQueryVariables
   ) =>
     getAPIClient()
       .query<
-        UsersRegisteringHistoryQuery,
-        UsersRegisteringHistoryQueryVariables
+        MonitoringUsersRegisteringHistoryQuery,
+        MonitoringUsersRegisteringHistoryQueryVariables
       >(USER_REGISTERING_HISTORY, variables)
       .toPromise()
-      .then(({ data }) => data?.usersRegisteringHistory),
+      .then(({ data }) => data?.monitoringUsersRegisteringHistory),
 }

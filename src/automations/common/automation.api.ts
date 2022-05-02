@@ -32,12 +32,12 @@ import {
   AutomationProductsQueryVariables,
   AutomationProductsBalanceQuery,
   AutomationProductsBalanceQueryVariables,
-  AutomationsCreationHistoryQuery,
-  AutomationsCreationHistoryQueryVariables,
-  AutomationsAutorestakeCreationHistoryQuery,
-  AutomationsAutorestakeCreationHistoryQueryVariables,
-  AutomationsRunsHistoryQuery,
-  AutomationsRunsHistoryQueryVariables,
+  MonitoringAutomationsCreationHistoryQuery,
+  MonitoringAutomationsCreationHistoryQueryVariables,
+  MonitoringAutomationsAutorestakeCreationHistoryQuery,
+  MonitoringAutomationsAutorestakeCreationHistoryQueryVariables,
+  MonitoringAutomationsRunsHistoryQuery,
+  MonitoringAutomationsRunsHistoryQueryVariables,
 } from '~/graphql/_generated-types'
 import { Automates } from './automation.types'
 import {
@@ -217,32 +217,32 @@ export const automationApi = {
   getAutomationsCreationHistory: () =>
     getAPIClient()
       .query<
-        AutomationsCreationHistoryQuery,
-        AutomationsCreationHistoryQueryVariables
+        MonitoringAutomationsCreationHistoryQuery,
+        MonitoringAutomationsCreationHistoryQueryVariables
       >(AUTOMATION_CREATION_HISTORY)
       .toPromise()
-      .then(({ data }) => data?.automatesCreationHistory),
+      .then(({ data }) => data?.monitoringAutomatesCreationHistory),
 
   getAutomationsAutorestakeCreationHistory: () =>
     getAPIClient()
       .query<
-        AutomationsAutorestakeCreationHistoryQuery,
-        AutomationsAutorestakeCreationHistoryQueryVariables
+        MonitoringAutomationsAutorestakeCreationHistoryQuery,
+        MonitoringAutomationsAutorestakeCreationHistoryQueryVariables
       >(AUTOMATION_AUTORESTAKE_CREATION_HISTORY)
       .toPromise()
-      .then(({ data }) => data?.autoRestakeAutomatesCreationHistory),
+      .then(({ data }) => data?.monitoringAutoRestakeAutomatesCreationHistory),
 
   getAutomationsRunsHistory: (
-    variables?: AutomationsRunsHistoryQueryVariables
+    variables?: MonitoringAutomationsRunsHistoryQueryVariables
   ) =>
     getAPIClient()
-      .query<AutomationsRunsHistoryQuery, AutomationsRunsHistoryQueryVariables>(
-        AUTOMATION_RUN_HISTORY,
-        variables
-      )
+      .query<
+        MonitoringAutomationsRunsHistoryQuery,
+        MonitoringAutomationsRunsHistoryQueryVariables
+      >(AUTOMATION_RUN_HISTORY, variables)
       .toPromise()
       .then(({ data }) => ({
-        list: data?.automateRunHistory ?? [],
+        list: data?.monitoringAutomateRunHistory ?? [],
       })),
 
   getProducts: (variables?: AutomationProductsQueryVariables) =>

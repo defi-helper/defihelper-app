@@ -1,8 +1,8 @@
 import { gql } from 'urql'
 
 export const USER_REGISTERING_HISTORY = gql`
-  query usersRegisteringHistory {
-    usersRegisteringHistory {
+  query monitoringUsersRegisteringHistory {
+    monitoringUsersRegisteringHistory {
       date
       number
     }
