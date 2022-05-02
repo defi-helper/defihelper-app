@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import {
   BlockchainEnum,
   StakingContractFragmentFragment,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Link } from '~/common/link'
 import { ButtonBase } from '~/common/button-base/button-base'

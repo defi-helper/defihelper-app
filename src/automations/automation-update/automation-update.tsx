@@ -20,7 +20,7 @@ import {
   StakingAutomatesContractFragmentFragment,
   AutomationDescriptionQuery,
   AutomationTriggerFragmentFragment,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { AutomationChooseButton } from '../common/automation-choose-button'
 import { AutomationConditionsDialog } from '../common/automation-conditions-dialog'
 import { AutomationActionsDialog } from '../common/automation-actions-dialog'

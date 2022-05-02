@@ -6,7 +6,7 @@ import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { config } from '~/config'
-import { ProtocolQuery } from '~/graphql/_generated-types'
+import { ProtocolQuery } from '~/api/_generated-types'
 import { paths } from '~/paths'
 import * as styles from './protocol-total.css'
 

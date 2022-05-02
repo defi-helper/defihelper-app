@@ -14,7 +14,7 @@ import {
   AuthEthMutation,
   AuthWavesInputType,
   AuthEthereumInputType,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { sidUtils, authApi } from './common'
@@ -36,7 +36,6 @@ export const logoutFx = authDomain.createEffect(() => {
 
 logoutFx.done.watch(() => {
   history.push(paths.portfolio)
-  window.location.reload()
 })
 
 export const saveUserFx = authDomain.createEffect(async (data: AuthData) => {

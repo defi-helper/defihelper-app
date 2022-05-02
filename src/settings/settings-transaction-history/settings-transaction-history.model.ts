@@ -3,7 +3,7 @@ import { createDomain, restore, combine, guard } from 'effector-logger/macro'
 import {
   BillingHistoryQueryVariables,
   WalletFragmentFragment,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { settingsApi } from '~/settings/common'
 import * as settingsWalletsModel from '~/settings/settings-wallets/settings-wallets.model'
 

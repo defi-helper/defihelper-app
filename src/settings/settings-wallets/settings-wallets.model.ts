@@ -3,10 +3,7 @@ import contracts from '@defihelper/networks/contracts.json'
 import { ethers } from 'ethers'
 import Balance from '@defihelper/networks/abi/Balance.json'
 
-import {
-  BlockchainEnum,
-  WalletFragmentFragment,
-} from '~/graphql/_generated-types'
+import { BlockchainEnum, WalletFragmentFragment } from '~/api/_generated-types'
 import { settingsApi } from '~/settings/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'

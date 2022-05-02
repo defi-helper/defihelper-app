@@ -8,7 +8,7 @@ import { dateUtils } from '~/common/date-utils'
 import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { ProtocolSocialPostProviderEnum } from '~/graphql/_generated-types'
+import { ProtocolSocialPostProviderEnum } from '~/api/_generated-types'
 import * as model from './protocol-media-activity.model'
 import * as styles from './protocol-media-activity.css'
 

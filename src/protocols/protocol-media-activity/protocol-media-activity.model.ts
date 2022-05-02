@@ -1,6 +1,6 @@
 import { createDomain } from 'effector-logger/macro'
 
-import { ProtocolSocialPostsQuery } from '~/graphql/_generated-types'
+import { ProtocolSocialPostsQuery } from '~/api/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 
 export const mediaActivity = createDomain()

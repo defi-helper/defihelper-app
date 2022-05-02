@@ -1,7 +1,7 @@
 import { createDomain, UnitValue } from 'effector-logger/macro'
 
 import { dateUtils } from '~/common/date-utils'
-import { MetricGroupEnum } from '~/graphql/_generated-types'
+import { MetricGroupEnum } from '~/api/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 
 const protocolTvlDomain = createDomain()

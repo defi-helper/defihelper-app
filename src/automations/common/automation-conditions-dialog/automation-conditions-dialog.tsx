@@ -6,7 +6,7 @@ import {
   AutomateConditionCreateInputType,
   AutomateConditionTypeEnum,
   AutomationDescriptionQuery,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { AutomationConditionContractMetric } from '../automation-condition-contract-metric'
 import { AutomationConditionEthereumBalance } from '../automation-condition-ethereum-balance'
 import { AutomationConditionEthereumGasPrice } from '../automation-condition-ethereum-gas-price'

@@ -1,4 +1,4 @@
-import { createClient, defaultExchanges, subscriptionExchange } from 'urql'
+import { GraphQLClient } from 'graphql-hooks'
 import memoize from 'fast-memoize'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 
@@ -21,25 +21,18 @@ export const getAPIClient = memoize(() => {
 
   const wsClient = new SubscriptionClient(wsUrl, { reconnect: true })
 
-  const client = createClient({
-    url,
-    fetchOptions: () => {
-      const sid = sidUtils.get()
+  const sid = sidUtils.get()
 
-      return sid
-        ? {
-            headers: {
-              Auth: sid,
-            },
-          }
-        : {}
-    },
-    exchanges: [
-      ...defaultExchanges,
-      subscriptionExchange({
-        forwardSubscription: (operation) => wsClient.request(operation),
-      }),
-    ],
+  const client = new GraphQLClient({
+    url,
+    fetchOptions: sid
+      ? {
+          headers: {
+            Auth: sid,
+          },
+        }
+      : {},
+    subscriptionClient: () => wsClient,
   })
 
   return client

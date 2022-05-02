@@ -9,7 +9,7 @@ import { ProtocolForm } from '~/protocols/common'
 import { detailModel } from '~/protocols/protocol-detail'
 import * as model from './protocol-update.model'
 import * as protocolOverviewModel from '~/protocols/protocol-overview/protocol-overview.model'
-import { BlockchainEnum } from '~/graphql/_generated-types'
+import { BlockchainEnum } from '~/api/_generated-types'
 
 export type ProtocolUpdateProps = unknown
 

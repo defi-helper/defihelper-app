@@ -1,6 +1,6 @@
 import { createDomain } from 'effector-logger/macro'
 
-import { UserContactEmailConfirmMutationVariables } from '~/graphql/_generated-types'
+import { UserContactEmailConfirmMutationVariables } from '~/api/_generated-types'
 import { settingsApi } from '~/settings/common'
 
 export const settingsConfirmEmailDomain = createDomain()

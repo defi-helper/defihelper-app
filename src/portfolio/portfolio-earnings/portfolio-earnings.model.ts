@@ -1,6 +1,6 @@
 import { createDomain, sample, guard } from 'effector-logger/macro'
 
-import { MetricGroupEnum } from '~/graphql/_generated-types'
+import { MetricGroupEnum } from '~/api/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 import * as portfolioMetricCardModel from '~/portfolio/portfolio-metric-cards/portfolio-metric-cards.model'
 import { authModel } from '~/auth'

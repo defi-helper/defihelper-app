@@ -1,7 +1,7 @@
 import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { automationApi } from '~/automations/common/automation.api'
-import { MonitoringAutomateRunHistoryFilterEnum } from '~/graphql/_generated-types'
+import { MonitoringAutomateRunHistoryFilterEnum } from '~/api/_generated-types'
 import { networksConfig } from '~/networks-config'
 import { protocolsApi } from '~/protocols/common'
 import { usersApi } from '~/users/common/users.api'

@@ -6,14 +6,16 @@ import {
   MonitoringUsersRegisteringHistoryQueryVariables,
   UserUpdateMutation,
   UserUpdateMutationVariables,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { USERS, USER_UPDATE, USER_REGISTERING_HISTORY } from './graphql'
 
 export const usersApi = {
   getUsers: (variables: UsersQueryVariables) =>
     getAPIClient()
-      .query<UsersQuery, UsersQueryVariables>(USERS, variables)
-      .toPromise()
+      .request<UsersQuery, UsersQueryVariables>({
+        query: USERS.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => ({
         list: data?.users.list ?? [],
         count: data?.users.pagination.count ?? 0,
@@ -21,21 +23,23 @@ export const usersApi = {
 
   updateUser: (variables: UserUpdateMutationVariables) =>
     getAPIClient()
-      .mutation<UserUpdateMutation, UserUpdateMutationVariables>(
-        USER_UPDATE,
-        variables
-      )
-      .toPromise()
+      .request<UserUpdateMutation, UserUpdateMutationVariables>({
+        query: USER_UPDATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.userUpdate),
 
   getUsersRegisteringHistory: (
     variables: MonitoringUsersRegisteringHistoryQueryVariables
   ) =>
     getAPIClient()
-      .query<
+      .request<
         MonitoringUsersRegisteringHistoryQuery,
+        unknown,
         MonitoringUsersRegisteringHistoryQueryVariables
-      >(USER_REGISTERING_HISTORY, variables)
-      .toPromise()
+      >({
+        query: USER_REGISTERING_HISTORY.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.monitoringUsersRegisteringHistory),
 }

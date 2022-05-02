@@ -1,5 +1,5 @@
 overwrite: true
-schema: "https://backend-local.defihelper.io/api"
+schema: "https://backend-dev.defihelper.info/api"
 documents: [
     './src/**/**/*.graphql.ts',
 ]
@@ -10,20 +10,17 @@ config:
     MetricColumnType: string
     UuidType: string
 generates:
-  src/graphql/_generated-fragment-types.ts:
+  src/api/_generated-fragment-types.ts:
     plugins:
       - add:
           content: '/* eslint-disable */'
       - fragment-matcher
-  src/graphql/_generated-types.ts:
-    config:
-      withHooks: true
+  src/api/_generated-types.ts:
     plugins:
       - add:
           content: '/* eslint-disable */'
       - typescript
       - typescript-operations
-      - typescript-urql
 hooks:
   afterAllFileWrite:
     - prettier --write

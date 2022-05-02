@@ -1,7 +1,6 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
-import { useThrottle } from 'react-use'
 import LazyLoad from 'react-lazyload'
 
 import { AppLayout } from '~/layouts'
@@ -13,23 +12,21 @@ import { Typography } from '~/common/typography'
 import { PortfolioMetricCards } from './portfolio-metric-cards'
 import { PortfolioWallets } from './portfolio-wallets/portfolio-wallets'
 import { PortfolioAssets } from './portfolio-assets'
+import {
+  useOnTokenMetricUpdatedSubscription,
+  useOnWalletMetricUpdatedSubscription,
+} from './common'
 import { PortfolioDeployedContracts } from './portfolio-deployed-contracts'
 import { SettingsContacts } from '~/settings/settings-contacts'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Loader } from '~/common/loader'
-import {
-  useOnWalletMetricUpdatedSubscription,
-  useOnTokenMetricUpdatedSubscription,
-  useOnWalletCreatedSubscription,
-} from '~/graphql/_generated-types'
 import { authModel } from '~/auth'
 import * as styles from './portfolio.css'
 import * as model from './portfolio.model'
 import { PortfolioExchanges } from '~/portfolio/portfolio-exchanges'
+import { useOnWalletCreatedSubscription } from '~/settings/common'
 
 export type PortfolioProps = unknown
-
-const TIME = 15000
 
 const HEIGHT = 300
 
@@ -41,36 +38,32 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
 
   useGate(model.PortfolioGate)
 
-  const subscriptionOptions = useMemo(() => {
+  const variables = useMemo(() => {
     if (!user) return undefined
 
     return {
-      variables: {
-        user: [user.id],
-      },
+      user: [user.id],
     }
   }, [user])
 
-  const [walletUpdated] =
-    useOnWalletMetricUpdatedSubscription(subscriptionOptions)
-  const [tokenMetricUpdated] =
-    useOnTokenMetricUpdatedSubscription(subscriptionOptions)
-  const [walletCreated] = useOnWalletCreatedSubscription(subscriptionOptions)
-
-  const metricUpdated = useThrottle(
-    walletUpdated.data?.onWalletMetricUpdated.id ||
-      tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
-      walletCreated.data?.onWalletCreated.id ||
-      '',
-    TIME
-  )
-
-  useEffect(() => {
-    if (metricUpdated) {
+  useOnTokenMetricUpdatedSubscription(({ data }) => {
+    if (data?.onTokenMetricUpdated.id) {
       model.portfolioUpdated()
       settingsWalletModel.updated()
     }
-  }, [metricUpdated])
+  }, variables)
+  useOnWalletMetricUpdatedSubscription(({ data }) => {
+    if (data?.onWalletMetricUpdated.id) {
+      model.portfolioUpdated()
+      settingsWalletModel.updated()
+    }
+  }, variables)
+  useOnWalletCreatedSubscription(({ data }) => {
+    if (data?.onWalletCreated.id) {
+      model.portfolioUpdated()
+      settingsWalletModel.updated()
+    }
+  }, variables)
 
   return (
     <AppLayout title="Portfolio">

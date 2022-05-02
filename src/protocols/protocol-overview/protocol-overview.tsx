@@ -7,7 +7,7 @@ import { ButtonBase } from '~/common/button-base'
 import { Typography } from '~/common/typography'
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
-import { ProtocolLinkType } from '~/graphql/_generated-types'
+import { ProtocolLinkType } from '~/api/_generated-types'
 import * as styles from './protocol-overview.css'
 import * as model from './protocol-overview.model'
 

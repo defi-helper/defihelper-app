@@ -17,7 +17,7 @@ import {
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { sidUtils } from '~/auth/common'
-import { BlockchainEnum } from '~/graphql/_generated-types'
+import { BlockchainEnum } from '~/api/_generated-types'
 import { networksConfig } from '~/networks-config'
 import type { WavesKeeperConnector } from '../common/waves-keeper-connector'
 

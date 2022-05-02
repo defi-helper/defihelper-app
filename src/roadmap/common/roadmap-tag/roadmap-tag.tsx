@@ -1,6 +1,6 @@
 import { Controller, useForm } from 'react-hook-form'
 
-import { ProposalTagEnum } from '~/graphql/_generated-types'
+import { ProposalTagEnum } from '~/api/_generated-types'
 import { Dialog } from '~/common/dialog'
 import { Button } from '~/common/button'
 import { Select, SelectOption } from '~/common/select'

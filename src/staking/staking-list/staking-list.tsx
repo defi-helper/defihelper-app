@@ -31,7 +31,7 @@ import {
   AutomateTriggerTypeEnum,
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { StakingBillingFormDialog, StakingApyDialog } from '~/staking/common'
 import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
 import { toastsService } from '~/toasts'

@@ -8,7 +8,7 @@ import {
   GovernanceReceiptQueryVariables,
   GovernanceVotesQuery,
   GovernanceVotesQueryVariables,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import {
   GOVERNANCE_PROPOSAL,
   GOVERNANCE_PROPOSALS,
@@ -19,14 +19,14 @@ import {
 export const governanceApi = {
   list: (variables: GovernanceProposalsQueryVariables) =>
     getAPIClient()
-      .query<GovernanceProposalsQuery, GovernanceProposalsQueryVariables>(
-        GOVERNANCE_PROPOSALS,
+      .request<
+        GovernanceProposalsQuery,
+        unknown,
+        GovernanceProposalsQueryVariables
+      >({
+        query: GOVERNANCE_PROPOSALS.loc?.source.body ?? '',
         variables,
-        {
-          requestPolicy: 'network-only',
-        }
-      )
-      .toPromise()
+      })
       .then(({ data }) => ({
         list: data?.govProposals.list ?? [],
         count: data?.govProposals.pagination.count ?? 0,
@@ -34,34 +34,33 @@ export const governanceApi = {
 
   detail: (variables: GovernanceProposalQueryVariables) =>
     getAPIClient()
-      .query<GovernanceProposalQuery, GovernanceProposalQueryVariables>(
-        GOVERNANCE_PROPOSAL,
+      .request<
+        GovernanceProposalQuery,
+        unknown,
+        GovernanceProposalQueryVariables
+      >({
+        query: GOVERNANCE_PROPOSAL.loc?.source.body ?? '',
         variables,
-        {
-          requestPolicy: 'network-only',
-        }
-      )
-      .toPromise()
+      })
       .then(({ data }) => data?.govProposal),
 
   receipt: (variables: GovernanceReceiptQueryVariables) =>
     getAPIClient()
-      .query<GovernanceReceiptQuery, GovernanceReceiptQueryVariables>(
-        GOVERNANCE_RECEIPT,
+      .request<
+        GovernanceReceiptQuery,
+        unknown,
+        GovernanceReceiptQueryVariables
+      >({
+        query: GOVERNANCE_RECEIPT.loc?.source.body ?? '',
         variables,
-        {
-          requestPolicy: 'network-only',
-        }
-      )
-      .toPromise()
+      })
       .then(({ data }) => data?.govReceipt),
 
   votes: (variables: GovernanceVotesQueryVariables) =>
     getAPIClient()
-      .query<GovernanceVotesQuery, GovernanceVotesQueryVariables>(
-        GOVERNANCE_VOTES,
-        variables
-      )
-      .toPromise()
+      .request<GovernanceVotesQuery, unknown, GovernanceVotesQueryVariables>({
+        query: GOVERNANCE_VOTES.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.govVotes),
 }

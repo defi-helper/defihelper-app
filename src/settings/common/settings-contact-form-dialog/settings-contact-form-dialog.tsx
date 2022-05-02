@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { Button } from '~/common/button'
 import { Input } from '~/common/input'
 import { Dialog } from '~/common/dialog'
-import { UserContactBrokerEnum } from '~/graphql/_generated-types'
+import { UserContactBrokerEnum } from '~/api/_generated-types'
 import * as styles from './settings-contact-form-dialog.css'
 import { settingsContactFormSchame } from './settings-contact-form-dialog.schema'
 

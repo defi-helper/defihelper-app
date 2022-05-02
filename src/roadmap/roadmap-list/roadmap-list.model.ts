@@ -10,7 +10,7 @@ import {
   ProposalTagMutationVariables,
   ProposalUntagMutationVariables,
   ProposalUpdateMutationVariables,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { roadmapApi, Proposal, ProposalsByStatus } from '~/roadmap/common'
 
 type Gate = {

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useGate, useStore } from 'effector-react'
 
 import { Typography } from '~/common/typography'
@@ -15,7 +14,7 @@ import { useDialog } from '~/common/dialog'
 import { authModel } from '~/auth'
 import * as model from './settings-contact.model'
 import * as styles from './settings-contacts.css'
-import { UserContactBrokerEnum } from '~/graphql/_generated-types'
+import { UserContactBrokerEnum } from '~/api/_generated-types'
 
 export type SettingsContactsProps = {
   className?: string

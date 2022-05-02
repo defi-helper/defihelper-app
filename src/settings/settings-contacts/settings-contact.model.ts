@@ -5,7 +5,7 @@ import { settingsApi } from '~/settings/common'
 import {
   UserContactCreateMutationVariables,
   UserContactFragmentFragment,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { authModel } from '~/auth'
 
 export const settingsContactsDomain = createDomain()

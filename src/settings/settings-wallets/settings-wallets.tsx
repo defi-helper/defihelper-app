@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from 'react'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import { useThrottle } from 'react-use'
 
 import { Typography } from '~/common/typography'
 import { Button } from '~/common/button'
@@ -17,17 +16,15 @@ import {
   SettingsSuccessDialog,
   TransactionEnum,
   SettingsWalletCard,
+  useOnBillingTransferCreatedSubscription,
+  useOnBillingTransferUpdatedSubscription,
+  useOnWalletCreatedSubscription,
 } from '~/settings/common'
 import { cutAccount } from '~/common/cut-account'
 import { useWalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
 import { useWalletConnect } from '~/wallets/wallet-connect'
-import {
-  useOnBillingTransferCreatedSubscription,
-  useOnBillingTransferUpdatedSubscription,
-  useOnWalletCreatedSubscription,
-} from '~/graphql/_generated-types'
 import { authModel } from '~/auth'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
@@ -51,41 +48,29 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   const handleConnect = useWalletConnect()
   const currentWallet = walletNetworkModel.useWalletNetwork()
 
-  const subscriptionOptions = useMemo(() => {
+  const variables = useMemo(() => {
     if (!user) return undefined
 
     return {
-      variables: {
-        user: [user.id],
-      },
+      user: [user.id],
     }
   }, [user])
 
-  const [transferCreated] =
-    useOnBillingTransferCreatedSubscription(subscriptionOptions)
-  const [transferUpdated] =
-    useOnBillingTransferUpdatedSubscription(subscriptionOptions)
-
-  const [walletCreated] = useOnWalletCreatedSubscription(subscriptionOptions)
-
-  const transferCreatedOrUpdated = useThrottle(
-    transferCreated.data?.onBillingTransferCreated.id ??
-      transferUpdated.data?.onBillingTransferUpdated.id ??
-      '',
-    15000
-  )
-
-  useEffect(() => {
-    if (transferCreatedOrUpdated) {
+  useOnBillingTransferCreatedSubscription(({ data }) => {
+    if (data?.onBillingTransferCreated.id) {
       model.updated()
     }
-  }, [transferCreatedOrUpdated])
-
-  useEffect(() => {
-    if (walletCreated.data?.onWalletCreated.id) {
+  }, variables)
+  useOnBillingTransferUpdatedSubscription(({ data }) => {
+    if (data?.onBillingTransferUpdated.id) {
       model.updated()
     }
-  }, [walletCreated.data?.onWalletCreated.id])
+  }, variables)
+  useOnWalletCreatedSubscription(({ data }) => {
+    if (data?.onWalletCreated.id) {
+      model.updated()
+    }
+  }, variables)
 
   const handleDeposit = (wallet: typeof wallets[number]) => async () => {
     try {

@@ -1,4 +1,4 @@
-import { BlockchainEnum } from '~/graphql/_generated-types'
+import { BlockchainEnum } from '~/api/_generated-types'
 import { networksConfig } from '~/networks-config'
 
 type Params = {

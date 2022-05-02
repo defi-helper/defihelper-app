@@ -1,4 +1,4 @@
-import { AutomateActionType } from '~/graphql/_generated-types'
+import { AutomateActionType } from '~/api/_generated-types'
 import { AutomationDialog } from '../automation-dialog'
 import {
   AutomationSelectList,

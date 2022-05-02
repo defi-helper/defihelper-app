@@ -1,6 +1,6 @@
 import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
-import { UserContactFragmentFragment } from '~/graphql/_generated-types'
+import { UserContactFragmentFragment } from '~/api/_generated-types'
 import { AutomationDialog } from '../automation-dialog'
 import {
   AutomationSelectList,

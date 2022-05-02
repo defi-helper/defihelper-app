@@ -10,7 +10,7 @@ import {
   AutomateTriggerCreateInputType,
   AutomateActionType,
   AutomateConditionType,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { automationApi } from '~/automations/common/automation.api'
 import { Trigger } from '../common/automation.types'
 import { toastsService } from '~/toasts'

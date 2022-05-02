@@ -12,7 +12,7 @@ import {
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
   UserRoleEnum,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import {
   buildAdaptersUrl,
   ConnectParams,
