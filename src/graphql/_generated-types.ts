@@ -982,6 +982,27 @@ export enum MetricGroupEnum {
   Year = 'year',
 }
 
+export enum MonitoringAutomateRunHistoryFilterEnum {
+  /** Only successful */
+  OnlySuccessful = 'onlySuccessful',
+  /** Only failed */
+  OnlyFailed = 'onlyFailed',
+  /** All */
+  All = 'all',
+}
+
+export type MonitoringStatisticsEarningsPointType = {
+  __typename?: 'MonitoringStatisticsEarningsPointType'
+  date: Scalars['DateTimeType']
+  number: Scalars['Float']
+}
+
+export type MonitoringStatisticsPointType = {
+  __typename?: 'MonitoringStatisticsPointType'
+  date: Scalars['DateTimeType']
+  number: Scalars['Int']
+}
+
 export type Mutation = {
   __typename?: 'Mutation'
   userUpdate: UserType
@@ -1828,6 +1849,11 @@ export type Query = {
   govToken: GovTokenType
   restakeStrategy: RestakeStrategyType
   treasury: TreasuryType
+  monitoringUsersRegisteringHistory: Array<MonitoringStatisticsPointType>
+  monitoringAutomateRunHistory: Array<MonitoringStatisticsPointType>
+  monitoringAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
+  monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
+  monitoringProtocolEarningsHistory: Array<MonitoringStatisticsEarningsPointType>
 }
 
 export type QueryUsersArgs = {
@@ -1941,6 +1967,14 @@ export type QueryRestakeStrategyArgs = {
   network?: Maybe<Scalars['String']>
   balance: Scalars['Float']
   apy: Scalars['Float']
+}
+
+export type QueryMonitoringAutomateRunHistoryArgs = {
+  filter: MonitoringAutomateRunHistoryFilterEnum
+}
+
+export type QueryMonitoringProtocolEarningsHistoryArgs = {
+  network: Scalars['String']
 }
 
 export type RestakeStrategyPointType = {
@@ -3533,6 +3567,20 @@ export type AutomationActionFragmentFragment = {
   'id' | 'type' | 'params' | 'paramsDescription' | 'priority' | 'createdAt'
 >
 
+export type MonitoringAutomationsAutorestakeCreationHistoryQueryVariables =
+  Exact<{ [key: string]: never }>
+
+export type MonitoringAutomationsAutorestakeCreationHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringAutoRestakeAutomatesCreationHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
+}
+
 export type AutomationConditionCreateMutationVariables = Exact<{
   input: AutomateConditionCreateInputType
 }>
@@ -3567,6 +3615,21 @@ export type AutomationConditionFragmentFragment = {
   AutomateConditionType,
   'id' | 'type' | 'params' | 'paramsDescription' | 'priority' | 'createdAt'
 >
+
+export type MonitoringAutomationsCreationHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringAutomationsCreationHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringAutomatesCreationHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
+}
 
 export type AutomationDescriptionFragmentFragment = {
   __typename?: 'AutomateDescriptionType'
@@ -3731,6 +3794,19 @@ export type AutomationProtocolsQuery = { __typename?: 'Query' } & {
       >
     >
   }
+}
+
+export type MonitoringAutomationsRunsHistoryQueryVariables = Exact<{
+  filter: MonitoringAutomateRunHistoryFilterEnum
+}>
+
+export type MonitoringAutomationsRunsHistoryQuery = { __typename?: 'Query' } & {
+  monitoringAutomateRunHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
 }
 
 export type AutomationTriggerCreateMutationVariables = Exact<{
@@ -4445,6 +4521,21 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
           >
         }
       } & ProtocolFragmentFragment
+  >
+}
+
+export type MonitoringProtocolDfhEarningsHistoryQueryVariables = Exact<{
+  network: Scalars['String']
+}>
+
+export type MonitoringProtocolDfhEarningsHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringProtocolEarningsHistory: Array<
+    { __typename?: 'MonitoringStatisticsEarningsPointType' } & Pick<
+      MonitoringStatisticsEarningsPointType,
+      'date' | 'number'
+    >
   >
 }
 
@@ -5519,6 +5610,21 @@ export type UsersQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type MonitoringUsersRegisteringHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringUsersRegisteringHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringUsersRegisteringHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
+}
+
 export type UserUpdateMutationVariables = Exact<{
   id: Scalars['UuidType']
   input: UserUpdateInputType
@@ -5998,6 +6104,26 @@ export function useAutomationActionUpdateMutation() {
     AutomationActionUpdateMutationVariables
   >(AutomationActionUpdateDocument)
 }
+export const MonitoringAutomationsAutorestakeCreationHistoryDocument = gql`
+  query monitoringAutomationsAutorestakeCreationHistory {
+    monitoringAutoRestakeAutomatesCreationHistory {
+      date
+      number
+    }
+  }
+`
+
+export function useMonitoringAutomationsAutorestakeCreationHistoryQuery(
+  options: Omit<
+    Urql.UseQueryArgs<MonitoringAutomationsAutorestakeCreationHistoryQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<MonitoringAutomationsAutorestakeCreationHistoryQuery>({
+    query: MonitoringAutomationsAutorestakeCreationHistoryDocument,
+    ...options,
+  })
+}
 export const AutomationConditionCreateDocument = gql`
   mutation AutomationConditionCreate(
     $input: AutomateConditionCreateInputType!
@@ -6043,6 +6169,26 @@ export function useAutomationConditionUpdateMutation() {
     AutomationConditionUpdateMutation,
     AutomationConditionUpdateMutationVariables
   >(AutomationConditionUpdateDocument)
+}
+export const MonitoringAutomationsCreationHistoryDocument = gql`
+  query monitoringAutomationsCreationHistory {
+    monitoringAutomatesCreationHistory {
+      date
+      number
+    }
+  }
+`
+
+export function useMonitoringAutomationsCreationHistoryQuery(
+  options: Omit<
+    Urql.UseQueryArgs<MonitoringAutomationsCreationHistoryQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<MonitoringAutomationsCreationHistoryQuery>({
+    query: MonitoringAutomationsCreationHistoryDocument,
+    ...options,
+  })
 }
 export const AutomationDescriptionDocument = gql`
   query AutomationDescription {
@@ -6240,6 +6386,28 @@ export function useAutomationProtocolsQuery(
 ) {
   return Urql.useQuery<AutomationProtocolsQuery>({
     query: AutomationProtocolsDocument,
+    ...options,
+  })
+}
+export const MonitoringAutomationsRunsHistoryDocument = gql`
+  query monitoringAutomationsRunsHistory(
+    $filter: MonitoringAutomateRunHistoryFilterEnum!
+  ) {
+    monitoringAutomateRunHistory(filter: $filter) {
+      date
+      number
+    }
+  }
+`
+
+export function useMonitoringAutomationsRunsHistoryQuery(
+  options: Omit<
+    Urql.UseQueryArgs<MonitoringAutomationsRunsHistoryQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<MonitoringAutomationsRunsHistoryQuery>({
+    query: MonitoringAutomationsRunsHistoryDocument,
     ...options,
   })
 }
@@ -7066,6 +7234,26 @@ export function useProtocolQuery(
   options: Omit<Urql.UseQueryArgs<ProtocolQueryVariables>, 'query'> = {}
 ) {
   return Urql.useQuery<ProtocolQuery>({ query: ProtocolDocument, ...options })
+}
+export const MonitoringProtocolDfhEarningsHistoryDocument = gql`
+  query monitoringProtocolDfhEarningsHistory($network: String!) {
+    monitoringProtocolEarningsHistory(network: $network) {
+      date
+      number
+    }
+  }
+`
+
+export function useMonitoringProtocolDfhEarningsHistoryQuery(
+  options: Omit<
+    Urql.UseQueryArgs<MonitoringProtocolDfhEarningsHistoryQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<MonitoringProtocolDfhEarningsHistoryQuery>({
+    query: MonitoringProtocolDfhEarningsHistoryDocument,
+    ...options,
+  })
 }
 export const ProtocolEstimatedDocument = gql`
   query ProtocolEstimated(
@@ -8365,6 +8553,26 @@ export function useUsersQuery(
   options: Omit<Urql.UseQueryArgs<UsersQueryVariables>, 'query'> = {}
 ) {
   return Urql.useQuery<UsersQuery>({ query: UsersDocument, ...options })
+}
+export const MonitoringUsersRegisteringHistoryDocument = gql`
+  query monitoringUsersRegisteringHistory {
+    monitoringUsersRegisteringHistory {
+      date
+      number
+    }
+  }
+`
+
+export function useMonitoringUsersRegisteringHistoryQuery(
+  options: Omit<
+    Urql.UseQueryArgs<MonitoringUsersRegisteringHistoryQueryVariables>,
+    'query'
+  > = {}
+) {
+  return Urql.useQuery<MonitoringUsersRegisteringHistoryQuery>({
+    query: MonitoringUsersRegisteringHistoryDocument,
+    ...options,
+  })
 }
 export const UserUpdateDocument = gql`
   mutation UserUpdate($id: UuidType!, $input: UserUpdateInputType!) {
