@@ -2,7 +2,7 @@ import * as yup from 'yup'
 
 import { isEthAddress } from '~/common/is-eth-address'
 import { isWavesAddress } from '~/common/is-waves-address'
-import { BlockchainEnum } from '~/graphql/_generated-types'
+import { BlockchainEnum } from '~/api/_generated-types'
 
 export const stakingContractFormSchema = yup.object().shape({
   blockchain: yup

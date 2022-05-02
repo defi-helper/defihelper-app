@@ -13,7 +13,7 @@ import { config } from '~/config'
 import {
   GovProposalStateEnum,
   GovReceiptSupportEnum,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { dateUtils } from '~/common/date-utils'
 import {
   GovernanceReasonDialog,
@@ -236,7 +236,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   </Button>
                 }
                 blockchain="ethereum"
-                network="1"
+                network={config.DEFAULT_CHAIN_ID}
               >
                 <Button
                   className={styles.voteButton}
@@ -252,7 +252,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   <Button className={styles.voteButton}>Vote abstain</Button>
                 }
                 blockchain="ethereum"
-                network="1"
+                network={config.DEFAULT_CHAIN_ID}
               >
                 <Button
                   className={styles.voteButton}
@@ -269,7 +269,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   </Button>
                 }
                 blockchain="ethereum"
-                network="1"
+                network={config.DEFAULT_CHAIN_ID}
               >
                 <Button
                   className={styles.voteButton}
@@ -286,7 +286,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             <WalletConnect
               fallback={<Button className={styles.mb32}>Connect</Button>}
               blockchain="ethereum"
-              network="1"
+              network={config.DEFAULT_CHAIN_ID}
             >
               <Button
                 onClick={handleQueueProposal}
@@ -305,7 +305,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               <WalletConnect
                 fallback={<Button className={styles.mb32}>Connect</Button>}
                 blockchain="ethereum"
-                network="1"
+                network={config.DEFAULT_CHAIN_ID}
               >
                 <Button
                   onClick={handleExecuteProposal}
@@ -340,7 +340,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                 <Typography key={id} className={styles.action} as="div">
                   <Link
                     href={buildExplorerUrl({
-                      network: config.IS_DEV ? '3' : '1',
+                      network: config.DEFAULT_CHAIN_ID,
                       address: target,
                     })}
                     target="_blank"
@@ -353,7 +353,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                       {isEthAddress(callData) ? (
                         <Link
                           href={buildExplorerUrl({
-                            network: config.IS_DEV ? '3' : '1',
+                            network: config.DEFAULT_CHAIN_ID,
                             address: callData,
                           })}
                           target="_blank"
@@ -375,7 +375,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             Author:{' '}
             <Link
               href={buildExplorerUrl({
-                network: config.IS_DEV ? '3' : '1',
+                network: config.DEFAULT_CHAIN_ID,
                 address: governanceDetail.proposer,
               })}
               target="_blank"

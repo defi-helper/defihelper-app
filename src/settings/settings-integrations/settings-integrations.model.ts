@@ -3,7 +3,7 @@ import { createDomain, combine, restore, guard } from 'effector-logger/macro'
 import {
   IntegrationExchangeApiConnectMutationVariables,
   WalletExchangeFragmentFragment,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { settingsApi } from '~/settings/common'
 import { toastsService } from '~/toasts'
 import { portfolioApi, portfolioSortAssetsByWallet } from '~/portfolio/common'

@@ -13,7 +13,7 @@ import { Loader } from '~/common/loader'
 import {
   UserContactBrokerEnum,
   UserNotificationTypeEnum,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { useDialog } from '~/common/dialog'
 import * as settingsContact from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './settings-smart-notifications.css'

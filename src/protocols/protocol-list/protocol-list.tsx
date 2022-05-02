@@ -42,11 +42,10 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     searchParams.get('filter') ?? options.all
   )
 
-  const [openSearchDialog] = useDialog(SearchDialog)
-
   const ability = useAbility()
   const user = useStore(authModel.$user)
 
+  const [openSearchDialog] = useDialog(SearchDialog)
   const [openConfirm] = useDialog(ConfirmDialog)
 
   const loading = useStore(model.fetchProtocolListFx.pending)
@@ -75,17 +74,28 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
     return currentOption === options.balances
   }, [currentOption])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const abortController = useMemo(() => new AbortController(), [currentOption])
+
   useGate(model.ProtocolListGate, {
     favorite:
       currentTab === Tabs.All ? undefined : currentTab === Tabs.Favourite,
     search: searchDebounced,
     hidden: ability.can('update', 'Protocol') ? null : false,
     debank,
+    abortController,
   })
 
   useEffect(() => {
-    history.replace({ search: `filter=${currentOption}` })
-  }, [currentOption, history])
+    history.replace({
+      search: `filter=${currentOption}`,
+    })
+
+    return () => {
+      abortController.abort()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentOption, abortController])
 
   const handleFavorite = (protocol: Protocol) => () => {
     model.protocolFavoriteFx({
@@ -111,7 +121,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   }
 
   const [sentryRef] = model.useInfiniteScroll()
-  const hasNetPage = useStore(model.useInfiniteScroll.hasNextPage)
+  const hasNextPage = useStore(model.useInfiniteScroll.hasNextPage)
 
   const tabs = (
     <ProtocolTabs
@@ -227,7 +237,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
               />
             </li>
           ))}
-          {(hasNetPage || !userReady || loading) && (
+          {(hasNextPage || !userReady || loading) && (
             <li>
               <div className={styles.loader} ref={sentryRef}>
                 <Loader height="36" />

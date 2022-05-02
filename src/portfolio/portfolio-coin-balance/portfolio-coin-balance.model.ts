@@ -7,7 +7,7 @@ import {
   MetricGroupEnum,
   SortOrderEnum,
   UserTokenMetricChartSortInputTypeColumnEnum,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { authModel } from '~/auth'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { mergeChartData } from '~/common/merge-chart-data'

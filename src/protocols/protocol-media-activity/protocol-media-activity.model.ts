@@ -1,13 +1,13 @@
 import { createDomain } from 'effector-logger/macro'
 
-import { ProtocolSocialPostsQuery } from '~/graphql/_generated-types'
+import { ProtocolSocialPostsQuery } from '~/api/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 
-export const protocolDetailDomain = createDomain()
+export const mediaActivity = createDomain()
 
 const LIMIT = 3
 
-export const fetchSocialPostsFx = protocolDetailDomain.createEffect(
+export const fetchSocialPostsFx = mediaActivity.createEffect(
   async (params: { protocolId: string; offset?: number }) => {
     const filter = {
       id: params.protocolId,
@@ -25,7 +25,9 @@ export const fetchSocialPostsFx = protocolDetailDomain.createEffect(
   }
 )
 
-export const $socialPosts = protocolDetailDomain
+export const reset = mediaActivity.createEvent()
+
+export const $socialPosts = mediaActivity
   .createStore<
     Exclude<
       Exclude<
@@ -39,7 +41,9 @@ export const $socialPosts = protocolDetailDomain
     ...state,
     ...payload.list,
   ])
+  .reset(reset)
 
-export const $socialCount = protocolDetailDomain
+export const $socialCount = mediaActivity
   .createStore(0)
   .on(fetchSocialPostsFx.doneData, (_, { count }) => count)
+  .reset(reset)

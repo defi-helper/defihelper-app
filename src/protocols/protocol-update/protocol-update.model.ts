@@ -5,7 +5,7 @@ import { history } from '~/common/history'
 import {
   ProtocolResolveContractsMutationVariables,
   ProtocolUpdateMutationVariables,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
 import { protocolsApi } from '../common/protocol.api'

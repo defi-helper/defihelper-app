@@ -1,7 +1,7 @@
 import { sample, createDomain, attach, restore } from 'effector-logger/macro'
 
 import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
-import { UserContactBrokerEnum } from '~/graphql/_generated-types'
+import { UserContactBrokerEnum } from '~/api/_generated-types'
 import { config } from '~/config'
 
 const betaAccessDomain = createDomain()

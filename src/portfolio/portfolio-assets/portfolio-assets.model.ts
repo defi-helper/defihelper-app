@@ -13,7 +13,7 @@ import {
   portfolioSortAssetsByPlatform,
   portfolioSortAssetsByWallet,
 } from '~/portfolio/common'
-import { PortfolioAssetFragment, UserType } from '~/graphql/_generated-types'
+import { PortfolioAssetFragment, UserType } from '~/api/_generated-types'
 import { authModel } from '~/auth'
 
 export const portfolioAssetsDomain = createDomain()

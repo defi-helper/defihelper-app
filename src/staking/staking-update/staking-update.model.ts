@@ -1,7 +1,7 @@
 import { createDomain } from 'effector-logger/macro'
 
 import { history } from '~/common/history'
-import { StakingContractUpdateMutationVariables } from '~/graphql/_generated-types'
+import { StakingContractUpdateMutationVariables } from '~/api/_generated-types'
 import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
 import { stakingApi } from '~/staking/common'

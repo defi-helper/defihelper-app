@@ -4,7 +4,7 @@ import omit from 'lodash.omit'
 
 import { authModel } from '~/auth'
 import { loadAdapter } from '~/common/load-adapter'
-import { UserType } from '~/graphql/_generated-types'
+import { UserType } from '~/api/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'

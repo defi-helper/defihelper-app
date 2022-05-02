@@ -5,7 +5,7 @@ import { Chip } from '~/common/chip'
 import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { UserContactStatusEnum } from '~/graphql/_generated-types'
+import { UserContactStatusEnum } from '~/api/_generated-types'
 import * as styles from './settings-contact-card.css'
 
 export type SettingsContactCardProps = {

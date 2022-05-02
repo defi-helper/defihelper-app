@@ -4,7 +4,7 @@ import {
   MetricChartType,
   SortOrderEnum,
   StakingContractFragmentFragment,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 
 export type StakingAutomatesContract = Exclude<
   Exclude<

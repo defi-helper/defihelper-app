@@ -1,5 +1,5 @@
 import { config } from './config'
-import { BlockchainEnum } from './graphql/_generated-types'
+import { BlockchainEnum } from './api/_generated-types'
 
 type Network = {
   title: string

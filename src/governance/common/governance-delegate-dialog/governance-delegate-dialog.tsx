@@ -43,7 +43,7 @@ export const GovernanceDelegateDialog: React.VFC<GovernanceDelegateDialogProps> 
             transform="uppercase"
             className={styles.subtitle}
           >
-            tokens represent voting shares in BondAppetit governance.
+            tokens represent voting shares in DeFiHelper governance.
           </Typography>
           <Button onClick={handleSelfDelegate} className={styles.self}>
             Self Delegate

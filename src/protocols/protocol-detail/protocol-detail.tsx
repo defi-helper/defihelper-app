@@ -1,5 +1,5 @@
-import { useMemo, useEffect } from 'react'
-import { useMedia, useThrottle } from 'react-use'
+import { useMemo } from 'react'
+import { useMedia } from 'react-use'
 import {
   useParams,
   Switch,
@@ -37,10 +37,6 @@ import { StakingAutomates } from '~/staking/staking-automates'
 import { Loader } from '~/common/loader'
 import { ButtonBase } from '~/common/button-base'
 import { paths } from '~/paths'
-import {
-  useOnTokenMetricUpdatedSubscription,
-  useOnWalletMetricUpdatedSubscription,
-} from '~/graphql/_generated-types'
 import { ProtocolEstimatedChart } from '~/protocols/protocol-estimated-chart'
 import { ProtocolTvlChart } from '~/protocols/protocol-tvl-chart'
 import { ProtocolUniqueWalletsChart } from '~/protocols/protocol-unique-wallets-chart'
@@ -48,6 +44,10 @@ import { ProtocolMediaActivity } from '../protocol-media-activity'
 import { OnboardTooltip } from '~/common/onboard-tooltip'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
+import {
+  useOnTokenMetricUpdatedSubscription,
+  useOnWalletMetricUpdatedSubscription,
+} from '~/portfolio/common'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -114,33 +114,23 @@ export const ProtocolDetail: React.FC = () => {
   const match = useRouteMatch()
   const user = useStore(authModel.$user)
 
-  const subscriptionOptions = useMemo(() => {
+  const variables = useMemo(() => {
     if (!user) return undefined
 
     return {
-      variables: {
-        user: [user.id],
-      },
+      user: [user.id],
     }
   }, [user])
+  useOnWalletMetricUpdatedSubscription(({ data }) => {
+    if (!data?.onWalletMetricUpdated.id) return
 
-  const [walletUpdated] =
-    useOnWalletMetricUpdatedSubscription(subscriptionOptions)
-  const [tokenMetricUpdated] =
-    useOnTokenMetricUpdatedSubscription(subscriptionOptions)
+    model.updated()
+  }, variables)
+  useOnTokenMetricUpdatedSubscription(({ data }) => {
+    if (!data?.onTokenMetricUpdated.id) return
 
-  const metricUpdated = useThrottle(
-    walletUpdated.data?.onWalletMetricUpdated.id ||
-      tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
-      '',
-    15000
-  )
-
-  useEffect(() => {
-    if (metricUpdated) {
-      model.updated()
-    }
-  }, [metricUpdated])
+    model.updated()
+  }, variables)
 
   return (
     <AppLayout

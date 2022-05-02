@@ -1,7 +1,7 @@
 import { createDomain, UnitValue } from 'effector-logger/macro'
 
 import { dateUtils } from '~/common/date-utils'
-import { MetricGroupEnum } from '~/graphql/_generated-types'
+import { MetricGroupEnum } from '~/api/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 
 const protocolMetricOverviewDomain = createDomain()
@@ -33,6 +33,9 @@ export const fetchMetricFx = protocolMetricOverviewDomain.createEffect(
   }
 )
 
+export const reset = protocolMetricOverviewDomain.createEvent()
+
 export const $metric = protocolMetricOverviewDomain
   .createStore<UnitValue<typeof fetchMetricFx.doneData>>([])
   .on(fetchMetricFx.doneData, (_, payload) => payload)
+  .reset(reset)

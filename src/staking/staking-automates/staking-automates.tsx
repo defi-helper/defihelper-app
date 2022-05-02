@@ -1,8 +1,7 @@
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import isEmpty from 'lodash.isempty'
-import { useThrottle } from 'react-use'
 
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
@@ -20,22 +19,20 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import { authModel } from '~/auth'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
-import {
-  useOnWalletMetricUpdatedSubscription,
-  useOnTokenMetricUpdatedSubscription,
-} from '~/graphql/_generated-types'
 import { parseError } from '~/common/parse-error'
 import { toastsService } from '~/toasts'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import {
+  useOnTokenMetricUpdatedSubscription,
+  useOnWalletMetricUpdatedSubscription,
+} from '~/portfolio/common'
 
 export type StakingAutomatesProps = {
   className?: string
   protocolId?: string
 }
-
-const TIME = 15000
 
 export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [openAdapter] = useDialog(StakingAdapterDialog)
@@ -188,35 +185,24 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
   useGate(model.StakingAutomatesGate, props.protocolId ?? null)
 
-  const subscriptionOptions = useMemo(() => {
+  const variables = useMemo(() => {
     if (!user) return undefined
 
     return {
-      variables: {
-        user: [user.id],
-      },
+      user: [user.id],
     }
   }, [user])
 
-  const [walletUpdated] =
-    useOnWalletMetricUpdatedSubscription(subscriptionOptions)
-  const [tokenMetricUpdated] =
-    useOnTokenMetricUpdatedSubscription(subscriptionOptions)
-
-  const onWalletMetricUpdated = useThrottle(
-    walletUpdated.data?.onWalletMetricUpdated.id || '',
-    TIME
-  )
-  const onTokenMetricUpdated = useThrottle(
-    tokenMetricUpdated.data?.onTokenMetricUpdated.id || '',
-    TIME
-  )
-
-  useEffect(() => {
-    if (onWalletMetricUpdated || onTokenMetricUpdated) {
+  useOnWalletMetricUpdatedSubscription(({ data }) => {
+    if (data?.onWalletMetricUpdated.id) {
       model.updated()
     }
-  }, [onWalletMetricUpdated, onTokenMetricUpdated])
+  }, variables)
+  useOnTokenMetricUpdatedSubscription(({ data }) => {
+    if (data?.onTokenMetricUpdated.id) {
+      model.updated()
+    }
+  }, variables)
 
   if (isEmpty(automatesContracts)) return <></>
 

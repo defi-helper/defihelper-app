@@ -22,7 +22,7 @@ import {
   AssetListByProtocolQuery,
   AssetsListByExchangeQueryVariables,
   AssetsListByExchangeQuery,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import {
   ADD_WALLET,
   BLOCKCHAINS,
@@ -40,35 +40,38 @@ import { ASSETS_LIST_BY_EXCHANGE } from '~/portfolio/common/graphql/assets-list-
 export const portfolioApi = {
   getTokenMetricChart: (variables: TokenMetricChartQueryVariables) =>
     getAPIClient()
-      .query<TokenMetricChartQuery, TokenMetricChartQueryVariables>(
-        TOKEN_METRIC_CHART,
-        variables
-      )
-      .toPromise()
+      .request<TokenMetricChartQuery, unknown, TokenMetricChartQueryVariables>({
+        query: TOKEN_METRIC_CHART.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.me),
 
   getBlockchains: (variables: BlockChainsQueryVariables) =>
     getAPIClient()
-      .query<BlockChainsQuery, BlockChainsQueryVariables>(
-        BLOCKCHAINS,
-        variables
-      )
-      .toPromise()
+      .request<BlockChainsQuery, unknown, BlockChainsQueryVariables>({
+        query: BLOCKCHAINS.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.me?.blockchains ?? []),
 
   getAssetsList: (variables: AssetListQueryVariables) =>
     getAPIClient()
-      .query<AssetListQuery, AssetListQueryVariables>(ASSETS_LIST, variables)
-      .toPromise()
+      .request<AssetListQuery, unknown, AssetListQueryVariables>({
+        query: ASSETS_LIST.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.me?.tokenAliases.list ?? []),
 
   getAssetsListByWallet: (variables: AssetsListByWalletQueryVariables) =>
     getAPIClient()
-      .query<AssetsListByWalletQuery, AssetsListByWalletQueryVariables>(
-        ASSETS_LIST_BY_WALLET,
-        variables
-      )
-      .toPromise()
+      .request<
+        AssetsListByWalletQuery,
+        unknown,
+        AssetsListByWalletQueryVariables
+      >({
+        query: ASSETS_LIST_BY_WALLET.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => {
         const [wallet = undefined] = data?.me?.wallets.list ?? []
 
@@ -77,11 +80,14 @@ export const portfolioApi = {
 
   getAssetsListByExchange: (variables: AssetsListByExchangeQueryVariables) =>
     getAPIClient()
-      .query<AssetsListByExchangeQuery, AssetsListByExchangeQueryVariables>(
-        ASSETS_LIST_BY_EXCHANGE,
-        variables
-      )
-      .toPromise()
+      .request<
+        AssetsListByExchangeQuery,
+        unknown,
+        AssetsListByExchangeQueryVariables
+      >({
+        query: ASSETS_LIST_BY_EXCHANGE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => {
         const [exchange = undefined] = data?.me?.exchanges.list ?? []
 
@@ -90,59 +96,64 @@ export const portfolioApi = {
 
   getAssetsListByProtocol: (variables: AssetListByProtocolQueryVariables) =>
     getAPIClient()
-      .query<AssetListByProtocolQuery, AssetListByProtocolQueryVariables>(
-        ASSETS_LIST_BY_PROTOCOL,
-        variables
-      )
-      .toPromise()
+      .request<
+        AssetListByProtocolQuery,
+        unknown,
+        AssetListByProtocolQueryVariables
+      >({
+        query: ASSETS_LIST_BY_PROTOCOL.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => {
         return data?.me?.tokenAliasesStakedMetrics.list ?? []
       }),
 
   addWallet: (variables: AddWalletMutationVariables) =>
     getAPIClient()
-      .mutation<AddWalletMutation, AddWalletMutationVariables>(
-        ADD_WALLET,
-        variables
-      )
-      .toPromise()
+      .request<AddWalletMutation, unknown, AddWalletMutationVariables>({
+        query: ADD_WALLET.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.addWallet),
 
   getTokenMetric: (variables?: TokenMetricQueryVariables) =>
     getAPIClient()
-      .query<TokenMetricQuery, TokenMetricQueryVariables>(
-        TOKEN_METRIC,
-        variables
-      )
-      .toPromise()
+      .request<TokenMetricQuery, unknown, TokenMetricQueryVariables>({
+        query: TOKEN_METRIC.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.me),
 
   myMetric: (variables?: MyMetricQueryVariables) =>
     getAPIClient()
-      .query<MyMetricQuery, MyMetricQueryVariables>(MY_METRIC, variables, {
-        requestPolicy: 'cache-and-network',
+      .request<MyMetricQuery, unknown, MyMetricQueryVariables>({
+        query: MY_METRIC.loc?.source.body ?? '',
+        variables,
       })
-      .toPromise()
       .then(({ data }) => data?.me?.metric),
 
   isPorfolioCollected: (variables?: IsPorfolioCollectedQueryVariables) =>
     getAPIClient()
-      .query<IsPorfolioCollectedQuery, IsPorfolioCollectedQueryVariables>(
-        IS_PORTFOLIO_COLLECTED,
+      .request<
+        IsPorfolioCollectedQuery,
+        unknown,
+        IsPorfolioCollectedQueryVariables
+      >({
+        query: IS_PORTFOLIO_COLLECTED.loc?.source.body ?? '',
         variables,
-        { requestPolicy: 'cache-and-network' }
-      )
-      .toPromise()
+      })
       .then(({ data }) => Boolean(data?.me?.isPorfolioCollected)),
 
   getProtocolList: (variables: PortfolioProtocolsQueryVariables) =>
     getAPIClient()
-      .query<PortfolioProtocolsQuery, PortfolioProtocolsQueryVariables>(
-        PORTFOLIO_PROTOCOLS,
+      .request<
+        PortfolioProtocolsQuery,
+        unknown,
+        PortfolioProtocolsQueryVariables
+      >({
+        query: PORTFOLIO_PROTOCOLS.loc?.source.body ?? '',
         variables,
-        { requestPolicy: 'cache-and-network' }
-      )
-      .toPromise()
+      })
       .then(({ data }) => ({
         list: (data?.protocols.list ?? [])
           .filter((v) => v.metric.myStaked !== '0')

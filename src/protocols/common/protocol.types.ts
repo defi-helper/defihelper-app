@@ -1,4 +1,4 @@
-import { ProtocolFragmentFragment } from '~/graphql/_generated-types'
+import { ProtocolFragmentFragment } from '~/api/_generated-types'
 
 export type Protocol = ProtocolFragmentFragment & {
   deleting: boolean

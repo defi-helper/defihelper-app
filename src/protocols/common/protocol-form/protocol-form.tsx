@@ -7,10 +7,7 @@ import { Checkbox } from '~/common/checkbox'
 import { Input } from '~/common/input'
 import { Button } from '~/common/button'
 import { Select, SelectOption } from '~/common/select'
-import {
-  BlockchainEnum,
-  ProtocolLinkInputType,
-} from '~/graphql/_generated-types'
+import { BlockchainEnum, ProtocolLinkInputType } from '~/api/_generated-types'
 import { Typography } from '~/common/typography'
 import { ButtonBase } from '~/common/button-base'
 import * as styles from './protocol-form.css'

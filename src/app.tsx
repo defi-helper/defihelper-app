@@ -1,5 +1,5 @@
 import { HelmetProvider } from 'react-helmet-async'
-import { Provider } from 'urql'
+import { ClientContext } from 'graphql-hooks'
 
 import './app.css'
 import './assets/fonts/Basier-Circle-regular-webfont/stylesheet.css'
@@ -21,7 +21,7 @@ export const App: React.VFC = () => {
 
   return (
     <ErrorBoundary>
-      <Provider value={getAPIClient()}>
+      <ClientContext.Provider value={getAPIClient()}>
         <HelmetProvider>
           <ThemeProvider>
             <DialogProvider>
@@ -33,7 +33,7 @@ export const App: React.VFC = () => {
             </DialogProvider>
           </ThemeProvider>
         </HelmetProvider>
-      </Provider>
+      </ClientContext.Provider>
     </ErrorBoundary>
   )
 }

@@ -8,7 +8,7 @@ import {
 import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'
-import { ProtocolFavoriteMutationVariables } from '~/graphql/_generated-types'
+import { ProtocolFavoriteMutationVariables } from '~/api/_generated-types'
 import { protocolsApi, Protocol } from '~/protocols/common'
 import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
 
@@ -21,9 +21,8 @@ type Params = {
   favorite?: boolean
   hidden: boolean | null
   debank?: boolean
+  abortController?: AbortController
 }
-
-const abortController = new AbortController()
 
 export const fetchProtocolListFx = protocolListDomain.createEffect(
   (params: Params) => {
@@ -50,7 +49,7 @@ export const fetchProtocolListFx = protocolListDomain.createEffect(
           limit: params?.limit,
         },
       },
-      abortController.signal
+      params.abortController?.signal
     )
   }
 )
@@ -80,7 +79,7 @@ export const fetchProtocolListMetricsFx = protocolListDomain.createEffect(
           limit: params?.limit,
         },
       },
-      abortController.signal
+      params.abortController?.signal
     )
   }
 )
@@ -109,10 +108,7 @@ export const deleteProtocolFx = protocolListDomain.createEffect(
 
 export const protocolFavoriteFx = protocolListDomain.createEffect(
   async (input: ProtocolFavoriteMutationVariables['input']) => {
-    const isFavorite = await protocolsApi.protocolFavorite(
-      { input },
-      abortController.signal
-    )
+    const isFavorite = await protocolsApi.protocolFavorite({ input })
 
     if (typeof isFavorite === 'boolean') {
       return isFavorite
@@ -169,6 +165,7 @@ export const ProtocolListGate = createGate<{
   favorite?: boolean
   hidden: boolean | null
   debank?: boolean
+  abortController?: AbortController
 }>({
   domain: protocolListDomain,
   name: 'ProtocolListGate',
@@ -240,8 +237,6 @@ export const $tabsCount = restore(fetchProtocolListCountFx.doneData, {
   favorites: params.favorite ? state.favorites + 1 : state.favorites - 1,
 }))
 
-ProtocolListGate.state.watch(() => abortController.abort())
-
 $protocolListMetrics.reset(
   ProtocolListGate.close,
   ProtocolListGate.state.updates
@@ -252,4 +247,3 @@ $protocolList.reset(
   ProtocolListGate.state.updates
 )
 $tabsCount.reset(ProtocolListGate.close)
-ProtocolListGate.close.watch(() => abortController.abort())

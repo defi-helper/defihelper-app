@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useEffect, useState } from 'react'
 
-import { StakingAutomatesContractFragmentFragment } from '~/graphql/_generated-types'
+import { StakingAutomatesContractFragmentFragment } from '~/api/_generated-types'
 import { AutomationDialog } from '../common/automation-dialog'
 import { AutomationChooseButton } from '../common/automation-choose-button'
 import { Icon } from '~/common/icon'

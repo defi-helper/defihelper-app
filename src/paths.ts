@@ -54,4 +54,6 @@ export const paths = {
   },
 
   vesting: '/vesting',
+
+  monitoring: '/monitoring',
 } as const

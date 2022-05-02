@@ -2,7 +2,7 @@ import { createDomain, restore, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { history } from '~/common/history'
-import { ProtocolCreateMutationVariables } from '~/graphql/_generated-types'
+import { ProtocolCreateMutationVariables } from '~/api/_generated-types'
 import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
 import { protocolsApi } from '../common/protocol.api'

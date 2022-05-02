@@ -7,7 +7,7 @@ import {
   StakingAutomatesContractFragmentFragment,
   AutomationDescriptionQuery,
   UserContactFragmentFragment,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { AutomationActionEthereumRun } from '../automation-action-ethereum-run'
 import { AutomationActionNotification } from '../automation-action-notification'
 import { AutomationDialog } from '../automation-dialog'

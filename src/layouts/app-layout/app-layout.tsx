@@ -66,6 +66,13 @@ const MENU: MenuItem[] = [
     can: 'read',
   },
   {
+    title: 'Monitoring',
+    path: paths.monitoring,
+    icon: 'grid',
+    subject: 'User',
+    can: 'read',
+  },
+  {
     title: 'Users',
     path: paths.users,
     icon: 'notification',

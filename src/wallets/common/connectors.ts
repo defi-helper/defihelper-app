@@ -11,7 +11,7 @@ import { config } from '~/config'
 import { WavesKeeperConnector } from './waves-keeper-connector'
 import { WavesExchangeConnector } from './waves-exchange-connector'
 import { networksConfig } from '~/networks-config'
-import { BlockchainEnum } from '~/graphql/_generated-types'
+import { BlockchainEnum } from '~/api/_generated-types'
 
 export const supportedChainIds = Object.values(networksConfig)
   .filter(({ blockchain }) => blockchain === BlockchainEnum.Ethereum)
@@ -22,13 +22,13 @@ export const injected = new InjectedConnector({
 })
 
 export const ledger = new LedgerConnector({
-  chainId: config.DEFAULT_CHAIN_ID,
+  chainId: Number(config.DEFAULT_CHAIN_ID),
   url: config.ETH_URL,
   pollingInterval: config.POLLING_INTERVAL,
 })
 
 export const trezor = new TrezorConnector({
-  chainId: config.DEFAULT_CHAIN_ID,
+  chainId: Number(config.DEFAULT_CHAIN_ID),
   url: config.ETH_URL,
   pollingInterval: config.POLLING_INTERVAL,
   manifestEmail: config.TREZOR_EMAIL,
@@ -50,12 +50,12 @@ export const walletconnect = new WalletConnectConnector({
 
 export const fortmatic = new FortmaticConnector({
   apiKey: config.FORTMATIC_KEY ?? '',
-  chainId: config.DEFAULT_CHAIN_ID,
+  chainId: Number(config.DEFAULT_CHAIN_ID),
 })
 
 export const portis = new PortisConnector({
   dAppId: config.PORTIS_ID ?? '',
-  networks: [config.DEFAULT_CHAIN_ID],
+  networks: [Number(config.DEFAULT_CHAIN_ID)],
 })
 
 export const binance = new BscConnector({

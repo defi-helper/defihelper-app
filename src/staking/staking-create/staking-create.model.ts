@@ -2,7 +2,7 @@ import { createDomain, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { history } from '~/common/history'
-import { StakingContractCreateMutationVariables } from '~/graphql/_generated-types'
+import { StakingContractCreateMutationVariables } from '~/api/_generated-types'
 import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'

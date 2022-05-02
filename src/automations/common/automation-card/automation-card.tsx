@@ -16,7 +16,7 @@ import {
   AutomateConditionType,
   AutomateTriggerTypeEnum,
   AutomationDescriptionQuery,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { networksConfig } from '~/networks-config'
 import { paths } from '~/paths'
 import { pluralize } from '~/common/pluralize'

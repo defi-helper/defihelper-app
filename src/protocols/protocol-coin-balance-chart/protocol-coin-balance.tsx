@@ -1,17 +1,16 @@
 import { useEffect, useState, useMemo } from 'react'
 import { useStore } from 'effector-react'
-import { useThrottle } from 'react-use'
 import isEmpty from 'lodash.isempty'
 
 import { Chart, CHART_GROUP_VALUES, ChartGroups } from '~/common/chart'
-import {
-  useOnTokenMetricUpdatedSubscription,
-  useOnWalletMetricUpdatedSubscription,
-} from '~/graphql/_generated-types'
 import { Typography } from '~/common/typography'
 import { ProtocolChartWrap } from '../common'
 import { authModel } from '~/auth'
 import * as model from './protocol-coin-balance.model'
+import {
+  useOnTokenMetricUpdatedSubscription,
+  useOnWalletMetricUpdatedSubscription,
+} from '~/portfolio/common'
 
 const STAKED_FIELDS = [
   {
@@ -46,27 +45,30 @@ export const ProtocolCoinBalanceChart: React.VFC<ProtocolCoinBalanceChartProps> 
     const user = useStore(authModel.$user)
     const loading = useStore(model.fetchStakedMetricFx.pending)
 
-    const subscriptionOptions = useMemo(() => {
+    const variables = useMemo(() => {
       if (!user) return undefined
 
       return {
-        variables: {
-          user: [user.id],
-        },
+        user: [user.id],
       }
     }, [user])
 
-    const [walletUpdated] =
-      useOnWalletMetricUpdatedSubscription(subscriptionOptions)
-    const [tokenMetricUpdated] =
-      useOnTokenMetricUpdatedSubscription(subscriptionOptions)
+    useOnWalletMetricUpdatedSubscription(({ data }) => {
+      if (!props.contracts.length || !data?.onWalletMetricUpdated.id) return
 
-    const metricUpdated = useThrottle(
-      walletUpdated.data?.onWalletMetricUpdated.id ||
-        tokenMetricUpdated.data?.onTokenMetricUpdated.id ||
-        '',
-      15000
-    )
+      model.fetchStakedMetricFx({
+        group: currentStakedGroup,
+        contracts: props.contracts,
+      })
+    }, variables)
+    useOnTokenMetricUpdatedSubscription(({ data }) => {
+      if (!props.contracts.length || !data?.onTokenMetricUpdated.id) return
+
+      model.fetchStakedMetricFx({
+        group: currentStakedGroup,
+        contracts: props.contracts,
+      })
+    }, variables)
 
     useEffect(() => {
       if (!props.contracts.length) return
@@ -75,7 +77,7 @@ export const ProtocolCoinBalanceChart: React.VFC<ProtocolCoinBalanceChartProps> 
         group: currentStakedGroup,
         contracts: props.contracts,
       })
-    }, [currentStakedGroup, props.contracts, metricUpdated])
+    }, [currentStakedGroup, props.contracts])
 
     useEffect(() => {
       return () => model.reset()

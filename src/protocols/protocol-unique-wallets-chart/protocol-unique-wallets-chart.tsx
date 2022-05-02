@@ -24,6 +24,8 @@ export const ProtocolUniqueWalletsChart: React.FC<ProtocolUniqueWalletsChartProp
       model.fetchMetricFx({
         protocolId: params.protocolId,
       })
+
+      return () => model.reset()
     }, [params.protocolId])
 
     const walletData = metric.map((wallet) => ({

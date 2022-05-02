@@ -8,7 +8,7 @@ import { SettingsIntegrationCard } from '~/settings/common/settings-integration-
 import { useDialog } from '~/common/dialog'
 import { SettingsIntegrationBinanceDialog } from '~/settings/common/settings-integration-binance-dialog'
 import { Icon } from '~/common/icon'
-import { WalletExchangeTypeEnum } from '~/graphql/_generated-types'
+import { WalletExchangeTypeEnum } from '~/api/_generated-types'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './settings-integrations.css'
 import * as model from './settings-integrations.model'

@@ -1,4 +1,4 @@
-import { MetricChartType } from '~/graphql/_generated-types'
+import { MetricChartType } from '~/api/_generated-types'
 
 type ChartData = Record<string, Array<Pick<MetricChartType, 'date' | 'sum'>>>
 

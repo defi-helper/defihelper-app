@@ -2,7 +2,7 @@ import { Dialog } from '~/common/dialog'
 import { Button } from '~/common/button'
 import { Typography } from '~/common/typography'
 import { config } from '~/config'
-import { UserContactBrokerEnum } from '~/graphql/_generated-types'
+import { UserContactBrokerEnum } from '~/api/_generated-types'
 import * as styles from './settings-success-dialog.css'
 
 export enum TransactionEnum {

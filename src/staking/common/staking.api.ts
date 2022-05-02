@@ -30,7 +30,7 @@ import {
   AutomationContractDeleteMutationVariables,
   ContractScannerRegisterMutationVariables,
   ContractScannerRegisterMutation,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
   STAKING_CONTRACT_DELETE,
@@ -53,11 +53,14 @@ import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-s
 export const stakingApi = {
   contractList: (variables: StakingContractListQueryVariables) =>
     getAPIClient()
-      .query<StakingContractListQuery, StakingContractListQueryVariables>(
-        STAKING_CONTRACT_LIST,
-        variables
-      )
-      .toPromise()
+      .request<
+        StakingContractListQuery,
+        unknown,
+        StakingContractListQueryVariables
+      >({
+        query: STAKING_CONTRACT_LIST.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => ({
         adapter: data?.protocol?.adapter,
         contracts: data?.protocol?.contracts.list ?? [],
@@ -66,82 +69,100 @@ export const stakingApi = {
 
   contractDelete: (id: string) =>
     getAPIClient()
-      .mutation<
+      .request<
         StakingContractDeleteMutation,
+        unknown,
         StakingContractDeleteMutationVariables
-      >(STAKING_CONTRACT_DELETE, { id })
-      .toPromise()
+      >({
+        query: STAKING_CONTRACT_DELETE.loc?.source.body ?? '',
+        variables: { id },
+      })
       .then(({ data }) => data?.contractDelete),
 
   contractCreate: (variables: StakingContractCreateMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         StakingContractCreateMutation,
+        unknown,
         StakingContractCreateMutationVariables
-      >(STAKING_CONTRACT_CREATE, variables)
-      .toPromise()
+      >({
+        query: STAKING_CONTRACT_CREATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.contractCreate.protocolId),
 
   contractUpdate: (variables: StakingContractUpdateMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         StakingContractUpdateMutation,
+        unknown,
         StakingContractUpdateMutationVariables
-      >(STAKING_CONTRACT_UPDATE, variables)
-      .toPromise()
+      >({
+        query: STAKING_CONTRACT_UPDATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.contractUpdate),
 
   connectWallet: (variables: StakingConnectWalletMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         StakingConnectWalletMutation,
+        unknown,
         StakingConnectWalletMutationVariables
-      >(STAKING_CONNECT_WALLET, variables)
-      .toPromise()
+      >({
+        query: STAKING_CONNECT_WALLET.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.contractWalletLink),
 
   updateMetrics: (contract: string) =>
     getAPIClient()
-      .mutation<
+      .request<
         StakingUpdateMetricsMutation,
+        unknown,
         StakingUpdateMetricsMutationVariables
-      >(STAKING_UPDATE_METRICS, { contract })
-      .toPromise()
+      >({
+        query: STAKING_UPDATE_METRICS.loc?.source.body ?? '',
+        variables: { contract },
+      })
       .then(({ data }) => data?.contractMetricScan),
 
   disconnectWallet: (variables: StakingDisconnectWalletMutationVariables) =>
     getAPIClient()
-      .mutation<
+      .request<
         StakingDisconnectWalletMutation,
+        unknown,
         StakingDisconnectWalletMutationVariables
-      >(STAKING_DISCONNECT_WALLET, variables)
-      .toPromise()
+      >({
+        query: STAKING_DISCONNECT_WALLET.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.contractWalletUnlink),
 
   connectedContracts: (protocolId: string) =>
     getAPIClient()
-      .query<
+      .request<
         StakingConnectedContractsQuery,
+        unknown,
         StakingConnectedContractsQueryVariables
-      >(STAKING_CONNECTED_CONTRACTS, {
-        filter: {
-          protocol: [protocolId],
+      >({
+        query: STAKING_CONNECTED_CONTRACTS.loc?.source.body ?? '',
+        variables: {
+          filter: {
+            protocol: [protocolId],
+          },
         },
       })
-      .toPromise()
       .then(({ data }) =>
         data?.me?.wallets.list?.flatMap(({ contracts }) => contracts.list)
       ),
 
-  // logoUrl: logoUrl ?? '',
-
   tokens: (variables: StakingTokensQueryVariables) =>
     getAPIClient()
-      .query<StakingTokensQuery, StakingTokensQueryVariables>(
-        STAKING_TOKENS,
-        variables
-      )
-      .toPromise()
+      .request<StakingTokensQuery, unknown, StakingTokensQueryVariables>({
+        query: STAKING_TOKENS.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) =>
         (data?.tokens.list ?? []).map((token) => ({
           id: token.id,
@@ -153,35 +174,42 @@ export const stakingApi = {
 
   contractMetric: (variables: StakingContractMetricQueryVariables) =>
     getAPIClient()
-      .query<StakingContractMetricQuery, StakingContractMetricQueryVariables>(
-        STAKING_CONTRACT_METRIC,
-        variables
-      )
-      .toPromise()
+      .request<
+        StakingContractMetricQuery,
+        unknown,
+        StakingContractMetricQueryVariables
+      >({
+        query: STAKING_CONTRACT_METRIC.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.me),
 
   contractScannerRegister: (
     variables: ContractScannerRegisterMutationVariables
   ) =>
     getAPIClient()
-      .mutation<
+      .request<
         ContractScannerRegisterMutation,
+        unknown,
         ContractScannerRegisterMutationVariables
-      >(CONTRACT_SCANNER_REGISTER, variables)
-      .toPromise()
+      >({
+        query: CONTRACT_SCANNER_REGISTER.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.contractScannerRegister),
 
   automatesContractList: (
     variables?: StakingAutomatesContractsQueryVariables
   ) =>
     getAPIClient()
-      .query<
+      .request<
         StakingAutomatesContractsQuery,
+        unknown,
         StakingAutomatesContractsQueryVariables
-      >(STAKING_AUTOMATES_CONTRACTS, variables, {
-        requestPolicy: 'cache-and-network',
+      >({
+        query: STAKING_AUTOMATES_CONTRACTS.loc?.source.body ?? '',
+        variables,
       })
-      .toPromise()
       .then(({ data }) => ({
         list: data?.automateContracts.list ?? [],
         count: data?.automateContracts.pagination.count ?? 0,
@@ -191,33 +219,42 @@ export const stakingApi = {
     variables: AutomationContractCreateMutationVariables
   ) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationContractCreateMutation,
+        unknown,
         AutomationContractCreateMutationVariables
-      >(AUTOMATION_CONTRACT_CREATE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_CONTRACT_CREATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateContractCreate),
 
   updateAutomatesContract: (
     variables: AutomationContractUpdateMutationVariables
   ) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationContractUpdateMutation,
+        unknown,
         AutomationContractUpdateMutationVariables
-      >(AUTOMATION_CONTRACT_UPDATE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_CONTRACT_UPDATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateContractUpdate),
 
   deleteAutomatesContract: (
     variables: AutomationContractDeleteMutationVariables
   ) =>
     getAPIClient()
-      .mutation<
+      .request<
         AutomationContractDeleteMutation,
+        unknown,
         AutomationContractDeleteMutationVariables
-      >(AUTOMATION_CONTRACT_DELETE, variables)
-      .toPromise()
+      >({
+        query: AUTOMATION_CONTRACT_DELETE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.automateContractDelete),
 
   scannerGetEventListener: (variables: {

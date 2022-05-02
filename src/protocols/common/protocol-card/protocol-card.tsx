@@ -12,7 +12,7 @@ import { Protocol } from '~/protocols/common/protocol.types'
 import { paths } from '~/paths'
 import { createComponent } from '~/common/create-component'
 import * as styles from './protocol-card.css'
-import { ProtocolListMetricsQuery } from '~/graphql/_generated-types'
+import { ProtocolListMetricsQuery } from '~/api/_generated-types'
 import { Loader } from '~/common/loader'
 
 export type ProtocolCardProps = {

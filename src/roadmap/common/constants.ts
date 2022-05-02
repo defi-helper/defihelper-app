@@ -1,4 +1,4 @@
-import { ProposalStatusEnum, ProposalTagEnum } from '~/graphql/_generated-types'
+import { ProposalStatusEnum, ProposalTagEnum } from '~/api/_generated-types'
 
 export const STATUSES = {
   [ProposalStatusEnum.Open]: 'Planned',

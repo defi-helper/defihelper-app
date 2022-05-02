@@ -20,7 +20,7 @@ import {
   ProposalTagMutation,
   ProposalUntagMutation,
   ProposalUntagMutationVariables,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import {
   PROPOSAL_CREATE,
   PROPOSAL_DELETE,
@@ -37,12 +37,10 @@ import {
 export const roadmapApi = {
   proposalList: (variables?: ProposalsQueryVariables) =>
     getAPIClient()
-      .query<ProposalsQuery, ProposalsQueryVariables>(
-        PROPOSAL_LIST,
+      .request<ProposalsQuery, unknown, ProposalsQueryVariables>({
+        query: PROPOSAL_LIST.loc?.source.body ?? '',
         variables,
-        { requestPolicy: 'network-only' }
-      )
-      .toPromise()
+      })
       .then(({ data }) => ({
         list: data?.proposals.list ?? [],
         pagination: data?.proposals.pagination.count ?? 0,
@@ -50,12 +48,14 @@ export const roadmapApi = {
 
   proposalListByStatus: (variables?: ProposalsByStatusQueryVariables) =>
     getAPIClient()
-      .query<ProposalsByStatusQuery, ProposalsByStatusQueryVariables>(
-        PROPOSAL_LIST_BY_STATUS,
+      .request<
+        ProposalsByStatusQuery,
+        unknown,
+        ProposalsByStatusQueryVariables
+      >({
+        query: PROPOSAL_LIST_BY_STATUS.loc?.source.body ?? '',
         variables,
-        { requestPolicy: 'network-only' }
-      )
-      .toPromise()
+      })
       .then(({ data }) => ({
         open: data?.open,
         in_process: data?.in_process,
@@ -65,72 +65,83 @@ export const roadmapApi = {
 
   proposalDetail: (variables: ProposalQueryVariables) =>
     getAPIClient()
-      .query<ProposalQuery, ProposalQueryVariables>(PROPOSAL_DETAIL, variables)
-      .toPromise()
+      .request<ProposalQuery, unknown, ProposalQueryVariables>({
+        query: PROPOSAL_DETAIL.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.proposal),
 
   proposalCreate: (variables: ProposalCreateMutationVariables) =>
     getAPIClient()
-      .mutation<ProposalCreateMutation, ProposalCreateMutationVariables>(
-        PROPOSAL_CREATE,
-        variables
-      )
-      .toPromise()
+      .request<
+        ProposalCreateMutation,
+        unknown,
+        ProposalCreateMutationVariables
+      >({
+        query: PROPOSAL_CREATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.proposalCreate),
 
   proposalTag: (variables: ProposalTagMutationVariables) =>
     getAPIClient()
-      .mutation<ProposalTagMutation, ProposalTagMutationVariables>(
-        PROPOSAL_TAG,
-        variables
-      )
-      .toPromise()
+      .request<ProposalTagMutation, unknown, ProposalTagMutationVariables>({
+        query: PROPOSAL_TAG.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.proposalTag),
 
   proposalUntag: (variables: ProposalUntagMutationVariables) =>
     getAPIClient()
-      .mutation<ProposalUntagMutation, ProposalUntagMutationVariables>(
-        PROPOSAL_UNTAG,
-        variables
-      )
-      .toPromise()
+      .request<ProposalUntagMutation, unknown, ProposalUntagMutationVariables>({
+        query: PROPOSAL_UNTAG.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.proposalUntag),
 
   proposalUpdate: (variables: ProposalUpdateMutationVariables) =>
     getAPIClient()
-      .mutation<ProposalUpdateMutation, ProposalUpdateMutationVariables>(
-        PROPOSAL_UPDATE,
-        variables
-      )
-      .toPromise()
+      .request<
+        ProposalUpdateMutation,
+        unknown,
+        ProposalUpdateMutationVariables
+      >({
+        query: PROPOSAL_UPDATE.loc?.source.body ?? '',
+        variables,
+      })
       .then(({ data }) => data?.proposalUpdate),
 
   proposalDelete: (proposalId: string) =>
     getAPIClient()
-      .mutation<ProposalDeleteMutation, ProposalDeleteMutationVariables>(
-        PROPOSAL_DELETE,
-        {
+      .request<
+        ProposalDeleteMutation,
+        unknown,
+        ProposalDeleteMutationVariables
+      >({
+        query: PROPOSAL_DELETE.loc?.source.body ?? '',
+        variables: {
           id: proposalId,
-        }
-      )
-      .toPromise()
+        },
+      })
       .then(({ data }) => data?.proposalDelete),
 
   vote: (proposalId: string) =>
     getAPIClient()
-      .mutation<ProposalVoteMutation, ProposalVoteMutationVariables>(
-        PROPOSAL_VOTE,
-        { proposal: proposalId }
-      )
-      .toPromise()
+      .request<ProposalVoteMutation, unknown, ProposalVoteMutationVariables>({
+        query: PROPOSAL_VOTE.loc?.source.body ?? '',
+        variables: { proposal: proposalId },
+      })
       .then(({ data }) => data?.vote),
 
   proposalUnvote: (proposalId: string) =>
     getAPIClient()
-      .mutation<ProposalUnvoteMutation, ProposalUnvoteMutationVariables>(
-        PROPOSAL_UNVOTE,
-        { proposal: proposalId }
-      )
-      .toPromise()
+      .request<
+        ProposalUnvoteMutation,
+        unknown,
+        ProposalUnvoteMutationVariables
+      >({
+        query: PROPOSAL_UNVOTE.loc?.source.body ?? '',
+        variables: { proposal: proposalId },
+      })
       .then(({ data }) => data?.unvote),
 }

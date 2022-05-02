@@ -1,6 +1,6 @@
 import { createDomain, guard, restore } from 'effector-logger/macro'
 
-import { AddWalletInputType } from '~/graphql/_generated-types'
+import { AddWalletInputType } from '~/api/_generated-types'
 import { portfolioApi } from '~/portfolio/common'
 import * as assetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
 import { authModel } from '~/auth'

@@ -4,7 +4,7 @@ import { createGate } from 'effector-react'
 import {
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
-} from '~/graphql/_generated-types'
+} from '~/api/_generated-types'
 import { Contract, stakingApi, StakingListPayload } from '~/staking/common'
 import { PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
