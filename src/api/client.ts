@@ -1,5 +1,4 @@
 import { GraphQLClient } from 'graphql-hooks'
-import memoize from 'fast-memoize'
 import { SubscriptionClient } from 'subscriptions-transport-ws'
 
 import { sidUtils } from '~/auth/common/sid-utils'
@@ -8,7 +7,7 @@ import { config } from '~/config'
 const API_URL_ERROR_MESSAGE = 'config.API_URL is required'
 const WS_API_URLERROR_MESSAGE = 'config.WS_API_URL is required'
 
-export const getAPIClient = memoize(() => {
+export const getAPIClient = () => {
   const url = config.API_URL
   const wsUrl = config.WS_API_URL
 
@@ -36,4 +35,4 @@ export const getAPIClient = memoize(() => {
   })
 
   return client
-})
+}
