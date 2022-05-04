@@ -28,6 +28,12 @@ const WALLET_MAP = new Map([
       address: '0xDa6e2681B36862e30A380b07d0b14150206cA177',
     },
   ],
+  [
+    '0xdD52F3b42191c6A95630a949b8883c2e173bD78C', // Demo
+    {
+      address: '0x2A8f11189E4702DbD10F76A3e4b5FCE53c620910',
+    },
+  ],
 ])
 
 const NUM = 1 + '0'.repeat(18)
