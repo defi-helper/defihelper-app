@@ -10,8 +10,7 @@ import { AppLayout } from '~/layouts'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { dateUtils } from '~/common/date-utils'
-import abi1 from './vesting1.abi.json'
-import abi2 from './vesting2.abi.json'
+import vestingAbi from './vesting.abi.json'
 import * as styles from './vesting.css'
 
 export type VestingProps = unknown
@@ -21,14 +20,12 @@ const WALLET_MAP = new Map([
     '0x90079B15eAf30388D71E5e194ABcdD5b39C3B404',
     {
       address: '0x45948e9ad7b3fbCbD27FBBf7CfDec814267b443c',
-      abi: abi1,
     },
   ],
   [
     '0xdDBB9d55fc46D789ae20A47eBF09aF024df4D692',
     {
       address: '0x420F18789F6d8E7b04f73e7bB42448C702d2aA83',
-      abi: abi2,
     },
   ],
 ])
@@ -52,7 +49,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
     return new ethers.Contract(
       contractInterface.address,
-      contractInterface.abi,
+      vestingAbi,
       networkProvider.getSigner()
     )
   }, [wallet])
