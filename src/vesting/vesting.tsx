@@ -1,6 +1,7 @@
 import { useAsyncFn, useAsyncRetry } from 'react-use'
 import { ethers } from 'ethers'
 import { useMemo } from 'react'
+import contracts from '@defihelper/networks/contracts.json'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
@@ -11,6 +12,8 @@ import { WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { dateUtils } from '~/common/date-utils'
 import vestingAbi from './vesting.abi.json'
+import { config } from '~/config'
+import { abi } from '~/abi'
 import * as styles from './vesting.css'
 
 export type VestingProps = unknown
@@ -38,6 +41,8 @@ const WALLET_MAP = new Map([
 
 const NUM = 1 + '0'.repeat(18)
 const BLOCK_PER_DAY = '13.3'
+const GOVERNOR_TOKEN =
+  contracts[config.DEFAULT_CHAIN_ID].GovernanceToken.address
 
 export const Vesting: React.VFC<VestingProps> = () => {
   const wallet = walletNetworkModel.useWalletNetwork()
@@ -46,7 +51,22 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
   const correctAccount = WALLET_MAP.has(account)
 
-  const contract = useMemo(() => {
+  const governorBravo = useMemo(() => {
+    const networkProvider = walletNetworkModel.getNetwork(
+      wallet?.provider,
+      wallet?.chainId
+    )
+
+    if (!networkProvider) return null
+
+    return new ethers.Contract(
+      GOVERNOR_TOKEN,
+      abi.GovernanceToken.abi,
+      networkProvider.getSigner()
+    )
+  }, [wallet])
+
+  const vestingContract = useMemo(() => {
     const contractInterface = WALLET_MAP.get(account)
     const networkProvider = walletNetworkModel.getNetwork(
       wallet?.provider,
@@ -62,46 +82,80 @@ export const Vesting: React.VFC<VestingProps> = () => {
     )
   }, [wallet, account])
 
-  const isOwner = useAsyncRetry(async () => {
-    if (!contract || !wallet?.account) return false
+  const balanceOf = useAsyncRetry(async () => {
+    const contractInterface = WALLET_MAP.get(account)
 
-    return contract.owner()
-  }, [wallet, contract])
+    if (!governorBravo || !contractInterface) return 0
 
-  const periodFinish = useAsyncRetry(async () => {
-    if (!contract || !wallet?.account) return null
+    const result = (
+      await governorBravo.balanceOf(contractInterface.address)
+    ).toString()
 
-    return contract.periodFinish(wallet.account)
-  }, [contract, wallet])
-  const earned = useAsyncRetry(async () => {
-    if (!contract || !wallet?.account) return null
+    return bignumberUtils.div(result, NUM)
+  }, [governorBravo])
 
-    return contract.earned(wallet.account)
-  }, [contract, wallet])
-  const rate = useAsyncRetry(async () => {
-    if (!contract || !wallet?.account) return null
-
-    return contract.rate(wallet.account)
-  }, [contract, wallet])
-
-  const [claimState, handleClaim] = useAsyncFn(async () => {
-    if (!contract || !wallet?.account) return null
-
-    const gasLimit = bignumberUtils.estimateGas(
-      await contract.estimateGas.claim()
+  const currentBlockNumber = useAsyncRetry(async () => {
+    const networkProvider = walletNetworkModel.getNetwork(
+      wallet?.provider,
+      wallet?.chainId
     )
 
-    return contract.claim(undefined, {
+    if (!networkProvider) return 0
+
+    return networkProvider.getBlockNumber()
+  }, [wallet])
+
+  const isOwner = useAsyncRetry(async () => {
+    if (!vestingContract || !account) return false
+
+    const owner: string = await vestingContract.owner()
+
+    return owner.toLowerCase() === account
+  }, [account, vestingContract])
+
+  const periodFinish = useAsyncRetry(async () => {
+    if (!vestingContract) return null
+
+    const period = await vestingContract.periodFinish()
+
+    return period.toString()
+  }, [vestingContract, wallet])
+  const earned = useAsyncRetry(async () => {
+    if (!vestingContract) return null
+
+    const result = await vestingContract.earned()
+
+    return result.toString()
+  }, [vestingContract, wallet])
+  const rate = useAsyncRetry(async () => {
+    if (!vestingContract) return null
+
+    const result = await vestingContract.rate()
+
+    return result.toString()
+  }, [vestingContract, wallet])
+
+  const [claimState, handleClaim] = useAsyncFn(async () => {
+    if (!vestingContract || !wallet?.account) return null
+
+    const gasLimit = bignumberUtils.estimateGas(
+      await vestingContract.estimateGas.claim()
+    )
+
+    return vestingContract.claim({
       gasLimit,
     })
-  }, [contract, wallet])
+  }, [vestingContract, wallet])
 
-  const dropDate = bignumberUtils.mul(
-    bignumberUtils.div(rate.value, NUM),
-    BLOCK_PER_DAY
+  const dropRate = bignumberUtils.div(
+    bignumberUtils.mul(rate.value, BLOCK_PER_DAY),
+    NUM
   )
 
-  const dropEnd = bignumberUtils.div(periodFinish.value, BLOCK_PER_DAY)
+  const dropEnd = bignumberUtils.mul(
+    bignumberUtils.minus(periodFinish.value, currentBlockNumber.value),
+    BLOCK_PER_DAY
+  )
 
   return (
     <AppLayout>
@@ -124,6 +178,18 @@ export const Vesting: React.VFC<VestingProps> = () => {
                       transform="uppercase"
                       family="mono"
                     >
+                      {bignumberUtils.format(balanceOf.value)}
+                    </Typography>
+                  </div>
+                  <div className={styles.row}>
+                    <Typography variant="body2" className={styles.label}>
+                      Claimable tokens
+                    </Typography>
+                    <Typography
+                      variant="h4"
+                      transform="uppercase"
+                      family="mono"
+                    >
                       {bignumberUtils.format(
                         bignumberUtils.div(earned.value, NUM)
                       )}
@@ -131,14 +197,16 @@ export const Vesting: React.VFC<VestingProps> = () => {
                   </div>
                   <div className={styles.row}>
                     <Typography variant="body2" className={styles.label}>
-                      Drop date
+                      Drop rate
                     </Typography>
                     <Typography
                       variant="h4"
                       transform="uppercase"
                       family="mono"
                     >
-                      {dateUtils.format(dropDate)} DFH / day
+                      ~
+                      {bignumberUtils.format(bignumberUtils.mul(dropRate, 100))}{' '}
+                      dfh / day
                     </Typography>
                   </div>
                   <div className={styles.row}>
@@ -150,7 +218,10 @@ export const Vesting: React.VFC<VestingProps> = () => {
                       transform="uppercase"
                       family="mono"
                     >
-                      {dateUtils.format(dropEnd)}
+                      {dateUtils.format(
+                        dateUtils.addDate(Number(dropEnd), 'seconds')
+                      )}
+                      (block: {String(currentBlockNumber.value ?? 0)})
                     </Typography>
                   </div>
                   <Button onClick={handleClaim} loading={claimState.loading}>
