@@ -12,7 +12,7 @@ export const root = style({
 })
 
 export const content = style({
-  marginBottom: 10,
+  marginBottom: 40,
 })
 
 export const close = style({

@@ -4,6 +4,7 @@ import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import clsx from 'clsx'
 import { StickyContainer, Sticky } from 'react-sticky'
+import Joyride, { Step } from '@defihelper/react-joyride'
 
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import { Can, useAbility } from '~/auth'
@@ -42,6 +43,8 @@ import * as walletsModel from '~/settings/settings-wallets/settings-wallets.mode
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import { Input } from '~/common/input'
 import { useDebounce } from '~/common/hooks'
+import { OnboardTooltip } from '~/common/onboard-tooltip'
+import { theme } from '~/common/theme'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
 
@@ -66,6 +69,25 @@ const sortIcon = (
 
   return <Icon icon={icon} width="18" />
 }
+
+const STEPS: Step[] = [
+  {
+    target: '.real_apy',
+    content: 'Here you can see your actual 7-day annualized percentage rate',
+    placement: 'top',
+  },
+  {
+    target: `.auto_staking`,
+    content:
+      'Auto-staking is a built-in automation that helps increase the profitability (APY) of staking contracts across other DeFi protocols',
+    placement: 'top',
+  },
+  {
+    target: `.buy_lp`,
+    content: 'You can buy liquidity pool tokens right here',
+    placement: 'bottom',
+  },
+]
 
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const ability = useAbility()
@@ -425,146 +447,169 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
               </div>
             )}
             {Boolean(stakingList.length) && (
-              <Sticky>
-                {({ isSticky, style }) => (
-                  <div
-                    className={clsx(
-                      styles.tableHeader,
-                      styles.row,
-                      isSticky && styles.fixedTableHeader
-                    )}
-                    style={style}
-                  >
-                    <Typography variant="body2">Pool</Typography>
-                    <Typography variant="body2" align="right">
-                      <ButtonBase
-                        onClick={handleSort({
-                          column: ContractListSortInputTypeColumnEnum.Tvl,
-                          order:
-                            sortBy.column ===
-                              ContractListSortInputTypeColumnEnum.Tvl &&
-                            sortBy.order === SortOrderEnum.Desc
-                              ? SortOrderEnum.Asc
-                              : SortOrderEnum.Desc,
-                        })}
-                      >
-                        TVL{' '}
-                        {sortBy.column ===
-                          ContractListSortInputTypeColumnEnum.Tvl &&
-                          sortIcon(
-                            sortBy,
-                            ContractListSortInputTypeColumnEnum.Tvl
-                          )}
-                      </ButtonBase>
-                    </Typography>
-                    <Typography variant="body2" align="right">
-                      <ButtonBase
-                        onClick={handleSort({
-                          column: ContractListSortInputTypeColumnEnum.AprYear,
-                          order:
-                            sortBy.column ===
-                              ContractListSortInputTypeColumnEnum.AprYear &&
-                            sortBy.order === SortOrderEnum.Desc
-                              ? SortOrderEnum.Asc
-                              : SortOrderEnum.Desc,
-                        })}
-                      >
-                        APY{' '}
-                        {sortBy.column ===
-                          ContractListSortInputTypeColumnEnum.AprYear &&
-                          sortIcon(
-                            sortBy,
-                            ContractListSortInputTypeColumnEnum.AprYear
-                          )}
-                      </ButtonBase>
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      align="right"
-                      className={styles.realApr}
+              <>
+                <Joyride
+                  run
+                  steps={STEPS}
+                  showSkipButton
+                  continuous
+                  styles={{
+                    overlay: {
+                      background: 'transparent',
+                    },
+                  }}
+                  floaterProps={{
+                    styles: {
+                      arrow: {
+                        color: theme.colors.common.green1,
+                      },
+                    },
+                  }}
+                  tooltipComponent={OnboardTooltip}
+                />
+                <Sticky>
+                  {({ isSticky, style }) => (
+                    <div
+                      className={clsx(
+                        styles.tableHeader,
+                        styles.row,
+                        isSticky && styles.fixedTableHeader
+                      )}
+                      style={style}
                     >
-                      <ButtonBase
-                        onClick={handleSort({
-                          column:
-                            ContractListSortInputTypeColumnEnum.AprWeekReal,
-                          order:
-                            sortBy.column ===
-                              ContractListSortInputTypeColumnEnum.AprWeekReal &&
-                            sortBy.order === SortOrderEnum.Desc
-                              ? SortOrderEnum.Asc
-                              : SortOrderEnum.Desc,
-                        })}
+                      <Typography variant="body2">Pool</Typography>
+                      <Typography variant="body2" align="right">
+                        <ButtonBase
+                          onClick={handleSort({
+                            column: ContractListSortInputTypeColumnEnum.Tvl,
+                            order:
+                              sortBy.column ===
+                                ContractListSortInputTypeColumnEnum.Tvl &&
+                              sortBy.order === SortOrderEnum.Desc
+                                ? SortOrderEnum.Asc
+                                : SortOrderEnum.Desc,
+                          })}
+                        >
+                          TVL{' '}
+                          {sortBy.column ===
+                            ContractListSortInputTypeColumnEnum.Tvl &&
+                            sortIcon(
+                              sortBy,
+                              ContractListSortInputTypeColumnEnum.Tvl
+                            )}
+                        </ButtonBase>
+                      </Typography>
+                      <Typography variant="body2" align="right">
+                        <ButtonBase
+                          onClick={handleSort({
+                            column: ContractListSortInputTypeColumnEnum.AprYear,
+                            order:
+                              sortBy.column ===
+                                ContractListSortInputTypeColumnEnum.AprYear &&
+                              sortBy.order === SortOrderEnum.Desc
+                                ? SortOrderEnum.Asc
+                                : SortOrderEnum.Desc,
+                          })}
+                        >
+                          APY{' '}
+                          {sortBy.column ===
+                            ContractListSortInputTypeColumnEnum.AprYear &&
+                            sortIcon(
+                              sortBy,
+                              ContractListSortInputTypeColumnEnum.AprYear
+                            )}
+                        </ButtonBase>
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        align="right"
+                        className={styles.realApr}
                       >
-                        Real APR (7d){' '}
-                        {sortBy.column ===
-                          ContractListSortInputTypeColumnEnum.AprWeekReal &&
-                          sortIcon(
-                            sortBy,
-                            ContractListSortInputTypeColumnEnum.AprWeekReal
-                          )}
-                      </ButtonBase>
-                      <Dropdown
-                        control={
-                          <ButtonBase>
-                            <Icon icon="question" width="16" height="16" />
-                          </ButtonBase>
-                        }
-                        trigger="hover"
-                        placement="top"
-                        offset={[0, 8]}
+                        <ButtonBase
+                          onClick={handleSort({
+                            column:
+                              ContractListSortInputTypeColumnEnum.AprWeekReal,
+                            order:
+                              sortBy.column ===
+                                ContractListSortInputTypeColumnEnum.AprWeekReal &&
+                              sortBy.order === SortOrderEnum.Desc
+                                ? SortOrderEnum.Asc
+                                : SortOrderEnum.Desc,
+                          })}
+                          className="real_apy"
+                        >
+                          Real APR (7d){' '}
+                          {sortBy.column ===
+                            ContractListSortInputTypeColumnEnum.AprWeekReal &&
+                            sortIcon(
+                              sortBy,
+                              ContractListSortInputTypeColumnEnum.AprWeekReal
+                            )}
+                        </ButtonBase>
+                        <Dropdown
+                          control={
+                            <ButtonBase>
+                              <Icon icon="question" width="16" height="16" />
+                            </ButtonBase>
+                          }
+                          trigger="hover"
+                          placement="top"
+                          offset={[0, 8]}
+                        >
+                          <Typography variant="body3">
+                            Actual 7-day annualized percentage rate
+                          </Typography>
+                        </Dropdown>
+                      </Typography>
+                      <Typography variant="body2" align="right">
+                        <ButtonBase
+                          onClick={handleSort({
+                            column:
+                              ContractListSortInputTypeColumnEnum.MyStaked,
+                            order:
+                              sortBy.column ===
+                                ContractListSortInputTypeColumnEnum.MyStaked &&
+                              sortBy.order === SortOrderEnum.Desc
+                                ? SortOrderEnum.Asc
+                                : SortOrderEnum.Desc,
+                          })}
+                        >
+                          Position{' '}
+                          {sortBy.column ===
+                            ContractListSortInputTypeColumnEnum.MyStaked &&
+                            sortIcon(
+                              sortBy,
+                              ContractListSortInputTypeColumnEnum.MyStaked
+                            )}
+                        </ButtonBase>
+                      </Typography>
+                      <Typography variant="body2" align="right">
+                        Unclaimed
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        className={`${styles.boostTooltipTHead} auto_staking`}
                       >
-                        <Typography variant="body3">
-                          Actual 7-day annualized percentage rate
-                        </Typography>
-                      </Dropdown>
-                    </Typography>
-                    <Typography variant="body2" align="right">
-                      <ButtonBase
-                        onClick={handleSort({
-                          column: ContractListSortInputTypeColumnEnum.MyStaked,
-                          order:
-                            sortBy.column ===
-                              ContractListSortInputTypeColumnEnum.MyStaked &&
-                            sortBy.order === SortOrderEnum.Desc
-                              ? SortOrderEnum.Asc
-                              : SortOrderEnum.Desc,
-                        })}
-                      >
-                        Position{' '}
-                        {sortBy.column ===
-                          ContractListSortInputTypeColumnEnum.MyStaked &&
-                          sortIcon(
-                            sortBy,
-                            ContractListSortInputTypeColumnEnum.MyStaked
-                          )}
-                      </ButtonBase>
-                    </Typography>
-                    <Typography variant="body2" align="right">
-                      Unclaimed
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      className={styles.boostTooltipTHead}
-                    >
-                      <Dropdown
-                        control={
-                          <ButtonBase>
-                            <Icon icon="question" width="16" height="16" />
-                          </ButtonBase>
-                        }
-                        trigger="hover"
-                        placement="top"
-                        offset={[0, 8]}
-                      >
-                        <Typography variant="body3">
-                          Activate auto-staking to boost your yield
-                        </Typography>
-                      </Dropdown>
-                      Auto-Staking Boost
-                    </Typography>
-                  </div>
-                )}
-              </Sticky>
+                        <Dropdown
+                          control={
+                            <ButtonBase>
+                              <Icon icon="question" width="16" height="16" />
+                            </ButtonBase>
+                          }
+                          trigger="hover"
+                          placement="top"
+                          offset={[0, 8]}
+                        >
+                          <Typography variant="body3">
+                            Activate auto-staking to boost your yield
+                          </Typography>
+                        </Dropdown>
+                        Auto-Staking Boost
+                      </Typography>
+                    </div>
+                  )}
+                </Sticky>
+              </>
             )}
             <ul className={styles.list}>
               {!loading && !stakingList.length && (

@@ -228,7 +228,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         </WalletConnect>
       </div>
       {hasBuyLiquidity && (
-        <div className={styles.buyLP}>
+        <div className={`${styles.buyLP} buy_lp`}>
           <WalletConnect
             fallback={
               <Button type="submit" size="small" variant="outlined">

@@ -11,7 +11,6 @@ import {
 import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
 import LazyLoad from 'react-lazyload'
-import Joyride from '@defihelper/react-joyride'
 
 import { AppLayout } from '~/layouts'
 import { authModel, Can, useAbility } from '~/auth'
@@ -41,12 +40,10 @@ import { ProtocolEstimatedChart } from '~/protocols/protocol-estimated-chart'
 import { ProtocolTvlChart } from '~/protocols/protocol-tvl-chart'
 import { ProtocolUniqueWalletsChart } from '~/protocols/protocol-unique-wallets-chart'
 import { ProtocolMediaActivity } from '../protocol-media-activity'
-import { OnboardTooltip } from '~/common/onboard-tooltip'
 import {
   useOnTokenMetricUpdatedSubscription,
   useOnWalletMetricUpdatedSubscription,
 } from '~/portfolio/common'
-import { theme } from '~/common/theme'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
 
@@ -84,18 +81,6 @@ const EARNINGS = [
 ]
 
 const HEIGHT = 300
-
-const STEPS = [
-  {
-    target: `.${styles.charts}`,
-    content: 'Here you can see your actual 7-day annualized percentage rate',
-  },
-  {
-    target: `.${styles.staking}`,
-    content:
-      'THERE YOU CAN CHOOSE ONE OF STAKING CONTRACTS WICH SUPPORT AUTO-STAKING. iN GENERAL, AUTO-STAKING evaluates the efficiency therein, collects the reward, transfers it through an exchange, and then returns it to the bulk of the deposit. YOU CAN LEARN MORE ABOUT IT AT THIS ARTICLE ON MEDIUM.',
-  },
-]
 
 export const ProtocolDetail: React.FC = () => {
   const params = useParams<{ protocolId: string }>()
@@ -181,25 +166,6 @@ export const ProtocolDetail: React.FC = () => {
       )}
       {protocol && (
         <>
-          <Joyride
-            run
-            steps={STEPS}
-            showSkipButton
-            continuous
-            styles={{
-              overlay: {
-                background: 'transparent',
-              },
-            }}
-            floaterProps={{
-              styles: {
-                arrow: {
-                  color: theme.colors.common.green1,
-                },
-              },
-            }}
-            tooltipComponent={OnboardTooltip}
-          />
           <div className={styles.header}>
             {protocol.icon && (
               <img src={protocol.icon} alt="" className={styles.icon} />
