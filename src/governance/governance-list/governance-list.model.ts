@@ -24,7 +24,7 @@ export const fetchGovernanceListFx = governanceListDomain.createEffect(
       filter: {
         network,
         contract: GOVERNOR_BRAVO,
-        cache: true,
+        cache: config.IS_DEV,
       },
     })
 )

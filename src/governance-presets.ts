@@ -26,9 +26,8 @@ export type GovernancePreset = {
 
 export const governancePresets: GovernancePreset[] = [
   {
-    title: 'Issuer: burn USDap',
-    description:
-      'Transfer USDap token from Treasury to Issuer contract and call rebalance',
+    title: 'Transfer USDT from Treasury',
+    description: 'Transfer USDT token from Treasury to other wallet',
     variables: {
       amount: {
         type: 'uint256',
@@ -56,11 +55,6 @@ export const governancePresets: GovernancePreset[] = [
             value: 'amount',
           },
         ],
-      },
-      {
-        contract: 'Issuer',
-        method: 'rebalance',
-        input: [],
       },
     ],
   },

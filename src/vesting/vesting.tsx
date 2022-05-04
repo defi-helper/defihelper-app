@@ -10,25 +10,22 @@ import { AppLayout } from '~/layouts'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { dateUtils } from '~/common/date-utils'
-import abi1 from './vesting1.abi.json'
-import abi2 from './vesting2.abi.json'
+import vestingAbi from './vesting.abi.json'
 import * as styles from './vesting.css'
 
 export type VestingProps = unknown
 
 const WALLET_MAP = new Map([
   [
-    '0x90079B15eAf30388D71E5e194ABcdD5b39C3B404',
+    '0x7d69FdA38Ab7B7D0f348a472F219e81aA47C4FFF', // Ar
     {
-      address: '0x45948e9ad7b3fbCbD27FBBf7CfDec814267b443c',
-      abi: abi1,
+      address: '0x0a30b22c3aBacA781e7a17C748D33564D03A3426',
     },
   ],
   [
-    '0xdDBB9d55fc46D789ae20A47eBF09aF024df4D692',
+    '0x5932758379c01779d42ba00A721f71a94bd7A35d', // An
     {
-      address: '0x420F18789F6d8E7b04f73e7bB42448C702d2aA83',
-      abi: abi2,
+      address: '0x23f37a5297f291feA8Da83AB34BFF7Df9b2F799F',
     },
   ],
 ])
@@ -52,7 +49,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
     return new ethers.Contract(
       contractInterface.address,
-      contractInterface.abi,
+      vestingAbi,
       networkProvider.getSigner()
     )
   }, [wallet])
@@ -102,7 +99,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
     <AppLayout>
       <WalletConnect fallback={<Button>Connect</Button>}>
         <Typography variant="h3" className={styles.title}>
-          Pre seed
+          Pre-seed round
         </Typography>
         <Paper radius={8} className={styles.root}>
           {correctAccount ? (
@@ -154,11 +151,13 @@ export const Vesting: React.VFC<VestingProps> = () => {
                 </>
               )}
               {isOwner.value === false && !isOwner.loading && (
-                <Typography variant="body2">you&apos;re not owner</Typography>
+                <Typography variant="body2">
+                  you&apos;re not the owner
+                </Typography>
               )}
             </>
           ) : (
-            <Typography variant="body2">incorrect account</Typography>
+            <Typography variant="body2">Wrong address</Typography>
           )}
         </Paper>
       </WalletConnect>

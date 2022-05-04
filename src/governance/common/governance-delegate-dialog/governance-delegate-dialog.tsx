@@ -48,7 +48,7 @@ export const GovernanceDelegateDialog: React.VFC<GovernanceDelegateDialogProps> 
           <Button onClick={handleSelfDelegate} className={styles.self}>
             Self Delegate
           </Button>
-          <Button onClick={handleAddDelegant}>Add Delegant</Button>
+          <Button onClick={handleAddDelegant}>Delegate your votes</Button>
         </>
       ),
       [Steps.delegant]: (

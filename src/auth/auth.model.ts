@@ -8,6 +8,7 @@ import {
 import { shallowEqual } from 'fast-equals'
 import { delay } from 'patronum/delay'
 
+import Cookies from 'js-cookie'
 import {
   MeQuery,
   AuthEthMutation,
@@ -76,6 +77,7 @@ export const authEthereumFx = authDomain.createEffect(
   async (input: AuthEthereumInputType) => {
     const data = await authApi.authEth({
       ...input,
+      code: Cookies.get('dfh-parent-code'),
       merge: input.merge ?? false,
     })
 
