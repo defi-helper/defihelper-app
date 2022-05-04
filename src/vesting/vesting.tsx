@@ -113,7 +113,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
           {correctAccount ? (
             <>
               {isOwner.loading && 'loading...'}
-              {isOwner.value === true && !isOwner.loading && (
+              {isOwner.value && !isOwner.loading && (
                 <>
                   <div className={styles.row}>
                     <Typography variant="body2" className={styles.label}>
@@ -158,7 +158,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
                   </Button>
                 </>
               )}
-              {isOwner.value === false && !isOwner.loading && (
+              {!isOwner.value && !isOwner.loading && (
                 <Typography variant="body2">
                   you&apos;re not the owner
                 </Typography>
