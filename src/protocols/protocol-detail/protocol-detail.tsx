@@ -11,7 +11,7 @@ import {
 import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
 import LazyLoad from 'react-lazyload'
-import Joyride from 'react-joyride'
+import Joyride from '@defihelper/react-joyride'
 
 import { AppLayout } from '~/layouts'
 import { authModel, Can, useAbility } from '~/auth'
@@ -42,12 +42,13 @@ import { ProtocolTvlChart } from '~/protocols/protocol-tvl-chart'
 import { ProtocolUniqueWalletsChart } from '~/protocols/protocol-unique-wallets-chart'
 import { ProtocolMediaActivity } from '../protocol-media-activity'
 import { OnboardTooltip } from '~/common/onboard-tooltip'
-import * as model from './protocol-detail.model'
-import * as styles from './protocol-detail.css'
 import {
   useOnTokenMetricUpdatedSubscription,
   useOnWalletMetricUpdatedSubscription,
 } from '~/portfolio/common'
+import { theme } from '~/common/theme'
+import * as model from './protocol-detail.model'
+import * as styles from './protocol-detail.css'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -87,8 +88,7 @@ const HEIGHT = 300
 const STEPS = [
   {
     target: `.${styles.charts}`,
-    content:
-      "Now it looks quiet empty, but once you connect your wallet we'll provide you with awesome statistics, wich help you earn more. you can do it right now!",
+    content: 'Here you can see your actual 7-day annualized percentage rate',
   },
   {
     target: `.${styles.staking}`,
@@ -186,6 +186,18 @@ export const ProtocolDetail: React.FC = () => {
             steps={STEPS}
             showSkipButton
             continuous
+            styles={{
+              overlay: {
+                background: 'transparent',
+              },
+            }}
+            floaterProps={{
+              styles: {
+                arrow: {
+                  color: theme.colors.common.green1,
+                },
+              },
+            }}
             tooltipComponent={OnboardTooltip}
           />
           <div className={styles.header}>

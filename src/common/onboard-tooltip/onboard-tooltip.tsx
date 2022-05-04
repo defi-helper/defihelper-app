@@ -1,6 +1,8 @@
-import { TooltipRenderProps } from 'react-joyride'
+import { TooltipRenderProps } from '@defihelper/react-joyride'
 
 import { Button } from '../button'
+import { ButtonBase } from '../button-base'
+import { Icon } from '../icon'
 import { Typography } from '../typography'
 import * as styles from './onboard-tooltip.css'
 
@@ -10,9 +12,13 @@ export const OnboardTooltip = ({
   primaryProps,
   tooltipProps,
   isLastStep,
+  closeProps,
 }: TooltipRenderProps) => {
   return (
     <div {...tooltipProps} className={styles.root}>
+      <ButtonBase {...closeProps} className={styles.close}>
+        <Icon icon="close" />
+      </ButtonBase>
       {step.title && (
         <Typography
           as="div"
@@ -34,14 +40,9 @@ export const OnboardTooltip = ({
           {step.content}
         </Typography>
       )}
-      <div>
+      <div className={styles.buttons}>
         {continuous && !isLastStep && (
-          <Button
-            color="blue"
-            variant="outlined"
-            {...primaryProps}
-            size="small"
-          >
+          <Button variant="outlined" {...primaryProps} size="small">
             next step
           </Button>
         )}

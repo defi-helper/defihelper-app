@@ -5,7 +5,6 @@ import {
   guard,
   restore,
 } from 'effector-logger/macro'
-import { createGate } from 'effector-react'
 import { shallowEqual } from 'fast-equals'
 import { delay } from 'patronum/delay'
 
@@ -220,16 +219,24 @@ export const openVideoDialogFx = authDomain.createEffect(
   (fn: () => Promise<unknown>) => fn()
 )
 
-export const UserGate = createGate<{
+type Payload = {
   openVideoDialog: () => Promise<unknown>
   openMergeWalletsDialog: () => Promise<unknown>
-}>({
-  name: 'UserGate',
-  domain: authDomain,
-})
+}
+
+export const open = authDomain.createEvent<Payload>()
+export const close = authDomain.createEvent()
+
+export const $auth = authDomain
+  .createStore<{
+    openVideoDialog: () => Promise<unknown>
+    openMergeWalletsDialog: () => Promise<unknown>
+  } | null>(null)
+  .on(open, (_, payload) => payload)
+  .reset(close)
 
 sample({
-  clock: UserGate.open,
+  clock: open,
   target: fetchUserFx,
 })
 
@@ -238,12 +245,15 @@ export const mergeWalletsDialogFx = authDomain.createEffect(
 )
 
 sample({
-  source: UserGate.state,
   clock: guard({
-    source: $user,
-    clock: [signedUserWaves, signedUserEthereum],
-    filter: (prevUser, { user: nextUser }) =>
-      prevUser !== null && prevUser.id !== nextUser.id,
+    source: $auth,
+    clock: guard({
+      source: $user,
+      clock: [signedUserWaves, signedUserEthereum],
+      filter: (prevUser, { user: nextUser }) =>
+        prevUser !== null && prevUser.id !== nextUser.id,
+    }),
+    filter: (auth): auth is Payload => Boolean(auth),
   }),
   fn: ({ openMergeWalletsDialog }) => openMergeWalletsDialog,
   target: mergeWalletsDialogFx,
@@ -275,9 +285,13 @@ guard({
 
 sample({
   clock: guard({
-    source: [UserGate.state, $user],
+    source: [$auth, $user],
     clock: saveUser,
-    filter: ([, prevUser]) => prevUser === null,
+    filter: (source): source is [Payload, null] => {
+      const [auth, prevUser] = source
+
+      return Boolean(auth) && prevUser === null
+    },
   }),
   fn: ([{ openVideoDialog }]) => openVideoDialog,
   target: openVideoDialogFx,
