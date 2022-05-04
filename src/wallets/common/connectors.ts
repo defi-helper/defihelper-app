@@ -50,12 +50,12 @@ export const walletconnect = new WalletConnectConnector({
 
 export const fortmatic = new FortmaticConnector({
   apiKey: config.FORTMATIC_KEY ?? '',
-  chainId: Number(config.DEFAULT_CHAIN_ID),
+  chainId: config.IS_DEV ? 3 : 1,
 })
 
 export const portis = new PortisConnector({
   dAppId: config.PORTIS_ID ?? '',
-  networks: [Number(config.DEFAULT_CHAIN_ID)],
+  networks: [config.IS_DEV ? 3 : 1],
 })
 
 export const binance = new BscConnector({

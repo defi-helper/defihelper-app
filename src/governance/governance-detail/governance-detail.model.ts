@@ -41,7 +41,7 @@ export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect(
           proposalId,
           network: config.DEFAULT_CHAIN_ID,
           contract: GOVERNOR_BRAVO,
-          cache: true,
+          cache: config.IS_DEV,
         },
       })
       .then((governanceProposal) =>
