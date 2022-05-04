@@ -70,7 +70,7 @@ const sortIcon = (
   return <Icon icon={icon} width="18" />
 }
 
-const STEPS: Step[] = [
+const STEPS: (Step & { action?: () => JSX.Element; closeButton?: string })[] = [
   {
     target: '.real_apy',
     content: 'Here you can see your actual 7-day annualized percentage rate',
@@ -81,11 +81,15 @@ const STEPS: Step[] = [
     content:
       'Auto-staking is a built-in automation that helps increase the profitability (APY) of staking contracts across other DeFi protocols',
     placement: 'top',
+    action: () => {
+      return <Button>CONNECT WALLET</Button>
+    },
   },
   {
     target: `.buy_lp`,
     content: 'You can buy liquidity pool tokens right here',
     placement: 'bottom',
+    closeButton: 'start earning',
   },
 ]
 

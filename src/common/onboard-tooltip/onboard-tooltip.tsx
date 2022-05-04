@@ -13,7 +13,8 @@ export const OnboardTooltip = ({
   tooltipProps,
   isLastStep,
   closeProps,
-}: TooltipRenderProps) => {
+  action,
+}: TooltipRenderProps & { action?: () => JSX.Element }) => {
   return (
     <div {...tooltipProps} className={styles.root}>
       <ButtonBase {...closeProps} className={styles.close}>
@@ -46,6 +47,7 @@ export const OnboardTooltip = ({
             next step
           </Button>
         )}
+        {action}
       </div>
     </div>
   )
