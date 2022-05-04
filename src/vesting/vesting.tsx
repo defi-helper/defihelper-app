@@ -17,19 +17,19 @@ export type VestingProps = unknown
 
 const WALLET_MAP = new Map([
   [
-    '0x7d69FdA38Ab7B7D0f348a472F219e81aA47C4FFF', // Ar
+    '0x7d69FdA38Ab7B7D0f348a472F219e81aA47C4FFF'.toLowerCase(), // Ar
     {
       address: '0x23a833f0058681700A50D8082D6BeC41BAA7DCeb',
     },
   ],
   [
-    '0x5932758379c01779d42ba00A721f71a94bd7A35d', // An
+    '0x5932758379c01779d42ba00A721f71a94bd7A35d'.toLowerCase(), // An
     {
       address: '0xDa6e2681B36862e30A380b07d0b14150206cA177',
     },
   ],
   [
-    '0xdD52F3b42191c6A95630a949b8883c2e173bD78C', // Demo
+    '0xdD52F3b42191c6A95630a949b8883c2e173bD78C'.toLowerCase(), // Demo
     {
       address: '0x2A8f11189E4702DbD10F76A3e4b5FCE53c620910',
     },
@@ -42,10 +42,12 @@ const BLOCK_PER_DAY = '13.3'
 export const Vesting: React.VFC<VestingProps> = () => {
   const wallet = walletNetworkModel.useWalletNetwork()
 
-  const correctAccount = WALLET_MAP.has(wallet?.account ?? '')
+  const account = (wallet?.account ?? '').toLowerCase()
+
+  const correctAccount = WALLET_MAP.has(account)
 
   const contract = useMemo(() => {
-    const contractInterface = WALLET_MAP.get(wallet?.account ?? '')
+    const contractInterface = WALLET_MAP.get(account)
     const networkProvider = walletNetworkModel.getNetwork(
       wallet?.provider,
       wallet?.chainId
@@ -58,7 +60,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
       vestingAbi,
       networkProvider.getSigner()
     )
-  }, [wallet])
+  }, [wallet, account])
 
   const isOwner = useAsyncRetry(async () => {
     if (!contract || !wallet?.account) return false
