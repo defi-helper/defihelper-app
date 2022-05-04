@@ -65,24 +65,24 @@ export const Vesting: React.VFC<VestingProps> = () => {
   const isOwner = useAsyncRetry(async () => {
     if (!contract || !wallet?.account) return false
 
-    return contract.owner(wallet.account)
-  }, [wallet])
+    return contract.owner()
+  }, [wallet, contract])
 
   const periodFinish = useAsyncRetry(async () => {
     if (!contract || !wallet?.account) return null
 
     return contract.periodFinish(wallet.account)
-  }, [contract])
+  }, [contract, wallet])
   const earned = useAsyncRetry(async () => {
     if (!contract || !wallet?.account) return null
 
     return contract.earned(wallet.account)
-  }, [contract])
+  }, [contract, wallet])
   const rate = useAsyncRetry(async () => {
     if (!contract || !wallet?.account) return null
 
     return contract.rate(wallet.account)
-  }, [contract])
+  }, [contract, wallet])
 
   const [claimState, handleClaim] = useAsyncFn(async () => {
     if (!contract || !wallet?.account) return null
@@ -94,7 +94,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
     return contract.claim(undefined, {
       gasLimit,
     })
-  }, [])
+  }, [contract, wallet])
 
   const dropDate = bignumberUtils.mul(
     bignumberUtils.div(rate.value, NUM),
@@ -113,7 +113,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
           {correctAccount ? (
             <>
               {isOwner.loading && 'loading...'}
-              {isOwner.value === true && !isOwner.loading && (
+              {isOwner.value && !isOwner.loading && (
                 <>
                   <div className={styles.row}>
                     <Typography variant="body2" className={styles.label}>
@@ -158,7 +158,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
                   </Button>
                 </>
               )}
-              {isOwner.value === false && !isOwner.loading && (
+              {!isOwner.value && !isOwner.loading && (
                 <Typography variant="body2">
                   you&apos;re not the owner
                 </Typography>
