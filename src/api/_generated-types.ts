@@ -40,6 +40,8 @@ export type AuthEthereumInputType = {
   message: Scalars['String']
   /** Signed message */
   signature: Scalars['String']
+  /** Code */
+  code?: Maybe<Scalars['String']>
   /** Merged target account to current account */
   merge?: Maybe<Scalars['Boolean']>
 }
