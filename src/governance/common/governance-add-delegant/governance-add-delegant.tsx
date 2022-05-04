@@ -28,7 +28,7 @@ export const GovernanceAddDelegant: React.VFC<GovernanceAddDelegantProps> = (
     >
       <div className={styles.input}>
         <Input
-          placeholder="Deligant address"
+          placeholder="Wallet address"
           {...register('address', {
             required: true,
             pattern: isEthAddress.regex,
