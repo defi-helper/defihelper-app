@@ -147,9 +147,9 @@ export const Vesting: React.VFC<VestingProps> = () => {
     })
   }, [vestingContract, wallet])
 
-  const dropRate = bignumberUtils.mul(
-    bignumberUtils.div(rate.value, NUM),
-    BLOCK_PER_DAY
+  const dropRate = bignumberUtils.div(
+    bignumberUtils.mul(rate.value, BLOCK_PER_DAY),
+    NUM
   )
 
   const dropEnd = bignumberUtils.mul(
@@ -204,7 +204,9 @@ export const Vesting: React.VFC<VestingProps> = () => {
                       transform="uppercase"
                       family="mono"
                     >
-                      {dropRate} dfh / day
+                      ~
+                      {bignumberUtils.format(bignumberUtils.mul(dropRate, 100))}{' '}
+                      dfh / day
                     </Typography>
                   </div>
                   <div className={styles.row}>
