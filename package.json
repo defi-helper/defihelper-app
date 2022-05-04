@@ -11,7 +11,7 @@
     "@craco/craco": "^6.1.2",
     "@defihelper/docs": "^0.0.3",
     "@defihelper/ethers-multicall": "^0.3.2",
-    "@defihelper/networks": "^1.0.3",
+    "@defihelper/networks": "^1.0.5",
     "@defihelper/provider-keeper": "^0.1.5-dfh",
     "@ethersproject/abi": "^5.4.0",
     "@ethersproject/bytes": "^5.3.0",
