@@ -56,7 +56,7 @@ export const AuthVideoDialog: React.VFC<AuthVideoDialogProps> = (props) => {
         Important Notice
       </Typography>
       <Typography variant="body2" className={styles.title}>
-        DeFiHelper is at the MVP stage. Though we try our best, you may
+        DeFiHelper app is currently at the public beta stage. Though we try our best, you may
         encounter bugs or other issues.
       </Typography>
       <Typography variant="body2" className={styles.title}>
