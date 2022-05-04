@@ -62,26 +62,45 @@ export const Vesting: React.VFC<VestingProps> = () => {
     )
   }, [wallet, account])
 
-  const isOwner = useAsyncRetry(async () => {
-    if (!contract || !wallet?.account) return false
+  const currentBlockNumber = useAsyncRetry(async () => {
+    const networkProvider = walletNetworkModel.getNetwork(
+      wallet?.provider,
+      wallet?.chainId
+    )
 
-    return contract.owner()
-  }, [wallet, contract])
+    if (!networkProvider) return 0
+
+    return networkProvider.getBlockNumber()
+  }, [wallet])
+
+  const isOwner = useAsyncRetry(async () => {
+    if (!contract || !account) return false
+
+    const owner: string = await contract.owner()
+
+    return owner.toLowerCase() === account
+  }, [account, contract])
 
   const periodFinish = useAsyncRetry(async () => {
-    if (!contract || !wallet?.account) return null
+    if (!contract) return null
 
-    return contract.periodFinish(wallet.account)
+    const period = await contract.periodFinish()
+
+    return period.toString()
   }, [contract, wallet])
   const earned = useAsyncRetry(async () => {
-    if (!contract || !wallet?.account) return null
+    if (!contract) return null
 
-    return contract.earned(wallet.account)
+    const result = await contract.earned()
+
+    return result.toString()
   }, [contract, wallet])
   const rate = useAsyncRetry(async () => {
-    if (!contract || !wallet?.account) return null
+    if (!contract) return null
 
-    return contract.rate(wallet.account)
+    const result = await contract.rate()
+
+    return result.toString()
   }, [contract, wallet])
 
   const [claimState, handleClaim] = useAsyncFn(async () => {
@@ -91,7 +110,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
       await contract.estimateGas.claim()
     )
 
-    return contract.claim(undefined, {
+    return contract.claim({
       gasLimit,
     })
   }, [contract, wallet])
@@ -101,7 +120,10 @@ export const Vesting: React.VFC<VestingProps> = () => {
     BLOCK_PER_DAY
   )
 
-  const dropEnd = bignumberUtils.div(periodFinish.value, BLOCK_PER_DAY)
+  const dropEnd = bignumberUtils.mul(
+    bignumberUtils.minus(periodFinish.value, currentBlockNumber.value),
+    BLOCK_PER_DAY
+  )
 
   return (
     <AppLayout>
@@ -138,7 +160,10 @@ export const Vesting: React.VFC<VestingProps> = () => {
                       transform="uppercase"
                       family="mono"
                     >
-                      {dateUtils.format(dropDate)} DFH / day
+                      {dateUtils.format(
+                        dateUtils.addDate(Number(dropDate), 'seconds')
+                      )}{' '}
+                      DFH / day
                     </Typography>
                   </div>
                   <div className={styles.row}>
@@ -150,7 +175,9 @@ export const Vesting: React.VFC<VestingProps> = () => {
                       transform="uppercase"
                       family="mono"
                     >
-                      {dateUtils.format(dropEnd)}
+                      {dateUtils.format(
+                        dateUtils.addDate(Number(dropEnd), 'seconds')
+                      )}
                     </Typography>
                   </div>
                   <Button onClick={handleClaim} loading={claimState.loading}>
