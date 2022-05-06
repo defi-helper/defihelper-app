@@ -22,6 +22,7 @@ export type SettingsWalletCardProps = {
   network: string
   blockchain: string
   automations: string
+  worth: string
   onDeposit: () => void
   onRefund: () => void
   onRename: () => void
@@ -144,6 +145,18 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           </Typography>
           <Typography variant="body2" as="span">
             {props.automations}
+          </Typography>
+        </div>
+        <div className={styles.row}>
+          <Typography
+            variant="body2"
+            as="span"
+            className={clsx(styles.infoTitle, styles.opacity)}
+          >
+            Balance
+          </Typography>
+          <Typography variant="body2" as="span">
+            {props.worth}
           </Typography>
         </div>
       </div>
