@@ -25,6 +25,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
   return (
     <div className={clsx(styles.root, props.className)}>
       <PortfolioMetricCard
+        className="tracked_balance"
         title={
           <>
             Tracked Balance
@@ -50,6 +51,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
         }
       />
       <PortfolioMetricCard
+        className="tracked_apy"
         title={
           <>
             Avg. Tracked APY{' '}

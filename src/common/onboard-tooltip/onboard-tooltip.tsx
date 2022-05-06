@@ -6,15 +6,17 @@ import { Icon } from '../icon'
 import { Typography } from '../typography'
 import * as styles from './onboard-tooltip.css'
 
+type Props = TooltipRenderProps['step'] & {
+  action?: () => JSX.Element
+  closeButton?: string
+}
+
 export const OnboardTooltip = ({
-  continuous,
   step,
   primaryProps,
   tooltipProps,
-  isLastStep,
   closeProps,
-  action,
-}: TooltipRenderProps & { action?: () => JSX.Element }) => {
+}: Omit<TooltipRenderProps, 'step'> & { step: Props }) => {
   return (
     <div {...tooltipProps} className={styles.root}>
       <ButtonBase {...closeProps} className={styles.close}>
@@ -42,12 +44,15 @@ export const OnboardTooltip = ({
         </Typography>
       )}
       <div className={styles.buttons}>
-        {continuous && !isLastStep && (
-          <Button variant="outlined" {...primaryProps} size="small">
-            next step
-          </Button>
-        )}
-        {action}
+        <Button
+          variant="outlined"
+          {...primaryProps}
+          size="small"
+          className={styles.next}
+        >
+          {step.closeButton || 'next step'}
+        </Button>
+        {step.action && <step.action />}
       </div>
     </div>
   )

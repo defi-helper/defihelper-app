@@ -1,4 +1,4 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -26,9 +26,13 @@ export const close = style({
   color: theme.colors.textColorSecondary,
 })
 
-export const buttons = style({})
+export const buttons = style({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 20,
+})
 
-globalStyle(`${buttons} *`, {
-  color: theme.colors.common.black1,
+export const next = style({
+  color: `${theme.colors.common.black1} !important`,
   borderColor: theme.colors.common.black1,
 })

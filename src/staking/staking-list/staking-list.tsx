@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import { useLocalStorage, useInterval } from 'react-use'
+import { useCallback, useEffect, useState } from 'react'
+import { useLocalStorage, useInterval, useMedia } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import clsx from 'clsx'
 import { StickyContainer, Sticky } from 'react-sticky'
-import Joyride, { Step } from '@defihelper/react-joyride'
+import Joyride, { CallBackProps, STATUS, Step } from '@defihelper/react-joyride'
 
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import { Can, useAbility } from '~/auth'
@@ -45,6 +45,7 @@ import { Input } from '~/common/input'
 import { useDebounce } from '~/common/hooks'
 import { OnboardTooltip } from '~/common/onboard-tooltip'
 import { theme } from '~/common/theme'
+import { WalletConnect } from '~/wallets/wallet-connect'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
 
@@ -75,15 +76,22 @@ const STEPS: (Step & { action?: () => JSX.Element; closeButton?: string })[] = [
     target: '.real_apy',
     content: 'Here you can see your actual 7-day annualized percentage rate',
     placement: 'top',
+    disableBeacon: true,
   },
   {
     target: `.auto_staking`,
     content:
       'Auto-staking is a built-in automation that helps increase the profitability (APY) of staking contracts across other DeFi protocols',
     placement: 'top',
-    action: () => {
-      return <Button>CONNECT WALLET</Button>
-    },
+    action: () => (
+      <WalletConnect
+        fallback={
+          <Button size="small" className={styles.connectButton}>
+            CONNECT WALLET
+          </Button>
+        }
+      />
+    ),
   },
   {
     target: `.buy_lp`,
@@ -102,6 +110,13 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     column: ContractListSortInputTypeColumnEnum.MyStaked,
     order: SortOrderEnum.Desc,
   })
+
+  const [runLocalStorage, setLocalStorage] = useLocalStorage(
+    'stakingOnBoarding',
+    true
+  )
+  const [run, setRun] = useState(false)
+  const isDesktop = useMedia('(min-width: 960px)')
 
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutostaking', false)
 
@@ -409,6 +424,23 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [sentryRef] = model.useInfiniteScroll()
   const hasNetPage = useStore(model.useInfiniteScroll.hasNextPage)
 
+  const handleJoyrideCallback = useCallback((data: CallBackProps) => {
+    const { status } = data
+
+    if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status)) {
+      setLocalStorage(false)
+      setRun(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (!stakingList.length || !runLocalStorage || !isDesktop) return
+
+    setRun(Boolean(stakingList.length))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stakingList, runLocalStorage, isDesktop])
+
   return (
     <div className={styles.root}>
       <div className={styles.header}>
@@ -453,10 +485,11 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             {Boolean(stakingList.length) && (
               <>
                 <Joyride
-                  run
+                  run={run}
                   steps={STEPS}
-                  showSkipButton
                   continuous
+                  scrollToFirstStep
+                  callback={handleJoyrideCallback}
                   styles={{
                     overlay: {
                       background: 'transparent',
