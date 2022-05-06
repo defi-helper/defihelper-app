@@ -156,7 +156,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             Balance
           </Typography>
           <Typography variant="body2" as="span">
-            {props.worth}
+            ${bignumberUtils.format(props.worth)}
           </Typography>
         </div>
       </div>
