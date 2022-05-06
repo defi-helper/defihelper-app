@@ -264,14 +264,13 @@ export const stakingApi = {
       `${config.SCANNER_HOST}/contract/${variables.id}/event-listener`
     ).then((res) => res.json()),
 
-  scannerGetContract: (variables: {
-    network: string
-    address: string
-  }): Promise<{ startHeight: number; id: string } | null> =>
-    fetch(
-      `${config.SCANNER_HOST}/contract?network=${variables.network}&address=${variables.address}`
-    ).then(async (res) => {
-      const response: { startHeight: number; id: string }[] = await res.json()
-      return response.length ? response[0] : null
-    }),
+  scannerGetContract: (
+    contractId: string
+  ): Promise<{ startHeight: number; id: string } | null> =>
+    fetch(`${config.SCANNER_HOST}/contract/fid/${contractId}`).then(
+      async (res) => {
+        const response: { startHeight: number; id: string }[] = await res.json()
+        return response.length ? response[0] : null
+      }
+    ),
 }
