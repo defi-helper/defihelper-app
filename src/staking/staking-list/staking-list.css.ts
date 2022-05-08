@@ -148,8 +148,13 @@ export const empty = style({
 })
 
 export const table = style({
-  overflowX: 'auto',
-  overflowY: 'hidden',
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  overflowX: 'auto !important',
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  overflowY: 'hidden !important',
+  maxWidth: '100%',
 })
 
 export const boostTooltipTHead = style({
@@ -197,4 +202,10 @@ export const realApr = style({
   alignItems: 'center',
   justifyContent: 'flex-end',
   gap: 5,
+})
+
+export const connectButton = style({
+  color: `${theme.colors.common.white1} !important`,
+  borderColor: `${theme.colors.common.black1} !important`,
+  backgroundColor: `${theme.colors.common.black1} !important`,
 })
