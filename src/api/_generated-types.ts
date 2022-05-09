@@ -65,6 +65,8 @@ export type AuthWavesInputType = {
   message: Scalars['String']
   /** Signed message */
   signature: Scalars['String']
+  /** Promo id */
+  code?: Maybe<Scalars['String']>
   /** Merged target account to current account */
   merge?: Maybe<Scalars['Boolean']>
 }
@@ -735,6 +737,8 @@ export type ContractType = {
   link?: Maybe<Scalars['String']>
   /** Is hidden */
   hidden: Scalars['Boolean']
+  /** Is deprecated */
+  deprecated: Scalars['Boolean']
   metricChart: Array<MetricChartType>
   metric: ContractMetricType
   events: Array<Scalars['String']>
@@ -779,6 +783,8 @@ export type ContractUpdateInputType = {
   link?: Maybe<Scalars['String']>
   /** Is hidden */
   hidden?: Maybe<Scalars['Boolean']>
+  /** Is deprecated */
+  deprecated?: Maybe<Scalars['Boolean']>
 }
 
 export type GovProposalFilterInputType = {
@@ -1822,6 +1828,7 @@ export type Query = {
   __typename?: 'Query'
   ping: Scalars['String']
   me?: Maybe<UserType>
+  userReferrer: UserReferrerCodeType
   users: UserListQuery
   protocol?: Maybe<ProtocolType>
   protocols: ProtocolListQuery
@@ -1853,6 +1860,10 @@ export type Query = {
   monitoringAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringProtocolEarningsHistory: Array<MonitoringStatisticsEarningsPointType>
+}
+
+export type QueryUserReferrerArgs = {
+  code: Scalars['String']
 }
 
 export type QueryUsersArgs = {
@@ -2823,6 +2834,13 @@ export type UserNotificationType = {
 export enum UserNotificationTypeEnum {
   PortfolioMetrics = 'portfolioMetrics',
   AutomateCallNotEnoughFunds = 'automateCallNotEnoughFunds',
+}
+
+export type UserReferrerCodeType = {
+  __typename?: 'UserReferrerCodeType'
+  id: Scalars['UuidType']
+  code: Scalars['String']
+  redirectTo: Scalars['String']
 }
 
 export enum UserRoleEnum {
@@ -5530,6 +5548,7 @@ export type StakingContractFragmentFragment = {
   | 'protocolId'
   | 'layout'
   | 'deployBlockNumber'
+  | 'deprecated'
 > & {
     automate: { __typename?: 'ContractAutomatesType' } & Pick<
       ContractAutomatesType,

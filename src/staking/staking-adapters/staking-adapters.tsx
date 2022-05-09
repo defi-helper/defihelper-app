@@ -35,6 +35,7 @@ export type StakingAdaptersProps = {
   network: string
   onTurnOn: () => void
   autostakingLoading?: boolean
+  deprecated: boolean
   autorestake?: string
   prototypeAddress?: string
   buyLiquidity: Contract['automate']['buyLiquidity']
@@ -206,7 +207,12 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       <div className={styles.stake}>
         <WalletConnect
           fallback={
-            <Button type="submit" size="small" variant="outlined">
+            <Button
+              type="submit"
+              size="small"
+              variant="outlined"
+              disabled={props.deprecated}
+            >
               Stake
             </Button>
           }
@@ -219,7 +225,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             size="small"
             variant="outlined"
             disabled={Boolean(
-              actionLoading && actionLoading.action !== 'stake'
+              (actionLoading && actionLoading.action !== 'stake') ||
+                props.deprecated
             )}
             loading={actionLoading?.action === 'stake'}
           >
@@ -236,6 +243,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                 size="small"
                 variant="outlined"
                 className="buy_lp"
+                disabled={props.deprecated}
               >
                 buy LP
               </Button>
@@ -259,7 +267,12 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       <div className={styles.unstake}>
         <WalletConnect
           fallback={
-            <Button type="submit" size="small" variant="outlined">
+            <Button
+              type="submit"
+              size="small"
+              variant="outlined"
+              disabled={props.deprecated}
+            >
               Unstake
             </Button>
           }
@@ -272,7 +285,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             size="small"
             variant="outlined"
             disabled={Boolean(
-              actionLoading && actionLoading.action !== 'unstake'
+              (actionLoading && actionLoading.action !== 'unstake') ||
+                props.deprecated
             )}
             loading={actionLoading?.action === 'unstake'}
           >
@@ -284,7 +298,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         {!isExcludedAdapter(props.contractAdapter) && (
           <WalletConnect
             fallback={
-              <Button size="small" variant="outlined">
+              <Button
+                size="small"
+                variant="outlined"
+                disabled={props.deprecated}
+              >
                 Claim
               </Button>
             }
@@ -296,7 +314,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
               size="small"
               variant="outlined"
               disabled={Boolean(
-                actionLoading && actionLoading.action !== 'claim'
+                (actionLoading && actionLoading.action !== 'claim') ||
+                  props.deprecated
               )}
               loading={actionLoading?.action === 'claim'}
             >
@@ -314,7 +333,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
               ) : (
                 <WalletConnect
                   fallback={
-                    <Button size="small" variant="outlined">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      disabled={props.deprecated}
+                    >
                       Auto-Stake
                     </Button>
                   }
@@ -326,6 +349,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                     variant="outlined"
                     onClick={props.onTurnOn}
                     loading={props.autostakingLoading}
+                    disabled={props.deprecated}
                   >
                     Auto-Stake
                   </Button>

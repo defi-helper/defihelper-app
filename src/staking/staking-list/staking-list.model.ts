@@ -259,9 +259,7 @@ export const $contractsListCopies = restore($contractList.updates, []).on(
   stakingUpdateFx.doneData,
   (state, payload) => {
     return state.map((contract) =>
-      contract.id === payload?.id
-        ? { ...contract, hidden: payload.hidden }
-        : contract
+      contract.id === payload?.id ? { ...contract, ...payload } : contract
     )
   }
 )
