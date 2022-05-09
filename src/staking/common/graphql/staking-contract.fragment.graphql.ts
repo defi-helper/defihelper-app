@@ -15,6 +15,7 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
     protocolId
     layout
     deployBlockNumber
+    deprecated
     automate {
       adapters
       autorestake

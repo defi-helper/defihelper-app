@@ -714,6 +714,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         onTurnOn={handleAutostake(stakingListItem)}
                         buyLiquidity={stakingListItem.automate.buyLiquidity}
                         autostakingLoading={stakingListItem.autostakingLoading}
+                        deprecated={stakingListItem.deprecated}
                         autorestake={
                           stakingListItem.automate.autorestake ?? undefined
                         }
