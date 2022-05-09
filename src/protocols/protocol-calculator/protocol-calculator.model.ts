@@ -45,3 +45,5 @@ export const fetchEstimateFx = createEffect(protocolsApi.earnings)
 export const $metrics = createStore<UnitValue<
   typeof fetchEstimateFx.doneData
 > | null>(null)
+  .on(fetchEstimateFx.doneData, (_, payload) => payload)
+  .reset(reset)

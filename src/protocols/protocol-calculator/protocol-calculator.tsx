@@ -20,15 +20,6 @@ export type ProtocolCalculatorProps = {
   protocolId: string
 }
 
-// const [apy, setApy] = useState(100);
-// const [throttledSum, throttledApy] = useThrottle(
-//   useMemo(() => [sum, apy / 100], [sum, apy]),
-//   500
-// );
-// const [{ data }] = useRestakeStrategyQuery({
-//   variables: { balance: throttledSum, apy: throttledApy }
-// });
-
 export const ProtocolCalculator: React.VFC<ProtocolCalculatorProps> = (
   props
 ) => {
@@ -135,7 +126,7 @@ export const ProtocolCalculator: React.VFC<ProtocolCalculatorProps> = (
               variant="h4"
               className={clsx(styles.value, styles.green)}
             >
-              {bignumberUtils.format(autostaking)}%
+              {autostaking}%
             </Typography>
           </div>
         </div>
@@ -165,7 +156,10 @@ export const ProtocolCalculator: React.VFC<ProtocolCalculatorProps> = (
                 variant="body1"
                 className={clsx(styles.brown, styles.col)}
               >
-                {bignumberUtils.format(currentContract?.metric.aprYear)}% APY
+                {bignumberUtils.format(
+                  bignumberUtils.mul(currentContract?.metric.aprYear, 100)
+                )}
+                % APY
               </Typography>
             </tr>
             <tr className={styles.row}>
