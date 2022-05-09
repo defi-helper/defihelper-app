@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useStore } from 'effector-react'
 import networks from '@defihelper/networks/contracts.json'
 
@@ -10,6 +11,8 @@ import {
   StakingUnstakeDialog,
   StakingClaimDialog,
   StakingAdapterDialog,
+  StakingGovStakeDialog,
+  StakingGovUnstakeDialog,
 } from '~/staking/common'
 import { Button } from '~/common/button'
 import { useDialog, UserRejectionError } from '~/common/dialog'
@@ -20,6 +23,7 @@ import { authModel } from '~/auth'
 import { toastsService } from '~/toasts'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { BlockchainEnum } from '~/api/_generated-types'
+import { GovernanceStake, GovernanceUnstake } from '~/common/load-adapter'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
@@ -40,6 +44,10 @@ export type StakingAdaptersProps = {
   buyLiquidity: Contract['automate']['buyLiquidity']
 }
 
+const isGovernance = (adapter: string) => {
+  return ['xJoe', 'tom'].includes(adapter)
+}
+
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
@@ -47,6 +55,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const [openUnstakeDialog] = useDialog(StakingUnstakeDialog)
   const [openClaimDialog] = useDialog(StakingClaimDialog)
   const [openAdapter] = useDialog(StakingAdapterDialog)
+  const [openGovStakeDialog] = useDialog(StakingGovStakeDialog)
+  const [openGovUnstakeDialog] = useDialog(StakingGovUnstakeDialog)
 
   const wallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
@@ -97,7 +107,33 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             .catch(console.error)
         }
 
-        if ('methods' in contract.actions[action]) {
+        if (
+          isGovernance(props.contractAdapter) &&
+          'methods' in contract.actions[action]
+        ) {
+          const dialogs = {
+            stake: () =>
+              openGovStakeDialog({
+                methods: contract.actions?.stake
+                  .methods as unknown as GovernanceStake['methods'],
+                onSubmit: () => {
+                  model.stake({ wallet, contractId: props.contractId })
+
+                  scanHandler()
+                },
+              }),
+            unstake: () =>
+              openGovUnstakeDialog({
+                methods: contract.actions?.unstake
+                  .methods as unknown as GovernanceUnstake['methods'],
+                onSubmit: scanHandler,
+              }),
+          } as const
+
+          if (action === 'stake' || action === 'unstake') {
+            await dialogs[action]?.()
+          }
+        } else if ('methods' in contract.actions[action]) {
           const dialogs = {
             stake: () =>
               openStakeDialog({

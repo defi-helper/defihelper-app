@@ -120,6 +120,34 @@ type Unstake = {
   }
 }
 
+export type GovernanceStake = {
+  name: 'governanceSwap-stake'
+  methods: {
+    fromSymbol: () => string
+    fromLink: () => string
+    toSymbol: () => string
+    toLink: () => string
+    balanceOf: () => string
+    isApproved: (amount: string) => Promise<boolean>
+    approve: (amount: string) => Promise<{ tx?: Transaction }>
+    can: (amount: string) => Promise<boolean | Error>
+    stake: (amount: string) => Promise<{ tx?: Transaction }>
+  }
+}
+
+export type GovernanceUnstake = {
+  name: 'governanceSwap-unstake'
+  methods: {
+    fromSymbol: () => string
+    fromLink: () => string
+    toSymbol: () => string
+    toLink: () => string
+    balanceOf: () => Promise<string>
+    can: (amount: string) => Promise<boolean | Error>
+    unstake: (amount: string) => Promise<{ tx?: Transaction }>
+  }
+}
+
 export type AdapterActions = {
   stake: Stake
   unstake: Unstake
@@ -196,6 +224,8 @@ export type Adapters = {
   staking: AdapterFn
   swopfiStaking: AdapterFn
   masterChef: AdapterFn
+  xJoe: AdapterFn
+  tom: AdapterFn
   automates: Record<
     string,
     (signer: unknown, contractAddress: unknown) => Promise<AutomatesType>
