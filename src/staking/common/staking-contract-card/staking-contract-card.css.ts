@@ -69,3 +69,7 @@ export const apy = style({
   alignItems: 'center',
   justifyContent: 'flex-end',
 })
+
+export const grey = style({
+  color: theme.colors.textColorGrey,
+})

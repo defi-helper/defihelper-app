@@ -20,10 +20,11 @@ export type StakingContractCardProps = {
   onOpenContract?: () => void
   onOpenApy: () => void
   opened: boolean
-  onToggleContract: () => void
   onDelete: () => void
   onUpdate: () => void
   onScannerRegister: () => void
+  onToggleHideShowContract: () => void
+  onToggleDeprecatedContract: () => void
   protocolId: string
   protocolAdapter: string
   freshMetrics: Record<string, FreshMetrics>
@@ -81,6 +82,12 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
         )}
         <Typography variant="body2" as="div">
           {props.name}
+          {props.deprecated && (
+            <>
+              {' '}
+              - <span className={styles.grey}>deprecated</span>
+            </>
+          )}
 
           {props.network === props.currentNetwork && (
             <Can I="update" a="Protocol">
@@ -255,8 +262,13 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
               </ButtonBase>
             </Can>
             <Can I="update" a="Contract">
-              <ButtonBase onClick={props.onToggleContract}>
+              <ButtonBase onClick={props.onToggleHideShowContract}>
                 {props.hidden ? 'Show' : 'Hide'}
+              </ButtonBase>
+            </Can>
+            <Can I="update" a="Contract">
+              <ButtonBase onClick={props.onToggleDeprecatedContract}>
+                Deprecated
               </ButtonBase>
             </Can>
             <Can I="update" a="Contract">

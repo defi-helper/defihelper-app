@@ -352,24 +352,47 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     setSort(sort)
   }
 
-  const handleToggleContract = (contract: typeof stakingList[number]) => () => {
-    model.stakingUpdateFx({
-      id: contract.id,
-      input: {
-        blockchain: contract.blockchain,
-        network: contract.network,
-        address: contract.address,
-        adapter: contract.adapter,
-        name: contract.name,
-        description: contract.description,
-        link: contract.link,
-        hidden: !contract.hidden,
-        layout: contract.layout,
-        automates: contract.automate.adapters,
-        autorestakeAdapter: contract.automate.autorestake ?? undefined,
-      },
-    })
-  }
+  const handleToggleHideShowContract =
+    (contract: typeof stakingList[number]) => () => {
+      model.stakingUpdateFx({
+        id: contract.id,
+        input: {
+          blockchain: contract.blockchain,
+          network: contract.network,
+          address: contract.address,
+          adapter: contract.adapter,
+          name: contract.name,
+          description: contract.description,
+          link: contract.link,
+          hidden: !contract.hidden,
+          layout: contract.layout,
+          automates: contract.automate.adapters,
+          deprecated: contract.deprecated,
+          autorestakeAdapter: contract.automate.autorestake ?? undefined,
+        },
+      })
+    }
+
+  const handleToggleDeprecatedContract =
+    (contract: typeof stakingList[number]) => () => {
+      model.stakingUpdateFx({
+        id: contract.id,
+        input: {
+          blockchain: contract.blockchain,
+          network: contract.network,
+          address: contract.address,
+          adapter: contract.adapter,
+          name: contract.name,
+          description: contract.description,
+          link: contract.link,
+          hidden: contract.hidden,
+          layout: contract.layout,
+          automates: contract.automate.adapters,
+          deprecated: !contract.deprecated,
+          autorestakeAdapter: contract.automate.autorestake ?? undefined,
+        },
+      })
+    }
 
   const handleOpenApy =
     (metric: typeof stakingList[number]['metric']) => async () => {
@@ -662,7 +685,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                     key={stakingListItem.id}
                     className={clsx(
                       styles.listItem,
-                      stakingListItem.hidden && styles.hiddenListItem
+                      (stakingListItem.hidden || stakingListItem.deprecated) &&
+                        styles.hiddenListItem
                     )}
                   >
                     <StakingContractCard
@@ -675,7 +699,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                       freshMetrics={freshMetrics}
                       protocolAdapter={props.protocolAdapter}
                       protocolId={props.protocolId}
-                      onToggleContract={handleToggleContract(stakingListItem)}
+                      onToggleHideShowContract={handleToggleHideShowContract(
+                        stakingListItem
+                      )}
+                      onToggleDeprecatedContract={handleToggleDeprecatedContract(
+                        stakingListItem
+                      )}
                       onDelete={handleOpenConfirmDialog(stakingListItem.id)}
                       currentBlock={currentBlock}
                       currentNetwork={currentWallet?.chainId}
