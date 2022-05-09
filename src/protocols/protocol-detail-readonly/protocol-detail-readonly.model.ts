@@ -5,18 +5,13 @@ import { protocolsApi } from '~/protocols/common'
 
 const protocolDetailReadOnlyDomain = createDomain()
 
-const abortController = new AbortController()
-
 export const fetchProtocolFx = protocolDetailReadOnlyDomain.createEffect(
   async (protocolId: string) => {
-    const protocol = await protocolsApi.protocolDetail(
-      {
-        filter: {
-          id: protocolId,
-        },
+    const protocol = await protocolsApi.protocolDetail({
+      filter: {
+        id: protocolId,
       },
-      abortController.signal
-    )
+    })
 
     if (!protocol) throw new Error('something went wrong')
 
@@ -55,4 +50,3 @@ sample({
 })
 
 $protocol.reset(ProtocolDetailReadonlyGate.close)
-ProtocolDetailReadonlyGate.close.watch(() => abortController.abort())
