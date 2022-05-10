@@ -40,7 +40,8 @@ export const Monitoring: React.VFC = () => {
             </Typography>
 
             <Typography variant="h5" className={styles.total}>
-              {usersRegisteringHistory.pop()?.number ?? 0}
+              {usersRegisteringHistory[usersRegisteringHistory.length - 1]
+                ?.number ?? 0}
             </Typography>
           </div>
 
@@ -70,7 +71,8 @@ export const Monitoring: React.VFC = () => {
             </Typography>
 
             <Typography variant="h5" className={styles.total}>
-              {automationsCreationHistory.pop()?.number ?? 0}
+              {automationsCreationHistory[automationsCreationHistory.length - 1]
+                ?.number ?? 0}
             </Typography>
           </div>
 
@@ -100,7 +102,9 @@ export const Monitoring: React.VFC = () => {
             </Typography>
 
             <Typography variant="h5" className={styles.total}>
-              {automationsAutorestakeCreationHistory.pop()?.number ?? 0}
+              {automationsAutorestakeCreationHistory[
+                automationsAutorestakeCreationHistory.length - 1
+              ]?.number ?? 0}
             </Typography>
           </div>
 
@@ -130,7 +134,9 @@ export const Monitoring: React.VFC = () => {
             </Typography>
 
             <Typography variant="h5" className={styles.total}>
-              {automationsSuccessfulRunsHistory.pop()?.number ?? 0}
+              {automationsSuccessfulRunsHistory[
+                automationsSuccessfulRunsHistory.length - 1
+              ]?.number ?? 0}
             </Typography>
           </div>
 
@@ -160,7 +166,9 @@ export const Monitoring: React.VFC = () => {
             </Typography>
 
             <Typography variant="h5" className={styles.total}>
-              {automationsFailedRunsHistory.pop()?.number ?? 0}
+              {automationsFailedRunsHistory[
+                automationsFailedRunsHistory.length - 1
+              ]?.number ?? 0}
             </Typography>
           </div>
 
@@ -191,7 +199,9 @@ export const Monitoring: React.VFC = () => {
               </Typography>
 
               <Typography variant="h5" className={styles.total}>
-                {dfhProfitsPerNetwork[network].pop()?.number ?? 0}
+                {dfhProfitsPerNetwork[network][
+                  dfhProfitsPerNetwork[network].length - 1
+                ]?.number ?? 0}
               </Typography>
             </div>
 
