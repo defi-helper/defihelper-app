@@ -61,7 +61,11 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
 
       if (!wallet?.account) return
 
-      if (bignumberUtils.eq(governanceVotes?.votes, 0)) return
+      if (
+        bignumberUtils.eq(governanceVotes?.votes, 0) &&
+        bignumberUtils.eq(governanceVotes?.balance, 0)
+      )
+        return
 
       const result = await openDelegate({
         votes: governanceVotes?.votes,
@@ -92,7 +96,9 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
           <Paper radius={8} className={styles.votes}>
             <Typography variant="body2" as="span">
               {votesLoading ? '...' : governanceVotes?.votes ?? 0} votes
-              (locked)
+              {bignumberUtils.gte(governanceVotes?.balance, '0') &&
+                bignumberUtils.eq(governanceVotes?.votes, '0') &&
+                ' (locked)'}
             </Typography>
             <WalletConnect
               fallback={

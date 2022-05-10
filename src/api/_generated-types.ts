@@ -931,6 +931,7 @@ export type GovTokenType = {
 
 export type GovVoteType = {
   __typename?: 'GovVoteType'
+  balance: Scalars['String']
   votes: Scalars['String']
   delegates: Scalars['String']
 }
@@ -2396,6 +2397,49 @@ export type TokenMetricUpdatedEvent = {
   token: WalletBlockchainType
 }
 
+export type TokenPriceFeedCoingeckoAddressInputType = {
+  platform: TokenPriceFeedCoingeckoPlatformEnum
+  address: Scalars['String']
+}
+
+export type TokenPriceFeedCoingeckoAddressType = {
+  __typename?: 'TokenPriceFeedCoingeckoAddressType'
+  type: Scalars['String']
+  platform: TokenPriceFeedCoingeckoPlatformEnum
+  address: Scalars['String']
+}
+
+export type TokenPriceFeedCoingeckoIdInputType = {
+  id: Scalars['String']
+}
+
+export type TokenPriceFeedCoingeckoIdType = {
+  __typename?: 'TokenPriceFeedCoingeckoIdType'
+  type: Scalars['String']
+  id: Scalars['String']
+}
+
+export enum TokenPriceFeedCoingeckoPlatformEnum {
+  Ethereum = 'ethereum',
+  BinanceSmartChain = 'binance_smart_chain',
+  Avalanche = 'avalanche',
+  Moonriver = 'moonriver',
+  PolygonPos = 'polygon_pos',
+  Fantom = 'fantom',
+  Cronos = 'cronos',
+  ArbitrumOne = 'arbitrum_one',
+  OptimisticEthereum = 'optimistic_ethereum',
+}
+
+export type TokenPriceFeedInputType = {
+  coingeckoId?: Maybe<TokenPriceFeedCoingeckoIdInputType>
+  coingeckoAddress?: Maybe<TokenPriceFeedCoingeckoAddressInputType>
+}
+
+export type TokenPriceFeedType =
+  | TokenPriceFeedCoingeckoIdType
+  | TokenPriceFeedCoingeckoAddressType
+
 export type TokenType = {
   __typename?: 'TokenType'
   /** Identificator */
@@ -2414,6 +2458,7 @@ export type TokenType = {
   symbol: Scalars['String']
   /** Decimals */
   decimals: Scalars['Int']
+  priceFeed?: Maybe<TokenPriceFeedType>
 }
 
 export type TokenUpdateInputType = {
@@ -2425,6 +2470,7 @@ export type TokenUpdateInputType = {
   symbol?: Maybe<Scalars['String']>
   /** Decimals */
   decimals?: Maybe<Scalars['Int']>
+  priceFeed?: Maybe<TokenPriceFeedInputType>
 }
 
 export type TreasuryType = {
@@ -2544,6 +2590,8 @@ export type UserBlockchainTypeTokenMetricChartArgs = {
 
 export type UserBlockchainWalletListFilterInputType = {
   search?: Maybe<Scalars['String']>
+  /** Is wallet deleted */
+  deleted?: Maybe<Scalars['Boolean']>
 }
 
 export type UserBlockchainWalletListPaginationInputType = {
@@ -3213,7 +3261,9 @@ export type WalletBlockchainType = {
   tokenMetricChart: Array<MetricChartType>
   metric: WalletMetricType
   billing: WalletBillingType
-  /** Date of created account */
+  /** Date of deleted wallet */
+  deletedAt?: Maybe<Scalars['DateTimeType']>
+  /** Date of created wallet */
   createdAt: Scalars['DateTimeType']
 }
 
@@ -3341,6 +3391,8 @@ export type WalletExchangeType = {
   balance: Scalars['String']
   /** Account */
   account: Scalars['String']
+  /** Date of deleted wallet */
+  deletedAt?: Maybe<Scalars['DateTimeType']>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -3372,6 +3424,8 @@ export type WalletListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   type?: Maybe<WalletBlockchainTypeEnum>
   search?: Maybe<Scalars['String']>
+  /** Is wallet deleted */
+  deleted?: Maybe<Scalars['Boolean']>
 }
 
 export type WalletListPaginationInputType = {
@@ -4046,7 +4100,7 @@ export type GovernanceVotesQueryVariables = Exact<{
 export type GovernanceVotesQuery = { __typename?: 'Query' } & {
   govVotes: { __typename?: 'GovVoteType' } & Pick<
     GovVoteType,
-    'votes' | 'delegates'
+    'votes' | 'delegates' | 'balance'
   >
 }
 
