@@ -2,9 +2,9 @@ import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { automationApi } from '~/automations/common/automation.api'
 import { MonitoringAutomateRunHistoryFilterEnum } from '~/api/_generated-types'
-import { networksConfig } from '~/networks-config'
 import { protocolsApi } from '~/protocols/common'
 import { usersApi } from '~/users/common/users.api'
+import { networksConfig } from '~/networks-config'
 
 const monitoringDomain = createDomain()
 
@@ -42,14 +42,6 @@ export const fetchAutomationsCreationHistoryFx = monitoringDomain.createEffect(
     return automationApi.getAutomationsCreationHistory()
   }
 )
-
-export const fetchDfhNetworksEarningsFx = monitoringDomain.createEffect(() => {
-  return Promise.all(
-    Object.values(networksConfig).map((network) =>
-      fetchDfhProtocolEarningsHistoryFx(network.chainId.toString())
-    )
-  )
-})
 
 export const fetchAutomationsAutorestakeCreationHistoryFx =
   monitoringDomain.createEffect(() => {
@@ -94,6 +86,24 @@ export const $dfhEarningsHistory = monitoringDomain
     }
   })
 
+export const fetchMetricsSyncFx = monitoringDomain.createEffect(async () => {
+  const metricsFxList = [
+    fetchUsersRegisteringHistoryFx(),
+    fetchAutomationsCreationHistoryFx(),
+    fetchAutomationsAutorestakeCreationHistoryFx(),
+    fetchAutomationsSuccessfulRunsHistoryFx(),
+    fetchAutomationsFailedRunsHistoryFx(),
+    ...Object.values(networksConfig).map((network) =>
+      fetchDfhProtocolEarningsHistoryFx(network.chainId.toString())
+    ),
+  ]
+
+  await metricsFxList.reduce(async (promise, networkEarningFx) => {
+    await promise
+    await networkEarningFx
+  }, Promise.resolve())
+})
+
 export const MonitoringGate = createGate({
   domain: monitoringDomain,
   name: 'MonitoringGate',
@@ -101,12 +111,5 @@ export const MonitoringGate = createGate({
 
 sample({
   clock: MonitoringGate.open,
-  target: [
-    fetchUsersRegisteringHistoryFx,
-    fetchAutomationsCreationHistoryFx,
-    fetchAutomationsAutorestakeCreationHistoryFx,
-    fetchAutomationsSuccessfulRunsHistoryFx,
-    fetchAutomationsFailedRunsHistoryFx,
-    fetchDfhNetworksEarningsFx,
-  ],
+  target: [fetchMetricsSyncFx],
 })
