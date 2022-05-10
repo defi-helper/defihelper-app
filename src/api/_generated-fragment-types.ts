@@ -6,6 +6,11 @@ export interface PossibleTypesResultData {
   }
 }
 const result: PossibleTypesResultData = {
-  possibleTypes: {},
+  possibleTypes: {
+    TokenPriceFeedType: [
+      'TokenPriceFeedCoingeckoIdType',
+      'TokenPriceFeedCoingeckoAddressType',
+    ],
+  },
 }
 export default result

@@ -5,6 +5,7 @@ export const GOVERNANCE_VOTES = gql`
     govVotes(filter: $filter) {
       votes
       delegates
+      balance
     }
   }
 `
