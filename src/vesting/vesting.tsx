@@ -220,7 +220,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     >
                       {dateUtils.format(
                         dateUtils.addDate(Number(dropEnd), 'seconds')
-                      )} &nbsp;
+                      )}{' '}
                       (at block: {String(currentBlockNumber.value ?? 0)})
                     </Typography>
                   </div>
