@@ -95,7 +95,16 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
           </Typography>
           <Paper radius={8} className={styles.votes}>
             <Typography variant="body2" as="span">
-              {votesLoading ? '...' : governanceVotes?.votes ?? 0} votes
+              {votesLoading ? (
+                '...'
+              ) : (
+                <>
+                  {bignumberUtils.gt(governanceVotes?.votes, 0)
+                    ? governanceVotes?.votes ?? 0
+                    : governanceVotes?.balance ?? 0}
+                </>
+              )}{' '}
+              votes
               {bignumberUtils.gte(governanceVotes?.balance, '0') &&
                 bignumberUtils.eq(governanceVotes?.votes, '0') &&
                 ' (locked)'}
