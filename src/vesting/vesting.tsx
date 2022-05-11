@@ -22,19 +22,19 @@ const WALLET_MAP = new Map([
   [
     '0x7d69FdA38Ab7B7D0f348a472F219e81aA47C4FFF'.toLowerCase(), // Ar
     {
-      address: '0x23a833f0058681700A50D8082D6BeC41BAA7DCeb',
+      address: '0x3Bd4cAfa2b78f094863e5DF641B7fFccfF297820',
     },
   ],
   [
     '0x5932758379c01779d42ba00A721f71a94bd7A35d'.toLowerCase(), // An
     {
-      address: '0xDa6e2681B36862e30A380b07d0b14150206cA177',
+      address: '0x34046c1dE4e3896ef332Ba20eEEFa50f7Ca995d4',
     },
   ],
   [
     '0xdD52F3b42191c6A95630a949b8883c2e173bD78C'.toLowerCase(), // Demo
     {
-      address: '0x2A8f11189E4702DbD10F76A3e4b5FCE53c620910',
+      address: '0x084216EfbF8F084001a37bb0a2B0A9432D6B483e',
     },
   ],
 ])
