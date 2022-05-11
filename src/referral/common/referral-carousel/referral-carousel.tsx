@@ -9,9 +9,17 @@ import { ButtonBase } from '~/common/button-base'
 import * as styles from './referral-carousel.css'
 import { Paper } from '~/common/paper'
 
-export type ReferralCarouselProps = unknown
+export type ReferralCarouselProps = {
+  referralCode?: string
+}
 
-export const ReferralCarousel: React.FC<ReferralCarouselProps> = () => {
+export const ReferralCarousel: React.FC<ReferralCarouselProps> = (props) => {
+  const link = props.referralCode
+    ? `https://defihelper.io/p/${props.referralCode}`
+    : ''
+  const shareText = `With manual restaking, you may lose more than you could have earned due
+  to high transaction. ${link}`
+
   const settings = {
     dots: true,
     infinite: false,
@@ -28,12 +36,39 @@ export const ReferralCarousel: React.FC<ReferralCarouselProps> = () => {
     customPaging: () => <ButtonBase className={styles.dot} />,
   }
 
+  const handleShareFacebook = () => {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=https://defihelper.io/p/${props.referralCode}&src=sdkpreparse`,
+      '_blank',
+      'location=yes,height=500,width=500,scrollbars=no,status=no,menubar=no,toolbar=no'
+    )
+  }
+
+  const handleShareTwitter = () => {
+    window.open(
+      `https://twitter.com/intent/tweet?text=${shareText}`,
+      '_blank',
+      'location=yes,height=500,width=500,scrollbars=no,status=no,menubar=no,toolbar=no'
+    )
+  }
+
+  const handleShareLinkedIn = () => {
+    window.open(
+      `https://www.linkedin.com/sharing/share-offsite/?url=https://defihelper.io/p/${props.referralCode}`,
+      '_blank',
+      'location=yes,height=500,width=500,scrollbars=no,status=no,menubar=no,toolbar=no'
+    )
+  }
+
+  const handleShareTelegram = () => {
+    window.open(
+      `https://telegram.me/share/url?url=https://defihelper.io/p/${props.referralCode}&text=${shareText}`
+    )
+  }
+
   const slide = (
     <div>
-      <Typography className={styles.socialText}>
-        With manual restaking, you may lose more than you could have earned due
-        to high transaction. defihelper.io/5ecf40b805b5
-      </Typography>
+      <Typography className={styles.socialText}>{shareText}</Typography>
       <div className={styles.socialActions}>
         <div className={styles.socailLinksWrap}>
           <Typography
@@ -44,16 +79,32 @@ export const ReferralCarousel: React.FC<ReferralCarouselProps> = () => {
             Share
           </Typography>
           <div className={styles.socialLinks}>
-            <Button variant="outlined" className={styles.socialButton}>
+            <Button
+              variant="outlined"
+              className={styles.socialButton}
+              onClick={() => handleShareFacebook()}
+            >
               <Icon width={16} height={16} icon="facebook" />
             </Button>
-            <Button variant="outlined" className={styles.socialButton}>
+            <Button
+              variant="outlined"
+              className={styles.socialButton}
+              onClick={() => handleShareTwitter()}
+            >
               <Icon width={16} height={16} icon="twitter" />
             </Button>
-            <Button variant="outlined" className={styles.socialButton}>
+            <Button
+              variant="outlined"
+              className={styles.socialButton}
+              onClick={() => handleShareTelegram()}
+            >
               <Icon width={16} height={16} icon="telegram" />
             </Button>
-            <Button variant="outlined" className={styles.socialButton}>
+            <Button
+              variant="outlined"
+              className={styles.socialButton}
+              onClick={() => handleShareLinkedIn()}
+            >
               <Icon width={16} height={16} icon="linkedin" />
             </Button>
           </div>

@@ -2888,6 +2888,8 @@ export type UserReferrerCodeType = {
   __typename?: 'UserReferrerCodeType'
   id: Scalars['UuidType']
   code: Scalars['String']
+  usedTimes: Scalars['Int']
+  visits: Scalars['Int']
   redirectTo: Scalars['String']
 }
 
@@ -3067,6 +3069,7 @@ export type UserType = {
   wallets: WalletListType
   exchanges: WalletExchangeListType
   blockchains: Array<UserBlockchainType>
+  referrerCode: UserReferrerCodeType
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
   metric: UserMetricType
@@ -4830,6 +4833,22 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'createdAt'
   | 'favorite'
 >
+
+export type MyReferrerCodeQueryVariables = Exact<{ [key: string]: never }>
+
+export type MyReferrerCodeQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      referrerCode: {
+        __typename?: 'UserReferrerCodeType'
+      } & ReferrerCodeFragment
+    }
+  >
+}
+
+export type ReferrerCodeFragment = {
+  __typename?: 'UserReferrerCodeType'
+} & Pick<UserReferrerCodeType, 'code' | 'redirectTo' | 'usedTimes' | 'visits'>
 
 export type ProposalCreateMutationVariables = Exact<{
   input: ProposalCreateInputType
