@@ -9,5 +9,6 @@ export const WALLET_FRAGMENT = gql`
     publicKey
     name
     createdAt
+    statisticsCollectedAt
   }
 `
