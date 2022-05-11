@@ -153,7 +153,7 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
             hidden={false}
             className={styles.sidebarMobileInner}
           >
-            <SettingsTelegram />
+            {user && <SettingsTelegram />}
           </LayoutSidebar>
         </div>
       )}

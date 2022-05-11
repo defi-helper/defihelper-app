@@ -1,7 +1,6 @@
 import { useGate, useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { useLocalStorage } from 'react-use'
-import { authModel } from '~/auth'
 
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
@@ -19,7 +18,6 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   const userContact = useStore(model.$userContact)
   const userContacts = useStore(settingsContacts.$userContactList)
   const [noThanks, setNoThanks] = useLocalStorage('telegram', false)
-  const user = useStore(authModel.$user)
   const loading = useStore(settingsContacts.fetchUserContactListFx.pending)
 
   const contacts = useMemo(
@@ -35,7 +33,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
 
   const handleHandleNoThanks = () => setNoThanks(true)
 
-  if (hasTelegram || noThanks || !user || loading) return <></>
+  if (hasTelegram || noThanks || loading) return <></>
 
   return (
     <Paper radius={4} className={styles.root}>
