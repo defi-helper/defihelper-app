@@ -119,7 +119,7 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
           onLogout={user ? handleLogout : undefined}
           hidden={hidden}
         >
-          <SettingsTelegram />
+          {user && <SettingsTelegram />}
         </LayoutSidebar>
         <ButtonBase onClick={handleHideSidebar} className={styles.hideButton}>
           <Icon
