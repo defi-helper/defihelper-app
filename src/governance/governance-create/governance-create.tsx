@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import React, { lazy, Suspense, useEffect, useState } from 'react'
 import isEmpty from 'lodash.isempty'
 import { useForm } from 'react-hook-form'
 import { useStore } from 'effector-react'
@@ -23,6 +23,8 @@ import { Paper } from '~/common/paper'
 import { Head } from '~/common/head'
 import { switchNetwork } from '~/wallets/common'
 import { config } from '~/config'
+import { Link } from '~/common/link'
+import { buildExplorerUrl } from '~/common/build-explorer-url'
 import * as styles from './governance-create.css'
 import * as model from './governance-create.model'
 
@@ -34,17 +36,33 @@ const MarkdownEditor = lazy(() =>
 
 export type GovernanceCreateProps = unknown
 
-const joinArguments = (args: GovernanceActionArguments) => {
-  return Object.entries(args)
-    .map(([param, paramValue]) => {
-      const value =
-        paramValue.type === 'address'
-          ? cutAccount(paramValue.value)
-          : paramValue.value
+const joinArguments = (args: GovernanceActionArguments, chainId: string) => {
+  const argsArr = Object.entries(args)
 
-      return [param, value].join(': ')
-    })
-    .join(', ')
+  return argsArr.map(([param, paramValue], index) => {
+    const value =
+      paramValue.type === 'address' ? (
+        <Link
+          target="_blank"
+          underline="always"
+          href={buildExplorerUrl({
+            network: chainId,
+            address: paramValue.value,
+          })}
+        >
+          {cutAccount(paramValue.value)}
+        </Link>
+      ) : (
+        paramValue.value
+      )
+
+    return (
+      <React.Fragment key={String(index)}>
+        {param}: {value}
+        {argsArr.length - 1 === index ? '' : ', '}
+      </React.Fragment>
+    )
+  })
 }
 
 type FormValues = {
@@ -197,13 +215,23 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
                 >
                   {index + 1}:{' '}
                   {contracts[action.contract] ? (
-                    cutAccount(contracts[action.contract].address)
+                    <Link
+                      href={buildExplorerUrl({
+                        network: wallet?.chainId ?? '1',
+                        address: contracts[action.contract].address,
+                      })}
+                      target="_blank"
+                      underline="always"
+                    >
+                      {cutAccount(contracts[action.contract].address)}
+                    </Link>
                   ) : (
                     <span className={styles.unsupportedContract}>
                       Unsupported contract
                     </span>
                   )}
-                  .{action.method}({joinArguments(action.arguments)})
+                  .{action.method}(
+                  {joinArguments(action.arguments, wallet?.chainId ?? '1')})
                 </Typography>
                 <ButtonBase
                   className={styles.actionButton}

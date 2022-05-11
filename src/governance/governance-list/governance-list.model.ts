@@ -104,7 +104,11 @@ sample({
 sample({
   clock: guard({
     source: [walletNetworkModel.$wallet, GovernanceListGate.status],
-    clock: [GovernanceListGate.open, walletNetworkModel.$wallet.updates],
+    clock: [
+      GovernanceListGate.open,
+      walletNetworkModel.$wallet.updates,
+      delegateVotesFx.done,
+    ],
     filter: ([wallet, opened]) => opened && Boolean(wallet?.account),
   }),
   fn: ([wallet]) => ({

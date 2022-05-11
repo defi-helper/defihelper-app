@@ -32,7 +32,7 @@ export const GovernanceVoteInfo: React.FC<GovernanceVoteInfoProps> = (
         </Typography>
       )}
       <Typography variant="h3" as="div">
-        {percentage}% voted {props.variant}
+        {bignumberUtils.format(percentage)}% voted {props.variant}
       </Typography>
       <div
         className={clsx(

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useMedia } from 'react-use'
 import {
   useParams,
@@ -40,12 +40,14 @@ import { ProtocolEstimatedChart } from '~/protocols/protocol-estimated-chart'
 import { ProtocolTvlChart } from '~/protocols/protocol-tvl-chart'
 import { ProtocolUniqueWalletsChart } from '~/protocols/protocol-unique-wallets-chart'
 import { ProtocolMediaActivity } from '../protocol-media-activity'
-import * as model from './protocol-detail.model'
-import * as styles from './protocol-detail.css'
 import {
   useOnTokenMetricUpdatedSubscription,
   useOnWalletMetricUpdatedSubscription,
 } from '~/portfolio/common'
+import { ProtocolNotifications } from '../protocol-notifications'
+import { ProtocolCalculator } from '../protocol-calculator'
+import * as model from './protocol-detail.model'
+import * as styles from './protocol-detail.css'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -87,9 +89,12 @@ export const ProtocolDetail: React.FC = () => {
 
   const ability = useAbility()
 
+  const abortController = useMemo(() => new AbortController(), [])
+
   useGate(model.ProtocolDetailGate, {
     ...params,
     hidden: ability.can('update', 'Contract') ? null : false,
+    signal: abortController.signal,
   })
 
   const protocol = useStore(model.$protocol)
@@ -116,6 +121,10 @@ export const ProtocolDetail: React.FC = () => {
 
     model.updated()
   }, variables)
+
+  useEffect(() => {
+    return () => abortController.abort()
+  }, [abortController])
 
   return (
     <AppLayout
@@ -232,35 +241,64 @@ export const ProtocolDetail: React.FC = () => {
                     ))}
                   </Grid>
                 )}
-                <ProtocolCharts>
-                  <ProtocolCharts.Header>
-                    <Typography variant="h3">Statistics</Typography>
-                    {protocol.metric.myMinUpdatedAt && (
-                      <ProtocolLastUpdated>
-                        {protocol.metric.myMinUpdatedAt}
-                      </ProtocolLastUpdated>
-                    )}
-                  </ProtocolCharts.Header>
-                  <LazyLoad height={HEIGHT}>
-                    <ProtocolCoinBalanceChart contracts={protocol.contracts} />
-                  </LazyLoad>
-                  <LazyLoad height={HEIGHT}>
-                    <ProtocolEstimatedChart metric={protocol.metric} />
-                  </LazyLoad>
-                </ProtocolCharts>
-                <LazyLoad height={HEIGHT} className={styles.mb120}>
-                  <ProtocolTotal
-                    {...protocol.metric}
-                    hasAutostaking={protocol.hasAutostaking}
-                  />
-                </LazyLoad>
-                <LazyLoad height={HEIGHT} className={styles.automates}>
-                  <StakingAutomates protocolId={params.protocolId} />
-                </LazyLoad>
+                {!user && (
+                  <div className={clsx(styles.mb120, styles.noAuthColumns)}>
+                    <div className={styles.noAuthTitle}>
+                      <Typography variant="inherit" as="div" align="center">
+                        Track your crypto across chains.
+                      </Typography>
+                      <Typography variant="inherit" as="div" align="center">
+                        Automate your investments.
+                      </Typography>
+                      <Typography variant="inherit" as="div" align="center">
+                        Boost your yields.
+                      </Typography>
+                    </div>
+                    <ProtocolNotifications />
+                    <ProtocolCalculator protocolId={params.protocolId} />
+                  </div>
+                )}
+                {user && (
+                  <>
+                    {' '}
+                    <div className={styles.mb120}>
+                      <ProtocolCharts.Header>
+                        <Typography variant="h3">Statistics</Typography>
+                        {protocol.metric.myMinUpdatedAt && (
+                          <ProtocolLastUpdated>
+                            {protocol.metric.myMinUpdatedAt}
+                          </ProtocolLastUpdated>
+                        )}
+                      </ProtocolCharts.Header>
+                      <div className={styles.charts}>
+                        <ProtocolCharts>
+                          <LazyLoad height={HEIGHT}>
+                            <ProtocolCoinBalanceChart
+                              contracts={protocol.contracts}
+                            />
+                          </LazyLoad>
+                          <LazyLoad height={HEIGHT}>
+                            <ProtocolEstimatedChart metric={protocol.metric} />
+                          </LazyLoad>
+                        </ProtocolCharts>
+                        <LazyLoad height={HEIGHT}>
+                          <ProtocolTotal
+                            {...protocol.metric}
+                            hasAutostaking={protocol.hasAutostaking}
+                          />
+                        </LazyLoad>
+                      </div>
+                    </div>
+                    <LazyLoad height={HEIGHT} className={styles.automates}>
+                      <StakingAutomates protocolId={params.protocolId} />
+                    </LazyLoad>
+                  </>
+                )}
                 <LazyLoad height={HEIGHT}>
                   <StakingList
                     protocolId={params.protocolId}
                     protocolAdapter={protocol.adapter}
+                    className={styles.staking}
                   />
                 </LazyLoad>
               </Route>

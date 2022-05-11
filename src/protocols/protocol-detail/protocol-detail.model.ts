@@ -7,10 +7,12 @@ import { stakingApi } from '~/staking/common'
 
 export const protocolDetailDomain = createDomain()
 
-const abortController = new AbortController()
-
 export const fetchProtocolFx = protocolDetailDomain.createEffect(
-  async (params: { protocolId: string; hidden?: null | boolean }) => {
+  async (params: {
+    protocolId: string
+    hidden?: null | boolean
+    signal?: AbortSignal
+  }) => {
     const protocol = await protocolsApi.protocolDetail(
       {
         filter: {
@@ -18,7 +20,7 @@ export const fetchProtocolFx = protocolDetailDomain.createEffect(
         },
         hidden: params.hidden,
       },
-      abortController.signal
+      params.signal
     )
 
     if (!protocol) throw new Error('something went wrong')
@@ -47,6 +49,7 @@ export const $protocol = protocolDetailDomain
 type GateState = {
   protocolId: string
   hidden?: null | boolean
+  signal?: AbortSignal
 }
 
 export const ProtocolDetailGate = createGate<GateState | null>({
@@ -81,4 +84,3 @@ sample({
 })
 
 $protocol.reset(ProtocolDetailGate.close)
-ProtocolDetailGate.close.watch(() => abortController.abort())

@@ -206,12 +206,12 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     >
                       ~
                       {bignumberUtils.format(bignumberUtils.mul(dropRate, 100))}{' '}
-                      dfh / day
+                      dfh per day
                     </Typography>
                   </div>
                   <div className={styles.row}>
                     <Typography variant="body2" className={styles.label}>
-                      Drop end
+                      Vesting end
                     </Typography>
                     <Typography
                       variant="h4"
@@ -220,8 +220,8 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     >
                       {dateUtils.format(
                         dateUtils.addDate(Number(dropEnd), 'seconds')
-                      )}
-                      (block: {String(currentBlockNumber.value ?? 0)})
+                      )}{' '}
+                      (at block: {String(currentBlockNumber.value ?? 0)})
                     </Typography>
                   </div>
                   <Button onClick={handleClaim} loading={claimState.loading}>
