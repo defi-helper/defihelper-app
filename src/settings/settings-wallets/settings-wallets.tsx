@@ -221,6 +221,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
                 blockchain={wallet.blockchain}
                 worth={wallet.metric?.worth ?? '0'}
                 automations={String(wallet.triggersCount)}
+                statisticsCollectedAt={wallet.statisticsCollectedAt}
                 onDeposit={currentWallet ? handleDeposit(wallet) : connect}
                 onRefund={currentWallet ? handleRefund(wallet) : connect}
                 onRename={currentWallet ? handleRename(wallet) : connect}
