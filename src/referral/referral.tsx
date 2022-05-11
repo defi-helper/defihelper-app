@@ -204,7 +204,19 @@ export const Referral: React.VFC<ReferralProps> = () => {
             <div className={styles.incomeInner}>
               <div>
                 <Typography variant="body2" className={styles.incomeTitle}>
-                  Total referrers
+                  Visits
+                </Typography>
+                <Typography
+                  variant="h3"
+                  as="div"
+                  className={styles.incomeValue}
+                >
+                  {loading ? <Loader height="16" /> : referralCode?.visits}
+                </Typography>
+              </div>
+              <div className={styles.resultsActiveReferrals}>
+                <Typography variant="body2" className={styles.incomeTitle}>
+                  Registered
                 </Typography>
                 <Typography
                   variant="h3"
@@ -214,20 +226,6 @@ export const Referral: React.VFC<ReferralProps> = () => {
                   {loading ? <Loader height="16" /> : referralCode?.usedTimes}
                 </Typography>
               </div>
-              {false && (
-                <div className={styles.resultsActiveReferrals}>
-                  <Typography variant="body2" className={styles.incomeTitle}>
-                    Total referrals
-                  </Typography>
-                  <Typography
-                    variant="h3"
-                    as="div"
-                    className={styles.incomeValue}
-                  >
-                    {referralCode?.usedTimes}
-                  </Typography>
-                </div>
-              )}
               {false && (
                 <div className={styles.resultsAllTransactions}>
                   <Button

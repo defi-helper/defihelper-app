@@ -5,5 +5,6 @@ export const REFERRER_CODE = gql`
     code
     redirectTo
     usedTimes
+    visits
   }
 `

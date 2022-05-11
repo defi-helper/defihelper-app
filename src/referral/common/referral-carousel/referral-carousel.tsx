@@ -14,8 +14,11 @@ export type ReferralCarouselProps = {
 }
 
 export const ReferralCarousel: React.FC<ReferralCarouselProps> = (props) => {
+  const link = props.referralCode
+    ? `https://defihelper.io/p/${props.referralCode}`
+    : ''
   const shareText = `With manual restaking, you may lose more than you could have earned due
-  to high transaction. defihelper.io/p/${props.referralCode}`
+  to high transaction. ${link}`
 
   const settings = {
     dots: true,

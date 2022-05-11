@@ -2843,6 +2843,7 @@ export type UserReferrerCodeType = {
   id: Scalars['UuidType']
   code: Scalars['String']
   usedTimes: Scalars['Int']
+  visits: Scalars['Int']
   redirectTo: Scalars['String']
 }
 
@@ -4801,7 +4802,7 @@ export type MyReferrerCodeQuery = { __typename?: 'Query' } & {
 
 export type ReferrerCodeFragment = {
   __typename?: 'UserReferrerCodeType'
-} & Pick<UserReferrerCodeType, 'code' | 'redirectTo' | 'usedTimes'>
+} & Pick<UserReferrerCodeType, 'code' | 'redirectTo' | 'usedTimes' | 'visits'>
 
 export type ProposalCreateMutationVariables = Exact<{
   input: ProposalCreateInputType
