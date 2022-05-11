@@ -45,3 +45,11 @@ globalStyle(`${input} .ProseMirror *`, {
   margin: 0,
   padding: 0,
 })
+
+globalStyle(`${input} a`, {
+  color: theme.colors.common.blue1,
+})
+
+globalStyle(`${input} strong`, {
+  fontWeight: 'bold',
+})

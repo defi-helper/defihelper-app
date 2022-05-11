@@ -15,6 +15,31 @@ export const header = style({
   },
 })
 
+export const noAuthColumns = style({
+  display: 'grid',
+  gridColumnGap: 24,
+  gridRowGap: 26,
+  gridTemplateColumns: '1fr',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gridTemplateColumns: '1fr 1fr',
+    },
+  },
+})
+
+export const noAuthTitle = style({
+  fontSize: 48,
+  lineHeight: '56px',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gridColumnStart: 1,
+      gridColumnEnd: 3,
+    },
+  },
+})
+
 export const icon = style({
   verticalAlign: 'middle',
   marginRight: 12,
@@ -135,3 +160,7 @@ export const automates = style({
 export const edit = style({
   marginLeft: 10,
 })
+
+export const charts = style({})
+
+export const staking = style({})

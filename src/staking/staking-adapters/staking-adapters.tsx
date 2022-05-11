@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useStore } from 'effector-react'
 import networks from '@defihelper/networks/contracts.json'
 
@@ -10,6 +11,8 @@ import {
   StakingUnstakeDialog,
   StakingClaimDialog,
   StakingAdapterDialog,
+  StakingGovStakeDialog,
+  StakingGovUnstakeDialog,
 } from '~/staking/common'
 import { Button } from '~/common/button'
 import { useDialog, UserRejectionError } from '~/common/dialog'
@@ -20,6 +23,7 @@ import { authModel } from '~/auth'
 import { toastsService } from '~/toasts'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { BlockchainEnum } from '~/api/_generated-types'
+import { GovernanceStake, GovernanceUnstake } from '~/common/load-adapter'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
@@ -35,9 +39,14 @@ export type StakingAdaptersProps = {
   network: string
   onTurnOn: () => void
   autostakingLoading?: boolean
+  deprecated: boolean
   autorestake?: string
   prototypeAddress?: string
   buyLiquidity: Contract['automate']['buyLiquidity']
+}
+
+const isGovernance = (adapter: string) => {
+  return ['xJoe', 'tom'].includes(adapter)
 }
 
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
@@ -47,6 +56,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const [openUnstakeDialog] = useDialog(StakingUnstakeDialog)
   const [openClaimDialog] = useDialog(StakingClaimDialog)
   const [openAdapter] = useDialog(StakingAdapterDialog)
+  const [openGovStakeDialog] = useDialog(StakingGovStakeDialog)
+  const [openGovUnstakeDialog] = useDialog(StakingGovUnstakeDialog)
 
   const wallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
@@ -97,7 +108,33 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             .catch(console.error)
         }
 
-        if ('methods' in contract.actions[action]) {
+        if (
+          isGovernance(props.contractAdapter) &&
+          'methods' in contract.actions[action]
+        ) {
+          const dialogs = {
+            stake: () =>
+              openGovStakeDialog({
+                methods: contract.actions?.stake
+                  .methods as unknown as GovernanceStake['methods'],
+                onSubmit: () => {
+                  model.stake({ wallet, contractId: props.contractId })
+
+                  scanHandler()
+                },
+              }),
+            unstake: () =>
+              openGovUnstakeDialog({
+                methods: contract.actions?.unstake
+                  .methods as unknown as GovernanceUnstake['methods'],
+                onSubmit: scanHandler,
+              }),
+          } as const
+
+          if (action === 'stake' || action === 'unstake') {
+            await dialogs[action]?.()
+          }
+        } else if ('methods' in contract.actions[action]) {
           const dialogs = {
             stake: () =>
               openStakeDialog({
@@ -206,7 +243,12 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       <div className={styles.stake}>
         <WalletConnect
           fallback={
-            <Button type="submit" size="small" variant="outlined">
+            <Button
+              type="submit"
+              size="small"
+              variant="outlined"
+              disabled={props.deprecated}
+            >
               Stake
             </Button>
           }
@@ -219,7 +261,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             size="small"
             variant="outlined"
             disabled={Boolean(
-              actionLoading && actionLoading.action !== 'stake'
+              (actionLoading && actionLoading.action !== 'stake') ||
+                props.deprecated
             )}
             loading={actionLoading?.action === 'stake'}
           >
@@ -231,7 +274,13 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         <div className={styles.buyLP}>
           <WalletConnect
             fallback={
-              <Button type="submit" size="small" variant="outlined">
+              <Button
+                type="submit"
+                size="small"
+                variant="outlined"
+                className="buy_lp"
+                disabled={props.deprecated}
+              >
                 buy LP
               </Button>
             }
@@ -244,6 +293,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
               size="small"
               variant="outlined"
               loading={buyLpLoading}
+              className="buy_lp"
             >
               buy LP
             </Button>
@@ -253,7 +303,12 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       <div className={styles.unstake}>
         <WalletConnect
           fallback={
-            <Button type="submit" size="small" variant="outlined">
+            <Button
+              type="submit"
+              size="small"
+              variant="outlined"
+              disabled={props.deprecated}
+            >
               Unstake
             </Button>
           }
@@ -266,7 +321,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             size="small"
             variant="outlined"
             disabled={Boolean(
-              actionLoading && actionLoading.action !== 'unstake'
+              (actionLoading && actionLoading.action !== 'unstake') ||
+                props.deprecated
             )}
             loading={actionLoading?.action === 'unstake'}
           >
@@ -278,7 +334,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         {!isExcludedAdapter(props.contractAdapter) && (
           <WalletConnect
             fallback={
-              <Button size="small" variant="outlined">
+              <Button
+                size="small"
+                variant="outlined"
+                disabled={props.deprecated}
+              >
                 Claim
               </Button>
             }
@@ -290,7 +350,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
               size="small"
               variant="outlined"
               disabled={Boolean(
-                actionLoading && actionLoading.action !== 'claim'
+                (actionLoading && actionLoading.action !== 'claim') ||
+                  props.deprecated
               )}
               loading={actionLoading?.action === 'claim'}
             >
@@ -308,7 +369,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
               ) : (
                 <WalletConnect
                   fallback={
-                    <Button size="small" variant="outlined">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      disabled={props.deprecated}
+                    >
                       Auto-Stake
                     </Button>
                   }
@@ -320,6 +385,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                     variant="outlined"
                     onClick={props.onTurnOn}
                     loading={props.autostakingLoading}
+                    disabled={props.deprecated}
                   >
                     Auto-Stake
                   </Button>

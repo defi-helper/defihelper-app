@@ -9,7 +9,7 @@ md.renderer = new RemarkableReactRenderer({
   components: {
     a: ({ children, href }) => {
       return (
-        <Link target="_blank" href={href} color="blue">
+        <Link target="_blank" href={href} color="blue" underline="always">
           {children}
         </Link>
       )
@@ -22,6 +22,11 @@ md.renderer = new RemarkableReactRenderer({
     p: ({ children }) => <Typography variant="body2">{children}</Typography>,
     strong: ({ children }) => (
       <Typography variant="inherit" weight="bold">
+        {children}
+      </Typography>
+    ),
+    em: ({ children }) => (
+      <Typography variant="inherit" as="em">
         {children}
       </Typography>
     ),

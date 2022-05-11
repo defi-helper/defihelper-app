@@ -1,5 +1,5 @@
-import { useGate, useStore } from 'effector-react'
-import { useMemo } from 'react'
+import { useStore } from 'effector-react'
+import { useEffect, useMemo } from 'react'
 import { useLocalStorage } from 'react-use'
 
 import { useDialog } from '~/common/dialog'
@@ -33,10 +33,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
     }
   }
 
-  useGate(model.UserGate, {
-    openVideoDialog: handleOpenVideoDialog,
-    openMergeWalletsDialog,
-  })
+  useEffect(() => {
+    model.open({
+      openVideoDialog: handleOpenVideoDialog,
+      openMergeWalletsDialog,
+    })
+
+    return () => model.close()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <AbilityContext.Provider value={ability}>
