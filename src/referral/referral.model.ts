@@ -1,4 +1,4 @@
-import { createDomain, sample } from 'effector-logger/macro'
+import { createDomain, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { ReferrerCodeFragment } from '~/api/_generated-types'
 import { authModel } from '~/auth'
@@ -18,9 +18,11 @@ export const ReferralGate = createGate({
   name: 'ReferralGate',
 })
 
-sample({
-  clock: ReferralGate.open,
-  target: [fetchMyReferralCodeFx],
+guard({
+  source: ReferralGate.status,
+  clock: [ReferralGate.open, authModel.$user.updates],
+  filter: (isOpened: boolean) => isOpened,
+  target: fetchMyReferralCodeFx,
 })
 
 $referrerCode.reset(ReferralGate.close, authModel.logoutFx.done)
