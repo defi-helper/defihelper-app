@@ -65,6 +65,8 @@ export type AuthWavesInputType = {
   message: Scalars['String']
   /** Signed message */
   signature: Scalars['String']
+  /** Promo id */
+  code?: Maybe<Scalars['String']>
   /** Merged target account to current account */
   merge?: Maybe<Scalars['Boolean']>
 }
@@ -735,6 +737,8 @@ export type ContractType = {
   link?: Maybe<Scalars['String']>
   /** Is hidden */
   hidden: Scalars['Boolean']
+  /** Is deprecated */
+  deprecated: Scalars['Boolean']
   metricChart: Array<MetricChartType>
   metric: ContractMetricType
   events: Array<Scalars['String']>
@@ -779,6 +783,8 @@ export type ContractUpdateInputType = {
   link?: Maybe<Scalars['String']>
   /** Is hidden */
   hidden?: Maybe<Scalars['Boolean']>
+  /** Is deprecated */
+  deprecated?: Maybe<Scalars['Boolean']>
 }
 
 export type GovProposalFilterInputType = {
@@ -1822,6 +1828,7 @@ export type Query = {
   __typename?: 'Query'
   ping: Scalars['String']
   me?: Maybe<UserType>
+  userReferrer: UserReferrerCodeType
   users: UserListQuery
   protocol?: Maybe<ProtocolType>
   protocols: ProtocolListQuery
@@ -1853,6 +1860,10 @@ export type Query = {
   monitoringAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringProtocolEarningsHistory: Array<MonitoringStatisticsEarningsPointType>
+}
+
+export type QueryUserReferrerArgs = {
+  code: Scalars['String']
 }
 
 export type QueryUsersArgs = {
@@ -2533,6 +2544,8 @@ export type UserBlockchainTypeTokenMetricChartArgs = {
 
 export type UserBlockchainWalletListFilterInputType = {
   search?: Maybe<Scalars['String']>
+  /** Is wallet deleted */
+  deleted?: Maybe<Scalars['Boolean']>
 }
 
 export type UserBlockchainWalletListPaginationInputType = {
@@ -2825,6 +2838,14 @@ export enum UserNotificationTypeEnum {
   AutomateCallNotEnoughFunds = 'automateCallNotEnoughFunds',
 }
 
+export type UserReferrerCodeType = {
+  __typename?: 'UserReferrerCodeType'
+  id: Scalars['UuidType']
+  code: Scalars['String']
+  usedTimes: Scalars['Int']
+  redirectTo: Scalars['String']
+}
+
 export enum UserRoleEnum {
   /** User */
   User = 'user',
@@ -3001,6 +3022,7 @@ export type UserType = {
   wallets: WalletListType
   exchanges: WalletExchangeListType
   blockchains: Array<UserBlockchainType>
+  referrerCode: UserReferrerCodeType
   metricChart: Array<MetricChartType>
   tokenMetricChart: Array<MetricChartType>
   metric: UserMetricType
@@ -3195,7 +3217,9 @@ export type WalletBlockchainType = {
   tokenMetricChart: Array<MetricChartType>
   metric: WalletMetricType
   billing: WalletBillingType
-  /** Date of created account */
+  /** Date of deleted wallet */
+  deletedAt?: Maybe<Scalars['DateTimeType']>
+  /** Date of created wallet */
   createdAt: Scalars['DateTimeType']
 }
 
@@ -3323,6 +3347,8 @@ export type WalletExchangeType = {
   balance: Scalars['String']
   /** Account */
   account: Scalars['String']
+  /** Date of deleted wallet */
+  deletedAt?: Maybe<Scalars['DateTimeType']>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -3354,6 +3380,8 @@ export type WalletListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   type?: Maybe<WalletBlockchainTypeEnum>
   search?: Maybe<Scalars['String']>
+  /** Is wallet deleted */
+  deleted?: Maybe<Scalars['Boolean']>
 }
 
 export type WalletListPaginationInputType = {
@@ -4758,6 +4786,22 @@ export type ProtocolFragmentFragment = { __typename?: 'ProtocolType' } & Pick<
   | 'createdAt'
   | 'favorite'
 >
+
+export type MyReferrerCodeQueryVariables = Exact<{ [key: string]: never }>
+
+export type MyReferrerCodeQuery = { __typename?: 'Query' } & {
+  me?: Maybe<
+    { __typename?: 'UserType' } & {
+      referrerCode: {
+        __typename?: 'UserReferrerCodeType'
+      } & ReferrerCodeFragment
+    }
+  >
+}
+
+export type ReferrerCodeFragment = {
+  __typename?: 'UserReferrerCodeType'
+} & Pick<UserReferrerCodeType, 'code' | 'redirectTo' | 'usedTimes'>
 
 export type ProposalCreateMutationVariables = Exact<{
   input: ProposalCreateInputType
