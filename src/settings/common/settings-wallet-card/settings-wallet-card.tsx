@@ -14,6 +14,7 @@ import { CircularProgress } from '~/common/circular-progress'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { networksConfig } from '~/networks-config'
 import * as styles from './settings-wallet-card.css'
+import { dateUtils } from '~/common/date-utils'
 
 export type SettingsWalletCardProps = {
   className?: string
@@ -30,6 +31,7 @@ export type SettingsWalletCardProps = {
   error?: boolean
   feeFunds: number
   locked: number
+  statisticsCollectedAt: string
   deleting?: boolean
   editing?: boolean
   depositing?: boolean
@@ -157,6 +159,19 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           </Typography>
           <Typography variant="body2" as="span">
             ${bignumberUtils.format(props.worth)}
+          </Typography>
+        </div>
+        <div className={styles.row}>
+          <Typography
+            variant="body2"
+            as="span"
+            className={clsx(styles.infoTitle, styles.opacity)}
+          >
+            Stats. updated
+          </Typography>
+          <Typography variant="body2" as="span">
+            {dateUtils.format(props.statisticsCollectedAt, 'M MMM')} {` at `}
+            {dateUtils.format(props.statisticsCollectedAt, 'HH:mm')}
           </Typography>
         </div>
       </div>

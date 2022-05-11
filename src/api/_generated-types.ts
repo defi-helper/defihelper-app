@@ -628,10 +628,18 @@ export type ContractCreateInputType = {
   eventsToSubscribe?: Maybe<Array<Scalars['String']>>
 }
 
+export type ContractListAutomateFilterInputType = {
+  /** Has buy liquidity automate */
+  buyLiquidity?: Maybe<Scalars['Boolean']>
+  /** Has autorestake automate */
+  autorestake?: Maybe<Scalars['Boolean']>
+}
+
 export type ContractListFilterInputType = {
   id?: Maybe<Scalars['UuidType']>
   blockchain?: Maybe<BlockchainFilterInputType>
   hidden?: Maybe<Scalars['Boolean']>
+  automate?: Maybe<ContractListAutomateFilterInputType>
   search?: Maybe<Scalars['String']>
 }
 
@@ -710,6 +718,12 @@ export type ContractMetricWalletFilterInputType = {
   type?: Maybe<Array<WalletBlockchainTypeEnum>>
 }
 
+export type ContractTokenLinkType = {
+  __typename?: 'ContractTokenLinkType'
+  stake: Array<TokenType>
+  reward: Array<TokenType>
+}
+
 export type ContractType = {
   __typename?: 'ContractType'
   /** Identificator */
@@ -742,6 +756,7 @@ export type ContractType = {
   metricChart: Array<MetricChartType>
   metric: ContractMetricType
   events: Array<Scalars['String']>
+  tokens: ContractTokenLinkType
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -3257,6 +3272,8 @@ export type WalletBlockchainType = {
   address: Scalars['String']
   /** Public key */
   publicKey: Scalars['String']
+  /** Statistics collected */
+  statisticsCollectedAt: Scalars['DateTimeType']
   contracts: WalletContractListType
   triggersCount: Scalars['Int']
   tokenAliases: WalletTokenAliasListType
@@ -3390,6 +3407,8 @@ export type WalletExchangeType = {
   name: Scalars['String']
   /** Exchange type */
   exchange: WalletExchangeTypeEnum
+  /** Statistics collected at */
+  statisticsCollectedAt: Scalars['DateTimeType']
   tokenAliases: WalletExchangeTokenAliasListType
   balance: Scalars['String']
   /** Account */
@@ -5340,6 +5359,7 @@ export type WalletFragmentFragment = {
   | 'publicKey'
   | 'name'
   | 'createdAt'
+  | 'statisticsCollectedAt'
 >
 
 export type AutomationContractCreateMutationVariables = Exact<{
