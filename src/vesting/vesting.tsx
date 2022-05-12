@@ -1,6 +1,6 @@
 import { useAsyncFn, useAsyncRetry } from 'react-use'
 import { ethers } from 'ethers'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import contracts from '@defihelper/networks/contracts.json'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -157,6 +157,15 @@ export const Vesting: React.VFC<VestingProps> = () => {
     BLOCK_PER_DAY
   )
 
+  useEffect(() => {
+    rate.retry()
+    earned.retry()
+    periodFinish.retry()
+    currentBlockNumber.retry()
+    balanceOf.retry()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claimState.loading])
+
   return (
     <AppLayout>
       <WalletConnect fallback={<Button>Connect</Button>}>
@@ -221,7 +230,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
                       {dateUtils.format(
                         dateUtils.addDate(Number(dropEnd), 'seconds')
                       )}{' '}
-                      (at block: {String(currentBlockNumber.value ?? 0)})
+                      (at block: {String(periodFinish.value ?? 0)})
                     </Typography>
                   </div>
                   <Button onClick={handleClaim} loading={claimState.loading}>
