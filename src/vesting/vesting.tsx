@@ -37,6 +37,13 @@ const WALLET_MAP = new Map([
       address: '0x084216EfbF8F084001a37bb0a2B0A9432D6B483e',
     },
   ],
+  [
+    '0x4AD9a5549241d61b9f07E27e997BDd351CD35934'.toLowerCase(), // Demo
+    {
+      address: '0x3Ab4B02ab5792e055633EDDefFA4230A20f0323C',
+    },
+  ],
+
 ])
 
 const NUM = 1 + '0'.repeat(18)
