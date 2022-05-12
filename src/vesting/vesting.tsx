@@ -1,6 +1,6 @@
 import { useAsyncFn, useAsyncRetry } from 'react-use'
 import { ethers } from 'ethers'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import contracts from '@defihelper/networks/contracts.json'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -156,6 +156,15 @@ export const Vesting: React.VFC<VestingProps> = () => {
     bignumberUtils.minus(periodFinish.value, currentBlockNumber.value),
     BLOCK_PER_DAY
   )
+
+  useEffect(() => {
+    rate.retry()
+    earned.retry()
+    periodFinish.retry()
+    currentBlockNumber.retry()
+    balanceOf.retry()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [claimState.loading])
 
   return (
     <AppLayout>
