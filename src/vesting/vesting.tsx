@@ -43,7 +43,6 @@ const WALLET_MAP = new Map([
       address: '0x3Ab4B02ab5792e055633EDDefFA4230A20f0323C',
     },
   ],
-
 ])
 
 const NUM = 1 + '0'.repeat(18)
