@@ -178,7 +178,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
                       transform="uppercase"
                       family="mono"
                     >
-                      {bignumberUtils.format(balanceOf.value)}
+                      {bignumberUtils.format(balanceOf.value)} DFH
                     </Typography>
                   </div>
                   <div className={styles.row}>
@@ -192,7 +192,8 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     >
                       {bignumberUtils.format(
                         bignumberUtils.div(earned.value, NUM)
-                      )}
+                      )}{' '}
+                      DFH
                     </Typography>
                   </div>
                   <div className={styles.row}>
