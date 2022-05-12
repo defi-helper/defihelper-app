@@ -221,7 +221,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
                       {dateUtils.format(
                         dateUtils.addDate(Number(dropEnd), 'seconds')
                       )}{' '}
-                      (at block: {String(currentBlockNumber.value ?? 0)})
+                      (at block: {String(periodFinish.value ?? 0)})
                     </Typography>
                   </div>
                   <Button onClick={handleClaim} loading={claimState.loading}>
