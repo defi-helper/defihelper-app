@@ -17,10 +17,10 @@ export const content = style({
 
 export const close = style({
   position: 'absolute',
-  right: -5,
-  top: -5,
-  width: 10,
-  height: 10,
+  right: -10,
+  top: -10,
+  width: 21,
+  height: 21,
   borderRadius: '50%',
   background: theme.colors.textColorPrimary,
   color: theme.colors.textColorSecondary,
