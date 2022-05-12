@@ -66,6 +66,16 @@ export const deleteWalletFx = walletListDomain.createEffect(
   }
 )
 
+export const updateStatisticsWalletFx = walletListDomain.createEffect(
+  async (walletId: string) => {
+    const data = await settingsApi.walletUpdateStatistics({ id: walletId })
+
+    if (!data) throw new Error('something went wrong')
+
+    return data
+  }
+)
+
 const isChainId = (chainId: unknown): chainId is ChainIdEnum =>
   String(chainId) in contracts
 

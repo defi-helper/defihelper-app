@@ -32,6 +32,8 @@ import {
   IntegrationExchangeApiConnectMutation,
   WalletListMetricsQueryVariables,
   WalletListMetricsQuery,
+  WalletUpdateStatisticsMutation,
+  WalletUpdateStatisticsMutationVariables,
 } from '~/api/_generated-types'
 import {
   USER_CONTACTS,
@@ -51,6 +53,7 @@ import {
   WALLET_LIST_METRICS,
 } from './graphql'
 import { BILLING_TRANSFER_CREATE } from '~/settings/common/graphql/billing-transfer-create.graphql'
+import { WALLET_UPDATE_STATISTICS } from './graphql/wallet-update-statistics.graphql'
 
 export const settingsApi = {
   userNotificationsList: () =>
@@ -242,6 +245,18 @@ export const settingsApi = {
         variables,
       })
       .then(({ data }) => data?.walletDelete),
+
+  walletUpdateStatistics: (variables: WalletDeleteMutationVariables) =>
+    getAPIClient()
+      .request<
+        WalletUpdateStatisticsMutation,
+        unknown,
+        WalletUpdateStatisticsMutationVariables
+      >({
+        query: WALLET_UPDATE_STATISTICS.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.walletUpdateStatistics),
 
   history: (variables?: BillingHistoryQueryVariables) =>
     getAPIClient()

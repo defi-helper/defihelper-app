@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import { Typography } from '~/common/typography'
 import { Button } from '~/common/button'
 import { useDialog } from '~/common/dialog'
+import { toastsService } from '~/toasts'
 import {
   SettingsHeader,
   SettingsInitialCard,
@@ -152,6 +153,18 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     }
   }
 
+  const handleUpdateStatistics =
+    (wallet: typeof wallets[number]) => async () => {
+      try {
+        model.updateStatisticsWalletFx(wallet.id)
+        toastsService.success('Statistics will be updated in several minutes')
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
+    }
+
   const handleAddWallet = async () => {
     try {
       const wallet = await openWalletList()
@@ -225,6 +238,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
                 onDeposit={currentWallet ? handleDeposit(wallet) : connect}
                 onRefund={currentWallet ? handleRefund(wallet) : connect}
                 onRename={currentWallet ? handleRename(wallet) : connect}
+                onUpdateStatistics={handleUpdateStatistics(wallet)}
                 onDelete={handleDelete(wallet)}
                 feeFunds={wallet.billing?.balance?.netBalance ?? 0}
                 locked={wallet.billing?.balance?.claim ?? 0}

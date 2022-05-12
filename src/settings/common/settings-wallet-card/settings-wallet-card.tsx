@@ -28,6 +28,7 @@ export type SettingsWalletCardProps = {
   onRefund: () => void
   onRename: () => void
   onDelete: () => void
+  onUpdateStatistics: () => void
   error?: boolean
   feeFunds: number
   locked: number
@@ -88,14 +89,9 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             </ButtonBase>
             <ButtonBase
               className={styles.dropdownItem}
-              as="a"
-              href={buildExplorerUrl({
-                network: props.network,
-                address: props.address,
-              })}
-              target="_blank"
+              onClick={props.onUpdateStatistics}
             >
-              Explorer
+              Update statistics
             </ButtonBase>
             <ButtonBase
               className={clsx(styles.dropdownItem, styles.deleteButton)}

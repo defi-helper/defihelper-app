@@ -1028,10 +1028,12 @@ export type Mutation = {
   __typename?: 'Mutation'
   userUpdate: UserType
   authEth?: Maybe<AuthType>
+  authDemo?: Maybe<AuthType>
   authWaves?: Maybe<AuthType>
   addWallet?: Maybe<AuthType>
   walletUpdate: WalletBlockchainType
   walletDelete: Scalars['Boolean']
+  walletUpdateStatistics: Scalars['Boolean']
   walletMetricScan: Scalars['Boolean']
   integrationExchangeApiConnect: WalletExchangeType
   integrationDisconnect: Scalars['Boolean']
@@ -1106,6 +1108,10 @@ export type MutationWalletUpdateArgs = {
 }
 
 export type MutationWalletDeleteArgs = {
+  id: Scalars['UuidType']
+}
+
+export type MutationWalletUpdateStatisticsArgs = {
   id: Scalars['UuidType']
 }
 
@@ -3407,7 +3413,7 @@ export type WalletExchangeType = {
   name: Scalars['String']
   /** Exchange type */
   exchange: WalletExchangeTypeEnum
-  /** Statistics collected at */
+  /** Statistics collected */
   statisticsCollectedAt: Scalars['DateTimeType']
   tokenAliases: WalletExchangeTokenAliasListType
   balance: Scalars['String']
@@ -5338,6 +5344,15 @@ export type WalletListQuery = { __typename?: 'Query' } & {
     }
   >
 }
+
+export type WalletUpdateStatisticsMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type WalletUpdateStatisticsMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'walletUpdateStatistics'
+>
 
 export type WalletUpdateMutationVariables = Exact<{
   id: Scalars['UuidType']
