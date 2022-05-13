@@ -13,16 +13,7 @@ export const root = style({
   color: theme.colors.common.black1,
 })
 
-export const close = style({
-  position: 'absolute',
-  right: -5,
-  top: -5,
-  width: 10,
-  height: 10,
-  borderRadius: '50%',
-  background: theme.colors.textColorPrimary,
-  color: theme.colors.textColorSecondary,
-})
+export const close = style({})
 
 export const text = style({
   marginBottom: 14,
@@ -31,6 +22,11 @@ export const text = style({
 
 export const buttons = style({
   margin: 'auto',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 8,
+  alignItems: 'center',
+  justifyContent: 'center',
 })
 
 export const button = style({
