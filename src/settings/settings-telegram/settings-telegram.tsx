@@ -37,9 +37,6 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
 
   return (
     <Paper radius={4} className={styles.root}>
-      <ButtonBase onClick={handleHandleNoThanks} className={styles.close}>
-        <Icon icon="close" />
-      </ButtonBase>
       <div className={styles.alert}>
         <div className={styles.alertHeader}>
           <div className={styles.alertIcon}>
@@ -84,8 +81,11 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
           className={styles.button}
           onClick={model.openTelegram}
         >
-          CONNECT TELEGRAM
+          Turn on notifications
         </Button>
+        <ButtonBase onClick={handleHandleNoThanks} className={styles.close}>
+          No, thanks
+        </ButtonBase>
       </div>
     </Paper>
   )
