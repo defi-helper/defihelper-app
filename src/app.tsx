@@ -1,6 +1,5 @@
 import { HelmetProvider } from 'react-helmet-async'
 import { ClientContext } from 'graphql-hooks'
-import { useMemo } from 'react'
 
 import './app.css'
 import './assets/fonts/Basier-Circle-regular-webfont/stylesheet.css'
@@ -17,10 +16,10 @@ import { ErrorBoundary, Sentry } from './error-boundary'
 
 Sentry.init()
 
+const client = getAPIClient()
+
 export const App: React.VFC = () => {
   useEthereumNetwork()
-
-  const client = useMemo(() => getAPIClient(), [])
 
   return (
     <ErrorBoundary>
