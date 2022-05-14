@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { UseSubscriptionOperation, ClientContext } from 'graphql-hooks'
 import { useThrottle } from 'react-use'
-import { useContext, useRef, useEffect, useState } from 'react'
+import { useContext, useRef, useEffect, useState, useMemo } from 'react'
 
 const TIME = 15000
 
@@ -76,12 +76,14 @@ export const subscriptionFactory = <T = unknown, Y extends object = object>(
       callback(throttledResponse)
     }, [throttledResponse])
 
-    return useSubscription<T, Y, unknown>(
-      {
+    const subscriptionParams = useMemo(
+      () => ({
         ...options,
         variables,
-      },
-      setResponse
+      }),
+      [variables]
     )
+
+    return useSubscription<T, Y, unknown>(subscriptionParams, setResponse)
   }
 }
