@@ -100,12 +100,11 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
   }
 
   const handleToggleDemo = () => {
-    if (user?.role === 'demo') {
-      authModel.logoutFx()
-      return
-    }
+    authModel.logoutFx()
 
-    authModel.authDemoFx()
+    if (user?.role !== 'demo') {
+      authModel.authDemoFx()
+    }
   }
 
   const handleToggleSidebar = () => {

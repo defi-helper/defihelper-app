@@ -426,7 +426,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
           />
         </>
       )}
-      <CanDemo alternativeProps={{ type: 'submit' }}>
+      <CanDemo>
         <Button className={styles.submit} loading={props.loading}>
           Setup
         </Button>

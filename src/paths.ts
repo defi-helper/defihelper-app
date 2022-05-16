@@ -18,6 +18,7 @@ export const paths = {
   },
 
   portfolio: '/portfolio',
+  demo: '/demo',
 
   roadmap: {
     list: '/roadmap',
