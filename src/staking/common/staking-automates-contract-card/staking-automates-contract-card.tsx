@@ -13,6 +13,7 @@ import { CircularProgress } from '~/common/circular-progress'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { networksConfig } from '~/networks-config'
 import * as styles from './staking-automates-contract-card.css'
+import { CanDemo } from '~/auth/common/CanDemo'
 
 export type StakingAutomatesContractCardProps = {
   className?: string
@@ -80,15 +81,23 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               placement="left-start"
               offset={[0, 4]}
             >
-              <ButtonBase className={styles.dropdownItem} onClick={props.onRun}>
-                Run manually
-              </ButtonBase>
-              <ButtonBase
-                className={clsx(styles.deleteButton, styles.dropdownItem)}
-                onClick={props.onDelete}
-              >
-                Delete
-              </ButtonBase>
+              <CanDemo>
+                <ButtonBase
+                  className={styles.dropdownItem}
+                  onClick={props.onRun}
+                >
+                  Run manually
+                </ButtonBase>
+              </CanDemo>
+
+              <CanDemo>
+                <ButtonBase
+                  className={clsx(styles.deleteButton, styles.dropdownItem)}
+                  onClick={props.onDelete}
+                >
+                  Delete
+                </ButtonBase>
+              </CanDemo>
             </Dropdown>
           </div>
           <div className={styles.row}>
@@ -209,35 +218,43 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
           </div>
           <div className={styles.buttons}>
-            <Button
-              size="small"
-              className={styles.deposit}
-              onClick={props.onDeposit}
-              loading={props.depositing}
-              disabled={props.deleting || props.refunding || props.migrating}
-            >
-              Deposit
-            </Button>
-            <Button
-              size="small"
-              variant="light"
-              className={styles.refund}
-              onClick={props.onMigrate}
-              loading={props.migrating}
-              disabled={props.deleting || props.depositing || props.refunding}
-            >
-              Migrate
-            </Button>
-            <Button
-              size="small"
-              variant="light"
-              className={styles.refund}
-              onClick={props.onRefund}
-              loading={props.refunding}
-              disabled={props.deleting || props.depositing || props.migrating}
-            >
-              Unstake
-            </Button>
+            <CanDemo>
+              <Button
+                size="small"
+                className={styles.deposit}
+                onClick={props.onDeposit}
+                loading={props.depositing}
+                disabled={props.deleting || props.refunding || props.migrating}
+              >
+                Deposit
+              </Button>
+            </CanDemo>
+
+            <CanDemo>
+              <Button
+                size="small"
+                variant="light"
+                className={styles.refund}
+                onClick={props.onMigrate}
+                loading={props.migrating}
+                disabled={props.deleting || props.depositing || props.refunding}
+              >
+                Migrate
+              </Button>
+            </CanDemo>
+
+            <CanDemo>
+              <Button
+                size="small"
+                variant="light"
+                className={styles.refund}
+                onClick={props.onRefund}
+                loading={props.refunding}
+                disabled={props.deleting || props.depositing || props.migrating}
+              >
+                Unstake
+              </Button>
+            </CanDemo>
             {props.error && (
               <Dropdown
                 control={

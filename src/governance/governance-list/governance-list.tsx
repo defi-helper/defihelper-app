@@ -23,6 +23,7 @@ import { Loader } from '~/common/loader'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as model from './governance-list.model'
 import * as styles from './governance-list.css'
+import { CanDemo } from '~/auth/common/CanDemo'
 
 export type GovernanceListProps = unknown
 
@@ -116,16 +117,18 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
               blockchain="ethereum"
               network={config.DEFAULT_CHAIN_ID}
             >
-              <ButtonBase
-                onClick={handleopenDelegate}
-                disabled={delegateLoading}
-                className={styles.delegate}
-              >
-                {getDelegateButtonText(
-                  governanceVotes?.votes,
-                  governanceVotes?.delegates
-                )}
-              </ButtonBase>
+              <CanDemo>
+                <ButtonBase
+                  onClick={handleopenDelegate}
+                  disabled={delegateLoading}
+                  className={styles.delegate}
+                >
+                  {getDelegateButtonText(
+                    governanceVotes?.votes,
+                    governanceVotes?.delegates
+                  )}
+                </ButtonBase>
+              </CanDemo>
             </WalletConnect>
           </Paper>
           <WalletConnect

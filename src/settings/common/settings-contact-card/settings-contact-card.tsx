@@ -7,6 +7,7 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { UserContactStatusEnum } from '~/api/_generated-types'
 import * as styles from './settings-contact-card.css'
+import { CanDemo } from '~/auth/common/CanDemo'
 
 export type SettingsContactCardProps = {
   title: string
@@ -42,27 +43,29 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
         </Typography>
       </div>
       <div className={styles.buttons}>
-        {!props.status ? (
-          <Button
-            size="small"
-            variant="light"
-            color="primary"
-            onClick={props.onConnect}
-            loading={props.loading}
-          >
-            Connect
-          </Button>
-        ) : (
-          <Button
-            size="small"
-            variant="light"
-            color="red"
-            onClick={props.onDisconnect}
-            loading={props.loading}
-          >
-            Disconnect
-          </Button>
-        )}
+        <CanDemo>
+          {!props.status ? (
+            <Button
+              size="small"
+              variant="light"
+              color="primary"
+              onClick={props.onConnect}
+              loading={props.loading}
+            >
+              Connect
+            </Button>
+          ) : (
+            <Button
+              size="small"
+              variant="light"
+              color="red"
+              onClick={props.onDisconnect}
+              loading={props.loading}
+            >
+              Disconnect
+            </Button>
+          )}
+        </CanDemo>
       </div>
     </Paper>
   )

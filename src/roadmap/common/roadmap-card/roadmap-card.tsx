@@ -12,6 +12,7 @@ import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { MarkdownRender } from '~/common/markdown-render'
 import * as styles from './roadmap-card.css'
+import { CanDemo } from '~/auth/common/CanDemo'
 
 export type RoadmapCardProps = Proposal & {
   onEdit?: () => void
@@ -113,13 +114,16 @@ export const RoadmapCard: React.VFC<RoadmapCardProps> = (props) => {
             </Typography>
           </div>
         </Dropdown>
-        <RoadmapVote
-          onUnvote={props.onUnvote}
-          onVote={props.onVote}
-          voted={props.voted}
-        >
-          {props.votes.list?.length}
-        </RoadmapVote>
+
+        <CanDemo targetArgument="onVote">
+          <RoadmapVote
+            onUnvote={props.onUnvote}
+            onVote={props.onVote}
+            voted={props.voted}
+          >
+            {props.votes.list?.length}
+          </RoadmapVote>
+        </CanDemo>
       </div>
     </Paper>
   )

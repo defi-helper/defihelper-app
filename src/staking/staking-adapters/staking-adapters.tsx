@@ -27,6 +27,7 @@ import { GovernanceStake, GovernanceUnstake } from '~/common/load-adapter'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
+import { CanDemo } from '~/auth/common/CanDemo'
 
 export type StakingAdaptersProps = {
   className?: string
@@ -255,19 +256,21 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           blockchain={props.blockchain}
           network={props.network}
         >
-          <Button
-            type="submit"
-            onClick={handleStake}
-            size="small"
-            variant="outlined"
-            disabled={Boolean(
-              (actionLoading && actionLoading.action !== 'stake') ||
-                props.deprecated
-            )}
-            loading={actionLoading?.action === 'stake'}
-          >
-            Stake
-          </Button>
+          <CanDemo>
+            <Button
+              type="submit"
+              onClick={handleStake}
+              size="small"
+              variant="outlined"
+              disabled={Boolean(
+                (actionLoading && actionLoading.action !== 'stake') ||
+                  props.deprecated
+              )}
+              loading={actionLoading?.action === 'stake'}
+            >
+              Stake
+            </Button>
+          </CanDemo>
         </WalletConnect>
       </div>
       {hasBuyLiquidity && (
@@ -287,16 +290,18 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             blockchain={props.blockchain}
             network={props.network}
           >
-            <Button
-              type="submit"
-              onClick={handleBuyLiquidity}
-              size="small"
-              variant="outlined"
-              loading={buyLpLoading}
-              className="buy_lp"
-            >
-              buy LP
-            </Button>
+            <CanDemo>
+              <Button
+                type="submit"
+                onClick={handleBuyLiquidity}
+                size="small"
+                variant="outlined"
+                loading={buyLpLoading}
+                className="buy_lp"
+              >
+                buy LP
+              </Button>
+            </CanDemo>
           </WalletConnect>
         </div>
       )}
@@ -315,19 +320,21 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           blockchain={props.blockchain}
           network={props.network}
         >
-          <Button
-            type="submit"
-            onClick={handleUnStake}
-            size="small"
-            variant="outlined"
-            disabled={Boolean(
-              (actionLoading && actionLoading.action !== 'unstake') ||
-                props.deprecated
-            )}
-            loading={actionLoading?.action === 'unstake'}
-          >
-            Unstake
-          </Button>
+          <CanDemo>
+            <Button
+              type="submit"
+              onClick={handleUnStake}
+              size="small"
+              variant="outlined"
+              disabled={Boolean(
+                (actionLoading && actionLoading.action !== 'unstake') ||
+                  props.deprecated
+              )}
+              loading={actionLoading?.action === 'unstake'}
+            >
+              Unstake
+            </Button>
+          </CanDemo>
         </WalletConnect>
       </div>
       <div className={styles.claim}>
@@ -345,18 +352,20 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             blockchain={props.blockchain}
             network={props.network}
           >
-            <Button
-              onClick={handleClaim}
-              size="small"
-              variant="outlined"
-              disabled={Boolean(
-                (actionLoading && actionLoading.action !== 'claim') ||
-                  props.deprecated
-              )}
-              loading={actionLoading?.action === 'claim'}
-            >
-              Claim
-            </Button>
+            <CanDemo>
+              <Button
+                onClick={handleClaim}
+                size="small"
+                variant="outlined"
+                disabled={Boolean(
+                  (actionLoading && actionLoading.action !== 'claim') ||
+                    props.deprecated
+                )}
+                loading={actionLoading?.action === 'claim'}
+              >
+                Claim
+              </Button>
+            </CanDemo>
           </WalletConnect>
         )}
       </div>
@@ -380,15 +389,17 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                   blockchain={props.blockchain}
                   network={props.network}
                 >
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={props.onTurnOn}
-                    loading={props.autostakingLoading}
-                    disabled={props.deprecated}
-                  >
-                    Auto-Stake
-                  </Button>
+                  <CanDemo>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={props.onTurnOn}
+                      loading={props.autostakingLoading}
+                      disabled={props.deprecated}
+                    >
+                      Auto-Stake
+                    </Button>
+                  </CanDemo>
                 </WalletConnect>
               )}
             </>

@@ -6,8 +6,11 @@ import {
   AuthEthMutation,
   AuthWavesMutationVariables,
   AuthWavesMutation,
+  AuthDemoMutation,
+  AuthDemoMutationVariables,
 } from '~/api/_generated-types'
 import { ME, AUTH_ETH, AUTH_WAVES } from './graphql'
+import { AUTH_DEMO } from './graphql/auth-demo.graphql'
 
 export const authApi = {
   me: () =>
@@ -26,6 +29,13 @@ export const authApi = {
         },
       })
       .then(({ data }) => data?.authEth),
+
+  authDemo: () =>
+    getAPIClient()
+      .request<AuthDemoMutation, unknown, AuthDemoMutationVariables>({
+        query: AUTH_DEMO.loc?.source.body ?? '',
+      })
+      .then(({ data }) => data?.authDemo),
 
   authWaves: (input: AuthWavesMutationVariables['input']) =>
     getAPIClient()

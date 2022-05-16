@@ -11,6 +11,7 @@ import { Icon } from '~/common/icon'
 import { SOCIAL_LINKS } from '../constants'
 import { Dropdown } from '~/common/dropdown'
 import * as styles from './layout-sidebar.css'
+import { LayoutDemoSwitcher } from '../layout-demo-switcher'
 
 type MenuItem = {
   title: string
@@ -28,7 +29,9 @@ type MenuItem = {
 
 export type LayoutHeaderProps = {
   menu: MenuItem[]
+  isDemo: boolean
   onLogout?: () => void
+  onToggleDemo?: () => void
   hidden?: boolean
   className?: string
 }
@@ -101,6 +104,15 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
       </ul>
       {!props.hidden && props.children}
       <div className={styles.spacer} />
+
+      {!props.hidden && (
+        <div className={styles.switchers}>
+          <LayoutDemoSwitcher
+            onToggleDemo={props.onToggleDemo}
+            state={props.isDemo}
+          />
+        </div>
+      )}
       {!props.hidden && (
         <div className={styles.switchers}>
           <LayoutThemeSwitcher />
