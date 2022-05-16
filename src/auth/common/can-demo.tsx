@@ -11,7 +11,6 @@ import * as authModel from '~/auth/auth.model'
 
 export type CanDemoProps = {
   targetArgument?: string
-  alternativeProps?: Record<string, number | string>
 }
 
 export const CanDemo: React.FC<CanDemoProps> = (props) => {
@@ -31,10 +30,7 @@ export const CanDemo: React.FC<CanDemoProps> = (props) => {
   const show = async () => {
     try {
       await openDemoAccessDialog({
-        logOut: () => {
-          console.warn('')
-          authModel.logoutFx()
-        },
+        onConfirm: () => authModel.logoutFx(),
       })
 
       try {
@@ -64,7 +60,6 @@ export const CanDemo: React.FC<CanDemoProps> = (props) => {
 
   const element = React.cloneElement(props.children, {
     ...props.children.props,
-    ...props.alternativeProps,
     [props.targetArgument ?? 'onClick']: show,
   })
 

@@ -30,7 +30,7 @@ import { ProposalTagEnum } from '~/api/_generated-types'
 import { Select, SelectOption } from '~/common/select'
 import * as model from './roadmap-list.model'
 import * as styles from './roadmap-list.css'
-import { CanDemo } from '~/auth/common/CanDemo'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type RoadmapListProps = unknown
 

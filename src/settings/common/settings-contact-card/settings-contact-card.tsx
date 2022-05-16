@@ -7,7 +7,7 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { UserContactStatusEnum } from '~/api/_generated-types'
 import * as styles from './settings-contact-card.css'
-import { CanDemo } from '~/auth/common/CanDemo'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type SettingsContactCardProps = {
   title: string

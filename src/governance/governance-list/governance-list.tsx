@@ -23,7 +23,7 @@ import { Loader } from '~/common/loader'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as model from './governance-list.model'
 import * as styles from './governance-list.css'
-import { CanDemo } from '~/auth/common/CanDemo'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type GovernanceListProps = unknown
 

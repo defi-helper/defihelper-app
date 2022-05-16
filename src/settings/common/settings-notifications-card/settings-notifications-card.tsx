@@ -4,7 +4,7 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as styles from './settings-notifications-card.css'
 import { Switch } from '~/common/switch'
-import { CanDemo } from '~/auth/common/CanDemo'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type SettingsContactCardProps = {
   onSwitch: (v: boolean) => void

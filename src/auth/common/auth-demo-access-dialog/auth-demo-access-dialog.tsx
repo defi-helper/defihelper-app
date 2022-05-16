@@ -6,7 +6,6 @@ import * as styles from './auth-demo-access-dialog.css'
 export type AuthDemoAccessDialogProps = {
   onCancel: () => void
   onConfirm: () => void
-  logOut: () => void
 }
 
 export const AuthDemoAccessDialog: React.VFC<AuthDemoAccessDialogProps> = (
@@ -30,13 +29,7 @@ export const AuthDemoAccessDialog: React.VFC<AuthDemoAccessDialogProps> = (
         >
           stay in simulation
         </Button>
-        <Button
-          color="secondary"
-          onClick={() => {
-            props.onConfirm()
-            props.logOut()
-          }}
-        >
+        <Button color="secondary" onClick={() => props.onConfirm()}>
           connect wallet
         </Button>
       </div>

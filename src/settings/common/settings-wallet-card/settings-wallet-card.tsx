@@ -15,7 +15,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { networksConfig } from '~/networks-config'
 import * as styles from './settings-wallet-card.css'
 import { dateUtils } from '~/common/date-utils'
-import { CanDemo } from '~/auth/common/CanDemo'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type SettingsWalletCardProps = {
   className?: string

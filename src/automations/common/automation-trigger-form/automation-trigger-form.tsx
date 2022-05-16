@@ -37,7 +37,7 @@ import {
 } from './automation-trigger-form.validation'
 import { toastsService } from '~/toasts'
 import * as styles from './automation-trigger-form.css'
-import { CanDemo } from '~/auth/common/CanDemo'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type AutomationTriggerFormProps = {
   type: 'ByTime' | 'ByEvent'
