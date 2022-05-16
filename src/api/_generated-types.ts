@@ -2919,6 +2919,8 @@ export enum UserRoleEnum {
   User = 'user',
   /** Administrator */
   Admin = 'admin',
+  /** Demo */
+  Demo = 'demo',
 }
 
 export type UserStoreBalanceType = {
@@ -3593,6 +3595,16 @@ export enum WalletTokenMetricChartSortInputTypeColumnEnum {
 export type WalletUpdateInputType = {
   /** Name */
   name?: Maybe<Scalars['String']>
+}
+
+export type AuthDemoMutationVariables = Exact<{ [key: string]: never }>
+
+export type AuthDemoMutation = { __typename?: 'Mutation' } & {
+  authDemo?: Maybe<
+    { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
+        user: { __typename?: 'UserType' } & UserFragmentFragment
+      }
+  >
 }
 
 export type AuthEthMutationVariables = Exact<{

@@ -41,6 +41,10 @@ logoutFx.done.watch(() => {
 export const saveUserFx = authDomain.createEffect(async (data: AuthData) => {
   sidUtils.set(data.sid)
 
+  if (data.user.role === 'demo') {
+    localStorage.setItem('video', 'true')
+  }
+
   return data.user
 })
 
@@ -62,6 +66,7 @@ export const authWavesFx = authDomain.createEffect(
   async (params: AuthWavesInputType) => {
     const data = await authApi.authWaves({
       ...params,
+      code: Cookies.get('dfh-parent-code'),
       merge: params.merge ?? false,
     })
 
@@ -86,6 +91,13 @@ export const authEthereumFx = authDomain.createEffect(
     return data
   }
 )
+
+export const authDemoFx = authDomain.createEffect(async () => {
+  const data = await authApi.authDemo()
+  if (!data) throw new Error(ERROR_MESSAGE)
+
+  return data
+})
 
 const userReady = delay({ source: fetchUserFx.finally, timeout: 500 })
 
@@ -138,11 +150,17 @@ const signedUserWaves = guard({
     Boolean(clock) && sidUtils.get() !== clock.sid,
 })
 
+const preparedUserDemo = guard({
+  clock: authDemoFx.doneData,
+  filter: (clock): clock is AuthData =>
+    Boolean(clock) && sidUtils.get() !== clock.sid,
+})
+
 const saveUser = sample({
   clock: guard({
     clock: sample({
       source: $user,
-      clock: [signedUserWaves, signedUserEthereum],
+      clock: [signedUserWaves, signedUserEthereum, preparedUserDemo],
       fn: (prevUser, nextUser) => ({ prevUser, nextUser }),
     }),
     filter: ({ prevUser, nextUser }) =>

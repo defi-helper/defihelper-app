@@ -26,6 +26,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
 import { pluralize } from '~/common/pluralize'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type AutomationListProps = unknown
 
@@ -179,7 +180,9 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
             </Typography>
           </Paper>
           <WalletConnect fallback={<Button>Buy</Button>}>
-            <Button onClick={handleBuyProducts}>Buy</Button>
+            <CanDemo>
+              <Button onClick={handleBuyProducts}>Buy</Button>
+            </CanDemo>
           </WalletConnect>
           <Input
             placeholder="Search"
@@ -197,12 +200,14 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
               </Button>
             }
           >
-            <Button color="blue" onClick={handleAddAutomation}>
-              +
-              <Typography variant="inherit" className={styles.left}>
-                new automation
-              </Typography>
-            </Button>
+            <CanDemo>
+              <Button color="blue" onClick={handleAddAutomation}>
+                +
+                <Typography variant="inherit" className={styles.left}>
+                  new automation
+                </Typography>
+              </Button>
+            </CanDemo>
           </WalletConnect>
         </div>
         <div className={styles.grid}>

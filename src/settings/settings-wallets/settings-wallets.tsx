@@ -29,6 +29,7 @@ import { useWalletConnect } from '~/wallets/wallet-connect'
 import { authModel } from '~/auth'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type SettingsWalletsProps = {
   className?: string
@@ -194,16 +195,18 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     <div className={clsx(styles.root, props.className)}>
       <SettingsHeader className={styles.header}>
         <Typography variant="h3">Wallets and Funds</Typography>
-        <Button
-          color="blue"
-          onClick={handleAddWallet}
-          className={styles.addButton}
-        >
-          +
-          <Typography variant="inherit" className={styles.addButtonTitle}>
-            Add Wallet
-          </Typography>
-        </Button>
+        <CanDemo>
+          <Button
+            color="blue"
+            onClick={handleAddWallet}
+            className={styles.addButton}
+          >
+            +
+            <Typography variant="inherit" className={styles.addButtonTitle}>
+              Add Wallet
+            </Typography>
+          </Button>
+        </CanDemo>
       </SettingsHeader>
       <div className={styles.list}>
         {loading && <SettingsWalletLoading />}
@@ -213,6 +216,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
               Connect your wallets. You will see all statistics in portfolio,
               will be able to automate actions and setup notifications.
             </Typography>
+
             <Button size="small" onClick={handleAddWallet}>
               + Add Wallet
             </Button>

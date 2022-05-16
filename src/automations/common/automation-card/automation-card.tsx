@@ -22,6 +22,7 @@ import { paths } from '~/paths'
 import { pluralize } from '~/common/pluralize'
 import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-card.css'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type AutomationCardProps = {
   onEdit?: () => void
@@ -128,23 +129,34 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
           offset={[0, 4]}
         >
           {props.onEdit && (
-            <ButtonBase className={styles.dropdownItem} onClick={props.onEdit}>
-              Edit
-            </ButtonBase>
+            <CanDemo>
+              <ButtonBase
+                className={styles.dropdownItem}
+                onClick={props.onEdit}
+              >
+                Edit
+              </ButtonBase>
+            </CanDemo>
           )}
-          <ButtonBase
-            as={ReactRouterLink}
-            className={styles.dropdownItem}
-            to={paths.automations.history(props.id)}
-          >
-            History
-          </ButtonBase>
-          <ButtonBase
-            className={clsx(styles.dropdownItem, styles.red)}
-            onClick={props.onDelete}
-          >
-            Delete
-          </ButtonBase>
+
+          <CanDemo>
+            <ButtonBase
+              as={ReactRouterLink}
+              className={styles.dropdownItem}
+              to={paths.automations.history(props.id)}
+            >
+              History
+            </ButtonBase>
+          </CanDemo>
+
+          <CanDemo>
+            <ButtonBase
+              className={clsx(styles.dropdownItem, styles.red)}
+              onClick={props.onDelete}
+            >
+              Delete
+            </ButtonBase>
+          </CanDemo>
         </Dropdown>
       </div>
       <Typography family="mono" transform="uppercase">
@@ -178,7 +190,10 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
         subtitle={networksConfig[props.walletNetwork]?.title}
         automation={automation}
       />
-      <Switch checked={props.active} onChange={props.onActivate} />
+
+      <CanDemo targetArgument="onChange">
+        <Switch checked={props.active} onChange={props.onActivate} />
+      </CanDemo>
     </Paper>
   )
 }

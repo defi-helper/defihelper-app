@@ -15,6 +15,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { networksConfig } from '~/networks-config'
 import * as styles from './settings-wallet-card.css'
 import { dateUtils } from '~/common/date-utils'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type SettingsWalletCardProps = {
   className?: string
@@ -81,24 +82,32 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             placement="left-start"
             offset={[0, 4]}
           >
-            <ButtonBase
-              className={styles.dropdownItem}
-              onClick={props.onRename}
-            >
-              Rename
-            </ButtonBase>
-            <ButtonBase
-              className={styles.dropdownItem}
-              onClick={props.onUpdateStatistics}
-            >
-              Update statistics
-            </ButtonBase>
-            <ButtonBase
-              className={clsx(styles.dropdownItem, styles.deleteButton)}
-              onClick={props.onDelete}
-            >
-              Delete
-            </ButtonBase>
+            <CanDemo>
+              <ButtonBase
+                className={styles.dropdownItem}
+                onClick={props.onRename}
+              >
+                Rename
+              </ButtonBase>
+            </CanDemo>
+
+            <CanDemo>
+              <ButtonBase
+                className={styles.dropdownItem}
+                onClick={props.onUpdateStatistics}
+              >
+                Update statistics
+              </ButtonBase>
+            </CanDemo>
+
+            <CanDemo>
+              <ButtonBase
+                className={clsx(styles.dropdownItem, styles.deleteButton)}
+                onClick={props.onDelete}
+              >
+                Delete
+              </ButtonBase>
+            </CanDemo>
           </Dropdown>
         </div>
         <div className={styles.row}>
@@ -239,25 +248,30 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           </Typography>
         </div>
         <div className={styles.buttons}>
-          <Button
-            size="small"
-            className={styles.deposit}
-            onClick={props.onDeposit}
-            loading={props.depositing}
-            disabled={props.editing || props.deleting || props.refunding}
-          >
-            Deposit
-          </Button>
-          <Button
-            size="small"
-            variant="light"
-            className={styles.refund}
-            onClick={props.onRefund}
-            loading={props.refunding}
-            disabled={props.editing || props.deleting || props.depositing}
-          >
-            Refund
-          </Button>
+          <CanDemo>
+            <Button
+              size="small"
+              className={styles.deposit}
+              onClick={props.onDeposit}
+              loading={props.depositing}
+              disabled={props.editing || props.deleting || props.refunding}
+            >
+              Deposit
+            </Button>
+          </CanDemo>
+
+          <CanDemo>
+            <Button
+              size="small"
+              variant="light"
+              className={styles.refund}
+              onClick={props.onRefund}
+              loading={props.refunding}
+              disabled={props.editing || props.deleting || props.depositing}
+            >
+              Refund
+            </Button>
+          </CanDemo>
           {props.error && (
             <Dropdown
               control={

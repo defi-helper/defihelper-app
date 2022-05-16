@@ -99,6 +99,14 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
     authModel.logoutFx()
   }
 
+  const handleToggleDemo = () => {
+    authModel.logoutFx()
+
+    if (user?.role !== 'demo') {
+      authModel.authDemoFx()
+    }
+  }
+
   const handleToggleSidebar = () => {
     setOpenSidebar(!openSidebar)
   }
@@ -116,8 +124,10 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
       <div className={styles.sidebarDesktop}>
         <LayoutSidebar
           menu={menu}
+          onToggleDemo={handleToggleDemo}
           onLogout={user ? handleLogout : undefined}
           hidden={hidden}
+          isDemo={user?.role === 'demo'}
         >
           {user && <SettingsTelegram />}
         </LayoutSidebar>
@@ -149,7 +159,9 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
           </ButtonBase>
           <LayoutSidebar
             menu={menu}
+            onToggleDemo={handleToggleDemo}
             onLogout={user ? handleLogout : undefined}
+            isDemo={user?.role === 'demo'}
             hidden={false}
             className={styles.sidebarMobileInner}
           >
