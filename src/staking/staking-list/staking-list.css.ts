@@ -112,8 +112,7 @@ export const tableHeader = style({
 
   ':before': {
     content: '""',
-    background: `${theme.colors.textColorGrey}`,
-    opacity: 0,
+    background: `${theme.colors.paper}`,
     position: 'absolute',
     top: 0,
     left: 0,
@@ -121,12 +120,6 @@ export const tableHeader = style({
     bottom: 0,
     zIndex: -1,
     transition: 'opacity .3s ease-in-out',
-  },
-})
-
-export const fixedTableHeader = style({
-  ':before': {
-    opacity: 0.3,
   },
 })
 

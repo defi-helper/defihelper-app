@@ -528,13 +528,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   tooltipComponent={OnboardTooltip}
                 />
                 <Sticky>
-                  {({ isSticky, style }) => (
+                  {({ style }) => (
                     <div
-                      className={clsx(
-                        styles.tableHeader,
-                        styles.row,
-                        isSticky && styles.fixedTableHeader
-                      )}
+                      className={clsx(styles.tableHeader, styles.row)}
                       style={style}
                     >
                       <Typography variant="body2">Pool</Typography>
