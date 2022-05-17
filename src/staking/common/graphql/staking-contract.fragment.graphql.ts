@@ -16,6 +16,14 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
     layout
     deployBlockNumber
     deprecated
+    tokens {
+      stake {
+        alias {
+          logoUrl
+          name
+        }
+      }
+    }
     automate {
       adapters
       autorestake
