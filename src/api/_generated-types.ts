@@ -5670,6 +5670,15 @@ export type StakingContractFragmentFragment = {
   | 'deployBlockNumber'
   | 'deprecated'
 > & {
+    tokens: { __typename?: 'ContractTokenLinkType' } & {
+      stake: Array<
+        { __typename?: 'TokenType' } & {
+          alias?: Maybe<
+            { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl' | 'name'>
+          >
+        }
+      >
+    }
     automate: { __typename?: 'ContractAutomatesType' } & Pick<
       ContractAutomatesType,
       'adapters' | 'autorestake'

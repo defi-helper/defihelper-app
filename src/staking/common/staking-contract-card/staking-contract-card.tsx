@@ -77,7 +77,19 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
       <div className={styles.tableCol}>
         {currentNetwork && (
           <div className={styles.coinIcons}>
-            <Icon className={styles.coinIcon} icon={currentNetwork.icon} />
+            {props.tokens.stake.map((token) => (
+              <span className={styles.coinIcon}>
+                {token.alias?.logoUrl ? (
+                  <img
+                    src={token.alias?.logoUrl}
+                    alt={token.alias?.name}
+                    className={styles.coinIconImage}
+                  />
+                ) : (
+                  <div className={styles.coinIconEmpty} />
+                )}
+              </span>
+            ))}
           </div>
         )}
         <Typography variant="body2" as="div">
