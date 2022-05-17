@@ -8,7 +8,11 @@ export const WALLET_LIST = gql`
     $pagination: WalletListPaginationInputType
   ) {
     me {
-      wallets(filter: { type: wallet }, sort: $sort, pagination: $pagination) {
+      wallets(
+        filter: { type: wallet, deleted: false }
+        sort: $sort
+        pagination: $pagination
+      ) {
         list {
           ...walletFragment
         }

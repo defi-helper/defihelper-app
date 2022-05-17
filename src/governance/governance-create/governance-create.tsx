@@ -1,10 +1,12 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react'
+import { yupResolver } from '@hookform/resolvers/yup'
 import isEmpty from 'lodash.isempty'
 import { useForm } from 'react-hook-form'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import { ethers } from 'ethers'
 import networks from '@defihelper/networks/contracts.json'
+import * as yup from 'yup'
 
 import { AppLayout } from '~/layouts'
 import { ButtonBase } from '~/common/button-base'
@@ -83,7 +85,14 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
 
   const loading = useStore(model.proposeFx.pending)
 
-  const { register, handleSubmit, formState, setValue } = useForm<FormValues>()
+  const { register, handleSubmit, formState, setValue } = useForm<FormValues>({
+    resolver: yupResolver(
+      yup.object().shape({
+        name: yup.string().required('required'),
+        description: yup.string().required('required'),
+      })
+    ),
+  })
 
   const [actions, setActions] = useState<GovernanceAction[]>([])
 
@@ -199,9 +208,9 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
           placeholder="Enter the name of proposal"
           className={styles.input}
           disabled={loading}
-          {...register('name', { required: true })}
+          {...register('name')}
         />
-        {formState.errors.name?.type === 'required' && (
+        {Boolean(formState.errors.name) && (
           <Typography className={styles.error}>required</Typography>
         )}
         {!isEmpty(actions) && (
@@ -270,7 +279,7 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
             className={styles.input}
           />
         </Suspense>
-        {formState.errors.description?.type === 'required' && (
+        {Boolean(formState.errors.description) && (
           <Typography className={styles.error}>required</Typography>
         )}
         <Button type="submit" loading={loading} className={styles.submit}>

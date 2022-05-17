@@ -20,21 +20,75 @@ export type VestingProps = unknown
 
 const WALLET_MAP = new Map([
   [
-    '0x7d69FdA38Ab7B7D0f348a472F219e81aA47C4FFF'.toLowerCase(), // Ar
+    '0x9C3c6cF9D29Ab9E9e14503dbfC9aD8bB2A0E37EF'.toLowerCase(),
     {
-      address: '0x3Bd4cAfa2b78f094863e5DF641B7fFccfF297820',
+      address: '0x8F25e48e27C17331565136C75171690192760fD1',
     },
   ],
   [
-    '0x5932758379c01779d42ba00A721f71a94bd7A35d'.toLowerCase(), // An
+    '0x4AD9a5549241d61b9f07E27e997BDd351CD35934'.toLowerCase(),
     {
-      address: '0x34046c1dE4e3896ef332Ba20eEEFa50f7Ca995d4',
+      address: '0x780903c0475E1d02ad46d1C2321c629725A16296',
     },
   ],
   [
-    '0xdD52F3b42191c6A95630a949b8883c2e173bD78C'.toLowerCase(), // Demo
+    '0x9853372055811fA68ba489824dB417EbfF3F3Bdc'.toLowerCase(),
     {
-      address: '0x084216EfbF8F084001a37bb0a2B0A9432D6B483e',
+      address: '0xc4DAC4BC47A29a52d80a47315A14C820369e69B1',
+    },
+  ],
+  [
+    '0x45ec3b0b163e868D9AA1E4eAA02c754B33bde9e2'.toLowerCase(),
+    {
+      address: '0xf52F784333349991f8Bd9952d070b2c12F68dbF2',
+    },
+  ],
+  [
+    '0x2032190fc119bbec562e8a557c225410fc1dd10d'.toLowerCase(),
+    {
+      address: '0x42a4b77D6cCE2FE320c7fc3219A8D3D63a7B44D2',
+    },
+  ],
+  [
+    '0xfefa4a9e064f8071e286c590ada4842c8e97cce8'.toLowerCase(),
+    {
+      address: '0x583d6234ca0c73C750b6E10e973E9506553Ffd3e',
+    },
+  ],
+  [
+    '0x4a8b77f8577a6943f0834ab614797f9e63c72b42'.toLowerCase(),
+    {
+      address: '0xd9ea507785222fA767bB098F909A0D5a63eA8156',
+    },
+  ],
+  [
+    '0xc0819e1e01204bcb9cb5a0a3be826afedad6edef'.toLowerCase(),
+    {
+      address: '0xBd2469EE1092B78953F898EE8c44C4D797270460',
+    },
+  ],
+  [
+    '0x8e2f571bcd253fbfd0f614646eba17ac77a7538d'.toLowerCase(),
+    {
+      address: '0xaFFcd11266ED19a4e0Cf9D2be6feA22c5fCD7dbd',
+    },
+  ],
+  [
+    '0xeB9531d74fed20945B07ea34e7978D7E95f0c068'.toLowerCase(),
+    {
+      address: '0x3f7dCBe6B7eCD57B0021681489D619d67746ddf9',
+    },
+  ],
+  [
+    '0x12d3D411d010891a88BFf2401bD73FA41fb1316e'.toLowerCase(),
+    {
+      address: '0x115289B270b4BD5d5b82Bc1D23155De2A9ef905A',
+    },
+  ],
+  [
+    '0xb7E33f3A3B3B9ea9Fa4FD844A088C0aa33E27b3c'.toLowerCase(),
+    {
+      address: '0x950120715aB48f9c9f7b91893C4CAe4983733b82',
     },
   ],
 ])
@@ -187,7 +241,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
                       transform="uppercase"
                       family="mono"
                     >
-                      {bignumberUtils.format(balanceOf.value)}
+                      {bignumberUtils.format(balanceOf.value)} DFH
                     </Typography>
                   </div>
                   <div className={styles.row}>
@@ -201,7 +255,8 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     >
                       {bignumberUtils.format(
                         bignumberUtils.div(earned.value, NUM)
-                      )}
+                      )}{' '}
+                      DFH
                     </Typography>
                   </div>
                   <div className={styles.row}>
