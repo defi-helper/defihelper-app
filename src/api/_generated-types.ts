@@ -1027,6 +1027,7 @@ export type MonitoringStatisticsPointType = {
 export type Mutation = {
   __typename?: 'Mutation'
   userUpdate: UserType
+  authThroughAdmin?: Maybe<AuthType>
   authEth?: Maybe<AuthType>
   authDemo?: Maybe<AuthType>
   authWaves?: Maybe<AuthType>
@@ -1088,6 +1089,10 @@ export type Mutation = {
 export type MutationUserUpdateArgs = {
   id: Scalars['UuidType']
   input: UserUpdateInputType
+}
+
+export type MutationAuthThroughAdminArgs = {
+  userId: Scalars['UuidType']
 }
 
 export type MutationAuthEthArgs = {
@@ -3613,6 +3618,18 @@ export type AuthEthMutationVariables = Exact<{
 
 export type AuthEthMutation = { __typename?: 'Mutation' } & {
   authEth?: Maybe<
+    { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
+        user: { __typename?: 'UserType' } & UserFragmentFragment
+      }
+  >
+}
+
+export type AuthThroughAdminMutationVariables = Exact<{
+  userId: Scalars['UuidType']
+}>
+
+export type AuthThroughAdminMutation = { __typename?: 'Mutation' } & {
+  authThroughAdmin?: Maybe<
     { __typename?: 'AuthType' } & Pick<AuthType, 'sid'> & {
         user: { __typename?: 'UserType' } & UserFragmentFragment
       }

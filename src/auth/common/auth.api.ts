@@ -8,9 +8,12 @@ import {
   AuthWavesMutation,
   AuthDemoMutation,
   AuthDemoMutationVariables,
+  AuthThroughAdminMutationVariables,
+  AuthThroughAdminMutation,
 } from '~/api/_generated-types'
 import { ME, AUTH_ETH, AUTH_WAVES } from './graphql'
 import { AUTH_DEMO } from './graphql/auth-demo.graphql'
+import { AUTH_THROUGH_ADMIN } from './graphql/auth-through-admin.graphql'
 
 export const authApi = {
   me: () =>
@@ -46,4 +49,18 @@ export const authApi = {
         },
       })
       .then(({ data }) => data?.authWaves),
+
+  authThroughAdmin: (userId: AuthThroughAdminMutationVariables['userId']) =>
+    getAPIClient()
+      .request<
+        AuthThroughAdminMutation,
+        unknown,
+        AuthThroughAdminMutationVariables
+      >({
+        query: AUTH_THROUGH_ADMIN.loc?.source.body ?? '',
+        variables: {
+          userId,
+        },
+      })
+      .then(({ data }) => data?.authThroughAdmin),
 }

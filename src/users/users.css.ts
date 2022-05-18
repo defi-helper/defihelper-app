@@ -29,6 +29,10 @@ export const tableRow = style({
   },
 })
 
+export const adminActionButton = style({
+  marginRight: 10,
+})
+
 export const tableHeader = composeStyles(
   tableRow,
   style({
