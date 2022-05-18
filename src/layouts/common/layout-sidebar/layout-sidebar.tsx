@@ -7,7 +7,7 @@ import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import { config } from '~/config'
 import { LayoutThemeSwitcher } from '~/layouts/common/layout-theme-switcher'
-import { Icon } from '~/common/icon'
+import { Icon, IconProps } from '~/common/icon'
 import { SOCIAL_LINKS } from '../constants'
 import { Dropdown } from '~/common/dropdown'
 import * as styles from './layout-sidebar.css'
@@ -16,14 +16,7 @@ import { LayoutDemoSwitcher } from '../layout-demo-switcher'
 type MenuItem = {
   title: string
   path: string
-  icon:
-    | 'home'
-    | 'grid'
-    | 'energy'
-    | 'notification'
-    | 'check'
-    | 'settings'
-    | 'affilate'
+  icon: IconProps['icon']
   exact?: boolean
 }
 

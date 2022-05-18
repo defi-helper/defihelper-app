@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
+import React, {
   Children,
   isValidElement,
   cloneElement,
@@ -7,18 +7,28 @@ import {
   useEffect,
 } from 'react'
 import clsx from 'clsx'
+import isEmpty from 'lodash.isempty'
 
 import { InputProps } from '~/common/input'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
 import { createComponent } from '~/common/create-component'
+import { ButtonBase } from '~/common/button-base'
+import { Checkbox } from '~/common/checkbox'
 import * as styles from './select.css'
 
-export type SelectProps = Omit<InputProps, 'value' | 'defaultValue'> & {
+export type SelectProps = Omit<
+  InputProps,
+  'value' | 'defaultValue' | 'defaultChecked'
+> & {
   sameWidth?: boolean
-  value?: string | number
-  defaultValue?: string | number
+  value?: string | number | string[] | number[]
+  defaultValue?: string | number | string[] | number[]
+  multiple?: boolean
+  clearable?: boolean
+  header?: React.ReactNode
+  footer?: React.ReactNode
 }
 
 export const Select = createComponent<HTMLInputElement, SelectProps>(
@@ -41,21 +51,36 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
       (event: React.ChangeEvent<HTMLInputElement>) => {
         const newEvent = event
 
-        newEvent.target.value = child.props.value
+        const localValueArr = (
+          Array.isArray(localValue) ? localValue : [localValue]
+        ).filter(Boolean)
+
+        const childValueArr = localValueArr.includes(child.props.value)
+          ? localValueArr.filter(
+              (localValueItem) => localValueItem !== child.props.value
+            )
+          : [...localValueArr, child.props.value]
+
+        const childValue = props.multiple ? childValueArr : child.props.value
+
+        newEvent.target.value = childValue
         newEvent.target.name = props.name ?? ''
         newEvent.target.type = 'text'
 
-        child.props.onClick?.(event)
+        child.props.onClick?.(newEvent)
 
-        setLocalValue(child.props.value)
+        setLocalValue(childValue)
 
-        props.onChange?.(event)
+        props.onChange?.(newEvent)
       }
 
     const valueMap = children.reduce<Map<string | number, any>>(
       (acc, child) => {
         if (isValidElement(child)) {
-          acc.set(child.props.value, child.props.children)
+          acc.set(
+            child.props.value,
+            child.props.renderValue ?? child.props.children
+          )
         }
 
         return acc
@@ -63,33 +88,59 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
       new Map<string, any>()
     )
 
-    const renderValue = valueMap.get(localValue)
+    const renderValue = Array.isArray(localValue)
+      ? localValue.map((localValueItem) => valueMap.get(localValueItem))
+      : valueMap.get(localValue)
+
+    const handleClearValue = (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation()
+
+      const newEvent = event as unknown as React.ChangeEvent<HTMLInputElement>
+
+      newEvent.target.value = ''
+      newEvent.target.name = props.name ?? ''
+      newEvent.target.type = 'text'
+
+      setLocalValue('')
+
+      props.onChange?.(newEvent)
+    }
 
     useEffect(() => {
-      if (value) {
-        setLocalValue(value)
-      }
+      if (!value) return
+
+      setLocalValue(value)
     }, [value])
+
+    const localValueArr = Array.isArray(localValue)
+      ? localValue
+      : [localValue].filter(Boolean)
+
+    const renderValueArr = Array.isArray(renderValue)
+      ? renderValue.map((renderValueItem, index) => (
+          <React.Fragment key={String(index)}>
+            {renderValueItem}
+            {renderValue.length - 1 === index ? '' : ', '}
+          </React.Fragment>
+        ))
+      : renderValue
 
     return (
       <div className={clsx(styles.root, className)}>
         <input
           type="hidden"
           ref={ref}
-          value={localValue}
+          value={Array.isArray(localValue) ? localValue.join(', ') : localValue}
           name={props.name}
           onChange={props.onChange}
         />
         <Dropdown
           control={(isOpen) => (
             <div
-              className={clsx(
-                {
-                  [styles.error]: props.error,
-                  [styles.disabled]: props.disabled,
-                },
-                className
-              )}
+              className={clsx({
+                [styles.error]: props.error,
+                [styles.disabled]: props.disabled,
+              })}
             >
               {props.label && (
                 <Typography
@@ -106,13 +157,26 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                 className={styles.input}
                 data-placeholder={props.placeholder}
               >
-                {renderValue}{' '}
-                <Icon
-                  icon={isOpen ? 'arrowUp' : 'arrowDown'}
-                  height="1em"
-                  width="1em"
-                  className={styles.arrow}
-                />
+                <div className={styles.inputInner}>
+                  {!isEmpty(renderValueArr)
+                    ? renderValueArr
+                    : props.placeholder}{' '}
+                </div>
+                {props.clearable && !isEmpty(localValue) ? (
+                  <ButtonBase
+                    onClick={handleClearValue}
+                    className={styles.icon}
+                  >
+                    <Icon icon="close" height="24" width="24" />
+                  </ButtonBase>
+                ) : (
+                  <Icon
+                    icon={isOpen ? 'arrowUp' : 'arrowDown'}
+                    height="18"
+                    width="18"
+                    className={styles.icon}
+                  />
+                )}
               </div>
               {props.helperText && (
                 <Typography
@@ -133,21 +197,38 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
           placement="bottom-start"
           offset={[0, 8]}
           sameWidth={sameWidth}
+          clickable={props.multiple}
         >
-          {Children.map(
-            children,
-            (child) =>
-              isValidElement(child) &&
-              cloneElement(child, {
-                ...child.props,
-                onClick: handleClickOnOption(child),
-                className: clsx(
-                  styles.option,
-                  child.props.className,
-                  child.props.value === localValue && styles.active
-                ),
-              })
-          )}
+          {props.header}
+          <div className={styles.dropdownInner}>
+            {Children.map(
+              children,
+              (child) =>
+                isValidElement(child) &&
+                cloneElement(child, {
+                  ...child.props,
+                  onClick: handleClickOnOption(child),
+                  className: clsx(
+                    styles.option,
+                    child.props.className,
+                    localValueArr.includes(child.props.value) && styles.active
+                  ),
+                  children: (
+                    <>
+                      {child.props.children}{' '}
+                      {props.multiple && (
+                        <Checkbox
+                          checked={localValueArr.includes(child.props.value)}
+                          onChange={handleClickOnOption(child)}
+                          className={styles.checkbox}
+                        />
+                      )}
+                    </>
+                  ),
+                })
+            )}
+          </div>
+          {props.footer}
         </Dropdown>
       </div>
     )
