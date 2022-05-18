@@ -225,7 +225,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
             Generating Portfolio...
           </Typography>
           <Typography className={styles.generatingDescription}>
-            The building process can take up to 24 hours. Add contacts so you
+            The building process can take up to 1 hour. Add contacts so you
             can recieve notifications about any actions. You will be notified
             when portfolio is ready. You will be able to change it any time in
             settings.
