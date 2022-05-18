@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 
 import { BuyLiquidityProtocolsQuery, BuyLiquidityContractsQuery } from '~/api'
+import { CanDemo } from '~/auth/common/can-demo'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
@@ -204,14 +205,16 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                           </Link>
                         </Typography>
                         <div className={styles.contractButtonWrap}>
-                          <Button
-                            size="medium"
-                            color="green"
-                            className={styles.contractButton}
-                            onClick={handleOnBuyLP(contract)}
-                          >
-                            Buy lp
-                          </Button>
+                          <CanDemo>
+                            <Button
+                              size="medium"
+                              color="green"
+                              className={styles.contractButton}
+                              onClick={handleOnBuyLP(contract)}
+                            >
+                              Buy lp
+                            </Button>
+                          </CanDemo>
                         </div>
                       </Paper>
                     )
