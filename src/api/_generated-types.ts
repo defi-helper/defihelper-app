@@ -1027,6 +1027,7 @@ export type MonitoringStatisticsPointType = {
 export type Mutation = {
   __typename?: 'Mutation'
   userUpdate: UserType
+  authThroughAdmin?: Maybe<AuthType>
   authEth?: Maybe<AuthType>
   authDemo?: Maybe<AuthType>
   authWaves?: Maybe<AuthType>
@@ -1088,6 +1089,10 @@ export type Mutation = {
 export type MutationUserUpdateArgs = {
   id: Scalars['UuidType']
   input: UserUpdateInputType
+}
+
+export type MutationAuthThroughAdminArgs = {
+  userId: Scalars['UuidType']
 }
 
 export type MutationAuthEthArgs = {
@@ -1541,6 +1546,8 @@ export type ProtocolLinkType = {
 }
 
 export type ProtocolListFilterInputType = {
+  /** Target ID */
+  id?: Maybe<Array<Scalars['UuidType']>>
   blockchain?: Maybe<BlockchainFilterInputType>
   /** Target user ID */
   linked?: Maybe<Scalars['UuidType']>
@@ -2919,6 +2926,8 @@ export enum UserRoleEnum {
   User = 'user',
   /** Administrator */
   Admin = 'admin',
+  /** Demo */
+  Demo = 'demo',
 }
 
 export type UserStoreBalanceType = {
@@ -4050,6 +4059,115 @@ export type AutomationTriggersQuery = { __typename?: 'Query' } & {
         {
           __typename?: 'AutomateTriggerType'
         } & AutomationTriggerFragmentFragment
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type BuyLiquidityContractsQueryVariables = Exact<{
+  filter: ProtocolFilterInputType
+  contractFilter?: Maybe<ContractListFilterInputType>
+  contractSort?: Maybe<
+    Array<ContractListSortInputType> | ContractListSortInputType
+  >
+  contractPagination?: Maybe<ContractListPaginationInputType>
+}>
+
+export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
+  protocol?: Maybe<
+    { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'adapter'> & {
+        contracts: { __typename?: 'ContractListType' } & {
+          list?: Maybe<
+            Array<
+              { __typename?: 'ContractType' } & Pick<
+                ContractType,
+                'id' | 'address' | 'name' | 'network' | 'blockchain'
+              > & {
+                  tokens: { __typename?: 'ContractTokenLinkType' } & {
+                    stake: Array<
+                      { __typename?: 'TokenType' } & {
+                        alias?: Maybe<
+                          { __typename?: 'TokenAlias' } & Pick<
+                            TokenAlias,
+                            'logoUrl'
+                          >
+                        >
+                      }
+                    >
+                    reward: Array<
+                      { __typename?: 'TokenType' } & {
+                        alias?: Maybe<
+                          { __typename?: 'TokenAlias' } & Pick<
+                            TokenAlias,
+                            'logoUrl'
+                          >
+                        >
+                      }
+                    >
+                  }
+                  automate: { __typename?: 'ContractAutomatesType' } & {
+                    buyLiquidity?: Maybe<
+                      {
+                        __typename?: 'ContractAutomatesBuyLiquidityType'
+                      } & Pick<
+                        ContractAutomatesBuyLiquidityType,
+                        'router' | 'pair'
+                      >
+                    >
+                  }
+                  metric: { __typename?: 'ContractMetricType' } & Pick<
+                    ContractMetricType,
+                    'tvl' | 'aprDay' | 'aprWeek' | 'aprMonth' | 'aprYear'
+                  >
+                }
+            >
+          >
+          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+        }
+      }
+  >
+}
+
+export type BuyLiquidityProtocolsSelectQueryVariables = Exact<{
+  search?: Maybe<Scalars['String']>
+  sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
+  pagination?: Maybe<ProtocolListPaginationInputType>
+}>
+
+export type BuyLiquidityProtocolsSelectQuery = { __typename?: 'Query' } & {
+  protocols: { __typename?: 'ProtocolListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'ProtocolType' } & Pick<
+          ProtocolType,
+          'id' | 'name' | 'icon'
+        >
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type BuyLiquidityProtocolsQueryVariables = Exact<{
+  filter?: Maybe<ProtocolListFilterInputType>
+  sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
+  pagination?: Maybe<ProtocolListPaginationInputType>
+}>
+
+export type BuyLiquidityProtocolsQuery = { __typename?: 'Query' } & {
+  protocols: { __typename?: 'ProtocolListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'ProtocolType' } & Pick<
+          ProtocolType,
+          'id' | 'name' | 'icon'
+        > & {
+            metric: { __typename?: 'ProtocolMetricType' } & Pick<
+              ProtocolMetricType,
+              'tvl'
+            >
+          }
       >
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>

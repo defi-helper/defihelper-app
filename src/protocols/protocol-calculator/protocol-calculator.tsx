@@ -222,7 +222,7 @@ export const ProtocolCalculator: React.VFC<ProtocolCalculatorProps> = (
         </table>
         <WalletConnect
           fallback={
-            <Button color="secondary" size="large" className={styles.button}>
+            <Button color="green" size="large" className={styles.button}>
               CONNECT WALLET
             </Button>
           }

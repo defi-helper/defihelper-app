@@ -60,7 +60,7 @@ export const Referral: React.VFC<ReferralProps> = () => {
               </Typography>
             </div>
             <Button
-              color="secondary"
+              color="green"
               variant="contained"
               className={styles.copyButton}
               onClick={() =>
@@ -84,7 +84,7 @@ export const Referral: React.VFC<ReferralProps> = () => {
               </Typography>
             </div>
             <Button
-              color="secondary"
+              color="green"
               variant="contained"
               className={styles.copyButton}
               onClick={() => copyToClipboard(referralCode?.code ?? '')}
@@ -138,7 +138,7 @@ export const Referral: React.VFC<ReferralProps> = () => {
                   <Typography variant="body2">$1,862.25</Typography>
                 </div>
                 <div>
-                  <Button color="secondary" variant="contained">
+                  <Button color="green" variant="contained">
                     Claim tokens
                   </Button>
                 </div>

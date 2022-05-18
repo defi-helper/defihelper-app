@@ -84,3 +84,10 @@ export const select = style({})
 export const apply = style({
   justifyContent: 'center',
 })
+
+export const protocolIcon = style({
+  borderRadius: '50%',
+  width: 24,
+  height: 24,
+  marginRight: 8,
+})

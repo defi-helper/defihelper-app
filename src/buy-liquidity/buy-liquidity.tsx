@@ -1,12 +1,28 @@
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { useStore } from 'effector-react'
+import isEmpty from 'lodash.isempty'
+
 import { AppLayout } from '~/layouts'
 import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
-import * as styles from './buy-liquidity.css'
 import { Paper } from '~/common/paper'
 import { Head } from '~/common/head'
 import { Select, SelectOption } from '~/common/select'
 import { Input } from '~/common/input'
 import { Button } from '~/common/button'
+import { BuyLiquidityTable } from './common/buy-liquidity-table'
+import { BlockchainEnum } from '~/api'
+import {
+  StakingBuyLiquidityDialog,
+  StakingSuccessDialog,
+} from '~/staking/common'
+import { useDialog, UserRejectionError } from '~/common/dialog'
+import { toastsService } from '~/toasts'
+import { switchNetwork } from '~/wallets/common'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import * as stakingModel from '~/staking/staking-adapters/staking-adapters.model'
+import * as styles from './buy-liquidity.css'
+import * as model from './buy-liquidity.model'
 
 export type BuyLiquidityProps = unknown
 
@@ -26,8 +42,126 @@ const INSTRUCTION = [
 ]
 
 export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
-  const test = (event: any) => {
-    console.log(event.target.value)
+  const protocols = useStore(model.$protocols)
+  const protocolsSelect = useStore(model.$protocolsSelect)
+  const contracts = useStore(model.$contracts)
+
+  const [protocolIds, setProtocolIds] = useState<string[]>([])
+  const protocolIdsRef = useRef<string[]>([])
+  const [search, setSearch] = useState('')
+  const [openedProtocol, setOpenedProtocol] = useState('')
+  const [blockchain, setBlockChain] = useState<BlockchainEnum | null>(null)
+
+  const protocolListLoading = useStore(model.fetchProtocolsFx.pending)
+  const contractListLoading = useStore(model.fetchContractsFx.pending)
+
+  const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
+  const [openSuccessDialog] = useDialog(StakingSuccessDialog)
+
+  const wallet = walletNetworkModel.useWalletNetwork()
+
+  useEffect(() => {
+    const abortController = new AbortController()
+
+    model.fetchProtocolsFx({
+      signal: abortController.signal,
+      filter: {
+        id: isEmpty(protocolIds) ? undefined : protocolIds,
+        blockchain: blockchain
+          ? {
+              protocol: blockchain,
+            }
+          : undefined,
+      },
+    })
+
+    return () => {
+      abortController.abort()
+      model.resetProtocols()
+    }
+  }, [protocolIds, blockchain])
+
+  useEffect(() => {
+    if (!openedProtocol) return
+
+    const abortController = new AbortController()
+
+    model.fetchContractsFx({
+      signal: abortController.signal,
+      filter: {
+        id: openedProtocol,
+      },
+    })
+
+    return () => {
+      abortController.abort()
+      model.resetContracts()
+    }
+  }, [openedProtocol])
+
+  useEffect(() => {
+    const abortController = new AbortController()
+
+    model.fetchProtocolsSelectFx({
+      signal: abortController.signal,
+      search: search || undefined,
+    })
+
+    return () => {
+      abortController.abort()
+      model.resetProtocolsSelect()
+    }
+  }, [search])
+
+  const handleFilterByProtocolId = (event: ChangeEvent<HTMLInputElement>) => {
+    protocolIdsRef.current = event.target.value.split(',').filter(Boolean)
+  }
+
+  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value)
+  }
+
+  const handleApplyFilterByProtocolId = () => {
+    setProtocolIds(protocolIdsRef.current)
+  }
+
+  const handleChooseBlockchain = (event: ChangeEvent<HTMLInputElement>) => {
+    setBlockChain(event.target.value as BlockchainEnum)
+  }
+
+  const handleBuyLiquidity = async (contract: typeof contracts[number]) => {
+    if (!wallet?.account || !contract.automate.buyLiquidity) return
+
+    await switchNetwork(contract.network).catch((error) => {
+      if (error instanceof Error) {
+        toastsService.error(error.message)
+      }
+    })
+
+    try {
+      const { adapter, tokens } = await stakingModel.buyLPFx({
+        account: wallet.account,
+        provider: wallet.provider,
+        chainId: contract.network,
+        router: contract.automate.buyLiquidity.router,
+        pair: contract.automate.buyLiquidity.pair,
+        network: contract.network,
+        protocol: contract.blockchain,
+      })
+
+      await openBuyLiquidity({
+        buyLiquidityAdapter: adapter,
+        tokens,
+      })
+
+      await openSuccessDialog({
+        type: 'buyLiquidity',
+      })
+    } catch (error) {
+      if (error instanceof Error && !(error instanceof UserRejectionError)) {
+        console.error(error.message)
+      }
+    }
   }
 
   return (
@@ -55,29 +189,70 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
         ))}
       </div>
       <div className={styles.selects}>
-        <Select placeholder="Choose blockchain" className={styles.select}>
-          <SelectOption value="select">select</SelectOption>
+        <Select
+          placeholder="Choose blockchain"
+          className={styles.select}
+          onChange={handleChooseBlockchain}
+        >
+          {Object.entries(BlockchainEnum).map(([title, value]) => (
+            <SelectOption value={value} key={title}>
+              {title}
+            </SelectOption>
+          ))}
         </Select>
         <Select
           placeholder="Choose protocol"
           clearable
-          onChange={test}
           multiple
           className={styles.select}
-          header={<Input placeholder="Search" />}
+          onChange={handleFilterByProtocolId}
+          header={
+            <Input
+              placeholder="Search"
+              value={search}
+              onChange={handleSearch}
+            />
+          }
           footer={
-            <Button color="green" size="medium" className={styles.apply}>
+            <Button
+              color="green"
+              size="medium"
+              className={styles.apply}
+              onClick={handleApplyFilterByProtocolId}
+            >
               Apply
             </Button>
           }
         >
-          <SelectOption value="select1">select1</SelectOption>
-          <SelectOption value="select2">select2</SelectOption>
-          <SelectOption value="select3">select3</SelectOption>
-          <SelectOption value="select4">select4</SelectOption>
-          <SelectOption value="select5">select5</SelectOption>
+          {protocolsSelect.map((protocol) => (
+            <SelectOption
+              value={protocol.id}
+              renderValue={protocol.name}
+              key={protocol.id}
+            >
+              {protocol.icon ? (
+                <img
+                  src={protocol.icon}
+                  alt=""
+                  className={styles.protocolIcon}
+                />
+              ) : (
+                <Paper className={styles.protocolIcon} />
+              )}
+              {protocol.name}
+            </SelectOption>
+          ))}
         </Select>
       </div>
+      <BuyLiquidityTable
+        protocols={protocols}
+        onProtocolClick={setOpenedProtocol}
+        openedProtocol={openedProtocol}
+        protocolListLoading={protocolListLoading}
+        contracts={contracts}
+        contractListLoading={contractListLoading}
+        onBuyLpClick={handleBuyLiquidity}
+      />
     </AppLayout>
   )
 }

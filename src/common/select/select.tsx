@@ -7,6 +7,7 @@ import React, {
   useEffect,
 } from 'react'
 import clsx from 'clsx'
+import isEmpty from 'lodash.isempty'
 
 import { InputProps } from '~/common/input'
 import { Dropdown } from '~/common/dropdown'
@@ -76,7 +77,10 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
     const valueMap = children.reduce<Map<string | number, any>>(
       (acc, child) => {
         if (isValidElement(child)) {
-          acc.set(child.props.value, child.props.children)
+          acc.set(
+            child.props.value,
+            child.props.renderValue ?? child.props.children
+          )
         }
 
         return acc
@@ -112,6 +116,15 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
       ? localValue
       : [localValue].filter(Boolean)
 
+    const renderValueArr = Array.isArray(renderValue)
+      ? renderValue.map((renderValueItem, index) => (
+          <React.Fragment key={String(index)}>
+            {renderValueItem}
+            {renderValue.length - 1 === index ? '' : ', '}
+          </React.Fragment>
+        ))
+      : renderValue
+
     return (
       <div className={clsx(styles.root, className)}>
         <input
@@ -145,16 +158,11 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                 data-placeholder={props.placeholder}
               >
                 <div className={styles.inputInner}>
-                  {(Array.isArray(renderValue)
-                    ? renderValue.map((renderValueItem, index) => (
-                        <React.Fragment key={String(index)}>
-                          {renderValueItem}
-                          {renderValue.length - 1 === index ? '' : ', '}
-                        </React.Fragment>
-                      ))
-                    : renderValue) || props.placeholder}{' '}
+                  {!isEmpty(renderValueArr)
+                    ? renderValueArr
+                    : props.placeholder}{' '}
                 </div>
-                {props.clearable && localValue ? (
+                {props.clearable && !isEmpty(localValue) ? (
                   <ButtonBase
                     onClick={handleClearValue}
                     className={styles.icon}
