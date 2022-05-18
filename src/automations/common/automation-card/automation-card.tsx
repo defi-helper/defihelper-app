@@ -129,12 +129,12 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
           offset={[0, 4]}
         >
           {props.onEdit && (
-            <CanDemo wrapperClassName={styles.dropdownItem}>
+            <CanDemo сlassName={styles.dropdownItem}>
               <ButtonBase onClick={props.onEdit}>Edit</ButtonBase>
             </CanDemo>
           )}
 
-          <CanDemo wrapperClassName={styles.dropdownItem}>
+          <CanDemo сlassName={styles.dropdownItem}>
             <ButtonBase
               as={ReactRouterLink}
               to={paths.automations.history(props.id)}
@@ -143,7 +143,7 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
             </ButtonBase>
           </CanDemo>
 
-          <CanDemo wrapperClassName={styles.dropdownItem}>
+          <CanDemo сlassName={styles.dropdownItem}>
             <ButtonBase className={styles.red} onClick={props.onDelete}>
               Delete
             </ButtonBase>

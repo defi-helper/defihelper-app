@@ -11,7 +11,7 @@ import * as authModel from '~/auth/auth.model'
 
 export type CanDemoProps = {
   targetArgument?: string
-  wrapperClassName?: string
+  сlassName?: string
 }
 
 export const CanDemo: React.FC<CanDemoProps> = (props) => {
@@ -66,7 +66,7 @@ export const CanDemo: React.FC<CanDemoProps> = (props) => {
 
   return (
     <span
-      className={props.wrapperClassName}
+      className={props.сlassName}
       style={{
         opacity: 0.7,
         cursor: 'no-drop',
