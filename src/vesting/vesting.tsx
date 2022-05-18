@@ -94,7 +94,10 @@ const WALLET_MAP = new Map([
 ])
 
 const NUM = 1 + '0'.repeat(18)
-const BLOCK_PER_DAY = '13.3'
+const BLOCK_PER_DAY = bignumberUtils.div(
+  bignumberUtils.mul(bignumberUtils.mul(24, 60), 60),
+  '13.3'
+)
 const GOVERNOR_TOKEN =
   contracts[config.DEFAULT_CHAIN_ID].GovernanceToken.address
 
