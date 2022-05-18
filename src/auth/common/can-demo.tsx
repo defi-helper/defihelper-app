@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { MouseEventHandler } from 'react'
 import { useDialog } from '~/common/dialog'
 import { useAbility } from '../auth.ability'
 import { AuthDemoAccessDialog } from './auth-demo-access-dialog'
@@ -11,6 +11,7 @@ import * as authModel from '~/auth/auth.model'
 
 export type CanDemoProps = {
   targetArgument?: string
+  onClick?: MouseEventHandler<HTMLButtonElement>
 }
 
 export const CanDemo: React.FC<CanDemoProps> = (props) => {
@@ -27,7 +28,11 @@ export const CanDemo: React.FC<CanDemoProps> = (props) => {
     return props.children
   }
 
-  const show = async () => {
+  const show = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    if (props.onClick) {
+      props.onClick(e)
+    }
+
     try {
       await openDemoAccessDialog({
         onConfirm: () => authModel.logoutFx(),
@@ -58,10 +63,8 @@ export const CanDemo: React.FC<CanDemoProps> = (props) => {
     }
   }
 
-  const element = React.cloneElement(props.children, {
+  return React.cloneElement(props.children, {
     ...props.children.props,
     [props.targetArgument ?? 'onClick']: show,
   })
-
-  return <span style={{ opacity: 0.7, cursor: 'no-drop' }}>{element}</span>
 }

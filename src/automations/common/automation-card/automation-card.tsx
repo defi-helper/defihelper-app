@@ -142,8 +142,8 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
           <CanDemo>
             <ButtonBase
               as={ReactRouterLink}
-              className={styles.dropdownItem}
               to={paths.automations.history(props.id)}
+              className={styles.dropdownItem}
             >
               History
             </ButtonBase>
@@ -151,7 +151,7 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
 
           <CanDemo>
             <ButtonBase
-              className={clsx(styles.dropdownItem, styles.red)}
+              className={clsx(styles.red, styles.dropdownItem)}
               onClick={props.onDelete}
             >
               Delete
