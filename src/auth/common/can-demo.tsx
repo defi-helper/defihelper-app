@@ -11,6 +11,7 @@ import * as authModel from '~/auth/auth.model'
 
 export type CanDemoProps = {
   targetArgument?: string
+  wrapperClassName?: string
 }
 
 export const CanDemo: React.FC<CanDemoProps> = (props) => {
@@ -63,5 +64,15 @@ export const CanDemo: React.FC<CanDemoProps> = (props) => {
     [props.targetArgument ?? 'onClick']: show,
   })
 
-  return <span style={{ opacity: 0.7, cursor: 'no-drop' }}>{element}</span>
+  return (
+    <span
+      className={props.wrapperClassName}
+      style={{
+        opacity: 0.7,
+        cursor: 'no-drop',
+      }}
+    >
+      {element}
+    </span>
+  )
 }

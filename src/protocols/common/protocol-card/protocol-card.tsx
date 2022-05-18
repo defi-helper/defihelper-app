@@ -14,6 +14,7 @@ import { createComponent } from '~/common/create-component'
 import * as styles from './protocol-card.css'
 import { ProtocolListMetricsQuery } from '~/api/_generated-types'
 import { Loader } from '~/common/loader'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type ProtocolCardProps = {
   onFavorite?: () => void
@@ -30,10 +31,8 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
   (props, ref) => {
     const { protocol } = props
 
-    const handleOnFavorite = (event: React.MouseEvent<HTMLSpanElement>) => {
+    const preventDefault = (event: React.MouseEvent<HTMLSpanElement>) => {
       event.preventDefault()
-
-      props.onFavorite?.()
     }
 
     const tvl =
@@ -53,16 +52,20 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
         }
         ref={ref as React.ForwardedRef<null>}
       >
-        <ButtonBase
-          className={clsx(
-            styles.favorite,
-            protocol.favorite && styles.favoriteActive
-          )}
-          onClick={handleOnFavorite}
-          disabled={!props.onFavorite}
-          as="span"
-        >
-          <Icon icon="star" width="16" height="16" />
+        <ButtonBase onClick={preventDefault}>
+          <CanDemo>
+            <ButtonBase
+              className={clsx(
+                styles.favorite,
+                protocol.favorite && styles.favoriteActive
+              )}
+              onClick={() => props.onFavorite?.()}
+              disabled={!props.onFavorite}
+              as="span"
+            >
+              <Icon icon="star" width="16" height="16" />
+            </ButtonBase>
+          </CanDemo>
         </ButtonBase>
         <Typography as="span" variant="body2" className={clsx(styles.link)}>
           {protocol.icon && (
