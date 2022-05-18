@@ -6,6 +6,7 @@ import { Typography } from '~/common/typography'
 import { cutAccount } from '~/common/cut-account'
 import * as styles from './settings-integration-card.css'
 import { Button } from '~/common/button'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type SettingsWalletCardProps = {
   className?: string
@@ -48,14 +49,16 @@ export const SettingsIntegrationCard: React.VFC<SettingsWalletCardProps> = (
 
       <div className={clsx(styles.footer)}>
         <div className={styles.buttons}>
-          <Button
-            size="small"
-            onClick={account ? props.onDisconnect : props.onConnect}
-            className={account ? styles.disconnect : styles.connect}
-            loading={props.deleting || props.adding}
-          >
-            {account ? 'Disconnect' : 'Connect'}
-          </Button>
+          <CanDemo>
+            <Button
+              size="small"
+              onClick={account ? props.onDisconnect : props.onConnect}
+              className={account ? styles.disconnect : styles.connect}
+              loading={props.deleting || props.adding}
+            >
+              {account ? 'Disconnect' : 'Connect'}
+            </Button>
+          </CanDemo>
         </div>
       </div>
     </Paper>

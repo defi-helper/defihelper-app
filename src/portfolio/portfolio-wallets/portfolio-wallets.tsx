@@ -28,6 +28,7 @@ import { Loader } from '~/common/loader'
 import { Dropdown } from '~/common/dropdown'
 import * as model from './portfolio-wallets.model'
 import * as styles from './portfolio-wallets.css'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type PortfolioWalletsProps = {
   className?: string
@@ -98,16 +99,19 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
             </Typography>
           </Button>
         </Can>
-        <Button
-          color="blue"
-          onClick={handleOpenWalletList}
-          className={styles.addWallet}
-        >
-          +
-          <Typography variant="inherit" className={styles.addWalletTitle}>
-            add wallet
-          </Typography>
-        </Button>
+
+        <CanDemo>
+          <Button
+            color="blue"
+            onClick={handleOpenWalletList}
+            className={styles.addWallet}
+          >
+            +
+            <Typography variant="inherit" className={styles.addWalletTitle}>
+              add wallet
+            </Typography>
+          </Button>
+        </CanDemo>
       </div>
       <div className={styles.tableWrap}>
         <Paper className={styles.table} radius={8}>

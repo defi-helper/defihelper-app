@@ -14,6 +14,7 @@ type Entities =
   | 'Wallet'
   | 'Governance'
   | 'User'
+  | 'NonDemo'
 
 export type Actions = 'create' | 'read' | 'update' | 'delete'
 export type Subjects = Entities | { type: Entities }
@@ -24,31 +25,43 @@ export const AppAbility = Ability as AbilityClass<AppAbilityType>
 export const defineRulesFor = (role?: string) => {
   const { can, rules } = new AbilityBuilder(AppAbility)
 
-  if (role === 'admin') {
-    can(['create', 'delete', 'read', 'update'], ['all'])
-  } else if (role === 'user') {
-    can(
-      ['read'],
-      [
-        'Contract',
-        'Protocol',
-        'Networks',
-        'Portfolio',
-        'Proposal',
-        'UserContact',
-      ],
-      {
-        hidden: false,
-      }
-    )
-  } else {
-    can(
-      ['read'],
-      ['Contract', 'Protocol', 'Networks', 'Proposal', 'UserContact'],
-      {
-        hidden: false,
-      }
-    )
+  switch (role) {
+    case 'admin':
+      can(['create', 'delete', 'read', 'update'], ['all'])
+      break
+    case 'demo':
+      can(
+        ['read'],
+        [
+          'Contract',
+          'Protocol',
+          'Networks',
+          'Portfolio',
+          'Proposal',
+          'UserContact',
+        ],
+        {
+          hidden: false,
+        }
+      )
+      break
+    default:
+      can(
+        ['read'],
+        [
+          'Contract',
+          'Protocol',
+          'Networks',
+          'Portfolio',
+          'Proposal',
+          'UserContact',
+          'NonDemo',
+        ],
+        {
+          hidden: false,
+        }
+      )
+      break
   }
 
   return rules

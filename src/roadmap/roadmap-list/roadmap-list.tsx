@@ -30,6 +30,7 @@ import { ProposalTagEnum } from '~/api/_generated-types'
 import { Select, SelectOption } from '~/common/select'
 import * as model from './roadmap-list.model'
 import * as styles from './roadmap-list.css'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type RoadmapListProps = unknown
 
@@ -220,15 +221,17 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           value={search}
           onChange={handleSearch}
         />
-        <Button
-          variant="contained"
-          color="blue"
-          className={styles.addButton}
-          onClick={handleAdd}
-          loading={createLoading}
-        >
-          + New Request
-        </Button>
+        <CanDemo>
+          <Button
+            variant="contained"
+            color="blue"
+            className={styles.addButton}
+            onClick={handleAdd}
+            loading={createLoading}
+          >
+            + New Request
+          </Button>
+        </CanDemo>
       </div>
       <Select
         value={currentOption}

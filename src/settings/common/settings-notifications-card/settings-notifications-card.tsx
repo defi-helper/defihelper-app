@@ -4,6 +4,7 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as styles from './settings-notifications-card.css'
 import { Switch } from '~/common/switch'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type SettingsContactCardProps = {
   onSwitch: (v: boolean) => void
@@ -26,10 +27,12 @@ export const SettingsNotificationsCard: React.VFC<SettingsContactCardProps> = (
         </Typography>
       </div>
       <div className={styles.buttons}>
-        <Switch
-          onChange={(e) => props.onSwitch(e.target.checked)}
-          defaultChecked={props.enabled}
-        />
+        <CanDemo targetArgument="onChange">
+          <Switch
+            onChange={(e) => props.onSwitch(e.target.checked)}
+            checked={props.enabled}
+          />
+        </CanDemo>
       </div>
     </Paper>
   )

@@ -49,7 +49,9 @@ export const SettingsContactFormDialog: React.VFC<SettingsContactFormDialogProps
               label="Address"
               placeholder="Enter Address"
               className={styles.input}
-              disabled={formState.isSubmitting || Boolean(props.defaultValues)}
+              disabled={
+                formState.isSubmitting || Boolean(props.defaultValues?.address)
+              }
               helperText={formState.errors.address?.message}
               error={Boolean(formState.errors.address?.message)}
             />

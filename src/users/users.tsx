@@ -18,12 +18,10 @@ const ROWS_PER_PAGE = 10
 
 export const Users: React.VFC<UsersProps> = () => {
   const users = useStore(model.$users)
+  const count = useStore(model.$count)
 
   const [openRoleDialog] = useDialog(UserRoleDialog)
-
   const [page, setPages] = useState(0)
-
-  const count = useStore(model.$count)
 
   useGate(model.UsersGate, {
     limit: ROWS_PER_PAGE,
@@ -42,6 +40,17 @@ export const Users: React.VFC<UsersProps> = () => {
         ...user,
         role,
       })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const handleLoginAsUser = (user: typeof users[number]) => async () => {
+    try {
+      await model.loginByUserFx(user)
+      window.location.reload()
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)
@@ -69,9 +78,23 @@ export const Users: React.VFC<UsersProps> = () => {
             <div key={user.id} className={styles.tableRow}>
               <Typography variant="body3">{user.id}</Typography>
               <Typography variant="body3">
-                {user.role}{' '}
+                {user.role}
+                {' · '}
                 {user.role !== UserRoleEnum.Admin && (
-                  <ButtonBase onClick={handleChangeRole(user)}>Edit</ButtonBase>
+                  <>
+                    <ButtonBase
+                      className={styles.adminActionButton}
+                      onClick={handleChangeRole(user)}
+                    >
+                      Edit
+                    </ButtonBase>
+                    <ButtonBase
+                      className={styles.adminActionButton}
+                      onClick={handleLoginAsUser(user)}
+                    >
+                      Login
+                    </ButtonBase>
+                  </>
                 )}
               </Typography>
               <Typography variant="body3">{user.createdAt}</Typography>

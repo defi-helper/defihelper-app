@@ -27,12 +27,24 @@ export const coinIcons = style({
   display: 'inline-flex',
   alignItems: 'center',
   marginRight: 20,
-  marginLeft: -10,
 })
 
 export const coinIcon = style({
   width: 24,
   height: 24,
+})
+
+export const coinIconEmpty = style({
+  width: 24,
+  height: 24,
+  background: '#bbb',
+  borderRadius: 26,
+})
+
+export const coinIconImage = style({
+  width: 24,
+  height: 24,
+  borderRadius: 26,
 })
 
 export const apyButton = style({

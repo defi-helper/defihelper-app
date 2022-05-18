@@ -37,6 +37,7 @@ import { ReferralCalculator } from '~/referral/referral-calculator'
 import { Vesting } from '~/vesting'
 import { Monitoring } from '~/monitoring'
 import { BuyLiquidity } from '~/buy-liquidity'
+import { DemoForward } from '~/demo-forward'
 
 export type RouterProps = unknown
 
@@ -84,6 +85,9 @@ export const Router: React.VFC<RouterProps> = () => {
         </Route>
         <PrivateRoute path={paths.portfolio}>
           <Portfolio />
+        </PrivateRoute>
+        <PrivateRoute path={paths.demo}>
+          <DemoForward />
         </PrivateRoute>
         <Route path={paths.roadmap.detail()}>
           <RoadmapDetail />

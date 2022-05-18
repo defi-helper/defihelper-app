@@ -37,6 +37,7 @@ import {
 } from './automation-trigger-form.validation'
 import { toastsService } from '~/toasts'
 import * as styles from './automation-trigger-form.css'
+import { CanDemo } from '~/auth/common/can-demo'
 
 export type AutomationTriggerFormProps = {
   type: 'ByTime' | 'ByEvent'
@@ -425,9 +426,11 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
           />
         </>
       )}
-      <Button className={styles.submit} loading={props.loading} type="submit">
-        Setup
-      </Button>
+      <CanDemo>
+        <Button className={styles.submit} loading={props.loading}>
+          Setup
+        </Button>
+      </CanDemo>
     </AutomationForm>
   )
 }
