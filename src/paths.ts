@@ -56,4 +56,6 @@ export const paths = {
   vesting: '/vesting',
 
   monitoring: '/monitoring',
+
+  buyLp: '/buy-liquidity',
 } as const

@@ -77,6 +77,8 @@ import { ReactComponent as FacebookIcon } from '~/assets/icons/facebook.svg'
 import { ReactComponent as FantomIcon } from '~/assets/icons/blockchains/fantom.svg'
 import { ReactComponent as CronosIcon } from '~/assets/icons/blockchains/cronos.svg'
 import { ReactComponent as ArbitrumIcon } from '~/assets/icons/blockchains/arbitrum.svg'
+import { ReactComponent as CheckboxCheckedIcon } from '~/assets/icons/checkbox-checked.svg'
+import { ReactComponent as CheckboxIcon } from '~/assets/icons/checkbox.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -163,6 +165,8 @@ const ICONS = {
   cronos: CronosIcon,
   CRO: CronosIcon,
   arbitrum: ArbitrumIcon,
+  checkboxChecked: CheckboxCheckedIcon,
+  checkbox: CheckboxIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

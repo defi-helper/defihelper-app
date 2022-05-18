@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 import clsx from 'clsx'
 import { isValidElement, cloneElement, useRef } from 'react'
 import type { Placement, Modifier } from '@popperjs/core'
 import { useKey } from 'react-use'
 import isEmpty from 'lodash.isempty'
 
-import { useClickAway, usePopper } from '~/common/hooks'
+import { useClickAway, usePopper, useForkRef } from '~/common/hooks'
 import { Paper } from '~/common/paper'
 import { Portal } from '~/common/portal'
 import * as styles from './dropdown.css'
@@ -16,6 +17,7 @@ export type DropdownProps = {
   offset?: number[]
   sameWidth?: boolean
   trigger?: 'click' | 'hover'
+  clickable?: boolean
 }
 
 export const Dropdown: React.FC<DropdownProps> = (props) => {
@@ -25,6 +27,8 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
   const { placement = 'auto', trigger = 'click' } = props
 
   const localRef = useRef(null)
+
+  const popper = useRef<HTMLElement>(null)
 
   const modifiers = useRef<Partial<Modifier<string, unknown>>[]>([])
 
@@ -43,20 +47,22 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
     modifiers: isEmpty(modifiers.current) ? undefined : modifiers.current,
   })
 
+  const popperRef = useForkRef(setPopperElement, popper)
+
   const handleOnTrigger = (event: Event | null) => {
     const target = (event?.currentTarget as HTMLElement) ?? null
 
     event?.preventDefault() // clickable protocol
     event?.stopPropagation() // portfolio wallet select
 
-    if (target && referenceElement) {
-      setReferenceElement(null)
-    } else {
-      setReferenceElement(target)
-    }
+    setReferenceElement(target)
   }
 
-  useClickAway(localRef, handleOnTrigger.bind(null, null))
+  useClickAway(
+    localRef,
+    handleOnTrigger.bind(null, null),
+    props.clickable ? popper : undefined
+  )
 
   useKey('Escape', handleOnTrigger.bind(null, null))
 
@@ -78,9 +84,10 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
         <Portal>
           <Paper
             radius={8}
-            ref={setPopperElement}
+            ref={popperRef}
             {...popperAttributes}
             style={popperStyles}
+            data-open="true"
             className={clsx(styles.dropdown, props.className)}
           >
             {props.children}

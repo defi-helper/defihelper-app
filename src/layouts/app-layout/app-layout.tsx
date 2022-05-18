@@ -7,7 +7,7 @@ import { paths } from '~/paths'
 import { LayoutSidebar, LayoutContainer, LayoutBreadcrumbs } from '../common'
 import { authModel, useAbility } from '~/auth'
 import { ButtonBase } from '~/common/button-base'
-import { Icon } from '~/common/icon'
+import { Icon, IconProps } from '~/common/icon'
 import { useBodyScrollLock } from '~/common/hooks'
 import * as styles from './app-layout.css'
 import { SettingsTelegram } from '~/settings/settings-telegram'
@@ -20,14 +20,7 @@ export type AppLayoutProps = {
 type MenuItem = {
   title: string
   path: string
-  icon:
-    | 'home'
-    | 'grid'
-    | 'energy'
-    | 'check'
-    | 'settings'
-    | 'affilate'
-    | 'notification'
+  icon: IconProps['icon']
   subject?: 'User'
   can?: 'read'
 }
@@ -47,6 +40,11 @@ const MENU: MenuItem[] = [
     title: 'Automations',
     path: paths.automations.list,
     icon: 'energy',
+  },
+  {
+    title: 'Buy LP',
+    path: paths.buyLp,
+    icon: 'automation',
   },
   {
     title: 'Vote',

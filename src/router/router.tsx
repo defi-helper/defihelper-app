@@ -36,6 +36,7 @@ import { ReferralTransactions } from '~/referral/referral-transactions'
 import { ReferralCalculator } from '~/referral/referral-calculator'
 import { Vesting } from '~/vesting'
 import { Monitoring } from '~/monitoring'
+import { BuyLiquidity } from '~/buy-liquidity'
 
 export type RouterProps = unknown
 
@@ -123,6 +124,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.referral.list}>
           <Referral />
         </PrivateRoute>
+        <Route path={paths.buyLp}>
+          <BuyLiquidity />
+        </Route>
         <CanRoute action="read" subject="User" path={paths.users}>
           <Users />
         </CanRoute>
