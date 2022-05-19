@@ -12,7 +12,6 @@ import { useDialog } from '~/common/dialog'
 import { AuthChangeNetworkDialog } from './common'
 import { UnsupportedChainError } from '~/wallets/common/unsupported-chain'
 import * as styles from './auth.css'
-import { AuthSignMessageDialog } from './common/auth-sign-message-dialog'
 
 export type AuthProps = {
   className?: string
@@ -21,19 +20,15 @@ export type AuthProps = {
 export const Auth: React.VFC<AuthProps> = (props) => {
   const [openWalletList] = useWalletList()
   const [openChangeNetworkDialog] = useDialog(AuthChangeNetworkDialog)
-  const [openSignMessageDialog] = useDialog(AuthSignMessageDialog)
 
   const handleConnect = async () => {
     try {
       const wallet = await openWalletList()
 
       if (!wallet.account) return
-
-      walletNetworkModel
-        .activateWalletFx({
-          connector: wallet.connector,
-        })
-        .then(() => openSignMessageDialog().catch(() => {}))
+      walletNetworkModel.activateWalletFx({
+        connector: wallet.connector,
+      })
     } catch (error) {
       if (error instanceof UnsupportedChainError) {
         openChangeNetworkDialog().catch((err) => console.error(err.message))
