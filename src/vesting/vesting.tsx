@@ -1,4 +1,4 @@
-import { useAsyncFn, useAsyncRetry } from 'react-use'
+import { useAsyncFn, useAsyncRetry, useInterval } from 'react-use'
 import { ethers } from 'ethers'
 import { useMemo } from 'react'
 import contracts from '@defihelper/networks/contracts.json'
@@ -208,7 +208,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
       await vestingContract.estimateGas.claim()
     )
 
-    const transactionReceipt = vestingContract.claim({
+    const transactionReceipt = await vestingContract.claim({
       gasLimit,
     })
 
@@ -232,6 +232,15 @@ export const Vesting: React.VFC<VestingProps> = () => {
     bignumberUtils.minus(periodFinish.value, currentBlockNumber.value),
     BLOCK
   )
+
+  useInterval(() => {
+    rate.retry()
+    earned.retry()
+    periodFinish.retry()
+    currentBlockNumber.retry()
+    balanceOf.retry()
+  }, 15000)
+
   return (
     <AppLayout>
       <WalletConnect fallback={<Button>Connect</Button>}>
