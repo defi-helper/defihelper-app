@@ -20,7 +20,7 @@ export const OnboardTooltip = ({
   return (
     <div {...tooltipProps} className={styles.root}>
       <ButtonBase {...closeProps} className={styles.close}>
-        <Icon icon="close" />
+        <Icon icon="close" width="24" height="24" />
       </ButtonBase>
       {step.title && (
         <Typography

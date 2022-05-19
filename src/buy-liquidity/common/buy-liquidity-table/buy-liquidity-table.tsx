@@ -117,10 +117,9 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                     </div>
                   )}
                   {props.contracts.map((contract) => {
-                    const logoUrls = [
-                      ...contract.tokens.stake,
-                      ...contract.tokens.reward,
-                    ].map(({ alias }) => alias?.logoUrl)
+                    const logoUrls = contract.tokens.stake.map(
+                      ({ alias }) => alias?.logoUrl
+                    )
 
                     return (
                       <Paper

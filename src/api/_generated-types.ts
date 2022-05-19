@@ -4117,16 +4117,6 @@ export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
                         >
                       }
                     >
-                    reward: Array<
-                      { __typename?: 'TokenType' } & {
-                        alias?: Maybe<
-                          { __typename?: 'TokenAlias' } & Pick<
-                            TokenAlias,
-                            'logoUrl'
-                          >
-                        >
-                      }
-                    >
                   }
                   automate: { __typename?: 'ContractAutomatesType' } & {
                     buyLiquidity?: Maybe<

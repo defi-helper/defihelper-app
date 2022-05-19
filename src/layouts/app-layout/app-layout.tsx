@@ -45,6 +45,8 @@ const MENU: MenuItem[] = [
     title: 'Buy LP',
     path: paths.buyLp,
     icon: 'automation',
+    subject: 'User',
+    can: 'read',
   },
   {
     title: 'Vote',
