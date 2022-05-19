@@ -149,7 +149,6 @@ export const signMessageWavesFx = networkDomain.createEffect(
 
 export const signMessageEthereumFx = networkDomain.createEffect(
   async (params: SignMessageEthereum) => {
-    console.warn('started sign 111')
     const signedMessageData = await signMessageEthereum(
       createEthereumProvider(params.provider),
       params.account,
