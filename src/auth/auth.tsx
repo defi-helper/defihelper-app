@@ -21,7 +21,7 @@ export type AuthProps = {
 export const Auth: React.VFC<AuthProps> = (props) => {
   const [openWalletList] = useWalletList()
   const [openChangeNetworkDialog] = useDialog(AuthChangeNetworkDialog)
-  const [openSignMessageDialog, closeSignMessageDialog] = useDialog(
+  const [openSignMessageDialog] = useDialog(
     AuthSignMessageDialog
   )
 
@@ -37,7 +37,6 @@ export const Auth: React.VFC<AuthProps> = (props) => {
         })
         .then(() => openSignMessageDialog().catch(() => {}))
     } catch (error) {
-      closeSignMessageDialog()
       if (error instanceof UnsupportedChainError) {
         openChangeNetworkDialog().catch((err) => console.error(err.message))
 
