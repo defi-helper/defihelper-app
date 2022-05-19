@@ -29,11 +29,6 @@ export const BUY_LIQUIDITY_CONTRACT_LIST = gql`
                 logoUrl
               }
             }
-            reward {
-              alias {
-                logoUrl
-              }
-            }
           }
           automate {
             buyLiquidity {

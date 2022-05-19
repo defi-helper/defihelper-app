@@ -29,7 +29,7 @@ export const AuthDemoAccessDialog: React.VFC<AuthDemoAccessDialogProps> = (
         >
           stay in simulation
         </Button>
-        <Button color="secondary" onClick={() => props.onConfirm()}>
+        <Button color="green" onClick={() => props.onConfirm()}>
           connect wallet
         </Button>
       </div>
