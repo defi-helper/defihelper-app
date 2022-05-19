@@ -91,6 +91,12 @@ const WALLET_MAP = new Map([
       address: '0x950120715aB48f9c9f7b91893C4CAe4983733b82',
     },
   ],
+  [
+    '0xdD52F3b42191c6A95630a949b8883c2e173bD78C'.toLowerCase(), // DEMO RINKEBY
+    {
+      address: '0x28Fb0B64112F69b3d93ed250e8ae0fe7a22e79fD',
+    },
+  ],
 ])
 
 const NUM = 1 + '0'.repeat(18)
