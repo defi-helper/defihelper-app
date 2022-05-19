@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useGate, useStore } from 'effector-react'
 import omit from 'lodash.omit'
+import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { AppLayout } from '~/layouts'
 import { authModel } from '~/auth'
@@ -28,9 +29,10 @@ import { Loader } from '~/common/loader'
 import { SearchDialog } from '~/common/search-dialog'
 import { ProposalTagEnum } from '~/api/_generated-types'
 import { Select, SelectOption } from '~/common/select'
+import { CanDemo } from '~/auth/common/can-demo'
+import { paths } from '~/paths'
 import * as model from './roadmap-list.model'
 import * as styles from './roadmap-list.css'
-import { CanDemo } from '~/auth/common/can-demo'
 
 export type RoadmapListProps = unknown
 
@@ -191,7 +193,19 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
 
   return (
     <AppLayout
-      title="Vote"
+      title={
+        <div className={styles.mobileTabs}>
+          <div>Vote</div>
+          <Typography
+            variant="inherit"
+            as={ReactRouterLink}
+            to={paths.governance.list}
+            className={styles.inacitveTab}
+          >
+            Governance
+          </Typography>
+        </div>
+      }
       action={
         <div className={styles.action}>
           <ButtonBase
@@ -215,12 +229,22 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
       <Head title="Vote" />
       <div className={styles.header}>
         <Typography variant="h3">Vote</Typography>
-        <Input
-          placeholder="Search"
-          className={styles.input}
-          value={search}
-          onChange={handleSearch}
-        />
+        <Typography
+          variant="h3"
+          as={ReactRouterLink}
+          to={paths.governance.list}
+          className={styles.inacitveTab}
+        >
+          Governance
+        </Typography>
+        <Typography
+          variant="body2"
+          transform="uppercase"
+          family="mono"
+          className={styles.year}
+        >
+          DFH {new Date().getFullYear()} roadmap
+        </Typography>
         <CanDemo>
           <Button
             variant="contained"
@@ -233,18 +257,30 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           </Button>
         </CanDemo>
       </div>
-      <Select
-        value={currentOption}
-        onChange={({ target }) => setOption(target.value)}
-        className={styles.select}
-      >
-        <SelectOption value="">All</SelectOption>
-        {Object.entries(TAGS).map(([key, title]) => (
-          <SelectOption key={key} value={key}>
-            {title}
-          </SelectOption>
-        ))}
-      </Select>
+      <Typography variant="h4" className={styles.subtitle}>
+        Here you can see the planned features of the service and vote and add
+        the features you need
+      </Typography>
+      <div className={styles.inputs}>
+        <Select
+          value={currentOption}
+          onChange={({ target }) => setOption(target.value)}
+          className={styles.select}
+        >
+          <SelectOption value="">All</SelectOption>
+          {Object.entries(TAGS).map(([key, title]) => (
+            <SelectOption key={key} value={key}>
+              {title}
+            </SelectOption>
+          ))}
+        </Select>
+        <Input
+          placeholder="Search"
+          value={search}
+          className={styles.search}
+          onChange={handleSearch}
+        />
+      </div>
       {loading && (
         <Paper radius={8} className={styles.loader}>
           <Loader height="36" />

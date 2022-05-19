@@ -22,8 +22,19 @@ export const proposal = style({
 
 export const header = style({
   marginBottom: 28,
-  display: 'flex',
   alignItems: 'center',
+  gap: 24,
+  display: 'none',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      display: 'flex',
+    },
+  },
+})
+
+export const subtitle = style({
+  marginBottom: 24,
 })
 
 export const status = style({
@@ -55,4 +66,25 @@ export const loader = style({
   alignItems: 'center',
   justifyContent: 'center',
   margin: 'auto',
+})
+
+export const mobileTabs = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 14,
+})
+
+export const inacitveTab = style({
+  color: theme.colors.textColorGrey,
+  opacity: 0.5,
+  transition: 'color .3s ease-in-out, opacity .3s ease-in-out',
+
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      ':hover': {
+        opacity: 1,
+        color: theme.colors.textColorPrimary,
+      },
+    },
+  },
 })
