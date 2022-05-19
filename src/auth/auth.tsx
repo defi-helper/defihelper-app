@@ -26,7 +26,6 @@ export const Auth: React.VFC<AuthProps> = (props) => {
       const wallet = await openWalletList()
 
       if (!wallet.account) return
-
       walletNetworkModel.activateWalletFx({
         connector: wallet.connector,
       })

@@ -34,9 +34,8 @@ export const CanDemo: React.FC<CanDemoProps> = (props) => {
     }
 
     try {
-      await openDemoAccessDialog({
-        onConfirm: () => authModel.logoutFx(),
-      })
+      await openDemoAccessDialog()
+      await authModel.logoutFx()
 
       try {
         const wallet = await openWalletList()
