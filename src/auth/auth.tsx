@@ -21,9 +21,7 @@ export type AuthProps = {
 export const Auth: React.VFC<AuthProps> = (props) => {
   const [openWalletList] = useWalletList()
   const [openChangeNetworkDialog] = useDialog(AuthChangeNetworkDialog)
-  const [openSignMessageDialog] = useDialog(
-    AuthSignMessageDialog
-  )
+  const [openSignMessageDialog] = useDialog(AuthSignMessageDialog)
 
   const handleConnect = async () => {
     try {
