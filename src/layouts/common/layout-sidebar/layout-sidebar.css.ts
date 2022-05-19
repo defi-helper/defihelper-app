@@ -112,8 +112,6 @@ export const socailLinkHidden = style({
 })
 
 export const socialIcon = style({
-  width: 20,
-  height: 20,
   margin: '0 6px',
 })
 

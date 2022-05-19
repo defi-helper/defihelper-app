@@ -113,7 +113,7 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
         </div>
       )}
       <div className={clsx(styles.social, props.hidden && styles.socialHidden)}>
-        {SOCIAL_LINKS.map((link) => (
+        {SOCIAL_LINKS.map(({ width = 20, height = 20, ...link }) => (
           <Link
             key={link.icon}
             href={link.link}
@@ -123,7 +123,12 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
               props.hidden && styles.socailLinkHidden
             )}
           >
-            <Icon icon={link.icon} className={styles.socialIcon} />
+            <Icon
+              icon={link.icon}
+              width={width}
+              height={height}
+              className={styles.socialIcon}
+            />
           </Link>
         ))}
       </div>
