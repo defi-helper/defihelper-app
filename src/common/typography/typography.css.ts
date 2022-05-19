@@ -7,6 +7,7 @@ export const root = style({
   fontFamily: 'inherit',
   color: 'currentColor',
   fontWeight: 'normal',
+  textDecoration: 'none',
 })
 
 export const fontFamilies = styleVariants({
