@@ -100,9 +100,12 @@ const WALLET_MAP = new Map([
 ])
 
 const NUM = 1 + '0'.repeat(18)
+
+const BLOCK = '13.3'
+
 const BLOCK_PER_DAY = bignumberUtils.div(
   bignumberUtils.mul(bignumberUtils.mul(24, 60), 60),
-  '13.3'
+  BLOCK
 )
 const GOVERNOR_TOKEN =
   contracts[config.DEFAULT_CHAIN_ID].GovernanceToken.address
@@ -227,7 +230,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
   const dropEnd = bignumberUtils.mul(
     bignumberUtils.minus(periodFinish.value, currentBlockNumber.value),
-    BLOCK_PER_DAY
+    BLOCK
   )
   return (
     <AppLayout>
@@ -242,11 +245,11 @@ export const Vesting: React.VFC<VestingProps> = () => {
               {isOwner.value && !isOwner.loading && (
                 <>
                   <div className={styles.row}>
-                    <Typography variant="body2" className={styles.label}>
+                    <Typography variant="body3" className={styles.label}>
                       Tokens left
                     </Typography>
                     <Typography
-                      variant="h4"
+                      variant="body2"
                       transform="uppercase"
                       family="mono"
                     >
@@ -254,11 +257,11 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     </Typography>
                   </div>
                   <div className={styles.row}>
-                    <Typography variant="body2" className={styles.label}>
+                    <Typography variant="body3" className={styles.label}>
                       Claimable tokens
                     </Typography>
                     <Typography
-                      variant="h4"
+                      variant="body2"
                       transform="uppercase"
                       family="mono"
                     >
@@ -269,11 +272,11 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     </Typography>
                   </div>
                   <div className={styles.row}>
-                    <Typography variant="body2" className={styles.label}>
+                    <Typography variant="body3" className={styles.label}>
                       Drop rate
                     </Typography>
                     <Typography
-                      variant="h4"
+                      variant="body2"
                       transform="uppercase"
                       family="mono"
                     >
@@ -281,11 +284,11 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     </Typography>
                   </div>
                   <div className={styles.row}>
-                    <Typography variant="body2" className={styles.label}>
+                    <Typography variant="body3" className={styles.label}>
                       Vesting end
                     </Typography>
                     <Typography
-                      variant="h4"
+                      variant="body2"
                       transform="uppercase"
                       family="mono"
                     >
@@ -301,13 +304,13 @@ export const Vesting: React.VFC<VestingProps> = () => {
                 </>
               )}
               {!isOwner.value && !isOwner.loading && (
-                <Typography variant="body2">
+                <Typography variant="body3">
                   you&apos;re not the owner
                 </Typography>
               )}
             </>
           ) : (
-            <Typography variant="body2">Wrong address</Typography>
+            <Typography variant="body3">Wrong address</Typography>
           )}
         </Paper>
       </WalletConnect>
