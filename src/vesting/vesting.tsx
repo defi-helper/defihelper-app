@@ -1,4 +1,4 @@
-import { useAsyncFn, useAsyncRetry } from 'react-use'
+import { useAsyncFn, useAsyncRetry, useInterval } from 'react-use'
 import { ethers } from 'ethers'
 import { useMemo } from 'react'
 import contracts from '@defihelper/networks/contracts.json'
@@ -91,12 +91,21 @@ const WALLET_MAP = new Map([
       address: '0x950120715aB48f9c9f7b91893C4CAe4983733b82',
     },
   ],
+  [
+    '0xdD52F3b42191c6A95630a949b8883c2e173bD78C'.toLowerCase(), // DEMO RINKEBY
+    {
+      address: '0x28Fb0B64112F69b3d93ed250e8ae0fe7a22e79fD',
+    },
+  ],
 ])
 
 const NUM = 1 + '0'.repeat(18)
+
+const BLOCK = '13.3'
+
 const BLOCK_PER_DAY = bignumberUtils.div(
   bignumberUtils.mul(bignumberUtils.mul(24, 60), 60),
-  '13.3'
+  BLOCK
 )
 const GOVERNOR_TOKEN =
   contracts[config.DEFAULT_CHAIN_ID].GovernanceToken.address
@@ -199,7 +208,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
       await vestingContract.estimateGas.claim()
     )
 
-    const transactionReceipt = vestingContract.claim({
+    const transactionReceipt = await vestingContract.claim({
       gasLimit,
     })
 
@@ -221,8 +230,17 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
   const dropEnd = bignumberUtils.mul(
     bignumberUtils.minus(periodFinish.value, currentBlockNumber.value),
-    BLOCK_PER_DAY
+    BLOCK
   )
+
+  useInterval(() => {
+    rate.retry()
+    earned.retry()
+    periodFinish.retry()
+    currentBlockNumber.retry()
+    balanceOf.retry()
+  }, 15000)
+
   return (
     <AppLayout>
       <WalletConnect fallback={<Button>Connect</Button>}>
@@ -236,11 +254,11 @@ export const Vesting: React.VFC<VestingProps> = () => {
               {isOwner.value && !isOwner.loading && (
                 <>
                   <div className={styles.row}>
-                    <Typography variant="body2" className={styles.label}>
+                    <Typography variant="body3" className={styles.label}>
                       Tokens left
                     </Typography>
                     <Typography
-                      variant="h4"
+                      variant="body2"
                       transform="uppercase"
                       family="mono"
                     >
@@ -248,11 +266,11 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     </Typography>
                   </div>
                   <div className={styles.row}>
-                    <Typography variant="body2" className={styles.label}>
+                    <Typography variant="body3" className={styles.label}>
                       Claimable tokens
                     </Typography>
                     <Typography
-                      variant="h4"
+                      variant="body2"
                       transform="uppercase"
                       family="mono"
                     >
@@ -263,11 +281,11 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     </Typography>
                   </div>
                   <div className={styles.row}>
-                    <Typography variant="body2" className={styles.label}>
+                    <Typography variant="body3" className={styles.label}>
                       Drop rate
                     </Typography>
                     <Typography
-                      variant="h4"
+                      variant="body2"
                       transform="uppercase"
                       family="mono"
                     >
@@ -275,11 +293,11 @@ export const Vesting: React.VFC<VestingProps> = () => {
                     </Typography>
                   </div>
                   <div className={styles.row}>
-                    <Typography variant="body2" className={styles.label}>
+                    <Typography variant="body3" className={styles.label}>
                       Vesting end
                     </Typography>
                     <Typography
-                      variant="h4"
+                      variant="body2"
                       transform="uppercase"
                       family="mono"
                     >
@@ -295,13 +313,13 @@ export const Vesting: React.VFC<VestingProps> = () => {
                 </>
               )}
               {!isOwner.value && !isOwner.loading && (
-                <Typography variant="body2">
+                <Typography variant="body3">
                   you&apos;re not the owner
                 </Typography>
               )}
             </>
           ) : (
-            <Typography variant="body2">Wrong address</Typography>
+            <Typography variant="body3">Wrong address</Typography>
           )}
         </Paper>
       </WalletConnect>
