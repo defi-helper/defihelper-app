@@ -271,9 +271,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
                       transform="uppercase"
                       family="mono"
                     >
-                      ~
-                      {bignumberUtils.format(bignumberUtils.mul(dropRate, 100))}{' '}
-                      dfh per day
+                      ~{bignumberUtils.format(dropRate)} dfh per day
                     </Typography>
                   </div>
                   <div className={styles.row}>
