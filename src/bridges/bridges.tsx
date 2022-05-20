@@ -10,6 +10,7 @@ import arbitrumBridge from '~/assets/images/arbitrum-bridge.png'
 import gnosisBridge from '~/assets/images/gnosis-bridge.png'
 import avalancheBridge from '~/assets/images/avalanche-bridge.png'
 import fantomBridge from '~/assets/images/fantom-bridge.png'
+import { Head } from '~/common/head'
 import * as styles from './bridges.css'
 
 export type BridgesProps = unknown
@@ -55,6 +56,10 @@ const BRIDGES = [
 export const Bridges: React.VFC<BridgesProps> = () => {
   return (
     <AppLayout title="Bridges">
+      <Head title="Bridges" />
+      <div className={styles.header}>
+        <Typography variant="h3">Bridges</Typography>
+      </div>
       <ul className={styles.list}>
         {BRIDGES.map((bridge) => (
           <li key={bridge.title}>

@@ -14,7 +14,7 @@ import { createComponent } from '~/common/create-component'
 import * as styles from './protocol-card.css'
 import { ProtocolListMetricsQuery } from '~/api/_generated-types'
 import { Loader } from '~/common/loader'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 
 export type ProtocolCardProps = {
   onFavorite?: () => void

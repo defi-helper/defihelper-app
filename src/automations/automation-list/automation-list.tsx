@@ -26,7 +26,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
 import { pluralize } from '~/common/pluralize'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 
 export type AutomationListProps = unknown
 

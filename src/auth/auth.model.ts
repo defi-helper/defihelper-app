@@ -235,34 +235,41 @@ guard({
   target: toastsService.info.prepend(() => 'Wallet already added!'),
 })
 
-export const openVideoDialogFx = authDomain.createEffect(
-  (fn: () => Promise<unknown>) => fn()
-)
-
 type Payload = {
   openVideoDialog: () => Promise<unknown>
   openMergeWalletsDialog: () => Promise<unknown>
+  openAuthSignMessageDialog: () => Promise<unknown>
+  closeAuthSignMessageDialog: () => void
 }
 
 export const open = authDomain.createEvent<Payload>()
 export const close = authDomain.createEvent()
 
 export const $auth = authDomain
-  .createStore<{
-    openVideoDialog: () => Promise<unknown>
-    openMergeWalletsDialog: () => Promise<unknown>
-  } | null>(null)
+  .createStore<Payload | null>(null)
   .on(open, (_, payload) => payload)
   .reset(close)
+
+const openModalFx = authDomain.createEffect((modal: () => Promise<unknown>) =>
+  modal()
+)
+
+const closeModalFx = authDomain.createEffect((fn: () => void) => fn())
+
+sample({
+  clock: guard({
+    source: $auth,
+    clock: walletNetworkModel.signMessage,
+    filter: (modal): modal is Payload => Boolean(modal),
+  }),
+  fn: ({ openAuthSignMessageDialog }) => openAuthSignMessageDialog,
+  target: openModalFx,
+})
 
 sample({
   clock: open,
   target: fetchUserFx,
 })
-
-export const mergeWalletsDialogFx = authDomain.createEffect(
-  (fn: () => Promise<unknown>) => fn()
-)
 
 sample({
   clock: guard({
@@ -276,14 +283,24 @@ sample({
     filter: (auth): auth is Payload => Boolean(auth),
   }),
   fn: ({ openMergeWalletsDialog }) => openMergeWalletsDialog,
-  target: mergeWalletsDialogFx,
+  target: openModalFx,
+})
+
+sample({
+  clock: guard({
+    source: $auth,
+    clock: [signedUserWaves, signedUserEthereum],
+    filter: (modal): modal is Payload => Boolean(modal),
+  }),
+  fn: ({ closeAuthSignMessageDialog }) => closeAuthSignMessageDialog,
+  target: closeModalFx,
 })
 
 guard({
   source: $signedMessageEthereum.map((store) =>
     store ? { ...store, merge: true } : null
   ),
-  clock: mergeWalletsDialogFx.done,
+  clock: openModalFx.done,
   filter: (
     source
   ): source is Omit<AuthEthereumInputType, 'merge'> & { merge: boolean } =>
@@ -295,7 +312,7 @@ guard({
   source: $signedMessageWaves.map((store) =>
     store ? { ...store, merge: true } : null
   ),
-  clock: mergeWalletsDialogFx.done,
+  clock: openModalFx.done,
   filter: (
     source
   ): source is Omit<AuthWavesInputType, 'merge'> & { merge: boolean } =>
@@ -314,7 +331,7 @@ sample({
     },
   }),
   fn: ([{ openVideoDialog }]) => openVideoDialog,
-  target: openVideoDialogFx,
+  target: openModalFx,
 })
 
 guard({

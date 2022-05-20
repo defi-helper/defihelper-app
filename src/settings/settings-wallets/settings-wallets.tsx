@@ -29,7 +29,7 @@ import { useWalletConnect } from '~/wallets/wallet-connect'
 import { authModel } from '~/auth'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 
 export type SettingsWalletsProps = {
   className?: string

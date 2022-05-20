@@ -1,12 +1,12 @@
 import React, { MouseEventHandler } from 'react'
 import { useDialog } from '~/common/dialog'
-import { useAbility } from '../auth.ability'
-import { AuthDemoAccessDialog } from './auth-demo-access-dialog'
+import { useAbility } from './auth.ability'
+import { AuthDemoAccessDialog } from './common/auth-demo-access-dialog'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { toastsService } from '~/toasts'
 import { UnsupportedChainError } from '~/wallets/common/unsupported-chain'
 import { useWalletList } from '~/wallets/wallet-list'
-import { AuthChangeNetworkDialog } from '.'
+import { AuthChangeNetworkDialog } from './common'
 import * as authModel from '~/auth/auth.model'
 
 export type CanDemoProps = {

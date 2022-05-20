@@ -28,7 +28,7 @@ import { Loader } from '~/common/loader'
 import { Dropdown } from '~/common/dropdown'
 import * as model from './portfolio-wallets.model'
 import * as styles from './portfolio-wallets.css'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 
 export type PortfolioWalletsProps = {
   className?: string

@@ -13,7 +13,7 @@ import { CircularProgress } from '~/common/circular-progress'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { networksConfig } from '~/networks-config'
 import * as styles from './staking-automates-contract-card.css'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 
 export type StakingAutomatesContractCardProps = {
   className?: string

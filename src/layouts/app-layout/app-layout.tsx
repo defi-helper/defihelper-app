@@ -83,8 +83,6 @@ const MENU: MenuItem[] = [
     title: 'Bridges',
     path: paths.bridges,
     icon: 'bridges',
-    subject: 'User',
-    can: 'read',
   },
 ]
 
