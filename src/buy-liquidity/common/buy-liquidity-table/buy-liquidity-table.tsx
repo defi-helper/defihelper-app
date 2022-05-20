@@ -12,6 +12,7 @@ import { Link } from '~/common/link'
 import { Loader } from '~/common/loader'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
+import { networksConfig } from '~/networks-config'
 import * as styles from './buy-liquidity-table.css'
 
 type Contracts = Exclude<
@@ -133,6 +134,14 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                           className={styles.contractCardName}
                         >
                           <span className={styles.contractCardIcons}>
+                            {networksConfig[contract.network]?.icon && (
+                              <Icon
+                                icon={networksConfig[contract.network].icon}
+                                width="20"
+                                height="20"
+                                className={styles.contractNetworkIcon}
+                              />
+                            )}
                             {isEmpty(logoUrls) ? (
                               <Paper className={styles.contractCardIcon} />
                             ) : (

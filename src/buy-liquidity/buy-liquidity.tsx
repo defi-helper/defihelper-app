@@ -54,6 +54,7 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
 
   const protocolListLoading = useStore(model.fetchProtocolsFx.pending)
   const contractListLoading = useStore(model.fetchContractsFx.pending)
+  const protocolSelectLoading = useStore(model.fetchProtocolsSelectFx.pending)
 
   const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
@@ -224,6 +225,12 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
             </Button>
           }
         >
+          {protocolSelectLoading && isEmpty(protocolsSelect) && (
+            <SelectOption disabled>Loading...</SelectOption>
+          )}
+          {!protocolSelectLoading && isEmpty(protocolsSelect) && (
+            <SelectOption disabled>No protocols found</SelectOption>
+          )}
           {protocolsSelect.map((protocol) => (
             <SelectOption
               value={protocol.id}

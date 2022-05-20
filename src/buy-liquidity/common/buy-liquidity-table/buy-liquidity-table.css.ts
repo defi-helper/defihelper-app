@@ -245,6 +245,10 @@ export const contractCardIcon = style({
   },
 })
 
+export const contractNetworkIcon = style({
+  marginRight: 16,
+})
+
 export const contractCardTextRow = style({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
