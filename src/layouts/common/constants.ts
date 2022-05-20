@@ -1,4 +1,11 @@
-export const SOCIAL_LINKS = [
+import { IconProps } from '~/common/icon'
+
+export const SOCIAL_LINKS: Array<{
+  link: string
+  icon: IconProps['icon']
+  width?: number
+  height?: number
+}> = [
   {
     link: 'https://defihelper.medium.com/',
     icon: 'medium',
@@ -19,4 +26,10 @@ export const SOCIAL_LINKS = [
     link: 'https://discord.gg/2sT3bmjPhf',
     icon: 'discord',
   },
-] as const
+  {
+    link: 'https://www.youtube.com/channel/UCLmBfSUb2Ip88W9jlxwQzgw',
+    icon: 'youtube',
+    width: 29,
+    height: 20,
+  },
+]

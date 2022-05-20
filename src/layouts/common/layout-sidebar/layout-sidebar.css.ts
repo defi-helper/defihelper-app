@@ -83,7 +83,6 @@ export const spacer = style({
 })
 
 export const social = style({
-  minHeight: 52,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -112,8 +111,6 @@ export const socailLinkHidden = style({
 })
 
 export const socialIcon = style({
-  width: 20,
-  height: 20,
   margin: '0 6px',
 })
 
@@ -122,27 +119,5 @@ export const switchers = style({
   alignItems: 'center',
   gridTemplateColumns: 'repeat(auto-fit, minmax(20px, 1fr))',
   gap: 16,
-})
-
-export const govButton = style({
-  borderColor: theme.colors.border,
-  minHeight: 32,
-})
-
-export const logout = style({
-  fontFamily: theme.fonts.mono,
-  textTransform: 'uppercase',
-  fontSize: 14,
-  lineHeight: '20px',
-  opacity: 0.64,
-  transition: 'opacity .3s ease-in-out',
-  marginTop: 16,
-
-  '@media': {
-    [theme.mediaQueries.hover()]: {
-      ':hover': {
-        opacity: 1,
-      },
-    },
-  },
+  marginBottom: 16,
 })

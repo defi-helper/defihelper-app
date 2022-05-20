@@ -178,12 +178,18 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
           >
             {governanceDetail.state}
           </Chip>
-          {[
+          {([
             GovProposalStateEnum.Defeated,
             GovProposalStateEnum.Executed,
             GovProposalStateEnum.Expired,
             GovProposalStateEnum.Succeeded,
-          ].includes(governanceDetail.state) && (
+          ].includes(governanceDetail.state) ||
+            (receipt &&
+              [
+                GovReceiptSupportEnum.For,
+                GovReceiptSupportEnum.Abstain,
+                GovReceiptSupportEnum.Against,
+              ].includes(receipt.support))) && (
             <div className={clsx(styles.voteInfo, styles.mb32)}>
               <GovernanceVoteInfo
                 variant="for"

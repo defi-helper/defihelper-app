@@ -7,10 +7,10 @@ import { paths } from '~/paths'
 import { LayoutSidebar, LayoutContainer, LayoutBreadcrumbs } from '../common'
 import { authModel, useAbility } from '~/auth'
 import { ButtonBase } from '~/common/button-base'
-import { Icon } from '~/common/icon'
+import { Icon, IconProps } from '~/common/icon'
 import { useBodyScrollLock } from '~/common/hooks'
-import * as styles from './app-layout.css'
 import { SettingsTelegram } from '~/settings/settings-telegram'
+import * as styles from './app-layout.css'
 
 export type AppLayoutProps = {
   title?: React.ReactNode
@@ -20,14 +20,7 @@ export type AppLayoutProps = {
 type MenuItem = {
   title: string
   path: string
-  icon:
-    | 'home'
-    | 'grid'
-    | 'energy'
-    | 'check'
-    | 'settings'
-    | 'affilate'
-    | 'notification'
+  icon: IconProps['icon']
   subject?: 'User'
   can?: 'read'
 }
@@ -47,6 +40,13 @@ const MENU: MenuItem[] = [
     title: 'Automations',
     path: paths.automations.list,
     icon: 'energy',
+  },
+  {
+    title: 'Buy LP',
+    path: paths.buyLp,
+    icon: 'automation',
+    subject: 'User',
+    can: 'read',
   },
   {
     title: 'Vote',
@@ -95,10 +95,6 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
     setHide(!hidden)
   }
 
-  const handleLogout = () => {
-    authModel.logoutFx()
-  }
-
   const handleToggleDemo = () => {
     authModel.logoutFx()
 
@@ -126,7 +122,6 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
           showDemoSwitcher={user?.role !== 'user'}
           menu={menu}
           onToggleDemo={handleToggleDemo}
-          onLogout={user ? handleLogout : undefined}
           hidden={hidden}
           isDemo={user?.role === 'demo'}
         >
@@ -162,7 +157,6 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
             showDemoSwitcher={user?.role !== 'user'}
             menu={menu}
             onToggleDemo={handleToggleDemo}
-            onLogout={user ? handleLogout : undefined}
             isDemo={user?.role === 'demo'}
             hidden={false}
             className={styles.sidebarMobileInner}

@@ -41,7 +41,7 @@ export const ReferralCalculator: React.VFC<ReferralCalculatorProps> = () => {
             defihelper.io/5ecf40b805b5
           </Typography>
           <Button
-            color="secondary"
+            color="green"
             variant="contained"
             className={styles.cardButton}
           >
@@ -161,7 +161,7 @@ export const ReferralCalculator: React.VFC<ReferralCalculatorProps> = () => {
               </Typography>
             </div>
             <div className={styles.estimatedButton}>
-              <Button color="secondary">about Referral program</Button>
+              <Button color="green">about Referral program</Button>
             </div>
           </div>
         </Paper>

@@ -1,13 +1,12 @@
-import { NavLink, Link as ReactRouerLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import clsx from 'clsx'
 
 import { Link } from '~/common/link'
 import { paths } from '~/paths'
 import { ButtonBase } from '~/common/button-base'
-import { Button } from '~/common/button'
 import { config } from '~/config'
 import { LayoutThemeSwitcher } from '~/layouts/common/layout-theme-switcher'
-import { Icon } from '~/common/icon'
+import { Icon, IconProps } from '~/common/icon'
 import { SOCIAL_LINKS } from '../constants'
 import { Dropdown } from '~/common/dropdown'
 import * as styles from './layout-sidebar.css'
@@ -16,14 +15,7 @@ import { LayoutDemoSwitcher } from '../layout-demo-switcher'
 type MenuItem = {
   title: string
   path: string
-  icon:
-    | 'home'
-    | 'grid'
-    | 'energy'
-    | 'notification'
-    | 'check'
-    | 'settings'
-    | 'affilate'
+  icon: IconProps['icon']
   exact?: boolean
 }
 
@@ -31,7 +23,6 @@ export type LayoutHeaderProps = {
   menu: MenuItem[]
   showDemoSwitcher: boolean
   isDemo: boolean
-  onLogout?: () => void
   onToggleDemo?: () => void
   hidden?: boolean
   className?: string
@@ -120,7 +111,7 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
         </div>
       )}
       <div className={clsx(styles.social, props.hidden && styles.socialHidden)}>
-        {SOCIAL_LINKS.map((link) => (
+        {SOCIAL_LINKS.map(({ width = 20, height = 20, ...link }) => (
           <Link
             key={link.icon}
             href={link.link}
@@ -130,26 +121,15 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
               props.hidden && styles.socailLinkHidden
             )}
           >
-            <Icon icon={link.icon} className={styles.socialIcon} />
+            <Icon
+              icon={link.icon}
+              width={width}
+              height={height}
+              className={styles.socialIcon}
+            />
           </Link>
         ))}
       </div>
-      {!props.hidden && (
-        <Button
-          as={ReactRouerLink}
-          to={paths.governance.list}
-          variant="outlined"
-          size="small"
-          className={styles.govButton}
-        >
-          Governance
-        </Button>
-      )}
-      {props.onLogout && !props.hidden && (
-        <ButtonBase className={styles.logout} onClick={props.onLogout}>
-          Log Out
-        </ButtonBase>
-      )}
     </aside>
   )
 }
