@@ -218,7 +218,7 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                   children: (
                     <>
                       {child.props.children}{' '}
-                      {props.multiple && (
+                      {props.multiple && !child.props.disabled && (
                         <Checkbox
                           checked={localValueArr.includes(child.props.value)}
                           onChange={handleClickOnOption(child)}
