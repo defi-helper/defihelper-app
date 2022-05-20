@@ -18,7 +18,10 @@ export const getAPIClient = () => {
     throw new Error(WS_API_URLERROR_MESSAGE)
   }
 
-  const wsClient = new SubscriptionClient(wsUrl, { reconnect: true })
+  const wsClient = new SubscriptionClient(wsUrl, {
+    reconnect: true,
+    minTimeout: 5000,
+  })
 
   const sid = sidUtils.get()
 

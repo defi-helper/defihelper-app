@@ -12,7 +12,7 @@ import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { MarkdownRender } from '~/common/markdown-render'
 import * as styles from './roadmap-card.css'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 
 export type RoadmapCardProps = Proposal & {
   onEdit?: () => void

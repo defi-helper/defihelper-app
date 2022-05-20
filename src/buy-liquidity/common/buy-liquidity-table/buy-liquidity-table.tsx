@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 
 import { BuyLiquidityProtocolsQuery, BuyLiquidityContractsQuery } from '~/api'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'

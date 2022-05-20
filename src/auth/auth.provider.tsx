@@ -4,7 +4,11 @@ import { useLocalStorage } from 'react-use'
 
 import { useDialog } from '~/common/dialog'
 import { AbilityContext, buildAbilityFor } from './auth.ability'
-import { AuthVideoDialog, AuthMergeWallets } from './common'
+import {
+  AuthVideoDialog,
+  AuthMergeWallets,
+  AuthSignMessageDialog,
+} from './common'
 import * as model from './auth.model'
 
 export type AuthProviderProps = unknown
@@ -16,6 +20,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
 
   const [openVideoDialog] = useDialog(AuthVideoDialog)
   const [openMergeWalletsDialog] = useDialog(AuthMergeWallets)
+  const [openAuthSignMessageDialog, closeAuthSignMessageDialog] = useDialog(
+    AuthSignMessageDialog
+  )
 
   const ability = useMemo(() => buildAbilityFor(user?.role), [user])
 
@@ -37,6 +44,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
     model.open({
       openVideoDialog: handleOpenVideoDialog,
       openMergeWalletsDialog,
+      openAuthSignMessageDialog,
+      closeAuthSignMessageDialog,
     })
 
     return () => model.close()

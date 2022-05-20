@@ -6,7 +6,7 @@ import { Typography } from '~/common/typography'
 import { cutAccount } from '~/common/cut-account'
 import * as styles from './settings-integration-card.css'
 import { Button } from '~/common/button'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 
 export type SettingsWalletCardProps = {
   className?: string

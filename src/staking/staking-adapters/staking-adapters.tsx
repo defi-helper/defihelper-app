@@ -27,7 +27,7 @@ import { GovernanceStake, GovernanceUnstake } from '~/common/load-adapter'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 
 export type StakingAdaptersProps = {
   className?: string

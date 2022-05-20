@@ -22,7 +22,7 @@ import { paths } from '~/paths'
 import { pluralize } from '~/common/pluralize'
 import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-card.css'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 
 export type AutomationCardProps = {
   onEdit?: () => void
