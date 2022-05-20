@@ -38,6 +38,7 @@ import { Vesting } from '~/vesting'
 import { Monitoring } from '~/monitoring'
 import { BuyLiquidity } from '~/buy-liquidity'
 import { DemoForward } from '~/demo-forward'
+import { Bridges } from '~/bridges'
 
 export type RouterProps = unknown
 
@@ -140,6 +141,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.monitoring}>
           <Monitoring />
         </PrivateRoute>
+        <Route path={paths.bridges}>
+          <Bridges />
+        </Route>
         <Route>
           <NotFound />
         </Route>

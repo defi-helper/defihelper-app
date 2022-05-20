@@ -79,6 +79,13 @@ const MENU: MenuItem[] = [
     subject: 'User',
     can: 'read',
   },
+  {
+    title: 'Bridges',
+    path: paths.bridges,
+    icon: 'bridges',
+    subject: 'User',
+    can: 'read',
+  },
 ]
 
 export const AppLayout: React.FC<AppLayoutProps> = (props) => {

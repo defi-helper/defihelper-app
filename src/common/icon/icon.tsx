@@ -80,6 +80,8 @@ import { ReactComponent as ArbitrumIcon } from '~/assets/icons/blockchains/arbit
 import { ReactComponent as CheckboxCheckedIcon } from '~/assets/icons/checkbox-checked.svg'
 import { ReactComponent as CheckboxIcon } from '~/assets/icons/checkbox.svg'
 import { ReactComponent as YoutubeIcon } from '~/assets/icons/youtube.svg'
+import { ReactComponent as LinkBridgeIcon } from '~/assets/icons/link-bridge.svg'
+import { ReactComponent as BridgesIcon } from '~/assets/icons/bridges.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -169,6 +171,8 @@ const ICONS = {
   checkboxChecked: CheckboxCheckedIcon,
   checkbox: CheckboxIcon,
   youtube: YoutubeIcon,
+  linkBridge: LinkBridgeIcon,
+  bridges: BridgesIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {
