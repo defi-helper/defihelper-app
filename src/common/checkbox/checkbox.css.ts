@@ -26,27 +26,26 @@ export const input = style({
 })
 
 export const checkbox = style({
-  opacity: 0.8,
-  border: '2px solid currentColor',
-  borderRadius: 4,
-  width: 16,
-  height: 16,
   display: 'inline-block',
   position: 'relative',
-
-  ':before': {
-    content: '""',
-    position: 'absolute',
-    top: 3,
-    left: 3,
-    bottom: 3,
-    right: 3,
-    opacity: 0,
-    background: 'currentcolor',
-    borderRadius: 'inherit',
-  },
 })
 
-globalStyle(`${input}:checked ~ ${checkbox}:before`, {
-  opacity: 1,
+export const checkboxChecked = style({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  opacity: 0,
 })
+
+export const checked = style({})
+
+globalStyle(`${input}:checked ~ ${checkbox}, ${checked} ${checkbox}`, {
+  opacity: 0,
+})
+
+globalStyle(
+  `${input}:checked ~ ${checkboxChecked}, ${checked} ${checkboxChecked}`,
+  {
+    opacity: 1,
+  }
+)

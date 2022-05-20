@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -6,12 +6,17 @@ export const header = style({
   display: 'none',
   alignItems: 'center',
   marginBottom: 32,
+  gap: 24,
 
   '@media': {
     [theme.mediaQueries.md()]: {
       display: 'flex',
     },
   },
+})
+
+export const subtitle = style({
+  marginBottom: 24,
 })
 
 export const searchButton = style({
@@ -32,9 +37,9 @@ export const createMobile = style({
   borderRadius: 6,
 })
 
-export const input = style({
-  maxWidth: 211,
+export const year = style({
   marginLeft: 'auto',
+  color: theme.colors.common.pink3,
 })
 
 export const addButton = style({
@@ -48,7 +53,54 @@ export const loader = style({
   justifyContent: 'center',
 })
 
-export const select = style({
+export const inputs = style({
+  display: 'flex',
+  alignItems: 'center',
   marginBottom: 28,
+  gap: 24,
+})
+
+export const input = style({
   maxWidth: 200,
+  width: '100%',
+})
+
+export const select = input
+
+globalStyle(`${select} > div > div, ${select} > div > div > svg`, {
+  background: theme.colors.background,
+})
+
+export const search = style([
+  input,
+  {
+    display: 'none',
+
+    '@media': {
+      [theme.mediaQueries.md()]: {
+        display: 'block',
+      },
+    },
+  },
+])
+
+export const mobileTabs = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 14,
+})
+
+export const inacitveTab = style({
+  color: theme.colors.textColorGrey,
+  opacity: 0.5,
+  transition: 'color .3s ease-in-out, opacity .3s ease-in-out',
+
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      ':hover': {
+        opacity: 1,
+        color: theme.colors.textColorPrimary,
+      },
+    },
+  },
 })

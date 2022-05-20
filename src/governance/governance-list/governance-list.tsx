@@ -87,13 +87,33 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
   }
 
   return (
-    <AppLayout>
+    <AppLayout
+      title={
+        <div className={styles.mobileTabs}>
+          <Typography
+            variant="inherit"
+            as={ReactRouterLink}
+            to={paths.roadmap.list}
+            className={styles.inacitveTab}
+          >
+            Vote
+          </Typography>
+          <div>Governance</div>
+        </div>
+      }
+    >
       <Head title="Governance" />
       <div className={styles.root}>
         <div className={styles.header}>
-          <Typography variant="h3" family="square">
-            Governance
+          <Typography
+            variant="h3"
+            as={ReactRouterLink}
+            to={paths.roadmap.list}
+            className={styles.inacitveTab}
+          >
+            Vote
           </Typography>
+          <Typography variant="h3">Governance</Typography>
           <Paper radius={8} className={styles.votes}>
             <Typography variant="body2" as="span">
               {votesLoading ? (
@@ -134,7 +154,7 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
           <WalletConnect
             fallback={
               <Button variant="contained" color="blue">
-                <Icon icon="plus" height="24" width="24" />
+                + New proposal
               </Button>
             }
             blockchain="ethereum"
@@ -146,10 +166,14 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
               color="blue"
               to={paths.governance.create}
             >
-              <Icon icon="plus" height="24" width="24" />
+              + New proposal
             </Button>
           </WalletConnect>
         </div>
+        <Typography variant="h4" className={styles.subtitle}>
+          Governance — it is the main tool for protocol management, control of
+          the treasure and allocation of tokens
+        </Typography>
         {loading && (
           <div className={styles.loader}>
             <Loader height="36" />

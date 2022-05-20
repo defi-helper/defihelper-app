@@ -17,3 +17,7 @@ export const section = style({
     },
   },
 })
+
+export const title = style({
+  marginBottom: 32,
+})

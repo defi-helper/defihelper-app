@@ -3,16 +3,20 @@ import { RefObject, useEffect, useRef } from 'react'
 type AnyEvent = MouseEvent | TouchEvent
 
 export function useClickAway<T extends HTMLElement = HTMLElement>(
-  ref: RefObject<T>,
-  handler: (event: AnyEvent) => void
+  ref1: RefObject<T>,
+  handler: (event: AnyEvent) => void,
+  ref2?: RefObject<T>
 ): void {
   const handlerRef = useRef(handler)
 
   useEffect(() => {
     const listener = (event: AnyEvent) => {
-      const el = ref?.current
+      const el = ref1?.current
+      const el2 = ref2?.current
 
-      if (!el || el.contains(event.target as Node)) {
+      const target = event.target as Node
+
+      if (!el || el.contains(target) || el2?.contains(target)) {
         return
       }
 
@@ -24,5 +28,5 @@ export function useClickAway<T extends HTMLElement = HTMLElement>(
     return () => {
       document.removeEventListener('click', listener)
     }
-  }, [ref])
+  }, [ref1, ref2])
 }
