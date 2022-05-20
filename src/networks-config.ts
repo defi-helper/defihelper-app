@@ -20,6 +20,8 @@ type Network = {
     | 'fantom'
     | 'cronos'
     | 'arbitrum'
+    | 'aurora'
+    | 'moonbeam'
 }
 
 const prodNetworks: Record<string, Network> = {
@@ -86,6 +88,29 @@ const prodNetworks: Record<string, Network> = {
       'https://rpc.moonriver.moonbeam.network',
       'https://rpc.moonriver.moonbeam.network',
     ],
+  },
+  1284: {
+    chainId: 1284,
+    title: 'MoonBeam',
+    explorerUrl: 'https://moonbeam.moonscan.io',
+    coin: 'GLMR',
+    decimals: 18,
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'moonbeam',
+    rpcUrls: [
+      'https://rpc.api.moonbeam.network',
+      'https://rpc.api.moonbeam.network',
+    ],
+  },
+  1313161554: {
+    chainId: 1313161554,
+    title: 'Aurora',
+    explorerUrl: 'https://aurorascan.dev',
+    coin: 'ETH',
+    decimals: 18,
+    blockchain: BlockchainEnum.Ethereum,
+    icon: 'aurora',
+    rpcUrls: ['https://mainnet.aurora.dev', 'https://mainnet.aurora.dev'],
   },
   43114: {
     chainId: 43114,
