@@ -77,6 +77,8 @@ import { ReactComponent as FacebookIcon } from '~/assets/icons/facebook.svg'
 import { ReactComponent as FantomIcon } from '~/assets/icons/blockchains/fantom.svg'
 import { ReactComponent as CronosIcon } from '~/assets/icons/blockchains/cronos.svg'
 import { ReactComponent as ArbitrumIcon } from '~/assets/icons/blockchains/arbitrum.svg'
+import { ReactComponent as MoonbeamIcon } from '~/assets/icons/blockchains/moonbeam.svg'
+import { ReactComponent as AuroraIcon } from '~/assets/icons/blockchains/aurora.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -132,6 +134,8 @@ const ICONS = {
   wavesRegular: WavesRegularIcon,
   ethereumRegular: EthereumRegularIcon,
   bnbRegular: BnbRegularIcon,
+  moonbeam: MoonbeamIcon,
+  aurora: AuroraIcon,
   burger: BurgerIcon,
   close: CloseIcon,
   link: LinkIcon,
