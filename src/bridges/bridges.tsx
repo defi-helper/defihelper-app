@@ -18,12 +18,12 @@ export type BridgesProps = unknown
 const BRIDGES = [
   {
     title: 'BNB Chain bridge',
-    link: 'https://www.bnbchain.world/en/bridge',
+    link: 'https://cbridge.celer.network/',
     icon: bnbBridge,
   },
   {
     title: 'Polygon bridge',
-    link: 'https://wallet.polygon.technology/bridge',
+    link: 'https://wallet.polygon.technology/',
     icon: polygonBridge,
   },
   {
@@ -38,7 +38,7 @@ const BRIDGES = [
   },
   {
     title: 'Gnosis Chain bridge',
-    link: 'https://omni.gnosischain.com/bridge',
+    link: 'https://bridge.xdaichain.com/',
     icon: gnosisBridge,
   },
   {
@@ -48,7 +48,7 @@ const BRIDGES = [
   },
   {
     title: 'Fantom bridge',
-    link: 'https://multichain.org/',
+    link: 'https://app.multichain.org/',
     icon: fantomBridge,
   },
 ]
