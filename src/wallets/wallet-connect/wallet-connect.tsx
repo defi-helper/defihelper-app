@@ -1,6 +1,6 @@
 import { useStore } from 'effector-react'
 import { isValidElement, cloneElement } from 'react'
-import { CanDemo } from '~/auth/common/can-demo'
+import { CanDemo } from '~/auth/can-demo'
 
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
