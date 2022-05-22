@@ -1,5 +1,6 @@
 import { useStore } from 'effector-react'
 import { isValidElement, cloneElement } from 'react'
+import { CanDemo } from '~/auth/common/can-demo'
 
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -28,10 +29,10 @@ export const WalletConnect: React.FC<WalletConnectProps> = (props) => {
     }),
   })
 
-  if (!activeWallet) return fallback
+  if (!activeWallet) return <CanDemo>{fallback}</CanDemo>
 
   if (props.blockchain && activeWallet.blockchain !== props.blockchain) {
-    return fallback
+    return <CanDemo>{fallback}</CanDemo>
   }
 
   const currentWallet = wallets.find((wallet) => {
@@ -51,11 +52,11 @@ export const WalletConnect: React.FC<WalletConnectProps> = (props) => {
     }),
   })
 
-  if (!currentWallet) return newFallback
+  if (!currentWallet) return <CanDemo>{newFallback}</CanDemo>
 
   if (props.blockchain && currentWallet.blockchain !== props.blockchain) {
-    return newFallback
+    return <CanDemo>{newFallback}</CanDemo>
   }
 
-  return <>{props.children}</>
+  return <CanDemo>{props.children}</CanDemo>
 }

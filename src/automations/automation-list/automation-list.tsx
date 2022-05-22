@@ -180,9 +180,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
             </Typography>
           </Paper>
           <WalletConnect fallback={<Button>Buy</Button>}>
-            <CanDemo>
-              <Button onClick={handleBuyProducts}>Buy</Button>
-            </CanDemo>
+            <Button onClick={handleBuyProducts}>Buy</Button>
           </WalletConnect>
           <Input
             placeholder="Search"
