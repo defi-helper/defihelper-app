@@ -201,36 +201,51 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
           sameWidth={sameWidth}
           clickable={props.multiple}
         >
-          {props.header}
-          <div className={styles.dropdownInner}>
-            {Children.map(
-              children,
-              (child) =>
-                isValidElement(child) &&
-                cloneElement(child, {
-                  ...child.props,
-                  onClick: handleClickOnOption(child),
-                  className: clsx(
-                    styles.option,
-                    child.props.className,
-                    localValueArr.includes(child.props.value) && styles.active
-                  ),
-                  children: (
-                    <>
-                      {child.props.children}{' '}
-                      {props.multiple && !child.props.disabled && (
-                        <Checkbox
-                          checked={localValueArr.includes(child.props.value)}
-                          onChange={handleClickOnOption(child)}
-                          className={styles.checkbox}
-                        />
-                      )}
-                    </>
-                  ),
-                })
-            )}
-          </div>
-          {props.footer}
+          {(cb) => (
+            <>
+              {props.header}
+              <div className={styles.dropdownInner}>
+                {Children.map(
+                  children,
+                  (child) =>
+                    isValidElement(child) &&
+                    cloneElement(child, {
+                      ...child.props,
+                      onClick: handleClickOnOption(child),
+                      className: clsx(
+                        styles.option,
+                        child.props.className,
+                        localValueArr.includes(child.props.value) &&
+                          styles.active
+                      ),
+                      children: (
+                        <>
+                          {child.props.children}{' '}
+                          {props.multiple && !child.props.disabled && (
+                            <Checkbox
+                              checked={localValueArr.includes(
+                                child.props.value
+                              )}
+                              onChange={handleClickOnOption(child)}
+                              className={styles.checkbox}
+                            />
+                          )}
+                        </>
+                      ),
+                    })
+                )}
+              </div>
+              {isValidElement(props.footer) &&
+                cloneElement(props.footer, {
+                  ...props.footer.props,
+                  onClick: () => {
+                    if (!isValidElement(props.footer)) return
+                    props.footer?.props.onClick()
+                    cb()
+                  },
+                })}
+            </>
+          )}
         </Dropdown>
       </div>
     )

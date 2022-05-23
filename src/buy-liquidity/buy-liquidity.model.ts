@@ -1,10 +1,19 @@
 import { createEvent } from 'effector'
-import { createEffect, createStore, UnitValue } from 'effector-logger/macro'
+import {
+  createEffect,
+  createStore,
+  UnitValue,
+  createDomain,
+  sample,
+} from 'effector-logger/macro'
 import {
   BuyLiquidityProtocolsQueryVariables,
   BuyLiquidityContractsQueryVariables,
   BuyLiquidityProtocolsSelectQueryVariables,
+  SortOrderEnum,
+  ContractListSortInputTypeColumnEnum,
 } from '~/api'
+import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
 import { buyLiquidityApi } from './common/buy-liquidity.api'
 
 export const resetProtocolsSelect = createEvent()
@@ -66,13 +75,33 @@ export const fetchContractsFx = createEffect(
             buyLiquidity: true,
           },
         },
+        contractSort: [
+          {
+            column: ContractListSortInputTypeColumnEnum.AprYear,
+            order: SortOrderEnum.Desc,
+          },
+        ],
       },
       signal
     )
 )
 
 export const $contracts = createStore<
-  UnitValue<typeof fetchContractsFx.doneData>
+  UnitValue<typeof fetchContractsFx.doneData>['list']
 >([])
-  .on(fetchContractsFx.doneData, (_, payload) => payload)
+  .on(fetchContractsFx.doneData, (state, { list }) => [...state, ...list])
   .reset(resetContracts)
+
+const contractListDomain = createDomain()
+
+export const useInfiniteScrollContracts = createUseInfiniteScroll({
+  domain: contractListDomain,
+  loading: fetchContractsFx.pending,
+  items: $contracts,
+})
+
+sample({
+  clock: fetchContractsFx.doneData,
+  fn: (clock) => clock.count,
+  target: useInfiniteScrollContracts.totalElements,
+})

@@ -76,5 +76,8 @@ export const buyLiquidityApi = {
           },
         }
       )
-      .then(({ data }) => data?.protocol?.contracts.list ?? []),
+      .then(({ data }) => ({
+        list: data?.protocol?.contracts.list ?? [],
+        count: data?.protocol?.contracts.pagination.count ?? 0,
+      })),
 }

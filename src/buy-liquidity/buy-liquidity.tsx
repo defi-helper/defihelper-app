@@ -82,6 +82,8 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
     }
   }, [protocolIds, blockchain])
 
+  const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
+
   useEffect(() => {
     if (!openedProtocol) return
 
@@ -92,11 +94,20 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
       filter: {
         id: openedProtocol,
       },
+      contractPagination: {
+        offset: contractsOffset,
+      },
     })
 
     return () => {
       abortController.abort()
+    }
+  }, [openedProtocol, contractsOffset])
+
+  useEffect(() => {
+    return () => {
       model.resetContracts()
+      model.useInfiniteScrollContracts.reset()
     }
   }, [openedProtocol])
 
@@ -115,7 +126,13 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
   }, [search])
 
   const handleFilterByProtocolId = (event: ChangeEvent<HTMLInputElement>) => {
-    protocolIdsRef.current = event.target.value.split(',').filter(Boolean)
+    const value = event.target.value.split(',').filter(Boolean)
+
+    protocolIdsRef.current = value
+
+    if (isEmpty(value)) {
+      setProtocolIds(value)
+    }
   }
 
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
@@ -165,6 +182,11 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
     }
   }
 
+  const [contractsSentryRef] = model.useInfiniteScrollContracts()
+  const contractsHasNextPage = useStore(
+    model.useInfiniteScrollContracts.hasNextPage
+  )
+
   return (
     <AppLayout title="Buy LP">
       <Head title="Buy LP" />
@@ -194,6 +216,7 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
           placeholder="Choose blockchain"
           className={styles.select}
           onChange={handleChooseBlockchain}
+          clearable
         >
           {Object.entries(BlockchainEnum).map(([title, value]) => (
             <SelectOption value={value} key={title}>
@@ -259,6 +282,8 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
         contracts={contracts}
         contractListLoading={contractListLoading}
         onBuyLpClick={handleBuyLiquidity}
+        contractsSentryRef={contractsSentryRef}
+        contractsHasNextPage={contractsHasNextPage}
       />
     </AppLayout>
   )

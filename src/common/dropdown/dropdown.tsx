@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import clsx from 'clsx'
 import { isValidElement, cloneElement, useRef } from 'react'
 import type { Placement, Modifier } from '@popperjs/core'
@@ -18,9 +17,10 @@ export type DropdownProps = {
   sameWidth?: boolean
   trigger?: 'click' | 'hover'
   clickable?: boolean
+  children: React.ReactNode | ((cb: () => void) => JSX.Element)
 }
 
-export const Dropdown: React.FC<DropdownProps> = (props) => {
+export const Dropdown: React.VFC<DropdownProps> = (props) => {
   if (!isValidElement(props.control) && typeof props.control !== 'function')
     throw new Error('control is not valid')
 
@@ -55,7 +55,7 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
     event?.preventDefault() // clickable protocol
     event?.stopPropagation() // portfolio wallet select
 
-    setReferenceElement(target)
+    setReferenceElement(referenceElement ? null : target)
   }
 
   useClickAway(
@@ -70,6 +70,11 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
     typeof props.control === 'function'
       ? props.control(Boolean(referenceElement))
       : props.control
+
+  const children =
+    typeof props.children === 'function'
+      ? props.children(setReferenceElement.bind(null, null))
+      : props.children
 
   return (
     <>
@@ -90,7 +95,7 @@ export const Dropdown: React.FC<DropdownProps> = (props) => {
             data-open="true"
             className={clsx(styles.dropdown, props.className)}
           >
-            {props.children}
+            {children}
           </Paper>
         </Portal>
       )}
