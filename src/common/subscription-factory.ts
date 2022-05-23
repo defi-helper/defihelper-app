@@ -31,28 +31,25 @@ function useSubscription<
   }
 
   useEffect(() => {
-    const request = {
-      query: options.query,
-      variables: options.variables,
-    }
-
-    const observable = client.createSubscription(request)
-
-    const subscription = observable.subscribe({
-      next: (result) => {
-        callbackRef.current(result as any)
-      },
-      error: (errors) => {
-        callbackRef.current({ errors } as any)
-      },
-      complete: () => {
-        subscription.unsubscribe()
-      },
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
+    // const request = {
+    //   query: options.query,
+    //   variables: options.variables,
+    // }
+    // const observable = client.createSubscription(request)
+    // const subscription = observable.subscribe({
+    //   next: (result) => {
+    //     callbackRef.current(result as any)
+    //   },
+    //   error: (errors) => {
+    //     callbackRef.current({ errors } as any)
+    //   },
+    //   complete: () => {
+    //     subscription.unsubscribe()
+    //   },
+    // })
+    // return () => {
+    //   subscription.unsubscribe()
+    // }
   }, [options.variables]) // eslint-disable-line
   // the effect should be run when component is mounted and unmounted
 }
