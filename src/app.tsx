@@ -25,11 +25,8 @@ export const App: React.VFC = () => {
   useEthereumNetwork()
 
   const matomoCounterConfiguration = createInstance({
-    urlBase: 'https://LINK.TO.DOMAIN',
+    urlBase: 'https://defihelper.matomo.cloud',
     siteId: 1,
-    userId: 'UID76903202', // optional, default value: `undefined`.
-    trackerUrl: 'https://LINK.TO.DOMAIN/tracking.php', // optional, default value: `${urlBase}matomo.php`
-    srcUrl: 'https://LINK.TO.DOMAIN/tracking.js', // optional, default value: `${urlBase}matomo.js`
     disabled: config.IS_DEV, // optional, false by default. Makes all tracking calls no-ops if set to true.
   })
 
@@ -37,7 +34,7 @@ export const App: React.VFC = () => {
     <ErrorBoundary>
       {!config.IS_DEV && (
         <YMInitializer
-          accounts={[31337]}
+          accounts={[86006279]}
           options={{ webvisor: true }}
           version="2"
         />

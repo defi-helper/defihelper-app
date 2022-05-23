@@ -124,7 +124,6 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
     <div className={styles.root}>
       <div className={styles.sidebarDesktop}>
         <LayoutSidebar
-          showDemoSwitcher={user?.role !== 'user'}
           menu={menu}
           onToggleDemo={handleToggleDemo}
           hidden={hidden}
@@ -159,7 +158,6 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
             <Icon icon="close" width="40" height="40" />
           </ButtonBase>
           <LayoutSidebar
-            showDemoSwitcher={user?.role !== 'user'}
             menu={menu}
             onToggleDemo={handleToggleDemo}
             isDemo={user?.role === 'demo'}

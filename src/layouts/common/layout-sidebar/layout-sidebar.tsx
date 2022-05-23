@@ -21,7 +21,6 @@ type MenuItem = {
 
 export type LayoutHeaderProps = {
   menu: MenuItem[]
-  showDemoSwitcher: boolean
   isDemo: boolean
   onToggleDemo?: () => void
   hidden?: boolean
@@ -97,7 +96,7 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
       {!props.hidden && props.children}
       <div className={styles.spacer} />
 
-      {!props.hidden && props.showDemoSwitcher && (
+      {!props.hidden && (
         <div className={styles.switchers}>
           <LayoutDemoSwitcher
             onToggleDemo={props.onToggleDemo}

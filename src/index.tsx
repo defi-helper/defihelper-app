@@ -19,7 +19,7 @@ window.ethers = ethers
 window.axios = cachios
 
 if (!config.IS_DEV) {
-  ReactGA.initialize('UA-000000-01')
+  ReactGA.initialize('UA-210628430')
   TagManager.initialize({
     gtmId: 'GTM-NWWFXMV',
   })
