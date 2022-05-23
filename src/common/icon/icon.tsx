@@ -84,6 +84,7 @@ import { ReactComponent as CheckboxIcon } from '~/assets/icons/checkbox.svg'
 import { ReactComponent as YoutubeIcon } from '~/assets/icons/youtube.svg'
 import { ReactComponent as LinkBridgeIcon } from '~/assets/icons/link-bridge.svg'
 import { ReactComponent as BridgesIcon } from '~/assets/icons/bridges.svg'
+import { ReactComponent as UnknownNetworkIcon } from '~/assets/icons/unknown-network.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -177,6 +178,7 @@ const ICONS = {
   youtube: YoutubeIcon,
   linkBridge: LinkBridgeIcon,
   bridges: BridgesIcon,
+  unknownNetwork: UnknownNetworkIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

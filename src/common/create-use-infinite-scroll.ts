@@ -78,6 +78,7 @@ export const createUseInfiniteScroll = (options: Options) => {
   useScroll.totalElements = totalElements
   useScroll.reset = reset
   useScroll.hasNextPage = $hasNextPage
+  useScroll.offset = $offset
 
   return useScroll
 }

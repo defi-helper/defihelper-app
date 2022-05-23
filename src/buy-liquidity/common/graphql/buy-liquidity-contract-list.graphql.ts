@@ -28,6 +28,9 @@ export const BUY_LIQUIDITY_CONTRACT_LIST = gql`
               alias {
                 logoUrl
               }
+              network
+              address
+              name
             }
           }
           automate {
@@ -42,6 +45,7 @@ export const BUY_LIQUIDITY_CONTRACT_LIST = gql`
             aprWeek
             aprMonth
             aprYear
+            myStaked
           }
         }
         pagination {

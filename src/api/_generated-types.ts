@@ -2831,6 +2831,7 @@ export type UserEventSubscriptionType = {
 
 export type UserListFilterInputType = {
   role?: Maybe<UserRoleEnum>
+  wallet?: Maybe<UserListWalletFilterInputType>
 }
 
 export type UserListPaginationInputType = {
@@ -2855,6 +2856,12 @@ export type UserListSortInputType = {
 export enum UserListSortInputTypeColumnEnum {
   Id = 'id',
   CreatedAt = 'createdAt',
+}
+
+export type UserListWalletFilterInputType = {
+  blockchain?: Maybe<BlockchainFilterInputType>
+  type?: Maybe<WalletBlockchainTypeEnum>
+  search?: Maybe<Scalars['String']>
 }
 
 export type UserMetricChartFilterInputType = {
@@ -4108,14 +4115,17 @@ export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
               > & {
                   tokens: { __typename?: 'ContractTokenLinkType' } & {
                     stake: Array<
-                      { __typename?: 'TokenType' } & {
-                        alias?: Maybe<
-                          { __typename?: 'TokenAlias' } & Pick<
-                            TokenAlias,
-                            'logoUrl'
+                      { __typename?: 'TokenType' } & Pick<
+                        TokenType,
+                        'network' | 'address' | 'name'
+                      > & {
+                          alias?: Maybe<
+                            { __typename?: 'TokenAlias' } & Pick<
+                              TokenAlias,
+                              'logoUrl'
+                            >
                           >
-                        >
-                      }
+                        }
                     >
                   }
                   automate: { __typename?: 'ContractAutomatesType' } & {
@@ -4130,7 +4140,12 @@ export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
                   }
                   metric: { __typename?: 'ContractMetricType' } & Pick<
                     ContractMetricType,
-                    'tvl' | 'aprDay' | 'aprWeek' | 'aprMonth' | 'aprYear'
+                    | 'tvl'
+                    | 'aprDay'
+                    | 'aprWeek'
+                    | 'aprMonth'
+                    | 'aprYear'
+                    | 'myStaked'
                   >
                 }
             >

@@ -2,17 +2,21 @@ import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 
 import { BuyLiquidityProtocolsQuery, BuyLiquidityContractsQuery } from '~/api'
-import { CanDemo } from '~/auth/can-demo'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
+import { ButtonBase } from '~/common/button-base'
 import { cutAccount } from '~/common/cut-account'
+import { useDialog } from '~/common/dialog'
+import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Link } from '~/common/link'
 import { Loader } from '~/common/loader'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
+import { StakingApyDialog } from '~/staking/common'
+import { WalletConnect } from '~/wallets/wallet-connect'
 import * as styles from './buy-liquidity-table.css'
 
 type Contracts = Exclude<
@@ -35,9 +39,14 @@ export type BuyLiquidityTableProps = {
   openedProtocol: string
   protocolListLoading?: boolean
   contractListLoading?: boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  contractsSentryRef: any
+  contractsHasNextPage: boolean
 }
 
 export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
+  const [openApyDialog] = useDialog(StakingApyDialog)
+
   const handleOnProtocolClick = (protocolId: string) => () => {
     props.onProtocolClick?.(
       props.openedProtocol === protocolId ? '' : protocolId
@@ -48,6 +57,26 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
     props.onBuyLpClick?.(contract)
   }
 
+  const handleOpenApy = (metric: Contracts[number]['metric']) => async () => {
+    const apr = {
+      '1d': metric.aprDay,
+      '7d': metric.aprWeek,
+      '30d': metric.aprMonth,
+      '365d(APY)': metric.aprYear,
+    }
+
+    try {
+      await openApyDialog({
+        apr,
+        staked: metric.myStaked,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
@@ -56,7 +85,7 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
       </div>
       <ul className={styles.list}>
         {!props.protocolListLoading && isEmpty(props.protocols) && (
-          <li className={styles.listItemLoader}>
+          <li>
             <Paper radius={8} className={styles.empty}>
               No protocols found
             </Paper>
@@ -108,7 +137,7 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                     <Typography variant="body2">LP Token Address</Typography>
                   </div>
                   {!props.contractListLoading && isEmpty(props.contracts) && (
-                    <div className={styles.listItemLoader}>
+                    <div>
                       <Paper
                         radius={8}
                         className={clsx(styles.empty, styles.emptyContracts)}
@@ -117,16 +146,12 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                       </Paper>
                     </div>
                   )}
-                  {props.contracts.map((contract) => {
-                    const logoUrls = contract.tokens.stake.map(
-                      ({ alias }) => alias?.logoUrl
-                    )
-
+                  {props.contracts.map((contract, contractIndex) => {
                     return (
                       <Paper
                         radius={8}
                         className={styles.contractCard}
-                        key={contract.id}
+                        key={contract.id + String(contractIndex)}
                       >
                         <Typography
                           as="div"
@@ -134,32 +159,103 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                           className={styles.contractCardName}
                         >
                           <span className={styles.contractCardIcons}>
-                            {networksConfig[contract.network]?.icon && (
+                            {networksConfig[contract.network]?.icon ? (
                               <Icon
                                 icon={networksConfig[contract.network].icon}
                                 width="20"
                                 height="20"
                                 className={styles.contractNetworkIcon}
                               />
+                            ) : (
+                              <Paper
+                                className={styles.contractUnknownNetworkIcon}
+                              >
+                                <Icon
+                                  icon="unknownNetwork"
+                                  width="16"
+                                  height="16"
+                                />
+                              </Paper>
                             )}
-                            {isEmpty(logoUrls) ? (
+                            {isEmpty(contract.tokens.stake) ? (
                               <Paper className={styles.contractCardIcon} />
                             ) : (
-                              logoUrls.map((logourl, index) =>
-                                logourl ? (
+                              contract.tokens.stake.map((token, index) => {
+                                const icon = token.alias?.logoUrl ? (
                                   <img
-                                    src={logourl}
+                                    src={token.alias?.logoUrl}
                                     alt=""
                                     className={styles.contractCardIcon}
-                                    key={String(index)}
                                   />
                                 ) : (
-                                  <Paper
-                                    className={styles.contractCardIcon}
-                                    key={String(index)}
-                                  />
+                                  <Paper className={styles.contractCardIcon} />
                                 )
-                              )
+
+                                return (
+                                  <Dropdown
+                                    key={String(index)}
+                                    control={
+                                      <ButtonBase
+                                        className={
+                                          styles.contractCardButtonIcon
+                                        }
+                                      >
+                                        {icon}
+                                      </ButtonBase>
+                                    }
+                                    className={styles.contractTokenInfo}
+                                  >
+                                    {(close) => (
+                                      <>
+                                        <ButtonBase
+                                          onClick={close}
+                                          className={
+                                            styles.contractTokenInfoClose
+                                          }
+                                        >
+                                          <Icon
+                                            icon="close"
+                                            width={34}
+                                            height={34}
+                                          />
+                                        </ButtonBase>
+                                        {icon}
+                                        <div>
+                                          <Typography
+                                            variant="body2"
+                                            family="mono"
+                                          >
+                                            {token.name}
+                                          </Typography>
+                                          <Typography
+                                            variant="body2"
+                                            family="mono"
+                                          >
+                                            <Link
+                                              target="_blank"
+                                              color="blue"
+                                              className={
+                                                styles.contractCardLink
+                                              }
+                                              href={buildExplorerUrl({
+                                                address: token.address,
+                                                network: token.network,
+                                              })}
+                                            >
+                                              Explorer{' '}
+                                              <Icon
+                                                icon="link"
+                                                width="1em"
+                                                height="1em"
+                                              />
+                                            </Link>
+                                          </Typography>
+                                        </div>
+                                      </>
+                                    )}
+                                  </Dropdown>
+                                )
+                              })
                             )}
                           </span>
                           <Typography variant="inherit">
@@ -190,6 +286,12 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                               10000
                             )}
                             %
+                            <ButtonBase
+                              onClick={handleOpenApy(contract.metric)}
+                              className={styles.apyButton}
+                            >
+                              <Icon icon="calculator" width="20" height="20" />
+                            </ButtonBase>
                           </Typography>
                         </Typography>
                         <Typography
@@ -213,7 +315,17 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                           </Link>
                         </Typography>
                         <div className={styles.contractButtonWrap}>
-                          <CanDemo>
+                          <WalletConnect
+                            fallback={
+                              <Button
+                                size="medium"
+                                color="green"
+                                className={styles.contractButton}
+                              >
+                                Buy lp
+                              </Button>
+                            }
+                          >
                             <Button
                               size="medium"
                               color="green"
@@ -222,13 +334,17 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                             >
                               Buy lp
                             </Button>
-                          </CanDemo>
+                          </WalletConnect>
                         </div>
                       </Paper>
                     )
                   })}
-                  {props.contractListLoading && (
-                    <div className={styles.listItemLoader}>
+                  {(props.contractsHasNextPage ||
+                    props.contractListLoading) && (
+                    <div
+                      className={styles.listItemLoader}
+                      ref={props.contractsSentryRef}
+                    >
                       <Loader height="36" />
                     </div>
                   )}
