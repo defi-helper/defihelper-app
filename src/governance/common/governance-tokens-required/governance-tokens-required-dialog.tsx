@@ -10,7 +10,7 @@ export const GovernanceTokensRequired: React.VFC = () => {
       </Typography>
       <Typography>
         In order to create new proposals you need to have at least 10,000,000
-        DFH on your wallet and deligate votes.
+        DFH on your wallet and delegate votes.
       </Typography>
     </Dialog>
   )
