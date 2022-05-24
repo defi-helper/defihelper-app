@@ -3,15 +3,35 @@ import ReactGA from 'react-ga'
 
 export const analytics = {
   onWalletConnected() {
-    ym('reachGoal', 'wallet-connected')
-    ReactGA.ga('send', 'wallet_connected')
+    Promise.all([
+      ym('reachGoal', 'wallet-connected'),
+      ReactGA.ga('event', 'wallet_connected'),
+    ])
   },
   onAutomationCreated() {
-    ym('reachGoal', 'automation-created')
-    ReactGA.ga('send', 'automation_created')
+    Promise.all([
+      ym('reachGoal', 'automation-created'),
+      ReactGA.ga('event', 'automation_created'),
+    ])
   },
   onDeposit() {
-    ym('reachGoal', 'topped-up-balance')
-    ReactGA.ga('send', 'topped_up_balance')
+    Promise.all([
+      ym('reachGoal', 'topped-up-balance'),
+      ReactGA.ga('event', 'topped_up_balance'),
+    ])
+  },
+
+  onAutoStakingEnabled() {
+    Promise.all([
+      ym('reachGoal', 'auto-staking-enabled'),
+      ReactGA.ga('event', 'auto_staking_enabled'),
+    ])
+  },
+
+  onNotificationsEnabled() {
+    Promise.all([
+      ym('reachGoal', 'auto-staking-enabled'),
+      ReactGA.ga('event', 'auto_staking_enabled'),
+    ])
   },
 }

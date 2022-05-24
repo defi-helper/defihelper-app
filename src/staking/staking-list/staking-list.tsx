@@ -48,6 +48,7 @@ import { theme } from '~/common/theme'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
+import { analytics } from '~/analytics'
 
 export type StakingListProps = {
   protocolId: string
@@ -338,6 +339,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             .then(cb)
         }
 
+        analytics.onAutoStakingEnabled()
         toastsService.success('success!')
       } catch (error) {
         if (error instanceof Error && !(error instanceof UserRejectionError)) {

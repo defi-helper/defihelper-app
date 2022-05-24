@@ -389,17 +389,15 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                   blockchain={props.blockchain}
                   network={props.network}
                 >
-                  <CanDemo>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={props.onTurnOn}
-                      loading={props.autostakingLoading}
-                      disabled={props.deprecated}
-                    >
-                      Auto-Stake
-                    </Button>
-                  </CanDemo>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={props.onTurnOn}
+                    loading={props.autostakingLoading}
+                    disabled={props.deprecated}
+                  >
+                    Auto-Stake
+                  </Button>
                 </WalletConnect>
               )}
             </>
