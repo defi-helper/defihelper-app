@@ -75,6 +75,7 @@ export const protocolCard = style([
     position: 'relative',
     display: 'block',
     cursor: 'pointer',
+    zIndex: 10,
 
     '@media': {
       [theme.mediaQueries.md()]: {
@@ -245,6 +246,9 @@ export const contractCardIcon = style({
   width: 20,
   height: 20,
   borderRadius: '50%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 })
 
 export const contractNetworkIcon = style({

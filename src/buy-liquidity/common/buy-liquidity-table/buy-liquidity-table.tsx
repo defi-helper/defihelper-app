@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
+import { Sticky, StickyContainer } from 'react-sticky'
 
 import { BuyLiquidityProtocolsQuery, BuyLiquidityContractsQuery } from '~/api'
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -96,260 +97,298 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
 
           return (
             <li className={styles.listItem} key={protocol.id}>
-              <Paper
-                radius={8}
-                className={styles.protocolCard}
-                onClick={handleOnProtocolClick(protocol.id)}
-              >
-                <Typography variant="body2" className={styles.protocolCardName}>
-                  {protocol.icon ? (
-                    <img
-                      src={protocol.icon}
-                      alt=""
-                      className={styles.protocolCardImage}
-                    />
-                  ) : (
-                    <Paper className={styles.protocolCardImage} />
-                  )}
-                  <Typography variant="inherit">{protocol.name}</Typography>
-                </Typography>
-                <Typography variant="body2" className={styles.protocolCardTvl}>
-                  <Typography variant="inherit" className={styles.grey}>
-                    Protocol TVL
-                  </Typography>
-                  <Typography variant="inherit">
-                    ${bignumberUtils.format(protocol.metric.tvl)}
-                  </Typography>
-                </Typography>
-                <Icon
-                  icon={opened ? 'arrowUp' : 'arrowDown'}
-                  width="24"
-                  height="24"
-                  className={styles.protocolCardArrow}
-                />
-              </Paper>
-              {opened && (
-                <div className={styles.contracts}>
-                  <div className={styles.contractHeader}>
-                    <Typography variant="body2">Pool</Typography>
-                    <Typography variant="body2">TVL</Typography>
-                    <Typography variant="body2">APY</Typography>
-                    <Typography variant="body2">LP Token Address</Typography>
-                  </div>
-                  {!props.contractListLoading && isEmpty(props.contracts) && (
-                    <div>
-                      <Paper
-                        radius={8}
-                        className={clsx(styles.empty, styles.emptyContracts)}
-                      >
-                        No contracts found
-                      </Paper>
-                    </div>
-                  )}
-                  {props.contracts.map((contract, contractIndex) => {
+              <StickyContainer>
+                <Sticky>
+                  {({ isSticky, style }) => {
                     return (
                       <Paper
                         radius={8}
-                        className={styles.contractCard}
-                        key={contract.id + String(contractIndex)}
+                        className={styles.protocolCard}
+                        onClick={handleOnProtocolClick(protocol.id)}
+                        style={isSticky && opened ? style : undefined}
                       >
                         <Typography
-                          as="div"
                           variant="body2"
-                          className={styles.contractCardName}
+                          className={styles.protocolCardName}
                         >
-                          <span className={styles.contractCardIcons}>
-                            {networksConfig[contract.network]?.icon ? (
-                              <Icon
-                                icon={networksConfig[contract.network].icon}
-                                width="20"
-                                height="20"
-                                className={styles.contractNetworkIcon}
-                              />
-                            ) : (
-                              <Paper
-                                className={styles.contractUnknownNetworkIcon}
-                              >
+                          {protocol.icon ? (
+                            <img
+                              src={protocol.icon}
+                              alt=""
+                              className={styles.protocolCardImage}
+                            />
+                          ) : (
+                            <Paper className={styles.protocolCardImage} />
+                          )}
+                          <Typography variant="inherit">
+                            {protocol.name}
+                          </Typography>
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          className={styles.protocolCardTvl}
+                        >
+                          <Typography variant="inherit" className={styles.grey}>
+                            Protocol TVL
+                          </Typography>
+                          <Typography variant="inherit">
+                            ${bignumberUtils.format(protocol.metric.tvl)}
+                          </Typography>
+                        </Typography>
+                        <Icon
+                          icon={opened ? 'arrowUp' : 'arrowDown'}
+                          width="24"
+                          height="24"
+                          className={styles.protocolCardArrow}
+                        />
+                      </Paper>
+                    )
+                  }}
+                </Sticky>
+                {opened && (
+                  <div className={styles.contracts}>
+                    <div className={styles.contractHeader}>
+                      <Typography variant="body2">Pool</Typography>
+                      <Typography variant="body2">TVL</Typography>
+                      <Typography variant="body2">APY</Typography>
+                      <Typography variant="body2">LP Token Address</Typography>
+                    </div>
+                    {!props.contractListLoading && isEmpty(props.contracts) && (
+                      <div>
+                        <Paper
+                          radius={8}
+                          className={clsx(styles.empty, styles.emptyContracts)}
+                        >
+                          No contracts found
+                        </Paper>
+                      </div>
+                    )}
+                    {props.contracts.map((contract, contractIndex) => {
+                      return (
+                        <Paper
+                          radius={8}
+                          className={styles.contractCard}
+                          key={contract.id + String(contractIndex)}
+                        >
+                          <Typography
+                            as="div"
+                            variant="body2"
+                            className={styles.contractCardName}
+                          >
+                            <span className={styles.contractCardIcons}>
+                              {networksConfig[contract.network]?.icon ? (
                                 <Icon
-                                  icon="unknownNetwork"
-                                  width="16"
-                                  height="16"
+                                  icon={networksConfig[contract.network].icon}
+                                  width="20"
+                                  height="20"
+                                  className={styles.contractNetworkIcon}
                                 />
-                              </Paper>
-                            )}
-                            {isEmpty(contract.tokens.stake) ? (
-                              <Paper className={styles.contractCardIcon} />
-                            ) : (
-                              contract.tokens.stake.map((token, index) => {
-                                const icon = token.alias?.logoUrl ? (
-                                  <img
-                                    src={token.alias?.logoUrl}
-                                    alt=""
-                                    className={styles.contractCardIcon}
+                              ) : (
+                                <Paper
+                                  className={styles.contractUnknownNetworkIcon}
+                                >
+                                  <Icon
+                                    icon="unknownNetwork"
+                                    width="16"
+                                    height="16"
                                   />
-                                ) : (
-                                  <Paper className={styles.contractCardIcon} />
-                                )
+                                </Paper>
+                              )}
+                              {isEmpty(contract.tokens.stake) ? (
+                                <Paper className={styles.contractCardIcon} />
+                              ) : (
+                                contract.tokens.stake.map((token, index) => {
+                                  const icon = token.alias?.logoUrl ? (
+                                    <img
+                                      src={token.alias?.logoUrl}
+                                      alt=""
+                                      className={styles.contractCardIcon}
+                                    />
+                                  ) : (
+                                    <Paper className={styles.contractCardIcon}>
+                                      <Icon
+                                        icon="unknownNetwork"
+                                        width="16"
+                                        height="16"
+                                      />
+                                    </Paper>
+                                  )
 
-                                return (
-                                  <Dropdown
-                                    key={String(index)}
-                                    control={
-                                      <ButtonBase
-                                        className={
-                                          styles.contractCardButtonIcon
-                                        }
-                                      >
-                                        {icon}
-                                      </ButtonBase>
-                                    }
-                                    className={styles.contractTokenInfo}
-                                  >
-                                    {(close) => (
-                                      <>
+                                  return (
+                                    <Dropdown
+                                      key={String(index)}
+                                      control={
                                         <ButtonBase
-                                          onClick={close}
                                           className={
-                                            styles.contractTokenInfoClose
+                                            styles.contractCardButtonIcon
                                           }
                                         >
-                                          <Icon
-                                            icon="close"
-                                            width={34}
-                                            height={34}
-                                          />
+                                          {icon}
                                         </ButtonBase>
-                                        {icon}
-                                        <div>
-                                          <Typography
-                                            variant="body2"
-                                            family="mono"
+                                      }
+                                      className={styles.contractTokenInfo}
+                                    >
+                                      {(close) => (
+                                        <>
+                                          <ButtonBase
+                                            onClick={close}
+                                            className={
+                                              styles.contractTokenInfoClose
+                                            }
                                           >
-                                            {token.name}
-                                          </Typography>
-                                          <Typography
-                                            variant="body2"
-                                            family="mono"
-                                          >
-                                            <Link
-                                              target="_blank"
-                                              color="blue"
-                                              className={
-                                                styles.contractCardLink
-                                              }
-                                              href={buildExplorerUrl({
-                                                address: token.address,
-                                                network: token.network,
-                                              })}
+                                            <Icon
+                                              icon="close"
+                                              width={34}
+                                              height={34}
+                                            />
+                                          </ButtonBase>
+                                          {icon}
+                                          <div>
+                                            <Typography
+                                              variant="body2"
+                                              family="mono"
                                             >
-                                              Explorer{' '}
-                                              <Icon
-                                                icon="link"
-                                                width="1em"
-                                                height="1em"
-                                              />
-                                            </Link>
-                                          </Typography>
-                                        </div>
-                                      </>
-                                    )}
-                                  </Dropdown>
-                                )
-                              })
-                            )}
-                          </span>
-                          <Typography variant="inherit">
-                            {contract.name}
+                                              {token.name}
+                                            </Typography>
+                                            <Typography
+                                              variant="body2"
+                                              family="mono"
+                                            >
+                                              <Link
+                                                target="_blank"
+                                                color="blue"
+                                                className={
+                                                  styles.contractCardLink
+                                                }
+                                                href={buildExplorerUrl({
+                                                  address: token.address,
+                                                  network: token.network,
+                                                })}
+                                              >
+                                                Explorer{' '}
+                                                <Icon
+                                                  icon="link"
+                                                  width="1em"
+                                                  height="1em"
+                                                />
+                                              </Link>
+                                            </Typography>
+                                          </div>
+                                        </>
+                                      )}
+                                    </Dropdown>
+                                  )
+                                })
+                              )}
+                            </span>
+                            <Typography variant="inherit">
+                              {contract.name}
+                            </Typography>
                           </Typography>
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          className={styles.contractCardTextRow}
-                        >
-                          <Typography variant="inherit" className={styles.grey}>
-                            TVL
-                          </Typography>
-                          <Typography variant="inherit">
-                            ${bignumberUtils.format(contract.metric.tvl)}
-                          </Typography>
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          className={styles.contractCardTextRow}
-                        >
-                          <Typography variant="inherit" className={styles.grey}>
-                            APY
-                          </Typography>
-                          <Typography variant="inherit">
-                            {bignumberUtils.formatMax(
-                              bignumberUtils.mul(contract.metric.aprYear, 100),
-                              10000
-                            )}
-                            %
-                            <ButtonBase
-                              onClick={handleOpenApy(contract.metric)}
-                              className={styles.apyButton}
-                            >
-                              <Icon icon="calculator" width="20" height="20" />
-                            </ButtonBase>
-                          </Typography>
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          className={styles.contractCardTextRow}
-                        >
-                          <Typography variant="inherit" className={styles.grey}>
-                            LP Token Address
-                          </Typography>{' '}
-                          <Link
-                            target="_blank"
-                            color="blue"
-                            className={styles.contractCardLink}
-                            href={buildExplorerUrl({
-                              address: contract.address,
-                              network: contract.network,
-                            })}
+                          <Typography
+                            variant="body2"
+                            className={styles.contractCardTextRow}
                           >
-                            {cutAccount(contract.address)}{' '}
-                            <Icon icon="link" width="1em" height="1em" />
-                          </Link>
-                        </Typography>
-                        <div className={styles.contractButtonWrap}>
-                          <WalletConnect
-                            fallback={
+                            <Typography
+                              variant="inherit"
+                              className={styles.grey}
+                            >
+                              TVL
+                            </Typography>
+                            <Typography variant="inherit">
+                              ${bignumberUtils.format(contract.metric.tvl)}
+                            </Typography>
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            className={styles.contractCardTextRow}
+                          >
+                            <Typography
+                              variant="inherit"
+                              className={styles.grey}
+                            >
+                              APY
+                            </Typography>
+                            <Typography variant="inherit">
+                              {bignumberUtils.formatMax(
+                                bignumberUtils.mul(
+                                  contract.metric.aprYear,
+                                  100
+                                ),
+                                10000
+                              )}
+                              %
+                              <ButtonBase
+                                onClick={handleOpenApy(contract.metric)}
+                                className={styles.apyButton}
+                              >
+                                <Icon
+                                  icon="calculator"
+                                  width="20"
+                                  height="20"
+                                />
+                              </ButtonBase>
+                            </Typography>
+                          </Typography>
+                          <Typography
+                            variant="body2"
+                            className={styles.contractCardTextRow}
+                          >
+                            <Typography
+                              variant="inherit"
+                              className={styles.grey}
+                            >
+                              LP Token Address
+                            </Typography>{' '}
+                            <Link
+                              target="_blank"
+                              color="blue"
+                              className={styles.contractCardLink}
+                              href={buildExplorerUrl({
+                                address: contract.address,
+                                network: contract.network,
+                              })}
+                            >
+                              {cutAccount(contract.address)}{' '}
+                              <Icon icon="link" width="1em" height="1em" />
+                            </Link>
+                          </Typography>
+                          <div className={styles.contractButtonWrap}>
+                            <WalletConnect
+                              fallback={
+                                <Button
+                                  size="medium"
+                                  color="green"
+                                  className={styles.contractButton}
+                                >
+                                  Buy lp
+                                </Button>
+                              }
+                            >
                               <Button
                                 size="medium"
                                 color="green"
                                 className={styles.contractButton}
+                                onClick={handleOnBuyLP(contract)}
                               >
                                 Buy lp
                               </Button>
-                            }
-                          >
-                            <Button
-                              size="medium"
-                              color="green"
-                              className={styles.contractButton}
-                              onClick={handleOnBuyLP(contract)}
-                            >
-                              Buy lp
-                            </Button>
-                          </WalletConnect>
-                        </div>
-                      </Paper>
-                    )
-                  })}
-                  {(props.contractsHasNextPage ||
-                    props.contractListLoading) && (
-                    <div
-                      className={styles.listItemLoader}
-                      ref={props.contractsSentryRef}
-                    >
-                      <Loader height="36" />
-                    </div>
-                  )}
-                </div>
-              )}
+                            </WalletConnect>
+                          </div>
+                        </Paper>
+                      )
+                    })}
+                    {props.contractsHasNextPage && (
+                      <div
+                        className={styles.listItemLoader}
+                        ref={props.contractsSentryRef}
+                      >
+                        <Loader height="36" />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </StickyContainer>
             </li>
           )
         })}

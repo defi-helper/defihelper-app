@@ -1,4 +1,4 @@
-import { createDomain, sample, UnitValue } from 'effector-logger/macro'
+import { createDomain, guard, UnitValue } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 
 import { settingsApi } from '~/settings/common'
@@ -6,7 +6,7 @@ import {
   UserContactCreateMutationVariables,
   UserContactFragmentFragment,
 } from '~/api/_generated-types'
-import { authModel } from '~/auth'
+import * as authModel from '~/auth/auth.model'
 
 export const settingsContactsDomain = createDomain()
 
@@ -116,7 +116,9 @@ export const SettingsContactsGate = createGate({
   name: 'SettingsContactsGate',
 })
 
-sample({
-  clock: SettingsContactsGate.open,
+guard({
+  source: authModel.$userReady,
+  clock: [SettingsContactsGate.open, authModel.$userReady.updates],
+  filter: (userReady) => userReady,
   target: fetchUserContactListFx,
 })
