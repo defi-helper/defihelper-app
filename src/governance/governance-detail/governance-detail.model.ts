@@ -41,8 +41,8 @@ export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect(
       .detail({
         filter: {
           proposalId,
-          network: '1',
-          contract: '0x7725c6045092DEB243ae23aFB4355f43aAC1FC22',
+          network: config.DEFAULT_CHAIN_ID,
+          contract: GOVERNOR_BRAVO,
           cache: !config.IS_DEV,
         },
       })

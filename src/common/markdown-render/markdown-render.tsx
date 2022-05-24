@@ -30,7 +30,11 @@ md.renderer = new RemarkableReactRenderer({
         {children}
       </Typography>
     ),
-    em: ({ children }) => <Typography as="em">{children}</Typography>,
+    em: ({ children }) => (
+      <Typography variant="inherit" as="em">
+        {children}
+      </Typography>
+    ),
   },
 })
 
