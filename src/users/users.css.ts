@@ -45,6 +45,11 @@ export const tableBody = style({})
 
 export const tableCol = style({})
 
+export const search = style({
+  width: 300,
+  marginBottom: 20,
+})
+
 export const pagination = style({
   position: 'absolute',
   top: 0,
