@@ -108,6 +108,7 @@ export const protocolsApi = {
       .then(({ data }) => ({
         favorites: data?.favorites.pagination.count ?? 0,
         all: data?.all.pagination.count ?? 0,
+        fullSupport: data?.fullSupport.pagination.count ?? 0,
       })),
 
   protocolDetail: (variables: ProtocolQueryVariables, signal?: AbortSignal) =>

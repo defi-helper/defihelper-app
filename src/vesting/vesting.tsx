@@ -244,84 +244,86 @@ export const Vesting: React.VFC<VestingProps> = () => {
   return (
     <AppLayout>
       <WalletConnect fallback={<Button>Connect</Button>}>
-        <Typography variant="h3" className={styles.title}>
-          Pre-seed round
-        </Typography>
-        <Paper radius={8} className={styles.root}>
-          {correctAccount ? (
-            <>
-              {isOwner.loading && 'loading...'}
-              {isOwner.value && !isOwner.loading && (
-                <>
-                  <div className={styles.row}>
-                    <Typography variant="body3" className={styles.label}>
-                      Tokens left
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      transform="uppercase"
-                      family="mono"
-                    >
-                      {bignumberUtils.format(balanceOf.value)} DFH
-                    </Typography>
-                  </div>
-                  <div className={styles.row}>
-                    <Typography variant="body3" className={styles.label}>
-                      Claimable tokens
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      transform="uppercase"
-                      family="mono"
-                    >
-                      {bignumberUtils.format(
-                        bignumberUtils.div(earned.value, NUM)
-                      )}{' '}
-                      DFH
-                    </Typography>
-                  </div>
-                  <div className={styles.row}>
-                    <Typography variant="body3" className={styles.label}>
-                      Drop rate
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      transform="uppercase"
-                      family="mono"
-                    >
-                      ~{bignumberUtils.format(dropRate)} dfh per day
-                    </Typography>
-                  </div>
-                  <div className={styles.row}>
-                    <Typography variant="body3" className={styles.label}>
-                      Vesting end
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      transform="uppercase"
-                      family="mono"
-                    >
-                      {dateUtils.format(
-                        dateUtils.addDate(Number(dropEnd), 'seconds')
-                      )}{' '}
-                      (at block: {String(periodFinish.value ?? 0)})
-                    </Typography>
-                  </div>
-                  <Button onClick={handleClaim} loading={claimState.loading}>
-                    Claim
-                  </Button>
-                </>
-              )}
-              {!isOwner.value && !isOwner.loading && (
-                <Typography variant="body3">
-                  you&apos;re not the owner
-                </Typography>
-              )}
-            </>
-          ) : (
-            <Typography variant="body3">Wrong address</Typography>
-          )}
-        </Paper>
+        <div>
+          <Typography variant="h3" className={styles.title}>
+            Pre-seed round
+          </Typography>
+          <Paper radius={8} className={styles.root}>
+            {correctAccount ? (
+              <>
+                {isOwner.loading && 'loading...'}
+                {isOwner.value && !isOwner.loading && (
+                  <>
+                    <div className={styles.row}>
+                      <Typography variant="body3" className={styles.label}>
+                        Tokens left
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        transform="uppercase"
+                        family="mono"
+                      >
+                        {bignumberUtils.format(balanceOf.value)} DFH
+                      </Typography>
+                    </div>
+                    <div className={styles.row}>
+                      <Typography variant="body3" className={styles.label}>
+                        Claimable tokens
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        transform="uppercase"
+                        family="mono"
+                      >
+                        {bignumberUtils.format(
+                          bignumberUtils.div(earned.value, NUM)
+                        )}{' '}
+                        DFH
+                      </Typography>
+                    </div>
+                    <div className={styles.row}>
+                      <Typography variant="body3" className={styles.label}>
+                        Drop rate
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        transform="uppercase"
+                        family="mono"
+                      >
+                        ~{bignumberUtils.format(dropRate)} dfh per day
+                      </Typography>
+                    </div>
+                    <div className={styles.row}>
+                      <Typography variant="body3" className={styles.label}>
+                        Vesting end
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        transform="uppercase"
+                        family="mono"
+                      >
+                        {dateUtils.format(
+                          dateUtils.addDate(Number(dropEnd), 'seconds')
+                        )}{' '}
+                        (at block: {String(periodFinish.value ?? 0)})
+                      </Typography>
+                    </div>
+                    <Button onClick={handleClaim} loading={claimState.loading}>
+                      Claim
+                    </Button>
+                  </>
+                )}
+                {!isOwner.value && !isOwner.loading && (
+                  <Typography variant="body3">
+                    you&apos;re not the owner
+                  </Typography>
+                )}
+              </>
+            ) : (
+              <Typography variant="body3">Wrong address</Typography>
+            )}
+          </Paper>
+        </div>
       </WalletConnect>
     </AppLayout>
   )

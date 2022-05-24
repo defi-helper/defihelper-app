@@ -4,12 +4,9 @@ import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
 import { useEffect, useMemo, useState } from 'react'
 import { useThrottle } from 'react-use'
-import { bignumberUtils } from '~/common/bignumber-utils'
 
+import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
-import { ButtonBase } from '~/common/button-base'
-import { Dropdown } from '~/common/dropdown'
-import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { WalletConnect } from '~/wallets/wallet-connect'
@@ -84,31 +81,6 @@ export const ProtocolCalculator: React.VFC<ProtocolCalculatorProps> = (
         Calculate your income
       </Typography>
       <Paper radius={12} className={styles.content}>
-        <div className={styles.select}>
-          <Dropdown
-            control={(open) => (
-              <ButtonBase>
-                {currentContract?.name ?? 'loading...'}{' '}
-                <Icon
-                  icon={open ? 'arrowUp' : 'arrowDown'}
-                  height="1em"
-                  width="1em"
-                />
-              </ButtonBase>
-            )}
-            placement="bottom-start"
-            offset={[0, 4]}
-          >
-            {contracts.map((contract) => (
-              <ButtonBase
-                key={contract.id}
-                onClick={() => setContract(contract)}
-              >
-                {contract.name}
-              </ButtonBase>
-            ))}
-          </Dropdown>
-        </div>
         <div className={styles.contentHeader}>
           <div>
             <Typography variant="body2" className={styles.fs14}>

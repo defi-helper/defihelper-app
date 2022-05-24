@@ -109,13 +109,3 @@ globalStyle(`${slider} .rc-slider-handle`, {
 globalStyle(`${slider} .rc-slider-handle:active`, {
   boxShadow: 'none',
 })
-
-export const select = style({
-  display: 'flex',
-  justifyContent: 'center',
-  marginBottom: 50,
-})
-
-export const selectButton = style({
-  cursor: 'pointer',
-})
