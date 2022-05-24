@@ -18,6 +18,7 @@ import { useDialog } from '~/common/dialog'
 import * as settingsContact from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './settings-smart-notifications.css'
 import * as model from './settings-smart-notifications.model'
+import { analytics } from '~/analytics'
 
 export type SettingsContactsProps = {
   className?: string
@@ -58,6 +59,7 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
 
     try {
       await model.toggleUserNotificationFx({ type, state })
+      analytics.onNotificationsEnabled()
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)

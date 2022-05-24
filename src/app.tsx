@@ -27,7 +27,7 @@ export const App: React.VFC = () => {
   const matomoCounterConfiguration = createInstance({
     urlBase: 'https://defihelper.matomo.cloud',
     siteId: 1,
-    disabled: config.IS_DEV, // optional, false by default. Makes all tracking calls no-ops if set to true.
+    disabled: config.IS_DEV,
   })
 
   return (
