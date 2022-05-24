@@ -30,6 +30,7 @@ import { authModel } from '~/auth'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
 import { CanDemo } from '~/auth/can-demo'
+import { analytics } from '~/analytics'
 
 export type SettingsWalletsProps = {
   className?: string
@@ -90,6 +91,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
         provider: currentWallet.provider,
       })
 
+      analytics.onDeposit()
       await openSuccess({
         type: TransactionEnum.deposit,
       })

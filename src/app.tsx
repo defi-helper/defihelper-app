@@ -5,6 +5,8 @@ import './app.css'
 import './assets/fonts/Basier-Circle-regular-webfont/stylesheet.css'
 import './assets/fonts/Basier-Square-Mono-Regular-Webfont/stylesheet.css'
 import './assets/fonts/Basier-Square-regular-webfont/stylesheet.css'
+import { MatomoProvider, createInstance } from '@datapunt/matomo-tracker-react'
+import { YMInitializer } from 'react-yandex-metrika'
 import { useEthereumNetwork } from './wallets/wallet-networks'
 import { Router } from './router'
 import { DialogProvider } from './common/dialog'
@@ -13,6 +15,7 @@ import { ToastProvider } from './toasts'
 import { AuthProvider } from './auth'
 import { getAPIClient } from './api'
 import { ErrorBoundary, Sentry } from './error-boundary'
+import { config } from './config'
 
 Sentry.init()
 
@@ -21,21 +24,36 @@ const client = getAPIClient()
 export const App: React.VFC = () => {
   useEthereumNetwork()
 
+  const matomoCounterConfiguration = createInstance({
+    urlBase: 'https://defihelper.matomo.cloud',
+    siteId: 1,
+    disabled: config.IS_DEV, // optional, false by default. Makes all tracking calls no-ops if set to true.
+  })
+
   return (
     <ErrorBoundary>
-      <ClientContext.Provider value={client}>
-        <HelmetProvider>
-          <ThemeProvider>
-            <DialogProvider>
-              <ToastProvider maxItems={6}>
-                <AuthProvider>
-                  <Router />
-                </AuthProvider>
-              </ToastProvider>
-            </DialogProvider>
-          </ThemeProvider>
-        </HelmetProvider>
-      </ClientContext.Provider>
+      {!config.IS_DEV && (
+        <YMInitializer
+          accounts={[86006279]}
+          options={{ webvisor: true }}
+          version="2"
+        />
+      )}
+      <MatomoProvider value={matomoCounterConfiguration}>
+        <ClientContext.Provider value={client}>
+          <HelmetProvider>
+            <ThemeProvider>
+              <DialogProvider>
+                <ToastProvider maxItems={6}>
+                  <AuthProvider>
+                    <Router />
+                  </AuthProvider>
+                </ToastProvider>
+              </DialogProvider>
+            </ThemeProvider>
+          </HelmetProvider>
+        </ClientContext.Provider>
+      </MatomoProvider>
     </ErrorBoundary>
   )
 }

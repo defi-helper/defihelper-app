@@ -20,6 +20,9 @@ import * as settingsWalletModel from '~/settings/settings-wallets/settings-walle
 import { sidUtils, authApi } from './common'
 import { history } from '~/common/history'
 import { paths } from '~/paths'
+
+import { analytics } from '~/analytics'
+
 import { toastsService } from '~/toasts'
 
 type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
@@ -256,6 +259,10 @@ const openModalFx = authDomain.createEffect((modal: () => Promise<unknown>) =>
 
 const closeModalFx = authDomain.createEffect((fn: () => void) => fn())
 
+const sendAnalyticsEventFx = authDomain.createEffect(() =>
+  analytics.onWalletConnected()
+)
+
 sample({
   clock: guard({
     source: $auth,
@@ -284,6 +291,11 @@ sample({
   }),
   fn: ({ openMergeWalletsDialog }) => openMergeWalletsDialog,
   target: openModalFx,
+})
+
+sample({
+  clock: [signedUserWaves, signedUserEthereum],
+  target: sendAnalyticsEventFx,
 })
 
 sample({

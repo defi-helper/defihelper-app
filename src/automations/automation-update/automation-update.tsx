@@ -32,6 +32,7 @@ import * as styles from './automation-update.css'
 import * as model from './automation-update.model'
 import * as contactModel from '~/settings/settings-contacts/settings-contact.model'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
+import { analytics } from '~/analytics'
 
 export type AutomationUpdateProps = {
   updatingTrigger?: AutomationTriggerFragmentFragment
@@ -266,6 +267,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   ) => {
     try {
       await model.createTriggerFx(formValues)
+      analytics.onAutomationCreated()
 
       setTab(Tabs.Conditions)
     } catch (error) {
