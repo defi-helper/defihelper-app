@@ -1,7 +1,8 @@
-import { createDomain, restore, sample } from 'effector-logger/macro'
+import { createDomain, restore, sample, guard } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
 import { ethers } from 'ethers'
 import contracts from '@defihelper/networks/contracts.json'
+import type { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { abi } from '~/abi'
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -29,6 +30,7 @@ type CastVoteWithReason = {
   account: string
   chainId: string
   provider: unknown
+  cache: boolean
 }
 
 export const governanceDetailDomain = createDomain()
@@ -60,12 +62,9 @@ export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect(
 )
 
 export const fetchReceiptFx = governanceDetailDomain.createEffect(
-  async (params: Omit<GovReceiptFilterInputType, 'cache'>) =>
+  async (params: GovReceiptFilterInputType) =>
     governanceApi.receipt({
-      filter: {
-        ...params,
-        cache: !config.IS_DEV,
-      },
+      filter: params,
     })
 )
 
@@ -108,6 +107,7 @@ export const executeFx = governanceDetailDomain.createEffect(
     account: string
     chainId: string
     provider: unknown
+    cache: boolean
   }) => {
     const governorBravo = createContract(params.provider, params.chainId)
 
@@ -132,6 +132,7 @@ export const queueFx = governanceDetailDomain.createEffect(
     account: string
     chainId: string
     provider: unknown
+    cache: boolean
   }) => {
     const governorBravo = createContract(params.provider, params.chainId)
 
@@ -157,14 +158,36 @@ sample({
   target: fetchGovernanceProposalFx,
 })
 
+const openedGate = sample({
+  clock: guard({
+    source: walletNetworkModel.$wallet,
+    clock: [walletNetworkModel.$wallet, GovernanceDetailGate.open],
+    filter: (
+      wallet
+    ): wallet is {
+      chainId: string
+      account: string
+      connector: AbstractConnector
+      blockchain: string
+    } => Boolean(wallet),
+  }),
+  fn: (params) => ({
+    params: {
+      ...params,
+      cache: !config.IS_DEV,
+    },
+  }),
+})
+
 sample({
   source: GovernanceDetailGate.state,
-  clock: [queueFx.done, executeFx.done, castVoteFx.done],
+  clock: [queueFx.done, executeFx.done, castVoteFx.done, openedGate],
   fn: (proposalId, { params }) => ({
     network: Number(params.chainId),
     contract: GOVERNOR_BRAVO,
     proposalId: Number(proposalId),
     wallet: params.account,
+    cache: params.cache,
   }),
   target: fetchReceiptFx,
 })

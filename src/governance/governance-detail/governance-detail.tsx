@@ -65,6 +65,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
         account: wallet.account,
         chainId: String(wallet.chainId),
         provider: wallet.provider,
+        cache: false,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -83,6 +84,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
         account: wallet.account,
         chainId: String(wallet.chainId),
         provider: wallet.provider,
+        cache: false,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -105,6 +107,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
         account: wallet.account,
         chainId: String(wallet.chainId),
         provider: wallet.provider,
+        cache: false,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -127,6 +130,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
         account: wallet.account,
         chainId: String(wallet.chainId),
         provider: wallet.provider,
+        cache: false,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -146,6 +150,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
         account: wallet.account,
         chainId: String(wallet.chainId),
         provider: wallet.provider,
+        cache: false,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -233,61 +238,62 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               In order to be applied, the quorum of 4% must be reached
             </Typography>
           )}
-          {governanceDetail.state === GovProposalStateEnum.Active && !receipt && (
-            <div className={clsx(styles.voteButtons, styles.mb32)}>
-              <WalletConnect
-                fallback={
-                  <Button className={styles.voteButton} color="green">
+          {governanceDetail.state === GovProposalStateEnum.Active &&
+            !receipt?.hasVoted && (
+              <div className={clsx(styles.voteButtons, styles.mb32)}>
+                <WalletConnect
+                  fallback={
+                    <Button className={styles.voteButton} color="green">
+                      Vote for
+                    </Button>
+                  }
+                  blockchain="ethereum"
+                  network={config.DEFAULT_CHAIN_ID}
+                >
+                  <Button
+                    className={styles.voteButton}
+                    onClick={handleVoteFor}
+                    loading={loadingCastVote}
+                    color="green"
+                  >
                     Vote for
                   </Button>
-                }
-                blockchain="ethereum"
-                network={config.DEFAULT_CHAIN_ID}
-              >
-                <Button
-                  className={styles.voteButton}
-                  onClick={handleVoteFor}
-                  loading={loadingCastVote}
-                  color="green"
+                </WalletConnect>
+                <WalletConnect
+                  fallback={
+                    <Button className={styles.voteButton}>Vote abstain</Button>
+                  }
+                  blockchain="ethereum"
+                  network={config.DEFAULT_CHAIN_ID}
                 >
-                  Vote for
-                </Button>
-              </WalletConnect>
-              <WalletConnect
-                fallback={
-                  <Button className={styles.voteButton}>Vote abstain</Button>
-                }
-                blockchain="ethereum"
-                network={config.DEFAULT_CHAIN_ID}
-              >
-                <Button
-                  className={styles.voteButton}
-                  onClick={handleVoteAbstain}
-                  loading={loadingCastVote}
+                  <Button
+                    className={styles.voteButton}
+                    onClick={handleVoteAbstain}
+                    loading={loadingCastVote}
+                  >
+                    Vote abstain
+                  </Button>
+                </WalletConnect>
+                <WalletConnect
+                  fallback={
+                    <Button className={styles.voteButton} color="red">
+                      Vote against
+                    </Button>
+                  }
+                  blockchain="ethereum"
+                  network={config.DEFAULT_CHAIN_ID}
                 >
-                  Vote abstain
-                </Button>
-              </WalletConnect>
-              <WalletConnect
-                fallback={
-                  <Button className={styles.voteButton} color="red">
+                  <Button
+                    className={styles.voteButton}
+                    onClick={handleVoteAgainst}
+                    loading={loadingCastVote}
+                    color="red"
+                  >
                     Vote against
                   </Button>
-                }
-                blockchain="ethereum"
-                network={config.DEFAULT_CHAIN_ID}
-              >
-                <Button
-                  className={styles.voteButton}
-                  onClick={handleVoteAgainst}
-                  loading={loadingCastVote}
-                  color="red"
-                >
-                  Vote against
-                </Button>
-              </WalletConnect>
-            </div>
-          )}
+                </WalletConnect>
+              </div>
+            )}
           {governanceDetail.state === GovProposalStateEnum.Succeeded && (
             <WalletConnect
               fallback={<Button className={styles.mb32}>Connect</Button>}
