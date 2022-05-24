@@ -51,3 +51,7 @@ export const loader = style({
   justifyContent: 'center',
   margin: 'auto',
 })
+
+export const author = style({
+  marginBottom: 20,
+})

@@ -3,6 +3,7 @@ import RemarkableReactRenderer from 'remarkable-react'
 
 import { Link } from '~/common/link'
 import { Typography } from '~/common/typography'
+import * as styles from './markdown-render.css'
 
 const md = new Remarkable()
 md.renderer = new RemarkableReactRenderer({
@@ -19,7 +20,11 @@ md.renderer = new RemarkableReactRenderer({
     h3: ({ children }) => <Typography variant="h3">{children}</Typography>,
     h4: ({ children }) => <Typography variant="h4">{children}</Typography>,
     h5: ({ children }) => <Typography variant="h5">{children}</Typography>,
-    p: ({ children }) => <Typography variant="body2">{children}</Typography>,
+    p: ({ children }) => (
+      <Typography variant="body2" className={styles.paragraph}>
+        {children}
+      </Typography>
+    ),
     strong: ({ children }) => (
       <Typography variant="inherit" weight="bold">
         {children}
