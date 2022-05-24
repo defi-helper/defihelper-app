@@ -383,7 +383,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               )
             )}
           </Paper>
-          <Typography>
+          <Typography className={styles.author}>
             Author:{' '}
             <Link
               href={buildExplorerUrl({
