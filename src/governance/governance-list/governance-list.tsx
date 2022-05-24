@@ -58,7 +58,7 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
 
   const isEnoughGovernanceTokens = bignumberUtils.gte(
     governanceVotes?.balance,
-    10000
+    10000000
   )
 
   const wallet = walletNetworkModel.useWalletNetwork()
