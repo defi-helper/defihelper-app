@@ -12,7 +12,15 @@ type User = Exclude<UsersQuery['users']['list'], null | undefined>[number]
 export const usersDomain = createDomain()
 
 export const fetchUsersFx = usersDomain.createEffect(
-  (pagination: PaginationState) => usersApi.getUsers({ pagination })
+  ({ pagination, search }: { pagination: PaginationState; search?: string }) =>
+    usersApi.getUsers({
+      pagination,
+      filter: {
+        wallet: {
+          search,
+        },
+      },
+    })
 )
 
 export const updateUserFx = usersDomain.createEffect((user: User) => {
@@ -43,7 +51,10 @@ export const $count = restore(
   0
 )
 
-export const UsersGate = createGate<PaginationState>({
+export const UsersGate = createGate<{
+  pagination: PaginationState
+  search?: string
+}>({
   name: 'UsersGate',
   domain: usersDomain,
 })

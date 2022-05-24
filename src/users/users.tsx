@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useGate, useStore } from 'effector-react'
+import { useEffect, useState } from 'react'
+import { useStore } from 'effector-react'
 
 import { AppLayout } from '~/layouts'
 import { ButtonBase } from '~/common/button-base'
@@ -11,10 +11,11 @@ import { Typography } from '~/common/typography'
 import { TablePagination } from '~/common/table-pagination'
 import * as model from './users.model'
 import * as styles from './users.css'
+import { Input } from '~/common/input'
 
 export type UsersProps = unknown
 
-const ROWS_PER_PAGE = 10
+const ROWS_PER_PAGE = 30
 
 export const Users: React.VFC<UsersProps> = () => {
   const users = useStore(model.$users)
@@ -22,11 +23,17 @@ export const Users: React.VFC<UsersProps> = () => {
 
   const [openRoleDialog] = useDialog(UserRoleDialog)
   const [page, setPages] = useState(0)
+  const [search, setSearch] = useState<string | undefined>(undefined)
 
-  useGate(model.UsersGate, {
-    limit: ROWS_PER_PAGE,
-    offset: page * ROWS_PER_PAGE,
-  })
+  useEffect(() => {
+    model.fetchUsersFx({
+      pagination: {
+        limit: ROWS_PER_PAGE,
+        offset: page * ROWS_PER_PAGE,
+      },
+      search,
+    })
+  }, [search, page])
 
   const handleChangeRole = (user: typeof users[number]) => async () => {
     try {
@@ -61,6 +68,13 @@ export const Users: React.VFC<UsersProps> = () => {
   return (
     <AppLayout>
       <div className={styles.tableWrap}>
+        <Input
+          type="text"
+          label="Search"
+          onChange={(e) => setSearch(e.target.value)}
+          className={styles.search}
+        />
+
         <Paper radius={8} className={styles.table}>
           <div className={styles.tableHeader}>
             <Typography variant="body3">id</Typography>

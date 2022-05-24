@@ -2831,6 +2831,7 @@ export type UserEventSubscriptionType = {
 
 export type UserListFilterInputType = {
   role?: Maybe<UserRoleEnum>
+  wallet?: Maybe<UserListWalletFilterInputType>
 }
 
 export type UserListPaginationInputType = {
@@ -2855,6 +2856,12 @@ export type UserListSortInputType = {
 export enum UserListSortInputTypeColumnEnum {
   Id = 'id',
   CreatedAt = 'createdAt',
+}
+
+export type UserListWalletFilterInputType = {
+  blockchain?: Maybe<BlockchainFilterInputType>
+  type?: Maybe<WalletBlockchainTypeEnum>
+  search?: Maybe<Scalars['String']>
 }
 
 export type UserMetricChartFilterInputType = {
