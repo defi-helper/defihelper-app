@@ -183,9 +183,9 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
   }
 
   const [contractsSentryRef] = model.useInfiniteScrollContracts()
-  const contractsHasNextPage = useStore(
-    model.useInfiniteScrollContracts.hasNextPage
-  )
+  const contractsHasNextPage =
+    useStore(model.useInfiniteScrollContracts.hasNextPage) ||
+    contractListLoading
 
   return (
     <AppLayout title="Buy LP">
