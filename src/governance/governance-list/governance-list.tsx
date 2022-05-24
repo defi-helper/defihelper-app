@@ -24,6 +24,7 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as model from './governance-list.model'
 import * as styles from './governance-list.css'
 import { CanDemo } from '~/auth/can-demo'
+import { GovernanceTokensRequired } from '../common/governance-tokens-required'
 
 export type GovernanceListProps = unknown
 
@@ -43,6 +44,9 @@ const getDelegateButtonText = (votes?: string | null, delegateTo?: string) => {
 
 export const GovernanceList: React.VFC<GovernanceListProps> = () => {
   const [openDelegate] = useDialog(GovernanceDelegateDialog)
+  const [openGovernanceTokensWarningDialog] = useDialog(
+    GovernanceTokensRequired
+  )
 
   const loading = useStore(model.fetchGovernanceListFx.pending)
   const governanceList = useStore(model.$governanceList)
@@ -51,6 +55,11 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
   const votesLoading = useStore(model.fetchGovernanceVotesFx.pending)
 
   const delegateLoading = useStore(model.delegateVotesFx.pending)
+
+  const isEnoughGovernanceTokens = bignumberUtils.gte(
+    governanceVotes?.balance,
+    10000
+  )
 
   const wallet = walletNetworkModel.useWalletNetwork()
 
@@ -160,14 +169,26 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
             blockchain="ethereum"
             network={config.DEFAULT_CHAIN_ID}
           >
-            <Button
-              as={ReactRouterLink}
-              variant="contained"
-              color="blue"
-              to={paths.governance.create}
-            >
-              + New proposal
-            </Button>
+            {isEnoughGovernanceTokens ? (
+              <Button
+                as={ReactRouterLink}
+                variant="contained"
+                color="blue"
+                to={paths.governance.create}
+              >
+                + New proposal
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="blue"
+                onClick={() =>
+                  openGovernanceTokensWarningDialog().catch(() => {})
+                }
+              >
+                + New proposal
+              </Button>
+            )}
           </WalletConnect>
         </div>
         <Typography variant="h4" className={styles.subtitle}>
