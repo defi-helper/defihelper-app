@@ -8,6 +8,7 @@ import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { UserContactBrokerEnum } from '~/api/_generated-types'
+import * as authModel from '~/auth/auth.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './settings-telegram.css'
 import * as model from './settings-telegram.model'
@@ -19,6 +20,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   const userContacts = useStore(settingsContacts.$userContactList)
   const [noThanks, setNoThanks] = useLocalStorage('telegram', false)
   const loading = useStore(settingsContacts.fetchUserContactListFx.pending)
+  const userReady = useStore(authModel.$userReady)
 
   const contacts = useMemo(
     () => (userContact ? [...userContacts, userContact] : userContacts),
@@ -33,7 +35,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
 
   const handleHandleNoThanks = () => setNoThanks(true)
 
-  if (hasTelegram || noThanks || loading) return <></>
+  if (hasTelegram || noThanks || loading || !userReady) return <></>
 
   return (
     <Paper radius={4} className={styles.root}>
