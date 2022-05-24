@@ -6,8 +6,9 @@ export type Protocol = ProtocolFragmentFragment & {
 }
 
 export enum Tabs {
-  Favourite,
-  All,
+  Favorite = 'favorite',
+  All = 'all',
+  FullSupport = 'full-support',
 }
 
 export type EastimatedEarnings = {

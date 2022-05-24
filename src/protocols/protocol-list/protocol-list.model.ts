@@ -9,7 +9,7 @@ import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'
 import { ProtocolFavoriteMutationVariables } from '~/api/_generated-types'
-import { protocolsApi, Protocol } from '~/protocols/common'
+import { protocolsApi, Protocol, Tabs } from '~/protocols/common'
 import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
 
 const protocolListDomain = createDomain()
@@ -18,26 +18,34 @@ type Params = {
   offset: number
   limit: number
   search?: string
-  favorite?: boolean
   hidden: boolean | null
-  debank?: boolean
   abortController?: AbortController
+  tab: Tabs
+}
+
+const tabs = {
+  [Tabs.All]: {},
+  [Tabs.Favorite]: {
+    favorite: true,
+  },
+  [Tabs.FullSupport]: {
+    isDebank: false,
+  },
 }
 
 export const fetchProtocolListFx = protocolListDomain.createEffect(
   (params: Params) => {
     const filter = {
       hidden: params.hidden,
-      isDebank: params.debank,
+      ...tabs[params.tab],
     }
 
     return protocolsApi.protocolList(
       {
-        ...(params?.search || typeof params?.favorite === 'boolean'
+        ...(params?.search
           ? {
               filter: {
                 search: params.search,
-                favorite: params.favorite,
                 ...filter,
               },
             }
@@ -58,16 +66,15 @@ export const fetchProtocolListMetricsFx = protocolListDomain.createEffect(
   (params: Params) => {
     const filter = {
       hidden: params.hidden,
-      isDebank: params.debank,
+      ...tabs[params.tab],
     }
 
     return protocolsApi.protocolListMetrics(
       {
-        ...(params?.search || typeof params?.favorite === 'boolean'
+        ...(params?.search
           ? {
               filter: {
                 search: params.search,
-                favorite: params.favorite,
                 ...filter,
               },
             }
@@ -161,10 +168,9 @@ export const useInfiniteScroll = createUseInfiniteScroll({
 })
 
 export const ProtocolListGate = createGate<{
+  tab: Tabs
   search: string
-  favorite?: boolean
   hidden: boolean | null
-  debank?: boolean
   abortController?: AbortController
 }>({
   domain: protocolListDomain,
@@ -232,6 +238,7 @@ sample({
 export const $tabsCount = restore(fetchProtocolListCountFx.doneData, {
   all: 0,
   favorites: 0,
+  fullSupport: 0,
 }).on(protocolFavoriteFx.done, (state, { params }) => ({
   ...state,
   favorites: params.favorite ? state.favorites + 1 : state.favorites - 1,

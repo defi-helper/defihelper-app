@@ -19,7 +19,7 @@ export const fetchContractsFx = createEffect(async (protocolId: string) => {
     },
     contractPagination: {
       offset: 0,
-      limit: 10,
+      limit: 1,
     },
     contractSort: [
       {

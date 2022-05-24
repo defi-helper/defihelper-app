@@ -12,5 +12,10 @@ export const PROTOCOL_LIST_COUNT = gql`
         count
       }
     }
+    fullSupport: protocols(filter: { hidden: $hidden, isDebank: false }) {
+      pagination {
+        count
+      }
+    }
   }
 `

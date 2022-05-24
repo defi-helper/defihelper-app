@@ -19,28 +19,19 @@ import { Protocol, ProtocolCard, ProtocolTabs, Tabs } from '../common'
 import { Paper } from '~/common/paper'
 import { ButtonBase } from '~/common/button-base'
 import { Loader } from '~/common/loader'
-import { Select, SelectOption } from '~/common/select'
 import * as model from './protocol-list.model'
 import * as styles from './protocol-list.css'
 
 export type ProtocolListProps = unknown
 
-const options = {
-  all: 'All',
-  full: 'Full support',
-  balances: 'Only balances',
-}
-
 export const ProtocolList: React.VFC<ProtocolListProps> = () => {
   const [search, setSearch] = useState('')
-  const [currentTab, setCurrentTab] = useState(Tabs.All)
+  const searchParams = useQueryParams()
+  const [currentTab, setCurrentTab] = useState<Tabs>(
+    (searchParams.get('filter') as Tabs | null) ?? Tabs.All
+  )
 
   const history = useHistory()
-  const searchParams = useQueryParams()
-
-  const [currentOption, setOption] = useState(
-    searchParams.get('filter') ?? options.all
-  )
 
   const ability = useAbility()
   const user = useStore(authModel.$user)
@@ -68,34 +59,26 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
 
   const searchDebounced = useDebounce(search, 1000)
 
-  const debank = useMemo(() => {
-    if (currentOption === options.all) return undefined
-
-    return currentOption === options.balances
-  }, [currentOption])
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const abortController = useMemo(() => new AbortController(), [currentOption])
+  const abortController = useMemo(() => new AbortController(), [currentTab])
 
   useGate(model.ProtocolListGate, {
-    favorite:
-      currentTab === Tabs.All ? undefined : currentTab === Tabs.Favourite,
+    tab: currentTab,
     search: searchDebounced,
     hidden: ability.can('update', 'Protocol') ? null : false,
-    debank,
     abortController,
   })
 
   useEffect(() => {
     history.replace({
-      search: `filter=${currentOption}`,
+      search: `filter=${currentTab}`,
     })
 
     return () => {
       abortController.abort()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentOption, abortController])
+  }, [currentTab, abortController])
 
   const handleFavorite = (protocol: Protocol) => () => {
     model.protocolFavoriteFx({
@@ -128,6 +111,7 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
       className={styles.tabs}
       all={tabsCount.all}
       favorites={tabsCount.favorites}
+      fullSupport={tabsCount.fullSupport}
       onChange={setCurrentTab}
       value={currentTab}
     />
@@ -184,17 +168,6 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
             </Button>
           </Can>
         </div>
-        <Select
-          value={currentOption}
-          onChange={({ target }) => setOption(target.value)}
-          className={styles.select}
-        >
-          {Object.entries(options).map(([key, value]) => (
-            <SelectOption key={key} value={value}>
-              {value}
-            </SelectOption>
-          ))}
-        </Select>
         <div className={styles.proposalsHeader}>
           <Typography variant="body2" className={styles.name}>
             Name

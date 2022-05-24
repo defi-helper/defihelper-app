@@ -4833,6 +4833,9 @@ export type ProtocolsCountQuery = { __typename?: 'Query' } & {
   all: { __typename?: 'ProtocolListQuery' } & {
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
+  fullSupport: { __typename?: 'ProtocolListQuery' } & {
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
 }
 
 export type ProtocolListMetricsQueryVariables = Exact<{
