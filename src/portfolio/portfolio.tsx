@@ -159,6 +159,9 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
             continuous
             scrollToFirstStep
             callback={handleJoyrideCallback}
+            disableCloseOnEsc
+            disableOverlayClose
+            disableOverlay
             floaterProps={{
               styles: {
                 arrow: {
