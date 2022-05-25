@@ -17,7 +17,11 @@ const getWsClient = memoize(() => {
 
   const wsClient = new SubscriptionClient(wsUrl, {
     reconnect: true,
-    minTimeout: 5000,
+    minTimeout: 15000,
+    timeout: 15000,
+    reconnectionAttempts: 5,
+    lazy: true,
+    inactivityTimeout: 5000,
   })
 
   return wsClient

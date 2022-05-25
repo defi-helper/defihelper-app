@@ -515,11 +515,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                   continuous
                   scrollToFirstStep
                   callback={handleJoyrideCallback}
-                  styles={{
-                    overlay: {
-                      background: 'transparent',
-                    },
-                  }}
+                  disableCloseOnEsc
+                  disableOverlayClose
+                  disableOverlay
                   floaterProps={{
                     styles: {
                       arrow: {
