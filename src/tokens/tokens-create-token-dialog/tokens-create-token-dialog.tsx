@@ -46,8 +46,6 @@ export const TokensCreateTokenDialog: React.VFC<TokensCreateTokenDialogProps> =
       token.priceFeed?.type ?? 'coingeckoId'
     )
 
-    console.info(token.priceFeed?.type)
-
     const [tokenAliasSearch, setTokenAliasSearch] = useState<
       undefined | string
     >(token.alias?.name)
