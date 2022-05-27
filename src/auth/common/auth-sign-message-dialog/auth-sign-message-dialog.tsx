@@ -14,9 +14,8 @@ export const AuthSignMessageDialog: React.VFC<AuthSignMessageDialogProps> =
           Please verify your address
         </Typography>
         <Typography variant="body2">
-          To ensure the security of your privacy, please sign this simple
-          plain-text message to prove you&apos;re the owner of this address.
-          (Nothing more. No risk for your asset at all.)
+          To secure your privacy, please sign the plain-text message proving
+          that you are the owner of this address.
         </Typography>
       </Dialog>
     )

@@ -62,6 +62,11 @@ const MENU: MenuItem[] = [
     icon: 'settings',
   },
   {
+    title: 'Bridges',
+    path: paths.bridges,
+    icon: 'bridges',
+  },
+  {
     title: 'Referral Program',
     path: paths.referral.list,
     icon: 'affilate',
@@ -69,23 +74,11 @@ const MENU: MenuItem[] = [
     can: 'read',
   },
   {
-    title: 'Monitoring',
-    path: paths.monitoring,
+    title: 'Admin',
+    path: paths.admin,
     icon: 'grid',
     subject: 'User',
     can: 'read',
-  },
-  {
-    title: 'Users',
-    path: paths.users,
-    icon: 'notification',
-    subject: 'User',
-    can: 'read',
-  },
-  {
-    title: 'Bridges',
-    path: paths.bridges,
-    icon: 'bridges',
   },
 ]
 

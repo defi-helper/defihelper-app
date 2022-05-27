@@ -192,8 +192,8 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
           </WalletConnect>
         </div>
         <Typography variant="h4" className={styles.subtitle}>
-          Governance — it is the main tool for protocol management, control of
-          the treasure and allocation of tokens
+          Participate in the governance of the protocol, and help steer
+          it&apos;s future
         </Typography>
         {loading && (
           <div className={styles.loader}>

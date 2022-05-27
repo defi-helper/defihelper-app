@@ -21,7 +21,7 @@ export const contractUpdate = async (
 export const stakingUpdateFx = stakingUpdate.createEffect(contractUpdate)
 
 stakingUpdateFx.doneData.watch((payload) => {
-  history.push(paths.protocols.detail(payload.protocolId))
+  history.push(paths.protocols.detail(payload.protocol.id))
 })
 
 toastsService.forwardErrors(stakingUpdateFx.failData)

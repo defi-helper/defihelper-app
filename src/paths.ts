@@ -57,10 +57,13 @@ export const paths = {
   vesting: '/vesting',
 
   monitoring: '/monitoring',
+  tokens: '/tokens',
 
   buyLp: '/buy-liquidity',
 
   bridges: '/bridges',
 
   autostaking: '/autostaking',
+
+  admin: '/admin',
 } as const

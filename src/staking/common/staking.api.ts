@@ -89,7 +89,7 @@ export const stakingApi = {
         query: STAKING_CONTRACT_CREATE.loc?.source.body ?? '',
         variables,
       })
-      .then(({ data }) => data?.contractCreate.protocolId),
+      .then(({ data }) => data?.contractCreate.protocol.id),
 
   contractUpdate: (variables: StakingContractUpdateMutationVariables) =>
     getAPIClient()

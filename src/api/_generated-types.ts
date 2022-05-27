@@ -663,6 +663,7 @@ export enum ContractListSortInputTypeColumnEnum {
   Tvl = 'tvl',
   AprYear = 'aprYear',
   AprWeekReal = 'aprWeekReal',
+  AprBoosted = 'aprBoosted',
   MyStaked = 'myStaked',
 }
 
@@ -728,7 +729,7 @@ export type ContractType = {
   __typename?: 'ContractType'
   /** Identificator */
   id: Scalars['UuidType']
-  protocolId: Scalars['UuidType']
+  protocol: ProtocolType
   /** Adapter name */
   adapter: Scalars['String']
   /** Layout name */
@@ -1861,6 +1862,7 @@ export type Query = {
   users: UserListQuery
   protocol?: Maybe<ProtocolType>
   protocols: ProtocolListQuery
+  contracts: ContractListType
   proposal?: Maybe<ProposalType>
   proposals: ProposalListQuery
   landingMediumPosts: Array<LandingMediumPostType>
@@ -1909,6 +1911,12 @@ export type QueryProtocolsArgs = {
   filter?: Maybe<ProtocolListFilterInputType>
   sort?: Maybe<Array<ProtocolListSortInputType>>
   pagination?: Maybe<ProtocolListPaginationInputType>
+}
+
+export type QueryContractsArgs = {
+  filter?: Maybe<ContractListFilterInputType>
+  sort?: Maybe<Array<ContractListSortInputType>>
+  pagination?: Maybe<ContractListPaginationInputType>
 }
 
 export type QueryProposalArgs = {
@@ -2375,6 +2383,7 @@ export type TokenListQueryFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   address?: Maybe<Array<Scalars['String']>>
   tradable?: Maybe<Scalars['Boolean']>
+  isPriceFeedNedded?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
 
@@ -2487,6 +2496,7 @@ export type TokenType = {
   /** Decimals */
   decimals: Scalars['Int']
   priceFeed?: Maybe<TokenPriceFeedType>
+  priceFeedNeeded: Scalars['Boolean']
 }
 
 export type TokenUpdateInputType = {
@@ -5573,7 +5583,6 @@ export type StakingAutomatesContractFragmentFragment = {
       { __typename?: 'ContractType' } & Pick<
         ContractType,
         | 'id'
-        | 'protocolId'
         | 'adapter'
         | 'layout'
         | 'blockchain'
@@ -5587,6 +5596,7 @@ export type StakingAutomatesContractFragmentFragment = {
         | 'events'
         | 'createdAt'
       > & {
+          protocol: { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'id'>
           automate: { __typename?: 'ContractAutomatesType' } & Pick<
             ContractAutomatesType,
             'adapters' | 'autorestake'
@@ -5711,8 +5721,13 @@ export type StakingContractEventsQuery = { __typename?: 'Query' } & {
           Array<
             { __typename?: 'ContractType' } & Pick<
               ContractType,
-              'id' | 'protocolId' | 'events'
-            >
+              'id' | 'events'
+            > & {
+                protocol: { __typename?: 'ProtocolType' } & Pick<
+                  ProtocolType,
+                  'id'
+                >
+              }
           >
         >
       }
@@ -5801,11 +5816,11 @@ export type StakingContractFragmentFragment = {
   | 'hidden'
   | 'createdAt'
   | 'adapter'
-  | 'protocolId'
   | 'layout'
   | 'deployBlockNumber'
   | 'deprecated'
 > & {
+    protocol: { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'id'>
     tokens: { __typename?: 'ContractTokenLinkType' } & {
       stake: Array<
         { __typename?: 'TokenType' } & {
@@ -5879,6 +5894,65 @@ export type StakingUpdateMetricsMutation = { __typename?: 'Mutation' } & Pick<
   Mutation,
   'contractMetricScan'
 >
+
+export type TokensAliasQueryVariables = Exact<{
+  filter?: Maybe<TokenAliasListFilterInputType>
+  sort?: Maybe<Array<TokenAliasListSortInputType> | TokenAliasListSortInputType>
+  pagination?: Maybe<TokenAliasListPaginationInputType>
+}>
+
+export type TokensAliasQuery = { __typename?: 'Query' } & {
+  tokensAlias: { __typename?: 'TokenAliasListQuery' } & {
+    list?: Maybe<Array<{ __typename?: 'TokenAlias' } & TokenAliasFragment>>
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type TokenAliasFragment = { __typename?: 'TokenAlias' } & Pick<
+  TokenAlias,
+  'id' | 'name' | 'symbol' | 'logoUrl' | 'liquidity'
+>
+
+export type TokensQueryVariables = Exact<{
+  filter?: Maybe<TokenListQueryFilterInputType>
+  sort?: Maybe<Array<TokenListQuerySortInputType> | TokenListQuerySortInputType>
+  pagination?: Maybe<TokenListQueryPaginationInputType>
+}>
+
+export type TokensQuery = { __typename?: 'Query' } & {
+  tokens: { __typename?: 'TokenListQuery' } & {
+    list?: Maybe<Array<{ __typename?: 'TokenType' } & TokenFragment>>
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type TokenUpdateMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: TokenUpdateInputType
+}>
+
+export type TokenUpdateMutation = { __typename?: 'Mutation' } & {
+  tokenUpdate: { __typename?: 'TokenType' } & TokenFragment
+}
+
+export type TokenFragment = { __typename?: 'TokenType' } & Pick<
+  TokenType,
+  'id' | 'name' | 'decimals' | 'symbol' | 'network'
+> & {
+    alias?: Maybe<
+      { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'id' | 'name' | 'symbol'>
+    >
+    priceFeed?: Maybe<
+      | ({ __typename?: 'TokenPriceFeedCoingeckoIdType' } & Pick<
+          TokenPriceFeedCoingeckoIdType,
+          'id' | 'type'
+        >)
+      | ({ __typename?: 'TokenPriceFeedCoingeckoAddressType' } & Pick<
+          TokenPriceFeedCoingeckoAddressType,
+          'type' | 'platform' | 'address'
+        >)
+    >
+  }
 
 export type UsersQueryVariables = Exact<{
   filter?: Maybe<UserListFilterInputType>

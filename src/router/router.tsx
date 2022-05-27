@@ -40,6 +40,8 @@ import { BuyLiquidity } from '~/buy-liquidity'
 import { DemoForward } from '~/demo-forward'
 import { Bridges } from '~/bridges'
 import { Autostaking } from '~/autostaking'
+import { Tokens } from '~/tokens'
+import { Admin } from '~/admin'
 
 export type RouterProps = unknown
 
@@ -142,12 +144,18 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.monitoring}>
           <Monitoring />
         </PrivateRoute>
+        <PrivateRoute path={paths.tokens}>
+          <Tokens />
+        </PrivateRoute>
         <Route path={paths.bridges}>
           <Bridges />
         </Route>
         <Route path={paths.autostaking}>
           <Autostaking />
         </Route>
+        <PrivateRoute path={paths.admin}>
+          <Admin />
+        </PrivateRoute>
         <Route>
           <NotFound />
         </Route>
