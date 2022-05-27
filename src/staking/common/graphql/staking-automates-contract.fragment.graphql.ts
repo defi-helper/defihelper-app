@@ -10,7 +10,9 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
     archivedAt
     contract {
       id
-      protocolId
+      protocol {
+        id
+      }
       adapter
       layout
       blockchain
