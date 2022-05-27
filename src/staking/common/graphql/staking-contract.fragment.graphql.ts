@@ -12,7 +12,9 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
     hidden
     createdAt
     adapter
-    protocolId
+    protocol {
+      id
+    }
     layout
     deployBlockNumber
     deprecated

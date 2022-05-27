@@ -15,7 +15,9 @@ export const STAKING_CONTRACTS_EVENTS = gql`
       ) {
         list {
           id
-          protocolId
+          protocol {
+            id
+          }
           events
         }
       }
