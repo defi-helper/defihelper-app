@@ -57,6 +57,7 @@ export const paths = {
   vesting: '/vesting',
 
   monitoring: '/monitoring',
+  tokens: '/tokens',
 
   buyLp: '/buy-liquidity',
 

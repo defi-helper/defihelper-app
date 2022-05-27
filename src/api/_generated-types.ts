@@ -2375,6 +2375,7 @@ export type TokenListQueryFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   address?: Maybe<Array<Scalars['String']>>
   tradable?: Maybe<Scalars['Boolean']>
+  isPriceFeedNedded?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
 
@@ -2487,6 +2488,7 @@ export type TokenType = {
   /** Decimals */
   decimals: Scalars['Int']
   priceFeed?: Maybe<TokenPriceFeedType>
+  priceFeedNeeded: Scalars['Boolean']
 }
 
 export type TokenUpdateInputType = {
@@ -5879,6 +5881,65 @@ export type StakingUpdateMetricsMutation = { __typename?: 'Mutation' } & Pick<
   Mutation,
   'contractMetricScan'
 >
+
+export type TokensAliasQueryVariables = Exact<{
+  filter?: Maybe<TokenAliasListFilterInputType>
+  sort?: Maybe<Array<TokenAliasListSortInputType> | TokenAliasListSortInputType>
+  pagination?: Maybe<TokenAliasListPaginationInputType>
+}>
+
+export type TokensAliasQuery = { __typename?: 'Query' } & {
+  tokensAlias: { __typename?: 'TokenAliasListQuery' } & {
+    list?: Maybe<Array<{ __typename?: 'TokenAlias' } & TokenAliasFragment>>
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type TokenAliasFragment = { __typename?: 'TokenAlias' } & Pick<
+  TokenAlias,
+  'id' | 'name' | 'symbol' | 'logoUrl' | 'liquidity'
+>
+
+export type TokensQueryVariables = Exact<{
+  filter?: Maybe<TokenListQueryFilterInputType>
+  sort?: Maybe<Array<TokenListQuerySortInputType> | TokenListQuerySortInputType>
+  pagination?: Maybe<TokenListQueryPaginationInputType>
+}>
+
+export type TokensQuery = { __typename?: 'Query' } & {
+  tokens: { __typename?: 'TokenListQuery' } & {
+    list?: Maybe<Array<{ __typename?: 'TokenType' } & TokenFragment>>
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type TokenUpdateMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: TokenUpdateInputType
+}>
+
+export type TokenUpdateMutation = { __typename?: 'Mutation' } & {
+  tokenUpdate: { __typename?: 'TokenType' } & TokenFragment
+}
+
+export type TokenFragment = { __typename?: 'TokenType' } & Pick<
+  TokenType,
+  'id' | 'name' | 'decimals' | 'symbol' | 'network'
+> & {
+    alias?: Maybe<
+      { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'id' | 'name' | 'symbol'>
+    >
+    priceFeed?: Maybe<
+      | ({ __typename?: 'TokenPriceFeedCoingeckoIdType' } & Pick<
+          TokenPriceFeedCoingeckoIdType,
+          'id' | 'type'
+        >)
+      | ({ __typename?: 'TokenPriceFeedCoingeckoAddressType' } & Pick<
+          TokenPriceFeedCoingeckoAddressType,
+          'type' | 'platform' | 'address'
+        >)
+    >
+  }
 
 export type UsersQueryVariables = Exact<{
   filter?: Maybe<UserListFilterInputType>

@@ -14,7 +14,7 @@ export const dropdown = style({
 })
 
 export const dropdownInner = style({
-  maxHeight: 400,
+  maxHeight: 300,
   overflowX: 'hidden',
   overflowY: 'auto',
   display: 'flex',
