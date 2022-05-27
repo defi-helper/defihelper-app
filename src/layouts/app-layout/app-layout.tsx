@@ -37,6 +37,11 @@ const MENU: MenuItem[] = [
     icon: 'grid',
   },
   {
+    title: 'Autostaking',
+    path: paths.autostaking,
+    icon: 'autostaking',
+  },
+  {
     title: 'Automations',
     path: paths.automations.list,
     icon: 'energy',

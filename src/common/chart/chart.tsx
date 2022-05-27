@@ -21,8 +21,8 @@ import clsx from 'clsx'
 
 import { useTheme } from '~/common/theme'
 import { config } from '~/config'
+import { Loader } from '~/common/loader'
 import * as styles from './chart.css'
-import { Loader } from '../loader'
 
 export type ChartProps = {
   dataFields: Array<IXYSeriesDataFields & { color?: string; format?: string }>

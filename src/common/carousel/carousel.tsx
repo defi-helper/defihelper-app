@@ -11,7 +11,7 @@ export type CarouselProps = {
   className?: string
 }
 
-export const Carousel: React.FC<CarouselProps> = (props) => {
+export const Carousel: React.VFC<CarouselProps> = (props) => {
   const settings = {
     dots: true,
     infinite: false,
