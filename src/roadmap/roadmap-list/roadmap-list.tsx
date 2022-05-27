@@ -262,8 +262,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
         </CanDemo>
       </div>
       <Typography variant="h4" className={styles.subtitle}>
-        Here you can see the planned features of the service and vote and add
-        the features you need
+        Vote for proposals you feel will most benefit the protocol
       </Typography>
       <div className={styles.inputs}>
         <Select
