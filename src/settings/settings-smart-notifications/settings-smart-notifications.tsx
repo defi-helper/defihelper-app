@@ -104,8 +104,7 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
             title="Account Balance Status"
             description={
               <>
-                Get notified about balance insufficiency to pay for automated
-                transactions
+                Get notified if your balance is too low to pay for automations
               </>
             }
             onSwitch={(state) =>
