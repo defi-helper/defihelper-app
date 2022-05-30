@@ -35,6 +35,6 @@ const closeWallet = guard({
 export const $assetsByWallet = restore(
   fetchAssetsByWalletFx.doneData,
   []
-).reset(closeWallet, authModel.logoutFx.done)
+).reset(closeWallet, authModel.logoutFx)
 
-$openedWallet.reset(authModel.logoutFx.done)
+$openedWallet.reset(authModel.logoutFx)

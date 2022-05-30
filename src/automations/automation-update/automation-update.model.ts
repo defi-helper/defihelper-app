@@ -14,8 +14,14 @@ import {
 import { automationApi } from '~/automations/common/automation.api'
 import { Trigger } from '../common/automation.types'
 import { toastsService } from '~/toasts'
+import { authModel } from '~/auth'
 
 export const automationUpdateDomain = createDomain()
+
+export const AutomationUpdateGate = createGate<Trigger | null>({
+  domain: automationUpdateDomain,
+  name: 'AutomationUpdateGate',
+})
 
 export const createTriggerFx = automationUpdateDomain.createEffect(
   async (input: AutomateTriggerCreateInputType) => {
@@ -101,11 +107,6 @@ export const fetchProtocolsFx = automationUpdateDomain.createEffect(() =>
   })
 )
 
-export const AutomationUpdateGate = createGate<Trigger | null>({
-  domain: automationUpdateDomain,
-  name: 'AutomationUpdateGate',
-})
-
 sample({
   clock: AutomationUpdateGate.open,
   target: fetchProtocolsFx,
@@ -174,12 +175,12 @@ export const $conditionsPriority = restore(
   0
 )
 
-$actions.reset(AutomationUpdateGate.close)
-$actionsPriority.reset(AutomationUpdateGate.close)
-$conditions.reset(AutomationUpdateGate.close)
-$conditionsPriority.reset(AutomationUpdateGate.close)
-$createdTrigger.reset(AutomationUpdateGate.close)
-$updatedTrigger.reset(AutomationUpdateGate.close)
+$actions.reset(AutomationUpdateGate.close, authModel.logoutFx)
+$actionsPriority.reset(AutomationUpdateGate.close, authModel.logoutFx)
+$conditions.reset(AutomationUpdateGate.close, authModel.logoutFx)
+$conditionsPriority.reset(AutomationUpdateGate.close, authModel.logoutFx)
+$createdTrigger.reset(AutomationUpdateGate.close, authModel.logoutFx)
+$updatedTrigger.reset(AutomationUpdateGate.close, authModel.logoutFx)
 
 toastsService.forwardErrors(
   createActionFx.failData,

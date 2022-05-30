@@ -4,8 +4,17 @@ import { createGate } from 'effector-react'
 import { automationApi } from '~/automations/common/automation.api'
 import { PaginationState } from '~/common/create-pagination'
 import { AutomateTriggerCallHistoryType } from '~/api/_generated-types'
+import { authModel } from '~/auth'
 
 export const automationHistoryListDomain = createDomain()
+
+export const AutomationHistoryListGate = createGate<{
+  automationId: string
+  pagination: PaginationState
+}>({
+  domain: automationHistoryListDomain,
+  name: 'AutomationHistoryListGate',
+})
 
 export const fetchHistoryFx = automationHistoryListDomain.createEffect(
   (params: { pagination: PaginationState; automationId: string }) =>
@@ -20,19 +29,12 @@ export const fetchHistoryFx = automationHistoryListDomain.createEffect(
 export const $count = restore(
   fetchHistoryFx.doneData.map(({ count }) => count),
   0
-)
+).reset(AutomationHistoryListGate.close, authModel.logoutFx)
 
 export const $history = automationHistoryListDomain
   .createStore<AutomateTriggerCallHistoryType[]>([])
   .on(fetchHistoryFx.doneData, (_, { list }) => list)
-
-export const AutomationHistoryListGate = createGate<{
-  automationId: string
-  pagination: PaginationState
-}>({
-  domain: automationHistoryListDomain,
-  name: 'AutomationHistoryListGate',
-})
+  .reset(AutomationHistoryListGate.close, authModel.logoutFx)
 
 sample({
   source: AutomationHistoryListGate.state,

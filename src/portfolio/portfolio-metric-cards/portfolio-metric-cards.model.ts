@@ -30,4 +30,4 @@ sample({
   target: fetchMetricCardsFx,
 })
 
-$metric.reset(authModel.logoutFx.done)
+$metric.reset(authModel.logoutFx)

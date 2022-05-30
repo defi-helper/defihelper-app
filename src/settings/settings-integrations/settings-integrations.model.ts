@@ -113,7 +113,7 @@ export const $integrations = combine($integrationsList, (integrations) => {
   }, {})
 })
 
-$assetsByIntegration.reset(authModel.logoutFx.done)
+$assetsByIntegration.reset(authModel.logoutFx)
 toastsService.forwardErrors(
   fetchEstablishedIntegrationsListFx.failData,
   connectIntegrationApiExchangeFx.failData,
