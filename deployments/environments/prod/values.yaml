@@ -36,8 +36,13 @@ autoscaling:
   maxReplicas: 1
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
-nodeSelector: {}
-tolerations: []
+nodeSelector:
+  group_name: "apps-web"
+tolerations:
+  - key: node-role.kubernetes.io/apps-web
+    operator: "Equal"
+    value: "true"
+    effect: NoSchedule
 affinity: {}
 nameOverride: ""
 fullnameOverride: ""
