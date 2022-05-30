@@ -109,7 +109,7 @@ export const $userContactList = settingsContactsDomain
         : contact
     )
   )
-  .reset(authModel.logoutFx.done)
+  .reset(authModel.logoutFx)
 
 export const SettingsContactsGate = createGate({
   domain: settingsContactsDomain,
@@ -117,8 +117,8 @@ export const SettingsContactsGate = createGate({
 })
 
 guard({
-  source: authModel.$userReady,
+  source: [authModel.$userReady, authModel.$user],
   clock: [SettingsContactsGate.open, authModel.$userReady.updates],
-  filter: (userReady) => userReady,
+  filter: ([userReady, user]) => userReady && Boolean(user),
   target: fetchUserContactListFx,
 })

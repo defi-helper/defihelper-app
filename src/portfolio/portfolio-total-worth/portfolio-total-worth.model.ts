@@ -110,4 +110,4 @@ export const $portfolioTotalWorth = portfolioTotalWorth
       },
     }
   })
-  .reset(authModel.logoutFx.done)
+  .reset(authModel.logoutFx)

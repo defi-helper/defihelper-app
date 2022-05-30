@@ -9,6 +9,7 @@ import { loadAdapter } from '~/common/load-adapter'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
+import { authModel } from '~/auth'
 
 type DeployParams = {
   inputs: string[]
@@ -22,6 +23,11 @@ type DeployParams = {
 }
 
 export const automationDeployContractDomain = createDomain()
+
+export const AutomationDeployContractGate = createGate<string>({
+  domain: automationDeployContractDomain,
+  name: 'AutomationDeployContractGate',
+})
 
 export const fetchAutomationContractsFx =
   automationDeployContractDomain.createEffect(async (chainId: string) => {
@@ -87,8 +93,12 @@ export const fetchDeployAdapterFx = automationDeployContractDomain.createEffect(
 export const $automateContracts = automationDeployContractDomain
   .createStore<Automates[]>([])
   .on(fetchAutomationContractsFx.doneData, (_, payload) => payload)
+  .reset(AutomationDeployContractGate.close, authModel.logoutFx)
 
-export const $deployAdapter = restore(fetchDeployAdapterFx.doneData, null)
+export const $deployAdapter = restore(
+  fetchDeployAdapterFx.doneData,
+  null
+).reset(AutomationDeployContractGate.close, authModel.logoutFx)
 
 export const deployFx = automationDeployContractDomain.createEffect(
   async (params: DeployParams) => {
@@ -123,11 +133,6 @@ export const deployFx = automationDeployContractDomain.createEffect(
     return createdContract
   }
 )
-
-export const AutomationDeployContractGate = createGate<string>({
-  domain: automationDeployContractDomain,
-  name: 'AutomationDeployContractGate',
-})
 
 sample({
   clock: guard({
