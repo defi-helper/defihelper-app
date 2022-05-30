@@ -52,11 +52,22 @@ globalStyle(`${search} input`, {
   backgroundColor: theme.colors.paper,
 })
 
+export const tableWrap = style({
+  maxWidth: '100%',
+  overflowX: 'auto',
+})
+
+export const table = style({
+  background: theme.colors.paper,
+  minWidth: 1000,
+})
+
 export const row = style({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr',
   alignItems: 'center',
   padding: '20px 16px',
+  gap: 30,
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr 10% 12% 14% 19%',
 
   selectors: {
     '&:not(:last-child)': {
@@ -68,14 +79,17 @@ export const row = style({
 export const tableHeader = style([
   row,
   {
-    padding: '16px 105px 16px 44px',
+    padding: 16,
     color: theme.colors.textColorGrey,
-    display: 'none',
-
-    '@media': {
-      [theme.mediaQueries.md()]: {
-        display: 'grid',
-      },
-    },
   },
 ])
+
+export const tableName = style({
+  paddingLeft: 28,
+})
+
+export const apyBoost = style({
+  display: 'flex',
+  gap: 16,
+  alignItems: 'center',
+})

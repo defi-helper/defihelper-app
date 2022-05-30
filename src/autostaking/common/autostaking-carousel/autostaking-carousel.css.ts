@@ -2,7 +2,9 @@ import { style, globalStyle } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
-export const root = style({})
+export const root = style({
+  overflow: 'hidden',
+})
 
 export const slide = style({
   padding: '0 12px',

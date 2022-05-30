@@ -4104,6 +4104,68 @@ export type AutomationTriggersQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type AutostakingStakingContractsQueryVariables = Exact<{
+  filter?: Maybe<ContractListFilterInputType>
+  sort?: Maybe<Array<ContractListSortInputType> | ContractListSortInputType>
+  pagination?: Maybe<ContractListPaginationInputType>
+}>
+
+export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
+  contracts: { __typename?: 'ContractListType' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'ContractType' } & Pick<
+          ContractType,
+          | 'id'
+          | 'adapter'
+          | 'layout'
+          | 'blockchain'
+          | 'network'
+          | 'address'
+          | 'deployBlockNumber'
+          | 'name'
+          | 'description'
+          | 'link'
+          | 'hidden'
+          | 'deprecated'
+        > & {
+            protocol: { __typename?: 'ProtocolType' } & Pick<
+              ProtocolType,
+              'id' | 'name' | 'icon'
+            >
+            metric: { __typename?: 'ContractMetricType' } & Pick<
+              ContractMetricType,
+              | 'tvl'
+              | 'aprDay'
+              | 'aprWeek'
+              | 'aprMonth'
+              | 'aprYear'
+              | 'myStaked'
+              | 'aprWeekReal'
+              | 'myAPYBoost'
+            >
+            tokens: { __typename?: 'ContractTokenLinkType' } & {
+              stake: Array<
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'network' | 'address' | 'name'
+                > & {
+                    alias?: Maybe<
+                      { __typename?: 'TokenAlias' } & Pick<
+                        TokenAlias,
+                        'logoUrl'
+                      >
+                    >
+                  }
+              >
+            }
+          }
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
 export type BuyLiquidityContractsQueryVariables = Exact<{
   filter: ProtocolFilterInputType
   contractFilter?: Maybe<ContractListFilterInputType>
