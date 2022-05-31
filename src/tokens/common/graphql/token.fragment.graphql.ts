@@ -1,12 +1,11 @@
 import { gql } from 'urql'
+import { TOKEN_ALIAS_FRAGMENT } from './token-alias.fragment.graphql'
 
 export const TOKEN_FRAGMENT = gql`
   fragment token on TokenType {
     id
     alias {
-      id
-      name
-      symbol
+      ...tokenAlias
     }
     name
     decimals
@@ -24,5 +23,7 @@ export const TOKEN_FRAGMENT = gql`
       }
     }
     network
+    address
   }
+  ${TOKEN_ALIAS_FRAGMENT}
 `

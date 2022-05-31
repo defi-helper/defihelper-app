@@ -13,7 +13,11 @@ import {
   portfolioSortAssetsByPlatform,
   portfolioSortAssetsByWallet,
 } from '~/portfolio/common'
-import { PortfolioAssetFragment, UserType } from '~/api/_generated-types'
+import {
+  PortfolioAssetFragment,
+  TokenAliasLiquidityEnum,
+  UserType,
+} from '~/api/_generated-types'
 import { authModel } from '~/auth'
 
 export const portfolioAssetsDomain = createDomain()
@@ -53,6 +57,12 @@ export const fetchUserInteractedProtocolsListFx =
   )
 
 export const $assets = portfolioAssetsDomain
+  .createStore<PortfolioAssetFragment[]>([])
+  .on(fetchAssetsListFx.doneData, (_, payload) =>
+    payload.filter((row) => row.liquidity !== TokenAliasLiquidityEnum.Trash)
+  )
+
+export const $assetsDebug = portfolioAssetsDomain
   .createStore<PortfolioAssetFragment[]>([])
   .on(fetchAssetsListFx.doneData, (_, payload) => payload)
 

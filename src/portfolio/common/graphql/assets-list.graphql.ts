@@ -6,7 +6,7 @@ export const ASSETS_LIST = gql`
     me {
       tokenAliases(
         pagination: { limit: 50 }
-        filter: { liquidity: [stable, unstable] }
+        filter: { liquidity: [stable, unstable, trash] }
       ) {
         list {
           ...portfolioAsset

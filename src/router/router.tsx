@@ -41,6 +41,7 @@ import { DemoForward } from '~/demo-forward'
 import { Bridges } from '~/bridges'
 import { Tokens } from '~/tokens'
 import { Admin } from '~/admin'
+import { TokensAlias } from '~/tokens-alias'
 
 export type RouterProps = unknown
 
@@ -142,6 +143,9 @@ export const Router: React.VFC<RouterProps> = () => {
         </PrivateRoute>
         <PrivateRoute path={paths.monitoring}>
           <Monitoring />
+        </PrivateRoute>
+        <PrivateRoute path={paths.tokensAlias}>
+          <TokensAlias />
         </PrivateRoute>
         <PrivateRoute path={paths.tokens}>
           <Tokens />

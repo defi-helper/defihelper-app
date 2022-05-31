@@ -1,5 +1,7 @@
 import {
   getAPIClient,
+  TokenAliasUpdateMutation,
+  TokenAliasUpdateMutationVariables,
   TokensAliasQuery,
   TokensAliasQueryVariables,
   TokensQuery,
@@ -8,6 +10,7 @@ import {
   TokenUpdateMutationVariables,
 } from '~/api'
 import { TOKENS_ALIAS } from './token-alias-list.graphql'
+import { TOKEN_ALIAS_UPDATE } from './token-alias-update.graphql'
 import { TOKENS } from './token-list.graphql'
 import { TOKEN_UPDATE } from './token-update.graphql'
 
@@ -41,4 +44,16 @@ export const tokensApi = {
         variables,
       })
       .then(({ data }) => data?.tokenUpdate),
+
+  tokenAliasUpdate: (variables: TokenAliasUpdateMutationVariables) =>
+    getAPIClient()
+      .request<
+        TokenAliasUpdateMutation,
+        unknown,
+        TokenAliasUpdateMutationVariables
+      >({
+        query: TOKEN_ALIAS_UPDATE.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.tokenAliasUpdate),
 }

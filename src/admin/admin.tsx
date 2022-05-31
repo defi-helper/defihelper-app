@@ -22,6 +22,11 @@ const PAGES = [
     icon: <Icon icon="grid" />,
   },
   {
+    title: 'Tokens aliases',
+    link: paths.tokensAlias,
+    icon: <Icon icon="grid" />,
+  },
+  {
     title: 'Users',
     link: paths.users,
     icon: <Icon icon="grid" />,
