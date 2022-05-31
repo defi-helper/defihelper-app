@@ -44,7 +44,7 @@ export const paths = {
       `/automations/history/${automationId}` as const,
   },
 
-  users: '/users',
+  users: '/admin/users',
 
   governanceMultisig: '/governance-multisig',
 
@@ -56,8 +56,9 @@ export const paths = {
 
   vesting: '/vesting',
 
-  monitoring: '/monitoring',
-  tokens: '/tokens',
+  monitoring: '/admin/monitoring',
+  tokens: '/admin/tokens',
+  tokensAlias: '/admin/tokens-alias',
 
   buyLp: '/buy-liquidity',
 

@@ -11,13 +11,23 @@ export const title = style({
 
 export const searchBox = style({
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'flex-end',
   marginBottom: 20,
 })
 
 export const total = style({
   opacity: 0.6,
   fontFamily: 'monospace',
+})
+
+export const tokenLogo = style({
+  height: 24,
+  width: 24,
+  borderRadius: 24,
+})
+
+export const liquiditySelect = style({
+  width: 200,
 })
 
 export const titleWrapper = style({
@@ -58,7 +68,7 @@ export const tableRow = composeStyles(
   mb,
   style({
     display: 'grid',
-    gridTemplateColumns: '75px minmax(20%, 1fr) 70px 60px 60px 1fr 35px',
+    gridTemplateColumns: '40px 1fr 100px',
     gridGap: 15,
     overflowWrap: 'break-word',
   })

@@ -6,6 +6,7 @@ import {
   PortfolioAssetByProtocolFragment,
   PortfolioAssetByWalletFragment,
   PortfolioAssetFragment,
+  TokenAliasLiquidityEnum,
 } from '~/api/_generated-types'
 import * as styles from './portfolio-asset-card.css'
 
@@ -30,7 +31,15 @@ export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
         myBalance: asset.metric.balance,
         myUSD: asset.metric.usd,
       },
+      tokenAlias: asset.tokenAlias,
     } as PortfolioAssetFragment
+  }
+
+  if (
+    'liquidity' in asset &&
+    asset.liquidity === TokenAliasLiquidityEnum.Trash
+  ) {
+    return null
   }
 
   return (

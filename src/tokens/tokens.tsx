@@ -10,6 +10,7 @@ import {
 import { ButtonBase } from '~/common/button-base'
 import { useDialog } from '~/common/dialog'
 import { Input } from '~/common/input'
+import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
@@ -91,6 +92,7 @@ export const Tokens: React.VFC = () => {
           </div>
 
           <div className={clsx(styles.tableRow, styles.tableHeader)}>
+            <Typography variant="body3">Type</Typography>
             <Typography variant="body3">Name</Typography>
             <Typography variant="body3">Smbl</Typography>
             <Typography variant="body3">Dcmls</Typography>
@@ -100,7 +102,19 @@ export const Tokens: React.VFC = () => {
           <div>
             {tokens.map((token) => (
               <div className={styles.tableRow}>
-                <Typography variant="body2">{token.name}</Typography>
+                <Typography variant="body2">
+                  {token.alias?.liquidity ?? '-'}
+                </Typography>
+                <Typography variant="body2">
+                  <Link
+                    target="_blank"
+                    href={`${
+                      networksConfig[token.network]?.explorerUrl
+                    }/address/${token.address}`}
+                  >
+                    {token.name}
+                  </Link>
+                </Typography>
                 <Typography variant="body3">{token.symbol}</Typography>
                 <Typography variant="body3">{token.decimals}</Typography>
                 <Typography variant="body3">{token.network}</Typography>
