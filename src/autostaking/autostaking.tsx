@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react'
+import { useThrottle } from 'react-use'
+
 import { AppLayout } from '~/layouts'
 import { Head } from '~/common/head'
 import { Icon } from '~/common/icon'
@@ -14,6 +17,19 @@ import { AutostakingContracts } from './autostaking-contracts'
 export type AutostakingProps = unknown
 
 export const Autostaking: React.VFC<AutostakingProps> = () => {
+  const [search, setSearch] = useState('')
+  const [currentTab, setCurrentTab] = useState(0)
+
+  const searchThrottled = useThrottle(search, 300)
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value)
+  }
+
+  useEffect(() => {
+    setSearch('')
+  }, [currentTab])
+
   return (
     <AppLayout title="Boost your APY">
       <Head title="Boost your APY" />
@@ -22,7 +38,7 @@ export const Autostaking: React.VFC<AutostakingProps> = () => {
         <Typography variant="h3">Boost your APY</Typography>
       </div>
       <AutostakingInstruction />
-      <AutostakingTabs className={styles.tabs}>
+      <AutostakingTabs className={styles.tabs} onChange={setCurrentTab}>
         <AutostakingTabs.Header>
           <Typography as={ButtonBase} variant="h3">
             Your deployed contracts
@@ -31,11 +47,15 @@ export const Autostaking: React.VFC<AutostakingProps> = () => {
             Contracts to migrate
           </Typography>
           <AutostakingTabs.HeaderRight>
-            <Input placeholder="Search" className={styles.search} />
+            <Input
+              placeholder="Search"
+              className={styles.search}
+              onChange={handleSearch}
+            />
           </AutostakingTabs.HeaderRight>
         </AutostakingTabs.Header>
-        <AutostakingDeployedContracts />
-        <AutostakingMigrateContracts />
+        <AutostakingDeployedContracts search={searchThrottled} />
+        <AutostakingMigrateContracts search={searchThrottled} />
       </AutostakingTabs>
       <AutostakingContracts />
     </AppLayout>

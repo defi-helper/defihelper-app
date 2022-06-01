@@ -12,18 +12,17 @@ import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { CircularProgress } from '~/common/circular-progress'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { networksConfig } from '~/networks-config'
-import * as styles from './autostaking-deployed-contract-card.css'
 import { CanDemo } from '~/auth/can-demo'
-import { dateUtils } from '~/common/date-utils'
+import * as styles from './autostaking-deployed-contract-card.css'
 
 export type AutostakingDeployedContractCardProps = {
   className?: string
   title: string
   address: string
   network: string
+  tokensIcons: Array<string | null>
   blockchain: string
   value: string
-  nextRestakeDate: string
   onDeposit: () => void
   onUnstake: () => void
   onDelete: () => void
@@ -53,6 +52,26 @@ export const AutostakingDeployedContractCard: React.VFC<AutostakingDeployedContr
       <Paper className={clsx(styles.root, props.className)} radius={8}>
         <div className={styles.header}>
           <div className={styles.heading}>
+            <div className={styles.icons}>
+              {props.tokensIcons.map((logoUrl, index) =>
+                logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt=""
+                    key={String(index)}
+                    className={styles.icon}
+                  />
+                ) : (
+                  <Paper
+                    radius={24}
+                    key={String(index)}
+                    className={styles.paperIcon}
+                  >
+                    <Icon icon="unknownNetwork" width="16" height="16" />
+                  </Paper>
+                )
+              )}
+            </div>
             <Typography as="span">
               {props.title || cutAccount(props.address)}
             </Typography>
@@ -147,16 +166,6 @@ export const AutostakingDeployedContractCard: React.VFC<AutostakingDeployedContr
           </div>
         </div>
         <div className={clsx(styles.footer, props.error && styles.error)}>
-          <div className={styles.row}>
-            <Typography variant="body2" as="span" className={styles.infoTitle}>
-              <Typography variant="inherit" className={styles.opacity}>
-                Next restake
-              </Typography>
-            </Typography>
-            <Typography variant="body2" as="span">
-              {dateUtils.format(props.nextRestakeDate, 'DD/MM/YYYY')}
-            </Typography>
-          </div>
           <div className={styles.row}>
             <Typography variant="body2" as="span" className={styles.infoTitle}>
               <Typography variant="inherit" className={styles.opacity}>

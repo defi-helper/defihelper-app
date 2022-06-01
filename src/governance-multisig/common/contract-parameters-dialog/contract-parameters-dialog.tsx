@@ -64,7 +64,7 @@ export const ContractParametersDialog: React.VFC<ContractParametersDialogProps> 
 
     return (
       <Dialog className={styles.root}>
-        <form onSubmit={handleOnSubmit}>
+        <form noValidate autoComplete="off" onSubmit={handleOnSubmit}>
           <div className={styles.fn}>
             {props.method.name}
             {props.method.inputs.map((input) => (

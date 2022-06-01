@@ -88,7 +88,11 @@ export const TokensCreateTokenDialog: React.VFC<TokensCreateTokenDialogProps> =
           Edit token
         </Typography>
 
-        <form onSubmit={handleSubmit((values) => props.onConfirm(values))}>
+        <form
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSubmit((values) => props.onConfirm(values))}
+        >
           <Input
             {...register('name')}
             label="Name"

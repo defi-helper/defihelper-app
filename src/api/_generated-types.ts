@@ -637,6 +637,7 @@ export type ContractListAutomateFilterInputType = {
 
 export type ContractListFilterInputType = {
   id?: Maybe<Scalars['UuidType']>
+  protocol?: Maybe<Array<Scalars['UuidType']>>
   blockchain?: Maybe<BlockchainFilterInputType>
   hidden?: Maybe<Scalars['Boolean']>
   automate?: Maybe<ContractListAutomateFilterInputType>
@@ -5667,6 +5668,18 @@ export type StakingAutomatesContractFragmentFragment = {
             ContractMetricType,
             'tvl' | 'aprYear' | 'myStaked' | 'myEarned' | 'myAPYBoost'
           >
+          tokens: { __typename?: 'ContractTokenLinkType' } & {
+            stake: Array<
+              { __typename?: 'TokenType' } & Pick<
+                TokenType,
+                'network' | 'address' | 'name'
+              > & {
+                  alias?: Maybe<
+                    { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
+                  >
+                }
+            >
+          }
         }
     >
     contractWallet?: Maybe<

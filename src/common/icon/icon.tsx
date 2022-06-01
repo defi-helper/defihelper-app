@@ -89,6 +89,7 @@ import { ReactComponent as AutostakingIcon } from '~/assets/icons/autostaking.sv
 import { ReactComponent as EyeIcon } from '~/assets/icons/eye.svg'
 import { ReactComponent as ArrowLongLeftIcon } from '~/assets/icons/arrow-long-left.svg'
 import { ReactComponent as ArrowLongRightIcon } from '~/assets/icons/arrow-long-right.svg'
+import { ReactComponent as PlayIcon } from '~/assets/icons/play.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -187,6 +188,7 @@ const ICONS = {
   eye: EyeIcon,
   arrowLongLeft: ArrowLongLeftIcon,
   arrowLongRight: ArrowLongRightIcon,
+  play: PlayIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

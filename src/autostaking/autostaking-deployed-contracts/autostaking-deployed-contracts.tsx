@@ -2,21 +2,25 @@ import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { useMemo } from 'react'
 import { useMedia } from 'react-use'
+import { useStore, useGate } from 'effector-react'
 
-import { BlockchainEnum } from '~/api'
 import { AutostakingDeployedContractCard } from '~/autostaking/common/autostaking-deployed-contract-card'
 import { Paper } from '~/common/paper'
 import { AutostakingCarousel } from '~/autostaking/common/autostaking-carousel'
 import { Typography } from '~/common/typography'
+import * as model from '~/staking/staking-automates/staking-automates.model'
 import * as styles from './autostaking-deployed-contracts.css'
 
 export type AutostakingDeployedContractsProps = {
   className?: string
+  search: string
 }
 
 export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContractsProps> =
   (props) => {
-    const contracts = Array.from({ length: 3 }, (_, i) => i)
+    const contracts = useStore(model.$automatesContracts)
+
+    useGate(model.StakingAutomatesGate)
 
     const isEmptyContracts = isEmpty(contracts)
 
@@ -37,6 +41,22 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
       return 1
     }, [isDesktop, isTablet])
 
+    const handleOnDelete =
+      (deployedContract: typeof contracts[number]) => () => {
+        console.log(deployedContract)
+      }
+    const handleOnUnstake =
+      (deployedContract: typeof contracts[number]) => () => {
+        console.log(deployedContract)
+      }
+    const handleOnDeposit =
+      (deployedContract: typeof contracts[number]) => () => {
+        console.log(deployedContract)
+      }
+    const handleOnRun = (deployedContract: typeof contracts[number]) => () => {
+      console.log(deployedContract)
+    }
+
     return (
       <Component
         className={clsx(props.className, {
@@ -56,21 +76,29 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
             count={contracts.length}
             slidesToShow={slidesToShow}
           >
-            {contracts.map((i) => (
+            {contracts.map((deployedContract) => (
               <AutostakingDeployedContractCard
-                key={i}
-                title="USDT-BUSD"
-                address="0xD001e8B722ab435277087f68A8cb5f565d9085Af"
-                network="1"
-                blockchain={BlockchainEnum.Ethereum}
-                value="1000"
-                nextRestakeDate={new Date().toISOString()}
-                apy="100"
-                apyBoost="100"
-                onDelete={() => {}}
-                onUnstake={() => {}}
-                onDeposit={() => {}}
-                onRun={() => {}}
+                key={deployedContract.id}
+                title={deployedContract.contract?.name ?? ''}
+                address={deployedContract.address}
+                network={deployedContract.contract?.network ?? ''}
+                tokensIcons={
+                  deployedContract.contract?.tokens.stake.map(
+                    ({ alias }) => alias?.logoUrl ?? null
+                  ) ?? []
+                }
+                blockchain={deployedContract.contract?.blockchain ?? ''}
+                value={deployedContract.contractWallet?.metric.stakedUSD ?? ''}
+                apy={deployedContract.contract?.metric.aprYear}
+                apyBoost={deployedContract.contract?.metric.myAPYBoost}
+                onDelete={handleOnDelete(deployedContract)}
+                onUnstake={handleOnUnstake(deployedContract)}
+                onDeposit={handleOnDeposit(deployedContract)}
+                onRun={handleOnRun(deployedContract)}
+                deleting={deployedContract.deleting}
+                depositing={deployedContract.depositing}
+                running={deployedContract.running}
+                unstaking={deployedContract.refunding}
               />
             ))}
           </AutostakingCarousel>

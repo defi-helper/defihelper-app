@@ -7,6 +7,7 @@ import {
   createContext,
   useContext,
   cloneElement,
+  useEffect,
 } from 'react'
 
 import * as styles from './autostaking-tabs.css'
@@ -19,6 +20,8 @@ const TabContext = createContext<{
 export type AutostakingTabsProps = {
   className?: string
   children?: React.ReactNode
+  onChange?: (currentTabIndex: number) => void
+  value?: number
 }
 
 const HeaderRight: React.FC<unknown> = (props) => <>{props.children}</>
@@ -50,7 +53,7 @@ const Header = (props: AutostakingTabsProps) => {
 }
 
 export const AutostakingTabs = (props: AutostakingTabsProps) => {
-  const [currentTab, setCurrentTab] = useState(0)
+  const [currentTab, setCurrentTab] = useState(props.value ?? 0)
 
   const children = Children.toArray(props.children).filter(isValidElement)
 
@@ -61,6 +64,11 @@ export const AutostakingTabs = (props: AutostakingTabsProps) => {
   const handleChangeTab = (tabIndex: number) => {
     setCurrentTab(tabIndex)
   }
+
+  useEffect(() => {
+    props.onChange?.(currentTab)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentTab])
 
   return (
     <TabContext.Provider

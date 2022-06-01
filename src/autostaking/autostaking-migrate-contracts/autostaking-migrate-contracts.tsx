@@ -12,6 +12,7 @@ import * as styles from './autostaking-migrate-contracts.css'
 
 export type AutostakingMigrateContractsProps = {
   className?: string
+  search: string
 }
 
 export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsProps> =
