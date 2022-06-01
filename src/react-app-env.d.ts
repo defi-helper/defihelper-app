@@ -30,6 +30,7 @@ interface Window {
   dayjs: unknown
   ethersMulticall: unknown
   BinanceChain?: unknown
+  uniswap3: unknown
 }
 
 declare module 'remarkable-react' {
