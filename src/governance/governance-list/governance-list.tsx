@@ -57,7 +57,7 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
   const delegateLoading = useStore(model.delegateVotesFx.pending)
 
   const isEnoughGovernanceTokens = bignumberUtils.gte(
-    governanceVotes?.balance,
+    governanceVotes?.votes,
     10000000
   )
 
@@ -95,6 +95,11 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
     }
   }
 
+  const handleOpenGovernanceTokensWarningDialog = () =>
+    openGovernanceTokensWarningDialog().catch((error) =>
+      console.error(error.message)
+    )
+
   return (
     <AppLayout
       title={
@@ -129,9 +134,11 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
                 '...'
               ) : (
                 <>
-                  {bignumberUtils.gt(governanceVotes?.votes, 0)
-                    ? governanceVotes?.votes ?? 0
-                    : governanceVotes?.balance ?? 0}
+                  {bignumberUtils.format(
+                    bignumberUtils.gt(governanceVotes?.votes, 0)
+                      ? governanceVotes?.votes ?? 0
+                      : governanceVotes?.balance ?? 0
+                  )}
                 </>
               )}{' '}
               votes
@@ -182,9 +189,7 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
               <Button
                 variant="contained"
                 color="blue"
-                onClick={() =>
-                  openGovernanceTokensWarningDialog().catch(() => {})
-                }
+                onClick={handleOpenGovernanceTokensWarningDialog}
               >
                 + New proposal
               </Button>
