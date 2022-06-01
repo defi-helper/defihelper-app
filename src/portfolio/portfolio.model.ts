@@ -43,4 +43,4 @@ sample({
   ],
 })
 
-$portfolioCollected.reset(PortfolioGate.close, authModel.logoutFx.done)
+$portfolioCollected.reset(PortfolioGate.close, authModel.logoutFx)

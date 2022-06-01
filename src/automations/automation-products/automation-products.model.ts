@@ -12,6 +12,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
 import { toastsService } from '~/toasts'
 import { config } from '~/config'
+import { authModel } from '~/auth'
 
 type Product = Exclude<
   AutomationProductsQuery['products']['list'],
@@ -77,6 +78,11 @@ export const buyProductFx = automationProductsDomain.createEffect(
   }
 )
 
+export const AutomationProductsGate = createGate({
+  name: 'AutomationProductsGate',
+  domain: automationProductsDomain,
+})
+
 export const $products = automationProductsDomain
   .createStore<Product[]>([])
   .on(fetchProductsFx.doneData, (_, { list }) => list)
@@ -90,11 +96,7 @@ export const $products = automationProductsDomain
       product.id === params.product.id ? { ...product, buying: false } : product
     )
   )
-
-export const AutomationProductsGate = createGate({
-  name: 'AutomationProductsGate',
-  domain: automationProductsDomain,
-})
+  .reset(AutomationProductsGate.close, authModel.logoutFx)
 
 sample({
   clock: AutomationProductsGate.open,

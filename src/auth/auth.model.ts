@@ -20,9 +20,7 @@ import * as settingsWalletModel from '~/settings/settings-wallets/settings-walle
 import { sidUtils, authApi } from './common'
 import { history } from '~/common/history'
 import { paths } from '~/paths'
-
 import { analytics } from '~/analytics'
-
 import { toastsService } from '~/toasts'
 
 type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
@@ -61,9 +59,7 @@ export const $user = authDomain
   )
   .reset(logoutFx.done)
 
-export const $userWallets = settingsWalletModel.$wallets.reset(
-  logoutFx.doneData
-)
+export const $userWallets = settingsWalletModel.$wallets.reset(logoutFx)
 
 export const authWavesFx = authDomain.createEffect(
   async (params: AuthWavesInputType) => {
@@ -134,12 +130,12 @@ sample({
 const $signedMessageEthereum = restore(
   authEthereumFx.map((payload) => payload),
   null
-)
+).reset(logoutFx)
 
 const $signedMessageWaves = restore(
   authWavesFx.map((payload) => payload),
   null
-)
+).reset(logoutFx)
 
 const signedUserEthereum = guard({
   clock: authEthereumFx.doneData,

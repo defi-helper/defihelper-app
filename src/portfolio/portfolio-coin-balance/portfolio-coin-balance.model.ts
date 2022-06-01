@@ -105,5 +105,5 @@ export const $portfolioCoinBalance = portfolioCoinBalance
 
 export const reset = portfolioCoinBalance.createEvent()
 
-$portfolioCoinBalance.reset(authModel.logoutFx.done)
-$currentGroup.reset(authModel.logoutFx.done, reset)
+$portfolioCoinBalance.reset(authModel.logoutFx)
+$currentGroup.reset(authModel.logoutFx, reset)

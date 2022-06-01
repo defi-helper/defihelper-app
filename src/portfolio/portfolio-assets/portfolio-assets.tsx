@@ -15,6 +15,8 @@ import * as styles from './portfolio-assets.css'
 import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
 import { Loader } from '~/common/loader'
 import { Link } from '~/common/link'
+import { useDialog } from '~/common/dialog'
+import { PortfolioDebugInfoDialog } from '../common/portfolio-debug-info-dialog/portfolio-debug-info-dialog'
 
 export type PortfolioAssetsProps = {
   className?: string
@@ -22,6 +24,7 @@ export type PortfolioAssetsProps = {
 
 export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   const assets = useStore(portfolioAssetsModel.$assets)
+  const assetsDebug = useStore(portfolioAssetsModel.$assetsDebug)
   const assetsByWallet = useStore(portfolioAssetsModel.$assetsByWallet)
   const wallets = useStore(settingsWalletModel.$wallets)
   const assetListLoading = useStore(
@@ -39,7 +42,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
   const assetsByPlatformLoading = useStore(
     portfolioAssetsModel.fetchAssetsByPlatformFx.pending
   )
-
+  const [openPortfolioDebugInfo] = useDialog(PortfolioDebugInfoDialog)
   const assetsLoading = assetListLoading || assetByWalletLoading
 
   const [currentTab, setCurrentTab] = useState(0)
@@ -72,6 +75,15 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
           className={clsx(currentTab !== 1 ? styles.inactiveTab : null)}
         >
           Platforms {protocols.length}
+        </Typography>
+
+        <Typography
+          onClick={() =>
+            openPortfolioDebugInfo({ assets: assetsDebug }).catch(() => {})
+          }
+          className={styles.debugInfo}
+        >
+          debug info
         </Typography>
       </div>
       <div className={styles.tableWrap}>

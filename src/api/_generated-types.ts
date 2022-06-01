@@ -4571,7 +4571,7 @@ export type PortfolioAssetByWalletFragment = {
 } & {
   tokenAlias: { __typename?: 'TokenAlias' } & Pick<
     TokenAlias,
-    'symbol' | 'name' | 'logoUrl'
+    'id' | 'symbol' | 'name' | 'logoUrl' | 'liquidity'
   >
   metric: { __typename?: 'WalletTokenAliasMetricType' } & Pick<
     WalletTokenAliasMetricType,
@@ -4581,7 +4581,7 @@ export type PortfolioAssetByWalletFragment = {
 
 export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
   TokenAlias,
-  'symbol' | 'name' | 'logoUrl'
+  'id' | 'symbol' | 'name' | 'logoUrl' | 'liquidity'
 > & {
     metric: { __typename?: 'TokenAliasMetricType' } & Pick<
       TokenAliasMetricType,
@@ -5983,6 +5983,15 @@ export type TokensAliasQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type TokenAliasUpdateMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: TokenAliasUpdateInputType
+}>
+
+export type TokenAliasUpdateMutation = { __typename?: 'Mutation' } & {
+  tokenAliasUpdate: { __typename?: 'TokenAlias' } & TokenAliasFragment
+}
+
 export type TokenAliasFragment = { __typename?: 'TokenAlias' } & Pick<
   TokenAlias,
   'id' | 'name' | 'symbol' | 'logoUrl' | 'liquidity'
@@ -6012,11 +6021,9 @@ export type TokenUpdateMutation = { __typename?: 'Mutation' } & {
 
 export type TokenFragment = { __typename?: 'TokenType' } & Pick<
   TokenType,
-  'id' | 'name' | 'decimals' | 'symbol' | 'network'
+  'id' | 'name' | 'decimals' | 'symbol' | 'network' | 'address'
 > & {
-    alias?: Maybe<
-      { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'id' | 'name' | 'symbol'>
-    >
+    alias?: Maybe<{ __typename?: 'TokenAlias' } & TokenAliasFragment>
     priceFeed?: Maybe<
       | ({ __typename?: 'TokenPriceFeedCoingeckoIdType' } & Pick<
           TokenPriceFeedCoingeckoIdType,

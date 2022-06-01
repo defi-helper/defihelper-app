@@ -15,6 +15,12 @@ import { stakingApi } from '~/staking/common'
 
 export const automationListDomain = createDomain()
 
+export const AutomationListGate = createGate<string>({
+  domain: automationListDomain,
+  name: 'AutomationListGate',
+  defaultState: '',
+})
+
 export const fetchTriggersFx = automationListDomain.createEffect(
   async (search: string) => {
     return automationApi.getTriggers(
@@ -128,12 +134,7 @@ export const $triggers = automationListDomain
         },
       }))
   )
-
-export const AutomationListGate = createGate<string>({
-  domain: automationListDomain,
-  name: 'AutomationListGate',
-  defaultState: '',
-})
+  .reset(authModel.logoutFx, AutomationListGate.close)
 
 sample({
   source: AutomationListGate.state,
@@ -184,6 +185,7 @@ export const $contracts = automationListDomain
   .on(deleteContractFx.done, (state, { params }) =>
     state.filter((contract) => contract.id !== params)
   )
+  .reset(authModel.logoutFx, AutomationListGate.close)
 
 sample({
   clock: guard({
@@ -203,13 +205,19 @@ const fetchDescriptionFx = automationListDomain.createEffect(
   automationApi.getDescription
 )
 
-export const $descriptions = restore(fetchDescriptionFx.doneData, null)
+export const $descriptions = restore(fetchDescriptionFx.doneData, null).reset(
+  authModel.logoutFx,
+  AutomationListGate.close
+)
 
 export const fetchBalanceFx = automationListDomain.createEffect(
   automationApi.getBalance
 )
 
-export const $balance = restore(fetchBalanceFx.doneData, 0)
+export const $balance = restore(fetchBalanceFx.doneData, 0).reset(
+  authModel.logoutFx,
+  AutomationListGate.close
+)
 
 sample({
   clock: AutomationListGate.open,

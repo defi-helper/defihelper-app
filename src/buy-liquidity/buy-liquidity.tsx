@@ -28,16 +28,16 @@ export type BuyLiquidityProps = unknown
 
 const INSTRUCTION = [
   {
-    title: '1. Choose  one of supported protocol ',
-    text: 'You can buy LP only with suported protocols. Look up for «Buy LP» button',
+    title: '1. Choose protocol',
+    text: "Select a protocol and look for the 'Buy LP' button",
   },
   {
-    title: '2. Choose contract ',
-    text: "Make your choice based on the numbers: we've already calculated TVL and APY for you",
+    title: '2. Choose contract',
+    text: 'Choose a contract based on our TVL and APY data',
   },
   {
-    title: "3. Press «Buy LP» button and you're in!",
-    text: 'AS easy as that! Pressing «Buy LP» will start automation wich allows you do it right in DFH!',
+    title: "3. Press 'Buy LP' button",
+    text: "Click on the 'Buy LP' button to invest in a certain pool",
   },
 ]
 
@@ -195,7 +195,7 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
         <Typography variant="h3">Buy LP</Typography>
       </div>
       <Typography variant="h4" className={styles.subtitle}>
-        Buying liquidity pools in DFH is easy as 1,2,3
+        Buying liquidity pool tokens is as easy as 1-2-3
       </Typography>
       <div className={styles.instruction}>
         {INSTRUCTION.map((instructionItem) => (

@@ -98,4 +98,4 @@ guard({
   target: fetchChartDataFx,
 })
 
-$portfolioEarnings.reset(authModel.logoutFx.done)
+$portfolioEarnings.reset(authModel.logoutFx)

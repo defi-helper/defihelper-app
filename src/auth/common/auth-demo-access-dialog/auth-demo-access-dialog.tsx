@@ -14,11 +14,11 @@ export const AuthDemoAccessDialog: React.VFC<AuthDemoAccessDialogProps> = (
   return (
     <Dialog className={styles.root}>
       <Typography variant="body2" weight="semibold" className={styles.title}>
-        You are in demo accout
+        You are in simulation mode
       </Typography>
       <Typography variant="body2" className={styles.body}>
-        To make any operations you have to connect your wallet. You can do it
-        right now or continue exploring the DeFiHelper in simulation mode.
+        You can&apos;t perform this operation in simulation mode. Please turn
+        off the simulation mode first to proceed.
       </Typography>
 
       <div className={styles.buttonGroup}>

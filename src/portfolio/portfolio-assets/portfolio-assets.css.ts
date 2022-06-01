@@ -25,6 +25,14 @@ export const inactiveTab = style({
   cursor: 'pointer',
 })
 
+export const debugInfo = style({
+  opacity: 0.2,
+  alignItems: 'center',
+  display: 'flex',
+  cursor: 'pointer',
+  fontSize: 11,
+})
+
 export const tableWrap = style({
   overflowX: 'auto',
   overflowY: 'hidden',

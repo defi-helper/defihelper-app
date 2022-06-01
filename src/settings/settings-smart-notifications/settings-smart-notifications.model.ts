@@ -33,7 +33,7 @@ export const toggleUserNotificationFx =
 export const $userNotificationsList = settingsNotificationsDomain
   .createStore<UserNotificationTypeFragment[]>([])
   .on(fetchUserNotificationsListFx.doneData, (_, payload) => payload)
-  .reset(authModel.logoutFx.done)
+  .reset(authModel.logoutFx)
 
 export const SettingsNotificationsGate = createGate({
   domain: settingsNotificationsDomain,

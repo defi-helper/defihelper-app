@@ -25,4 +25,4 @@ guard({
   target: fetchMyReferralCodeFx,
 })
 
-$referrerCode.reset(ReferralGate.close, authModel.logoutFx.done)
+$referrerCode.reset(ReferralGate.close, authModel.logoutFx)
