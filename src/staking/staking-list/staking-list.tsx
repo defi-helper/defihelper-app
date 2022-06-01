@@ -130,6 +130,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     : null
 
   const stakingList = useStore(model.$contractsListCopies)
+  const autostaking = useStore(model.$autostaking)
   const { metrics: freshMetrics, errors: freshMetricsError } = useStore(
     model.$freshMetrics
   )
@@ -236,7 +237,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         const metric = metrics[findedWallet.id]
 
-        if (!metric || !metric?.billing.balance.netBalance)
+        if (
+          !metric ||
+          typeof metric?.billing.balance.netBalance === 'undefined'
+        )
           throw Error('wallet is not connected')
 
         await openBillingForm({
@@ -443,7 +447,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         console.error(e)
       }
     },
-    currentWallet ? 3000 : null
+    currentWallet ? 1500 : null
   )
 
   const [sentryRef] = model.useInfiniteScroll()
@@ -738,7 +742,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         network={stakingListItem.network}
                         onTurnOn={handleAutostake(stakingListItem)}
                         buyLiquidity={stakingListItem.automate.buyLiquidity}
-                        autostakingLoading={stakingListItem.autostakingLoading}
+                        autostakingLoading={
+                          autostaking[stakingListItem.address]
+                        }
                         deprecated={stakingListItem.deprecated}
                         autorestake={
                           stakingListItem.automate.autorestake ?? undefined

@@ -10,7 +10,7 @@ export type AutostakingTabsDialogProps = unknown
 
 enum Tabs {
   transfer,
-  stake,
+  deposit,
 }
 
 export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> =
@@ -41,21 +41,30 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> =
             transform="uppercase"
             className={clsx(
               styles.tab,
-              currentTab === Tabs.stake && styles.tabActive
+              currentTab === Tabs.deposit && styles.tabActive
             )}
             as={ButtonBase}
-            onClick={handleChangeTab(Tabs.stake)}
+            onClick={handleChangeTab(Tabs.deposit)}
           >
-            STAKE
+            Deposit
           </Typography>
         </div>
-        <Typography variant="body2" className={styles.subtitle}>
-          Transfer your{' '}
-          <Link color="blue" href="/">
-            APE-LP
-          </Link>{' '}
-          tokens to your personal contract to enable automation.
-        </Typography>
+        {currentTab === Tabs.transfer && (
+          <>
+            <Typography variant="body2" className={styles.subtitle}>
+              Transfer your{' '}
+              <Link color="blue" href="/">
+                APE-LP
+              </Link>{' '}
+              tokens to your personal contract to enable automation.
+            </Typography>
+            <Typography>
+              Don&apos;t have LP tokens? Buy LP tokens (ZAP) from a single token
+              in 1 click
+            </Typography>
+          </>
+        )}
+        {currentTab === Tabs.deposit && <></>}
       </Dialog>
     )
   }

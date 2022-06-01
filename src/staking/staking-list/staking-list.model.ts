@@ -240,20 +240,11 @@ export const $contractList = stakingListDomain
   .on(deleteStakingFx.doneData, (state, payload) => {
     return state.filter(({ id }) => id !== payload)
   })
-  .on(autostakingStart, (state, payload) => {
-    return state.map((contract) =>
-      contract.id === payload
-        ? { ...contract, autostakingLoading: true }
-        : contract
-    )
-  })
-  .on(autostakingEnd, (state, payload) => {
-    return state.map((contract) =>
-      contract.id === payload
-        ? { ...contract, autostakingLoading: false }
-        : contract
-    )
-  })
+
+export const $autostaking = stakingListDomain
+  .createStore<Record<string, boolean>>({})
+  .on(autostakingStart, (state, payload) => ({ ...state, [payload]: true }))
+  .on(autostakingEnd, (state, payload) => ({ ...state, [payload]: false }))
 
 export const $contractsListCopies = restore($contractList.updates, []).on(
   stakingUpdateFx.doneData,
