@@ -11,7 +11,7 @@ import * as styles from './autostaking-video-dialog.css'
 
 export type AutostakingVideoDialogProps = {
   dontShowAgain?: boolean
-  onDontShowAgain: (value: boolean) => void
+  onDontShowAgain?: (value: boolean) => void
   onConfirm: () => void
 }
 
@@ -32,7 +32,7 @@ export const AutostakingVideoDialog: React.VFC<AutostakingVideoDialogProps> = (
   }
 
   useEffect(() => {
-    props.onDontShowAgain(dontShow)
+    props.onDontShowAgain?.(dontShow)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dontShow])
 
@@ -80,10 +80,12 @@ export const AutostakingVideoDialog: React.VFC<AutostakingVideoDialogProps> = (
       <Link href="/" color="blue" target="_blank" className={styles.link}>
         Learn more about DeFiHelper security
       </Link>
-      <Typography variant="body2" as="label" className={styles.checkbox}>
-        <Checkbox onChange={handleDontShow} checked={dontShow} />
-        Don&apos;t show this again
-      </Typography>
+      {props.onDontShowAgain && (
+        <Typography variant="body2" as="label" className={styles.checkbox}>
+          <Checkbox onChange={handleDontShow} checked={dontShow} />
+          Don&apos;t show this again
+        </Typography>
+      )}
       <Button size="medium" onClick={props.onConfirm}>
         start
       </Button>

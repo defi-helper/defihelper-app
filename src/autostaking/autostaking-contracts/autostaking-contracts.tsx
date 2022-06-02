@@ -61,7 +61,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   )
 
   const contractsLoading = useStore(model.fetchContractsFx.pending)
-  const contracts = useStore(model.$contracts)
+  const contracts = useStore(model.$contractsWithAutostakingLoading)
 
   const protocolSelectLoading = useStore(model.fetchProtocolsSelectFx.pending)
   const protocolsSelect = useStore(model.$protocolsSelect)
@@ -177,6 +177,8 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   }, [])
 
   const handleAutostake = (contract: typeof contracts[number]) => async () => {
+    model.autostakingStart(contract.id)
+
     try {
       const addresses = await model.fetchContractAddressesFx({
         contracts: [contract],
@@ -334,6 +336,8 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
       if (error instanceof Error && !(error instanceof UserRejectionError)) {
         toastsService.error(error.message)
       }
+    } finally {
+      model.autostakingEnd(contract.id)
     }
   }
 
@@ -591,6 +595,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                     size="small"
                     className={styles.autostakeButton}
                     onClick={handleAutostake(contract)}
+                    loading={contract.autostakingLoading}
                   >
                     auto-stake
                   </Button>

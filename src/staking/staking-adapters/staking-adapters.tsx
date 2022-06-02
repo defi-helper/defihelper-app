@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useStore } from 'effector-react'
 import networks from '@defihelper/networks/contracts.json'
 

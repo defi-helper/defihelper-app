@@ -5,6 +5,7 @@ import {
   UnitValue,
   createDomain,
   sample,
+  combine,
 } from 'effector-logger/macro'
 
 import {
@@ -46,6 +47,24 @@ export const $contracts = createStore<
 >([])
   .on(fetchContractsFx.doneData, (state, { list }) => [...state, ...list])
   .reset(resetContracts)
+
+export const autostakingStart = createEvent<string>()
+export const autostakingEnd = createEvent<string>()
+
+export const $autostaking = createStore<Record<string, boolean>>({})
+  .on(autostakingStart, (state, payload) => ({ ...state, [payload]: true }))
+  .on(autostakingEnd, (state, payload) => ({ ...state, [payload]: false }))
+  .reset(resetContracts)
+
+export const $contractsWithAutostakingLoading = combine(
+  $contracts,
+  $autostaking,
+  (contracts, autostaking) =>
+    contracts.map((contract) => ({
+      ...contract,
+      autostakingLoading: autostaking[contract.id],
+    }))
+)
 
 export const resetProtocolsSelect = createEvent()
 
