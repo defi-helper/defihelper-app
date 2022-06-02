@@ -1,24 +1,43 @@
 import { useForm } from 'react-hook-form'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { buildExplorerUrl } from '~/common/build-explorer-url'
 
 import { Button } from '~/common/button'
+import { cutAccount } from '~/common/cut-account'
 import { Dialog } from '~/common/dialog'
+import { Link } from '~/common/link'
 import { NumericalInput } from '~/common/numerical-input'
 import { Typography } from '~/common/typography'
 import * as styles from './autostaking-balance-dialog.css'
 
+type FormValues = {
+  amount: string
+}
+
 export type AutostakingBalanceDialogProps = {
   onConfirm: () => void
+  balance: string
+  network: string
+  wallet: string
+  priceUSD: string | undefined
+  recomendedIncome: string | undefined
+  token: string | undefined
+  onSubmit: (formValues: FormValues) => Promise<void>
 }
 
 export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> =
   (props) => {
-    const { register, handleSubmit } = useForm<{ balance: string }>()
+    const { register, handleSubmit, formState } = useForm<FormValues>()
 
-    const handleOnSubmit = handleSubmit((formValues) => {
-      // eslint-disable-next-line no-console
-      console.log(formValues)
-
-      props.onConfirm()
+    const handleOnSubmit = handleSubmit(async (formValues) => {
+      try {
+        await props.onSubmit(formValues)
+        props.onConfirm()
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
+      }
     })
 
     return (
@@ -45,23 +64,49 @@ export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> 
           onSubmit={handleOnSubmit}
         >
           <NumericalInput
-            {...register('balance')}
+            {...register('amount', { required: true })}
             placeholder="Enter amount"
             className={styles.input}
+            helperText={formState.errors.amount?.message}
+            error={Boolean(formState.errors.amount?.message)}
           />
           <div className={styles.balances}>
             <Typography variant="body2" className={styles.grey}>
               Recommended amount to deposit
             </Typography>
             <Typography variant="body2" className={styles.recomendedBalance}>
-              1 BNB ($290,76)
+              {bignumberUtils.format(props.recomendedIncome)} {props.token} ($
+              {bignumberUtils.format(
+                bignumberUtils.mul(props.recomendedIncome, props.priceUSD)
+              )}
+              )
             </Typography>
             <Typography variant="body2" className={styles.grey}>
-              Your DeFiHelper balance for wallet 23wbs4...4dsda2
+              Your DeFiHelper balance for wallet{' '}
+              <Link
+                href={buildExplorerUrl({
+                  network: props.network,
+                  address: props.wallet,
+                })}
+                target="_blank"
+              >
+                {cutAccount(props.wallet)}
+              </Link>
             </Typography>
-            <Typography variant="body2">2 BNB ($582,22)</Typography>
+            <Typography variant="body2">
+              {bignumberUtils.format(props.balance)} {props.token} ($
+              {bignumberUtils.format(
+                bignumberUtils.mul(props.balance, props.priceUSD)
+              )}
+              )
+            </Typography>
           </div>
-          <Button type="submit" size="small" className={styles.button}>
+          <Button
+            type="submit"
+            size="small"
+            className={styles.button}
+            loading={formState.isSubmitting}
+          >
             submit
           </Button>
         </form>

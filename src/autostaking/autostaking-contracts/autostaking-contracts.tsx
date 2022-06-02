@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
@@ -28,7 +24,7 @@ import { Paper } from '~/common/paper'
 import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
-import { StakingApyDialog } from '~/staking/common'
+import { StakingAdapterDialog, StakingApyDialog } from '~/staking/common'
 import { AutostakingVideoDialog } from '~/autostaking/common/autostaking-video-dialog'
 import { AutostakingBalanceDialog } from '~/autostaking/common/autostaking-balance-dialog'
 import { AutostakingDeployDialog } from '~/autostaking/common/autostaking-deploy-dialog'
@@ -43,6 +39,7 @@ import * as walletsModel from '~/settings/settings-wallets/settings-wallets.mode
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { WalletConnect } from '~/wallets/wallet-connect'
 
 export type AutostakingContractsProps = {
   className?: string
@@ -56,6 +53,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const [openAutostakingBalanceDialog] = useDialog(AutostakingBalanceDialog)
   const [openAutostakingDeployDialog] = useDialog(AutostakingDeployDialog)
   const [openAutostakingTabsDialog] = useDialog(AutostakingTabsDialog)
+  const [openAdapter] = useDialog(StakingAdapterDialog)
 
   const [enableAutostakingVideo, setEnableAutostakingVideo] = useLocalStorage(
     'enableAutostakingVideo',
@@ -79,7 +77,6 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(walletsModel.$wallets)
-  const contractPrototypeAddresses = useStore(model.$contractAddresses)
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -181,8 +178,11 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
 
   const handleAutostake = (contract: typeof contracts[number]) => async () => {
     try {
-      const prototypeAddress =
-        contractPrototypeAddresses[contract.id]?.prototypeAddress
+      const addresses = await model.fetchContractAddressesFx({
+        contracts: [contract],
+        protocolAdapter: contract.protocol.adapter,
+      })
+      const { prototypeAddress = undefined } = addresses[contract.id]
 
       await switchNetwork(contract.network)
 
@@ -214,18 +214,32 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
       if (!metric || typeof metric?.billing.balance.netBalance === 'undefined')
         throw Error('wallet is not connected')
 
-      await openBillingForm({
-        balance: String(metric.billing.balance.netBalance),
+      const billingBalance = await model.fetchBillingBalanceFx({
+        blockchain: findedWallet.blockchain,
         network: findedWallet.network,
-        onSubmit: (result) =>
-          walletsModel.depositFx({
-            blockchain: findedWallet.blockchain,
-            amount: result.amount,
-            walletAddress: findedWallet.address,
-            chainId: String(currentWallet.chainId),
-            provider: currentWallet.provider,
-          }),
       })
+
+      if (
+        bignumberUtils.lt(
+          metric.billing.balance.netBalance,
+          billingBalance.recomendedIncome
+        )
+      ) {
+        await openAutostakingBalanceDialog({
+          balance: String(metric.billing.balance.netBalance),
+          network: findedWallet.network,
+          wallet: findedWallet.address,
+          ...billingBalance,
+          onSubmit: (result) =>
+            walletsModel.depositFx({
+              blockchain: findedWallet.blockchain,
+              amount: result.amount,
+              walletAddress: findedWallet.address,
+              chainId: String(currentWallet.chainId),
+              provider: currentWallet.provider,
+            }),
+        })
+      }
 
       const deployAdapter = await deployModel.fetchDeployAdapterFx({
         address: prototypeAddress,
@@ -236,7 +250,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
         contractAddress: contract.address,
       })
 
-      const stepsResult = await openDeployStepsDialog({
+      const stepsResult = await openAutostakingDeployDialog({
         steps: deployAdapter.deploy,
       })
 
@@ -300,7 +314,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
       }
 
       if ('methods' in stakingAutomatesAdapter.migrate) {
-        await openMigrateDialog({
+        await openAutostakingTabsDialog({
           methods: stakingAutomatesAdapter.migrate.methods,
           onLastStep: cb,
         })
@@ -319,30 +333,6 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
     } catch (error) {
       if (error instanceof Error && !(error instanceof UserRejectionError)) {
         toastsService.error(error.message)
-      }
-    }
-  }
-
-  const handleAutoStake = (contract: typeof contracts[number]) => async () => {
-    try {
-      if (!enableAutostakingVideo) {
-        await openAutostakingVideoDialog({
-          dontShowAgain: enableAutostakingVideo,
-          onDontShowAgain: setEnableAutostakingVideo,
-        }).catch(console.error)
-      }
-
-      await openAutostakingBalanceDialog()
-
-      await openAutostakingDeployDialog()
-
-      await openAutostakingTabsDialog()
-
-      // eslint-disable-next-line no-console
-      console.log(contract)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
       }
     }
   }
@@ -585,14 +575,26 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                   )}
                   %
                 </Typography>
-                <Button
-                  color="green"
-                  size="small"
-                  className={styles.autostakeButton}
-                  onClick={handleAutoStake(contract)}
+                <WalletConnect
+                  fallback={
+                    <Button
+                      color="green"
+                      size="small"
+                      className={styles.autostakeButton}
+                    >
+                      auto-stake
+                    </Button>
+                  }
                 >
-                  auto-stake
-                </Button>
+                  <Button
+                    color="green"
+                    size="small"
+                    className={styles.autostakeButton}
+                    onClick={handleAutostake(contract)}
+                  >
+                    auto-stake
+                  </Button>
+                </WalletConnect>
               </div>
             </div>
           ))}

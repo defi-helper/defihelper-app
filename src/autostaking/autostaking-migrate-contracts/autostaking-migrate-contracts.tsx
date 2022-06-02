@@ -6,8 +6,8 @@ import { useMedia } from 'react-use'
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { AutostakingCarousel } from '../common/autostaking-carousel'
-import { AutostakingMigrateCard } from '../common/autostaking-migrate-card'
+import { AutostakingCarousel } from '~/autostaking/common/autostaking-carousel'
+import { AutostakingMigrateCard } from '~/autostaking/common/autostaking-migrate-card'
 import * as styles from './autostaking-migrate-contracts.css'
 
 export type AutostakingMigrateContractsProps = {

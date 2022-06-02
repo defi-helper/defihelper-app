@@ -95,6 +95,4 @@ export const fetchContractAddressesFx = createEffect(
   }
 )
 
-export const $contractAddresses = createStore<
-  UnitValue<typeof fetchContractAddressesFx.doneData>
->({}).on(fetchContractAddressesFx.doneData, (_, payload) => payload)
+export const fetchBillingBalanceFx = createEffect(autostakingApi.billingBalance)

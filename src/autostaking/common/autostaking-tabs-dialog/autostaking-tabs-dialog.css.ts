@@ -97,3 +97,8 @@ export const success = style({
 export const successIcon = style({
   color: theme.colors.textColorGreen,
 })
+
+export const balance = style({
+  color: theme.colors.common.blue1,
+  marginLeft: 'auto',
+})

@@ -1,6 +1,8 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import clsx from 'clsx'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useState, useEffect } from 'react'
+import { useAsyncFn, useAsyncRetry } from 'react-use'
+import { Controller, useForm } from 'react-hook-form'
 import { useNProgress } from '@tanem/react-nprogress'
 
 import { Button } from '~/common/button'
@@ -9,11 +11,19 @@ import { Dialog } from '~/common/dialog'
 import { Link } from '~/common/link'
 import { NumericalInput } from '~/common/numerical-input'
 import { Typography } from '~/common/typography'
-import * as styles from './autostaking-tabs-dialog.css'
 import { Icon } from '~/common/icon'
+import { paths } from '~/paths'
+import { history } from '~/common/history'
+import { AutomatesType } from '~/common/load-adapter'
+import * as styles from './autostaking-tabs-dialog.css'
+import { toastsService } from '~/toasts'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type AutostakingTabsDialogProps = {
   onConfirm: () => void
+  onCancel: () => void
+  methods?: AutomatesType['migrate']['methods']
+  onLastStep: () => void
 }
 
 enum Tabs {
@@ -46,36 +56,127 @@ const Loader = (props: { loading: boolean }) => {
   )
 }
 
+type FormValues = { amount: string }
+
 export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
   props
 ) => {
-  const { register, handleSubmit } = useForm<{ amount: string }>()
+  const { formState, control, handleSubmit, watch, setValue } =
+    useForm<{ amount: string }>()
   const [loading] = useState(false)
 
   const [currentTab, setCurrentTab] = useState(Tabs.transfer)
+
+  const amount = watch('amount')
+
+  const balanceOf = useAsyncRetry(async () => {
+    return props.methods?.balanceOf()
+  }, [props.methods])
+
+  const canTransfer = useAsyncRetry(async () => {
+    if (bignumberUtils.eq(amount, 0)) return true
+
+    return props.methods?.canTransfer(amount)
+  }, [props.methods, amount])
+
+  const [transferState, onTransfer] = useAsyncFn(
+    async (formValues: FormValues) => {
+      if (!props.methods) return false
+
+      const { canTransfer: canTransferMethod, transfer } = props.methods
+
+      try {
+        const can = await canTransferMethod(formValues.amount)
+
+        if (can instanceof Error) throw can
+        if (!can) throw new Error("can't transfer")
+
+        const { tx } = await transfer(formValues.amount)
+
+        await tx?.wait()
+
+        return true
+      } catch (error) {
+        if (error instanceof Error) {
+          toastsService.error(error.message)
+        }
+
+        return false
+      }
+    },
+    []
+  )
+
+  const [, onDeposit] = useAsyncFn(async () => {
+    if (!props.methods) return false
+
+    const { deposit, canDeposit: canDepositMethod } = props.methods
+
+    try {
+      const can = await canDepositMethod()
+
+      if (can instanceof Error) throw can
+      if (!can) throw new Error("can't deposit")
+
+      const { tx } = await deposit()
+
+      await tx?.wait()
+
+      balanceOf.retry()
+
+      setCurrentTab(Tabs.success)
+
+      props.onLastStep()
+
+      return true
+    } catch (error) {
+      if (error instanceof Error) {
+        toastsService.error(error.message)
+      }
+
+      return false
+    }
+  }, [])
 
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
   }
 
-  const handleOnSubmit = handleSubmit((formValues) => {
-    // eslint-disable-next-line no-console
-    console.log(formValues)
+  const transferred = useAsyncRetry(async () => {
+    return props.methods?.transferred()
+  }, [props.methods])
 
-    setCurrentTab(Tabs.deposit)
-  })
+  const handleOnSubmit = handleSubmit(onTransfer)
 
-  const handleDeposit = () => {
-    setCurrentTab(Tabs.success)
-  }
+  useEffect(() => {
+    if (!balanceOf.value) return
+
+    setValue('amount', balanceOf.value)
+  }, [balanceOf.value, setValue])
+
+  useEffect(() => {
+    if (transferState.value) {
+      setCurrentTab(Tabs.deposit)
+      balanceOf.retry()
+      transferred.retry()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transferState.value])
 
   const handleConfirm = () => {
     props.onConfirm()
   }
 
   const handlers: Record<number, () => void> = {
-    [Tabs.deposit]: handleDeposit,
+    [Tabs.deposit]: onDeposit,
     [Tabs.success]: handleConfirm,
+  }
+
+  const handleClickBuy = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
+
+    props.onCancel()
+    history.push(paths.buyLp)
   }
 
   return (
@@ -120,14 +221,43 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
               </Typography>
               {!loading && (
                 <>
-                  <NumericalInput
-                    label={<span>amount</span>}
-                    className={styles.input}
-                    {...register('amount')}
+                  <Controller
+                    control={control}
+                    name="amount"
+                    render={({ field }) => (
+                      <NumericalInput
+                        label={
+                          <>
+                            Amount
+                            <ButtonBase
+                              className={styles.balance}
+                              onClick={() =>
+                                setValue('amount', balanceOf.value ?? '0')
+                              }
+                            >
+                              {balanceOf.value ?? '0'} MAX
+                            </ButtonBase>
+                          </>
+                        }
+                        disabled={formState.isSubmitting}
+                        className={styles.input}
+                        {...field}
+                        value={field.value || '0'}
+                        error={canTransfer.value instanceof Error}
+                        helperText={
+                          canTransfer.value instanceof Error
+                            ? canTransfer.value.message
+                            : undefined
+                        }
+                      />
+                    )}
                   />
                   <Typography variant="body2">
                     Don&apos;t have LP tokens? Buy LP tokens (ZAP) from a single
-                    token in 1 click
+                    token{' '}
+                    <Link color="blue" onClick={handleClickBuy} href="#">
+                      in 1 click
+                    </Link>
                   </Typography>
                 </>
               )}

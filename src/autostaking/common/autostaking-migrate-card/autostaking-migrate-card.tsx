@@ -4,10 +4,11 @@ import { useState } from 'react'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
+import { useDialog } from '~/common/dialog'
 import { Icon } from '~/common/icon'
-import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
+import { AutostakingVideoDialog } from '../autostaking-video-dialog'
 import * as styles from './autostaking-migrate-card.css'
 
 export type AutostakingMigrateCardProps = {
@@ -25,12 +26,17 @@ export type AutostakingMigrateCardProps = {
 export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
   props
 ) => {
+  const [openVideoDialog] = useDialog(AutostakingVideoDialog)
   const [hide, setHide] = useState(false)
 
   const { icon = 'close' } = props
 
   const handleHideToggle = () => {
     setHide(!hide)
+  }
+
+  const handleShowVideo = () => {
+    openVideoDialog().catch(console.error)
   }
 
   return (
@@ -67,9 +73,9 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
       <div className={styles.item}>
         <Typography variant="body2" className={styles.grey}>
           Boosted APY{' '}
-          <Link href="/" color="blue">
+          <ButtonBase className={styles.howItWorks} onClick={handleShowVideo}>
             how it works?
-          </Link>
+          </ButtonBase>
         </Typography>
         <Typography variant="body2" className={styles.green}>
           + {bignumberUtils.formatMax(props.apyBoost, 10000)} %

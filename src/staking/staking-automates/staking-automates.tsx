@@ -35,11 +35,11 @@ export type StakingAutomatesProps = {
 }
 
 export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
-  const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openErrorDialog] = useDialog(StakingErrorDialog)
   const wallet = walletNetworkModel.useWalletNetwork()
   const user = useStore(authModel.$user)
   const handleConnect = useWalletConnect()
+  const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openDepositDialog] = useDialog(StakingDepositDialog)
   const [openMigrateDialog] = useDialog(StakingMigrateDialog)

@@ -66,3 +66,7 @@ export const hideConfirm = style({
 export const green = style({
   color: theme.colors.textColorGreen,
 })
+
+export const howItWorks = style({
+  color: theme.colors.common.blue1,
+})

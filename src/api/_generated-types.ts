@@ -491,6 +491,13 @@ export type AutomatesDescriptionType = {
   actions: AutomateActionsDescriptionType
 }
 
+export type BalanceMetaType = {
+  __typename?: 'BalanceMetaType'
+  token: Scalars['String']
+  recomendedIncome: Scalars['String']
+  priceUSD: Scalars['String']
+}
+
 export type BillingBalanceType = {
   __typename?: 'BillingBalanceType'
   lowFeeFunds: Scalars['Boolean']
@@ -1897,6 +1904,7 @@ export type Query = {
   tokenAlias?: Maybe<TokenAlias>
   tokensAlias: TokenAliasListQuery
   products: StoreProductListQuery
+  billingBalance: BalanceMetaType
   govProposal?: Maybe<GovProposalType>
   govProposals: GovProposalListQuery
   govReceipt?: Maybe<GovReceiptType>
@@ -1991,6 +1999,11 @@ export type QueryProductsArgs = {
   filter?: Maybe<StoreProductListQueryFilterInputType>
   sort?: Maybe<Array<StoreProductListQuerySortInputType>>
   pagination?: Maybe<StoreProductListQueryPaginationInputType>
+}
+
+export type QueryBillingBalanceArgs = {
+  blockchain: BlockchainEnum
+  network: Scalars['String']
 }
 
 export type QueryGovProposalArgs = {
@@ -4124,6 +4137,18 @@ export type AutomationTriggersQuery = { __typename?: 'Query' } & {
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
+}
+
+export type BillingBalanceQueryVariables = Exact<{
+  blockchain: BlockchainEnum
+  network: Scalars['String']
+}>
+
+export type BillingBalanceQuery = { __typename?: 'Query' } & {
+  billingBalance: { __typename?: 'BalanceMetaType' } & Pick<
+    BalanceMetaType,
+    'token' | 'recomendedIncome' | 'priceUSD'
+  >
 }
 
 export type AutostakingStakingContractsQueryVariables = Exact<{
