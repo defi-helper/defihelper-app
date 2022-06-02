@@ -16,6 +16,7 @@ export type AutostakingMigrateCardProps = {
   title: string
   protocol: string
   balance: string
+  tokenIcons: Array<string | null>
   apy: string
   apyBoost: string
   onMigrate?: () => void
@@ -45,6 +46,17 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
         <Icon icon={icon} width="34" height="34" />
       </ButtonBase>
       <div className={styles.header}>
+        <div className={styles.contractCardIcons}>
+          {props.tokenIcons.map((tokenIcon) =>
+            tokenIcon ? (
+              <img src={tokenIcon} alt="" className={styles.contractCardIcon} />
+            ) : (
+              <Paper className={styles.contractCardIcon}>
+                <Icon icon="unknownNetwork" width="16" height="16" />
+              </Paper>
+            )
+          )}
+        </div>
         <Typography>{props.title}</Typography>
       </div>
       <div className={styles.item}>

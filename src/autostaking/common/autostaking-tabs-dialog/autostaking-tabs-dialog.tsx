@@ -15,9 +15,9 @@ import { Icon } from '~/common/icon'
 import { paths } from '~/paths'
 import { history } from '~/common/history'
 import { AutomatesType } from '~/common/load-adapter'
-import * as styles from './autostaking-tabs-dialog.css'
 import { toastsService } from '~/toasts'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import * as styles from './autostaking-tabs-dialog.css'
 
 export type AutostakingTabsDialogProps = {
   onConfirm: () => void
@@ -63,7 +63,6 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
 ) => {
   const { formState, control, handleSubmit, watch, setValue } =
     useForm<{ amount: string }>()
-  const [loading] = useState(false)
 
   const [currentTab, setCurrentTab] = useState(Tabs.transfer)
 
@@ -107,7 +106,7 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
     []
   )
 
-  const [, onDeposit] = useAsyncFn(async () => {
+  const [depositState, onDeposit] = useAsyncFn(async () => {
     if (!props.methods) return false
 
     const { deposit, canDeposit: canDepositMethod } = props.methods
@@ -219,7 +218,7 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
                 </Link>{' '}
                 tokens to your personal contract to enable automation.
               </Typography>
-              {!loading && (
+              {!transferState.loading && (
                 <>
                   <Controller
                     control={control}
@@ -261,7 +260,7 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
                   </Typography>
                 </>
               )}
-              <Loader loading={loading} />
+              <Loader loading={transferState.loading} />
             </>
           )}
           {currentTab === Tabs.deposit && (
@@ -270,7 +269,7 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
                 To start earning rewards you need to stake your tokens to the
                 protocol&apos;s contract.
               </Typography>
-              <Loader loading={loading} />
+              <Loader loading={depositState.loading} />
             </>
           )}
           {currentTab === Tabs.success && (

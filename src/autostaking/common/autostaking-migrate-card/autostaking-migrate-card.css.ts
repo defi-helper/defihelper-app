@@ -10,7 +10,7 @@ export const root = style({
 export const header = style({
   display: 'flex',
   alignItems: 'center',
-  gap: 8,
+  gap: 6,
   marginBottom: 16,
 })
 
@@ -69,4 +69,24 @@ export const green = style({
 
 export const howItWorks = style({
   color: theme.colors.common.blue1,
+})
+
+export const contractCardIcons = style({
+  display: 'flex',
+  alignItems: 'center',
+})
+
+export const contractCardIcon = style({
+  width: 20,
+  height: 20,
+  borderRadius: '50%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  selectors: {
+    '&:not(:first-child)': {
+      marginLeft: -4,
+    },
+  },
 })
