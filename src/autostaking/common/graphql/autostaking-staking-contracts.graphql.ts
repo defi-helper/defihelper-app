@@ -13,6 +13,7 @@ export const AUTOSTAKING_STAKING_CONTRACTS = gql`
           id
           name
           icon
+          adapter
         }
         adapter
         layout
@@ -25,6 +26,9 @@ export const AUTOSTAKING_STAKING_CONTRACTS = gql`
         link
         hidden
         deprecated
+        automate {
+          autorestake
+        }
         metric(filter: { wallet: { type: [wallet] } }) {
           tvl
           aprDay

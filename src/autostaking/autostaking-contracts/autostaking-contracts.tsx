@@ -1,15 +1,21 @@
+/* eslint-disable no-unused-vars */
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
 import React, { useEffect, useRef, useState } from 'react'
 import { useThrottle, useLocalStorage } from 'react-use'
 
-import { BlockchainEnum } from '~/api'
+import {
+  AutomateActionTypeEnum,
+  AutomateConditionTypeEnum,
+  AutomateTriggerTypeEnum,
+  BlockchainEnum,
+} from '~/api'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
-import { useDialog } from '~/common/dialog'
+import { useDialog, UserRejectionError } from '~/common/dialog'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
@@ -23,9 +29,17 @@ import { StakingApyDialog } from '~/staking/common'
 import { AutostakingVideoDialog } from '~/autostaking/common/autostaking-video-dialog'
 import { AutostakingBalanceDialog } from '~/autostaking/common/autostaking-balance-dialog'
 import { AutostakingDeployDialog } from '~/autostaking/common/autostaking-deploy-dialog'
+import { AutostakingTabsDialog } from '../common/autostaking-tabs-dialog'
+import { toastsService } from '~/toasts'
+import { analytics } from '~/analytics'
+import { switchNetwork } from '~/wallets/common'
+import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as styles from './autostaking-contracts.css'
 import * as model from './autostaking-contracts.model'
-import { AutostakingTabsDialog } from '../common/autostaking-tabs-dialog'
+import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
+import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
+import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type AutostakingContractsProps = {
   className?: string
@@ -60,6 +74,9 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const searchThrottled = useThrottle(search, 500)
 
   const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
+  const currentWallet = walletNetworkModel.useWalletNetwork()
+  const wallets = useStore(walletsModel.$wallets)
+  const contractPrototypeAddresses = useStore(model.$contractAddresses)
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -158,6 +175,150 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
       model.useInfiniteScrollContracts.reset()
     }
   }, [])
+
+  const handleAutostake = (contract: typeof contracts[number]) => async () => {
+    try {
+      const prototypeAddress =
+        contractPrototypeAddresses[contract.id]?.prototypeAddress
+
+      await switchNetwork(contract.network)
+
+      if (!contract.automate.autorestake || !prototypeAddress || !currentWallet)
+        return
+
+      if (!enableAutostakingVideo) {
+        await openAutostakingVideoDialog({
+          dontShowAgain: enableAutostakingVideo,
+          onDontShowAgain: setEnableAutostakingVideo,
+        }).catch(console.error)
+      }
+
+      const findedWallet = wallets.find((wallet) => {
+        const sameAddreses =
+          String(currentWallet.chainId) === 'main'
+            ? currentWallet.account === wallet.address
+            : currentWallet.account?.toLowerCase() === wallet.address
+
+        return sameAddreses && String(currentWallet.chainId) === wallet.network
+      })
+
+      if (!findedWallet) throw new Error('wallet is not connected')
+
+      const metrics = await walletsModel.fetchWalletListMetricsFx()
+
+      const metric = metrics[findedWallet.id]
+
+      if (!metric || typeof metric?.billing.balance.netBalance === 'undefined')
+        throw Error('wallet is not connected')
+
+      await openBillingForm({
+        balance: String(metric.billing.balance.netBalance),
+        network: findedWallet.network,
+        onSubmit: (result) =>
+          walletsModel.depositFx({
+            blockchain: findedWallet.blockchain,
+            amount: result.amount,
+            walletAddress: findedWallet.address,
+            chainId: String(currentWallet.chainId),
+            provider: currentWallet.provider,
+          }),
+      })
+
+      const deployAdapter = await deployModel.fetchDeployAdapterFx({
+        address: prototypeAddress,
+        protocol: contract.protocol.adapter,
+        contract: contract.automate.autorestake,
+        chainId: String(currentWallet.chainId),
+        provider: currentWallet.provider,
+        contractAddress: contract.address,
+      })
+
+      const stepsResult = await openDeployStepsDialog({
+        steps: deployAdapter.deploy,
+      })
+
+      const deployedContract = await deployModel.deployFx({
+        proxyAddress: stepsResult.address,
+        inputs: stepsResult.inputs,
+        protocol: contract.protocol.id,
+        adapter: contract.automate.autorestake,
+        contract: contract.id,
+        account: findedWallet.address,
+        chainId: String(currentWallet.chainId),
+        provider: currentWallet.provider,
+      })
+
+      const createdTrigger = await automationUpdateModel.createTriggerFx({
+        wallet: findedWallet.id,
+        params: JSON.stringify({}),
+        type: AutomateTriggerTypeEnum.EveryHour,
+        name: `Autostaking ${contract.name}`,
+        active: true,
+      })
+
+      const action = await automationUpdateModel.createActionFx({
+        trigger: createdTrigger.id,
+        type: AutomateActionTypeEnum.EthereumAutomateRun,
+        params: JSON.stringify({
+          id: deployedContract.id,
+        }),
+        priority: 0,
+      })
+
+      await automationUpdateModel.createConditionFx({
+        trigger: createdTrigger.id,
+        type: AutomateConditionTypeEnum.EthereumOptimalAutomateRun,
+        params: JSON.stringify({
+          id: action.id,
+        }),
+        priority: 0,
+      })
+
+      const stakingAutomatesAdapter =
+        await stakingAutomatesModel.fetchAdapterFx({
+          protocolAdapter: contract.protocol.adapter,
+          contractAdapter: contract.automate.autorestake,
+          contractId: contract.id,
+          contractAddress: contract.address,
+          provider: currentWallet.provider,
+          chainId: String(currentWallet.chainId),
+          action: 'migrate',
+        })
+
+      if (!stakingAutomatesAdapter) throw new Error('something went wrong')
+
+      const cb = () => {
+        stakingAutomatesModel
+          .scanWalletMetricFx({
+            walletId: createdTrigger.wallet.id,
+            contractId: contract.id,
+          })
+          .catch(console.error)
+      }
+
+      if ('methods' in stakingAutomatesAdapter.migrate) {
+        await openMigrateDialog({
+          methods: stakingAutomatesAdapter.migrate.methods,
+          onLastStep: cb,
+        })
+      } else {
+        await openAdapter({
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          steps: stakingAutomatesAdapter.migrate,
+        })
+          .catch(cb)
+          .then(cb)
+      }
+
+      analytics.onAutoStakingEnabled()
+      toastsService.success('success!')
+    } catch (error) {
+      if (error instanceof Error && !(error instanceof UserRejectionError)) {
+        toastsService.error(error.message)
+      }
+    }
+  }
 
   const handleAutoStake = (contract: typeof contracts[number]) => async () => {
     try {

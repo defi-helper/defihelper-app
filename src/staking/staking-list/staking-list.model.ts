@@ -125,35 +125,16 @@ export const fetchScannerFx = stakingListDomain.createEffect(
 
 export const fetchContractAddressesFx = stakingListDomain.createEffect(
   async (params: { contracts: Contract[]; protocolAdapter?: string }) => {
-    const contractAddresses = params.contracts.map(async (contract) => {
-      let contractAddress
+    const contracts = params.contracts.map(({ id, network, automate }) => ({
+      id,
+      network,
+      autorestake: automate.autorestake,
+    }))
 
-      if (params.protocolAdapter && contract.automate.autorestake) {
-        contractAddress = await automationApi
-          .getContractAddress({
-            protocol: params.protocolAdapter,
-            contract: contract.automate.autorestake,
-            chainId: contract.network,
-          })
-          .catch(console.error)
-      }
-
-      return {
-        contractId: contract.id,
-        prototypeAddress: contractAddress?.address,
-      }
-    })
-
-    return (await Promise.all(contractAddresses)).reduce<
-      Record<
-        string,
-        { contractId: string; prototypeAddress: string | undefined }
-      >
-    >((acc, address) => {
-      acc[address.contractId] = address
-
-      return acc
-    }, {})
+    return automationApi.getContractsAddresses(
+      contracts,
+      params.protocolAdapter
+    )
   }
 )
 

@@ -60,7 +60,9 @@ export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> 
             </Typography>
             <Typography variant="body2">2 BNB ($582,22)</Typography>
           </div>
-          <Button type="submit">submit</Button>
+          <Button type="submit" size="small" className={styles.button}>
+            submit
+          </Button>
         </form>
       </Dialog>
     )

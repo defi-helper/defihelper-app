@@ -11,6 +11,7 @@ import {
   AutostakingStakingContractsQueryVariables,
   BuyLiquidityProtocolsSelectQueryVariables,
 } from '~/api'
+import { automationApi } from '~/automations/common/automation.api'
 import { autostakingApi } from '~/autostaking/common/autostaking.api'
 import { buyLiquidityApi } from '~/buy-liquidity/common/buy-liquidity.api'
 import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
@@ -75,3 +76,25 @@ sample({
   fn: (clock) => clock.count,
   target: useInfiniteScrollContracts.totalElements,
 })
+
+export const fetchContractAddressesFx = createEffect(
+  async (params: {
+    contracts: UnitValue<typeof fetchContractsFx.doneData>['list']
+    protocolAdapter?: string
+  }) => {
+    const contracts = params.contracts.map(({ id, network, automate }) => ({
+      id,
+      network,
+      autorestake: automate.autorestake,
+    }))
+
+    return automationApi.getContractsAddresses(
+      contracts,
+      params.protocolAdapter
+    )
+  }
+)
+
+export const $contractAddresses = createStore<
+  UnitValue<typeof fetchContractAddressesFx.doneData>
+>({}).on(fetchContractAddressesFx.doneData, (_, payload) => payload)

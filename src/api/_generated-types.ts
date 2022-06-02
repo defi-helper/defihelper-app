@@ -633,6 +633,8 @@ export type ContractListAutomateFilterInputType = {
   buyLiquidity?: Maybe<Scalars['Boolean']>
   /** Has autorestake automate */
   autorestake?: Maybe<Scalars['Boolean']>
+  /** Is autorestake automate candidate */
+  autorestakeCandidate?: Maybe<Scalars['Boolean']>
 }
 
 export type ContractListFilterInputType = {
@@ -640,6 +642,7 @@ export type ContractListFilterInputType = {
   protocol?: Maybe<Array<Scalars['UuidType']>>
   blockchain?: Maybe<BlockchainFilterInputType>
   hidden?: Maybe<Scalars['Boolean']>
+  userLink?: Maybe<ContractUserLinkTypeEnum>
   automate?: Maybe<ContractListAutomateFilterInputType>
   search?: Maybe<Scalars['String']>
 }
@@ -802,6 +805,10 @@ export type ContractUpdateInputType = {
   hidden?: Maybe<Scalars['Boolean']>
   /** Is deprecated */
   deprecated?: Maybe<Scalars['Boolean']>
+}
+
+export enum ContractUserLinkTypeEnum {
+  AutorestakeHide = 'autorestakeHide',
 }
 
 export type GovProposalFilterInputType = {
@@ -1051,6 +1058,8 @@ export type Mutation = {
   contractDelete: Scalars['Boolean']
   contractWalletLink: Scalars['Boolean']
   contractWalletUnlink: Scalars['Boolean']
+  contractUserLink: Scalars['Boolean']
+  contractUserUnlink: Scalars['Boolean']
   contractMetricScan: Scalars['Boolean']
   userNotificationToggle: Scalars['Boolean']
   tokenUpdate: TokenType
@@ -1184,6 +1193,18 @@ export type MutationContractWalletLinkArgs = {
 export type MutationContractWalletUnlinkArgs = {
   contract: Scalars['UuidType']
   wallet: Scalars['UuidType']
+}
+
+export type MutationContractUserLinkArgs = {
+  contract: Scalars['UuidType']
+  user: Scalars['UuidType']
+  type?: Maybe<ContractUserLinkTypeEnum>
+}
+
+export type MutationContractUserUnlinkArgs = {
+  contract: Scalars['UuidType']
+  user: Scalars['UuidType']
+  type?: Maybe<ContractUserLinkTypeEnum>
 }
 
 export type MutationContractMetricScanArgs = {
@@ -4132,7 +4153,11 @@ export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
         > & {
             protocol: { __typename?: 'ProtocolType' } & Pick<
               ProtocolType,
-              'id' | 'name' | 'icon'
+              'id' | 'name' | 'icon' | 'adapter'
+            >
+            automate: { __typename?: 'ContractAutomatesType' } & Pick<
+              ContractAutomatesType,
+              'autorestake'
             >
             metric: { __typename?: 'ContractMetricType' } & Pick<
               ContractMetricType,

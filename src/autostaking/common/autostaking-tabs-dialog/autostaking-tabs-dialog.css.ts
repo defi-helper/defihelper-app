@@ -48,3 +48,52 @@ export const tabActive = style({
     opacity: 1,
   },
 })
+
+export const form = style({
+  flex: '1 0 auto',
+  display: 'flex',
+  flexDirection: 'column',
+})
+
+export const content = style({
+  display: 'flex',
+  flexDirection: 'column',
+  marginBottom: 'auto',
+  flex: '1 0 auto',
+})
+
+export const input = style({
+  marginBottom: 40,
+})
+
+export const button = style({
+  marginTop: 30,
+})
+
+export const loader = style({
+  display: 'flex',
+  gap: 4,
+})
+
+export const loaderItem = style({
+  width: 16,
+  height: 24,
+  border: `1px solid ${theme.colors.common.blue1}`,
+})
+
+export const loaderItemActive = style({
+  background: theme.colors.common.blue1,
+})
+
+export const success = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 24,
+  flex: '1 0 auto',
+  justifyContent: 'center',
+  alignItems: 'center',
+})
+
+export const successIcon = style({
+  color: theme.colors.textColorGreen,
+})

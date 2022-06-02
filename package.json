@@ -36,6 +36,7 @@
     "@storybook/node-logger": "^6.4.13",
     "@storybook/preset-create-react-app": "^3.2.0",
     "@storybook/react": "^6.4.13",
+    "@tanem/react-nprogress": "^5.0.0",
     "@testing-library/jest-dom": "^5.13.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
