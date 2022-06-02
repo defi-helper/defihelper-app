@@ -15,6 +15,7 @@ export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> 
     const { register, handleSubmit } = useForm<{ balance: string }>()
 
     const handleOnSubmit = handleSubmit((formValues) => {
+      // eslint-disable-next-line no-console
       console.log(formValues)
 
       props.onConfirm()

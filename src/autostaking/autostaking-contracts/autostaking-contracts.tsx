@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
@@ -335,6 +338,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
 
       await openAutostakingTabsDialog()
 
+      // eslint-disable-next-line no-console
       console.log(contract)
     } catch (error) {
       if (error instanceof Error) {

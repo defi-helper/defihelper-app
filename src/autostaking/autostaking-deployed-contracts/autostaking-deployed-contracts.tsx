@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { useMemo } from 'react'

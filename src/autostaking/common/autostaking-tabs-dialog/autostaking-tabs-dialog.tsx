@@ -59,6 +59,7 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
   }
 
   const handleOnSubmit = handleSubmit((formValues) => {
+    // eslint-disable-next-line no-console
     console.log(formValues)
 
     setCurrentTab(Tabs.deposit)
