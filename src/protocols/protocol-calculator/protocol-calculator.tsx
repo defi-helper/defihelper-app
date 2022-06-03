@@ -143,7 +143,7 @@ export const ProtocolCalculator: React.VFC<ProtocolCalculatorProps> = (
                 Restake manualy
               </Typography>
               <Typography as="th" variant="body1" className={styles.col}>
-                ${bignumberUtils.format(value)}
+                ${bignumberUtils.format(lastRestakeValue?.v)}
               </Typography>
               <Typography
                 as="th"
