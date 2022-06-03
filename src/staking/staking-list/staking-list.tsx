@@ -14,9 +14,7 @@ import { Button } from '~/common/button'
 import {
   StakingAdapterDialog,
   StakingContractCard,
-  StakingDescriptionDialog,
   StakingTabs,
-  StakingMigrateDialog,
 } from '../common'
 import { Paper } from '~/common/paper'
 import { useDialog, UserRejectionError } from '~/common/dialog'
@@ -33,8 +31,7 @@ import {
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
 } from '~/api/_generated-types'
-import { StakingBillingFormDialog, StakingApyDialog } from '~/staking/common'
-import { AutomationDeployStepsDialog } from '~/automations/common/automation-deploy-steps-dialog'
+import { StakingApyDialog } from '~/staking/common'
 import { toastsService } from '~/toasts'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
@@ -46,9 +43,15 @@ import { useDebounce } from '~/common/hooks'
 import { OnboardTooltip } from '~/common/onboard-tooltip'
 import { theme } from '~/common/theme'
 import { WalletConnect } from '~/wallets/wallet-connect'
+import { analytics } from '~/analytics'
+import { AutostakingVideoDialog } from '~/autostaking/common/autostaking-video-dialog'
+import { AutostakingBalanceDialog } from '~/autostaking/common/autostaking-balance-dialog'
+import { AutostakingDeployDialog } from '~/autostaking/common/autostaking-deploy-dialog'
+import { AutostakingTabsDialog } from '~/autostaking/common/autostaking-tabs-dialog'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import * as autostakingContractsModel from '~/autostaking/autostaking-contracts/autostaking-contracts.model'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
-import { analytics } from '~/analytics'
 
 export type StakingListProps = {
   protocolId: string
@@ -130,6 +133,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     : null
 
   const stakingList = useStore(model.$contractsListCopies)
+  const autostaking = useStore(model.$autostaking)
   const { metrics: freshMetrics, errors: freshMetricsError } = useStore(
     model.$freshMetrics
   )
@@ -141,12 +145,12 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const openedContract = useStore(model.$openedContract)
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
-  const [openDescriptionDialog] = useDialog(StakingDescriptionDialog)
-  const [openBillingForm] = useDialog(StakingBillingFormDialog)
-  const [openDeployStepsDialog] = useDialog(AutomationDeployStepsDialog)
   const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openApyDialog] = useDialog(StakingApyDialog)
-  const [openMigrateDialog] = useDialog(StakingMigrateDialog)
+  const [openAutostakingVideoDialog] = useDialog(AutostakingVideoDialog)
+  const [openAutostakingBalanceDialog] = useDialog(AutostakingBalanceDialog)
+  const [openAutostakingDeployDialog] = useDialog(AutostakingDeployDialog)
+  const [openAutostakingTabsDialog] = useDialog(AutostakingTabsDialog)
 
   const searchDebounced = useDebounce(search, 1000)
 
@@ -214,9 +218,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           return
 
         if (!dontShow) {
-          const result = await openDescriptionDialog()
-
-          setDontShow(result)
+          await openAutostakingVideoDialog({
+            dontShowAgain: dontShow,
+            onDontShowAgain: setDontShow,
+          }).catch(console.error)
         }
 
         const findedWallet = wallets.find((wallet) => {
@@ -236,21 +241,39 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         const metric = metrics[findedWallet.id]
 
-        if (!metric || !metric?.billing.balance.netBalance)
+        if (
+          !metric ||
+          typeof metric?.billing.balance.netBalance === 'undefined'
+        )
           throw Error('wallet is not connected')
 
-        await openBillingForm({
-          balance: String(metric.billing.balance.netBalance),
-          network: findedWallet.network,
-          onSubmit: (result) =>
-            walletsModel.depositFx({
-              blockchain: findedWallet.blockchain,
-              amount: result.amount,
-              walletAddress: findedWallet.address,
-              chainId: String(currentWallet.chainId),
-              provider: currentWallet.provider,
-            }),
-        })
+        const billingBalance =
+          await autostakingContractsModel.fetchBillingBalanceFx({
+            blockchain: findedWallet.blockchain,
+            network: findedWallet.network,
+          })
+
+        if (
+          bignumberUtils.lt(
+            metric.billing.balance.netBalance,
+            billingBalance.recomendedIncome
+          )
+        ) {
+          await openAutostakingBalanceDialog({
+            balance: String(metric.billing.balance.netBalance),
+            network: findedWallet.network,
+            wallet: findedWallet.address,
+            ...billingBalance,
+            onSubmit: (result) =>
+              walletsModel.depositFx({
+                blockchain: findedWallet.blockchain,
+                amount: result.amount,
+                walletAddress: findedWallet.address,
+                chainId: String(currentWallet.chainId),
+                provider: currentWallet.provider,
+              }),
+          })
+        }
 
         const deployAdapter = await deployModel.fetchDeployAdapterFx({
           address: prototypeAddress,
@@ -261,7 +284,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           contractAddress: contract.address,
         })
 
-        const stepsResult = await openDeployStepsDialog({
+        const stepsResult = await openAutostakingDeployDialog({
           steps: deployAdapter.deploy,
         })
 
@@ -325,7 +348,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         }
 
         if ('methods' in stakingAutomatesAdapter.migrate) {
-          await openMigrateDialog({
+          await openAutostakingTabsDialog({
             methods: stakingAutomatesAdapter.migrate.methods,
             onLastStep: cb,
           })
@@ -443,7 +466,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         console.error(e)
       }
     },
-    currentWallet ? 3000 : null
+    currentWallet ? 1500 : null
   )
 
   const [sentryRef] = model.useInfiniteScroll()
@@ -738,7 +761,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         network={stakingListItem.network}
                         onTurnOn={handleAutostake(stakingListItem)}
                         buyLiquidity={stakingListItem.automate.buyLiquidity}
-                        autostakingLoading={stakingListItem.autostakingLoading}
+                        autostakingLoading={
+                          autostaking[stakingListItem.address]
+                        }
                         deprecated={stakingListItem.deprecated}
                         autorestake={
                           stakingListItem.automate.autorestake ?? undefined

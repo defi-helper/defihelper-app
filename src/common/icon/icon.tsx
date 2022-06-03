@@ -85,6 +85,12 @@ import { ReactComponent as YoutubeIcon } from '~/assets/icons/youtube.svg'
 import { ReactComponent as LinkBridgeIcon } from '~/assets/icons/link-bridge.svg'
 import { ReactComponent as BridgesIcon } from '~/assets/icons/bridges.svg'
 import { ReactComponent as UnknownNetworkIcon } from '~/assets/icons/unknown-network.svg'
+import { ReactComponent as AutostakingIcon } from '~/assets/icons/autostaking.svg'
+import { ReactComponent as EyeIcon } from '~/assets/icons/eye.svg'
+import { ReactComponent as ArrowLongLeftIcon } from '~/assets/icons/arrow-long-left.svg'
+import { ReactComponent as ArrowLongRightIcon } from '~/assets/icons/arrow-long-right.svg'
+import { ReactComponent as PlayIcon } from '~/assets/icons/play.svg'
+import { ReactComponent as CheckboxCircleIcon } from '~/assets/icons/checkbox-circle.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -179,6 +185,12 @@ const ICONS = {
   linkBridge: LinkBridgeIcon,
   bridges: BridgesIcon,
   unknownNetwork: UnknownNetworkIcon,
+  autostaking: AutostakingIcon,
+  eye: EyeIcon,
+  arrowLongLeft: ArrowLongLeftIcon,
+  arrowLongRight: ArrowLongRightIcon,
+  play: PlayIcon,
+  checkboxCircle: CheckboxCircleIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

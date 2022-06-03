@@ -1,5 +1,3 @@
-import { useMemo, useState } from 'react'
-
 import {
   BlockchainEnum,
   StakingContractFragmentFragment,
@@ -22,18 +20,6 @@ const SCANNER_URL = 'https://scanner.defihelper.io/contract'
 export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorProps> =
   (props) => {
     const { row, currentBlock, onContractRegister } = props
-    const [seemsUnusual, setSeemsUnusual] = useState(false)
-
-    useMemo(
-      () =>
-        setSeemsUnusual(
-          bignumberUtils.gt(
-            bignumberUtils.minus(currentBlock, row.syncedBlock),
-            100
-          )
-        ),
-      [currentBlock, row.syncedBlock]
-    )
 
     if (!row.deployBlockNumber || row.blockchain !== BlockchainEnum.Ethereum) {
       return <>not deployed</>
@@ -46,6 +32,11 @@ export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorP
         </ButtonBase>
       )
     }
+
+    const seemsUnusual = bignumberUtils.gt(
+      bignumberUtils.minus(currentBlock, row.syncedBlock),
+      100
+    )
 
     return (
       <Link

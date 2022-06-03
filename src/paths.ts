@@ -63,5 +63,8 @@ export const paths = {
   buyLp: '/buy-liquidity',
 
   bridges: '/bridges',
+
+  autostaking: '/autostaking',
+
   admin: '/admin',
 } as const

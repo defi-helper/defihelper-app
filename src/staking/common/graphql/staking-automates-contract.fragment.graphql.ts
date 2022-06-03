@@ -36,6 +36,16 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       }
       events
       createdAt
+      tokens {
+        stake {
+          alias {
+            logoUrl
+          }
+          network
+          address
+          name
+        }
+      }
     }
     address
     contractWallet {

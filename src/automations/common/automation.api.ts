@@ -218,6 +218,56 @@ export const automationApi = {
         address: res.address as string | undefined,
       })),
 
+  getContractsAddresses: async (
+    contracts: {
+      network: string
+      autorestake?: string | null
+      id: string
+    }[],
+    protocolAdapter?: string
+  ) => {
+    const fn = (variables: {
+      protocol: string
+      contract: string
+      network: string
+    }) =>
+      fetch(
+        `${config.ADAPTERS_HOST}/automates/ethereum/${variables.protocol}/${variables.contract}/${variables.network}`
+      )
+        .then((res) => res.json())
+        .then((res) => ({
+          address: res.address as string | undefined,
+        }))
+
+    const contractAddresses = contracts.map(async (contract) => {
+      let contractAddress
+
+      if (protocolAdapter && contract.autorestake) {
+        contractAddress = await fn({
+          protocol: protocolAdapter,
+          contract: contract.autorestake,
+          network: contract.network,
+        }).catch(console.error)
+      }
+
+      return {
+        contractId: contract.id,
+        prototypeAddress: contractAddress?.address,
+      }
+    })
+
+    return (await Promise.all(contractAddresses)).reduce<
+      Record<
+        string,
+        { contractId: string; prototypeAddress: string | undefined }
+      >
+    >((acc, address) => {
+      acc[address.contractId] = address
+
+      return acc
+    }, {})
+  },
+
   getHistory: (variables: AutomationHistoryQueryVariables) =>
     getAPIClient()
       .request<

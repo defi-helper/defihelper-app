@@ -149,3 +149,4 @@ const contractCreated = guard({
 }).map(({ contract }) => contract)
 
 $automatesContracts.on(contractCreated, (state, payload) => [...state, payload])
+$automatesContracts.reset(StakingAutomatesGate.close)

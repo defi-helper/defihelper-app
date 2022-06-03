@@ -42,7 +42,6 @@ export type RegisterParams = {
 
 export type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
-  autostakingLoading?: boolean
 }
 
 export type ContractMetric = {

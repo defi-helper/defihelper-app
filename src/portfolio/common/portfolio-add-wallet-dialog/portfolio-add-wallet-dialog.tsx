@@ -18,7 +18,12 @@ export const PortfolioAddWalletDialog: React.VFC<PortfolioAddWalletDialogProps> 
 
     return (
       <Dialog className={styles.root}>
-        <form className={styles.form} onSubmit={handleSubmit(props.onConfirm)}>
+        <form
+          noValidate
+          autoComplete="off"
+          className={styles.form}
+          onSubmit={handleSubmit(props.onConfirm)}
+        >
           <div className={styles.input}>
             <Controller
               render={({ field }) => (

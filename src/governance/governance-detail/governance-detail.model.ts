@@ -160,20 +160,27 @@ sample({
 
 const openedGate = sample({
   clock: guard({
-    source: walletNetworkModel.$wallet,
+    source: [walletNetworkModel.$wallet, GovernanceDetailGate.status],
     clock: [walletNetworkModel.$wallet, GovernanceDetailGate.open],
     filter: (
-      wallet
-    ): wallet is {
-      chainId: string
-      account: string
-      connector: AbstractConnector
-      blockchain: string
-    } => Boolean(wallet),
+      params
+    ): params is [
+      {
+        chainId: string
+        account: string
+        connector: AbstractConnector
+        blockchain: string
+      },
+      boolean
+    ] => {
+      const [wallet, opened] = params
+
+      return Boolean(wallet) && opened
+    },
   }),
-  fn: (params) => ({
+  fn: ([wallet]) => ({
     params: {
-      ...params,
+      ...wallet,
       cache: !config.IS_DEV,
     },
   }),

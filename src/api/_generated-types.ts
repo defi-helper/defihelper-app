@@ -491,6 +491,13 @@ export type AutomatesDescriptionType = {
   actions: AutomateActionsDescriptionType
 }
 
+export type BalanceMetaType = {
+  __typename?: 'BalanceMetaType'
+  token: Scalars['String']
+  recomendedIncome: Scalars['String']
+  priceUSD: Scalars['String']
+}
+
 export type BillingBalanceType = {
   __typename?: 'BillingBalanceType'
   lowFeeFunds: Scalars['Boolean']
@@ -633,6 +640,8 @@ export type ContractListAutomateFilterInputType = {
   buyLiquidity?: Maybe<Scalars['Boolean']>
   /** Has autorestake automate */
   autorestake?: Maybe<Scalars['Boolean']>
+  /** Is autorestake automate candidate */
+  autorestakeCandidate?: Maybe<Scalars['Boolean']>
 }
 
 export type ContractListFilterInputType = {
@@ -640,6 +649,7 @@ export type ContractListFilterInputType = {
   protocol?: Maybe<Array<Scalars['UuidType']>>
   blockchain?: Maybe<BlockchainFilterInputType>
   hidden?: Maybe<Scalars['Boolean']>
+  userLink?: Maybe<ContractUserLinkTypeEnum>
   automate?: Maybe<ContractListAutomateFilterInputType>
   search?: Maybe<Scalars['String']>
 }
@@ -802,6 +812,10 @@ export type ContractUpdateInputType = {
   hidden?: Maybe<Scalars['Boolean']>
   /** Is deprecated */
   deprecated?: Maybe<Scalars['Boolean']>
+}
+
+export enum ContractUserLinkTypeEnum {
+  AutorestakeHide = 'autorestakeHide',
 }
 
 export type GovProposalFilterInputType = {
@@ -1051,6 +1065,8 @@ export type Mutation = {
   contractDelete: Scalars['Boolean']
   contractWalletLink: Scalars['Boolean']
   contractWalletUnlink: Scalars['Boolean']
+  contractUserLink: Scalars['Boolean']
+  contractUserUnlink: Scalars['Boolean']
   contractMetricScan: Scalars['Boolean']
   userNotificationToggle: Scalars['Boolean']
   tokenUpdate: TokenType
@@ -1184,6 +1200,18 @@ export type MutationContractWalletLinkArgs = {
 export type MutationContractWalletUnlinkArgs = {
   contract: Scalars['UuidType']
   wallet: Scalars['UuidType']
+}
+
+export type MutationContractUserLinkArgs = {
+  contract: Scalars['UuidType']
+  user: Scalars['UuidType']
+  type?: Maybe<ContractUserLinkTypeEnum>
+}
+
+export type MutationContractUserUnlinkArgs = {
+  contract: Scalars['UuidType']
+  user: Scalars['UuidType']
+  type?: Maybe<ContractUserLinkTypeEnum>
 }
 
 export type MutationContractMetricScanArgs = {
@@ -1876,6 +1904,7 @@ export type Query = {
   tokenAlias?: Maybe<TokenAlias>
   tokensAlias: TokenAliasListQuery
   products: StoreProductListQuery
+  billingBalance: BalanceMetaType
   govProposal?: Maybe<GovProposalType>
   govProposals: GovProposalListQuery
   govReceipt?: Maybe<GovReceiptType>
@@ -1970,6 +1999,11 @@ export type QueryProductsArgs = {
   filter?: Maybe<StoreProductListQueryFilterInputType>
   sort?: Maybe<Array<StoreProductListQuerySortInputType>>
   pagination?: Maybe<StoreProductListQueryPaginationInputType>
+}
+
+export type QueryBillingBalanceArgs = {
+  blockchain: BlockchainEnum
+  network: Scalars['String']
 }
 
 export type QueryGovProposalArgs = {
@@ -4105,6 +4139,106 @@ export type AutomationTriggersQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type BillingBalanceQueryVariables = Exact<{
+  blockchain: BlockchainEnum
+  network: Scalars['String']
+}>
+
+export type BillingBalanceQuery = { __typename?: 'Query' } & {
+  billingBalance: { __typename?: 'BalanceMetaType' } & Pick<
+    BalanceMetaType,
+    'token' | 'recomendedIncome' | 'priceUSD'
+  >
+}
+
+export type AutostakingStakingContractsQueryVariables = Exact<{
+  filter?: Maybe<ContractListFilterInputType>
+  sort?: Maybe<Array<ContractListSortInputType> | ContractListSortInputType>
+  pagination?: Maybe<ContractListPaginationInputType>
+}>
+
+export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
+  contracts: { __typename?: 'ContractListType' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'ContractType' } & Pick<
+          ContractType,
+          | 'id'
+          | 'adapter'
+          | 'layout'
+          | 'blockchain'
+          | 'network'
+          | 'address'
+          | 'deployBlockNumber'
+          | 'name'
+          | 'description'
+          | 'link'
+          | 'hidden'
+          | 'deprecated'
+        > & {
+            protocol: { __typename?: 'ProtocolType' } & Pick<
+              ProtocolType,
+              'id' | 'name' | 'icon' | 'adapter'
+            >
+            automate: { __typename?: 'ContractAutomatesType' } & Pick<
+              ContractAutomatesType,
+              'autorestake'
+            >
+            metric: { __typename?: 'ContractMetricType' } & Pick<
+              ContractMetricType,
+              | 'tvl'
+              | 'aprDay'
+              | 'aprWeek'
+              | 'aprMonth'
+              | 'aprYear'
+              | 'myStaked'
+              | 'aprWeekReal'
+              | 'myAPYBoost'
+            >
+            tokens: { __typename?: 'ContractTokenLinkType' } & {
+              stake: Array<
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'network' | 'address' | 'name'
+                > & {
+                    alias?: Maybe<
+                      { __typename?: 'TokenAlias' } & Pick<
+                        TokenAlias,
+                        'logoUrl'
+                      >
+                    >
+                  }
+              >
+            }
+          }
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type AutostakingUserLinkMutationVariables = Exact<{
+  contract: Scalars['UuidType']
+  user: Scalars['UuidType']
+  type?: Maybe<ContractUserLinkTypeEnum>
+}>
+
+export type AutostakingUserLinkMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'contractUserLink'
+>
+
+export type AutostakingUserUnlinkMutationVariables = Exact<{
+  contract: Scalars['UuidType']
+  user: Scalars['UuidType']
+  type?: Maybe<ContractUserLinkTypeEnum>
+}>
+
+export type AutostakingUserUnlinkMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'contractUserUnlink'
+>
+
 export type BuyLiquidityContractsQueryVariables = Exact<{
   filter: ProtocolFilterInputType
   contractFilter?: Maybe<ContractListFilterInputType>
@@ -5606,6 +5740,18 @@ export type StakingAutomatesContractFragmentFragment = {
             ContractMetricType,
             'tvl' | 'aprYear' | 'myStaked' | 'myEarned' | 'myAPYBoost'
           >
+          tokens: { __typename?: 'ContractTokenLinkType' } & {
+            stake: Array<
+              { __typename?: 'TokenType' } & Pick<
+                TokenType,
+                'network' | 'address' | 'name'
+              > & {
+                  alias?: Maybe<
+                    { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
+                  >
+                }
+            >
+          }
         }
     >
     contractWallet?: Maybe<

@@ -135,12 +135,12 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
     }
   }
 
-  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value)
-  }
-
   const handleApplyFilterByProtocolId = () => {
     setProtocolIds(protocolIdsRef.current)
+  }
+
+  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value)
   }
 
   const handleChooseBlockchain = (event: ChangeEvent<HTMLInputElement>) => {
