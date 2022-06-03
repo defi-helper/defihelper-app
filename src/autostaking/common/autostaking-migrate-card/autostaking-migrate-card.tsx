@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
+import { CircularProgress } from '~/common/circular-progress'
 import { useDialog } from '~/common/dialog'
 import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
@@ -21,6 +22,9 @@ export type AutostakingMigrateCardProps = {
   apyBoost: string
   onMigrate?: () => void
   onHide?: () => void
+  onShow?: () => void
+  showing?: boolean
+  hidding?: boolean
   icon?: 'close' | 'eye'
 }
 
@@ -42,8 +46,15 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
 
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
-      <ButtonBase className={styles.hideButton} onClick={handleHideToggle}>
-        <Icon icon={icon} width="34" height="34" />
+      <ButtonBase
+        className={styles.hideButton}
+        onClick={props.onShow ?? handleHideToggle}
+      >
+        {props.showing ? (
+          <CircularProgress />
+        ) : (
+          <Icon icon={icon} width="34" height="34" />
+        )}
       </ButtonBase>
       <div className={styles.header}>
         <div className={styles.contractCardIcons}>
@@ -110,6 +121,7 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
             size="small"
             className={styles.hideConfirm}
             onClick={props.onHide}
+            loading={props.hidding}
           >
             hide contract
           </Button>

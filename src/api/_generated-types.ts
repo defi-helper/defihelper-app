@@ -4217,6 +4217,28 @@ export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type AutostakingUserLinkMutationVariables = Exact<{
+  contract: Scalars['UuidType']
+  user: Scalars['UuidType']
+  type?: Maybe<ContractUserLinkTypeEnum>
+}>
+
+export type AutostakingUserLinkMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'contractUserLink'
+>
+
+export type AutostakingUserUnlinkMutationVariables = Exact<{
+  contract: Scalars['UuidType']
+  user: Scalars['UuidType']
+  type?: Maybe<ContractUserLinkTypeEnum>
+}>
+
+export type AutostakingUserUnlinkMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'contractUserUnlink'
+>
+
 export type BuyLiquidityContractsQueryVariables = Exact<{
   filter: ProtocolFilterInputType
   contractFilter?: Maybe<ContractListFilterInputType>
