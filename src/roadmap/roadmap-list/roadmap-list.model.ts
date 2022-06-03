@@ -83,7 +83,13 @@ export const updateProposalFx = proposalListDomain.createEffect(
   async (
     variables: ProposalUpdateMutationVariables & { proposal: Proposal }
   ) => {
-    const data = await roadmapApi.proposalUpdate(omit(variables, 'proposal'))
+    const { title, description, status, plannedAt, releasedAt } =
+      variables.input
+
+    const data = await roadmapApi.proposalUpdate({
+      ...omit(variables, 'proposal', 'input'),
+      input: { title, description, status, plannedAt, releasedAt },
+    })
 
     if (!data) throw new Error('not updated')
 
