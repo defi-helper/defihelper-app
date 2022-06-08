@@ -16,7 +16,6 @@ export type DropdownProps = {
   offset?: number[]
   sameWidth?: boolean
   trigger?: 'click' | 'hover'
-  clickable?: boolean
   children: React.ReactNode | ((cb: () => void) => JSX.Element)
 }
 
@@ -27,8 +26,6 @@ export const Dropdown: React.VFC<DropdownProps> = (props) => {
   const { placement = 'auto', trigger = 'click' } = props
 
   const localRef = useRef(null)
-
-  const popper = useRef<HTMLElement>(null)
 
   const modifiers = useRef<Partial<Modifier<string, unknown>>[]>([])
 
@@ -47,7 +44,7 @@ export const Dropdown: React.VFC<DropdownProps> = (props) => {
     modifiers: isEmpty(modifiers.current) ? undefined : modifiers.current,
   })
 
-  const popperRef = useForkRef(setPopperElement, popper)
+  const popperRef = useForkRef(setPopperElement, localRef)
 
   const handleOnTrigger = (event: Event | null) => {
     const target = (event?.currentTarget as HTMLElement) ?? null
@@ -58,11 +55,7 @@ export const Dropdown: React.VFC<DropdownProps> = (props) => {
     setReferenceElement(referenceElement ? null : target)
   }
 
-  useClickAway(
-    localRef,
-    handleOnTrigger.bind(null, null),
-    props.clickable ? popper : undefined
-  )
+  useClickAway(localRef, handleOnTrigger.bind(null, null))
 
   useKey('Escape', handleOnTrigger.bind(null, null))
 
@@ -80,7 +73,6 @@ export const Dropdown: React.VFC<DropdownProps> = (props) => {
     <>
       {cloneElement(control, {
         ...control.props,
-        ref: localRef,
         onClick: trigger === 'click' ? handleOnTrigger : undefined,
         onMouseEnter: trigger === 'hover' ? handleOnTrigger : undefined,
         onMouseLeave: trigger === 'hover' ? handleOnTrigger : undefined,

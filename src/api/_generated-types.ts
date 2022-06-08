@@ -252,6 +252,7 @@ export type AutomateContractListFilterInputType = {
   contract?: Maybe<Array<Scalars['UuidType']>>
   address?: Maybe<Array<Scalars['String']>>
   archived?: Maybe<Scalars['Boolean']>
+  search?: Maybe<Scalars['String']>
 }
 
 export type AutomateContractListPaginationInputType = {
@@ -1141,6 +1142,7 @@ export type MutationWalletUpdateStatisticsArgs = {
 export type MutationWalletMetricScanArgs = {
   wallet: Scalars['UuidType']
   contract: Scalars['UuidType']
+  txId?: Maybe<Scalars['String']>
 }
 
 export type MutationIntegrationExchangeApiConnectArgs = {

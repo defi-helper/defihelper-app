@@ -31,7 +31,7 @@ export const authApi = {
           input,
         },
       })
-      .then(({ data }) => data?.authEth),
+      .then(({ data, error }) => ({ data: data?.authEth, error })),
 
   authDemo: () =>
     getAPIClient()
@@ -48,7 +48,7 @@ export const authApi = {
           input,
         },
       })
-      .then(({ data }) => data?.authWaves),
+      .then(({ data, error }) => ({ data: data?.authWaves, error })),
 
   authThroughAdmin: (userId: AuthThroughAdminMutationVariables['userId']) =>
     getAPIClient()

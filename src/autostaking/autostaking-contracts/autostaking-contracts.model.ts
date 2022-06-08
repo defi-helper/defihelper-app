@@ -11,6 +11,9 @@ import {
 import {
   AutostakingStakingContractsQueryVariables,
   BuyLiquidityProtocolsSelectQueryVariables,
+  ContractListSortInputType,
+  ContractListSortInputTypeColumnEnum,
+  SortOrderEnum,
 } from '~/api'
 import { automationApi } from '~/automations/common/automation.api'
 import { autostakingApi } from '~/autostaking/common/autostaking.api'
@@ -24,6 +27,12 @@ export const fetchContractsFx = createEffect(
   }: AutostakingStakingContractsQueryVariables & {
     signal: AbortSignal
   }) => {
+    const sort = (
+      Array.isArray(variables.sort) ? variables.sort : [variables.sort]
+    ).filter((sortItem): sortItem is ContractListSortInputType =>
+      Boolean(sortItem)
+    )
+
     return autostakingApi.contracts(
       {
         ...variables,
@@ -34,6 +43,17 @@ export const fetchContractsFx = createEffect(
             autorestake: true,
           },
         },
+        sort: [
+          ...sort,
+          {
+            column: ContractListSortInputTypeColumnEnum.AprYear,
+            order: SortOrderEnum.Desc,
+          },
+          {
+            column: ContractListSortInputTypeColumnEnum.Name,
+            order: SortOrderEnum.Asc,
+          },
+        ],
       },
       signal
     )

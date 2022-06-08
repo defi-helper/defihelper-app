@@ -92,7 +92,6 @@ export const TokensAlias: React.VFC = () => {
                     offset={[0, 4]}
                   >
                     <Select
-                      clickableBackdrop
                       defaultValue={token.liquidity}
                       className={styles.liquiditySelect}
                       onChange={(e) =>

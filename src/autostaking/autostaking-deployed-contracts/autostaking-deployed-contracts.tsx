@@ -52,7 +52,10 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
     const wallet = walletNetworkModel.useWalletNetwork()
     const handleConnect = useWalletConnect()
 
-    useGate(model.StakingAutomatesGate, null)
+    useGate(
+      model.StakingAutomatesGate,
+      props.search ? { search: props.search } : null
+    )
 
     const isEmptyContracts = isEmpty(contracts)
 

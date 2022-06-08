@@ -9,6 +9,8 @@ import {
   AutomateConditionTypeEnum,
   AutomateTriggerTypeEnum,
   BlockchainEnum,
+  ContractListSortInputTypeColumnEnum,
+  SortOrderEnum,
 } from '~/api'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
@@ -32,17 +34,33 @@ import { AutostakingTabsDialog } from '../common/autostaking-tabs-dialog'
 import { toastsService } from '~/toasts'
 import { analytics } from '~/analytics'
 import { switchNetwork } from '~/wallets/common'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { WalletConnect } from '~/wallets/wallet-connect'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as styles from './autostaking-contracts.css'
 import * as model from './autostaking-contracts.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { WalletConnect } from '~/wallets/wallet-connect'
 
 export type AutostakingContractsProps = {
   className?: string
+}
+
+const sortIcon = (
+  sort: {
+    column: ContractListSortInputTypeColumnEnum
+    order: SortOrderEnum
+  },
+  column: ContractListSortInputTypeColumnEnum
+) => {
+  let icon: 'arrowDown' | 'arrowUp' = 'arrowUp'
+
+  if (sort.column === column && column && sort.order === SortOrderEnum.Desc) {
+    icon = 'arrowDown'
+  }
+
+  return <Icon icon={icon} width="18" />
 }
 
 export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
@@ -77,6 +95,11 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(walletsModel.$wallets)
+  const [blockchain, setBlockChain] = useState<BlockchainEnum | null>(null)
+  const [sortBy, setSort] = useState({
+    column: ContractListSortInputTypeColumnEnum.MyStaked,
+    order: SortOrderEnum.Desc,
+  })
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -84,6 +107,11 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
     const filter = {
       search: searchThrottled || undefined,
       protocol: !isEmpty(protocolIds) ? protocolIds : undefined,
+      blockchain: blockchain
+        ? {
+            protocol: blockchain,
+          }
+        : undefined,
     }
 
     model.fetchContractsFx({
@@ -92,17 +120,21 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
       pagination: {
         offset: contractsOffset,
       },
+      sort: {
+        column: sortBy.column,
+        order: sortBy.order,
+      },
     })
 
     return () => {
       abortController.abort()
     }
-  }, [protocolIds, searchThrottled, contractsOffset])
+  }, [protocolIds, sortBy, searchThrottled, contractsOffset, blockchain])
 
   useEffect(() => {
     model.resetContracts()
     model.useInfiniteScrollContracts.reset()
-  }, [searchThrottled])
+  }, [searchThrottled, blockchain, protocolIds, sortBy])
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -144,6 +176,12 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
     setSearch(event.target.value)
   }
 
+  const handleChooseBlockchain = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setBlockChain(event.target.value as BlockchainEnum)
+  }
+
   const handleOpenApy =
     (metric: typeof contracts[number]['metric']) => async () => {
       const apr = {
@@ -176,6 +214,9 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
     }
   }, [])
 
+  const handleSwitchNetwork = (contract: typeof contracts[number]) => () =>
+    switchNetwork(contract.network).catch(console.error)
+
   const handleAutostake = (contract: typeof contracts[number]) => async () => {
     model.autostakingStart(contract.id)
 
@@ -185,8 +226,6 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
         protocolAdapter: contract.protocol.adapter,
       })
       const { prototypeAddress = undefined } = addresses[contract.id]
-
-      await switchNetwork(contract.network)
 
       if (!contract.automate.autorestake || !prototypeAddress || !currentWallet)
         return
@@ -217,8 +256,8 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
         throw Error('wallet is not connected')
 
       const billingBalance = await model.fetchBillingBalanceFx({
-        blockchain: findedWallet.blockchain,
-        network: findedWallet.network,
+        blockchain: contract.blockchain,
+        network: contract.network,
       })
 
       if (
@@ -341,6 +380,10 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
     }
   }
 
+  const handleSort = (sort: typeof sortBy) => () => {
+    setSort(sort)
+  }
+
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
@@ -352,6 +395,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
             placeholder="Choose blockchain"
             className={styles.select}
             clearable
+            onChange={handleChooseBlockchain}
           >
             {Object.entries(BlockchainEnum).map(([title, value]) => (
               <SelectOption value={value} key={title}>
@@ -424,16 +468,82 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
             </Typography>
             <Typography variant="body2">Protocol</Typography>
             <Typography variant="body2" align="right" as="div">
-              TVL
+              <ButtonBase
+                onClick={handleSort({
+                  column: ContractListSortInputTypeColumnEnum.Tvl,
+                  order:
+                    sortBy.column === ContractListSortInputTypeColumnEnum.Tvl &&
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
+                })}
+              >
+                TVL{' '}
+                {sortBy.column === ContractListSortInputTypeColumnEnum.Tvl &&
+                  sortIcon(sortBy, ContractListSortInputTypeColumnEnum.Tvl)}
+              </ButtonBase>
             </Typography>
             <Typography variant="body2" align="right" as="div">
-              APY
+              <ButtonBase
+                onClick={handleSort({
+                  column: ContractListSortInputTypeColumnEnum.AprYear,
+                  order:
+                    sortBy.column ===
+                      ContractListSortInputTypeColumnEnum.AprYear &&
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
+                })}
+              >
+                APY{' '}
+                {sortBy.column ===
+                  ContractListSortInputTypeColumnEnum.AprYear &&
+                  sortIcon(sortBy, ContractListSortInputTypeColumnEnum.AprYear)}
+              </ButtonBase>
             </Typography>
             <Typography variant="body2" align="right" as="div">
-              Real APR (7d)
+              <ButtonBase
+                onClick={handleSort({
+                  column: ContractListSortInputTypeColumnEnum.AprWeekReal,
+                  order:
+                    sortBy.column ===
+                      ContractListSortInputTypeColumnEnum.AprWeekReal &&
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
+                })}
+                className="real_apy"
+              >
+                Real APR (7d){' '}
+                {sortBy.column ===
+                  ContractListSortInputTypeColumnEnum.AprWeekReal &&
+                  sortIcon(
+                    sortBy,
+                    ContractListSortInputTypeColumnEnum.AprWeekReal
+                  )}
+              </ButtonBase>
             </Typography>
             <Typography variant="body2" as="div">
-              APY Boost
+              <ButtonBase>APY Boost</ButtonBase>
+              <ButtonBase
+                onClick={handleSort({
+                  column: ContractListSortInputTypeColumnEnum.AprBoosted,
+                  order:
+                    sortBy.column ===
+                      ContractListSortInputTypeColumnEnum.AprBoosted &&
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
+                })}
+              >
+                APY Boost{' '}
+                {sortBy.column ===
+                  ContractListSortInputTypeColumnEnum.AprBoosted &&
+                  sortIcon(
+                    sortBy,
+                    ContractListSortInputTypeColumnEnum.AprBoosted
+                  )}
+              </ButtonBase>
             </Typography>
           </div>
           {isEmpty(contracts) && !contractsLoading && (
@@ -580,6 +690,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                   %
                 </Typography>
                 <WalletConnect
+                  network={contract.network}
                   fallback={
                     <Button
                       color="green"
@@ -594,7 +705,11 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                     color="green"
                     size="small"
                     className={styles.autostakeButton}
-                    onClick={handleAutostake(contract)}
+                    onClick={
+                      contract.network !== currentWallet?.chainId
+                        ? handleSwitchNetwork(contract)
+                        : handleAutostake(contract)
+                    }
                     loading={contract.autostakingLoading}
                   >
                     auto-stake

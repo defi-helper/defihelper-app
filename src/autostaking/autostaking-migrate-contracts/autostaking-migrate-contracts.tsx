@@ -64,7 +64,16 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
     useEffect(() => {
       const abortController = new AbortController()
 
-      model.fetchContractsFx({ signal: abortController.signal })
+      model.fetchContractsFx({
+        signal: abortController.signal,
+        filter: props.search ? { search: props.search } : undefined,
+      })
+      return () => abortController.abort()
+    }, [props.search])
+
+    useEffect(() => {
+      const abortController = new AbortController()
+
       model.fetchHiddenContractsFx({ signal: abortController.signal })
 
       return () => abortController.abort()
@@ -176,7 +185,11 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
               <Typography variant="h4" className={styles.description}>
                 We found some of your contracts. You can migrate them to
                 DeFiHelper to get more income from each of them.{' '}
-                <Link href="/" color="blue">
+                <Link
+                  href="https://youtu.be/5tUnwK77y8c"
+                  target="_blank"
+                  color="blue"
+                >
                   Learn more about our automations
                 </Link>
               </Typography>
@@ -206,47 +219,49 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
             </>
           )}
         </Component>
-        <Paper radius={8} className={styles.hiddenPaper}>
-          <Typography variant="body2">
-            You have {hiddenContracts.length} more hidden contracts
-          </Typography>
-          <Button
-            variant="outlined"
-            onClick={handleToggleHidden}
-            className={styles.hiddenPaperButton}
-          >
-            {hidden ? 'show' : 'hide'}
-          </Button>
-        </Paper>
         {!isEmpty(hiddenContracts) && (
-          <div>
-            {!hidden && (
-              <AutostakingCarousel
-                count={hiddenContracts.length}
-                slidesToShow={slidesToShow}
+          <>
+            <Paper radius={8} className={styles.hiddenPaper}>
+              <Typography variant="body2">
+                You have {hiddenContracts.length} more hidden contracts
+              </Typography>
+              <Button
+                variant="outlined"
+                onClick={handleToggleHidden}
+                className={styles.hiddenPaperButton}
               >
-                {hiddenContracts.map((contract) => (
-                  <AutostakingMigrateCard
-                    key={contract.id}
-                    title={contract.name}
-                    balance={contract.metric.myStaked}
-                    tokenIcons={
-                      contract.tokens.stake.map(
-                        ({ alias }) => alias?.logoUrl ?? null
-                      ) ?? []
-                    }
-                    protocol={contract.protocol.name}
-                    apy={contract.metric.aprYear}
-                    apyBoost={contract.metric.myAPYBoost}
-                    onMigrate={handleMigrate(contract)}
-                    icon="eye"
-                    onShow={handleShow(contract)}
-                    showing={contract.showing}
-                  />
-                ))}
-              </AutostakingCarousel>
-            )}
-          </div>
+                {hidden ? 'show' : 'hide'}
+              </Button>
+            </Paper>
+            <div>
+              {!hidden && (
+                <AutostakingCarousel
+                  count={hiddenContracts.length}
+                  slidesToShow={slidesToShow}
+                >
+                  {hiddenContracts.map((contract) => (
+                    <AutostakingMigrateCard
+                      key={contract.id}
+                      title={contract.name}
+                      balance={contract.metric.myStaked}
+                      tokenIcons={
+                        contract.tokens.stake.map(
+                          ({ alias }) => alias?.logoUrl ?? null
+                        ) ?? []
+                      }
+                      protocol={contract.protocol.name}
+                      apy={contract.metric.aprYear}
+                      apyBoost={contract.metric.myAPYBoost}
+                      onMigrate={handleMigrate(contract)}
+                      icon="eye"
+                      onShow={handleShow(contract)}
+                      showing={contract.showing}
+                    />
+                  ))}
+                </AutostakingCarousel>
+              )}
+            </div>
+          </>
         )}
       </div>
     )
