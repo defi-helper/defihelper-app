@@ -31,7 +31,8 @@ RUN apk add git
 COPY package.json ./package.json
 COPY package-lock.json ./package-lock.json
 RUN ls -la
-RUN npm ci
+RUN npm i
+#RUN npm ci --no-audit
 COPY . .
 RUN ls -la
 RUN npm run build
