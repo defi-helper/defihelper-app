@@ -33,7 +33,7 @@ COPY package-lock.json ./package-lock.json
 RUN ls -la
 RUN npm i
 RUN ls -la
-RUN npm ci --no-audit
+#RUN npm ci --no-audit
 COPY . .
 RUN ls -la
 RUN npm run build
