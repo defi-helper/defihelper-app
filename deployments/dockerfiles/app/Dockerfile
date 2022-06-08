@@ -28,9 +28,12 @@ ARG REACT_APP_WS_API_URL
 ENV REACT_APP_WS_API_URL ${REACT_APP_WS_API_URL:-wss://backend.defihelper.io/api}
 
 RUN apk add git
-COPY package*.json ./
+COPY package.json ./package.json
+COPY package-lock.json ./package-lock.json
+RUN ls -la
 RUN npm ci
 COPY . .
+RUN ls -la
 RUN npm run build
 
 FROM nginx:stable-alpine
