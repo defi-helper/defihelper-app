@@ -183,7 +183,10 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
       }
     }
 
-  useGate(model.StakingAutomatesGate, props.protocolId ?? null)
+  useGate(
+    model.StakingAutomatesGate,
+    props.protocolId ? { protocolId: props.protocolId } : null
+  )
 
   const variables = useMemo(() => {
     if (!user) return undefined

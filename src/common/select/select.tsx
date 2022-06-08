@@ -27,7 +27,6 @@ export type SelectProps = Omit<
   defaultValue?: string | number | string[] | number[]
   multiple?: boolean
   clearable?: boolean
-  clickableBackdrop?: boolean
   header?: React.ReactNode
   footer?: React.ReactNode
 }
@@ -200,7 +199,6 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
           placement="bottom-start"
           offset={[0, 8]}
           sameWidth={sameWidth}
-          clickable={props.multiple || props.clickableBackdrop}
         >
           {(cb) => (
             <>

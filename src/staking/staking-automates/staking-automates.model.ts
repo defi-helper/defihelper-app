@@ -30,6 +30,7 @@ type FetchAdapterParams = {
 type FetchAutomatesParams = {
   userId: string
   protocolId?: string
+  search?: string
 }
 
 type ScanWalletMetricParams = {
@@ -56,6 +57,7 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
         user: params.userId,
         archived: false,
         ...(params.protocolId ? { protocol: params.protocolId } : {}),
+        search: params.search,
       },
     })
 
@@ -113,7 +115,12 @@ export const $automatesContracts = stakingAutomatesDomain
     state.filter((contract) => contract.id !== params)
   )
 
-export const StakingAutomatesGate = createGate<string | null>({
+type Gate = {
+  protocolId?: string
+  search?: string
+}
+
+export const StakingAutomatesGate = createGate<Gate | null>({
   name: 'StakingAutomatesGate',
   domain: stakingAutomatesDomain,
   defaultState: null,
@@ -128,14 +135,23 @@ sample({
       StakingAutomatesGate.status,
       StakingAutomatesGate.state,
     ],
-    clock: [authModel.$user.updates, StakingAutomatesGate.open, updated],
-    filter: (source): source is [UserType, boolean, string] => {
+    clock: [
+      authModel.$user.updates,
+      StakingAutomatesGate.open,
+      StakingAutomatesGate.state.updates,
+      updated,
+    ],
+    filter: (source): source is [UserType, boolean, Gate] => {
       const [user, status] = source
 
       return Boolean(user?.id) && status
     },
   }),
-  fn: ([user, , protocolId]) => ({ userId: user.id, protocolId }),
+  fn: ([user, , gate]) => ({
+    userId: user.id,
+    protocolId: gate?.protocolId,
+    search: gate?.search,
+  }),
   target: fetchAutomatesContractsFx,
 })
 

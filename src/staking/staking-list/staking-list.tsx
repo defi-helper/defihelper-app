@@ -200,6 +200,9 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     alert('task pushed! wait little bit')
   }
 
+  const handleSwitchNetwork = (contract: typeof stakingList[number]) => () =>
+    switchNetwork(contract.network).catch(console.error)
+
   const handleAutostake =
     (contract: typeof stakingList[number]) => async () => {
       try {
@@ -207,8 +210,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         const prototypeAddress =
           contractPrototypeAddresses[contract.id]?.prototypeAddress
-
-        await switchNetwork(contract.network)
 
         if (
           !contract.automate.autorestake ||
@@ -249,8 +250,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
         const billingBalance =
           await autostakingContractsModel.fetchBillingBalanceFx({
-            blockchain: findedWallet.blockchain,
-            network: findedWallet.network,
+            blockchain: contract.blockchain,
+            network: contract.network,
           })
 
         if (
@@ -759,7 +760,11 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         contractId={stakingListItem.id}
                         blockchain={stakingListItem.blockchain}
                         network={stakingListItem.network}
-                        onTurnOn={handleAutostake(stakingListItem)}
+                        onTurnOn={
+                          stakingListItem.network !== currentWallet?.chainId
+                            ? handleSwitchNetwork(stakingListItem)
+                            : handleAutostake(stakingListItem)
+                        }
                         buyLiquidity={stakingListItem.automate.buyLiquidity}
                         autostakingLoading={
                           autostaking[stakingListItem.address]

@@ -65,6 +65,13 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const actionLoading = useStore(model.$actionLoading)
   const buyLpLoading = useStore(model.buyLPFx.pending)
 
+  const handleSwitchNetwork = () =>
+    switchNetwork(props.network).catch((error) => {
+      if (error instanceof Error) {
+        toastsService.error(error.message)
+      }
+    })
+
   const createAdapterAction =
     (action?: keyof Exclude<model.StakingAdapter['actions'], null>) =>
     async () => {
@@ -72,12 +79,6 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         if (!wallet?.account || !action) return
 
         model.action({ action, contractId: props.contractId })
-
-        await switchNetwork(props.network).catch((error) => {
-          if (error instanceof Error) {
-            toastsService.error(error.message)
-          }
-        })
 
         const contract = await model.fetchContractAdapterFx({
           protocolAdapter: props.protocolAdapter,
@@ -258,7 +259,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           <CanDemo>
             <Button
               type="submit"
-              onClick={handleStake}
+              onClick={
+                props.network !== wallet?.chainId
+                  ? handleSwitchNetwork
+                  : handleStake
+              }
               size="small"
               variant="outlined"
               disabled={Boolean(
@@ -292,7 +297,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             <CanDemo>
               <Button
                 type="submit"
-                onClick={handleBuyLiquidity}
+                onClick={
+                  props.network !== wallet?.chainId
+                    ? handleSwitchNetwork
+                    : handleBuyLiquidity
+                }
                 size="small"
                 variant="outlined"
                 loading={buyLpLoading}
@@ -322,7 +331,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           <CanDemo>
             <Button
               type="submit"
-              onClick={handleUnStake}
+              onClick={
+                props.network !== wallet?.chainId
+                  ? handleSwitchNetwork
+                  : handleUnStake
+              }
               size="small"
               variant="outlined"
               disabled={Boolean(
@@ -353,7 +366,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           >
             <CanDemo>
               <Button
-                onClick={handleClaim}
+                onClick={
+                  props.network !== wallet?.chainId
+                    ? handleSwitchNetwork
+                    : handleClaim
+                }
                 size="small"
                 variant="outlined"
                 disabled={Boolean(

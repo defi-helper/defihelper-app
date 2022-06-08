@@ -63,15 +63,16 @@ export const $userWallets = settingsWalletModel.$wallets.reset(logoutFx)
 
 export const authWavesFx = authDomain.createEffect(
   async (params: AuthWavesInputType) => {
-    const data = await authApi.authWaves({
+    const { data, error } = await authApi.authWaves({
       ...params,
       code: Cookies.get('dfh-parent-code'),
       merge: params.merge ?? false,
     })
 
-    if (!data) {
-      throw new Error(ERROR_MESSAGE)
-    }
+    if (error?.fetchError) throw error.fetchError
+    if (error?.graphQLErrors?.[0])
+      throw new Error(error.graphQLErrors[0].message)
+    if (!data) throw new Error(ERROR_MESSAGE)
 
     return data
   }
@@ -79,12 +80,15 @@ export const authWavesFx = authDomain.createEffect(
 
 export const authEthereumFx = authDomain.createEffect(
   async (input: AuthEthereumInputType) => {
-    const data = await authApi.authEth({
+    const { data, error } = await authApi.authEth({
       ...input,
       code: Cookies.get('dfh-parent-code'),
       merge: input.merge ?? false,
     })
 
+    if (error?.fetchError) throw error.fetchError
+    if (error?.graphQLErrors?.[0])
+      throw new Error(error.graphQLErrors[0].message)
     if (!data) throw new Error(ERROR_MESSAGE)
 
     return data
@@ -297,7 +301,12 @@ sample({
 sample({
   clock: guard({
     source: $auth,
-    clock: [signedUserWaves, signedUserEthereum],
+    clock: [
+      signedUserWaves,
+      signedUserEthereum,
+      authEthereumFx.fail,
+      authWavesFx.fail,
+    ],
     filter: (modal): modal is Payload => Boolean(modal),
   }),
   fn: ({ closeAuthSignMessageDialog }) => closeAuthSignMessageDialog,
@@ -348,3 +357,6 @@ guard({
   filter: (user) => Boolean(user),
   target: settingsWalletModel.fetchWalletListFx,
 })
+
+authEthereumFx.failData.watch((error) => toastsService.error(error.message))
+authWavesFx.failData.watch((error) => toastsService.error(error.message))

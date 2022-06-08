@@ -3,6 +3,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 
 import { Button } from '~/common/button'
+import { ButtonBase } from '~/common/button-base'
 import { cutAccount } from '~/common/cut-account'
 import { Dialog } from '~/common/dialog'
 import { Link } from '~/common/link'
@@ -27,7 +28,8 @@ export type AutostakingBalanceDialogProps = {
 
 export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> =
   (props) => {
-    const { register, handleSubmit, formState } = useForm<FormValues>()
+    const { register, handleSubmit, formState, setValue } =
+      useForm<FormValues>()
 
     const handleOnSubmit = handleSubmit(async (formValues) => {
       try {
@@ -39,6 +41,10 @@ export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> 
         }
       }
     })
+
+    const handleRecommendedIncome = () => {
+      setValue('amount', props.recomendedIncome ?? '0')
+    }
 
     return (
       <Dialog className={styles.root}>
@@ -74,13 +80,16 @@ export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> 
             <Typography variant="body2" className={styles.grey}>
               Recommended amount to deposit
             </Typography>
-            <Typography variant="body2" className={styles.recomendedBalance}>
+            <ButtonBase
+              className={styles.recomendedBalance}
+              onClick={handleRecommendedIncome}
+            >
               {bignumberUtils.format(props.recomendedIncome)} {props.token} ($
               {bignumberUtils.format(
                 bignumberUtils.mul(props.recomendedIncome, props.priceUSD)
               )}
               )
-            </Typography>
+            </ButtonBase>
             <Typography variant="body2" className={styles.grey}>
               Your DeFiHelper balance for wallet{' '}
               <Link

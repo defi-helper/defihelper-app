@@ -125,7 +125,6 @@ export const TokensCreateTokenDialog: React.VFC<TokensCreateTokenDialogProps> =
             onChange={(e) => setValue('alias', e.target.value)}
             label="Alias"
             className={styles.formField}
-            clickableBackdrop
             header={
               <Input
                 placeholder="Search"

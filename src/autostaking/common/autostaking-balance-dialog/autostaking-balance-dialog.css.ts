@@ -59,6 +59,8 @@ export const balances = style({
 
 export const recomendedBalance = style({
   color: theme.colors.common.blue1,
+  textAlign: 'left',
+  justifyContent: 'flex-start',
 })
 
 export const button = style({
