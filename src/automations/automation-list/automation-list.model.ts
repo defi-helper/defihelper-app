@@ -210,8 +210,8 @@ export const $descriptions = restore(fetchDescriptionFx.doneData, null).reset(
   AutomationListGate.close
 )
 
-export const fetchBalanceFx = automationListDomain.createEffect(
-  automationApi.getBalance
+export const fetchBalanceFx = automationListDomain.createEffect(() =>
+  automationApi.getBalance()
 )
 
 export const $balance = restore(fetchBalanceFx.doneData, 0).reset(
