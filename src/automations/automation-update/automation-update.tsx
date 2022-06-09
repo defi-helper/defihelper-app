@@ -33,6 +33,7 @@ import * as model from './automation-update.model'
 import * as contactModel from '~/settings/settings-contacts/settings-contact.model'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { analytics } from '~/analytics'
+import { automationApi } from '../common/automation.api'
 
 export type AutomationUpdateProps = {
   updatingTrigger?: AutomationTriggerFragmentFragment
@@ -277,6 +278,10 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     }
   }
 
+  const retrieveEvents = (network: string, address: string) => {
+    return automationApi.fetchContractAbi(network, address)
+  }
+
   return (
     <AutomationDialog
       title={
@@ -334,6 +339,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
               onCreate={handleCreateTrigger}
               onUpdate={model.updateTriggerFx}
               defaultValues={defaultValues}
+              retrieveEvents={retrieveEvents}
               loading={creating}
             />
           )}

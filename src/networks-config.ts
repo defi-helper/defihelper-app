@@ -4,6 +4,7 @@ import { BlockchainEnum } from './api/_generated-types'
 type Network = {
   title: string
   explorerUrl: string
+  etherscanApiUrl: string | null
   coin: string
   decimals?: number
   blockchain: BlockchainEnum
@@ -29,6 +30,7 @@ const prodNetworks: Record<string, Network> = {
     chainId: 1,
     title: 'Ethereum',
     explorerUrl: 'https://etherscan.io',
+    etherscanApiUrl: 'https://api.etherscan.io/api',
     coin: 'ETH',
     decimals: 18,
     blockchain: BlockchainEnum.Ethereum,
@@ -38,6 +40,7 @@ const prodNetworks: Record<string, Network> = {
     chainId: 1666600000,
     title: 'Harmony',
     explorerUrl: 'https://explorer.harmony.one',
+    etherscanApiUrl: null,
     coin: 'ONE',
     decimals: 18,
     blockchain: BlockchainEnum.Ethereum,
@@ -52,6 +55,7 @@ const prodNetworks: Record<string, Network> = {
   56: {
     chainId: 56,
     title: 'Binance Smart Chain',
+    etherscanApiUrl: 'https://api.bscscan.com/api',
     explorerUrl: 'https://bscscan.com',
     coin: 'BNB',
     decimals: 18,
@@ -66,6 +70,7 @@ const prodNetworks: Record<string, Network> = {
   137: {
     chainId: 137,
     title: 'Polygon',
+    etherscanApiUrl: 'https://api.polygonscan.com/api',
     explorerUrl: 'https://polygonscan.com',
     coin: 'MATIC',
     decimals: 18,
@@ -79,6 +84,7 @@ const prodNetworks: Record<string, Network> = {
   1285: {
     chainId: 1285,
     title: 'Moonriver',
+    etherscanApiUrl: 'https://api-moonriver.moonscan.io',
     explorerUrl: 'https://moonriver.moonscan.io',
     coin: 'MOVR',
     decimals: 18,
@@ -92,6 +98,7 @@ const prodNetworks: Record<string, Network> = {
   1284: {
     chainId: 1284,
     title: 'MoonBeam',
+    etherscanApiUrl: 'https://api-moonbeam.moonscan.io/api',
     explorerUrl: 'https://moonbeam.moonscan.io',
     coin: 'GLMR',
     decimals: 18,
@@ -105,6 +112,7 @@ const prodNetworks: Record<string, Network> = {
   1313161554: {
     chainId: 1313161554,
     title: 'Aurora',
+    etherscanApiUrl: 'https://api.aurorascan.dev/api',
     explorerUrl: 'https://aurorascan.dev',
     coin: 'ETH',
     decimals: 18,
@@ -116,6 +124,7 @@ const prodNetworks: Record<string, Network> = {
     chainId: 43114,
     title: 'Avalanche',
     explorerUrl: 'https://snowtrace.io',
+    etherscanApiUrl: 'https://api.snowtrace.io/api',
     coin: 'AVAX',
     decimals: 18,
     blockchain: BlockchainEnum.Ethereum,
@@ -129,6 +138,7 @@ const prodNetworks: Record<string, Network> = {
     chainId: 250,
     title: 'Fantom',
     explorerUrl: 'https://ftmscan.com',
+    etherscanApiUrl: 'https://api.ftmscan.com/api',
     coin: 'FTM',
     decimals: 18,
     blockchain: BlockchainEnum.Ethereum,
@@ -139,6 +149,7 @@ const prodNetworks: Record<string, Network> = {
     chainId: 25,
     title: 'Cronos',
     explorerUrl: 'https://cronoscan.com',
+    etherscanApiUrl: 'https://api.cronoscan.com/api',
     coin: 'CRO',
     decimals: 18,
     blockchain: BlockchainEnum.Ethereum,
@@ -149,6 +160,7 @@ const prodNetworks: Record<string, Network> = {
     chainId: 42161,
     title: 'Arbitrum',
     explorerUrl: 'https://arbiscan.io',
+    etherscanApiUrl: 'https://api.arbiscan.io/api',
     coin: 'ETH',
     decimals: 18,
     blockchain: BlockchainEnum.Ethereum,
@@ -159,6 +171,7 @@ const prodNetworks: Record<string, Network> = {
     chainId: 10,
     title: 'Optimistic Ethereum',
     explorerUrl: 'https://optimistic.etherscan.io',
+    etherscanApiUrl: 'https://api-optimistic.etherscan.io',
     coin: 'ETH',
     decimals: 18,
     blockchain: BlockchainEnum.Ethereum,
@@ -168,6 +181,7 @@ const prodNetworks: Record<string, Network> = {
   main: {
     chainId: 'main',
     title: 'Waves',
+    etherscanApiUrl: null,
     explorerUrl: 'https://wavesexplorer.com',
     coin: 'WAVES',
     blockchain: BlockchainEnum.Waves,
@@ -182,6 +196,7 @@ const devNetworks: Record<string, Network> = {
     explorerUrl: 'https://ropsten.etherscan.io',
     coin: 'ETH',
     decimals: 18,
+    etherscanApiUrl: null,
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
   },
@@ -191,6 +206,7 @@ const devNetworks: Record<string, Network> = {
     explorerUrl: 'https://kovan.etherscan.io',
     coin: 'ETH',
     decimals: 18,
+    etherscanApiUrl: null,
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
   },
@@ -200,6 +216,7 @@ const devNetworks: Record<string, Network> = {
     explorerUrl: 'https://rinkeby.etherscan.io',
     coin: 'ETH',
     decimals: 18,
+    etherscanApiUrl: null,
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
   },
@@ -209,6 +226,7 @@ const devNetworks: Record<string, Network> = {
     explorerUrl: 'https://goerli.etherscan.io',
     coin: 'ETH',
     decimals: 18,
+    etherscanApiUrl: null,
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',
   },
@@ -218,6 +236,7 @@ const devNetworks: Record<string, Network> = {
     explorerUrl: 'https://testnet.bscscan.com',
     coin: 'BNB',
     decimals: 18,
+    etherscanApiUrl: null,
     blockchain: BlockchainEnum.Ethereum,
     icon: 'bnbRegular',
     rpcUrls: [
@@ -237,6 +256,7 @@ const devNetworks: Record<string, Network> = {
     decimals: 18,
     blockchain: BlockchainEnum.Ethereum,
     icon: 'moonriver',
+    etherscanApiUrl: null,
     rpcUrls: ['https://rpc.testnet.moonbeam.network'],
   },
   43113: {
@@ -247,6 +267,7 @@ const devNetworks: Record<string, Network> = {
     decimals: 18,
     blockchain: BlockchainEnum.Ethereum,
     icon: 'avalanche',
+    etherscanApiUrl: null,
     rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
   },
   1666700000: {
@@ -254,6 +275,7 @@ const devNetworks: Record<string, Network> = {
     title: 'Harmony Testnet',
     explorerUrl: 'https://explorer.pops.one',
     coin: 'ONE',
+    etherscanApiUrl: null,
     decimals: 18,
     blockchain: BlockchainEnum.Ethereum,
     icon: 'ethereumRegular',

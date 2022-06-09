@@ -46,6 +46,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openAutomationProducts] = useDialog(AutomationProducts)
   const [openSearchDialog] = useDialog(SearchDialog)
+
   const wallet = walletNetworkModel.useWalletNetwork()
 
   const handleDeleteTrigger = (triggerId: string) => async () => {
@@ -182,6 +183,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           <WalletConnect fallback={<Button>Buy</Button>}>
             <Button onClick={handleBuyProducts}>Buy</Button>
           </WalletConnect>
+
           <Input
             placeholder="Search"
             className={styles.searchDesktop}

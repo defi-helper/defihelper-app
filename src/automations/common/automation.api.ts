@@ -1,5 +1,6 @@
 import { getAPIClient } from '~/api'
 import { config } from '~/config'
+import { networksConfig } from '~/networks-config'
 import {
   AutomationActionCreateMutation,
   AutomationActionCreateMutationVariables,
@@ -197,6 +198,31 @@ export const automationApi = {
         variables,
       })
       .then(({ data }) => data?.automateActionDelete),
+
+  fetchContractAbi: async (
+    network: keyof typeof networksConfig,
+    address: string
+  ): Promise<{ type: string; name: string }[]> =>
+    new Promise((resolve) => {
+      const baseApiUrl = config.API_URL?.replace('/api', '')
+      const interval = setInterval(async () => {
+        const { response, status } = await fetch(
+          `${baseApiUrl}/ethereum-abi/${network}/${address}`
+        ).then((res) => ({ response: res.json(), status: res.status }))
+
+        console.info(status)
+        if (status === 404) {
+          clearInterval(interval)
+          resolve([])
+          return
+        }
+
+        if (status === 200) {
+          clearInterval(interval)
+          resolve(response)
+        }
+      }, 1000)
+    }),
 
   getAutomationsContracts: (
     network = 'ethereum'
