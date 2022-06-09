@@ -279,7 +279,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   }
 
   const retrieveEvents = (network: string, address: string) => {
-    return automationApi.fetchContractAbi(network, address)
+    return model.resolveAbiFx({ network, address })
   }
 
   return (

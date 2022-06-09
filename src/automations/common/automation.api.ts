@@ -210,7 +210,6 @@ export const automationApi = {
           `${baseApiUrl}/ethereum-abi/${network}/${address}`
         ).then((res) => ({ response: res.json(), status: res.status }))
 
-        console.info(status)
         if (status === 404) {
           clearInterval(interval)
           resolve([])
