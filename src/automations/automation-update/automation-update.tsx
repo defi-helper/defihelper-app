@@ -33,7 +33,6 @@ import * as model from './automation-update.model'
 import * as contactModel from '~/settings/settings-contacts/settings-contact.model'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { analytics } from '~/analytics'
-import { automationApi } from '../common/automation.api'
 
 export type AutomationUpdateProps = {
   updatingTrigger?: AutomationTriggerFragmentFragment
