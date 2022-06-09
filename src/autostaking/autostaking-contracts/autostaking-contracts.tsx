@@ -1,8 +1,9 @@
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useThrottle, useLocalStorage } from 'react-use'
+import { Link as ReactRouterLink } from 'react-router-dom'
 
 import {
   AutomateActionTypeEnum,
@@ -42,6 +43,7 @@ import * as model from './autostaking-contracts.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
+import { paths } from '~/paths'
 
 export type AutostakingContractsProps = {
   className?: string
@@ -62,6 +64,29 @@ const sortIcon = (
 
   return <Icon icon={icon} width="18" />
 }
+
+const text = (
+  <>
+    If there are no funds on the contract, we calculate an APY Boost of $10,000.
+    <br />
+    <br />
+    You&apos; ll see the real data after you run auto-staking on this contract.
+  </>
+)
+
+const dropdown = (
+  <Dropdown
+    control={
+      <ButtonBase className={styles.apyboostQuestion}>
+        <Icon icon="question" width={16} height={16} />
+      </ButtonBase>
+    }
+    className={styles.dropdown}
+    offset={[0, 8]}
+  >
+    {text}
+  </Dropdown>
+)
 
 export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   props
@@ -97,7 +122,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const wallets = useStore(walletsModel.$wallets)
   const [blockchain, setBlockChain] = useState<BlockchainEnum | null>(null)
   const [sortBy, setSort] = useState({
-    column: ContractListSortInputTypeColumnEnum.MyStaked,
+    column: ContractListSortInputTypeColumnEnum.AprBoosted,
     order: SortOrderEnum.Desc,
   })
 
@@ -521,10 +546,11 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                     sortBy,
                     ContractListSortInputTypeColumnEnum.AprWeekReal
                   )}
-              </ButtonBase>
+              </ButtonBase>{' '}
+              {dropdown}
             </Typography>
             <Typography variant="body2" as="div">
-              <ButtonBase>APY Boost</ButtonBase>
+              {dropdown}{' '}
               <ButtonBase
                 onClick={handleSort({
                   column: ContractListSortInputTypeColumnEnum.AprBoosted,
@@ -549,175 +575,194 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
           {isEmpty(contracts) && !contractsLoading && (
             <div className={styles.padding}>No data</div>
           )}
-          {contracts.map((contract, ind) => (
-            <div className={styles.row} key={String(contract.id + ind)}>
-              <Typography
-                as="div"
-                variant="body2"
-                className={styles.contractCardName}
-              >
-                <span className={styles.contractCardIcons}>
-                  {networksConfig[contract.network]?.icon ? (
-                    <Icon
-                      icon={networksConfig[contract.network].icon}
-                      width="20"
-                      height="20"
-                      className={styles.contractNetworkIcon}
+          {contracts.map((contract, ind) => {
+            const apyboost = bignumberUtils.mul(contract.metric.myAPYBoost, 100)
+            const realApy = bignumberUtils.mul(contract.metric.aprWeekReal, 100)
+
+            return (
+              <div className={styles.row} key={String(contract.id + ind)}>
+                <Typography
+                  as="div"
+                  variant="body2"
+                  className={styles.contractCardName}
+                >
+                  <span className={styles.contractCardIcons}>
+                    {networksConfig[contract.network]?.icon ? (
+                      <Icon
+                        icon={networksConfig[contract.network].icon}
+                        width="20"
+                        height="20"
+                        className={styles.contractNetworkIcon}
+                      />
+                    ) : (
+                      <Paper className={styles.contractUnknownNetworkIcon}>
+                        <Icon icon="unknownNetwork" width="16" height="16" />
+                      </Paper>
+                    )}
+                    {isEmpty(contract.tokens.stake) ? (
+                      <Paper className={styles.contractCardIcon} />
+                    ) : (
+                      contract.tokens.stake.map((token, index) => {
+                        const icon = token.alias?.logoUrl ? (
+                          <img
+                            src={token.alias?.logoUrl}
+                            alt=""
+                            className={styles.contractCardIcon}
+                          />
+                        ) : (
+                          <Paper className={styles.contractCardIconUnknown}>
+                            <Icon
+                              icon="unknownNetwork"
+                              width="16"
+                              height="16"
+                            />
+                          </Paper>
+                        )
+
+                        return (
+                          <Dropdown
+                            key={String(index)}
+                            control={
+                              <ButtonBase
+                                className={styles.contractCardButtonIcon}
+                              >
+                                {icon}
+                              </ButtonBase>
+                            }
+                            className={styles.contractTokenInfo}
+                          >
+                            {(close) => (
+                              <>
+                                <ButtonBase
+                                  onClick={close}
+                                  className={styles.contractTokenInfoClose}
+                                >
+                                  <Icon icon="close" width={34} height={34} />
+                                </ButtonBase>
+                                {icon}
+                                <div>
+                                  <Typography variant="body2" family="mono">
+                                    {token.name}
+                                  </Typography>
+                                  <Typography variant="body2" family="mono">
+                                    <Link
+                                      target="_blank"
+                                      color="blue"
+                                      className={styles.contractCardLink}
+                                      href={buildExplorerUrl({
+                                        address: token.address,
+                                        network: token.network,
+                                      })}
+                                    >
+                                      Explorer{' '}
+                                      <Icon
+                                        icon="link"
+                                        width="1em"
+                                        height="1em"
+                                      />
+                                    </Link>
+                                  </Typography>
+                                </div>
+                              </>
+                            )}
+                          </Dropdown>
+                        )
+                      })
+                    )}
+                  </span>
+                  <Typography variant="inherit">{contract.name}</Typography>
+                </Typography>
+                <Typography
+                  variant="body2"
+                  className={styles.contractProtocol}
+                  as={ReactRouterLink}
+                  to={paths.protocols.detail(contract.protocol.id)}
+                >
+                  {contract.protocol.icon ? (
+                    <img
+                      alt=""
+                      src={contract.protocol.icon}
+                      className={styles.contractProtocolIcon}
                     />
                   ) : (
-                    <Paper className={styles.contractUnknownNetworkIcon}>
+                    <Paper className={styles.contractProtocolIcon}>
                       <Icon icon="unknownNetwork" width="16" height="16" />
                     </Paper>
-                  )}
-                  {isEmpty(contract.tokens.stake) ? (
-                    <Paper className={styles.contractCardIcon} />
-                  ) : (
-                    contract.tokens.stake.map((token, index) => {
-                      const icon = token.alias?.logoUrl ? (
-                        <img
-                          src={token.alias?.logoUrl}
-                          alt=""
-                          className={styles.contractCardIcon}
-                        />
-                      ) : (
-                        <Paper className={styles.contractCardIcon}>
-                          <Icon icon="unknownNetwork" width="16" height="16" />
-                        </Paper>
-                      )
-
-                      return (
-                        <Dropdown
-                          key={String(index)}
-                          control={
-                            <ButtonBase
-                              className={styles.contractCardButtonIcon}
-                            >
-                              {icon}
-                            </ButtonBase>
-                          }
-                          className={styles.contractTokenInfo}
-                        >
-                          {(close) => (
-                            <>
-                              <ButtonBase
-                                onClick={close}
-                                className={styles.contractTokenInfoClose}
-                              >
-                                <Icon icon="close" width={34} height={34} />
-                              </ButtonBase>
-                              {icon}
-                              <div>
-                                <Typography variant="body2" family="mono">
-                                  {token.name}
-                                </Typography>
-                                <Typography variant="body2" family="mono">
-                                  <Link
-                                    target="_blank"
-                                    color="blue"
-                                    className={styles.contractCardLink}
-                                    href={buildExplorerUrl({
-                                      address: token.address,
-                                      network: token.network,
-                                    })}
-                                  >
-                                    Explorer{' '}
-                                    <Icon
-                                      icon="link"
-                                      width="1em"
-                                      height="1em"
-                                    />
-                                  </Link>
-                                </Typography>
-                              </div>
-                            </>
-                          )}
-                        </Dropdown>
-                      )
-                    })
-                  )}
-                </span>
-                <Typography variant="inherit">{contract.name}</Typography>
-              </Typography>
-              <Typography
-                variant="body2"
-                as="div"
-                className={styles.contractProtocol}
-              >
-                {contract.protocol.icon ? (
-                  <img
-                    alt=""
-                    src={contract.protocol.icon}
-                    className={styles.contractProtocolIcon}
-                  />
-                ) : (
-                  <Paper className={styles.contractProtocolIcon}>
-                    <Icon icon="unknownNetwork" width="16" height="16" />
-                  </Paper>
-                )}{' '}
-                {contract.protocol.name}
-              </Typography>
-              <Typography variant="body2" align="right" as="div">
-                ${bignumberUtils.format(contract.metric.tvl)}
-              </Typography>
-              <Typography variant="body2" align="right" as="div">
-                {bignumberUtils.formatMax(
-                  bignumberUtils.mul(contract.metric.aprYear, 100),
-                  10000
-                )}
-                %
-              </Typography>
-              <Typography variant="body2" align="right" as="div">
-                {bignumberUtils.formatMax(
-                  bignumberUtils.mul(contract.metric.aprWeekReal, 100),
-                  10000,
-                  true
-                )}
-                %
-                <ButtonBase
-                  onClick={handleOpenApy(contract.metric)}
-                  className={styles.apyButton}
-                >
-                  <Icon icon="calculator" width="20" height="20" />
-                </ButtonBase>
-              </Typography>
-              <div className={styles.apyBoost}>
-                <Typography variant="body2" align="right" as="span">
+                  )}{' '}
+                  {contract.protocol.name}
+                </Typography>
+                <Typography variant="body2" align="right" as="div">
+                  ${bignumberUtils.format(contract.metric.tvl)}
+                </Typography>
+                <Typography variant="body2" align="right" as="div">
                   {bignumberUtils.formatMax(
-                    bignumberUtils.mul(contract.metric.myAPYBoost, 100),
-                    10000,
-                    true
+                    bignumberUtils.mul(contract.metric.aprYear, 100),
+                    10000
                   )}
                   %
+                  <ButtonBase
+                    onClick={handleOpenApy(contract.metric)}
+                    className={styles.apyButton}
+                  >
+                    <Icon icon="calculator" width="20" height="20" />
+                  </ButtonBase>
                 </Typography>
-                <WalletConnect
-                  network={contract.network}
-                  fallback={
+                <Typography variant="body2" align="right" as="div">
+                  <Typography
+                    variant="inherit"
+                    className={clsx({
+                      [styles.positive]: bignumberUtils.gt(realApy, '0'),
+                      [styles.negative]: bignumberUtils.lt(realApy, '0'),
+                    })}
+                  >
+                    {bignumberUtils.lt(realApy, '0') && '- '}
+                    {bignumberUtils.formatMax(realApy, 10000, true)}%
+                  </Typography>
+                </Typography>
+                <div className={styles.apyBoost}>
+                  {dropdown}
+                  <Typography
+                    variant="body2"
+                    align="right"
+                    as="span"
+                    className={clsx({
+                      [styles.positive]: bignumberUtils.gt(apyboost, '0'),
+                      [styles.negative]: bignumberUtils.lt(apyboost, '0'),
+                    })}
+                  >
+                    {bignumberUtils.lt(apyboost, '0') && '- '}
+                    {bignumberUtils.formatMax(apyboost, 10000, true)}%
+                  </Typography>
+                  <WalletConnect
+                    network={contract.network}
+                    fallback={
+                      <Button
+                        color="green"
+                        size="small"
+                        className={styles.autostakeButton}
+                      >
+                        auto-stake
+                      </Button>
+                    }
+                  >
                     <Button
                       color="green"
                       size="small"
                       className={styles.autostakeButton}
+                      onClick={
+                        contract.network !== currentWallet?.chainId
+                          ? handleSwitchNetwork(contract)
+                          : handleAutostake(contract)
+                      }
+                      loading={contract.autostakingLoading}
                     >
                       auto-stake
                     </Button>
-                  }
-                >
-                  <Button
-                    color="green"
-                    size="small"
-                    className={styles.autostakeButton}
-                    onClick={
-                      contract.network !== currentWallet?.chainId
-                        ? handleSwitchNetwork(contract)
-                        : handleAutostake(contract)
-                    }
-                    loading={contract.autostakingLoading}
-                  >
-                    auto-stake
-                  </Button>
-                </WalletConnect>
+                  </WalletConnect>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
           {contractsHasNextPage && (
             <div className={styles.loader} ref={contractsSentryRef}>
               <Loader height="36" />
