@@ -64,15 +64,12 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
   const [openWalletsDialog] = useDialog(AutomationWalletsDialog)
 
   const [fetchedEvents, setFetchedEvents] = useState<null | string[]>(null)
-  const [hintMessage, setHintMessage] = useState(
-    'Please, fill the address and network'
-  )
+  const [fetchingAbi, setFetchingAbi] = useState<boolean>(false)
   const { retrieveEvents } = props
 
   const defaultValues = useMemo((): FormValues => {
     const { params, wallet, ...restOfDefaultValues } = props.defaultValues ?? {}
-
-    const { address, ...parsedParams } = safeJsonParse(params)
+    const { address, event, ...parsedParams } = safeJsonParse(params)
 
     const findedWallet = props.wallets.find(
       (walletItem) => walletItem.id === wallet
@@ -82,6 +79,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
       ...restOfDefaultValues,
       ...parsedParams,
       address,
+      event,
       wallet: findedWallet,
     }
   }, [props.defaultValues, props.wallets])
@@ -93,7 +91,6 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
     setValue,
     reset,
     formState,
-    getValues,
     trigger,
     watch,
   } = useForm<FormValues, { test: string }>({
@@ -194,28 +191,15 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
   useEffect(() => {
     if (!address || !network) return
 
-    setHintMessage(`Fetching abi...`)
-
-    if (!/^(0x){1}[0-9a-fA-F]{40}$/i.test(address)) {
-      setHintMessage('Wrong address')
-      return
-    }
-
+    setFetchingAbi(true)
     retrieveEvents(network, address).then((abi) => {
       const events = abi.filter((i) => i.type === 'event')
-      if (!events.length) {
-        setHintMessage(`No events found :(`)
-        return
-      }
-
-      setHintMessage(`Choose the event, please`)
       setFetchedEvents(events.map(({ name }) => name))
+      setFetchingAbi(false)
     })
 
     trigger('address')
   }, [address, network, retrieveEvents, trigger])
-
-  console.warn(getValues())
 
   return (
     <AutomationForm onSubmit={handleOnSubmit}>
@@ -306,25 +290,21 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
                 label="Address"
                 className={styles.input}
                 {...register('address')}
-                onChange={(e) => setValue('address', e.target.value)}
+                helperText={formState.errors.address?.message}
+                error={Boolean(formState.errors.address?.message)}
               />
             )}
           />
 
-          <Typography variant="inherit" className={styles.hintMessage}>
-            {hintMessage}
-          </Typography>
-
           <Controller
             control={control}
             name="event"
-            render={({ field }) => (
+            render={() => (
               <Select
-                label="event"
+                label={`event ${fetchingAbi ? '· fetching abi' : ''}`}
                 disabled={fetchedEvents === null || fetchedEvents?.length === 0}
                 className={styles.input}
-                value={field.value}
-                onChange={(e) => setValue('event', e.target.value)}
+                {...register('event')}
                 helperText={formState.errors.event?.message}
                 error={Boolean(formState.errors.event?.message)}
               >
