@@ -179,7 +179,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
   useEffect(() => {
     if (!network) return
 
-    trigger(['network', 'address'])
+    trigger(['network'])
   }, [network, trigger])
 
   useEffect(() => {
@@ -196,9 +196,8 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
       const events = abi.filter((i) => i.type === 'event')
       setFetchedEvents(events.map(({ name }) => name))
       setFetchingAbi(false)
+      trigger('address')
     })
-
-    trigger('address')
   }, [address, network, retrieveEvents, trigger])
 
   return (
