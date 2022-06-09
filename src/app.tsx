@@ -16,6 +16,7 @@ import { AuthProvider } from './auth'
 import { getAPIClient } from './api'
 import { ErrorBoundary, Sentry } from './error-boundary'
 import { config } from './config'
+import { Cookie } from './common/cookie'
 
 Sentry.init()
 
@@ -47,6 +48,7 @@ export const App: React.VFC = () => {
                 <ToastProvider maxItems={6}>
                   <AuthProvider>
                     <Router />
+                    <Cookie />
                   </AuthProvider>
                 </ToastProvider>
               </DialogProvider>
