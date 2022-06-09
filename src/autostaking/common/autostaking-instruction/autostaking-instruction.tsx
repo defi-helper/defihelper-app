@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 
 import { Button } from '~/common/button'
-import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as styles from './autostaking-instruction.css'
@@ -17,7 +16,7 @@ const INSTRUCTION = [
     link: (
       <Button
         color="green"
-        as={Link}
+        as="a"
         href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
         target="_blank"
         size="medium"
@@ -32,7 +31,7 @@ const INSTRUCTION = [
     link: (
       <Button
         color="green"
-        as={Link}
+        as="a"
         href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
         target="_blank"
         size="medium"
@@ -47,7 +46,7 @@ const INSTRUCTION = [
     link: (
       <Button
         color="green"
-        as={Link}
+        as="a"
         href="https://defihelper.io/static/media/Math_Behind_DeFiHelper.pdf"
         target="_blank"
         size="medium"

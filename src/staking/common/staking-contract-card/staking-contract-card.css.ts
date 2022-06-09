@@ -34,12 +34,15 @@ export const coinIcon = style({
   height: 24,
 })
 
-export const coinIconEmpty = style({
-  width: 24,
-  height: 24,
-  background: '#bbb',
-  borderRadius: 26,
-})
+export const coinIconEmpty = style([
+  coinIcon,
+  {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: theme.colors.background,
+  },
+])
 
 export const coinIconImage = style({
   width: 24,

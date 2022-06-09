@@ -7,6 +7,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
+import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { paths } from '~/paths'
@@ -86,7 +87,9 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
                     className={styles.coinIconImage}
                   />
                 ) : (
-                  <div className={styles.coinIconEmpty} />
+                  <Paper className={styles.coinIconEmpty}>
+                    <Icon icon="unknownNetwork" width="16" height="16" />
+                  </Paper>
                 )}
               </span>
             ))}

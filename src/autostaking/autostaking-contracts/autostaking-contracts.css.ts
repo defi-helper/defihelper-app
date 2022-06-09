@@ -72,7 +72,7 @@ export const row = style([
     alignItems: 'center',
     gap: 30,
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr 10% 12% 14% 19%',
+    gridTemplateColumns: '1fr 13% 10% 10% 12% 1fr',
 
     selectors: {
       '&:not(:last-child)': {
@@ -140,6 +140,13 @@ export const contractCardIcon = style({
   justifyContent: 'center',
 })
 
+export const contractCardIconUnknown = style([
+  contractCardIcon,
+  {
+    background: theme.colors.background,
+  },
+])
+
 export const contractNetworkIcon = style({
   marginRight: 16,
 })
@@ -152,6 +159,7 @@ export const contractUnknownNetworkIcon = style([
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    background: theme.colors.background,
   },
 ])
 
@@ -209,4 +217,21 @@ export const loader = style({
 export const apyButton = style({
   verticalAlign: 'middle',
   marginLeft: 10,
+})
+
+export const positive = style({
+  color: theme.colors.textColorGreen,
+})
+
+export const negative = style({
+  color: theme.colors.common.red1,
+})
+
+export const apyboostQuestion = style({
+  color: theme.colors.textColorGrey,
+  verticalAlign: 'middle',
+})
+
+export const dropdown = style({
+  width: 252,
 })
