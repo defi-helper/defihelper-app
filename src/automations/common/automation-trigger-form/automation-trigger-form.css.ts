@@ -20,6 +20,11 @@ export const walletTitle = style({
   width: '100%',
 })
 
+export const hintMessage = style({
+  marginBottom: 4,
+  textAlign: 'center',
+})
+
 export const walletSubtitle = style({
   width: '100%',
   color: theme.colors.textColorGrey,

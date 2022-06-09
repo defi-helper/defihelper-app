@@ -277,6 +277,10 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
     }
   }
 
+  const retrieveEvents = (network: string, address: string) => {
+    return model.resolveAbiFx({ network, address })
+  }
+
   return (
     <AutomationDialog
       title={
@@ -334,6 +338,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
               onCreate={handleCreateTrigger}
               onUpdate={model.updateTriggerFx}
               defaultValues={defaultValues}
+              retrieveEvents={retrieveEvents}
               loading={creating}
             />
           )}

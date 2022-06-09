@@ -43,6 +43,12 @@ export const updateTriggerFx = automationUpdateDomain.createEffect(
   }
 )
 
+export const resolveAbiFx = automationUpdateDomain.createEffect(
+  async (input: { address: string; network: string }) => {
+    return automationApi.fetchContractAbi(input.network, input.address)
+  }
+)
+
 export const $createdTrigger = restore(createTriggerFx.doneData, null)
 export const $updatedTrigger = restore(updateTriggerFx.doneData, null)
 
