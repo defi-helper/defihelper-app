@@ -14,14 +14,12 @@ import {
   SortOrderEnum,
 } from '~/api'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { useDialog, UserRejectionError } from '~/common/dialog'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
-import { Link } from '~/common/link'
 import { Loader } from '~/common/loader'
 import { Paper } from '~/common/paper'
 import { Select, SelectOption } from '~/common/select'
@@ -37,13 +35,14 @@ import { analytics } from '~/analytics'
 import { switchNetwork } from '~/wallets/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { WalletConnect } from '~/wallets/wallet-connect'
+import { paths } from '~/paths'
+import { StakeRewardTokens } from '~/common/stake-reward-tokens'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as styles from './autostaking-contracts.css'
 import * as model from './autostaking-contracts.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
-import { paths } from '~/paths'
 
 export type AutostakingContractsProps = {
   className?: string
@@ -599,76 +598,11 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                         <Icon icon="unknownNetwork" width="16" height="16" />
                       </Paper>
                     )}
-                    {isEmpty(contract.tokens.stake) ? (
-                      <Paper className={styles.contractCardIcon} />
-                    ) : (
-                      contract.tokens.stake.map((token, index) => {
-                        const icon = token.alias?.logoUrl ? (
-                          <img
-                            src={token.alias?.logoUrl}
-                            alt=""
-                            className={styles.contractCardIcon}
-                          />
-                        ) : (
-                          <Paper className={styles.contractCardIconUnknown}>
-                            <Icon
-                              icon="unknownNetwork"
-                              width="16"
-                              height="16"
-                            />
-                          </Paper>
-                        )
-
-                        return (
-                          <Dropdown
-                            key={String(index)}
-                            control={
-                              <ButtonBase
-                                className={styles.contractCardButtonIcon}
-                              >
-                                {icon}
-                              </ButtonBase>
-                            }
-                            className={styles.contractTokenInfo}
-                          >
-                            {(close) => (
-                              <>
-                                <ButtonBase
-                                  onClick={close}
-                                  className={styles.contractTokenInfoClose}
-                                >
-                                  <Icon icon="close" width={34} height={34} />
-                                </ButtonBase>
-                                {icon}
-                                <div>
-                                  <Typography variant="body2" family="mono">
-                                    {token.name}
-                                  </Typography>
-                                  <Typography variant="body2" family="mono">
-                                    <Link
-                                      target="_blank"
-                                      color="blue"
-                                      className={styles.contractCardLink}
-                                      href={buildExplorerUrl({
-                                        address: token.address,
-                                        network: token.network,
-                                      })}
-                                    >
-                                      Explorer{' '}
-                                      <Icon
-                                        icon="link"
-                                        width="1em"
-                                        height="1em"
-                                      />
-                                    </Link>
-                                  </Typography>
-                                </div>
-                              </>
-                            )}
-                          </Dropdown>
-                        )
-                      })
-                    )}
+                    <StakeRewardTokens
+                      stakeTokens={contract.tokens.stake}
+                      rewardTokens={contract.tokens.reward}
+                      tokenClassName={styles.contractIconBg}
+                    />
                   </span>
                   <Typography variant="inherit">{contract.name}</Typography>
                 </Typography>

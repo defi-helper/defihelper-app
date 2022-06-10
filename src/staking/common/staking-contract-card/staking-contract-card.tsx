@@ -7,7 +7,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
-import { Paper } from '~/common/paper'
+import { StakeRewardTokens } from '~/common/stake-reward-tokens'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { paths } from '~/paths'
@@ -78,21 +78,12 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
       <div className={styles.tableCol}>
         {currentNetwork && (
           <div className={styles.coinIcons}>
-            {props.tokens.stake.map((token, index) => (
-              <span className={styles.coinIcon} key={String(index)}>
-                {token.alias?.logoUrl ? (
-                  <img
-                    src={token.alias?.logoUrl}
-                    alt={token.alias?.name}
-                    className={styles.coinIconImage}
-                  />
-                ) : (
-                  <Paper className={styles.coinIconEmpty}>
-                    <Icon icon="unknownNetwork" width="16" height="16" />
-                  </Paper>
-                )}
-              </span>
-            ))}
+            <StakeRewardTokens
+              stakeTokens={props.tokens.stake}
+              rewardTokens={props.tokens.reward}
+              size={24}
+              tokenClassName={styles.contractIconBg}
+            />
           </div>
         )}
         <Typography variant="body2" as="div">

@@ -22,8 +22,18 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
       stake {
         alias {
           logoUrl
-          name
         }
+        network
+        address
+        name
+      }
+      reward {
+        alias {
+          logoUrl
+        }
+        network
+        address
+        name
       }
     }
     automate {

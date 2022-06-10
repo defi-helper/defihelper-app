@@ -1,4 +1,4 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -234,23 +234,6 @@ export const contractCardIcons = style({
   alignItems: 'center',
 })
 
-export const contractCardButtonIcon = style({
-  selectors: {
-    '&:not(:first-child)': {
-      marginLeft: -4,
-    },
-  },
-})
-
-export const contractCardIcon = style({
-  width: 20,
-  height: 20,
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-})
-
 export const contractNetworkIcon = style({
   marginRight: 16,
 })
@@ -310,24 +293,6 @@ export const contractButton = style({
       width: 'auto',
     },
   },
-})
-
-export const contractTokenInfo = style({
-  maxWidth: 276,
-  width: '100%',
-  display: 'grid',
-  gridTemplateColumns: '24px 1fr',
-  gap: 8,
-})
-
-export const contractTokenInfoClose = style({
-  position: 'absolute',
-  right: 0,
-  top: 0,
-})
-
-globalStyle(`${contractTokenInfoClose} + div`, {
-  background: theme.colors.secondary,
 })
 
 export const apyButton = style({

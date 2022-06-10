@@ -9,11 +9,11 @@ import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { cutAccount } from '~/common/cut-account'
 import { useDialog } from '~/common/dialog'
-import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Link } from '~/common/link'
 import { Loader } from '~/common/loader'
 import { Paper } from '~/common/paper'
+import { StakeRewardTokens } from '~/common/stake-reward-tokens'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { StakingApyDialog } from '~/staking/common'
@@ -194,92 +194,10 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                                   />
                                 </Paper>
                               )}
-                              {isEmpty(contract.tokens.stake) ? (
-                                <Paper className={styles.contractCardIcon} />
-                              ) : (
-                                contract.tokens.stake.map((token, index) => {
-                                  const icon = token.alias?.logoUrl ? (
-                                    <img
-                                      src={token.alias?.logoUrl}
-                                      alt=""
-                                      className={styles.contractCardIcon}
-                                    />
-                                  ) : (
-                                    <Paper className={styles.contractCardIcon}>
-                                      <Icon
-                                        icon="unknownNetwork"
-                                        width="16"
-                                        height="16"
-                                      />
-                                    </Paper>
-                                  )
-
-                                  return (
-                                    <Dropdown
-                                      key={String(index)}
-                                      control={
-                                        <ButtonBase
-                                          className={
-                                            styles.contractCardButtonIcon
-                                          }
-                                        >
-                                          {icon}
-                                        </ButtonBase>
-                                      }
-                                      className={styles.contractTokenInfo}
-                                    >
-                                      {(close) => (
-                                        <>
-                                          <ButtonBase
-                                            onClick={close}
-                                            className={
-                                              styles.contractTokenInfoClose
-                                            }
-                                          >
-                                            <Icon
-                                              icon="close"
-                                              width={34}
-                                              height={34}
-                                            />
-                                          </ButtonBase>
-                                          {icon}
-                                          <div>
-                                            <Typography
-                                              variant="body2"
-                                              family="mono"
-                                            >
-                                              {token.name}
-                                            </Typography>
-                                            <Typography
-                                              variant="body2"
-                                              family="mono"
-                                            >
-                                              <Link
-                                                target="_blank"
-                                                color="blue"
-                                                className={
-                                                  styles.contractCardLink
-                                                }
-                                                href={buildExplorerUrl({
-                                                  address: token.address,
-                                                  network: token.network,
-                                                })}
-                                              >
-                                                Explorer{' '}
-                                                <Icon
-                                                  icon="link"
-                                                  width="1em"
-                                                  height="1em"
-                                                />
-                                              </Link>
-                                            </Typography>
-                                          </div>
-                                        </>
-                                      )}
-                                    </Dropdown>
-                                  )
-                                })
-                              )}
+                              <StakeRewardTokens
+                                stakeTokens={contract.tokens.stake}
+                                rewardTokens={contract.tokens.reward}
+                              />
                             </span>
                             <Typography variant="inherit">
                               {contract.name}

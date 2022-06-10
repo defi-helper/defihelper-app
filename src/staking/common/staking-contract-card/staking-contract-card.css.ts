@@ -29,27 +29,6 @@ export const coinIcons = style({
   marginRight: 20,
 })
 
-export const coinIcon = style({
-  width: 24,
-  height: 24,
-})
-
-export const coinIconEmpty = style([
-  coinIcon,
-  {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: theme.colors.background,
-  },
-])
-
-export const coinIconImage = style({
-  width: 24,
-  height: 24,
-  borderRadius: 26,
-})
-
 export const apyButton = style({
   verticalAlign: 'middle',
   marginLeft: 10,
@@ -87,4 +66,8 @@ export const apy = style({
 
 export const grey = style({
   color: theme.colors.textColorGrey,
+})
+
+export const contractIconBg = style({
+  background: theme.colors.background,
 })
