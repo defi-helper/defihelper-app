@@ -25,7 +25,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
 ) => {
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
-      <Typography className={styles.title}>
+      <Typography className={styles.title} as="div">
         <Icon
           icon={props.type === 'email' ? 'email' : 'telegram'}
           className={styles.icon}
