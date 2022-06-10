@@ -1,5 +1,7 @@
 import { style } from '@vanilla-extract/css'
 
+import { theme } from '~/common/theme'
+
 export const root = style({
   display: 'flex',
   flexDirection: 'column',
@@ -29,7 +31,7 @@ export const voteButton = style({
 })
 
 export const actions = style({
-  padding: 32,
+  padding: 24,
 })
 
 export const action = style({
@@ -53,5 +55,9 @@ export const loader = style({
 })
 
 export const author = style({
-  marginBottom: 20,
+  marginBottom: 16,
+})
+
+export const red = style({
+  color: theme.colors.common.red1,
 })

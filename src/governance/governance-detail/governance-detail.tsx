@@ -346,7 +346,29 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               )}
             </Typography>
           )}
-          <Paper className={clsx(styles.actions, styles.mb32)}>
+          <Paper radius={8} className={clsx(styles.actions, styles.mb32)}>
+            <Typography className={styles.author}>
+              Author:{' '}
+              <Link
+                href={buildExplorerUrl({
+                  network: config.DEFAULT_CHAIN_ID,
+                  address: governanceDetail.proposer,
+                })}
+                target="_blank"
+              >
+                {cutAccount(governanceDetail.proposer)}
+              </Link>
+            </Typography>
+            {governanceDetail.state === GovProposalStateEnum.Defeated && (
+              <Typography className={styles.author}>
+                Status:{' '}
+                <Typography variant="inherit" className={styles.red}>
+                  Defetead
+                </Typography>{' '}
+                (In order to be applied, the quorum of 4% (40 000 000 DFH) must
+                be reached)
+              </Typography>
+            )}
             {governanceDetail.actions.map(
               ({ target, callDatas, signature, id }) => (
                 <Typography key={id} className={styles.action} as="div">
@@ -383,18 +405,6 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               )
             )}
           </Paper>
-          <Typography className={styles.author}>
-            Author:{' '}
-            <Link
-              href={buildExplorerUrl({
-                network: config.DEFAULT_CHAIN_ID,
-                address: governanceDetail.proposer,
-              })}
-              target="_blank"
-            >
-              {cutAccount(governanceDetail.proposer)}
-            </Link>
-          </Typography>
           <MarkdownRender>{governanceDetail.description}</MarkdownRender>
         </div>
       )}
