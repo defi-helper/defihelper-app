@@ -35,8 +35,8 @@ const PAGES = [
 
 export const Admin: React.VFC<BridgesProps> = () => {
   return (
-    <AppLayout title="Bridges">
-      <Head title="Bridges" />
+    <AppLayout title="Admin">
+      <Head title="Admin" />
       <div className={styles.header}>
         <Typography variant="h3">Admin</Typography>
       </div>
