@@ -5,9 +5,9 @@ import { theme } from '~/common/theme'
 export const root = style({
   width: '100%',
   border: `2px solid ${theme.colors.paper}`,
-  padding: '16px 21px',
+  padding: '22px 24px',
   position: 'relative',
-  borderRadius: 16,
+  borderRadius: 8,
   backgroundColor: theme.colors.paper,
 })
 
