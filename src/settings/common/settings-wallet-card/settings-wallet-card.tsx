@@ -175,7 +175,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             Stats. updated
           </Typography>
           <Typography variant="body2" as="span">
-            {dateUtils.format(props.statisticsCollectedAt, 'M MMM')} {` at `}
+            {dateUtils.format(props.statisticsCollectedAt, 'D MMM')} {` at `}
             {dateUtils.format(props.statisticsCollectedAt, 'HH:mm')}
           </Typography>
         </div>
