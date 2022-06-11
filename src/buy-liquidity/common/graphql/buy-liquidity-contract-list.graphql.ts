@@ -32,6 +32,14 @@ export const BUY_LIQUIDITY_CONTRACT_LIST = gql`
               address
               name
             }
+            reward {
+              alias {
+                logoUrl
+              }
+              network
+              address
+              name
+            }
           }
           automate {
             buyLiquidity {

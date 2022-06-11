@@ -1,4 +1,10 @@
-import { createDomain, sample, UnitValue, combine } from 'effector-logger/macro'
+import {
+  createDomain,
+  sample,
+  UnitValue,
+  combine,
+  StoreValue,
+} from 'effector-logger/macro'
 import contracts from '@defihelper/networks/contracts.json'
 import { ethers } from 'ethers'
 import Balance from '@defihelper/networks/abi/Balance.json'
@@ -34,10 +40,13 @@ export const fetchWalletListFx = walletListDomain.createEffect(async () => {
 })
 
 export const fetchWalletListMetricsFx = walletListDomain.createEffect(
-  async () => {
-    return settingsApi.walletListMetrics({
-      pagination,
-    })
+  async (signal?: AbortSignal) => {
+    return settingsApi.walletListMetrics(
+      {
+        pagination,
+      },
+      signal
+    )
   }
 )
 
@@ -238,6 +247,9 @@ export const $walletMetrics = walletListDomain
   .createStore<UnitValue<typeof fetchWalletListMetricsFx.doneData>>({})
   .on(fetchWalletListMetricsFx.doneData, (_, payload) => payload)
 
+type WalletWithMetrics = StoreValue<typeof $wallets>[number] &
+  StoreValue<typeof $walletMetrics>[number]
+
 export const $walletsWithMetrics = combine(
   $wallets,
   $walletMetrics,
@@ -246,6 +258,21 @@ export const $walletsWithMetrics = combine(
       .map((wallet) => ({ ...wallet, ...walletMetrics?.[wallet.id] }))
       .sort((a, b) =>
         Number(bignumberUtils.minus(b.metric?.worth, a.metric?.worth))
+      )
+      .reduce(
+        (acc, wallet) => {
+          if (bignumberUtils.gt(wallet.metric?.worth, 0)) {
+            acc.nonEmpty.push(wallet as WalletWithMetrics)
+          } else {
+            acc.empty.push(wallet as WalletWithMetrics)
+          }
+
+          return acc
+        },
+        {
+          nonEmpty: [] as WalletWithMetrics[],
+          empty: [] as WalletWithMetrics[],
+        }
       )
 )
 

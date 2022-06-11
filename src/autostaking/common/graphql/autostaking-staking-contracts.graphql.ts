@@ -48,6 +48,14 @@ export const AUTOSTAKING_STAKING_CONTRACTS = gql`
             address
             name
           }
+          reward {
+            alias {
+              logoUrl
+            }
+            network
+            address
+            name
+          }
         }
       }
       pagination {

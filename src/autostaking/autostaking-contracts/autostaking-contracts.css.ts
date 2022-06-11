@@ -123,68 +123,25 @@ export const contractCardIcons = style({
   alignItems: 'center',
 })
 
-export const contractCardButtonIcon = style({
-  selectors: {
-    '&:not(:first-child)': {
-      marginLeft: -4,
-    },
-  },
-})
-
-export const contractCardIcon = style({
-  width: 20,
-  height: 20,
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-})
-
-export const contractCardIconUnknown = style([
-  contractCardIcon,
-  {
-    background: theme.colors.background,
-  },
-])
-
 export const contractNetworkIcon = style({
   marginRight: 16,
 })
 
+export const contractIconBg = style({
+  background: theme.colors.background,
+})
+
 export const contractUnknownNetworkIcon = style([
   contractNetworkIcon,
+  contractIconBg,
   {
     width: 20,
     height: 20,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: theme.colors.background,
   },
 ])
-
-export const contractTokenInfo = style({
-  maxWidth: 276,
-  width: '100%',
-  display: 'grid',
-  gridTemplateColumns: '24px 1fr',
-  gap: 8,
-})
-
-export const contractTokenInfoClose = style({
-  position: 'absolute',
-  right: 0,
-  top: 0,
-})
-
-globalStyle(`${contractTokenInfoClose} + div`, {
-  background: theme.colors.secondary,
-})
-
-export const contractCardLink = style({
-  alignItems: 'center',
-  verticalAlign: 'middle',
-})
 
 export const contractProtocol = style({
   display: 'flex',

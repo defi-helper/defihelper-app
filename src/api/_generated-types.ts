@@ -589,6 +589,71 @@ export type BlockchainFilterInputType = {
   network?: Maybe<Scalars['String']>
 }
 
+export type ConfigBlockchainFilterInputType = {
+  testnet?: Maybe<Scalars['Boolean']>
+}
+
+export type ConfigBlockchainType = {
+  __typename?: 'ConfigBlockchainType'
+  ethereum: Array<ConfigEthereumNetworkType>
+  waves: Array<ConfigWavesNetworkType>
+}
+
+export type ConfigBlockchainTypeEthereumArgs = {
+  filter?: Maybe<ConfigBlockchainFilterInputType>
+}
+
+export type ConfigBlockchainTypeWavesArgs = {
+  filter?: Maybe<ConfigBlockchainFilterInputType>
+}
+
+export enum ConfigEthereumNetworkIconEnum {
+  EthereumRegular = 'ethereumRegular',
+  Cronos = 'cronos',
+  BnbRegular = 'bnbRegular',
+  Polygon = 'polygon',
+  Fantom = 'fantom',
+  Moonbeam = 'moonbeam',
+  Moonriver = 'moonriver',
+  Arbitrum = 'arbitrum',
+  Avalanche = 'avalanche',
+  Aurora = 'aurora',
+  Harmony = 'harmony',
+}
+
+export type ConfigEthereumNetworkType = {
+  __typename?: 'ConfigEthereumNetworkType'
+  id: Scalars['String']
+  title: Scalars['String']
+  testnet: Scalars['Boolean']
+  explorerURL: Scalars['String']
+  coin: Scalars['String']
+  decimals: Scalars['Int']
+  blockchain: BlockchainEnum
+  icon: ConfigEthereumNetworkIconEnum
+}
+
+export type ConfigType = {
+  __typename?: 'ConfigType'
+  blockchain: ConfigBlockchainType
+}
+
+export enum ConfigWavesNetworkIconEnum {
+  WavesRegular = 'wavesRegular',
+}
+
+export type ConfigWavesNetworkType = {
+  __typename?: 'ConfigWavesNetworkType'
+  id: Scalars['String']
+  title: Scalars['String']
+  testnet: Scalars['Boolean']
+  explorerURL: Scalars['String']
+  coin: Scalars['String']
+  decimals: Scalars['Int']
+  blockchain: BlockchainEnum
+  icon: ConfigWavesNetworkIconEnum
+}
+
 export type ContractAutomatesBuyLiquidityType = {
   __typename?: 'ContractAutomatesBuyLiquidityType'
   /** Liquidity pool router address */
@@ -1888,6 +1953,7 @@ export type ProtocolUpdateInputType = {
 export type Query = {
   __typename?: 'Query'
   ping: Scalars['String']
+  config: ConfigType
   me?: Maybe<UserType>
   userReferrer: UserReferrerCodeType
   users: UserListQuery
@@ -4211,6 +4277,19 @@ export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
                     >
                   }
               >
+              reward: Array<
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'network' | 'address' | 'name'
+                > & {
+                    alias?: Maybe<
+                      { __typename?: 'TokenAlias' } & Pick<
+                        TokenAlias,
+                        'logoUrl'
+                      >
+                    >
+                  }
+              >
             }
           }
       >
@@ -4262,6 +4341,19 @@ export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
               > & {
                   tokens: { __typename?: 'ContractTokenLinkType' } & {
                     stake: Array<
+                      { __typename?: 'TokenType' } & Pick<
+                        TokenType,
+                        'network' | 'address' | 'name'
+                      > & {
+                          alias?: Maybe<
+                            { __typename?: 'TokenAlias' } & Pick<
+                              TokenAlias,
+                              'logoUrl'
+                            >
+                          >
+                        }
+                    >
+                    reward: Array<
                       { __typename?: 'TokenType' } & Pick<
                         TokenType,
                         'network' | 'address' | 'name'
@@ -5972,11 +6064,24 @@ export type StakingContractFragmentFragment = {
     protocol: { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'id'>
     tokens: { __typename?: 'ContractTokenLinkType' } & {
       stake: Array<
-        { __typename?: 'TokenType' } & {
-          alias?: Maybe<
-            { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl' | 'name'>
-          >
-        }
+        { __typename?: 'TokenType' } & Pick<
+          TokenType,
+          'network' | 'address' | 'name'
+        > & {
+            alias?: Maybe<
+              { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
+            >
+          }
+      >
+      reward: Array<
+        { __typename?: 'TokenType' } & Pick<
+          TokenType,
+          'network' | 'address' | 'name'
+        > & {
+            alias?: Maybe<
+              { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
+            >
+          }
       >
     }
     automate: { __typename?: 'ContractAutomatesType' } & Pick<

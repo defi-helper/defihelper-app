@@ -161,16 +161,26 @@ export const settingsApi = {
         count: data?.me?.wallets.pagination.count ?? 0,
       })),
 
-  walletListMetrics: (variables?: WalletListMetricsQueryVariables) =>
+  walletListMetrics: (
+    variables?: WalletListMetricsQueryVariables,
+    signal?: AbortSignal
+  ) =>
     getAPIClient()
       .request<
         WalletListMetricsQuery,
         unknown,
         WalletListMetricsQueryVariables
-      >({
-        query: WALLET_LIST_METRICS.loc?.source.body ?? '',
-        variables,
-      })
+      >(
+        {
+          query: WALLET_LIST_METRICS.loc?.source.body ?? '',
+          variables,
+        },
+        {
+          fetchOptionsOverrides: {
+            signal,
+          },
+        }
+      )
       .then(({ data }) =>
         (data?.me?.wallets.list ?? []).reduce<
           Record<

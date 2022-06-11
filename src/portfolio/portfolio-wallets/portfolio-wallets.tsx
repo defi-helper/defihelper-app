@@ -78,7 +78,10 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   }
 
   useEffect(() => {
-    settingsWalletModel.fetchWalletListMetricsFx()
+    const abortController = new AbortController()
+    settingsWalletModel.fetchWalletListMetricsFx(abortController.signal)
+
+    return () => abortController.abort()
   }, [])
 
   return (
@@ -135,7 +138,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
             </Typography>
           </div>
           <div className={styles.tableBody}>
-            {wallets.map((wallet) => (
+            {[...wallets.nonEmpty, ...wallets.empty].map((wallet) => (
               <React.Fragment key={wallet.id}>
                 <div className={styles.tableRow}>
                   <Typography variant="body2" as="div">

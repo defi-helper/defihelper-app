@@ -47,3 +47,11 @@ export const addButtonTitle = style({
     },
   },
 })
+
+export const showEmptyWallets = style({
+  fontSize: 20,
+  lineHeight: '28px',
+  color: theme.colors.common.blue1,
+  width: '100%',
+  marginTop: 32,
+})

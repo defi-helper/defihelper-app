@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 
@@ -31,6 +31,7 @@ import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
 import { CanDemo } from '~/auth/can-demo'
 import { analytics } from '~/analytics'
+import { ButtonBase } from '~/common/button-base'
 
 export type SettingsWalletsProps = {
   className?: string
@@ -38,12 +39,13 @@ export type SettingsWalletsProps = {
 
 export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   const wallets = useStore(model.$walletsWithMetrics)
-  const loading = useStore(model.fetchWalletListFx.pending)
+  const loading = useStore(model.fetchWalletListMetricsFx.pending)
 
   const [openRenameWallet] = useDialog(SettingsRenameWalletDialog)
   const [openConfirm] = useDialog(SettingsConfirmDialog)
   const [openBillingForm] = useDialog(SettingsBillingFormDialog)
   const [openSuccess] = useDialog(SettingsSuccessDialog)
+  const [showEmpty, setShowEmpty] = useState(false)
 
   const user = useStore(authModel.$user)
 
@@ -75,89 +77,93 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     }
   }, variables)
 
-  const handleDeposit = (wallet: typeof wallets[number]) => async () => {
-    try {
-      await switchNetwork(wallet.network)
+  const handleDeposit =
+    (wallet: typeof wallets.nonEmpty[number]) => async () => {
+      try {
+        await switchNetwork(wallet.network)
 
-      if (!currentWallet?.account) return
+        if (!currentWallet?.account) return
 
-      const result = await openBillingForm()
+        const result = await openBillingForm()
 
-      await model.depositFx({
-        blockchain: wallet.blockchain,
-        amount: result.amount,
-        walletAddress: currentWallet.account,
-        chainId: String(currentWallet.chainId),
-        provider: currentWallet.provider,
-      })
+        await model.depositFx({
+          blockchain: wallet.blockchain,
+          amount: result.amount,
+          walletAddress: currentWallet.account,
+          chainId: String(currentWallet.chainId),
+          provider: currentWallet.provider,
+        })
 
-      analytics.onDeposit()
-      await openSuccess({
-        type: TransactionEnum.deposit,
-      })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
+        analytics.onDeposit()
+        await openSuccess({
+          type: TransactionEnum.deposit,
+        })
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
       }
     }
-  }
-  const handleRefund = (wallet: typeof wallets[number]) => async () => {
-    try {
-      await switchNetwork(wallet.network)
+  const handleRefund =
+    (wallet: typeof wallets.nonEmpty[number]) => async () => {
+      try {
+        await switchNetwork(wallet.network)
 
-      if (!currentWallet?.account) return
+        if (!currentWallet?.account) return
 
-      const result = await openBillingForm()
+        const result = await openBillingForm()
 
-      await model.refundFx({
-        blockchain: wallet.blockchain,
-        amount: result.amount,
-        walletAddress: currentWallet.account,
-        chainId: String(currentWallet.chainId),
-        provider: currentWallet.provider,
-      })
+        await model.refundFx({
+          blockchain: wallet.blockchain,
+          amount: result.amount,
+          walletAddress: currentWallet.account,
+          chainId: String(currentWallet.chainId),
+          provider: currentWallet.provider,
+        })
 
-      await openSuccess({
-        type: TransactionEnum.refund,
-      })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
+        await openSuccess({
+          type: TransactionEnum.refund,
+        })
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
       }
     }
-  }
-  const handleRename = (wallet: typeof wallets[number]) => async () => {
-    try {
-      const result = await openRenameWallet({
-        defaultValues: {
-          name: wallet.name,
-        },
-      })
+  const handleRename =
+    (wallet: typeof wallets.nonEmpty[number]) => async () => {
+      try {
+        const result = await openRenameWallet({
+          defaultValues: {
+            name: wallet.name,
+          },
+        })
 
-      model.updateWalletFx({
-        walletId: wallet.id,
-        name: result.name,
-      })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
+        model.updateWalletFx({
+          walletId: wallet.id,
+          name: result.name,
+        })
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
       }
     }
-  }
-  const handleDelete = (wallet: typeof wallets[number]) => async () => {
-    try {
-      await openConfirm({ name: wallet.name || cutAccount(wallet.address) })
+  const handleDelete =
+    (wallet: typeof wallets.nonEmpty[number]) => async () => {
+      try {
+        await openConfirm({ name: wallet.name || cutAccount(wallet.address) })
 
-      model.deleteWalletFx(wallet.id)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
+        model.deleteWalletFx(wallet.id)
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        }
       }
     }
-  }
 
   const handleUpdateStatistics =
-    (wallet: typeof wallets[number]) => async () => {
+    (wallet: typeof wallets.nonEmpty[number]) => async () => {
       try {
         model.updateStatisticsWalletFx(wallet.id)
         toastsService.success('Statistics will be updated in several minutes')
@@ -188,10 +194,21 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   }
 
   useEffect(() => {
-    model.fetchWalletListMetricsFx()
+    const abortController = new AbortController()
+
+    model.fetchWalletListMetricsFx(abortController.signal)
+
+    return () => abortController.abort()
   }, [])
 
-  const paperCount = (wallets.length ? 3 : 2) - wallets.length
+  const paperCount = (wallets.nonEmpty.length ? 3 : 2) - wallets.nonEmpty.length
+
+  const mergedWallets = [
+    ...wallets.nonEmpty,
+    ...(showEmpty ? wallets.empty : []),
+  ]
+
+  const handleShowEmpty = () => setShowEmpty(true)
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -212,7 +229,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
       </SettingsHeader>
       <div className={styles.list}>
         {loading && <SettingsWalletLoading />}
-        {!loading && !wallets.length && (
+        {!loading && ![...wallets.nonEmpty, ...wallets.empty].length && (
           <SettingsInitialCard>
             <Typography variant="body2">
               Connect your wallets. You will see all statistics in portfolio,
@@ -225,7 +242,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
           </SettingsInitialCard>
         )}
         {!loading &&
-          wallets.map((wallet) => {
+          mergedWallets.map((wallet) => {
             const connect = handleConnect.bind(null, {
               blockchain: wallet.blockchain,
               network: wallet.network,
@@ -262,6 +279,14 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
             <SettingsPaper key={String(index)} />
           ))}
       </div>
+      {!showEmpty && Boolean(wallets.empty.length) && (
+        <ButtonBase
+          onClick={handleShowEmpty}
+          className={styles.showEmptyWallets}
+        >
+          Show empty wallets ({wallets.empty.length})
+        </ButtonBase>
+      )}
     </div>
   )
 }
