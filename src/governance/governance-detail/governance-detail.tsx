@@ -162,7 +162,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   return (
     <AppLayout title={loading ? 'loading...' : governanceDetail?.title}>
       <Head title={loading ? 'loading...' : governanceDetail?.title} />
-      {loading && (
+      {loading && !governanceDetail && (
         <div className={styles.loader}>
           <Loader height="36" />
         </div>
@@ -359,16 +359,21 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                 {cutAccount(governanceDetail.proposer)}
               </Link>
             </Typography>
-            {governanceDetail.state === GovProposalStateEnum.Defeated && (
-              <Typography className={styles.author}>
-                Status:{' '}
-                <Typography variant="inherit" className={styles.red}>
-                  Defetead
-                </Typography>{' '}
-                (In order to be applied, the quorum of 4% (40 000 000 DFH) must
-                be reached)
-              </Typography>
-            )}
+            <Typography className={styles.author}>
+              Status:{' '}
+              <Typography
+                variant="inherit"
+                className={
+                  styles.colors[
+                    GovProposalStateEnumColors[governanceDetail.state]
+                  ]
+                }
+              >
+                {governanceDetail.state}
+              </Typography>{' '}
+              {!bignumberUtils.gte(governanceDetail.forVotes, QUORUM_VOTES) &&
+                '(In order to be applied, the quorum of 4% (40 000 000 DFH) must be reached)'}
+            </Typography>
             {governanceDetail.actions.map(
               ({ target, callDatas, signature, id }) => (
                 <Typography key={id} className={styles.action} as="div">

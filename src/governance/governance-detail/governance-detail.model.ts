@@ -36,14 +36,14 @@ type CastVoteWithReason = {
 export const governanceDetailDomain = createDomain()
 
 export const fetchGovernanceProposalFx = governanceDetailDomain.createEffect(
-  (proposalId: number) =>
+  (params: { proposalId: number; cache: boolean }) =>
     governanceApi
       .detail({
         filter: {
-          proposalId,
+          proposalId: params.proposalId,
           network: config.DEFAULT_CHAIN_ID,
           contract: GOVERNOR_BRAVO,
-          cache: !config.IS_DEV,
+          cache: params.cache,
         },
       })
       .then((governanceProposal) =>
@@ -154,7 +154,17 @@ export const GovernanceDetailGate = createGate<string>({
 
 sample({
   clock: GovernanceDetailGate.open,
-  fn: (clock) => Number(clock),
+  fn: (clock) => ({ proposalId: Number(clock), cache: !config.IS_DEV }),
+  target: fetchGovernanceProposalFx,
+})
+
+sample({
+  source: GovernanceDetailGate.state,
+  clock: [queueFx.done, executeFx.done, castVoteFx.done],
+  fn: (proposalId, { params }) => ({
+    proposalId: Number(proposalId),
+    cache: params.cache,
+  }),
   target: fetchGovernanceProposalFx,
 })
 
