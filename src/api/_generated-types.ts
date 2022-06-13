@@ -589,6 +589,71 @@ export type BlockchainFilterInputType = {
   network?: Maybe<Scalars['String']>
 }
 
+export type ConfigBlockchainFilterInputType = {
+  testnet?: Maybe<Scalars['Boolean']>
+}
+
+export type ConfigBlockchainType = {
+  __typename?: 'ConfigBlockchainType'
+  ethereum: Array<ConfigEthereumNetworkType>
+  waves: Array<ConfigWavesNetworkType>
+}
+
+export type ConfigBlockchainTypeEthereumArgs = {
+  filter?: Maybe<ConfigBlockchainFilterInputType>
+}
+
+export type ConfigBlockchainTypeWavesArgs = {
+  filter?: Maybe<ConfigBlockchainFilterInputType>
+}
+
+export enum ConfigEthereumNetworkIconEnum {
+  EthereumRegular = 'ethereumRegular',
+  Cronos = 'cronos',
+  BnbRegular = 'bnbRegular',
+  Polygon = 'polygon',
+  Fantom = 'fantom',
+  Moonbeam = 'moonbeam',
+  Moonriver = 'moonriver',
+  Arbitrum = 'arbitrum',
+  Avalanche = 'avalanche',
+  Aurora = 'aurora',
+  Harmony = 'harmony',
+}
+
+export type ConfigEthereumNetworkType = {
+  __typename?: 'ConfigEthereumNetworkType'
+  id: Scalars['String']
+  title: Scalars['String']
+  testnet: Scalars['Boolean']
+  explorerURL: Scalars['String']
+  coin: Scalars['String']
+  decimals: Scalars['Int']
+  blockchain: BlockchainEnum
+  icon: ConfigEthereumNetworkIconEnum
+}
+
+export type ConfigType = {
+  __typename?: 'ConfigType'
+  blockchain: ConfigBlockchainType
+}
+
+export enum ConfigWavesNetworkIconEnum {
+  WavesRegular = 'wavesRegular',
+}
+
+export type ConfigWavesNetworkType = {
+  __typename?: 'ConfigWavesNetworkType'
+  id: Scalars['String']
+  title: Scalars['String']
+  testnet: Scalars['Boolean']
+  explorerURL: Scalars['String']
+  coin: Scalars['String']
+  decimals: Scalars['Int']
+  blockchain: BlockchainEnum
+  icon: ConfigWavesNetworkIconEnum
+}
+
 export type ContractAutomatesBuyLiquidityType = {
   __typename?: 'ContractAutomatesBuyLiquidityType'
   /** Liquidity pool router address */
@@ -1888,6 +1953,7 @@ export type ProtocolUpdateInputType = {
 export type Query = {
   __typename?: 'Query'
   ping: Scalars['String']
+  config: ConfigType
   me?: Maybe<UserType>
   userReferrer: UserReferrerCodeType
   users: UserListQuery
@@ -2296,6 +2362,7 @@ export type TokenAliasListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   liquidity?: Maybe<TokenAliasLiquidityEnum>
   symbol?: Maybe<Scalars['String']>
+  hasLogo?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
 
@@ -2420,6 +2487,7 @@ export type TokenListQueryFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   address?: Maybe<Array<Scalars['String']>>
   tradable?: Maybe<Scalars['Boolean']>
+  tokenAlias?: Maybe<Scalars['UuidType']>
   isPriceFeedNedded?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }

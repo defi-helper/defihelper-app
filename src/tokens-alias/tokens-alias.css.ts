@@ -11,7 +11,8 @@ export const title = style({
 
 export const searchBox = style({
   display: 'flex',
-  justifyContent: 'flex-end',
+  justifyContent: 'space-between',
+  alignItems: 'center',
   marginBottom: 20,
 })
 
@@ -27,7 +28,7 @@ export const tokenLogo = style({
 })
 
 export const liquiditySelect = style({
-  width: 200,
+  width: 150,
 })
 
 export const titleWrapper = style({
@@ -68,7 +69,7 @@ export const tableRow = composeStyles(
   mb,
   style({
     display: 'grid',
-    gridTemplateColumns: '40px 1fr 100px',
+    gridTemplateColumns: '40px 1fr 160px',
     gridGap: 15,
     overflowWrap: 'break-word',
   })

@@ -1,6 +1,7 @@
 import { createDomain } from 'effector-logger/macro'
 import {
   TokenAliasFragment,
+  TokenAliasUpdateMutationVariables,
   TokenFragment,
   TokenPriceFeedCoingeckoAddressType,
   TokenPriceFeedCoingeckoIdType,
@@ -32,12 +33,27 @@ export const tokenUpdateFx = tokensDomain.createEffect(
   (variables: TokenUpdateMutationVariables) => tokensApi.tokenUpdate(variables)
 )
 
+export const tokenAliasUpdateFx = tokensDomain.createEffect(
+  (variables: TokenAliasUpdateMutationVariables) =>
+    tokensApi.tokenAliasUpdate(variables)
+)
+
 export const $tokens = tokensDomain
   .createStore<TokenFragment[]>([])
   .on(fetchTokensFx.doneData, (_, payload) => payload.list)
   .on(tokenUpdateFx.doneData, (state, payload) =>
     state.map((item) => {
       return item.id === payload?.id ? payload : item
+    })
+  )
+  .on(tokenAliasUpdateFx.doneData, (state, payload) =>
+    state.map((item) => {
+      return item.alias?.id === payload?.id
+        ? {
+            ...item,
+            alias: payload,
+          }
+        : item
     })
   )
 
