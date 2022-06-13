@@ -197,8 +197,8 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
           </WalletConnect>
         </div>
         <Typography variant="h4" className={styles.subtitle}>
-          Participate in the governance of the protocol, and help steer
-          it&apos;s future
+          Participate in the governance of the protocol, and help steer its
+          future
         </Typography>
         {loading && (
           <div className={styles.loader}>
