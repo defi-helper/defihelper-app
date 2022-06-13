@@ -44,10 +44,13 @@ export const title = style({
 
 export const subtitle = style({
   marginBottom: 40,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
 
   '@media': {
     [theme.mediaQueries.md()]: {
-      marginBottom: 24,
+      gap: 24,
     },
   },
 })

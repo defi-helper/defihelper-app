@@ -44,9 +44,13 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             <Typography variant="h3" className={styles.title} weight="bold">
               Oh-oh, something went wrong.
             </Typography>
-            <Typography variant="h4" className={styles.subtitle}>
-              Please, reload page
-            </Typography>
+            <div className={styles.subtitle}>
+              <Typography variant="h4">Please, reload page</Typography>
+              <Typography variant="h4">
+                If the error persists - write about it in our discord chat, we
+                will help you
+              </Typography>
+            </div>
             <Button
               onClick={this.handleReloadPage}
               color="green"
