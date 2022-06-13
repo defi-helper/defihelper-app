@@ -9,7 +9,6 @@ import {
   AutomateActionTypeEnum,
   AutomateConditionTypeEnum,
   AutomateTriggerTypeEnum,
-  BlockchainEnum,
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
 } from '~/api'
@@ -119,7 +118,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(walletsModel.$wallets)
-  const [blockchain, setBlockChain] = useState<BlockchainEnum | null>(null)
+  const [blockchain, setBlockChain] = useState<string | null>(null)
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.AprBoosted,
     order: SortOrderEnum.Desc,
@@ -133,7 +132,8 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
       protocol: !isEmpty(protocolIds) ? protocolIds : undefined,
       blockchain: blockchain
         ? {
-            protocol: blockchain,
+            network: blockchain,
+            protocol: networksConfig[blockchain].blockchain,
           }
         : undefined,
     }
@@ -203,7 +203,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const handleChooseBlockchain = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setBlockChain(event.target.value as BlockchainEnum)
+    setBlockChain(event.target.value)
   }
 
   const handleOpenApy =
@@ -421,7 +421,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
             clearable
             onChange={handleChooseBlockchain}
           >
-            {Object.entries(BlockchainEnum).map(([title, value]) => (
+            {Object.entries(networksConfig).map(([value, { title }]) => (
               <SelectOption value={value} key={title}>
                 {title}
               </SelectOption>
@@ -646,10 +646,16 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                     variant="inherit"
                     className={clsx({
                       [styles.positive]: bignumberUtils.gt(realApy, '0'),
-                      [styles.negative]: bignumberUtils.lt(realApy, '0'),
+                      [styles.negative]:
+                        !bignumberUtils.eq(
+                          bignumberUtils.format(realApy),
+                          '0'
+                        ) && bignumberUtils.lt(realApy, '0'),
                     })}
                   >
-                    {bignumberUtils.lt(realApy, '0') && '- '}
+                    {!bignumberUtils.eq(bignumberUtils.format(realApy), '0') &&
+                      bignumberUtils.lt(realApy, '0') &&
+                      '- '}
                     {bignumberUtils.formatMax(realApy, 10000, true)}%
                   </Typography>
                 </Typography>
@@ -661,10 +667,16 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                     as="span"
                     className={clsx({
                       [styles.positive]: bignumberUtils.gt(apyboost, '0'),
-                      [styles.negative]: bignumberUtils.lt(apyboost, '0'),
+                      [styles.negative]:
+                        !bignumberUtils.eq(
+                          bignumberUtils.format(apyboost),
+                          '0'
+                        ) && bignumberUtils.lt(apyboost, '0'),
                     })}
                   >
-                    {bignumberUtils.lt(apyboost, '0') && '- '}
+                    {!bignumberUtils.eq(bignumberUtils.format(apyboost), '0') &&
+                      bignumberUtils.lt(apyboost, '0') &&
+                      '- '}
                     {bignumberUtils.formatMax(apyboost, 10000, true)}%
                   </Typography>
                   <WalletConnect
