@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { style, styleVariants } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -60,4 +60,38 @@ export const author = style({
 
 export const red = style({
   color: theme.colors.common.red1,
+})
+
+export const colors = styleVariants({
+  grey: {
+    color: theme.colors.textColorGrey,
+  },
+
+  blue: {
+    color: theme.colors.common.blue1,
+  },
+
+  red: {
+    color: theme.colors.common.red1,
+  },
+
+  orange: {
+    color: theme.colors.common.orange,
+  },
+
+  beige: {
+    color: theme.colors.common.beige,
+  },
+
+  green: {
+    color: theme.colors.common.green,
+  },
+
+  pink: {
+    color: theme.colors.common.pink3,
+  },
+
+  purple: {
+    color: theme.colors.common.purple,
+  },
 })

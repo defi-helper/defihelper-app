@@ -51,7 +51,7 @@ export const ProtocolCalculator: React.VFC<ProtocolCalculatorProps> = (
   )
 
   useEffect(() => {
-    if (!currentContract) return
+    if (!currentContract?.metric.aprYear) return
 
     model.fetchEstimateFx({
       balance: throttledSum,

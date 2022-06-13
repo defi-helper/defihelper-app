@@ -6,6 +6,10 @@ globalStyle('*,*:before,*:after', {
   boxSizing: 'border-box',
 })
 
+globalStyle('html, body, #root', {
+  height: '100%',
+})
+
 globalStyle('body', {
   fontFamily: theme.fonts.square,
   fontSize: '100%',

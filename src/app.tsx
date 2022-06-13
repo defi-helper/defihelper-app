@@ -32,18 +32,18 @@ export const App: React.VFC = () => {
   })
 
   return (
-    <ErrorBoundary>
-      {!config.IS_DEV && (
-        <YMInitializer
-          accounts={[86006279]}
-          options={{ webvisor: true }}
-          version="2"
-        />
-      )}
-      <MatomoProvider value={matomoCounterConfiguration}>
-        <ClientContext.Provider value={client}>
-          <HelmetProvider>
-            <ThemeProvider>
+    <ThemeProvider>
+      <ErrorBoundary>
+        {!config.IS_DEV && (
+          <YMInitializer
+            accounts={[86006279]}
+            options={{ webvisor: true }}
+            version="2"
+          />
+        )}
+        <MatomoProvider value={matomoCounterConfiguration}>
+          <ClientContext.Provider value={client}>
+            <HelmetProvider>
               <DialogProvider>
                 <ToastProvider maxItems={6}>
                   <AuthProvider>
@@ -52,10 +52,10 @@ export const App: React.VFC = () => {
                   </AuthProvider>
                 </ToastProvider>
               </DialogProvider>
-            </ThemeProvider>
-          </HelmetProvider>
-        </ClientContext.Provider>
-      </MatomoProvider>
-    </ErrorBoundary>
+            </HelmetProvider>
+          </ClientContext.Provider>
+        </MatomoProvider>
+      </ErrorBoundary>
+    </ThemeProvider>
   )
 }

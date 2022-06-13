@@ -1,7 +1,10 @@
 import { Component, ErrorInfo } from 'react'
-import { Button } from '~/common/button'
 
+import { Button } from '~/common/button'
+import { Icon } from '~/common/icon'
+import { Typography } from '~/common/typography'
 import { Sentry } from './sentry'
+import * as styles from './error-boundary.css'
 
 type ErrorBoundaryState = {
   hasError: boolean
@@ -35,12 +38,28 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
     if (hasError) {
       return (
-        <>
-          Oh-oh, something went wrong.
-          <br />
-          Please reload page
-          <Button onClick={this.handleReloadPage}>Reload</Button>
-        </>
+        <div className={styles.root}>
+          <Icon icon="logo" className={styles.logo} />
+          <div className={styles.content}>
+            <Typography variant="h3" className={styles.title} weight="bold">
+              Oh-oh, something went wrong.
+            </Typography>
+            <div className={styles.subtitle}>
+              <Typography variant="h4">Please, reload page</Typography>
+              <Typography variant="h4">
+                If the error persists - write about it in our discord chat, we
+                will help you
+              </Typography>
+            </div>
+            <Button
+              onClick={this.handleReloadPage}
+              color="green"
+              className={styles.button}
+            >
+              Reload
+            </Button>
+          </div>
+        </div>
       )
     }
 
