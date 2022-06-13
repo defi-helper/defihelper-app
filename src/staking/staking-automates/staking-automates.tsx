@@ -163,17 +163,16 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
         if (!adapter) return
 
         const tx = await adapter.run()
+        if (contract.contract && contract.contractWallet) {
+          model
+            .scanWalletMetricFx({
+              walletId: contract.contractWallet.id,
+              contractId: contract.contract.id,
+            })
+            .catch(console.error)
+        }
 
         await tx.wait()
-
-        if (!contract.contract || !contract.contractWallet) return
-
-        model
-          .scanWalletMetricFx({
-            walletId: contract.contractWallet.id,
-            contractId: contract.contract.id,
-          })
-          .catch(console.error)
       } catch (error) {
         const { message } = parseError(error)
 
