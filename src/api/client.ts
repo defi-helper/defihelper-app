@@ -4,6 +4,7 @@ import { SubscriptionClient } from 'subscriptions-transport-ws'
 
 import { sidUtils } from '~/auth/common/sid-utils'
 import { config } from '~/config'
+import { Sentry } from '~/error-boundary'
 
 const API_URL_ERROR_MESSAGE = 'config.API_URL is required'
 const WS_API_URLERROR_MESSAGE = 'config.WS_API_URL is required'
@@ -48,6 +49,16 @@ export const getAPIClient = () => {
         }
       : {},
     subscriptionClient: () => wsClient,
+    onError: ({ operation, result }) => {
+      Sentry.log(
+        new Error(
+          result.error?.graphQLErrors?.[0].message ||
+            result.error?.fetchError?.message ||
+            result.error?.httpError?.statusText
+        ),
+        operation as unknown as Record<string, unknown>
+      )
+    },
   })
 
   return client
