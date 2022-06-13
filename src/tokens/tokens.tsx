@@ -95,25 +95,13 @@ export const Tokens: React.VFC = () => {
     })
   }
 
-  const handleChangePage = (toPage: number) => {
-    setPage(toPage)
+  useEffect(() => {
     window.scrollTo(0, 0)
-  }
+  }, [page])
 
-  const handleChangeNetwork = (value?: string) => {
-    setNetwork(value)
+  useEffect(() => {
     setPage(1)
-  }
-
-  const handleChangeAlias = (value?: string) => {
-    setTokenAlias(value)
-    setPage(1)
-  }
-
-  const handleSearch = (value?: string) => {
-    setSearch(value)
-    setPage(1)
-  }
+  }, [network, search, tokenAlias])
 
   return (
     <AppLayout>
@@ -126,9 +114,7 @@ export const Tokens: React.VFC = () => {
             <Select
               value={network}
               onChange={(e) =>
-                handleChangeNetwork(
-                  e.target.value === '' ? undefined : e.target.value
-                )
+                setNetwork(e.target.value === '' ? undefined : e.target.value)
               }
               placeholder="Network"
               className={styles.formInputSearch}
@@ -142,7 +128,7 @@ export const Tokens: React.VFC = () => {
             </Select>
 
             <Select
-              onChange={(e) => handleChangeAlias(e.target.value)}
+              onChange={(e) => setTokenAlias(e.target.value)}
               value={tokenAlias}
               className={styles.formInputSearch}
               placeholder="Alias"
@@ -180,7 +166,7 @@ export const Tokens: React.VFC = () => {
               type="text"
               placeholder="Search"
               className={styles.formInputSearch}
-              onChange={(v) => handleSearch(v.target.value)}
+              onChange={(v) => setSearch(v.target.value)}
             />
           </div>
 
@@ -257,8 +243,8 @@ export const Tokens: React.VFC = () => {
             ))}
           </div>
 
-          <ButtonBase onClick={() => handleChangePage(page + 1)}>
-            next page(current - {page})
+          <ButtonBase onClick={() => setPage(page + 1)}>
+            next page(current {page})
           </ButtonBase>
         </Paper>
       </div>

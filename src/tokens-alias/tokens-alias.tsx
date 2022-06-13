@@ -24,11 +24,11 @@ export const TokensAlias: React.VFC = () => {
   const [search, setSearch] = useState<undefined | string>(
     searchParams.get('search') ?? undefined
   )
-  const [onlyWithLogo, setOnlyWithLogo] = useState(false)
+  const [hasLogo, setHasLogo] = useState<true | undefined>()
   const [page, setPage] = useState(1)
-  const [onlyLiquidity, setOnlyLiquidity] = useState<
-    TokenAliasLiquidityEnum | 'any'
-  >('any')
+  const [liquidity, setLiquidity] = useState<
+    TokenAliasLiquidityEnum | undefined
+  >()
 
   const tokens = useStore(model.$tokensAlias)
 
@@ -40,47 +40,35 @@ export const TokensAlias: React.VFC = () => {
       },
       filter: {
         search,
-        hasLogo: onlyWithLogo === true ? true : undefined,
-        liquidity: onlyLiquidity === 'any' ? undefined : onlyLiquidity,
+        hasLogo,
+        liquidity,
       },
       sort: {
         column: TokenAliasListSortInputTypeColumnEnum.CreatedAt,
         order: SortOrderEnum.Desc,
       },
     })
-  }, [search, onlyWithLogo, onlyLiquidity, page])
+  }, [search, hasLogo, liquidity, page])
 
   const handleUpdateTokenLiquidity = (
     token: TokenAliasFragment,
-    liquidity: TokenAliasLiquidityEnum
+    aliasLiquidity: TokenAliasLiquidityEnum
   ) => {
     model.tokenAliasUpdateFx({
       id: token.id,
       input: {
-        liquidity,
+        liquidity: aliasLiquidity,
       },
     })
   }
 
-  const handleChangePage = (toPage: number) => {
-    setPage(toPage)
+  useEffect(() => {
+    setPage(1)
+  }, [hasLogo, liquidity, search])
+
+  useEffect(() => {
     window.scrollTo(0, 0)
-  }
-
-  const handleChangeOnlyWithLogo = (value: boolean) => {
-    setOnlyWithLogo(value)
-    setPage(1)
-  }
-
-  const handleChangeLiquidity = (value: TokenAliasLiquidityEnum | 'any') => {
-    setOnlyLiquidity(value)
-    setPage(1)
-  }
-
-  const handleChangeSearch = (value?: string) => {
-    setSearch(value)
-    setPage(1)
-  }
+  }, [page])
 
   return (
     <AppLayout>
@@ -92,22 +80,22 @@ export const TokensAlias: React.VFC = () => {
           <div className={styles.searchBox}>
             <Typography as="label" variant="body2">
               <Checkbox
-                checked={onlyWithLogo}
-                onChange={() => handleChangeOnlyWithLogo(!onlyWithLogo)}
+                checked={hasLogo}
+                onChange={() =>
+                  setHasLogo(hasLogo === undefined ? true : undefined)
+                }
               />{' '}
               Only with icon
             </Typography>
 
             <Select
-              value={onlyLiquidity}
+              value={liquidity}
               onChange={(e) =>
-                handleChangeLiquidity(e.target.value as TokenAliasLiquidityEnum)
+                setLiquidity(e.target.value as TokenAliasLiquidityEnum)
               }
               className={styles.liquiditySelect}
+              placeholder="Alias"
             >
-              <SelectOption key="any" value="any">
-                Any
-              </SelectOption>
               {Object.entries(TokenAliasLiquidityEnum).map(([label, value]) => (
                 <SelectOption key={value} value={value}>
                   {label}
@@ -121,7 +109,7 @@ export const TokensAlias: React.VFC = () => {
               placeholder="Search"
               className={styles.formInputSearch}
               value={search}
-              onChange={(v) => handleChangeSearch(v.target.value)}
+              onChange={(v) => setSearch(v.target.value)}
             />
           </div>
 
@@ -168,7 +156,7 @@ export const TokensAlias: React.VFC = () => {
             ))}
           </div>
 
-          <ButtonBase onClick={() => handleChangePage(page + 1)}>
+          <ButtonBase onClick={() => setPage(page + 1)}>
             next page(current {page})
           </ButtonBase>
         </Paper>
