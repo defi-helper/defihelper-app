@@ -2362,6 +2362,7 @@ export type TokenAliasListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   liquidity?: Maybe<TokenAliasLiquidityEnum>
   symbol?: Maybe<Scalars['String']>
+  hasLogo?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
 
@@ -2486,6 +2487,7 @@ export type TokenListQueryFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   address?: Maybe<Array<Scalars['String']>>
   tradable?: Maybe<Scalars['Boolean']>
+  tokenAlias?: Maybe<Scalars['UuidType']>
   isPriceFeedNedded?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
