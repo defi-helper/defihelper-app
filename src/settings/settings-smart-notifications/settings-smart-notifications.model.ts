@@ -1,5 +1,6 @@
 import { createDomain, sample } from 'effector-logger/macro'
 import { createGate } from 'effector-react'
+
 import { settingsApi } from '~/settings/common'
 import {
   UserNotificationTypeFragment,
@@ -23,7 +24,7 @@ export const toggleUserNotificationFx =
       })
 
       if (isDone) {
-        return
+        return isDone
       }
 
       throw new Error('Unable to toggle')
@@ -33,6 +34,11 @@ export const toggleUserNotificationFx =
 export const $userNotificationsList = settingsNotificationsDomain
   .createStore<UserNotificationTypeFragment[]>([])
   .on(fetchUserNotificationsListFx.doneData, (_, payload) => payload)
+  .on(toggleUserNotificationFx.done, (state, { params }) =>
+    params.state
+      ? [...state, { type: params.type }]
+      : state.filter(({ type }) => type !== params.type)
+  )
   .reset(authModel.logoutFx)
 
 export const SettingsNotificationsGate = createGate({

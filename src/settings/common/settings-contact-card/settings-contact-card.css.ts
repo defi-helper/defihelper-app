@@ -2,14 +2,14 @@ import { style } from '@vanilla-extract/css'
 import { theme } from '~/common/theme'
 
 export const root = style({
-  padding: '24px 32px',
-  minHeight: 148,
+  padding: 32,
+  minHeight: 168,
   display: 'flex',
   flexDirection: 'column',
 
   '@media': {
     [theme.mediaQueries.md()]: {
-      minHeight: 168,
+      minHeight: 183,
     },
   },
 })
@@ -17,26 +17,41 @@ export const root = style({
 export const title = style({
   display: 'flex',
   alignItems: 'center',
-})
-
-export const status = style({
-  marginLeft: 'auto',
+  color: theme.colors.textColorGreen,
+  marginBottom: 18,
 })
 
 export const subtitle = style({
-  opacity: 0.64,
   marginBottom: 10,
+  display: 'flex',
+  alignItems: 'center',
 })
 
 export const icon = style({
-  width: '1em',
-  height: '1em',
+  width: 24,
+  height: 24,
   verticalAlign: 'middle',
   marginRight: 4,
 })
 
 export const buttons = style({
-  display: 'flex',
-  gap: 12,
+  marginLeft: 'auto',
+})
+
+export const switcher = style({
   marginTop: 'auto',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 11,
+})
+
+export const date = style({
+  gap: 11,
+  marginLeft: 'auto',
+})
+
+export const connect = style({})
+
+export const disconnect = style({
+  color: theme.colors.common.red1,
 })

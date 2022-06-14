@@ -108,7 +108,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
       <SettingsGrid>
         <SettingsContactCard
           address={telegram?.address}
-          title="Telegram"
+          title="Telegram notifications settings"
           type={UserContactBrokerEnum.Telegram}
           loading={
             telegram?.editing ||
@@ -122,7 +122,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
         />
         <SettingsContactCard
           address={email?.address}
-          title="Email"
+          title="Email notifications settings"
           type={UserContactBrokerEnum.Email}
           loading={
             email?.editing ||
