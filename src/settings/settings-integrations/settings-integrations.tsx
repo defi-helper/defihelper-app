@@ -3,136 +3,43 @@ import clsx from 'clsx'
 import { useEffect } from 'react'
 
 import { Typography } from '~/common/typography'
-import { SettingsHeader, SettingsPaper } from '~/settings/common'
+import { SettingsHeader } from '~/settings/common'
 import { SettingsIntegrationCard } from '~/settings/common/settings-integration-card'
 import { useDialog } from '~/common/dialog'
-import { SettingsIntegrationBinanceDialog } from '~/settings/common/settings-integration-binance-dialog'
 import { Icon } from '~/common/icon'
 import { WalletExchangeTypeEnum } from '~/api/_generated-types'
 import { ConfirmDialog } from '~/common/confirm-dialog'
+import { Loader } from '~/common/loader'
+import { Paper } from '~/common/paper'
+import { SettingsIntegrationConnect } from '../common/settings-integration-connect'
 import * as styles from './settings-integrations.css'
 import * as model from './settings-integrations.model'
-import { SettingsIntegrationHuobiDialog } from '~/settings/common/settings-integration-huobi-dialog'
-import { SettingsIntegrationOkexDialog } from '~/settings/common/settings-integration-okex-dialog'
-import { SettingsIntegrationAscendexDialog } from '~/settings/common/settings-integration-ascendex-dialog'
-import { SettingsIntegrationMexcDialog } from '~/settings/common/settings-integration-mexc-dialog'
-import { SettingsIntegrationAaxDialog } from '~/settings/common/settings-integration-aax-dialog/settings-integration-aax-dialog'
-import { SettingsIntegrationBitmartDialog } from '~/settings/common/settings-integration-bitmart-dialog'
-import { SettingsIntegrationCoinexDialog } from '~/settings/common/settings-integration-coinex-dialog'
-import { SettingsIntegrationPoloniexDialog } from '../common/settings-integration-poloniex-dialog'
-import { SettingsIntegrationFtxDialog } from '../common/settings-integration-ftx-dialog'
 
 export type SettingsIntegrationsProps = {
   className?: string
 }
 
-const AVAILABLE_INTEGRATIONS = Object.values(WalletExchangeTypeEnum)
-
-const PLACEHOLDERS_COUNT = 3 - AVAILABLE_INTEGRATIONS.length
+const titles = {
+  [WalletExchangeTypeEnum.Binance]: 'Binance',
+  [WalletExchangeTypeEnum.Huobi]: 'Huobi',
+  [WalletExchangeTypeEnum.Okex]: 'OKEx',
+  [WalletExchangeTypeEnum.Ascendex]: 'AscendEX',
+  [WalletExchangeTypeEnum.Mexc]: 'MEXC',
+  [WalletExchangeTypeEnum.Aax]: 'AAX',
+  [WalletExchangeTypeEnum.Bitmart]: 'Bitmart',
+  [WalletExchangeTypeEnum.Coinex]: 'Coinex',
+  [WalletExchangeTypeEnum.Poloniex]: 'Poloniex',
+  [WalletExchangeTypeEnum.Ftx]: 'FTX',
+}
 
 export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
   props
 ) => {
-  const integrations = useStore(model.$integrations)
+  const integrations = useStore(model.$integrationsList)
   const loading = useStore(model.fetchEstablishedIntegrationsListFx.pending)
   const connectAdding = useStore(model.$connectAdding)
 
-  const [
-    [openConnectBinance],
-    [openConnectHuobi],
-    [openConnectOkex],
-    [openConnectAscendex],
-    [openConnectMexc],
-    [openConnectAax],
-    [openConnectBitmart],
-    [openConnectCoinex],
-    [openConnectPoloniex],
-    [openConnectFtx],
-  ] = [
-    useDialog(SettingsIntegrationBinanceDialog),
-    useDialog(SettingsIntegrationHuobiDialog),
-    useDialog(SettingsIntegrationOkexDialog),
-    useDialog(SettingsIntegrationAscendexDialog),
-    useDialog(SettingsIntegrationMexcDialog),
-    useDialog(SettingsIntegrationAaxDialog),
-    useDialog(SettingsIntegrationBitmartDialog),
-    useDialog(SettingsIntegrationCoinexDialog),
-    useDialog(SettingsIntegrationPoloniexDialog),
-    useDialog(SettingsIntegrationFtxDialog),
-  ]
   const [openConfirmDialog] = useDialog(ConfirmDialog)
-
-  //   Huobi
-  // OKEx
-  // AscendEX
-  // MEXC
-  // AAX
-  // Bitmart
-  // Coinex
-  // Poloniex
-  // FTX
-
-  const handlers = {
-    [WalletExchangeTypeEnum.Binance]: {
-      title: 'Binance',
-      dialog: openConnectBinance,
-      effect: model.connectIntegrationApiExchangeFx,
-    },
-
-    [WalletExchangeTypeEnum.Huobi]: {
-      title: 'Huobi',
-      dialog: openConnectHuobi,
-      effect: model.connectIntegrationApiExchangeFx,
-    },
-
-    [WalletExchangeTypeEnum.Okex]: {
-      title: 'OKEx',
-      dialog: openConnectOkex,
-      effect: model.connectIntegrationApiExchangeFx,
-    },
-
-    [WalletExchangeTypeEnum.Ascendex]: {
-      title: 'AscendEX',
-      dialog: openConnectAscendex,
-      effect: model.connectIntegrationApiExchangeFx,
-    },
-
-    [WalletExchangeTypeEnum.Mexc]: {
-      title: 'MEXC',
-      dialog: openConnectMexc,
-      effect: model.connectIntegrationApiExchangeFx,
-    },
-
-    [WalletExchangeTypeEnum.Aax]: {
-      title: 'AAX',
-      dialog: openConnectAax,
-      effect: model.connectIntegrationApiExchangeFx,
-    },
-
-    [WalletExchangeTypeEnum.Bitmart]: {
-      title: 'Bitmart',
-      dialog: openConnectBitmart,
-      effect: model.connectIntegrationApiExchangeFx,
-    },
-
-    [WalletExchangeTypeEnum.Coinex]: {
-      title: 'Coinex',
-      dialog: openConnectCoinex,
-      effect: model.connectIntegrationApiExchangeFx,
-    },
-
-    [WalletExchangeTypeEnum.Poloniex]: {
-      title: 'Poloniex',
-      dialog: openConnectPoloniex,
-      effect: model.connectIntegrationApiExchangeFx,
-    },
-
-    [WalletExchangeTypeEnum.Ftx]: {
-      title: 'FTX',
-      dialog: openConnectFtx,
-      effect: model.connectIntegrationApiExchangeFx,
-    },
-  }
 
   const handleConnectIntegration =
     (integrationType: WalletExchangeTypeEnum) => async () => {
@@ -140,11 +47,11 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
         const objectKeys: string[] = []
         const objectValues: string[] = []
 
-        Object.entries(await handlers[integrationType].dialog()).map(([i, v]) =>
+        Object.entries(await titles[integrationType]).map(([i, v]) =>
           Promise.all([objectKeys.push(i), objectValues.push(v)])
         )
 
-        await handlers[integrationType].effect({
+        await model.connectIntegrationApiExchangeFx({
           objectKeys,
           objectValues,
           type: integrationType,
@@ -170,40 +77,42 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
     }
   }
 
-  const placeholders = Array.from(
-    Array(PLACEHOLDERS_COUNT < 0 ? 0 : PLACEHOLDERS_COUNT)
-  )
-
   useEffect(() => {
     model.fetchEstablishedIntegrationsListFx()
   }, [])
 
   return (
     <div className={clsx(styles.root, props.className)}>
-      <SettingsHeader className={styles.header}>
-        <Typography variant="h3">Integrations</Typography>
-      </SettingsHeader>
-      <div className={styles.list}>
-        {AVAILABLE_INTEGRATIONS.map((integrationType) => {
-          const integration = integrations[integrationType]
-
-          return (
-            <SettingsIntegrationCard
-              key={integration?.id ?? integrationType}
-              icon={<Icon icon={integrationType} width={28} height={28} />}
-              platform={handlers[integrationType].title}
-              account={integration?.account}
-              onConnect={handleConnectIntegration(integrationType)}
-              onDisconnect={handleDisconnect(integration?.id)}
-              adding={connectAdding === integrationType}
-              deleting={integration?.deleting}
+      {!loading && (
+        <>
+          <SettingsHeader className={styles.header}>
+            <Typography variant="h3">Integrations</Typography>
+          </SettingsHeader>
+          <div className={styles.list}>
+            {integrations.map((integration) => (
+              <SettingsIntegrationCard
+                key={integration?.id ?? integration.exchange}
+                icon={
+                  <Icon icon={integration.exchange} width={28} height={28} />
+                }
+                platform={titles[integration.exchange]}
+                account={integration?.account}
+                onDisconnect={handleDisconnect(integration?.id)}
+                deleting={integration?.deleting}
+              />
+            ))}
+            <SettingsIntegrationConnect
+              onConnect={handleConnectIntegration(WalletExchangeTypeEnum.Aax)}
+              connecting={Boolean(connectAdding)}
             />
-          )
-        })}
-
-        {!loading &&
-          placeholders.map((_, index) => <SettingsPaper key={String(index)} />)}
-      </div>
+          </div>
+        </>
+      )}
+      {loading && (
+        <Paper radius={8} className={styles.loader}>
+          <Loader height="36" />
+        </Paper>
+      )}
     </div>
   )
 }

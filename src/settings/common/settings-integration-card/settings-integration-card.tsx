@@ -13,10 +13,8 @@ export type SettingsWalletCardProps = {
   icon: ReactElement
   account?: string
   platform: string
-  onConnect: () => void
   onDisconnect: () => void
   deleting?: boolean
-  adding?: boolean
 }
 
 export const SettingsIntegrationCard: React.VFC<SettingsWalletCardProps> = (
@@ -26,41 +24,29 @@ export const SettingsIntegrationCard: React.VFC<SettingsWalletCardProps> = (
 
   return (
     <Paper className={clsx(styles.root, props.className)} radius={8}>
-      <div className={styles.header}>
-        <div className={styles.heading}>
-          <div className={styles.icon}>{icon}</div>
-          <Typography as="span" className={styles.platform}>
-            {platform}
-          </Typography>
-        </div>
-        <div className={styles.row}>
-          <Typography
-            variant="body2"
-            as="span"
-            className={clsx(styles.infoTitle, styles.opacity)}
-          >
-            Account
-          </Typography>
-          <Typography variant="body2">
-            {account ? cutAccount(account, 10) : 'none'}
-          </Typography>
-        </div>
+      <div className={styles.title}>
+        {icon}
+        <Typography as="span">{platform}</Typography>
       </div>
-
-      <div className={clsx(styles.footer)}>
-        <div className={styles.buttons}>
-          <CanDemo>
-            <Button
-              size="small"
-              onClick={account ? props.onDisconnect : props.onConnect}
-              className={account ? styles.disconnect : styles.connect}
-              loading={props.deleting || props.adding}
-            >
-              {account ? 'Disconnect' : 'Connect'}
-            </Button>
-          </CanDemo>
-        </div>
+      <div>
+        <Typography variant="body2" as="span" className={styles.account}>
+          Account
+        </Typography>
+        <Typography variant="body2">
+          {account ? cutAccount(account, 10) : 'none'}
+        </Typography>
       </div>
+      <CanDemo>
+        <Button
+          color="blue"
+          size="small"
+          onClick={props.onDisconnect}
+          loading={props.deleting}
+          className={styles.button}
+        >
+          Disconnect
+        </Button>
+      </CanDemo>
     </Paper>
   )
 }

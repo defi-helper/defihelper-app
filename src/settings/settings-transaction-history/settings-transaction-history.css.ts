@@ -16,6 +16,7 @@ export const empty = style({
 
 export const content = style({
   padding: '0 0 16px',
+  overflowX: 'auto',
 })
 
 export const grey = style({
