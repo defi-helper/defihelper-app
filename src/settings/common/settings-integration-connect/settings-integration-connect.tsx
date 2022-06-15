@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import { useState } from 'react'
-import { config, useTransition, animated } from '@react-spring/web'
+import { useEffect, useRef, useState } from 'react'
+import isEmpty from 'lodash.isempty'
 
 import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
@@ -23,6 +23,7 @@ export type SettingsIntegrationConnectProps = {
   className?: string
   onConnect: (value: Record<string, string>) => void
   connecting: boolean
+  countRender: number
 }
 
 const forms: Record<string, { title: string; form: React.ElementType }> = {
@@ -72,6 +73,7 @@ export const SettingsIntegrationConnect: React.FC<SettingsIntegrationConnectProp
   (props) => {
     const [form, setForm] = useState<string>('')
     const [connect, setConnect] = useState(false)
+    const formValuesRef = useRef<Record<string, string>>({})
 
     const handleConnect = () => {
       setConnect(!connect)
@@ -81,16 +83,22 @@ export const SettingsIntegrationConnect: React.FC<SettingsIntegrationConnectProp
       setForm(event.target.value)
     }
 
-    // const handleOnSubmit = () => {}
+    const handleOnChange = (formValues: Record<string, string>) => {
+      formValuesRef.current = formValues
+    }
+
+    const handleOnSubmit = (values: Record<string, string>) => {
+      if (isEmpty(values)) return
+
+      props.onConnect(values)
+    }
+
+    useEffect(() => {
+      setForm('')
+      setConnect(false)
+    }, [props.countRender])
 
     const CurrentForm = forms[form]?.form
-
-    const transitions = useTransition([connect].filter(Boolean), {
-      from: { maxHeight: 0 },
-      enter: { maxHeight: 1 },
-      leave: { maxHeight: 0 },
-      config: config.molasses,
-    })
 
     return (
       <Paper radius={8} className={clsx(styles.root, props.className)}>
@@ -104,19 +112,18 @@ export const SettingsIntegrationConnect: React.FC<SettingsIntegrationConnectProp
         <Button
           color="blue"
           size="small"
-          onClick={handleConnect}
+          onClick={
+            connect
+              ? () => handleOnSubmit(formValuesRef.current)
+              : handleConnect
+          }
           loading={props.connecting}
           className={styles.button}
         >
           Connect
         </Button>
-        {transitions(({ maxHeight }) => (
-          <animated.div
-            className={styles.form}
-            style={{
-              height: maxHeight.to((val) => `${Math.floor(val * 100)}%`),
-            }}
-          >
+        {connect && (
+          <div className={styles.form}>
             <Select
               onChange={handleChangeForm}
               value={form}
@@ -129,9 +136,14 @@ export const SettingsIntegrationConnect: React.FC<SettingsIntegrationConnectProp
                 </SelectOption>
               ))}
             </Select>
-            {CurrentForm && <CurrentForm />}
-          </animated.div>
-        ))}
+            {CurrentForm && (
+              <CurrentForm
+                onChange={handleOnChange}
+                onSubmit={handleOnSubmit}
+              />
+            )}
+          </div>
+        )}
       </Paper>
     )
   }

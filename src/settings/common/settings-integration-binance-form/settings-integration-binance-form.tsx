@@ -1,6 +1,8 @@
 import clsx from 'clsx'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useUpdateEffect, useUnmount } from 'react-use'
+import isEmpty from 'lodash.isempty'
 
 import { Input } from '~/common/input'
 import { Link } from '~/common/link'
@@ -13,7 +15,8 @@ type FormValues = {
 }
 
 export type SettingsIntegrationDialogProps = {
-  onConfirm: (formValues: FormValues) => void
+  onSubmit: (formValues: FormValues) => void
+  onChange: (formValues: Partial<FormValues>) => void
   defaultValues?: FormValues
   className?: string
 }
@@ -22,15 +25,30 @@ const HOW_TO_CREATE_API = 'https://www.binance.com/en/support/faq/360002502072'
 
 export const SettingsIntegrationBinanceForm: React.VFC<SettingsIntegrationDialogProps> =
   (props) => {
-    const { register, handleSubmit, formState } = useForm<FormValues>({
+    const { register, handleSubmit, formState, watch } = useForm<FormValues>({
       defaultValues: props.defaultValues,
       resolver: yupResolver(settingsIntegrationBinanceSchema),
+      mode: 'onBlur',
+    })
+
+    const formValues = watch()
+
+    useUpdateEffect(() => {
+      if (!isEmpty(formState.errors)) {
+        props.onChange?.({})
+      } else {
+        props.onChange?.(formValues)
+      }
+    }, [formValues, formState.errors])
+
+    useUnmount(() => {
+      props.onChange?.({})
     })
 
     return (
       <form
         noValidate
-        onSubmit={handleSubmit(props.onConfirm)}
+        onSubmit={handleSubmit(props.onSubmit)}
         className={clsx(styles.form, props.className)}
       >
         <Input

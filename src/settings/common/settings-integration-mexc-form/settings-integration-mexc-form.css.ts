@@ -11,5 +11,9 @@ export const createApiInstructionLink = style({
 })
 
 export const input = style({
-  marginBottom: 24,
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 24,
+    },
+  },
 })

@@ -1,6 +1,6 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Typography } from '~/common/typography'
 import { SettingsHeader } from '~/settings/common'
@@ -39,15 +39,18 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
   const loading = useStore(model.fetchEstablishedIntegrationsListFx.pending)
   const connectAdding = useStore(model.$connectAdding)
 
+  const [countRender, setCountRender] = useState(0)
+
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   const handleConnectIntegration =
-    (integrationType: WalletExchangeTypeEnum) => async () => {
+    (integrationType: WalletExchangeTypeEnum) =>
+    async (formValues: Record<string, string>) => {
       try {
         const objectKeys: string[] = []
         const objectValues: string[] = []
 
-        Object.entries(await titles[integrationType]).map(([i, v]) =>
+        Object.entries(formValues).map(([i, v]) =>
           Promise.all([objectKeys.push(i), objectValues.push(v)])
         )
 
@@ -56,6 +59,8 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
           objectValues,
           type: integrationType,
         })
+
+        setCountRender(countRender + 1)
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
@@ -104,6 +109,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
             <SettingsIntegrationConnect
               onConnect={handleConnectIntegration(WalletExchangeTypeEnum.Aax)}
               connecting={Boolean(connectAdding)}
+              countRender={countRender}
             />
           </div>
         </>
