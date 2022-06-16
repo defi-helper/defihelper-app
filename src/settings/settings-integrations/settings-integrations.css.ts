@@ -17,11 +17,10 @@ export const header = style({
 export const list = style({
   display: 'grid',
   gap: 24,
-  gridTemplateColumns: 'repeat(auto-fill, minmax(277px, 1fr))',
 
   '@media': {
-    [theme.mediaQueries.sm()]: {
-      gridTemplateColumns: 'repeat(auto-fill, minmax(351px, 1fr))',
+    [theme.mediaQueries.md()]: {
+      gridTemplateColumns: 'repeat(auto-fill, minmax(calc(50% - 24px), 1fr))',
     },
   },
 })
@@ -45,4 +44,12 @@ export const addButtonTitle = style({
       display: 'inline',
     },
   },
+})
+
+export const loader = style({
+  padding: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minHeight: 140,
 })

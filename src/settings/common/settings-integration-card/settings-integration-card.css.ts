@@ -2,71 +2,48 @@ import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
+export const flex = style({
+  display: 'flex',
+  alignItems: 'center',
+})
+
 export const root = style({
-  overflow: 'hidden',
-})
-
-export const heading = style({
-  display: 'flex',
-  alignItems: 'center',
-  marginBottom: 16,
-})
-
-export const icon = style({
-  marginRight: 8,
-  display: 'flex',
-  alignItems: 'center',
-  borderRadius: 24,
-})
-
-export const platform = style({
-  textTransform: 'capitalize',
-})
-
-export const header = style({
-  padding: 24,
-})
-
-export const footer = style({
-  padding: '16px 24px 24px',
-  background: theme.colors.common.blue1,
-  color: theme.colors.common.white1,
-})
-
-export const row = style({
+  gap: 14,
   display: 'grid',
-  gridTemplateColumns: '40% 60%',
+  alignItems: 'center',
+  padding: '22px 12px',
+  gridTemplateColumns: '1fr 1fr',
 
-  selectors: {
-    '&:not(:last-child)': {
-      marginBottom: 8,
+  '@media': {
+    [theme.mediaQueries.sm()]: {
+      gap: 24,
+      gridTemplateColumns: '30% 1fr 1fr',
+      padding: '44px 32px',
     },
   },
 })
 
-export const infoTitle = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 4,
+export const title = style([
+  flex,
+  {
+    gap: 8,
+    gridColumnStart: 1,
+    gridColumnEnd: 3,
+
+    '@media': {
+      [theme.mediaQueries.sm()]: {
+        gridColumnStart: 'unset',
+        gridColumnEnd: 'unset',
+      },
+    },
+  },
+])
+
+export const button = style({
+  marginLeft: 'auto',
+  width: 110,
 })
 
-export const opacity = style({
-  opacity: 0.64,
-})
-
-export const buttons = style({
-  display: 'flex',
-  gap: 12,
-})
-
-export const connect = style({
-  background: theme.colors.common.white1,
-  border: theme.colors.common.white1,
-  color: theme.colors.common.black1,
-})
-
-export const disconnect = style({
-  background: theme.colors.common.white3,
-  border: theme.colors.common.white3,
-  color: theme.colors.common.white1,
+export const account = style({
+  color: theme.colors.textColorGrey,
 })

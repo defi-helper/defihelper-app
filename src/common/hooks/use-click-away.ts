@@ -21,10 +21,10 @@ export function useClickAway<T extends HTMLElement = HTMLElement>(
       handlerRef.current(event)
     }
 
-    document.addEventListener('mouseup', listener)
+    document.addEventListener('click', listener)
 
     return () => {
-      document.removeEventListener('mouseup', listener)
+      document.removeEventListener('click', listener)
     }
   }, [ref1])
 }

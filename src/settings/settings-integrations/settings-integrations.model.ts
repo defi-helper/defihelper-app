@@ -1,4 +1,10 @@
-import { createDomain, combine, restore, guard } from 'effector-logger/macro'
+import {
+  restore,
+  guard,
+  createEffect,
+  createStore,
+  createEvent,
+} from 'effector-logger/macro'
 
 import {
   IntegrationExchangeApiConnectMutationVariables,
@@ -18,48 +24,43 @@ export type Integrations = Record<
   | undefined
 >
 
-export const integrationListDomain = createDomain()
+export const fetchEstablishedIntegrationsListFx = createEffect(async () =>
+  settingsApi.integrationList()
+)
 
-export const fetchEstablishedIntegrationsListFx =
-  integrationListDomain.createEffect(async () => settingsApi.integrationList())
+export const connectIntegrationApiExchangeFx = createEffect(
+  async (input: IntegrationExchangeApiConnectMutationVariables['input']) => {
+    const data = await settingsApi.integrationExchangeApiConnect({
+      input,
+    })
 
-export const connectIntegrationApiExchangeFx =
-  integrationListDomain.createEffect(
-    async (input: IntegrationExchangeApiConnectMutationVariables['input']) => {
-      const data = await settingsApi.integrationExchangeApiConnect({
-        input,
-      })
+    if (!data)
+      throw new Error(
+        'Please, verify your keys pair, the pair is expired or wrong'
+      )
 
-      if (!data)
-        throw new Error(
-          'Please, verify your keys pair, the pair is expired or wrong'
-        )
-
-      return data
-    }
-  )
+    return data
+  }
+)
 
 export const fetchAssetsByIntegration = (exchangeId: string) =>
   portfolioApi
     .getAssetsListByExchange({ exchangeId })
     .then(portfolioSortAssetsByWallet)
 
-export const fetchAssetsByIntegrationFx = integrationListDomain.createEffect(
-  fetchAssetsByIntegration
-)
+export const fetchAssetsByIntegrationFx = createEffect(fetchAssetsByIntegration)
 
 export const $assetsByIntegration = restore(
   fetchAssetsByIntegrationFx.doneData,
   []
 )
 
-export const openIntegration = integrationListDomain.createEvent<
-  string | null
->()
+export const openIntegration = createEvent<string | null>()
 
-export const $openedIntegration = integrationListDomain
-  .createStore<string | null>(null)
-  .on(openIntegration, (_, payload) => payload)
+export const $openedIntegration = createStore<string | null>(null).on(
+  openIntegration,
+  (_, payload) => payload
+)
 
 guard({
   clock: $openedIntegration.updates,
@@ -67,7 +68,7 @@ guard({
   target: fetchAssetsByIntegrationFx,
 })
 
-export const disconnectIntegrationFx = integrationListDomain.createEffect(
+export const disconnectIntegrationFx = createEffect(
   async (integrationId: string) => {
     const data = await settingsApi.integrationDisconnect(integrationId)
 
@@ -77,12 +78,11 @@ export const disconnectIntegrationFx = integrationListDomain.createEffect(
   }
 )
 
-export const $integrationsList = integrationListDomain
-  .createStore<
-    (WalletExchangeFragmentFragment & {
-      deleting?: boolean
-    })[]
-  >([])
+export const $integrationsList = createStore<
+  (WalletExchangeFragmentFragment & {
+    deleting?: boolean
+  })[]
+>([])
   .on(fetchEstablishedIntegrationsListFx.doneData, (_, payload) => payload)
   .on(disconnectIntegrationFx, (state, payload) => {
     return state.map((integration) =>
@@ -100,18 +100,11 @@ export const $integrationsList = integrationListDomain
     return [...state, payload.result]
   })
 
-export const $connectAdding = integrationListDomain
-  .createStore<WalletExchangeFragmentFragment['exchange'] | null>(null)
+export const $connectAdding = createStore<
+  WalletExchangeFragmentFragment['exchange'] | null
+>(null)
   .on(connectIntegrationApiExchangeFx, (_, { type }) => type)
   .on(connectIntegrationApiExchangeFx.finally, () => null)
-
-export const $integrations = combine($integrationsList, (integrations) => {
-  return integrations.reduce<Integrations>((acc, integration) => {
-    acc[integration.exchange] = integration
-
-    return acc
-  }, {})
-})
 
 $assetsByIntegration.reset(authModel.logoutFx)
 toastsService.forwardErrors(
