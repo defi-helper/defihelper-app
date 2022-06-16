@@ -73,7 +73,7 @@ export const Dropdown: React.VFC<DropdownProps> = (props) => {
     <>
       {cloneElement(control, {
         ...control.props,
-        onClick: trigger === 'click' ? handleOnTrigger : undefined,
+        onMouseUp: trigger === 'click' ? handleOnTrigger : undefined,
         onMouseEnter: trigger === 'hover' ? handleOnTrigger : undefined,
         onMouseLeave: trigger === 'hover' ? handleOnTrigger : undefined,
       })}

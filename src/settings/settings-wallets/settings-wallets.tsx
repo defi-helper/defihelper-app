@@ -205,7 +205,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
 
   const mergedWallets = [
     ...wallets.nonEmpty,
-    ...(showEmpty ? wallets.empty : []),
+    ...(showEmpty || !wallets.nonEmpty.length ? wallets.empty : []),
   ]
 
   const handleShowEmpty = () => setShowEmpty(true)
@@ -279,7 +279,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
             <SettingsPaper key={String(index)} />
           ))}
       </div>
-      {!showEmpty && Boolean(wallets.empty.length) && (
+      {!showEmpty && !wallets.nonEmpty.length && Boolean(wallets.empty.length) && (
         <ButtonBase
           onClick={handleShowEmpty}
           className={styles.showEmptyWallets}

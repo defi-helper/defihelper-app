@@ -46,9 +46,13 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
               unknown,
               string | React.JSXElementConstructor<unknown>
             >
-          | React.ReactPortal
+          | React.ReactPortal,
+
+        cb?: () => void
       ) =>
       (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.stopPropagation()
+
         const newEvent = event
 
         const localValueArr = (
@@ -72,6 +76,10 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
         setLocalValue(childValue)
 
         props.onChange?.(newEvent)
+
+        if (!props.header || !props.multiple) {
+          cb?.()
+        }
       }
 
     const valueMap = children.reduce<Map<string | number, any>>(
@@ -210,7 +218,7 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                     isValidElement(child) &&
                     cloneElement(child, {
                       ...child.props,
-                      onClick: handleClickOnOption(child),
+                      onClick: handleClickOnOption(child, cb),
                       className: clsx(
                         styles.option,
                         child.props.className,

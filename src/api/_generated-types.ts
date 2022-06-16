@@ -6273,6 +6273,41 @@ export type UserFragment = { __typename?: 'UserType' } & Pick<
     }
   }
 
+export type WalletConfigQueryVariables = Exact<{ [key: string]: never }>
+
+export type WalletConfigQuery = { __typename?: 'Query' } & {
+  config: { __typename?: 'ConfigType' } & {
+    blockchain: { __typename?: 'ConfigBlockchainType' } & {
+      ethereum: Array<
+        { __typename?: 'ConfigEthereumNetworkType' } & Pick<
+          ConfigEthereumNetworkType,
+          | 'id'
+          | 'title'
+          | 'testnet'
+          | 'explorerURL'
+          | 'coin'
+          | 'decimals'
+          | 'blockchain'
+          | 'icon'
+        >
+      >
+      waves: Array<
+        { __typename?: 'ConfigWavesNetworkType' } & Pick<
+          ConfigWavesNetworkType,
+          | 'id'
+          | 'title'
+          | 'testnet'
+          | 'explorerURL'
+          | 'coin'
+          | 'decimals'
+          | 'blockchain'
+          | 'icon'
+        >
+      >
+    }
+  }
+}
+
 export type WalletMetricScanMutationVariables = Exact<{
   wallet: Scalars['UuidType']
   contract: Scalars['UuidType']
