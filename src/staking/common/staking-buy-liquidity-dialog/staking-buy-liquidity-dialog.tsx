@@ -182,7 +182,7 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
               </Typography>
             </div>
             <div className={styles.description}>
-              1-click convert tokens to LP tokens.
+              Buy liquidity pool tokens in one click
             </div>
             <form
               noValidate

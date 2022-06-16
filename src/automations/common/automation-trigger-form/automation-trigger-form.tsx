@@ -280,7 +280,6 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
               </AutomationChooseButton>
             )}
           />
-
           <Controller
             control={control}
             name="address"
@@ -294,18 +293,26 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
               />
             )}
           />
-
           <Controller
             control={control}
             name="event"
             render={() => (
               <Select
-                label={`event ${fetchingAbi ? '· fetching abi' : ''}`}
+                label={`event ${
+                  fetchingAbi && !fetchedEvents?.length ? '· fetching abi' : ''
+                }`}
                 disabled={fetchedEvents === null || fetchedEvents?.length === 0}
                 className={styles.input}
                 {...register('event')}
+                defaultValue={defaultValues.event}
                 helperText={formState.errors.event?.message}
                 error={Boolean(formState.errors.event?.message)}
+                onChange={(e) => setValue('event', e.target.value)}
+                placeholder={
+                  fetchedEvents && fetchedEvents.length === 0
+                    ? 'No events resolved :('
+                    : ''
+                }
               >
                 {(fetchedEvents ?? []).map((eventName) => (
                   <SelectOption value={eventName}>{eventName}</SelectOption>
