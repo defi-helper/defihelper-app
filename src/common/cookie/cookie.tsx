@@ -20,7 +20,7 @@ export const Cookie = () => {
     <Portal>
       <Paper radius={8} className={styles.root}>
         <Typography className={styles.text}>
-          We use cookie to provide you with a better browsing experience. By
+          We use cookies to provide you with a better browsing experience. By
           continuing to browse, you are agreeing to our Cookie Policy.
         </Typography>
         <Button color="green" onClick={handleAccept} className={styles.button}>
