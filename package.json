@@ -99,6 +99,7 @@
     "clsx": "^1.1.1",
     "cross-env": "^7.0.3",
     "dayjs": "^1.10.5",
+    "dotenv": "^8.6.0",
     "effector": "^21.8.12",
     "effector-logger": "^0.10.0",
     "effector-react": "^21.3.3",
@@ -167,9 +168,9 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
-    "build-dev": "npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false cross-env REACT_APP_ENV=development craco build",
+    "start": "cross-env REACT_APP_ENV=development && node ./generate-networks && craco start",
+    "build": "node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
+    "build-dev": "cross-env REACT_APP_ENV=development && node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
     "test": "craco test",
     "watch": "node ./watch.js",
     "eject": "react-scripts eject",
