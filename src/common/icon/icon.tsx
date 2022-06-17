@@ -91,6 +91,7 @@ import { ReactComponent as ArrowLongLeftIcon } from '~/assets/icons/arrow-long-l
 import { ReactComponent as ArrowLongRightIcon } from '~/assets/icons/arrow-long-right.svg'
 import { ReactComponent as PlayIcon } from '~/assets/icons/play.svg'
 import { ReactComponent as CheckboxCircleIcon } from '~/assets/icons/checkbox-circle.svg'
+import { ReactComponent as HarmonyIcon } from '~/assets/icons/blockchains/harmony.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -191,6 +192,7 @@ const ICONS = {
   arrowLongRight: ArrowLongRightIcon,
   play: PlayIcon,
   checkboxCircle: CheckboxCircleIcon,
+  harmony: HarmonyIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {
