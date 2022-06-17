@@ -1,9 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const axios = require('cachios')
 const fs = require('fs')
+const path = require('path')
+
+require('dotenv').config({ path: path.resolve(process.cwd(), '.env') })
 
 const isDev = process.env.REACT_APP_ENV === 'development'
-const apiUrl = 'https://backend-dev.defihelper.info/api'
+const apiUrl = process.env.REACT_APP_API_URL
 
 const graphqlQuery = {
   operationName: 'WalletConfig',
