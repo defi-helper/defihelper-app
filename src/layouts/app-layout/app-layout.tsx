@@ -32,6 +32,13 @@ const MENU: MenuItem[] = [
     icon: 'home',
   },
   {
+    title: 'Trade',
+    path: paths.trade,
+    icon: 'trade',
+    subject: 'User',
+    can: 'read',
+  },
+  {
     title: 'Protocols',
     path: paths.protocols.list,
     icon: 'grid',

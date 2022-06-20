@@ -67,4 +67,6 @@ export const paths = {
   autostaking: '/autostaking',
 
   admin: '/admin',
+
+  trade: '/trade',
 } as const
