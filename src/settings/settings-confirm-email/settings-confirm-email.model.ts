@@ -1,4 +1,4 @@
-import { createDomain } from 'effector-logger/macro'
+import { createDomain } from 'effector'
 
 import { UserContactEmailConfirmMutationVariables } from '~/api/_generated-types'
 import { settingsApi } from '~/settings/common'

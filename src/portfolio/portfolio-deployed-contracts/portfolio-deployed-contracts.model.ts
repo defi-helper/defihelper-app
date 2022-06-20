@@ -1,4 +1,4 @@
-import { createDomain, guard, restore, sample } from 'effector-logger/macro'
+import { createDomain, guard, restore, sample } from 'effector'
 import { attach } from 'effector'
 
 import * as assetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'

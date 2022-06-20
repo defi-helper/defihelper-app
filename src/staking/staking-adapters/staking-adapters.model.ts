@@ -1,4 +1,4 @@
-import { createDomain, restore } from 'effector-logger/macro'
+import { createDomain, restore } from 'effector'
 import networks from '@defihelper/networks/contracts.json'
 import isEmpty from 'lodash.isempty'
 

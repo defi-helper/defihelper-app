@@ -1,4 +1,4 @@
-import { createDomain, UnitValue, guard, sample } from 'effector-logger/macro'
+import { createDomain, UnitValue, guard, sample } from 'effector'
 import contractsConfig from '@defihelper/networks/contracts.json'
 import { createGate } from 'effector-react'
 import type { ContractInterface } from 'ethers'

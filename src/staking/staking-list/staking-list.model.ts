@@ -5,7 +5,7 @@ import {
   sample,
   UnitValue,
   StoreValue,
-} from 'effector-logger/macro'
+} from 'effector'
 import { createGate } from 'effector-react'
 
 import {

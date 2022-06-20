@@ -1,10 +1,4 @@
-import {
-  createDomain,
-  sample,
-  UnitValue,
-  combine,
-  StoreValue,
-} from 'effector-logger/macro'
+import { createDomain, sample, UnitValue, combine, StoreValue } from 'effector'
 import contracts from '@defihelper/networks/contracts.json'
 import { ethers } from 'ethers'
 import Balance from '@defihelper/networks/abi/Balance.json'

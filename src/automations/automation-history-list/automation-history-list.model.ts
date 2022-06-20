@@ -1,4 +1,4 @@
-import { createDomain, sample, restore } from 'effector-logger/macro'
+import { createDomain, sample, restore } from 'effector'
 import { createGate } from 'effector-react'
 
 import { automationApi } from '~/automations/common/automation.api'

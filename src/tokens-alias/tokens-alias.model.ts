@@ -1,4 +1,4 @@
-import { createDomain } from 'effector-logger/macro'
+import { createDomain } from 'effector'
 import {
   TokenAliasFragment,
   TokenAliasUpdateMutationVariables,

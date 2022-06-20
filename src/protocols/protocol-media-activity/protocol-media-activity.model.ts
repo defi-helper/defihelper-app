@@ -1,4 +1,4 @@
-import { createDomain } from 'effector-logger/macro'
+import { createDomain } from 'effector'
 
 import { ProtocolSocialPostsQuery } from '~/api/_generated-types'
 import { protocolsApi } from '~/protocols/common'

@@ -5,7 +5,7 @@ import {
   UnitValue,
   createDomain,
   sample,
-} from 'effector-logger/macro'
+} from 'effector'
 import {
   BuyLiquidityProtocolsQueryVariables,
   BuyLiquidityContractsQueryVariables,
