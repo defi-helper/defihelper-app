@@ -20,6 +20,7 @@ import * as styles from './autostaking-migrate-contracts.css'
 import { authModel } from '~/auth'
 import { switchNetwork } from '~/wallets/common'
 import { useWalletConnect } from '~/wallets/wallet-connect'
+import { toastsService } from '~/toasts'
 
 export type AutostakingMigrateContractsProps = {
   className?: string
@@ -84,6 +85,8 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
     const handleMigrate =
       (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
       async () => {
+        model.migratingStart(contract.id)
+
         try {
           if (!currentWallet?.account) return
 
@@ -97,7 +100,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
             action: 'migrate',
           })
 
-          if (!adapter) return
+          if (!adapter) return toastsService.error('adapter not found')
 
           const findedWallet = wallets.find((wallet) => {
             const sameAddreses =
@@ -110,7 +113,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
             )
           })
 
-          if (!findedWallet) return
+          if (!findedWallet) return toastsService.error('wrong wallet')
 
           const onLastStep = () => {
             automatesModel
@@ -138,6 +141,8 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
           if (error instanceof Error) {
             console.error(error.message)
           }
+        } finally {
+          model.migratingEnd()
         }
       }
 
@@ -239,6 +244,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
                       }
                       onHide={handleHide(contract)}
                       hidding={contract.hidding}
+                      migrating={contract.migrating}
                     />
                   )
                 })}
@@ -298,6 +304,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
                         icon="eye"
                         onShow={handleShow(contract)}
                         showing={contract.showing}
+                        migrating={contract.migrating}
                       />
                     )
                   })}

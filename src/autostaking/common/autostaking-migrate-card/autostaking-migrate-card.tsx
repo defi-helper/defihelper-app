@@ -25,6 +25,7 @@ export type AutostakingMigrateCardProps = {
   onShow?: () => void
   showing?: boolean
   hidding?: boolean
+  migrating?: boolean
   icon?: 'close' | 'eye'
 }
 
@@ -109,7 +110,12 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
           + {bignumberUtils.formatMax(props.apyBoost, 10000)} %
         </Typography>
       </div>
-      <Button className={styles.button} size="small" onClick={props.onMigrate}>
+      <Button
+        className={styles.button}
+        size="small"
+        onClick={props.onMigrate}
+        loading={props.migrating}
+      >
         migrate tokens
       </Button>
       {hide && (
