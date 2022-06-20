@@ -50,6 +50,15 @@ import {
 import { config } from '~/config'
 import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-scanner-register.graphql'
 
+export interface WatcherEventListener {
+  id: string
+  sync: {
+    currentBlock: number
+    syncHeight: number
+  }
+  contract: string
+}
+
 export const stakingApi = {
   contractList: (variables: StakingContractListQueryVariables) =>
     getAPIClient()
@@ -259,7 +268,7 @@ export const stakingApi = {
 
   scannerGetEventListener: (variables: {
     id: string
-  }): Promise<{ id: string; syncHeight: number; contract: string }[]> =>
+  }): Promise<WatcherEventListener[]> =>
     fetch(
       `${config.SCANNER_HOST}/contract/${variables.id}/event-listener`
     ).then((res) => res.json()),
@@ -268,9 +277,6 @@ export const stakingApi = {
     contractId: string
   ): Promise<{ startHeight: number; id: string } | null> =>
     fetch(`${config.SCANNER_HOST}/contract/fid/${contractId}`).then(
-      async (res) => {
-        const response: { startHeight: number; id: string }[] = await res.json()
-        return response.length ? response[0] : null
-      }
+      async (res) => res.json()
     ),
 }

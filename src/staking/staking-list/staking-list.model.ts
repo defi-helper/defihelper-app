@@ -21,6 +21,7 @@ import {
   RegisterParams,
   stakingApi,
   StakingListPayload,
+  WatcherEventListener,
 } from '~/staking/common'
 import { PaginationState } from '~/common/create-pagination'
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -87,22 +88,19 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
 export const fetchScannerFx = stakingListDomain.createEffect(
   async (contracts: Contract[]) => {
     const stakingListWithAutostaking = contracts.map(async (contract) => {
-      let syncedBlock = -1
+      let pools: WatcherEventListener[] = []
 
       const scannerContract = await stakingApi.scannerGetContract(contract.id)
-
+      console.warn(contract.id, scannerContract)
       if (scannerContract) {
-        const listenedPools = await stakingApi.scannerGetEventListener({
+        pools = await stakingApi.scannerGetEventListener({
           id: scannerContract.id,
         })
-
-        syncedBlock =
-          Math.min(...listenedPools.map(({ syncHeight }) => syncHeight)) || 0
       }
 
       return {
         scannerId: scannerContract?.id,
-        syncedBlock,
+        pools,
         contractId: contract.id,
       }
     })
@@ -112,7 +110,7 @@ export const fetchScannerFx = stakingListDomain.createEffect(
         string,
         {
           scannerId?: string
-          syncedBlock: number
+          pools: WatcherEventListener[]
           contractId: string
         }
       >

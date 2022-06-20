@@ -108,7 +108,6 @@ const STEPS: (Step & { action?: () => JSX.Element; closeButton?: string })[] = [
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const ability = useAbility()
 
-  const [currentBlock, setCurrentBlock] = useState(-1)
   const [search, setSearch] = useState('')
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.MyStaked,
@@ -125,12 +124,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutostaking', false)
 
   const currentWallet = walletNetworkModel.useWalletNetwork()
-  const networkProvider = currentWallet
-    ? walletNetworkModel.getNetwork(
-        currentWallet.provider,
-        currentWallet.chainId
-      )
-    : null
 
   const stakingList = useStore(model.$contractsListCopies)
   const autostaking = useStore(model.$autostaking)
@@ -457,19 +450,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
     currentWallet ? 15000 : null
   )
 
-  useInterval(
-    async () => {
-      if (!networkProvider) return
-
-      try {
-        setCurrentBlock(await networkProvider.getBlockNumber())
-      } catch (e) {
-        console.error(e)
-      }
-    },
-    currentWallet ? 1500 : null
-  )
-
   const [sentryRef] = model.useInfiniteScroll()
   const hasNetPage = useStore(model.useInfiniteScroll.hasNextPage)
 
@@ -726,8 +706,6 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         stakingListItem
                       )}
                       onDelete={handleOpenConfirmDialog(stakingListItem.id)}
-                      currentBlock={currentBlock}
-                      currentNetwork={currentWallet?.chainId}
                       onOpenApy={handleOpenApy(stakingListItem.metric)}
                       scannerData={scanner[stakingListItem.id]}
                       onUpdate={handleUpdateMetrics(stakingListItem.id)}
