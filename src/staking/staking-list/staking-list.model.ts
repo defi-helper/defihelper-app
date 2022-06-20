@@ -91,7 +91,6 @@ export const fetchScannerFx = stakingListDomain.createEffect(
       let pools: WatcherEventListener[] = []
 
       const scannerContract = await stakingApi.scannerGetContract(contract.id)
-      console.warn(contract.id, scannerContract)
       if (scannerContract) {
         pools = await stakingApi.scannerGetEventListener({
           id: scannerContract.id,
