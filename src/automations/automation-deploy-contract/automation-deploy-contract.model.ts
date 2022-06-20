@@ -1,4 +1,4 @@
-import { createDomain, sample, guard, restore } from 'effector-logger/macro'
+import { createDomain, sample, guard, restore } from 'effector'
 import { createGate } from 'effector-react'
 import networks from '@defihelper/networks/contracts.json'
 

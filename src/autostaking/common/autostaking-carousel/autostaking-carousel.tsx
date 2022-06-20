@@ -56,9 +56,9 @@ export const AutostakingCarousel: React.FC<AutostakingCarouselProps> = (
     )
   }
 
-  const renderChildren = (child: React.ReactNode) => {
+  const renderChildren = (child: React.ReactNode, index: number) => {
     return isValidElement(child) ? (
-      <div className={styles.slide}>
+      <div className={styles.slide} key={String(index)}>
         {cloneElement(child, {
           ...child.props,
           className: clsx(child.props.className),

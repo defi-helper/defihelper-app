@@ -1,4 +1,4 @@
-import { createDomain, guard, sample, UnitValue } from 'effector-logger/macro'
+import { createDomain, guard, sample, UnitValue } from 'effector'
 import { createGate } from 'effector-react'
 
 import { protocolsApi } from '~/protocols/common'

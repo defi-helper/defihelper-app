@@ -4,7 +4,7 @@ import {
   createEffect,
   UnitValue,
   combine,
-} from 'effector-logger/macro'
+} from 'effector'
 
 import {
   AutostakingStakingContractsQueryVariables,
@@ -100,7 +100,14 @@ export const fetchHiddenContractsFx = createEffect(
   }
 )
 
+export const migratingStart = createEvent<string>()
+export const migratingEnd = createEvent()
+
 export const resetHiddenContracts = createEvent()
+
+export const $migratingContract = createStore<string>('')
+  .on(migratingStart, (_, payload) => payload)
+  .reset(migratingEnd, resetHiddenContracts, resetContracts)
 
 export const $hiddenContracts = createStore<
   UnitValue<typeof fetchHiddenContractsFx.doneData>['list']
@@ -140,19 +147,23 @@ export const $unlinkLoading = createStore<Record<string, boolean>>({})
 export const $contractsWithLoading = combine(
   $contracts,
   $unlinkLoading,
-  (contracts, unlinkLoading) =>
+  $migratingContract,
+  (contracts, unlinkLoading, migratingContract) =>
     contracts.map((contract) => ({
       ...contract,
       hidding: unlinkLoading[contract.id],
+      migrating: migratingContract === contract.id,
     }))
 )
 
 export const $hiddenContractsWithLoading = combine(
   $hiddenContracts,
   $linkLoading,
-  (hiddenContracts, linkLoading) =>
+  $migratingContract,
+  (hiddenContracts, linkLoading, migratingContract) =>
     hiddenContracts.map((contract) => ({
       ...contract,
       showing: linkLoading[contract.id],
+      migrating: migratingContract === contract.id,
     }))
 )

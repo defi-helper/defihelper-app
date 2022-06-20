@@ -47,6 +47,8 @@ const MENU: MenuItem[] = [
     title: 'Autostaking',
     path: paths.autostaking,
     icon: 'autostaking',
+    subject: 'User',
+    can: 'read',
   },
   {
     title: 'Automations',

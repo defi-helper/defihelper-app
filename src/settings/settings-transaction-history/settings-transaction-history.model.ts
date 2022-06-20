@@ -1,4 +1,4 @@
-import { createDomain, restore, combine, guard } from 'effector-logger/macro'
+import { createDomain, restore, combine, guard } from 'effector'
 
 import {
   BillingHistoryQueryVariables,

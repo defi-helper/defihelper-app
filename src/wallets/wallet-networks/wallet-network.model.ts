@@ -7,7 +7,7 @@ import {
   sample,
   createEvent,
   UnitValue,
-} from 'effector-logger/macro'
+} from 'effector'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { shallowEqual } from 'fast-equals'
