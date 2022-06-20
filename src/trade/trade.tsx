@@ -3,6 +3,7 @@ import { AppLayout } from '~/layouts'
 import { Typography } from '~/common/typography'
 import { Select, SelectOption } from '~/common/select'
 import * as styles from './trade.css'
+import { Paper } from '~/common/paper'
 
 export type TradeProps = unknown
 
@@ -13,10 +14,40 @@ export const Trade: React.VFC<TradeProps> = () => {
       <Typography variant="h3" className={styles.title}>
         Trade
       </Typography>
-      <div>
-        <Select label="Wallet">
-          <SelectOption value="SelectOption">test</SelectOption>
-        </Select>
+      <div className={styles.content}>
+        <div>
+          <div className={styles.selects}>
+            <Select label="Wallet">
+              <SelectOption value="SelectOption">test</SelectOption>
+            </Select>
+            <Select label="Exchange">
+              <SelectOption value="SelectOption">test</SelectOption>
+            </Select>
+          </div>
+          <Paper radius={8} className={styles.chart}>
+            <div>
+              <div>
+                <Typography>BTC/USDT</Typography>
+              </div>
+              <div>
+                <Typography variant="body3">24h change</Typography>
+                <Typography variant="body3">+ 13% | +4 085$</Typography>
+              </div>
+              <div>
+                <Typography variant="body3">24h volume (USD)</Typography>
+                <Typography variant="body3">5 259 687 158.42$</Typography>
+              </div>
+            </div>
+            <img src="" alt="" className={styles.chartInner} />
+          </Paper>
+        </div>
+        <div>
+          <div>
+            <Select label="Trading Pair">
+              <SelectOption value="SelectOption">test</SelectOption>
+            </Select>
+          </div>
+        </div>
       </div>
     </AppLayout>
   )
