@@ -109,7 +109,7 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
           + {bignumberUtils.formatMax(props.apyBoost, 10000)} %
         </Typography>
       </div>
-      <Button className={styles.button} size="small">
+      <Button className={styles.button} size="small" onClick={props.onMigrate}>
         migrate tokens
       </Button>
       {hide && (
