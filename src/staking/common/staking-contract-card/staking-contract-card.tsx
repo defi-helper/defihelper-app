@@ -14,6 +14,7 @@ import { paths } from '~/paths'
 import { StakingListRowSyncIndicator } from '~/staking/common/staking-list-row-sync-indicator'
 import { FreshMetrics, Contract } from '~/staking/common/staking.types'
 import { isExcludedAdapter } from '../constants'
+import { WatcherEventListener } from '../staking.api'
 import * as styles from './staking-contract-card.css'
 
 export type StakingContractCardProps = {
@@ -29,11 +30,9 @@ export type StakingContractCardProps = {
   protocolId: string
   protocolAdapter: string
   freshMetrics: Record<string, FreshMetrics>
-  currentBlock: number
-  currentNetwork?: string
   scannerData: {
     scannerId?: string | undefined
-    syncedBlock: number
+    pools: WatcherEventListener[]
     contractId: string
   }
   hideAutostakingBoost: boolean
@@ -95,16 +94,13 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             </>
           )}
 
-          {props.network === props.currentNetwork && (
-            <Can I="update" a="Protocol">
-              <br />
-              <StakingListRowSyncIndicator
-                row={{ ...props, ...props.scannerData }}
-                currentBlock={props.currentBlock}
-                onContractRegister={props.onScannerRegister}
-              />
-            </Can>
-          )}
+          <Can I="update" a="Protocol">
+            <br />
+            <StakingListRowSyncIndicator
+              row={{ ...props, ...props.scannerData }}
+              onContractRegister={props.onScannerRegister}
+            />
+          </Can>
           {props.error}
         </Typography>
       </div>

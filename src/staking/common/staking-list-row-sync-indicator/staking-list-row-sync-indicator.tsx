@@ -5,27 +5,27 @@ import {
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Link } from '~/common/link'
 import { ButtonBase } from '~/common/button-base/button-base'
+import { WatcherEventListener } from '../staking.api'
 
 export type StakingListRowSyncIndicatorProps = {
   row: StakingContractFragmentFragment & {
-    syncedBlock: number
+    pools: WatcherEventListener[]
     scannerId?: string
   }
-  currentBlock: number
   onContractRegister: () => void
 }
 
-const SCANNER_URL = 'https://scanner.defihelper.io/contract'
+const SCANNER_URL = 'https://watcher.defihelper.io/contract'
 
 export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorProps> =
   (props) => {
-    const { row, currentBlock, onContractRegister } = props
+    const { row, onContractRegister } = props
 
     if (!row.deployBlockNumber || row.blockchain !== BlockchainEnum.Ethereum) {
       return <>not deployed</>
     }
 
-    if (!row.scannerId) {
+    if (!row.scannerId || !row.pools.length) {
       return (
         <ButtonBase as={Link} onClick={onContractRegister}>
           register in scanner
@@ -34,7 +34,10 @@ export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorP
     }
 
     const seemsUnusual = bignumberUtils.gt(
-      bignumberUtils.minus(currentBlock, row.syncedBlock),
+      bignumberUtils.minus(
+        row.pools[0].sync.currentBlock,
+        row.pools[0].sync.syncHeight
+      ),
       100
     )
 
@@ -47,7 +50,7 @@ export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorP
           color: seemsUnusual ? '#ff0000' : '#3eab3a',
         }}
       >
-        {row.syncedBlock}/{currentBlock}
+        {row.pools[0].sync.syncHeight}/{row.pools[0].sync.currentBlock}
       </Link>
     )
   }
