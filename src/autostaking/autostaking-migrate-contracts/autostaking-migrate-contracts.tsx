@@ -18,6 +18,8 @@ import * as walletsModel from '~/settings/settings-wallets/settings-wallets.mode
 import * as model from './autostaking-migrate-contracts.model'
 import * as styles from './autostaking-migrate-contracts.css'
 import { authModel } from '~/auth'
+import { switchNetwork } from '~/wallets/common'
+import { useWalletConnect } from '~/wallets/wallet-connect'
 
 export type AutostakingMigrateContractsProps = {
   className?: string
@@ -165,6 +167,15 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
         })
       }
 
+    const wallet = walletNetworkModel.useWalletNetwork()
+
+    const handleConnect = useWalletConnect()
+
+    const handleSwitchNetwork =
+      (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
+      () =>
+        switchNetwork(contract.network).catch(console.error)
+
     return (
       <div className={clsx(styles.root, props.className)}>
         <Component
@@ -197,24 +208,40 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
                 count={contracts.length}
                 slidesToShow={slidesToShow}
               >
-                {contracts.map((contract) => (
-                  <AutostakingMigrateCard
-                    key={contract.id}
-                    title={contract.name}
-                    balance={contract.metric.myStaked}
-                    tokenIcons={
-                      contract.tokens.stake.map(
-                        ({ alias }) => alias?.logoUrl ?? null
-                      ) ?? []
-                    }
-                    protocol={contract.protocol.name}
-                    apy={contract.metric.aprYear}
-                    apyBoost={contract.metric.myAPYBoost}
-                    onMigrate={handleMigrate(contract)}
-                    onHide={handleHide(contract)}
-                    hidding={contract.hidding}
-                  />
-                ))}
+                {contracts.map((contract) => {
+                  const connect = handleConnect.bind(null, {
+                    blockchain: contract.blockchain,
+                    network: contract.network,
+                  })
+
+                  const wrongNetwork =
+                    String(wallet?.chainId) !== contract.network
+                      ? handleSwitchNetwork(contract)
+                      : null
+
+                  return (
+                    <AutostakingMigrateCard
+                      key={contract.id}
+                      title={contract.name}
+                      balance={contract.metric.myStaked}
+                      tokenIcons={
+                        contract.tokens.stake.map(
+                          ({ alias }) => alias?.logoUrl ?? null
+                        ) ?? []
+                      }
+                      protocol={contract.protocol.name}
+                      apy={contract.metric.aprYear}
+                      apyBoost={contract.metric.myAPYBoost}
+                      onMigrate={
+                        !wallet
+                          ? connect
+                          : wrongNetwork ?? handleMigrate(contract)
+                      }
+                      onHide={handleHide(contract)}
+                      hidding={contract.hidding}
+                    />
+                  )
+                })}
               </AutostakingCarousel>
             </>
           )}
@@ -239,25 +266,41 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
                   count={hiddenContracts.length}
                   slidesToShow={slidesToShow}
                 >
-                  {hiddenContracts.map((contract) => (
-                    <AutostakingMigrateCard
-                      key={contract.id}
-                      title={contract.name}
-                      balance={contract.metric.myStaked}
-                      tokenIcons={
-                        contract.tokens.stake.map(
-                          ({ alias }) => alias?.logoUrl ?? null
-                        ) ?? []
-                      }
-                      protocol={contract.protocol.name}
-                      apy={contract.metric.aprYear}
-                      apyBoost={contract.metric.myAPYBoost}
-                      onMigrate={handleMigrate(contract)}
-                      icon="eye"
-                      onShow={handleShow(contract)}
-                      showing={contract.showing}
-                    />
-                  ))}
+                  {hiddenContracts.map((contract) => {
+                    const connect = handleConnect.bind(null, {
+                      blockchain: contract.blockchain,
+                      network: contract.network,
+                    })
+
+                    const wrongNetwork =
+                      String(wallet?.chainId) !== contract.network
+                        ? handleSwitchNetwork(contract)
+                        : null
+
+                    return (
+                      <AutostakingMigrateCard
+                        key={contract.id}
+                        title={contract.name}
+                        balance={contract.metric.myStaked}
+                        tokenIcons={
+                          contract.tokens.stake.map(
+                            ({ alias }) => alias?.logoUrl ?? null
+                          ) ?? []
+                        }
+                        protocol={contract.protocol.name}
+                        apy={contract.metric.aprYear}
+                        apyBoost={contract.metric.myAPYBoost}
+                        onMigrate={
+                          !wallet
+                            ? connect
+                            : wrongNetwork ?? handleMigrate(contract)
+                        }
+                        icon="eye"
+                        onShow={handleShow(contract)}
+                        showing={contract.showing}
+                      />
+                    )
+                  })}
                 </AutostakingCarousel>
               )}
             </div>

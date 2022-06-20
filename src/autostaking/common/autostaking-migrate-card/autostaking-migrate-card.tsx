@@ -58,11 +58,16 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
       </ButtonBase>
       <div className={styles.header}>
         <div className={styles.contractCardIcons}>
-          {props.tokenIcons.map((tokenIcon) =>
+          {props.tokenIcons.map((tokenIcon, index) =>
             tokenIcon ? (
-              <img src={tokenIcon} alt="" className={styles.contractCardIcon} />
+              <img
+                src={tokenIcon}
+                alt=""
+                className={styles.contractCardIcon}
+                key={String(index)}
+              />
             ) : (
-              <Paper className={styles.contractCardIcon}>
+              <Paper className={styles.contractCardIcon} key={String(index)}>
                 <Icon icon="unknownNetwork" width="16" height="16" />
               </Paper>
             )
