@@ -1,4 +1,4 @@
-import { createDomain, UnitValue } from 'effector-logger/macro'
+import { createDomain, UnitValue } from 'effector'
 
 import { dateUtils } from '~/common/date-utils'
 import { MetricGroupEnum } from '~/api/_generated-types'

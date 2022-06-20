@@ -4,7 +4,7 @@ import {
   createEffect,
   UnitValue,
   combine,
-} from 'effector-logger/macro'
+} from 'effector'
 
 import {
   AutostakingStakingContractsQueryVariables,

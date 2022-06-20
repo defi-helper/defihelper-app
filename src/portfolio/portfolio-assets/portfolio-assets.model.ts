@@ -1,10 +1,4 @@
-import {
-  createDomain,
-  sample,
-  guard,
-  restore,
-  UnitValue,
-} from 'effector-logger/macro'
+import { createDomain, sample, guard, restore, UnitValue } from 'effector'
 import { createGate } from 'effector-react'
 
 import {

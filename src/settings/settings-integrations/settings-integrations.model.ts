@@ -4,7 +4,7 @@ import {
   createEffect,
   createStore,
   createEvent,
-} from 'effector-logger/macro'
+} from 'effector'
 
 import {
   IntegrationExchangeApiConnectMutationVariables,

@@ -1,4 +1,4 @@
-import { createDomain, guard } from 'effector-logger/macro'
+import { createDomain, guard } from 'effector'
 import { createGate } from 'effector-react'
 import { ReferrerCodeFragment } from '~/api/_generated-types'
 import { authModel } from '~/auth'

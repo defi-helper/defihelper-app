@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import { combine, Domain, sample } from 'effector-logger/macro'
+import { combine, Domain, sample } from 'effector'
 import { createElement } from 'react'
 
 import { Pagination } from './pagination'

@@ -1,4 +1,4 @@
-import { createDomain, sample, guard } from 'effector-logger/macro'
+import { createDomain, sample, guard } from 'effector'
 import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'

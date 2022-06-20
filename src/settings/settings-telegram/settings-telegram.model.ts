@@ -1,4 +1,4 @@
-import { sample, createDomain, attach, restore } from 'effector-logger/macro'
+import { sample, createDomain, attach, restore } from 'effector'
 
 import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
 import { UserContactBrokerEnum } from '~/api/_generated-types'

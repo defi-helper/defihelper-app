@@ -1,4 +1,4 @@
-import { createDomain, sample, guard } from 'effector-logger/macro'
+import { createDomain, sample, guard } from 'effector'
 
 import { MetricGroupEnum } from '~/api/_generated-types'
 import { protocolsApi } from '~/protocols/common'

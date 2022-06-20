@@ -1,4 +1,4 @@
-import { createDomain, UnitValue } from 'effector-logger/macro'
+import { createDomain, UnitValue } from 'effector'
 
 import { EastimatedEarnings, protocolsApi } from '~/protocols/common'
 import { bignumberUtils } from '~/common/bignumber-utils'

@@ -1,7 +1,7 @@
 import useInfiniteScroll, {
   UseInfiniteScrollHookArgs,
 } from 'react-infinite-scroll-hook'
-import { combine, Domain, Store, sample } from 'effector-logger/macro'
+import { combine, Domain, Store, sample } from 'effector'
 import { useStore } from 'effector-react'
 
 const DEFAULT_LIMIT = 10
