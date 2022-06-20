@@ -1,5 +1,5 @@
-import { createEvent } from 'effector'
 import {
+  createEvent,
   createEffect,
   createStore,
   UnitValue,

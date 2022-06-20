@@ -1,5 +1,4 @@
-import { createDomain, guard, restore, sample } from 'effector'
-import { attach } from 'effector'
+import { createDomain, guard, restore, sample, attach } from 'effector'
 
 import * as assetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
 import { authModel } from '~/auth'
