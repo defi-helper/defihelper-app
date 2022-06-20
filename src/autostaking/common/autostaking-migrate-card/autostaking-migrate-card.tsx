@@ -25,6 +25,7 @@ export type AutostakingMigrateCardProps = {
   onShow?: () => void
   showing?: boolean
   hidding?: boolean
+  migrating?: boolean
   icon?: 'close' | 'eye'
 }
 
@@ -58,11 +59,16 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
       </ButtonBase>
       <div className={styles.header}>
         <div className={styles.contractCardIcons}>
-          {props.tokenIcons.map((tokenIcon) =>
+          {props.tokenIcons.map((tokenIcon, index) =>
             tokenIcon ? (
-              <img src={tokenIcon} alt="" className={styles.contractCardIcon} />
+              <img
+                src={tokenIcon}
+                alt=""
+                className={styles.contractCardIcon}
+                key={String(index)}
+              />
             ) : (
-              <Paper className={styles.contractCardIcon}>
+              <Paper className={styles.contractCardIcon} key={String(index)}>
                 <Icon icon="unknownNetwork" width="16" height="16" />
               </Paper>
             )
@@ -104,7 +110,12 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
           + {bignumberUtils.formatMax(props.apyBoost, 10000)} %
         </Typography>
       </div>
-      <Button className={styles.button} size="small">
+      <Button
+        className={styles.button}
+        size="small"
+        onClick={props.onMigrate}
+        loading={props.migrating}
+      >
         migrate tokens
       </Button>
       {hide && (
