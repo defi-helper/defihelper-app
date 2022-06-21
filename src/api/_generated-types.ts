@@ -42,6 +42,8 @@ export type AuthEthereumInputType = {
   signature: Scalars['String']
   /** Code */
   code?: Maybe<Scalars['String']>
+  /** Timezone */
+  timezone: Scalars['String']
   /** Merged target account to current account */
   merge?: Maybe<Scalars['Boolean']>
 }
@@ -67,6 +69,8 @@ export type AuthWavesInputType = {
   signature: Scalars['String']
   /** Promo id */
   code?: Maybe<Scalars['String']>
+  /** Timezone */
+  timezone: Scalars['String']
   /** Merged target account to current account */
   merge?: Maybe<Scalars['Boolean']>
 }
@@ -631,6 +635,7 @@ export type ConfigEthereumNetworkType = {
   decimals: Scalars['Int']
   blockchain: BlockchainEnum
   icon: ConfigEthereumNetworkIconEnum
+  rpcUrls?: Maybe<Array<Scalars['String']>>
 }
 
 export type ConfigType = {
@@ -1150,8 +1155,6 @@ export type Mutation = {
   userContactUpdate: UserContactType
   userContactEmailConfirm: Scalars['Boolean']
   userContactDelete: Scalars['Boolean']
-  userEventSubscriptionCreate: UserEventSubscriptionType
-  userEventSubscriptionDelete: Scalars['Boolean']
   productCreate: StoreProductType
   productUpdate: StoreProductType
   productDelete: Scalars['Boolean']
@@ -1286,8 +1289,10 @@ export type MutationContractMetricScanArgs = {
 }
 
 export type MutationUserNotificationToggleArgs = {
+  contact: Scalars['UuidType']
   type: UserNotificationTypeEnum
   state: Scalars['Boolean']
+  hour: Scalars['Int']
 }
 
 export type MutationTokenUpdateArgs = {
@@ -1353,14 +1358,6 @@ export type MutationUserContactEmailConfirmArgs = {
 }
 
 export type MutationUserContactDeleteArgs = {
-  id: Scalars['UuidType']
-}
-
-export type MutationUserEventSubscriptionCreateArgs = {
-  input: UserEventSubscriptionCreateInputType
-}
-
-export type MutationUserEventSubscriptionDeleteArgs = {
   id: Scalars['UuidType']
 }
 
@@ -1966,8 +1963,6 @@ export type Query = {
   userContact?: Maybe<UserContactType>
   userContacts: UserContactListQuery
   userNotifications: Array<UserNotificationType>
-  userEventSubscription?: Maybe<UserEventSubscriptionType>
-  userEventSubscriptions: UserEventSubscriptionListQuery
   tokens: TokenListQuery
   tokenAlias?: Maybe<TokenAlias>
   tokensAlias: TokenAliasListQuery
@@ -2035,16 +2030,6 @@ export type QueryUserContactsArgs = {
   filter?: Maybe<UserContactListQueryFilterInputType>
   sort?: Maybe<Array<UserContactListSortInputType>>
   pagination?: Maybe<UserContactListPaginationInputType>
-}
-
-export type QueryUserEventSubscriptionArgs = {
-  filter: UserEventSubscriptionInputType
-}
-
-export type QueryUserEventSubscriptionsArgs = {
-  filter?: Maybe<UserEventSubscriptionListQueryFilterInputType>
-  sort?: Maybe<Array<UserEventSubscriptionListSortInputType>>
-  pagination?: Maybe<UserEventSubscriptionListPaginationInputType>
 }
 
 export type QueryTokensArgs = {
@@ -2882,68 +2867,6 @@ export type UserContactUpdateInputType = {
   name?: Maybe<Scalars['String']>
 }
 
-export type UserEventSubscriptionCreateInputType = {
-  /** User contact id */
-  contact: Scalars['String']
-  /** Contract id */
-  contract: Scalars['String']
-  /** Event name */
-  event: Scalars['String']
-}
-
-export type UserEventSubscriptionInputType = {
-  id: Scalars['UuidType']
-}
-
-export type UserEventSubscriptionListPaginationInputType = {
-  /** Limit */
-  limit?: Maybe<Scalars['Int']>
-  /** Offset */
-  offset?: Maybe<Scalars['Int']>
-}
-
-export type UserEventSubscriptionListQuery = {
-  __typename?: 'UserEventSubscriptionListQuery'
-  /** Elements */
-  list?: Maybe<Array<UserEventSubscriptionType>>
-  pagination: Pagination
-}
-
-export type UserEventSubscriptionListQueryFilterInputType = {
-  /** User ID */
-  user?: Maybe<Scalars['UuidType']>
-  /** Contract Id */
-  contract?: Maybe<Scalars['UuidType']>
-  /** Event */
-  event?: Maybe<Scalars['String']>
-  /** User contact type */
-  contactType?: Maybe<UserContactBrokerEnum>
-}
-
-export type UserEventSubscriptionListSortInputType = {
-  column: UserEventSubscriptionListSortInputTypeColumnEnum
-  order?: Maybe<SortOrderEnum>
-}
-
-export enum UserEventSubscriptionListSortInputTypeColumnEnum {
-  Id = 'id',
-  CreatedAt = 'createdAt',
-}
-
-export type UserEventSubscriptionType = {
-  __typename?: 'UserEventSubscriptionType'
-  /** Identificator */
-  id: Scalars['UuidType']
-  /** Contact */
-  contact: UserContactType
-  /** Contract */
-  contract: ContractType
-  /** Event */
-  event: Scalars['String']
-  /** Date of create */
-  createdAt: Scalars['DateTimeType']
-}
-
 export type UserListFilterInputType = {
   role?: Maybe<UserRoleEnum>
   wallet?: Maybe<UserListWalletFilterInputType>
@@ -3027,6 +2950,10 @@ export type UserNotificationType = {
   __typename?: 'UserNotificationType'
   /** Type */
   type: UserNotificationTypeEnum
+  /** Contact */
+  contact: Scalars['UuidType']
+  /** Time */
+  time: Scalars['String']
 }
 
 export enum UserNotificationTypeEnum {
@@ -5655,8 +5582,10 @@ export type UserNotificationsListQuery = { __typename?: 'Query' } & {
 }
 
 export type UserNotificationToggleMutationVariables = Exact<{
+  contact: Scalars['UuidType']
   type: UserNotificationTypeEnum
   state: Scalars['Boolean']
+  hour: Scalars['Int']
 }>
 
 export type UserNotificationToggleMutation = { __typename?: 'Mutation' } & Pick<
