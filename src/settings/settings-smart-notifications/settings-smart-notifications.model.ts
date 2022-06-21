@@ -16,10 +16,18 @@ export const fetchUserNotificationsListFx =
 
 export const toggleUserNotificationFx =
   settingsNotificationsDomain.createEffect(
-    async (params: { type: UserNotificationTypeEnum; state: boolean }) => {
+    async (params: {
+      contact: string
+      hour: number
+      type: UserNotificationTypeEnum
+      state: boolean
+    }) => {
+      const { type, state, contact, hour } = params
       const isDone = await settingsApi.userNotificationToggle({
-        type: params.type,
-        state: params.state,
+        type,
+        state,
+        contact,
+        hour,
       })
 
       if (isDone) {
