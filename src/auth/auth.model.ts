@@ -3,6 +3,7 @@ import { shallowEqual } from 'fast-equals'
 import { delay } from 'patronum/delay'
 
 import Cookies from 'js-cookie'
+import dayjs from 'dayjs'
 import {
   MeQuery,
   AuthEthMutation,
@@ -56,9 +57,10 @@ export const $user = authDomain
 export const $userWallets = settingsWalletModel.$wallets.reset(logoutFx)
 
 export const authWavesFx = authDomain.createEffect(
-  async (params: AuthWavesInputType) => {
+  async (params: Omit<AuthWavesInputType, 'timezone'>) => {
     const { data, error } = await authApi.authWaves({
       ...params,
+      timezone: dayjs.tz.guess(),
       code: Cookies.get('dfh-parent-code'),
       merge: params.merge ?? false,
     })
@@ -73,9 +75,10 @@ export const authWavesFx = authDomain.createEffect(
 )
 
 export const authEthereumFx = authDomain.createEffect(
-  async (input: AuthEthereumInputType) => {
+  async (input: Omit<AuthEthereumInputType, 'timezone'>) => {
     const { data, error } = await authApi.authEth({
       ...input,
+      timezone: dayjs.tz.guess(),
       code: Cookies.get('dfh-parent-code'),
       merge: input.merge ?? false,
     })
@@ -115,7 +118,7 @@ sample({
 
 sample({
   clock: walletNetworkModel.signMessageWavesFx.doneData,
-  fn: (params): AuthWavesInputType => ({
+  fn: (params): Omit<AuthWavesInputType, 'timezone'> => ({
     network: params.network,
     publicKey: params.publicKey,
     address: params.address,

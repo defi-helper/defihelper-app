@@ -58,7 +58,13 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
     }
 
     try {
-      await model.toggleUserNotificationFx({ type, state })
+      if (!contacts.length) return
+      await model.toggleUserNotificationFx({
+        type,
+        state,
+        hour: 12,
+        contact: contacts[0].id,
+      })
       analytics.onNotificationsEnabled()
     } catch (error) {
       if (error instanceof Error) {
