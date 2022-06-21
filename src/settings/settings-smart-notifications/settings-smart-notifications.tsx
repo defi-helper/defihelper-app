@@ -50,7 +50,6 @@ export const SettingsSmartNotifications: React.VFC<SettingsContactsProps> = (
         name: 'telegram',
         address: '',
       })
-
       await openSuccess({
         type: UserContactBrokerEnum.Telegram,
         confirmationCode: data.confirmationCode,
