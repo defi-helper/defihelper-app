@@ -51,7 +51,12 @@ export const abi = {
   TimelockInterface,
   Treasury,
   Store,
-  Delegator,
+  DelegatorAdvisors: Delegator,
+  DelegatorDevelopment: Delegator,
+  DelegatorEarlyEcosystem: Delegator,
+  DelegatorLiquidity: Delegator,
+  DelegatorMarketing: Delegator,
+  DelegatorTeam: Delegator,
 } as const
 
 export type AbiKeys = keyof typeof abi
