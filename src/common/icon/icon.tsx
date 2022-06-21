@@ -93,6 +93,7 @@ import { ReactComponent as PlayIcon } from '~/assets/icons/play.svg'
 import { ReactComponent as CheckboxCircleIcon } from '~/assets/icons/checkbox-circle.svg'
 import { ReactComponent as HarmonyIcon } from '~/assets/icons/blockchains/harmony.svg'
 import { ReactComponent as TradeIcon } from '~/assets/icons/trade.svg'
+import { ReactComponent as SwapIcon } from '~/assets/icons/swap.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -195,6 +196,7 @@ const ICONS = {
   checkboxCircle: CheckboxCircleIcon,
   harmony: HarmonyIcon,
   trade: TradeIcon,
+  swap: SwapIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {
