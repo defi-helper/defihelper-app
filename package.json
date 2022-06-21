@@ -168,7 +168,7 @@
   },
   "scripts": {
     "start": "cross-env REACT_APP_ENV=development && node ./generate-networks && craco start",
-    "build": "node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
+    "build": "node ./generate-networks && npx cross-env NODE_OPTIONS=--max_old_space_size=4096 npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
     "build-dev": "cross-env REACT_APP_ENV=development && node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
     "test": "craco test",
     "watch": "node ./watch.js",
