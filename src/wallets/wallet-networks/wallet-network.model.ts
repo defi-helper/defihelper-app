@@ -1,6 +1,13 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { ConnectorUpdate } from '@web3-react/types'
-import { createDomain, guard, sample } from 'effector-logger/macro'
+import {
+  createStore,
+  createEffect,
+  guard,
+  sample,
+  createEvent,
+  UnitValue,
+} from 'effector'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { shallowEqual } from 'fast-equals'
@@ -14,12 +21,13 @@ import {
   connectorsByName,
   Wallet,
   SignMessagePayload,
+  walletApi,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { sidUtils } from '~/auth/common'
 import { BlockchainEnum } from '~/api/_generated-types'
 import { networksConfig } from '~/networks-config'
-import type { WavesKeeperConnector } from '../common/waves-keeper-connector'
+import type { WavesKeeperConnector } from '~/wallets/common/waves-keeper-connector'
 
 export type SignMessageEthereum = {
   chainId: string
@@ -39,9 +47,7 @@ const networks = new Map<string, typeof createEthereumProvider>(
     .map(({ chainId }) => [String(chainId), createEthereumProvider])
 )
 
-export const networkDomain = createDomain()
-
-export const activateWalletFx = networkDomain.createEffect(
+export const activateWalletFx = createEffect(
   async (params: {
     connector: AbstractConnector
     update?: ConnectorUpdate<string>
@@ -65,7 +71,7 @@ export const activateWalletFx = networkDomain.createEffect(
   }
 )
 
-const saveLastConnectorFx = networkDomain.createEffect((connector: string) => {
+const saveLastConnectorFx = createEffect((connector: string) => {
   localStorage.connector = connector
 })
 
@@ -84,7 +90,7 @@ guard({
   target: saveLastConnectorFx,
 })
 
-export const updateWalletFx = networkDomain.createEffect(
+export const updateWalletFx = createEffect(
   async (params: {
     connector: AbstractConnector
     update: ConnectorUpdate<string>
@@ -101,14 +107,13 @@ export const updateWalletFx = networkDomain.createEffect(
   }
 )
 
-export const diactivateWalletFx = networkDomain.createEffect(
+export const diactivateWalletFx = createEffect(
   async (connector?: AbstractConnector) => {
     connector?.deactivate()
   }
 )
 
-export const $wallet = networkDomain
-  .createStore<Wallet | null>(null)
+export const $wallet = createStore<Wallet | null>(null)
   .on(activateWalletFx.doneData, (state, payload) => {
     return shallowEqual(state, payload) ? undefined : payload
   })
@@ -129,7 +134,7 @@ export const useWalletNetwork = () => {
   return useMemo(() => wallet, [wallet])
 }
 
-export const signMessageWavesFx = networkDomain.createEffect(
+export const signMessageWavesFx = createEffect(
   async (params: SignMessageWaves) => {
     const signedMessageData = await signMessageWaves(
       params.provider,
@@ -147,7 +152,7 @@ export const signMessageWavesFx = networkDomain.createEffect(
   }
 )
 
-export const signMessageEthereumFx = networkDomain.createEffect(
+export const signMessageEthereumFx = createEffect(
   async (params: SignMessageEthereum) => {
     const signedMessageData = await signMessageEthereum(
       createEthereumProvider(params.provider),
@@ -159,7 +164,7 @@ export const signMessageEthereumFx = networkDomain.createEffect(
   }
 )
 
-export const signMessage = networkDomain.createEvent<{
+export const signMessage = createEvent<{
   chainId: string
   provider: unknown
   account: string
@@ -185,6 +190,12 @@ guard({
     Boolean(clock.account && clock.chainId) && !sidUtils.get(),
   target: signMessage,
 })
+
+export const getConfigFx = createEffect(walletApi.getConfig)
+
+export const $config = createStore<UnitValue<
+  typeof getConfigFx.doneData
+> | null>(null).on(getConfigFx.doneData, (_, payload) => payload)
 
 toastsService.forwardErrors(
   signMessageEthereumFx.failData,

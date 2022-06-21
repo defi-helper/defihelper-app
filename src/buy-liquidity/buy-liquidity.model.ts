@@ -1,11 +1,11 @@
-import { createEvent } from 'effector'
 import {
+  createEvent,
   createEffect,
   createStore,
   UnitValue,
   createDomain,
   sample,
-} from 'effector-logger/macro'
+} from 'effector'
 import {
   BuyLiquidityProtocolsQueryVariables,
   BuyLiquidityContractsQueryVariables,

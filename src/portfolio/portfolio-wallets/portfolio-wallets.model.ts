@@ -1,4 +1,4 @@
-import { createDomain, guard, restore } from 'effector-logger/macro'
+import { createDomain, guard, restore } from 'effector'
 
 import { AddWalletInputType } from '~/api/_generated-types'
 import { portfolioApi } from '~/portfolio/common'

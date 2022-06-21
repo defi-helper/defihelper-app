@@ -1,10 +1,4 @@
-import {
-  createDomain,
-  sample,
-  split,
-  guard,
-  restore,
-} from 'effector-logger/macro'
+import { createDomain, sample, split, guard, restore } from 'effector'
 import { shallowEqual } from 'fast-equals'
 import { delay } from 'patronum/delay'
 

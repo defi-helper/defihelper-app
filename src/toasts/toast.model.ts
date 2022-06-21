@@ -1,10 +1,4 @@
-import {
-  createStore,
-  createApi,
-  createEvent,
-  forward,
-  Event,
-} from 'effector-logger/macro'
+import { createStore, createApi, createEvent, forward, Event } from 'effector'
 import { v4 as uuidv4 } from 'uuid'
 
 type Variants = 'default' | 'success' | 'info' | 'warning' | 'error'

@@ -6,7 +6,7 @@ import {
   createDomain,
   sample,
   combine,
-} from 'effector-logger/macro'
+} from 'effector'
 
 import {
   AutostakingStakingContractsQueryVariables,

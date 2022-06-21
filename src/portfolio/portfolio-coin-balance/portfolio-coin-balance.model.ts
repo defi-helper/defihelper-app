@@ -1,4 +1,4 @@
-import { createDomain, UnitValue } from 'effector-logger/macro'
+import { createDomain, UnitValue } from 'effector'
 import omit from 'lodash.omit'
 
 import { dateUtils } from '~/common/date-utils'

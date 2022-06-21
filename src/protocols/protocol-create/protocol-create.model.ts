@@ -1,4 +1,4 @@
-import { createDomain, restore, sample } from 'effector-logger/macro'
+import { createDomain, restore, sample } from 'effector'
 import { createGate } from 'effector-react'
 
 import { history } from '~/common/history'

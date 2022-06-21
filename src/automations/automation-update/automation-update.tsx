@@ -267,9 +267,8 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   ) => {
     try {
       await model.createTriggerFx(formValues)
-      analytics.onAutomationCreated()
-
       setTab(Tabs.Conditions)
+      analytics.onAutomationCreated()
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)

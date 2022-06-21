@@ -1,9 +1,4 @@
-import {
-  createEffect,
-  createStore,
-  UnitValue,
-  createEvent,
-} from 'effector-logger/macro'
+import { createEffect, createStore, UnitValue, createEvent } from 'effector'
 
 import { ContractListSortInputTypeColumnEnum, SortOrderEnum } from '~/api'
 import { stakingApi } from '~/staking/common'

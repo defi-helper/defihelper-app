@@ -129,14 +129,9 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
           offset={[0, 4]}
         >
           {props.onEdit && (
-            <CanDemo>
-              <ButtonBase
-                className={styles.dropdownItem}
-                onClick={props.onEdit}
-              >
-                Edit
-              </ButtonBase>
-            </CanDemo>
+            <ButtonBase className={styles.dropdownItem} onClick={props.onEdit}>
+              Edit
+            </ButtonBase>
           )}
 
           <CanDemo>
