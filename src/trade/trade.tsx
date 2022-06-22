@@ -12,6 +12,7 @@ import { TradeSmartSell } from './trade-smart-sell'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import * as styles from './trade.css'
+import { Icon } from '~/common/icon'
 
 export type TradeProps = unknown
 
@@ -105,9 +106,24 @@ export const Trade: React.VFC<TradeProps> = () => {
           </div>
           <img src="" alt="" className={styles.chartInner} />
         </Paper>
-        <Paper radius={8}>
+        <Paper radius={8} className={styles.selects}>
           <Dropdown
-            control={<ButtonBase>{currentSelect}</ButtonBase>}
+            control={(open) => (
+              <Typography
+                variant="body3"
+                as={ButtonBase}
+                transform="uppercase"
+                family="mono"
+                className={styles.tradeSellSelect}
+              >
+                {currentSelect}
+                <Icon
+                  icon={open ? 'arrowUp' : 'arrowDown'}
+                  width="16"
+                  height="16"
+                />
+              </Typography>
+            )}
             placement="bottom-start"
             offset={[0, 8]}
           >

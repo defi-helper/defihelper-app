@@ -46,3 +46,15 @@ export const chartInner = style({
   width: '100%',
   height: 570,
 })
+
+export const selects = style({
+  padding: '10px 16px',
+})
+
+export const tradeSellSelect = style({
+  backgroundColor: theme.colors.common.green1,
+  padding: '8px 16px',
+  justifyContent: 'space-between',
+  borderRadius: 8,
+  width: 160,
+})
