@@ -1,8 +1,8 @@
 import { networksConfig } from '~/networks-config'
 
 const explorers = Object.entries(networksConfig).reduce<Record<string, string>>(
-  (acc, [key, { explorerUrl }]) => {
-    acc[key] = explorerUrl
+  (acc, [key, { explorerURL }]) => {
+    acc[key] = explorerURL
 
     return acc
   },
@@ -15,9 +15,10 @@ type Options = {
   address?: string
 }
 
-export const buildExplorerUrl = (options: Options) =>
-  [
+export const buildExplorerUrl = (options: Options) => {
+  return [
     explorers[options.network],
     options.address ? 'address' : 'tx',
     options.address ? options.address : options.tx,
   ].join('/')
+}

@@ -7,7 +7,7 @@ type Icon = Networks[keyof Networks]['icon']
 
 type Network = {
   title: string
-  explorerUrl: string
+  explorerURL: string
   coin: string
   decimals?: number
   blockchain: BlockchainEnum
@@ -17,4 +17,4 @@ type Network = {
   testnet: boolean
 }
 
-export const networksConfig = networks as unknown as Record<string, Network>
+export const networksConfig = networks as Record<string, Network>

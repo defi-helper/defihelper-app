@@ -12,7 +12,7 @@ export type AutostakingInstructionProps = {
 const INSTRUCTION = [
   {
     title: 'What is auto-staking?',
-    text: 'Read our article and know everything about auto-staking feature',
+    text: 'Read our article and learn how our auto-staking feature works',
     link: (
       <Button
         color="green"
@@ -26,8 +26,8 @@ const INSTRUCTION = [
     ),
   },
   {
-    title: 'How to anable auto-staking?',
-    text: 'Full tutorial to make auto-staking set-up easy for you',
+    title: 'How to Enable auto-staking?',
+    text: 'Watch our complete tutorial, to make setting up auto-staking easy for you',
     link: (
       <Button
         color="green"
@@ -36,13 +36,13 @@ const INSTRUCTION = [
         target="_blank"
         size="medium"
       >
-        check instruction
+        Watch video
       </Button>
     ),
   },
   {
     title: 'Math behind DeFiHelper',
-    text: "Learn more about DFH algorithm and it's work",
+    text: "Learn more about DFH's algorithm, and how it works",
     link: (
       <Button
         color="green"
