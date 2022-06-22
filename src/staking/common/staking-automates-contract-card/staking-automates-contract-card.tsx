@@ -164,7 +164,10 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 <Typography variant="inherit">
                   In order to execute every automation action in blockchain,
                   such as auto-restaking, provide fee balance we can use.{' '}
-                  <Link href="/" className={styles.howItWorks}>
+                  <Link
+                    href="https://defihelper.io/no-code"
+                    className={styles.howItWorks}
+                  >
                     Learn more on How It Work
                   </Link>
                 </Typography>
@@ -197,7 +200,10 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 <Typography variant="inherit">
                   In order to execute every automation action in blockchain,
                   such as auto-restaking, provide fee balance we can use.{' '}
-                  <Link href="/" className={styles.howItWorks}>
+                  <Link
+                    href="https://defihelper.io/no-code"
+                    className={styles.howItWorks}
+                  >
                     Learn more on How It Work
                   </Link>
                 </Typography>

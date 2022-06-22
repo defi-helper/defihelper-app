@@ -28,7 +28,8 @@ export const StakingDescriptionDialog: React.VFC<StakingDescriptionDialogProps> 
         <div className={styles.content}>
           <Typography variant="body2" as="div">
             Austostaking is a special kind of automation which auto-compounds
-            your tokens at the optimal rate, to obtain the most profit
+            your tokens at the optimal rate - maximizing profit and minimizing
+            effort
           </Typography>
           <Typography variant="body2" as="div">
             1. First, you need to top up your DeFiHelper balance in order to
