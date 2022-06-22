@@ -51,12 +51,24 @@ export const buyProductFx = automationProductsDomain.createEffect(
       networkProvider.getSigner()
     )
 
+    const tenPercent = bignumberUtils.mul(
+      bignumberUtils.div(params.product.priceUSD, 100),
+      10
+    )
+
+    const priceUSDWithPercetage = bignumberUtils.plus(
+      tenPercent,
+      params.product.priceUSD
+    )
+
+    const priceUSD = bignumberUtils.toSend(priceUSDWithPercetage, 6)
+
     try {
       const gasLimit = bignumberUtils.estimateGas(
         await contract.estimateGas.buy(
           params.product.number,
           params.account,
-          bignumberUtils.toSend(params.product.priceUSD, 6),
+          priceUSD,
           dateUtils.addTimestamp(3, 'second')
         )
       )
@@ -64,7 +76,7 @@ export const buyProductFx = automationProductsDomain.createEffect(
       const transactionReceipt = await contract.buy(
         params.product.number,
         params.account,
-        bignumberUtils.toSend(params.product.priceUSD, 6),
+        priceUSD,
         dateUtils.addTimestamp(3, 'second'),
         {
           gasLimit,
