@@ -105,8 +105,8 @@ export const SettingsIntegrationConnect: React.FC<SettingsIntegrationConnectProp
         <div className={styles.text}>
           <Typography className={styles.title}>Add new integration</Typography>
           <Typography variant="body2">
-            Integration with other exchanges allows you to track your balances
-            from exchanges.
+            Integrating with exchanges allows you to track your balances from
+            them.
           </Typography>
         </div>
         <Button

@@ -236,19 +236,19 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
         })}
         radius={isEmptyContracts || loading ? 8 : undefined}
       >
-        {loading && (
+        {loading && isEmptyContracts && (
           <div className={styles.loader}>
             <Loader height="36" />
           </div>
         )}
-        {isEmptyContracts && !loading && (
+        {isEmptyContracts && (
           <Typography variant="h4">
             We couldn&apos;t find any of your contracts on other services. We
             regularly check for outside contracts, and as soon as we find a
             match, you will see your contracts here with the deposit option.
           </Typography>
         )}
-        {!isEmptyContracts && !loading && (
+        {!isEmptyContracts && (
           <AutostakingCarousel
             count={contracts.length}
             slidesToShow={slidesToShow}
