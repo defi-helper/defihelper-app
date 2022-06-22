@@ -5,6 +5,8 @@ import { settingsApi } from '~/settings/common'
 import {
   UserContactCreateMutationVariables,
   UserContactFragmentFragment,
+  UserNotificationTypeEnum,
+  UserNotificationTypeFragment,
 } from '~/api/_generated-types'
 import * as authModel from '~/auth/auth.model'
 
@@ -12,6 +14,10 @@ export const settingsContactsDomain = createDomain()
 
 export const fetchUserContactListFx = settingsContactsDomain.createEffect(() =>
   settingsApi.userContactList({})
+)
+
+export const fetchUserNotificationsListFx = settingsContactsDomain.createEffect(
+  () => settingsApi.userNotificationsList()
 )
 
 export const createUserContactFx = settingsContactsDomain.createEffect(
@@ -48,6 +54,52 @@ export const updateUserContactFx = settingsContactsDomain.createEffect(
   }
 )
 
+export const toggleUserNotificationFx = settingsContactsDomain.createEffect(
+  async (params: {
+    contact: string
+    hour: number
+    type: UserNotificationTypeEnum
+    state: boolean
+  }) => {
+    const { type, state, contact, hour } = params
+    const isDone = await settingsApi.userNotificationToggle({
+      type,
+      state,
+      contact,
+      hour,
+    })
+
+    if (isDone) {
+      return isDone
+    }
+
+    throw new Error('Unable to toggle')
+  }
+)
+
+export const updateUserNotificationFx = settingsContactsDomain.createEffect(
+  async (params: {
+    contact: string
+    hour: number
+    type: UserNotificationTypeEnum
+    state: boolean
+  }) => {
+    const { type, state, contact, hour } = params
+    const isDone = await settingsApi.userNotificationToggle({
+      type,
+      state,
+      contact,
+      hour,
+    })
+
+    if (isDone) {
+      return isDone
+    }
+
+    throw new Error('Unable to toggle')
+  }
+)
+
 export const deleteUserContactFx = settingsContactsDomain.createEffect(
   async (id: string) => {
     const isDeleted = await settingsApi.userContactDelete({
@@ -61,6 +113,30 @@ export const deleteUserContactFx = settingsContactsDomain.createEffect(
     throw new Error('Not deleted')
   }
 )
+
+export const $userNotificationsList = settingsContactsDomain
+  .createStore<UserNotificationTypeFragment[]>([])
+  .on(fetchUserNotificationsListFx.doneData, (_, payload) => payload)
+  .on(updateUserNotificationFx.done, (state, { params }) => {
+    return state.map((existingNotification) =>
+      existingNotification.type === params.type &&
+      params.contact === existingNotification.contact
+        ? { ...existingNotification, time: params.hour }
+        : existingNotification
+    )
+  })
+  .on(toggleUserNotificationFx.done, (state, { params }) => {
+    return params.state
+      ? [
+          ...state,
+          { type: params.type, time: params.hour, contact: params.contact },
+        ]
+      : state.filter(
+          ({ type, contact }) =>
+            type !== params.type && params.contact === contact
+        )
+  })
+  .reset(authModel.logoutFx)
 
 export const $userContactList = settingsContactsDomain
   .createStore<
@@ -120,5 +196,5 @@ guard({
   source: [authModel.$userReady, authModel.$user],
   clock: [SettingsContactsGate.open, authModel.$userReady.updates],
   filter: ([userReady, user]) => userReady && Boolean(user),
-  target: fetchUserContactListFx,
+  target: [fetchUserContactListFx, fetchUserNotificationsListFx],
 })
