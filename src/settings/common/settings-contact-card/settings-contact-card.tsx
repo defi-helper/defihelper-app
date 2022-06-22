@@ -32,12 +32,8 @@ export type SettingsContactCardProps = {
 export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
   props
 ) => {
-  const formatHour = (n: number): string => {
-    const prefix = String(n).length < 2 ? '0' : ''
-    return `${prefix}${n}:00`
-  }
-
-  const applyChanges = (state: boolean, hour: number) => {
+  const formatHour = (n: number): string => `${String(n).padStart(2, '0')}:00`
+  const saveNotification = (state: boolean, hour: number) => {
     if (!props.onToggleNotification) return
     props.onToggleNotification(state, hour)
   }
@@ -106,7 +102,10 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
           disabled={!props?.onToggleNotification}
           checked={!!props.notification}
           onChange={() =>
-            applyChanges(!props.notification, props.notification?.time ?? 12)
+            saveNotification(
+              !props.notification,
+              props.notification?.time ?? 12
+            )
           }
         />
         <Dropdown
@@ -124,7 +123,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
           {Array.from(Array(24).keys()).map((v) => (
             <ButtonBase
               className={clsx(styles.dropdownItem)}
-              onClick={() => applyChanges(!!props.notification, v)}
+              onClick={() => saveNotification(!!props.notification, v)}
             >
               {formatHour(v)}
             </ButtonBase>

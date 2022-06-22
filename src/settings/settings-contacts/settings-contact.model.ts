@@ -1,4 +1,4 @@
-import { createDomain, guard, UnitValue } from 'effector'
+import { createDomain, guard, sample, UnitValue } from 'effector'
 import { createGate } from 'effector-react'
 
 import { settingsApi } from '~/settings/common'
@@ -94,32 +94,6 @@ export const deleteUserContactFx = settingsContactsDomain.createEffect(
 export const $userNotificationsList = settingsContactsDomain
   .createStore<UserNotificationTypeFragment[]>([])
   .on(fetchUserNotificationsListFx.doneData, (_, payload) => payload)
-  .on(toggleUserNotificationFx.done, (state, { params }) => {
-    if (params.state) {
-      if (
-        state.some(
-          (existingNotification) =>
-            existingNotification.type === params.type &&
-            params.contact === existingNotification.contact
-        )
-      ) {
-        return state.map((existingNotification) =>
-          existingNotification.type === params.type &&
-          params.contact === existingNotification.contact
-            ? { ...existingNotification, time: params.hour }
-            : existingNotification
-        )
-      }
-
-      return [
-        ...state,
-        { type: params.type, time: params.hour, contact: params.contact },
-      ]
-    }
-    return state.filter(
-      ({ type, contact }) => type !== params.type && params.contact === contact
-    )
-  })
   .reset(authModel.logoutFx)
 
 export const $userContactList = settingsContactsDomain
@@ -174,6 +148,11 @@ export const $userContactList = settingsContactsDomain
 export const SettingsContactsGate = createGate({
   domain: settingsContactsDomain,
   name: 'SettingsContactsGate',
+})
+
+sample({
+  clock: [toggleUserNotificationFx.done],
+  target: [fetchUserNotificationsListFx],
 })
 
 guard({
