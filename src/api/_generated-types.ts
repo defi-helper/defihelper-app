@@ -2953,7 +2953,7 @@ export type UserNotificationType = {
   /** Contact */
   contact: Scalars['UuidType']
   /** Time */
-  time: Scalars['String']
+  time: Scalars['Int']
 }
 
 export enum UserNotificationTypeEnum {
@@ -5595,7 +5595,7 @@ export type UserNotificationToggleMutation = { __typename?: 'Mutation' } & Pick<
 
 export type UserNotificationTypeFragment = {
   __typename?: 'UserNotificationType'
-} & Pick<UserNotificationType, 'type'>
+} & Pick<UserNotificationType, 'type' | 'time' | 'contact'>
 
 export type WalletDeleteMutationVariables = Exact<{
   id: Scalars['UuidType']

@@ -40,9 +40,19 @@ export const buttons = style({
 
 export const switcher = style({
   marginTop: 'auto',
-  display: 'flex',
-  alignItems: 'center',
+  display: 'grid',
+  gridTemplateColumns: '1fr auto auto',
   gap: 11,
+})
+
+export const dropdownItem = style({
+  justifyContent: 'flex-start',
+
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 8,
+    },
+  },
 })
 
 export const date = style({
@@ -54,4 +64,9 @@ export const connect = style({})
 
 export const disconnect = style({
   color: theme.colors.common.red1,
+})
+
+export const dropdown = style({
+  maxHeight: 300,
+  overflow: 'scroll',
 })
