@@ -19,6 +19,7 @@ export type SettingsContactCardProps = {
   title: string
   address?: string
   type: string
+  currentTimezone: string
   status?: UserContactStatusEnum
   notification?: UserNotificationTypeFragment
   onConnect?: () => void
@@ -54,7 +55,11 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
           </Typography>
         </div>
         <div>
-          <Button color="blue" onClick={props.onConnect}>
+          <Button
+            color="blue"
+            onClick={props.onConnect}
+            className={styles.connectPrimaryButton}
+          >
             Connect
             <Icon
               icon={props.type === 'email' ? 'email' : 'telegram'}

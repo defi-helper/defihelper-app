@@ -31,12 +31,10 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const [openSuccess] = useDialog(SettingsSuccessDialog)
 
   const user = useStore(authModel.$user)
-
   const contactList = useStore(model.$userContactList)
   const contactCreating = useStore(model.createUserContactFx.pending)
   const creatingParams = useStore(model.$creatingUserParams)
   const notificationsList = useStore(model.$userNotificationsList)
-  console.error(notificationsList)
 
   useGate(model.SettingsContactsGate)
 
@@ -138,6 +136,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
         <SettingsContactCard
           isConnected={Boolean(telegram)}
           address={telegram?.address}
+          currentTimezone={user?.timezone ?? 'UTC'}
           title="Telegram notifications settings"
           type={UserContactBrokerEnum.Telegram}
           loading={
@@ -170,6 +169,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           address={email?.address}
           title="Email notifications settings"
           type={UserContactBrokerEnum.Email}
+          currentTimezone={user?.timezone ?? 'UTC'}
           loading={
             email?.editing ||
             email?.deleting ||

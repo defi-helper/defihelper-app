@@ -40,9 +40,9 @@ export const buttons = style({
 
 export const switcher = style({
   marginTop: 'auto',
-  display: 'grid',
-  gridTemplateColumns: '1fr auto auto',
-  gap: 11,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 12,
 })
 
 export const dropdownItem = style({
@@ -58,6 +58,10 @@ export const dropdownItem = style({
 export const date = style({
   gap: 11,
   marginLeft: 'auto',
+})
+
+export const connectPrimaryButton = style({
+  marginTop: 10,
 })
 
 export const connect = style({})
