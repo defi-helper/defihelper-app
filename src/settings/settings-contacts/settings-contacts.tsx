@@ -123,8 +123,6 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const telegram = contactsMap.get(UserContactBrokerEnum.Telegram)
   const email = contactsMap.get(UserContactBrokerEnum.Email)
 
-  console.warn(notificationsList)
-
   return (
     <div className={props.className}>
       {withHeader && (
