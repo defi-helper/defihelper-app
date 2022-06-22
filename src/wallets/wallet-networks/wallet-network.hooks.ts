@@ -107,7 +107,9 @@ export const useInactiveListener = (suppress = false) => {
 export const useEthereumNetwork = () => {
   const wallet = useStore($wallet)
 
-  useInactiveListener()
+  const suppress = useEagerConnect()
+
+  useInactiveListener(suppress)
 
   useEffect(() => {
     const handleUpdate = (update: ConnectorUpdate<string>) => {
