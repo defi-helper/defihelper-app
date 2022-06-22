@@ -72,8 +72,8 @@ export const switchNetwork = (network: string) => {
       decimals: currentNetwork.decimals ?? 18,
     },
     rpcUrls: currentNetwork.rpcUrls ?? [],
-    blockExplorerUrls: currentNetwork.explorerUrl
-      ? [currentNetwork.explorerUrl]
+    blockExplorerUrls: currentNetwork.explorerURL
+      ? [currentNetwork.explorerURL]
       : [],
   })
 }
