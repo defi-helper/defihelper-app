@@ -25,6 +25,7 @@ export type SettingsContactCardProps = {
   onConnect?: () => void
   onDisconnect?: () => void
   onToggleNotification?: (state: boolean, hour: number) => void
+  onUpdateNotification?: (state: boolean, hour: number) => void
   loading?: boolean
   className?: string
 }
@@ -33,9 +34,16 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
   props
 ) => {
   const formatHour = (n: number): string => `${String(n).padStart(2, '0')}:00`
-  const saveNotification = (state: boolean, hour: number) => {
+  const handleToggleNotification = () => {
     if (!props.onToggleNotification) return
-    props.onToggleNotification(state, hour)
+    props.onToggleNotification(
+      !props.notification,
+      props.notification?.time ?? 12
+    )
+  }
+  const handleUpdateNotification = (state: boolean, hour: number) => {
+    if (!props.onUpdateNotification) return
+    props.onUpdateNotification(state, hour)
   }
 
   if (!props.isConnected) {
@@ -101,12 +109,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
         <Switch
           disabled={!props?.onToggleNotification}
           checked={!!props.notification}
-          onChange={() =>
-            saveNotification(
-              !props.notification,
-              props.notification?.time ?? 12
-            )
-          }
+          onChange={handleToggleNotification}
         />
         <Dropdown
           control={
@@ -123,7 +126,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
           {Array.from(Array(24).keys()).map((v) => (
             <ButtonBase
               className={clsx(styles.dropdownItem)}
-              onClick={() => saveNotification(!!props.notification, v)}
+              onClick={() => handleUpdateNotification(!!props.notification, v)}
             >
               {formatHour(v)}
             </ButtonBase>

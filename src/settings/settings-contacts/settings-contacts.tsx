@@ -114,6 +114,27 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
     }
   }
 
+  const handleUpdateNotification = async (
+    { id: contact }: typeof contactList[number],
+    type: UserNotificationTypeEnum,
+    state: boolean,
+    hour: number
+  ) => {
+    try {
+      await model.updateUserNotificationFx({
+        type,
+        state,
+        hour,
+        contact,
+      })
+      analytics.onNotificationsEnabled()
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
   const contactsMap = contactList.reduce((acc, contact) => {
     acc.set(contact.broker, contact)
 
@@ -151,6 +172,16 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
               notification.type === UserNotificationTypeEnum.PortfolioMetrics &&
               notification.contact === telegram?.id
           )}
+          onUpdateNotification={(state: boolean, hour: number) =>
+            telegram
+              ? handleUpdateNotification(
+                  telegram,
+                  UserNotificationTypeEnum.PortfolioMetrics,
+                  state,
+                  hour
+                )
+              : undefined
+          }
           onToggleNotification={(state: boolean, hour: number) =>
             telegram
               ? handleToggleNotification(
@@ -180,6 +211,16 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
               notification.type === UserNotificationTypeEnum.PortfolioMetrics &&
               notification.contact === email?.id
           )}
+          onUpdateNotification={(state: boolean, hour: number) =>
+            email
+              ? handleUpdateNotification(
+                  email,
+                  UserNotificationTypeEnum.PortfolioMetrics,
+                  state,
+                  hour
+                )
+              : undefined
+          }
           onToggleNotification={(state: boolean, hour: number) =>
             email
               ? handleToggleNotification(

@@ -1,4 +1,4 @@
-import { createDomain, guard, sample, UnitValue } from 'effector'
+import { createDomain, guard, UnitValue } from 'effector'
 import { createGate } from 'effector-react'
 
 import { settingsApi } from '~/settings/common'
@@ -77,6 +77,29 @@ export const toggleUserNotificationFx = settingsContactsDomain.createEffect(
   }
 )
 
+export const updateUserNotificationFx = settingsContactsDomain.createEffect(
+  async (params: {
+    contact: string
+    hour: number
+    type: UserNotificationTypeEnum
+    state: boolean
+  }) => {
+    const { type, state, contact, hour } = params
+    const isDone = await settingsApi.userNotificationToggle({
+      type,
+      state,
+      contact,
+      hour,
+    })
+
+    if (isDone) {
+      return isDone
+    }
+
+    throw new Error('Unable to toggle')
+  }
+)
+
 export const deleteUserContactFx = settingsContactsDomain.createEffect(
   async (id: string) => {
     const isDeleted = await settingsApi.userContactDelete({
@@ -94,6 +117,25 @@ export const deleteUserContactFx = settingsContactsDomain.createEffect(
 export const $userNotificationsList = settingsContactsDomain
   .createStore<UserNotificationTypeFragment[]>([])
   .on(fetchUserNotificationsListFx.doneData, (_, payload) => payload)
+  .on(updateUserNotificationFx.done, (state, { params }) => {
+    return state.map((existingNotification) =>
+      existingNotification.type === params.type &&
+      params.contact === existingNotification.contact
+        ? { ...existingNotification, time: params.hour }
+        : existingNotification
+    )
+  })
+  .on(toggleUserNotificationFx.done, (state, { params }) => {
+    return params.state
+      ? [
+          ...state,
+          { type: params.type, time: params.hour, contact: params.contact },
+        ]
+      : state.filter(
+          ({ type, contact }) =>
+            type !== params.type && params.contact === contact
+        )
+  })
   .reset(authModel.logoutFx)
 
 export const $userContactList = settingsContactsDomain
@@ -148,11 +190,6 @@ export const $userContactList = settingsContactsDomain
 export const SettingsContactsGate = createGate({
   domain: settingsContactsDomain,
   name: 'SettingsContactsGate',
-})
-
-sample({
-  clock: [toggleUserNotificationFx.done],
-  target: [fetchUserNotificationsListFx],
 })
 
 guard({
