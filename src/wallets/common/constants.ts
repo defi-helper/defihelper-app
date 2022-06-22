@@ -101,20 +101,24 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     available: () => Boolean(window.WavesKeeper),
     extensionLink: WAVES_KEEPER_LINK,
   },
-  [ConnectorNames.WavesExchange]: {
-    connector: connectors.wavesExchange,
-    blockchain: 'waves',
-    logo: WavesExchangeIcon,
-    networks: wavesNetworks,
-    available: () => true,
-  },
-  [ConnectorNames.WalletConnect]: {
-    connector: connectors.walletconnect,
-    blockchain: 'ethereum',
-    logo: WalletConnectIcon,
-    networks: [String(config.DEFAULT_CHAIN_ID)],
-    available: () => true,
-  },
+  ...(config.IS_DEV
+    ? {
+        [ConnectorNames.WavesExchange]: {
+          connector: connectors.wavesExchange,
+          blockchain: 'waves',
+          logo: WavesExchangeIcon,
+          networks: wavesNetworks,
+          available: () => true,
+        },
+        [ConnectorNames.WalletConnect]: {
+          connector: connectors.walletconnect,
+          blockchain: 'ethereum',
+          logo: WalletConnectIcon,
+          networks: [String(config.DEFAULT_CHAIN_ID)],
+          available: () => true,
+        },
+      }
+    : {}),
   // [ConnectorNames.Portis]: {
   //   connector: connectors.portis,
   //   blockchain: 'ethereum',

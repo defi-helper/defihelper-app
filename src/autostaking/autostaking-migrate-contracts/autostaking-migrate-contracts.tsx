@@ -82,6 +82,13 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
       return () => abortController.abort()
     }, [])
 
+    useEffect(() => {
+      return () => {
+        model.resetContracts()
+        model.resetHiddenContracts()
+      }
+    }, [])
+
     const handleMigrate =
       (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
       async () => {
