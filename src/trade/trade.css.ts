@@ -58,3 +58,31 @@ export const tradeSellSelect = style({
   borderRadius: 8,
   width: 160,
 })
+
+export const tradeSelectHeader = style({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  marginBottom: 26,
+})
+
+export const tabs = style({
+  border: `1px solid ${theme.colors.border}`,
+  padding: 2,
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: 4,
+  borderRadius: 8,
+})
+
+export const tabItem = style({
+  borderRadius: 6,
+  padding: 6,
+})
+
+export const tabBuy = style({
+  background: theme.colors.common.green1,
+})
+
+export const tabSell = style({
+  background: theme.colors.common.red1,
+})

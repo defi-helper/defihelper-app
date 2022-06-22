@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import clsx from 'clsx'
 
 import { Head } from '~/common/head'
 import { AppLayout } from '~/layouts'
@@ -11,8 +12,8 @@ import { TradeSell } from './trade-sell'
 import { TradeSmartSell } from './trade-smart-sell'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
-import * as styles from './trade.css'
 import { Icon } from '~/common/icon'
+import * as styles from './trade.css'
 
 export type TradeProps = unknown
 
@@ -50,11 +51,21 @@ export const Trade: React.VFC<TradeProps> = () => {
     [Selects.SmartSell]: <TradeSmartSell />,
     [Selects.BuySell]: (
       <>
-        <div>
+        <div className={styles.tabs}>
           {Object.values(Tabs).map((tab) => (
-            <ButtonBase key={tab} onClick={handleChangeTab(tab)}>
+            <Typography
+              key={tab}
+              onClick={handleChangeTab(tab)}
+              className={clsx(styles.tabItem, {
+                [styles.tabBuy]: tab === Tabs.Buy && Tabs.Buy === currentTab,
+                [styles.tabSell]: tab === Tabs.Sell && Tabs.Sell === currentTab,
+              })}
+              as={ButtonBase}
+              transform="uppercase"
+              variant="body2"
+            >
               {tab}
-            </ButtonBase>
+            </Typography>
           ))}
         </div>
         {TabsComponents[currentTab]}
@@ -107,37 +118,50 @@ export const Trade: React.VFC<TradeProps> = () => {
           <img src="" alt="" className={styles.chartInner} />
         </Paper>
         <Paper radius={8} className={styles.selects}>
-          <Dropdown
-            control={(open) => (
-              <Typography
-                variant="body3"
-                as={ButtonBase}
-                transform="uppercase"
-                family="mono"
-                className={styles.tradeSellSelect}
-              >
-                {currentSelect}
-                <Icon
-                  icon={open ? 'arrowUp' : 'arrowDown'}
-                  width="16"
-                  height="16"
-                />
-              </Typography>
-            )}
-            placement="bottom-start"
-            offset={[0, 8]}
-          >
-            {(close) =>
-              Object.values(Selects).map((select) => (
-                <ButtonBase
-                  key={select}
-                  onClick={handleChangeSelect(select, close)}
+          <div className={styles.tradeSelectHeader}>
+            <Dropdown
+              control={(open) => (
+                <Typography
+                  variant="body3"
+                  as={ButtonBase}
+                  transform="uppercase"
+                  family="mono"
+                  className={styles.tradeSellSelect}
                 >
-                  {select}
-                </ButtonBase>
-              ))
-            }
-          </Dropdown>
+                  {currentSelect}
+                  <Icon
+                    icon={open ? 'arrowUp' : 'arrowDown'}
+                    width="16"
+                    height="16"
+                  />
+                </Typography>
+              )}
+              placement="bottom-start"
+              offset={[0, 8]}
+            >
+              {(close) =>
+                Object.values(Selects).map((select) => (
+                  <Typography
+                    variant="body3"
+                    key={select}
+                    onClick={handleChangeSelect(select, close)}
+                    as={ButtonBase}
+                    transform="uppercase"
+                  >
+                    {select}
+                  </Typography>
+                ))
+              }
+            </Dropdown>
+            <Typography variant="body3" as="div">
+              <Typography variant="inherit" as="div" align="right">
+                Current Balance
+              </Typography>
+              <Typography variant="inherit" as="div" align="right">
+                0.50000 ВТС
+              </Typography>
+            </Typography>
+          </div>
           {SelectComponents[currentSelect]}
         </Paper>
       </div>
