@@ -207,7 +207,7 @@ export const Tokens: React.VFC = () => {
                   <Link
                     target="_blank"
                     href={`${
-                      networksConfig[token.network]?.explorerUrl
+                      networksConfig[token.network]?.explorerURL
                     }/address/${token.address}`}
                   >
                     {token.name}
