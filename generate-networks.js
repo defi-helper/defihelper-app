@@ -10,10 +10,12 @@ const apiUrl = process.env.REACT_APP_API_URL
 
 const graphqlQuery = {
   operationName: 'WalletConfig',
-  query: `query WalletConfig {
+  query: `query WalletConfig($testnet: Boolean) {
     config {
       blockchain {
-        ethereum {
+        ethereum(filter: {
+          testnet: $testnet
+        }) {
           id
           title
           testnet
@@ -23,7 +25,9 @@ const graphqlQuery = {
           blockchain
           icon
         }
-        waves {
+        waves(filter: {
+          testnet: $testnet
+        }) {
           id
           title
           testnet
@@ -37,9 +41,7 @@ const graphqlQuery = {
     }
   }`,
   variables: {
-    filter: {
-      testnet: isDev,
-    },
+    testnet: isDev,
   },
 }
 

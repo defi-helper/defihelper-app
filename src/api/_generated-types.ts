@@ -2953,7 +2953,7 @@ export type UserNotificationType = {
   /** Contact */
   contact: Scalars['UuidType']
   /** Time */
-  time: Scalars['String']
+  time: Scalars['Int']
 }
 
 export enum UserNotificationTypeEnum {
@@ -3141,6 +3141,8 @@ export type UserType = {
   role: UserRoleEnum
   /** Current user locale */
   locale: LocaleEnum
+  /** Current user timezone */
+  timezone: Scalars['String']
   /** Is portfolio collected */
   isPorfolioCollected: Scalars['Boolean']
   tokenAliasesStakedMetrics: UserTokenAliasesStakedMetricsListType
@@ -3707,7 +3709,7 @@ export type MeQuery = { __typename?: 'Query' } & {
 
 export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
   UserType,
-  'id' | 'role' | 'createdAt'
+  'id' | 'role' | 'createdAt' | 'timezone'
 >
 
 export type AutomationActionCreateMutationVariables = Exact<{
@@ -5595,7 +5597,7 @@ export type UserNotificationToggleMutation = { __typename?: 'Mutation' } & Pick<
 
 export type UserNotificationTypeFragment = {
   __typename?: 'UserNotificationType'
-} & Pick<UserNotificationType, 'type'>
+} & Pick<UserNotificationType, 'type' | 'time' | 'contact'>
 
 export type WalletDeleteMutationVariables = Exact<{
   id: Scalars['UuidType']
