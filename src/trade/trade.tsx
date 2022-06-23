@@ -153,11 +153,21 @@ export const Trade: React.VFC<TradeProps> = () => {
                 ))
               }
             </Dropdown>
-            <Typography variant="body3" as="div">
+            <Typography
+              variant="body3"
+              as="div"
+              className={styles.currentBalance}
+              align="right"
+            >
               <Typography variant="inherit" as="div" align="right">
                 Current Balance
               </Typography>
-              <Typography variant="inherit" as="div" align="right">
+              <Typography
+                variant="inherit"
+                as={ButtonBase}
+                align="right"
+                className={styles.currentBalanceValue}
+              >
                 0.50000 ВТС
               </Typography>
             </Typography>

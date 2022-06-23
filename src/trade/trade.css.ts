@@ -80,9 +80,18 @@ export const tabItem = style({
 })
 
 export const tabBuy = style({
-  background: theme.colors.common.green1,
+  background: theme.colors.common.green2,
 })
 
 export const tabSell = style({
   background: theme.colors.common.red1,
+})
+
+export const currentBalance = style({
+  fontSize: 12,
+  lineHeight: '14px',
+})
+
+export const currentBalanceValue = style({
+  color: theme.colors.common.blue1,
 })
