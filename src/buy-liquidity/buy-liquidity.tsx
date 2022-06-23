@@ -188,11 +188,11 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
     contractListLoading
 
   return (
-    <AppLayout title="Buy LP">
-      <Head title="Buy LP" />
+    <AppLayout title="LP Tokens">
+      <Head title="LP Tokens" />
       <div className={styles.header}>
         <Icon icon="automation" className={styles.headerIcon} />
-        <Typography variant="h3">Buy LP</Typography>
+        <Typography variant="h3">LP Tokens</Typography>
       </div>
       <Typography variant="h4" className={styles.subtitle}>
         Buying liquidity pool tokens is as easy as 1-2-3
