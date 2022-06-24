@@ -7,12 +7,12 @@ import { Typography } from '~/common/typography'
 import { Select, SelectOption } from '~/common/select'
 import { Paper } from '~/common/paper'
 import { TradeOrders } from './trade-orders'
-import { TradeBuy } from './trade-buy'
-import { TradeSell } from './trade-sell'
+import { TradeBuySell } from './trade-buy-sell'
 import { TradeSmartSell } from './trade-smart-sell'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
+import { Button } from '~/common/button'
 import * as styles from './trade.css'
 
 export type TradeProps = unknown
@@ -42,11 +42,6 @@ export const Trade: React.VFC<TradeProps> = () => {
     cb()
   }
 
-  const TabsComponents = {
-    [Tabs.Buy]: <TradeBuy />,
-    [Tabs.Sell]: <TradeSell />,
-  }
-
   const SelectComponents = {
     [Selects.SmartSell]: <TradeSmartSell />,
     [Selects.BuySell]: (
@@ -68,7 +63,7 @@ export const Trade: React.VFC<TradeProps> = () => {
             </Typography>
           ))}
         </div>
-        {TabsComponents[currentTab]}
+        <TradeBuySell />
       </>
     ),
   }
@@ -173,6 +168,20 @@ export const Trade: React.VFC<TradeProps> = () => {
             </Typography>
           </div>
           {SelectComponents[currentSelect]}
+          <div className={styles.buttons}>
+            <Typography
+              className={styles.approveTransactions}
+              variant="body3"
+              as="div"
+            >
+              Approve transactions <Icon icon="info" width="1em" height="1em" />
+            </Typography>
+            <Button color="green">Approve USDT</Button>
+            <Button color="green">Approve ETH</Button>
+            <Button color="green" className={styles.fullWidth}>
+              Create Order
+            </Button>
+          </div>
         </Paper>
       </div>
       <TradeOrders />

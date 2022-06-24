@@ -11,8 +11,7 @@ export const root = style([
   flex,
   {
     gap: 24,
-    maxHeight: 420,
-    height: '100%',
+    maxHeight: 370,
     overflowY: 'auto',
     overflowX: 'hidden',
     padding: '0 10px',
@@ -25,15 +24,6 @@ export const inputGroup = style([
     gap: 8,
   },
 ])
-
-export const currentPrice = style({
-  color: theme.colors.textColorGrey,
-  fontSize: 12,
-})
-
-export const currentPriceButton = style({
-  color: theme.colors.common.blue1,
-})
 
 export const trailingBuy = style({
   display: 'flex',

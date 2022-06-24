@@ -1,45 +1,51 @@
 import { useToggle } from 'react-use'
 
-import { bignumberUtils } from '~/common/bignumber-utils'
-import { ButtonBase } from '~/common/button-base'
-import { NumericalInput } from '~/common/numerical-input'
-import { Typography } from '~/common/typography'
 import { Icon } from '~/common/icon'
+import { NumericalInput } from '~/common/numerical-input'
 import { Switch } from '~/common/switch'
+import { Typography } from '~/common/typography'
 import { TradeInput } from '~/trade/common/trade-input'
 import { TradePlusMinus } from '~/trade/common/trade-plus-minus'
 import { TradeSlider } from '~/trade/common/trade-slider'
 import { TradePercentagePicker } from '~/trade/common/trade-percentage-picker'
-import * as styles from './trade-smart-sell.css'
+import * as styles from './trade-buy-sell.css'
 
-export type TradeSmartSellProps = {
+export type TradeBuySellProps = {
   className?: string
 }
 
-export const TradeSmartSell: React.VFC<TradeSmartSellProps> = () => {
+export const TradeBuySell: React.VFC<TradeBuySellProps> = () => {
   const [takeProfit, toggleTakeProfit] = useToggle(false)
   const [stopLoss, toggleStopLoss] = useToggle(false)
 
   return (
     <div className={styles.root}>
       <div className={styles.inputGroup}>
-        <NumericalInput label="Unit" rightSide="BTC" />
-        <TradePercentagePicker />
-        <div>
-          <NumericalInput label="Bought price" rightSide="USDT" />
-          <Typography
-            variant="body3"
-            as="div"
-            align="center"
-            className={styles.currentPrice}
-          >
-            Current Price:{' '}
-            <ButtonBase className={styles.currentPriceButton}>
-              {bignumberUtils.format('54903')} USDT
-            </ButtonBase>
-          </Typography>
+        <NumericalInput label="Amount" rightSide={<>BTC</>} />
+        <NumericalInput label="Market price" rightSide={<>USDT</>} />
+        <div className={styles.trailingBuy}>
+          <div className={styles.trailingBuyTitle}>
+            <Typography
+              variant="body3"
+              as="label"
+              transform="uppercase"
+              family="mono"
+              className={styles.trailingBuyLabel}
+            >
+              Trailing buy
+              <Icon icon="info" width="1em" height="1em" />
+            </Typography>
+            <Switch size="small" />
+          </div>
+          <TradeInput
+            className={styles.trailingBuyInput}
+            negativeOrPositive
+            rightSide={<>%</>}
+          />
+          <TradePlusMinus />
         </div>
         <NumericalInput label="Total" rightSide="USDT" />
+        <TradePercentagePicker />
       </div>
       <div className={styles.inputGroup}>
         <div className={styles.trailingBuyTitle}>
@@ -48,13 +54,13 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = () => {
           </Typography>
           <Switch
             size="small"
-            checked={takeProfit}
             onChange={toggleTakeProfit}
+            checked={takeProfit}
           />
         </div>
         {takeProfit && (
           <>
-            <NumericalInput rightSide={<>USDT</>} />
+            <NumericalInput rightSide="USDT" />
             <div className={styles.trailingBuy}>
               <TradeInput
                 className={styles.trailingBuyInput}
@@ -100,7 +106,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = () => {
           <Typography as="div" className={styles.takeProfitLabel}>
             Stop Loss
           </Typography>
-          <Switch size="small" checked={stopLoss} onChange={toggleStopLoss} />
+          <Switch size="small" onChange={toggleStopLoss} checked={stopLoss} />
         </div>
         {stopLoss && (
           <>

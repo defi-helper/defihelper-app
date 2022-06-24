@@ -1,12 +1,22 @@
-import { style, globalStyle } from '@vanilla-extract/css'
+import { style, globalStyle, styleVariants } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
 export const root = style({
   position: 'relative',
   display: 'inline-block',
-  width: 56,
-  height: 32,
+})
+
+export const rootSizes = styleVariants({
+  small: {
+    width: 28,
+    height: 16,
+  },
+
+  medium: {
+    width: 56,
+    height: 32,
+  },
 })
 
 export const track = style({
@@ -26,17 +36,30 @@ export const thumb = style({
   backgroundColor: theme.colors.common.white1,
   borderRadius: '50%',
   position: 'absolute',
-  top: 4,
-  left: 4,
-  bottom: 4,
   margin: 'auto',
-  height: 24,
-  width: 24,
   transition: 'transform .3s ease-in-out',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
   color: theme.colors.common.black1,
+})
+
+export const thumbSizes = styleVariants({
+  small: {
+    top: 2,
+    left: 2,
+    bottom: 2,
+    height: 12,
+    width: 12,
+  },
+
+  medium: {
+    top: 4,
+    left: 4,
+    bottom: 4,
+    height: 24,
+    width: 24,
+  },
 })
 
 export const thumbError = style({})
@@ -57,6 +80,10 @@ globalStyle(`${input}:checked + ${track}:not(${trackError})`, {
   backgroundColor: theme.colors.common.green2,
 })
 
-globalStyle(`${input}:checked ~ ${thumb}:not(${thumbError})`, {
+globalStyle(`${input}:checked ~ ${thumbSizes.medium}:not(${thumbError})`, {
   transform: 'translateX(24px)',
+})
+
+globalStyle(`${input}:checked ~ ${thumbSizes.small}:not(${thumbError})`, {
+  transform: 'translateX(12px)',
 })

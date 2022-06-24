@@ -48,7 +48,7 @@ export const chartInner = style({
 })
 
 export const selects = style({
-  padding: '10px 16px',
+  padding: '10px 6px',
 })
 
 export const tradeSellSelect = style({
@@ -57,12 +57,14 @@ export const tradeSellSelect = style({
   justifyContent: 'space-between',
   borderRadius: 8,
   width: 160,
+  color: theme.colors.common.black1,
 })
 
 export const tradeSelectHeader = style({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
   marginBottom: 26,
+  padding: '0 10px',
 })
 
 export const tabs = style({
@@ -72,6 +74,7 @@ export const tabs = style({
   gridTemplateColumns: '1fr 1fr',
   gap: 4,
   borderRadius: 8,
+  margin: '0 10px 8px 10px',
 })
 
 export const tabItem = style({
@@ -95,3 +98,25 @@ export const currentBalance = style({
 export const currentBalanceValue = style({
   color: theme.colors.common.blue1,
 })
+
+export const buttons = style({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  padding: '12px 10px 0 10px',
+  gap: 8,
+})
+
+export const fullWidth = style({
+  gridColumnStart: 1,
+  gridColumnEnd: 3,
+})
+
+export const approveTransactions = style([
+  fullWidth,
+  {
+    display: 'flex',
+    gap: 8,
+    alignItems: 'center',
+    color: theme.colors.textColorGrey,
+  },
+])

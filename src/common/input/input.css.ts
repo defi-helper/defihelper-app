@@ -36,7 +36,7 @@ export const inputWrapFocus = style({
 
 export const input = style({
   display: 'block',
-  width: 'inherit',
+  width: '100%',
   height: 'inherit',
   outline: 'none',
   textTransform: 'inherit',
