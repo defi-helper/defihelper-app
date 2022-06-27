@@ -178,11 +178,11 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
                 family="mono"
                 className={styles.title}
               >
-                BUY LP TOKENS
+                BUY/SELL LP TOKENS
               </Typography>
             </div>
             <div className={styles.description}>
-              Buy liquidity pool tokens in one click
+              Buy/Sell liquidity pool tokens in one click
             </div>
             <form
               noValidate

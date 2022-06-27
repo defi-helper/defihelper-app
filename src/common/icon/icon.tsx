@@ -32,6 +32,9 @@ import { ReactComponent as TelegramIcon } from '~/assets/icons/socials/telegram.
 import { ReactComponent as TwitterIcon } from '~/assets/icons/socials/twitter.svg'
 import { ReactComponent as EthereumIcon } from '~/assets/icons/blockchains/ethereum.svg'
 import { ReactComponent as BscIcon } from '~/assets/icons/blockchains/bsc.svg'
+import { ReactComponent as LBankIcon } from '~/assets/icons/exchange/lbank.svg'
+import { ReactComponent as BybitIcon } from '~/assets/icons/exchange/bybit.svg'
+import { ReactComponent as GateIoIcon } from '~/assets/icons/exchange/gateio.svg'
 import { ReactComponent as WavesIcon } from '~/assets/icons/blockchains/waves.svg'
 import { ReactComponent as SolanaIcon } from '~/assets/icons/blockchains/solana.svg'
 import { ReactComponent as arrowUpIcon } from '~/assets/icons/arrow-top.svg'
@@ -137,7 +140,9 @@ const ICONS = {
   email: EmailIcon,
   ethereum: EthereumIcon,
   binance: BscIcon,
+  binanceus: BscIcon,
   waves: WavesIcon,
+  bybit: BybitIcon,
   solana: SolanaIcon,
   arrowUp: arrowUpIcon,
   checked: CheckedIcon,
@@ -171,6 +176,9 @@ const ICONS = {
   okex: OkexIcon,
   aax: AaxIcon,
   ftx: FtxIcon,
+  ftxus: FtxIcon,
+  gateio: GateIoIcon,
+  lbank: LBankIcon,
   ascendex: AscendexIcon,
   coinex: CoinexIcon,
   mexc: MexcIcon,

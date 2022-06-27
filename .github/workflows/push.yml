@@ -25,10 +25,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: Install dependencies
-      run: npm ci
-    - name: npm build
+      run: npm ci --no-audit
+    - name: Run build
       run: |
-        npm run build --if-present
+        npm run build
+      env:
+        REACT_APP_API_URL: "https://backend-dev.defihelper.info/api"
     - name: Archive artifacts
       uses: actions/upload-artifact@v2
       with:

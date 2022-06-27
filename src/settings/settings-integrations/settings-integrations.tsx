@@ -21,6 +21,7 @@ export type SettingsIntegrationsProps = {
 
 const titles = {
   [WalletExchangeTypeEnum.Binance]: 'Binance',
+  [WalletExchangeTypeEnum.Binanceus]: 'Binance US',
   [WalletExchangeTypeEnum.Huobi]: 'Huobi',
   [WalletExchangeTypeEnum.Okex]: 'OKEx',
   [WalletExchangeTypeEnum.Ascendex]: 'AscendEX',
@@ -30,6 +31,10 @@ const titles = {
   [WalletExchangeTypeEnum.Coinex]: 'Coinex',
   [WalletExchangeTypeEnum.Poloniex]: 'Poloniex',
   [WalletExchangeTypeEnum.Ftx]: 'FTX',
+  [WalletExchangeTypeEnum.Ftxus]: 'FTX US',
+  [WalletExchangeTypeEnum.Bybit]: 'Bybit',
+  [WalletExchangeTypeEnum.Lbank]: 'LBank',
+  [WalletExchangeTypeEnum.Gateio]: 'Gate.io',
 }
 
 export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (

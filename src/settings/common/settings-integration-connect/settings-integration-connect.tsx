@@ -18,6 +18,8 @@ import { SettingsIntegrationFtxForm } from '~/settings/common/settings-integrati
 import { WalletExchangeTypeEnum } from '~/api'
 import { Select, SelectOption } from '~/common/select'
 import * as styles from './settings-integration-connect.css'
+import { SettingsIntegrationGateioForm } from '../settings-integration-gateio-form'
+import { SettingsIntegrationLbankForm } from '../settings-integration-lbank-form'
 
 export type SettingsIntegrationConnectProps = {
   className?: string
@@ -29,6 +31,10 @@ export type SettingsIntegrationConnectProps = {
 const forms: Record<string, { title: string; form: React.ElementType }> = {
   [WalletExchangeTypeEnum.Binance]: {
     title: 'Binance',
+    form: SettingsIntegrationBinanceForm,
+  },
+  [WalletExchangeTypeEnum.Ftxus]: {
+    title: 'Binance US',
     form: SettingsIntegrationBinanceForm,
   },
   [WalletExchangeTypeEnum.Huobi]: {
@@ -66,6 +72,22 @@ const forms: Record<string, { title: string; form: React.ElementType }> = {
   [WalletExchangeTypeEnum.Ftx]: {
     title: 'FTX',
     form: SettingsIntegrationFtxForm,
+  },
+  [WalletExchangeTypeEnum.Ftxus]: {
+    title: 'FTX US',
+    form: SettingsIntegrationFtxForm,
+  },
+  [WalletExchangeTypeEnum.Bybit]: {
+    title: 'Bybit',
+    form: SettingsIntegrationFtxForm,
+  },
+  [WalletExchangeTypeEnum.Lbank]: {
+    title: 'Lbank',
+    form: SettingsIntegrationLbankForm,
+  },
+  [WalletExchangeTypeEnum.Gateio]: {
+    title: 'Gate.io',
+    form: SettingsIntegrationGateioForm,
   },
 }
 
