@@ -3501,6 +3501,11 @@ export enum WalletExchangeTypeEnum {
   Coinex = 'coinex',
   Poloniex = 'poloniex',
   Ftx = 'ftx',
+  Binanceus = 'binanceus',
+  Bybit = 'bybit',
+  Lbank = 'lbank',
+  Ftxus = 'ftxus',
+  Gateio = 'gateio',
 }
 
 export type WalletExchangexListFilterInputType = {
