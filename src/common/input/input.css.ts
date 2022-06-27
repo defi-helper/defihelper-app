@@ -14,25 +14,12 @@ export const disabled = style({
   opacity: 0.8,
 })
 
-export const input = style({
-  display: 'block',
-  width: 'inherit',
-  height: 'inherit',
-  outline: 'none',
+export const inputWrap = style({
   border: `1px solid ${theme.colors.border}`,
-  textTransform: 'inherit',
-  fontFamily: theme.fonts.square,
-  backgroundColor: 'transparent',
   borderRadius: 8,
-  fontSize: 16,
-  lineHeight: '24px',
-  padding: '8px 16px',
-  color: 'currentcolor',
   transition: 'border .2s ease-in-out',
-
-  '::placeholder': {
-    color: 'inherit',
-  },
+  display: 'flex',
+  background: theme.colors.paper,
 
   '@media': {
     [theme.mediaQueries.hover()]: {
@@ -41,9 +28,29 @@ export const input = style({
       },
     },
   },
+})
 
-  ':focus': {
-    borderColor: theme.colors.textColorPrimary,
+export const inputWrapFocus = style({
+  borderColor: theme.colors.textColorPrimary,
+})
+
+export const input = style({
+  display: 'block',
+  width: '100%',
+  height: 'inherit',
+  outline: 'none',
+  textTransform: 'inherit',
+  fontFamily: theme.fonts.square,
+  backgroundColor: 'transparent',
+  fontSize: 16,
+  lineHeight: '24px',
+  padding: '8px 16px',
+  color: 'currentcolor',
+  border: 'none',
+  flexGrow: 1,
+
+  '::placeholder': {
+    color: 'inherit',
   },
 })
 
@@ -78,3 +85,24 @@ export const fs14 = style({
 export const helperTextColor = style({
   color: theme.colors.textColorGrey,
 })
+
+export const side = style({
+  background: theme.colors.paper,
+  display: 'flex',
+  alignItems: 'center',
+  borderRadius: 8,
+})
+
+export const leftSide = style([
+  side,
+  {
+    padding: '0 0 0 16px',
+  },
+])
+
+export const rightSide = style([
+  side,
+  {
+    padding: '0 16px 0 0',
+  },
+])

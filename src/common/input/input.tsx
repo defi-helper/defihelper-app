@@ -12,10 +12,14 @@ export type InputProps = Omit<React.ComponentProps<'input'>, 'type'> & {
   helperText?: React.ReactNode
   error?: boolean
   type?: React.ComponentProps<'input'>['type'] | 'textarea'
+  leftSide?: React.ReactNode
+  rightSide?: React.ReactNode
 }
 
 export const Input = createComponent<HTMLInputElement, InputProps>(
   function Input(props, ref) {
+    const [focused, setFocus] = useState(false)
+
     const {
       className,
       label,
@@ -23,6 +27,8 @@ export const Input = createComponent<HTMLInputElement, InputProps>(
       error,
       helperText,
       disabled,
+      leftSide,
+      rightSide,
       ...restOfProps
     } = props
 
@@ -48,6 +54,10 @@ export const Input = createComponent<HTMLInputElement, InputProps>(
       }
     }, [textareaRef])
 
+    const handleToggleFocus = () => {
+      setFocus(!focused)
+    }
+
     return (
       <div
         className={clsx(
@@ -71,11 +81,21 @@ export const Input = createComponent<HTMLInputElement, InputProps>(
             {label}
           </Typography>
         )}
-        {cloneElement(component, {
-          ...component.props,
-          ...restOfProps,
-          className: clsx(styles.input, component.props.className),
-        })}
+        <div
+          className={clsx(styles.inputWrap, {
+            [styles.inputWrapFocus]: focused,
+          })}
+          onFocus={handleToggleFocus}
+          onBlur={handleToggleFocus}
+        >
+          {leftSide && <div className={styles.leftSide}>{leftSide}</div>}
+          {cloneElement(component, {
+            ...component.props,
+            ...restOfProps,
+            className: clsx(styles.input, component.props.className),
+          })}
+          {rightSide && <div className={styles.rightSide}>{rightSide}</div>}
+        </div>
         {helperText && (
           <Typography
             variant="body2"
