@@ -248,7 +248,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           })
 
         if (
-          bignumberUtils.lt(
+          bignumberUtils.lte(
             metric.billing.balance.netBalance,
             billingBalance.recomendedIncome
           )

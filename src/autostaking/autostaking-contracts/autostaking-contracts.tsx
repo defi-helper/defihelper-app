@@ -285,7 +285,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
       })
 
       if (
-        bignumberUtils.lt(
+        bignumberUtils.lte(
           metric.billing.balance.netBalance,
           billingBalance.recomendedIncome
         )
