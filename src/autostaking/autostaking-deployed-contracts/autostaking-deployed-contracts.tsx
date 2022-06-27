@@ -241,7 +241,7 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
             <Loader height="36" />
           </div>
         )}
-        {isEmptyContracts && (
+        {isEmptyContracts && !loading && (
           <Typography variant="h4">
             We couldn&apos;t find any of your contracts on other services. We
             regularly check for outside contracts, and as soon as we find a

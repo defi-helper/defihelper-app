@@ -32,6 +32,9 @@ import { ReactComponent as TelegramIcon } from '~/assets/icons/socials/telegram.
 import { ReactComponent as TwitterIcon } from '~/assets/icons/socials/twitter.svg'
 import { ReactComponent as EthereumIcon } from '~/assets/icons/blockchains/ethereum.svg'
 import { ReactComponent as BscIcon } from '~/assets/icons/blockchains/bsc.svg'
+import { ReactComponent as LBankIcon } from '~/assets/icons/exchange/lbank.svg'
+import { ReactComponent as BybitIcon } from '~/assets/icons/exchange/bybit.svg'
+import { ReactComponent as GateIoIcon } from '~/assets/icons/exchange/gateio.svg'
 import { ReactComponent as WavesIcon } from '~/assets/icons/blockchains/waves.svg'
 import { ReactComponent as SolanaIcon } from '~/assets/icons/blockchains/solana.svg'
 import { ReactComponent as arrowUpIcon } from '~/assets/icons/arrow-top.svg'
@@ -92,6 +95,10 @@ import { ReactComponent as ArrowLongRightIcon } from '~/assets/icons/arrow-long-
 import { ReactComponent as PlayIcon } from '~/assets/icons/play.svg'
 import { ReactComponent as CheckboxCircleIcon } from '~/assets/icons/checkbox-circle.svg'
 import { ReactComponent as HarmonyIcon } from '~/assets/icons/blockchains/harmony.svg'
+import { ReactComponent as TradeIcon } from '~/assets/icons/trade.svg'
+import { ReactComponent as SwapIcon } from '~/assets/icons/swap.svg'
+import { ReactComponent as MinusIcon } from '~/assets/icons/minus.svg'
+import { ReactComponent as InfoIcon } from '~/assets/icons/info.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -133,7 +140,9 @@ const ICONS = {
   email: EmailIcon,
   ethereum: EthereumIcon,
   binance: BscIcon,
+  binanceus: BscIcon,
   waves: WavesIcon,
+  bybit: BybitIcon,
   solana: SolanaIcon,
   arrowUp: arrowUpIcon,
   checked: CheckedIcon,
@@ -167,6 +176,9 @@ const ICONS = {
   okex: OkexIcon,
   aax: AaxIcon,
   ftx: FtxIcon,
+  ftxus: FtxIcon,
+  gateio: GateIoIcon,
+  lbank: LBankIcon,
   ascendex: AscendexIcon,
   coinex: CoinexIcon,
   mexc: MexcIcon,
@@ -193,6 +205,10 @@ const ICONS = {
   play: PlayIcon,
   checkboxCircle: CheckboxCircleIcon,
   harmony: HarmonyIcon,
+  trade: TradeIcon,
+  swap: SwapIcon,
+  minus: MinusIcon,
+  info: InfoIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

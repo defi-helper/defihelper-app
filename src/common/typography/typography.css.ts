@@ -108,6 +108,7 @@ export const variants = styleVariants({
     fontSize: 'inherit',
     lineHeight: 'inherit',
     fontFamily: 'inherit',
+    textAlign: 'inherit',
   },
 })
 

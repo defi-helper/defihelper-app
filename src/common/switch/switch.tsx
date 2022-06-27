@@ -14,10 +14,11 @@ type Components = {
 
 export type SwitchProps = Omit<
   React.ComponentProps<'input'>,
-  'type' | 'value' | 'defaultValue'
+  'type' | 'value' | 'defaultValue' | 'size'
 > & {
   components?: Partial<Components>
   error?: boolean
+  size?: 'small' | 'medium'
 }
 
 const defaultComponents: Components = {
@@ -28,7 +29,13 @@ const defaultComponents: Components = {
 
 export const Switch = createComponent<HTMLInputElement, SwitchProps>(
   function Switch(props, ref) {
-    const { components, className, error, ...restOfProps } = props
+    const {
+      components,
+      className,
+      error,
+      size = 'medium',
+      ...restOfProps
+    } = props
 
     const currentComponents = {
       input: components?.input ?? defaultComponents.input,
@@ -37,7 +44,7 @@ export const Switch = createComponent<HTMLInputElement, SwitchProps>(
     }
 
     return (
-      <span className={clsx(styles.root, className)}>
+      <span className={clsx(styles.root, styles.rootSizes[size], className)}>
         {cloneElement(currentComponents.input, {
           ...currentComponents.input.props,
           ...restOfProps,
@@ -59,6 +66,7 @@ export const Switch = createComponent<HTMLInputElement, SwitchProps>(
         {cloneElement(currentComponents.thumb, {
           ...currentComponents.thumb.props,
           className: clsx(
+            styles.thumbSizes[size],
             styles.thumb,
             error && styles.thumbError,
             currentComponents.thumb.props.className
