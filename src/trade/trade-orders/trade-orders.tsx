@@ -12,6 +12,7 @@ import { Input } from '~/common/input'
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
+import { TradeStatusChart } from '~/trade/common/trade-status-chart'
 import * as styles from './trade-orders.css'
 
 export type TradeOrdersProps = {
@@ -158,7 +159,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                   </Typography>
                 </div>
               </div>
-              <div />
+              <TradeStatusChart />
               <div>
                 <div className={styles.contractBalance}>
                   <img src="" className={styles.contractBalanceIcon} alt="" />
