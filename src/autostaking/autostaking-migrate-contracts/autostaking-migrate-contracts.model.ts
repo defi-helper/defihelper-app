@@ -30,6 +30,7 @@ export const fetchContractsFx = createEffect(
           hidden: false,
           automate: {
             autorestakeCandidate: true,
+            autorestake: true,
           },
         },
       },
