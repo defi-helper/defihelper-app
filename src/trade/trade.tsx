@@ -74,7 +74,7 @@ export const Trade: React.VFC<TradeProps> = () => {
       <Typography variant="h3" className={styles.title}>
         Trade
       </Typography>
-      <div className={styles.content}>
+      <div className={styles.header}>
         <Select label="Wallet">
           <SelectOption value="SelectOption">test</SelectOption>
         </Select>
@@ -84,31 +84,33 @@ export const Trade: React.VFC<TradeProps> = () => {
         <Select label="Trading Pair">
           <SelectOption value="SelectOption">test</SelectOption>
         </Select>
+      </div>
+      <div className={styles.content}>
         <Paper radius={8} className={styles.chart}>
           <div className={styles.chartHeader}>
             <div>
               <Typography>BTC/USDT</Typography>
             </div>
-            <div>
+            <Typography variant="body3" className={styles.chartMetric} as="div">
               <Typography
-                variant="body3"
+                variant="inherit"
                 className={styles.chartTitle}
                 as="span"
               >
                 24h change
               </Typography>
-              <Typography variant="body3">+ 13% | +4 085$</Typography>
-            </div>
-            <div>
+              <Typography variant="inherit">+ 13% | +4 085$</Typography>
+            </Typography>
+            <Typography variant="body3" className={styles.chartMetric} as="div">
               <Typography
-                variant="body3"
+                variant="inherit"
                 className={styles.chartTitle}
                 as="span"
               >
                 24h volume (USD)
               </Typography>
-              <Typography variant="body3">5 259 687 158.42$</Typography>
-            </div>
+              <Typography variant="inherit">5 259 687 158.42$</Typography>
+            </Typography>
           </div>
           <img src="" alt="" className={styles.chartInner} />
         </Paper>

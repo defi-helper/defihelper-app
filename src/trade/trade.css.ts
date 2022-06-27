@@ -13,28 +13,66 @@ export const title = style({
   },
 })
 
+export const header = style({
+  display: 'grid',
+  gap: 8,
+  marginBottom: 24,
+
+  '@media': {
+    [theme.mediaQueries.lg()]: {
+      gridTemplateColumns: '1fr 1fr 1fr',
+      columnGap: 24,
+    },
+  },
+})
+
 export const content = style({
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr 1fr',
-  columnGap: 24,
-  rowGap: 12,
+  gap: 24,
   marginBottom: 24,
+
+  '@media': {
+    [theme.mediaQueries.lg()]: {
+      gridTemplateColumns: '1fr 1fr 1fr',
+      columnGap: 24,
+      rowGap: 12,
+    },
+  },
 })
 
 export const chart = style({
-  padding: '8px 16px',
-  gridColumnStart: 1,
-  gridColumnEnd: 3,
+  padding: '10px 8px',
+
+  '@media': {
+    [theme.mediaQueries.lg()]: {
+      padding: '8px 16px',
+      gridColumnStart: 1,
+      gridColumnEnd: 3,
+    },
+  },
 })
 
 export const chartHeader = style({
   display: 'flex',
   alignItems: 'center',
   marginBottom: 6,
-  gap: 70,
+  gap: 17,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gap: 70,
+    },
+  },
 })
 
-export const chartMetric = style({})
+export const chartMetric = style({
+  '@media': {
+    [theme.mediaQueries.down(956)]: {
+      fontSize: 9,
+      lineHeight: '16px',
+    },
+  },
+})
 
 export const chartTitle = style({
   color: theme.colors.textColorGrey,

@@ -9,9 +9,26 @@ export const root = style({
 })
 
 export const header = style({
-  padding: '12px 24px 12px 16px',
   display: 'flex',
   alignItems: 'center',
+  padding: '14px 18px 13px 16px',
+  flexWrap: 'wrap',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '12px 24px 12px 16px',
+      flexWrap: 'nowrap',
+    },
+  },
+})
+
+export const body = style({
+  overflowY: 'hidden',
+  overflowX: 'auto',
+})
+
+export const bodyInner = style({
+  width: 1100,
 })
 
 export const title = style({
@@ -22,7 +39,13 @@ export const tabs = style({
   border: `1px solid ${theme.colors.border}`,
   background: 'none',
   padding: 2,
-  margin: '0 24px',
+  marginLeft: 'auto',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      margin: '0 24px',
+    },
+  },
 })
 
 export const tabsItem = style({
@@ -39,14 +62,27 @@ export const tabsItemActive = style({
 })
 
 export const search = style({
-  maxWidth: 240,
-  marginRight: 16,
+  marginTop: 8,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      marginTop: 0,
+      marginRight: 16,
+      maxWidth: 240,
+    },
+  },
 })
 
 export const actions = style({
-  display: 'flex',
+  display: 'none',
   alignItems: 'center',
   gap: 16,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      display: 'flex',
+    },
+  },
 })
 
 export const row = style({
@@ -55,7 +91,7 @@ export const row = style({
   alignItems: 'center',
 })
 
-export const tableHeader = style([
+export const tableHeadings = style([
   row,
   {
     padding: '7px 16px',
@@ -67,7 +103,7 @@ export const fs12 = style({
   lineHeight: '16px',
 })
 
-export const tableHeaderButton = style([
+export const tableHeadingsButton = style([
   fs12,
   {
     justifyContent: 'flex-start',
