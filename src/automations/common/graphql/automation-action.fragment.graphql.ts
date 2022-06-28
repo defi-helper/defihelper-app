@@ -8,5 +8,6 @@ export const AUTOMATION_ACTION_FRAGMENT = gql`
     paramsDescription
     priority
     createdAt
+    skipReason
   }
 `

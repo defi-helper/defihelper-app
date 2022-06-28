@@ -313,6 +313,10 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
                   depositing={deployedContract.depositing}
                   running={deployedContract.running}
                   unstaking={deployedContract.refunding}
+                  error={
+                    deployedContract.contractWallet?.billing?.balance
+                      ?.lowFeeFunds
+                  }
                 />
               )
             })}

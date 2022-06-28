@@ -30,8 +30,8 @@ const contracts = networks[config.DEFAULT_CHAIN_ID].Store
 
 export const automationProductsDomain = createDomain()
 
-export const fetchProductsFx = automationProductsDomain.createEffect(
-  automationApi.getProducts
+export const fetchProductsFx = automationProductsDomain.createEffect(() =>
+  automationApi.getProducts()
 )
 
 export const buyProductFx = automationProductsDomain.createEffect(

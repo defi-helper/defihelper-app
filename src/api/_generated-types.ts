@@ -126,6 +126,8 @@ export type AutomateActionType = {
   paramsDescription: Scalars['String']
   /** Execution priority (ascending) */
   priority: Scalars['Int']
+  /** Skip reason */
+  skipReason?: Maybe<AutomateSkipReasonEnum>
   /** Created at date */
   createdAt: Scalars['DateTimeType']
 }
@@ -205,6 +207,8 @@ export type AutomateConditionType = {
   priority: Scalars['Int']
   /** Created at date */
   createdAt: Scalars['DateTimeType']
+  /** Next restake date */
+  restakeAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export enum AutomateConditionTypeEnum {
@@ -240,6 +244,7 @@ export type AutomateContractCreateInputType = {
   protocol: Scalars['UuidType']
   /** Protocol contract */
   contract?: Maybe<Scalars['UuidType']>
+  type: AutomateContractTypeEnum
   /** Address */
   address: Scalars['String']
   /** Adapter name */
@@ -254,6 +259,7 @@ export type AutomateContractListFilterInputType = {
   wallet?: Maybe<Scalars['UuidType']>
   protocol?: Maybe<Scalars['UuidType']>
   contract?: Maybe<Array<Scalars['UuidType']>>
+  type?: Maybe<Array<AutomateContractTypeEnum>>
   address?: Maybe<Array<Scalars['String']>>
   archived?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
@@ -293,6 +299,8 @@ export type AutomateContractType = {
   __typename?: 'AutomateContractType'
   /** Identificator */
   id: Scalars['UuidType']
+  /** Contract type */
+  type: AutomateContractTypeEnum
   /** Owner wallet */
   wallet: WalletBlockchainType
   /** Protocol */
@@ -315,6 +323,10 @@ export type AutomateContractType = {
   archivedAt?: Maybe<Scalars['DateTimeType']>
 }
 
+export enum AutomateContractTypeEnum {
+  Autorestake = 'autorestake',
+}
+
 export type AutomateContractUpdateInputType = {
   /** Contract identifier */
   id: Scalars['UuidType']
@@ -332,6 +344,11 @@ export type AutomateDescriptionType = {
   __typename?: 'AutomateDescriptionType'
   name: Scalars['String']
   description: Scalars['String']
+}
+
+export enum AutomateSkipReasonEnum {
+  LowFeeFunds = 'LowFeeFunds',
+  NotAvailableNotification = 'NotAvailableNotification',
 }
 
 export type AutomateTriggerCallHistoryListFilterInputType = {
@@ -2604,6 +2621,7 @@ export type TokenUpdateInputType = {
 export type TreasuryType = {
   __typename?: 'TreasuryType'
   portfoliosCount: Scalars['Int']
+  walletsCount: Scalars['Int']
   protocolsCount: Scalars['Int']
   contractsCount: Scalars['Int']
   trackedUSD: Scalars['Float']
@@ -3156,6 +3174,8 @@ export type UserType = {
   metric: UserMetricType
   billing: UserBillingType
   store: UserStoreType
+  /** Date of last auth */
+  authAt: Scalars['DateTimeType']
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -3750,7 +3770,13 @@ export type AutomationActionFragmentFragment = {
   __typename?: 'AutomateActionType'
 } & Pick<
   AutomateActionType,
-  'id' | 'type' | 'params' | 'paramsDescription' | 'priority' | 'createdAt'
+  | 'id'
+  | 'type'
+  | 'params'
+  | 'paramsDescription'
+  | 'priority'
+  | 'createdAt'
+  | 'skipReason'
 >
 
 export type MonitoringAutomationsAutorestakeCreationHistoryQueryVariables =
@@ -5795,6 +5821,12 @@ export type StakingAutomatesContractFragmentFragment = {
             WalletMetricType,
             'stakedUSD'
           >
+          billing: { __typename?: 'WalletBillingType' } & {
+            balance: { __typename?: 'BillingBalanceType' } & Pick<
+              BillingBalanceType,
+              'lowFeeFunds'
+            >
+          }
         }
     >
     wallet: { __typename?: 'WalletBlockchainType' } & Pick<

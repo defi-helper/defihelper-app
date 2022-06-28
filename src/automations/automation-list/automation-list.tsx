@@ -253,6 +253,10 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
                 descriptions={descriptions}
                 wallet={trigger.wallet.name || 'untitled'}
                 walletNetwork={trigger.wallet.network}
+                skipReason={trigger.actions.list
+                  ?.map(({ skipReason }) => skipReason)
+                  .filter(Boolean)
+                  .join(', ')}
               />
             ))}
         </div>

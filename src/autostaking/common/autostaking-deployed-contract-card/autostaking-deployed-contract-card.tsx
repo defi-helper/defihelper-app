@@ -27,7 +27,6 @@ export type AutostakingDeployedContractCardProps = {
   onUnstake: () => void
   onDelete: () => void
   onRun: () => void
-  error?: boolean
   apy?: string
   apyBoost?: string
   deleting?: boolean
@@ -35,6 +34,7 @@ export type AutostakingDeployedContractCardProps = {
   unstaking?: boolean
   migrating?: boolean
   running?: boolean
+  error?: boolean
 }
 
 export const AutostakingDeployedContractCard: React.VFC<AutostakingDeployedContractCardProps> =

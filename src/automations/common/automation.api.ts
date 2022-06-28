@@ -381,7 +381,7 @@ export const automationApi = {
         list: data?.products.list ?? [],
       })),
 
-  getBalance: (variables?: AutomationProductsBalanceQueryVariables) =>
+  getBalance: () =>
     getAPIClient()
       .request<
         AutomationProductsBalanceQuery,
@@ -389,7 +389,6 @@ export const automationApi = {
         AutomationProductsBalanceQueryVariables
       >({
         query: AUTOMATION_PRODUCTS_BALANCE.loc?.source.body ?? '',
-        variables,
       })
       .then(({ data }) => data?.me?.store.balance.notifications ?? 0),
 }
