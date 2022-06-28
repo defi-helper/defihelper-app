@@ -189,7 +189,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             GovProposalStateEnum.Expired,
             GovProposalStateEnum.Succeeded,
           ].includes(governanceDetail.state) ||
-            (receipt &&
+            (receipt?.hasVoted &&
               [
                 GovReceiptSupportEnum.For,
                 GovReceiptSupportEnum.Abstain,

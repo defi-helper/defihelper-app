@@ -1,3 +1,4 @@
+import isEmpty from 'lodash.isempty'
 import { useEffect, useMemo, useState } from 'react'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
@@ -27,11 +28,11 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import { authModel } from '~/auth'
-import * as styles from './settings-wallets.css'
-import * as model from './settings-wallets.model'
 import { CanDemo } from '~/auth/can-demo'
 import { analytics } from '~/analytics'
 import { ButtonBase } from '~/common/button-base'
+import * as styles from './settings-wallets.css'
+import * as model from './settings-wallets.model'
 
 export type SettingsWalletsProps = {
   className?: string
@@ -205,7 +206,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
 
   const mergedWallets = [
     ...wallets.nonEmpty,
-    ...(showEmpty || !wallets.nonEmpty.length ? wallets.empty : []),
+    ...(showEmpty || isEmpty(wallets.nonEmpty) ? wallets.empty : []),
   ]
 
   const handleShowEmpty = () => setShowEmpty(true)
@@ -279,7 +280,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
             <SettingsPaper key={String(index)} />
           ))}
       </div>
-      {!showEmpty && !wallets.nonEmpty.length && Boolean(wallets.empty.length) && (
+      {!showEmpty && !isEmpty(wallets.empty) && (
         <ButtonBase
           onClick={handleShowEmpty}
           className={styles.showEmptyWallets}

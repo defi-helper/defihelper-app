@@ -274,6 +274,9 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               depositing={automatesContract.depositing}
               deleting={automatesContract.deleting}
               running={automatesContract.running}
+              error={
+                automatesContract.contractWallet?.billing.balance.lowFeeFunds
+              }
             />
           )
         })}

@@ -26,7 +26,9 @@ export const header = style({
 
 export const proposalTitle = style({
   textDecoration: 'none',
-  width: '100%',
+  width: 'calc(100% - 20px)',
+  display: 'inline-block',
+  wordBreak: 'break-all',
 })
 
 export const description = style({
@@ -48,7 +50,7 @@ export const info = style({
 })
 
 export const manageButton = style({
-  width: 20,
+  minWidth: 20,
   height: 20,
 })
 
