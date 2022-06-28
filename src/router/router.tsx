@@ -91,9 +91,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.portfolio}>
           <Portfolio />
         </PrivateRoute>
-        <PrivateRoute path={paths.demo}>
+        <Route path={paths.demo}>
           <DemoForward />
-        </PrivateRoute>
+        </Route>
         <Route path={paths.roadmap.detail()}>
           <RoadmapDetail />
         </Route>
