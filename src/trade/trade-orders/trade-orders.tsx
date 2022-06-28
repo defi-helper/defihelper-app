@@ -159,7 +159,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                   </Typography>
                 </div>
               </div>
-              <TradeStatusChart />
+              <TradeStatusChart
+                stopLoss="100"
+                takeProfit="200"
+                buy="150"
+                className={styles.contractStatus}
+              />
               <div>
                 <div className={styles.contractBalance}>
                   <img src="" className={styles.contractBalanceIcon} alt="" />

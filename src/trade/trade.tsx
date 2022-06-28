@@ -95,21 +95,25 @@ export const Trade: React.VFC<TradeProps> = () => {
               <Typography
                 variant="inherit"
                 className={styles.chartTitle}
-                as="span"
+                as="div"
               >
                 24h change
               </Typography>
-              <Typography variant="inherit">+ 13% | +4 085$</Typography>
+              <Typography variant="inherit" as="div">
+                + 13% | +4 085$
+              </Typography>
             </Typography>
             <Typography variant="body3" className={styles.chartMetric} as="div">
               <Typography
                 variant="inherit"
                 className={styles.chartTitle}
-                as="span"
+                as="div"
               >
                 24h volume (USD)
               </Typography>
-              <Typography variant="inherit">5 259 687 158.42$</Typography>
+              <Typography variant="inherit" as="div">
+                5 259 687 158.42$
+              </Typography>
             </Typography>
           </div>
           <img src="" alt="" className={styles.chartInner} />
