@@ -6,8 +6,11 @@ import {
   MonitoringUsersRegisteringHistoryQueryVariables,
   UserUpdateMutation,
   UserUpdateMutationVariables,
+  MonitoringWalletsRegisteringHistoryQuery,
+  MonitoringWalletsRegisteringHistoryQueryVariables,
 } from '~/api/_generated-types'
 import { USERS, USER_UPDATE, USER_REGISTERING_HISTORY } from './graphql'
+import { WALLET_REGISTERING_HISTORY } from './graphql/wallet-registering-history.graphql'
 
 export const usersApi = {
   getUsers: (variables: UsersQueryVariables) =>
@@ -42,4 +45,18 @@ export const usersApi = {
         variables,
       })
       .then(({ data }) => data?.monitoringUsersRegisteringHistory),
+
+  getWalletsRegisteringHistory: (
+    variables: MonitoringWalletsRegisteringHistoryQueryVariables
+  ) =>
+    getAPIClient()
+      .request<
+        MonitoringWalletsRegisteringHistoryQuery,
+        unknown,
+        MonitoringWalletsRegisteringHistoryQueryVariables
+      >({
+        query: WALLET_REGISTERING_HISTORY.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.monitoringWalletsRegisteringHistory),
 }

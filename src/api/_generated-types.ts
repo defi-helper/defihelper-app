@@ -4233,6 +4233,7 @@ export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
           | 'link'
           | 'hidden'
           | 'deprecated'
+          | 'watcherId'
         > & {
             protocol: { __typename?: 'ProtocolType' } & Pick<
               ProtocolType,
@@ -6057,6 +6058,7 @@ export type StakingContractFragmentFragment = {
   | 'adapter'
   | 'layout'
   | 'deployBlockNumber'
+  | 'watcherId'
   | 'deprecated'
 > & {
     protocol: { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'id'>
@@ -6268,6 +6270,21 @@ export type UserFragment = { __typename?: 'UserType' } & Pick<
       >
     }
   }
+
+export type MonitoringWalletsRegisteringHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringWalletsRegisteringHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringWalletsRegisteringHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
+}
 
 export type WalletConfigQueryVariables = Exact<{ [key: string]: never }>
 
