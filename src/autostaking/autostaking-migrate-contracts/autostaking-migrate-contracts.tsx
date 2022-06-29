@@ -35,6 +35,7 @@ import * as autostakingContractsModel from '~/autostaking/autostaking-contracts/
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as styles from './autostaking-migrate-contracts.css'
+import { Loader } from '~/common/loader'
 
 export type AutostakingMigrateContractsProps = {
   className?: string
@@ -45,6 +46,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
   (props) => {
     const contracts = useStore(model.$contractsWithLoading)
     const hiddenContracts = useStore(model.$hiddenContractsWithLoading)
+    const loading = useStore(model.fetchContractsFx.pending)
 
     const [enableAutostakingVideo, setEnableAutostakingVideo] = useLocalStorage(
       'enableAutostakingVideo',
@@ -97,7 +99,12 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
         signal: abortController.signal,
         filter: props.search ? { search: props.search } : undefined,
       })
-      return () => abortController.abort()
+      return () => {
+        model.resetContracts()
+        model.resetHiddenContracts()
+
+        abortController.abort()
+      }
     }, [props.search])
 
     useEffect(() => {
@@ -417,12 +424,17 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
           })}
           radius={isEmptyContracts ? 8 : undefined}
         >
-          {isEmptyContracts && (
+          {isEmptyContracts && !loading && (
             <Typography variant="h4">
               We couldn&apos;t find any of your contracts on other services. We
               regularly check for outside contracts, and as soon as we find a
               match, you will see your contracts here with the migration option.
             </Typography>
+          )}
+          {loading && isEmptyContracts && (
+            <div className={styles.loader}>
+              <Loader height="36" />
+            </div>
           )}
           {!isEmptyContracts && (
             <>

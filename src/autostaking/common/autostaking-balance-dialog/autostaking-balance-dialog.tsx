@@ -5,9 +5,10 @@ import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { cutAccount } from '~/common/cut-account'
-import { Dialog } from '~/common/dialog'
+import { Dialog, useDialog } from '~/common/dialog'
 import { Link } from '~/common/link'
 import { NumericalInput } from '~/common/numerical-input'
+import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import { Typography } from '~/common/typography'
 import * as styles from './autostaking-balance-dialog.css'
 
@@ -24,12 +25,21 @@ export type AutostakingBalanceDialogProps = {
   recomendedIncome: string | undefined
   token: string | undefined
   onSubmit: (formValues: FormValues) => Promise<void>
+  onCancel: () => void
 }
 
 export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> =
   (props) => {
     const { register, handleSubmit, formState, setValue } =
       useForm<FormValues>()
+
+    const [openStopTransaction] = useDialog(StopTransactionDialog)
+
+    const handleStopTransaction = () => {
+      openStopTransaction()
+        .then(props.onCancel)
+        .catch((error) => console.error(error.message))
+    }
 
     const handleOnSubmit = handleSubmit(async (formValues) => {
       try {
@@ -47,7 +57,10 @@ export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> 
     }
 
     return (
-      <Dialog className={styles.root}>
+      <Dialog
+        className={styles.root}
+        onClose={formState.isSubmitting ? handleStopTransaction : undefined}
+      >
         <div className={styles.mb}>
           <Typography
             variant="body2"
