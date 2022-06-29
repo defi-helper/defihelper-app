@@ -1,26 +1,40 @@
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { useEffect, useMemo, useState } from 'react'
-import { useMedia } from 'react-use'
-import { useStore } from 'effector-react'
+import { useLocalStorage, useMedia } from 'react-use'
+import { useGate, useStore } from 'effector-react'
 
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { AutostakingCarousel } from '~/autostaking/common/autostaking-carousel'
 import { AutostakingMigrateCard } from '~/autostaking/common/autostaking-migrate-card'
-import { useDialog } from '~/common/dialog'
+import { useDialog, UserRejectionError } from '~/common/dialog'
 import { StakingAdapterDialog, StakingMigrateDialog } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Button } from '~/common/button'
 import * as automatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as model from './autostaking-migrate-contracts.model'
-import * as styles from './autostaking-migrate-contracts.css'
 import { authModel } from '~/auth'
 import { switchNetwork } from '~/wallets/common'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import { toastsService } from '~/toasts'
+import {
+  AutomateActionTypeEnum,
+  AutomateConditionTypeEnum,
+  AutomateTriggerTypeEnum,
+} from '~/api'
+import { analytics } from '~/analytics'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { AutostakingVideoDialog } from '../common/autostaking-video-dialog'
+import { AutostakingBalanceDialog } from '../common/autostaking-balance-dialog'
+import { AutostakingDeployDialog } from '../common/autostaking-deploy-dialog'
+import { AutostakingTabsDialog } from '../common/autostaking-tabs-dialog'
+import * as autostakingContractsModel from '~/autostaking/autostaking-contracts/autostaking-contracts.model'
+import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
+import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
+import * as styles from './autostaking-migrate-contracts.css'
 
 export type AutostakingMigrateContractsProps = {
   className?: string
@@ -32,11 +46,23 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
     const contracts = useStore(model.$contractsWithLoading)
     const hiddenContracts = useStore(model.$hiddenContractsWithLoading)
 
+    const [enableAutostakingVideo, setEnableAutostakingVideo] = useLocalStorage(
+      'enableAutostakingVideo',
+      false
+    )
+
     const [openMigrateDialog] = useDialog(StakingMigrateDialog)
     const [openAdapter] = useDialog(StakingAdapterDialog)
+    const [openAutostakingVideoDialog] = useDialog(AutostakingVideoDialog)
+    const [openAutostakingBalanceDialog] = useDialog(AutostakingBalanceDialog)
+    const [openAutostakingDeployDialog] = useDialog(AutostakingDeployDialog)
+    const [openAutostakingTabsDialog] = useDialog(AutostakingTabsDialog)
     const currentWallet = walletNetworkModel.useWalletNetwork()
     const wallets = useStore(walletsModel.$wallets)
     const user = useStore(authModel.$user)
+
+    const automatesContracts = useStore(automatesModel.$automatesContracts)
+    useGate(automatesModel.StakingAutomatesGate)
 
     const [hidden, setHidden] = useState(true)
 
@@ -156,6 +182,184 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
         }
       }
 
+    const handleAutostake =
+      (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
+      async () => {
+        model.migratingStart(contract.id)
+
+        try {
+          const addresses =
+            await autostakingContractsModel.fetchContractAddressesFx({
+              contracts: [contract],
+              protocolAdapter: contract.protocol.adapter,
+            })
+          const { prototypeAddress = undefined } = addresses[contract.id]
+
+          if (
+            !contract.automate.autorestake ||
+            !prototypeAddress ||
+            !currentWallet
+          )
+            return
+
+          if (!enableAutostakingVideo) {
+            await openAutostakingVideoDialog({
+              dontShowAgain: enableAutostakingVideo,
+              onDontShowAgain: setEnableAutostakingVideo,
+            }).catch(console.error)
+          }
+
+          const findedWallet = wallets.find((wallet) => {
+            const sameAddreses =
+              String(currentWallet.chainId) === 'main'
+                ? currentWallet.account === wallet.address
+                : currentWallet.account?.toLowerCase() === wallet.address
+
+            return (
+              sameAddreses && String(currentWallet.chainId) === wallet.network
+            )
+          })
+
+          if (!findedWallet) throw new Error('wallet is not connected')
+
+          const metrics = await walletsModel.fetchWalletListMetricsFx()
+
+          const metric = metrics[findedWallet.id]
+
+          if (
+            !metric ||
+            typeof metric?.billing.balance.netBalance === 'undefined'
+          )
+            throw Error('wallet is not connected')
+
+          const billingBalance =
+            await autostakingContractsModel.fetchBillingBalanceFx({
+              blockchain: contract.blockchain,
+              network: contract.network,
+            })
+
+          if (
+            bignumberUtils.lte(
+              metric.billing.balance.netBalance,
+              billingBalance.recomendedIncome
+            )
+          ) {
+            await openAutostakingBalanceDialog({
+              balance: String(metric.billing.balance.netBalance),
+              network: findedWallet.network,
+              wallet: findedWallet.address,
+              ...billingBalance,
+              onSubmit: (result) =>
+                walletsModel.depositFx({
+                  blockchain: findedWallet.blockchain,
+                  amount: result.amount,
+                  walletAddress: findedWallet.address,
+                  chainId: String(currentWallet.chainId),
+                  provider: currentWallet.provider,
+                }),
+            })
+          }
+
+          const deployAdapter = await deployModel.fetchDeployAdapterFx({
+            address: prototypeAddress,
+            protocol: contract.protocol.adapter,
+            contract: contract.automate.autorestake,
+            chainId: String(currentWallet.chainId),
+            provider: currentWallet.provider,
+            contractAddress: contract.address,
+          })
+
+          const stepsResult = await openAutostakingDeployDialog({
+            steps: deployAdapter.deploy,
+          })
+
+          const deployedContract = await deployModel.deployFx({
+            proxyAddress: stepsResult.address,
+            inputs: stepsResult.inputs,
+            protocol: contract.protocol.id,
+            adapter: contract.automate.autorestake,
+            contract: contract.id,
+            account: findedWallet.address,
+            chainId: String(currentWallet.chainId),
+            provider: currentWallet.provider,
+          })
+
+          const createdTrigger = await automationUpdateModel.createTriggerFx({
+            wallet: findedWallet.id,
+            params: JSON.stringify({}),
+            type: AutomateTriggerTypeEnum.EveryHour,
+            name: `Autostaking ${contract.name}`,
+            active: true,
+          })
+
+          const action = await automationUpdateModel.createActionFx({
+            trigger: createdTrigger.id,
+            type: AutomateActionTypeEnum.EthereumAutomateRun,
+            params: JSON.stringify({
+              id: deployedContract.id,
+            }),
+            priority: 0,
+          })
+
+          await automationUpdateModel.createConditionFx({
+            trigger: createdTrigger.id,
+            type: AutomateConditionTypeEnum.EthereumOptimalAutomateRun,
+            params: JSON.stringify({
+              id: action.id,
+            }),
+            priority: 0,
+          })
+
+          const stakingAutomatesAdapter = await automatesModel.fetchAdapterFx({
+            protocolAdapter: contract.protocol.adapter,
+            contractAdapter: contract.automate.autorestake,
+            contractId: contract.id,
+            contractAddress: contract.address,
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
+            action: 'migrate',
+          })
+
+          if (!stakingAutomatesAdapter) throw new Error('something went wrong')
+
+          const cb = () => {
+            automatesModel
+              .scanWalletMetricFx({
+                walletId: createdTrigger.wallet.id,
+                contractId: contract.id,
+              })
+              .catch(console.error)
+          }
+
+          if ('methods' in stakingAutomatesAdapter.migrate) {
+            await openAutostakingTabsDialog({
+              methods: stakingAutomatesAdapter.migrate.methods,
+              onLastStep: cb,
+            })
+          } else {
+            await openAdapter({
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              steps: stakingAutomatesAdapter.migrate,
+            })
+              .catch(cb)
+              .then(cb)
+          }
+
+          analytics.onAutoStakingEnabled()
+          toastsService.success('success!')
+        } catch (error) {
+          if (
+            error instanceof Error &&
+            !(error instanceof UserRejectionError)
+          ) {
+            toastsService.error(error.message)
+          }
+        } finally {
+          model.migratingEnd()
+        }
+      }
+
     const handleToggleHidden = () => {
       setHidden(!hidden)
     }
@@ -190,6 +394,20 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
       (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
       () =>
         switchNetwork(contract.network).catch(console.error)
+
+    const automatesContractsMap = automatesContracts.reduce(
+      (acc, automateContract) => {
+        if (!automateContract.contract) return acc
+
+        acc.set(
+          automateContract.contract.id,
+          automateContract.contract.metric.myStaked
+        )
+
+        return acc
+      },
+      new Map<string, string>()
+    )
 
     return (
       <div className={clsx(styles.root, props.className)}>
@@ -234,6 +452,12 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
                       ? handleSwitchNetwork(contract)
                       : null
 
+                  const position = automatesContractsMap.get(contract.id)
+
+                  const migrate = bignumberUtils.gt(position, 0)
+                    ? handleMigrate(contract)
+                    : handleAutostake(contract)
+
                   return (
                     <AutostakingMigrateCard
                       key={contract.id}
@@ -247,11 +471,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
                       protocol={contract.protocol.name}
                       apy={contract.metric.aprYear}
                       apyBoost={contract.metric.myAPYBoost}
-                      onMigrate={
-                        !wallet
-                          ? connect
-                          : wrongNetwork ?? handleMigrate(contract)
-                      }
+                      onMigrate={!wallet ? connect : wrongNetwork ?? migrate}
                       onHide={handleHide(contract)}
                       hidding={contract.hidding}
                       migrating={contract.migrating}
@@ -293,6 +513,12 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
                         ? handleSwitchNetwork(contract)
                         : null
 
+                    const position = automatesContractsMap.get(contract.id)
+
+                    const migrate = bignumberUtils.gt(position, 0)
+                      ? handleMigrate(contract)
+                      : handleAutostake(contract)
+
                     return (
                       <AutostakingMigrateCard
                         key={contract.id}
@@ -306,11 +532,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
                         protocol={contract.protocol.name}
                         apy={contract.metric.aprYear}
                         apyBoost={contract.metric.myAPYBoost}
-                        onMigrate={
-                          !wallet
-                            ? connect
-                            : wrongNetwork ?? handleMigrate(contract)
-                        }
+                        onMigrate={!wallet ? connect : wrongNetwork ?? migrate}
                         icon="eye"
                         onShow={handleShow(contract)}
                         showing={contract.showing}
