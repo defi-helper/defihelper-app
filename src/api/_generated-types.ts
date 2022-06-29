@@ -839,6 +839,8 @@ export type ContractType = {
   network: Scalars['String']
   /** Address */
   address: Scalars['String']
+  /** Watcher id */
+  watcherId?: Maybe<Scalars['String']>
   /** Contract deployment block number */
   deployBlockNumber?: Maybe<Scalars['String']>
   /** Usable automates */
@@ -1984,6 +1986,7 @@ export type Query = {
   tokenAlias?: Maybe<TokenAlias>
   tokensAlias: TokenAliasListQuery
   products: StoreProductListQuery
+  productPriceFeed: StoreProductPriceFeedType
   billingBalance: BalanceMetaType
   govProposal?: Maybe<GovProposalType>
   govProposals: GovProposalListQuery
@@ -1997,6 +2000,7 @@ export type Query = {
   restakeStrategy: RestakeStrategyType
   treasury: TreasuryType
   monitoringUsersRegisteringHistory: Array<MonitoringStatisticsPointType>
+  monitoringWalletsRegisteringHistory: Array<MonitoringStatisticsPointType>
   monitoringAutomateRunHistory: Array<MonitoringStatisticsPointType>
   monitoringAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
@@ -2069,6 +2073,11 @@ export type QueryProductsArgs = {
   filter?: Maybe<StoreProductListQueryFilterInputType>
   sort?: Maybe<Array<StoreProductListQuerySortInputType>>
   pagination?: Maybe<StoreProductListQueryPaginationInputType>
+}
+
+export type QueryProductPriceFeedArgs = {
+  network: Scalars['String']
+  id: Scalars['UuidType']
 }
 
 export type QueryBillingBalanceArgs = {
@@ -2197,6 +2206,13 @@ export enum StoreProductListQuerySortInputTypeColumnEnum {
   Id = 'id',
   Name = 'name',
   CreatedAt = 'createdAt',
+}
+
+export type StoreProductPriceFeedType = {
+  __typename?: 'StoreProductPriceFeedType'
+  product: StoreProductType
+  /** Price in native token */
+  price: Scalars['Float']
 }
 
 export type StoreProductType = {
@@ -3923,6 +3939,18 @@ export type AutomationHistoryQuery = { __typename?: 'Query' } & {
         pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
       }
     }
+  >
+}
+
+export type AutomationProductPriceFeedQueryVariables = Exact<{
+  network: Scalars['String']
+  id: Scalars['UuidType']
+}>
+
+export type AutomationProductPriceFeedQuery = { __typename?: 'Query' } & {
+  productPriceFeed: { __typename?: 'StoreProductPriceFeedType' } & Pick<
+    StoreProductPriceFeedType,
+    'price'
   >
 }
 
