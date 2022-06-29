@@ -10,6 +10,7 @@ export const heading = style({
   display: 'flex',
   alignItems: 'center',
   marginBottom: 16,
+  gap: 6,
 })
 
 export const manage = style({
@@ -166,3 +167,29 @@ export const attentionDropdown = style({
   borderColor: 'currentcolor',
   width: 252,
 })
+
+export const icons = style({
+  display: 'flex',
+  alignItems: 'center',
+})
+
+export const icon = style({
+  width: 20,
+  height: 20,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+
+  selectors: {
+    '&:not(:first-child)': {
+      marginLeft: -4,
+    },
+  },
+})
+
+export const paperIcon = style([
+  icon,
+  {
+    background: theme.colors.common.black1,
+  },
+])
