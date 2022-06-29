@@ -26,6 +26,7 @@ export const AUTOSTAKING_STAKING_CONTRACTS = gql`
         link
         hidden
         deprecated
+        watcherId
         automate {
           autorestake
         }
