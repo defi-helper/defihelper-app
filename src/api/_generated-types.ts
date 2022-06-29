@@ -1997,6 +1997,7 @@ export type Query = {
   restakeStrategy: RestakeStrategyType
   treasury: TreasuryType
   monitoringUsersRegisteringHistory: Array<MonitoringStatisticsPointType>
+  monitoringWalletsRegisteringHistory: Array<MonitoringStatisticsPointType>
   monitoringAutomateRunHistory: Array<MonitoringStatisticsPointType>
   monitoringAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
@@ -6240,6 +6241,21 @@ export type UserFragment = { __typename?: 'UserType' } & Pick<
       >
     }
   }
+
+export type MonitoringWalletsRegisteringHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringWalletsRegisteringHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringWalletsRegisteringHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
+}
 
 export type WalletConfigQueryVariables = Exact<{ [key: string]: never }>
 
