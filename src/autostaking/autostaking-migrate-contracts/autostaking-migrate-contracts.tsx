@@ -82,17 +82,27 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
       return () => abortController.abort()
     }, [])
 
+    useEffect(() => {
+      return () => {
+        model.resetContracts()
+        model.resetHiddenContracts()
+      }
+    }, [])
+
     const handleMigrate =
       (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
       async () => {
         model.migratingStart(contract.id)
 
         try {
-          if (!currentWallet?.account) return
+          if (!currentWallet?.account)
+            return toastsService.error('wallet is not connected')
+          if (!contract.automate.autorestake)
+            return toastsService.error('adapter not found')
 
           const adapter = await automatesModel.fetchAdapterFx({
             protocolAdapter: contract.protocol.adapter,
-            contractAdapter: contract.adapter,
+            contractAdapter: contract.automate.autorestake,
             contractId: contract.id,
             contractAddress: contract.address,
             provider: currentWallet.provider,

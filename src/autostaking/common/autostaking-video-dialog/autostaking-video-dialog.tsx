@@ -50,8 +50,8 @@ export const AutostakingVideoDialog: React.VFC<AutostakingVideoDialogProps> = (
       </div>
       <Typography variant="body2" className={styles.subtitle}>
         Auto-staking is a special kind of automation which auto-compounds your
-        tokens at the optimal rate to obtain the most profit. Learn more from
-        the video introduction.
+        tokens at the optimal rate - maximizing profit and minimizing effort.
+        Learn more from the video introduction.
       </Typography>
       <div className={styles.video}>
         {play ? (
@@ -77,7 +77,12 @@ export const AutostakingVideoDialog: React.VFC<AutostakingVideoDialogProps> = (
           </>
         )}
       </div>
-      <Link href="/" color="blue" target="_blank" className={styles.link}>
+      <Link
+        href="https://defihelper.io/security"
+        color="blue"
+        target="_blank"
+        className={styles.link}
+      >
         Learn more about DeFiHelper security
       </Link>
       {props.onDontShowAgain && (

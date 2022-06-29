@@ -76,6 +76,9 @@ export const bignumberUtils = {
   lt: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isLessThan(num2 || 0),
 
+  lte: (num1?: string | number | null, num2?: string | number | null) =>
+    new BigNumber(num1 || 0).isLessThanOrEqualTo(num2 || 0),
+
   eq: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isEqualTo(num2 || 0),
 

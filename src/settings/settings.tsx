@@ -1,6 +1,5 @@
 import { AppLayout } from '~/layouts'
 import { SettingsContacts } from './settings-contacts'
-import { SettingsSmartNotifications } from './settings-smart-notifications'
 import { SettingsWallets } from './settings-wallets'
 import { Head } from '~/common/head'
 import { SettingsTransactionHistory } from './settings-transaction-history'
@@ -24,7 +23,6 @@ export const Settings: React.VFC<SettingsProps> = () => {
       <div className={styles.root}>
         <SettingsWallets className={styles.section} />
         <SettingsContacts className={styles.section} />
-        <SettingsSmartNotifications className={styles.section} />
         <SettingsTransactionHistory className={styles.section} />
         <SettingsIntegrations className={styles.section} />
         <StakingAutomates className={styles.section} />

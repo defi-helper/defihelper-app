@@ -28,7 +28,7 @@ export const Tokens: React.VFC = () => {
   const [network, setNetwork] = useState<string | undefined>(undefined)
   const [search, setSearch] = useState<undefined | string>(undefined)
   const [tokenAlias, setTokenAlias] = useState<undefined | string>(undefined)
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(0)
 
   const tokens = useStore(model.$tokens)
   const tokensAlias = useStore(model.$tokensAlias)
@@ -100,7 +100,7 @@ export const Tokens: React.VFC = () => {
   }, [page])
 
   useEffect(() => {
-    setPage(1)
+    setPage(0)
   }, [network, search, tokenAlias])
 
   return (
@@ -207,7 +207,7 @@ export const Tokens: React.VFC = () => {
                   <Link
                     target="_blank"
                     href={`${
-                      networksConfig[token.network]?.explorerUrl
+                      networksConfig[token.network]?.explorerURL
                     }/address/${token.address}`}
                   >
                     {token.name}
@@ -222,7 +222,7 @@ export const Tokens: React.VFC = () => {
                   {token.priceFeed?.type ?? '-'}
                 </Typography>
 
-                <Typography variant="body3">
+                <Typography variant="body3" title={token.alias?.id}>
                   <ButtonBase
                     as={ReactRouterLink}
                     to={`${paths.tokensAlias}?search=${token.alias?.id}`}

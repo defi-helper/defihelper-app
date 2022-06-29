@@ -5,5 +5,6 @@ export const USER_FRAGMENT = gql`
     id
     role
     createdAt
+    timezone
   }
 `

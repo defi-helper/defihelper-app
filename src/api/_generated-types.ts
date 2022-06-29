@@ -3715,7 +3715,7 @@ export type MeQuery = { __typename?: 'Query' } & {
 
 export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
   UserType,
-  'id' | 'role' | 'createdAt'
+  'id' | 'role' | 'createdAt' | 'timezone'
 >
 
 export type AutomationActionCreateMutationVariables = Exact<{
@@ -5603,7 +5603,7 @@ export type UserNotificationToggleMutation = { __typename?: 'Mutation' } & Pick<
 
 export type UserNotificationTypeFragment = {
   __typename?: 'UserNotificationType'
-} & Pick<UserNotificationType, 'type'>
+} & Pick<UserNotificationType, 'type' | 'time' | 'contact'>
 
 export type WalletDeleteMutationVariables = Exact<{
   id: Scalars['UuidType']

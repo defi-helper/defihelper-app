@@ -43,6 +43,7 @@ import { Autostaking } from '~/autostaking'
 import { Tokens } from '~/tokens'
 import { Admin } from '~/admin'
 import { TokensAlias } from '~/tokens-alias'
+import { Trade } from '~/trade'
 
 export type RouterProps = unknown
 
@@ -91,9 +92,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.portfolio}>
           <Portfolio />
         </PrivateRoute>
-        <PrivateRoute path={paths.demo}>
+        <Route path={paths.demo}>
           <DemoForward />
-        </PrivateRoute>
+        </Route>
         <Route path={paths.roadmap.detail()}>
           <RoadmapDetail />
         </Route>
@@ -159,6 +160,9 @@ export const Router: React.VFC<RouterProps> = () => {
         </Route>
         <PrivateRoute path={paths.admin}>
           <Admin />
+        </PrivateRoute>
+        <PrivateRoute path={paths.trade}>
+          <Trade />
         </PrivateRoute>
         <Route>
           <NotFound />

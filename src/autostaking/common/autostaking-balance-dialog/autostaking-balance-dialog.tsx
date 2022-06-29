@@ -60,8 +60,8 @@ export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> 
         </div>
         <Typography variant="body2" className={styles.subtitle}>
           Your personal balance on DeFiHelper is used to pay network commissions
-          for automations performed, as well as DeFiHelper commissions. You can
-          collect the balance on your balance at any time.
+          for enacted automations, as well as notifications. You can re-claim
+          your personal balance at any time.
         </Typography>
         <form
           noValidate

@@ -2,20 +2,33 @@ import { useEffect, useState } from 'react'
 
 import { escapeRegex } from '~/common/escape-regex'
 import { createComponent } from '~/common/create-component'
-import { Input } from '../input'
+import { Input } from '~/common/input'
 
-const INPUT_REGEX = RegExp(`^\\d*(?:\\\\[.])?\\d*$`) // match escaped "." characters via in a non-capturing group
+const INPUT_REGEX = RegExp(`^\\d*(?:\\\\[.])?\\d*$`)
+const INPUT_REGEX_NEGATIVE_POSITIVE = RegExp(`^\\d*(?:\\\\[.])?\\d*$`)
+
+export type NumericalInputProps = React.ComponentProps<typeof Input> & {
+  negativeOrPositive?: boolean
+}
 
 export const NumericalInput = createComponent<
   HTMLInputElement,
-  React.ComponentProps<typeof Input>
+  NumericalInputProps
 >(function NumericalInput(props, ref) {
   const [value, setValue] = useState(props.value as string)
 
+  const { negativeOrPositive, ...restProps } = props
+
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const eventValue = event.target.value.replace(/,/g, '.')
-    const valuePassed =
-      eventValue === '' || INPUT_REGEX.test(escapeRegex(eventValue))
+
+    let regex = INPUT_REGEX.test(escapeRegex(eventValue))
+
+    if (negativeOrPositive) {
+      regex = INPUT_REGEX_NEGATIVE_POSITIVE.test(escapeRegex(eventValue))
+    }
+
+    const valuePassed = eventValue === '' || regex
 
     if (!valuePassed) return
 
@@ -35,7 +48,7 @@ export const NumericalInput = createComponent<
 
   return (
     <Input
-      {...props}
+      {...restProps}
       value={value || ''}
       ref={ref}
       onChange={handleChange}

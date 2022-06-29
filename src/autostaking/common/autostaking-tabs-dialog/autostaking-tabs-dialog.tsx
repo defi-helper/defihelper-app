@@ -212,10 +212,12 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
           {currentTab === Tabs.transfer && (
             <>
               <Typography variant="body2" className={styles.subtitle}>
-                Transfer your{' '}
-                <Link color="blue" href="/">
-                  APE-LP
-                </Link>{' '}
+                Transfer your token{' '}
+                {false && (
+                  <Link color="blue" href="/">
+                    APE-LP
+                  </Link>
+                )}
                 tokens to your personal contract to enable automation.
               </Typography>
               {!transferState.loading && (

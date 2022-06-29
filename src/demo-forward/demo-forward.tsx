@@ -1,13 +1,18 @@
 import { useEffect } from 'react'
-import { Redirect } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 import * as authModel from '~/auth/auth.model'
 import { paths } from '~/paths'
 
 export const DemoForward: React.VFC = () => {
+  const history = useHistory()
   useEffect(() => {
-    authModel.logoutFx().then(() => authModel.authDemoFx())
-  }, [])
+    authModel
+      .logoutFx()
+      .then(() =>
+        authModel.authDemoFx().then(() => history.push(paths.portfolio))
+      )
+  }, [history])
 
-  return <Redirect to={paths.portfolio} />
+  return null
 }
