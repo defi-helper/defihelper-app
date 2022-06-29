@@ -126,6 +126,8 @@ export type AutomateActionType = {
   paramsDescription: Scalars['String']
   /** Execution priority (ascending) */
   priority: Scalars['Int']
+  /** Skip reason */
+  skipReason?: Maybe<AutomateSkipReasonEnum>
   /** Created at date */
   createdAt: Scalars['DateTimeType']
 }
@@ -205,6 +207,8 @@ export type AutomateConditionType = {
   priority: Scalars['Int']
   /** Created at date */
   createdAt: Scalars['DateTimeType']
+  /** Next restake date */
+  restakeAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export enum AutomateConditionTypeEnum {
@@ -240,6 +244,7 @@ export type AutomateContractCreateInputType = {
   protocol: Scalars['UuidType']
   /** Protocol contract */
   contract?: Maybe<Scalars['UuidType']>
+  type: AutomateContractTypeEnum
   /** Address */
   address: Scalars['String']
   /** Adapter name */
@@ -254,6 +259,7 @@ export type AutomateContractListFilterInputType = {
   wallet?: Maybe<Scalars['UuidType']>
   protocol?: Maybe<Scalars['UuidType']>
   contract?: Maybe<Array<Scalars['UuidType']>>
+  type?: Maybe<Array<AutomateContractTypeEnum>>
   address?: Maybe<Array<Scalars['String']>>
   archived?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
@@ -293,6 +299,8 @@ export type AutomateContractType = {
   __typename?: 'AutomateContractType'
   /** Identificator */
   id: Scalars['UuidType']
+  /** Contract type */
+  type: AutomateContractTypeEnum
   /** Owner wallet */
   wallet: WalletBlockchainType
   /** Protocol */
@@ -315,6 +323,10 @@ export type AutomateContractType = {
   archivedAt?: Maybe<Scalars['DateTimeType']>
 }
 
+export enum AutomateContractTypeEnum {
+  Autorestake = 'autorestake',
+}
+
 export type AutomateContractUpdateInputType = {
   /** Contract identifier */
   id: Scalars['UuidType']
@@ -332,6 +344,11 @@ export type AutomateDescriptionType = {
   __typename?: 'AutomateDescriptionType'
   name: Scalars['String']
   description: Scalars['String']
+}
+
+export enum AutomateSkipReasonEnum {
+  LowFeeFunds = 'LowFeeFunds',
+  NotAvailableNotification = 'NotAvailableNotification',
 }
 
 export type AutomateTriggerCallHistoryListFilterInputType = {
@@ -822,6 +839,8 @@ export type ContractType = {
   network: Scalars['String']
   /** Address */
   address: Scalars['String']
+  /** Watcher id */
+  watcherId?: Maybe<Scalars['String']>
   /** Contract deployment block number */
   deployBlockNumber?: Maybe<Scalars['String']>
   /** Usable automates */
@@ -1967,6 +1986,7 @@ export type Query = {
   tokenAlias?: Maybe<TokenAlias>
   tokensAlias: TokenAliasListQuery
   products: StoreProductListQuery
+  productPriceFeed: StoreProductPriceFeedType
   billingBalance: BalanceMetaType
   govProposal?: Maybe<GovProposalType>
   govProposals: GovProposalListQuery
@@ -1980,6 +2000,7 @@ export type Query = {
   restakeStrategy: RestakeStrategyType
   treasury: TreasuryType
   monitoringUsersRegisteringHistory: Array<MonitoringStatisticsPointType>
+  monitoringWalletsRegisteringHistory: Array<MonitoringStatisticsPointType>
   monitoringAutomateRunHistory: Array<MonitoringStatisticsPointType>
   monitoringAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
@@ -2052,6 +2073,11 @@ export type QueryProductsArgs = {
   filter?: Maybe<StoreProductListQueryFilterInputType>
   sort?: Maybe<Array<StoreProductListQuerySortInputType>>
   pagination?: Maybe<StoreProductListQueryPaginationInputType>
+}
+
+export type QueryProductPriceFeedArgs = {
+  network: Scalars['String']
+  id: Scalars['UuidType']
 }
 
 export type QueryBillingBalanceArgs = {
@@ -2180,6 +2206,13 @@ export enum StoreProductListQuerySortInputTypeColumnEnum {
   Id = 'id',
   Name = 'name',
   CreatedAt = 'createdAt',
+}
+
+export type StoreProductPriceFeedType = {
+  __typename?: 'StoreProductPriceFeedType'
+  product: StoreProductType
+  /** Price in native token */
+  price: Scalars['Float']
 }
 
 export type StoreProductType = {
@@ -2604,6 +2637,7 @@ export type TokenUpdateInputType = {
 export type TreasuryType = {
   __typename?: 'TreasuryType'
   portfoliosCount: Scalars['Int']
+  walletsCount: Scalars['Int']
   protocolsCount: Scalars['Int']
   contractsCount: Scalars['Int']
   trackedUSD: Scalars['Float']
@@ -3156,6 +3190,8 @@ export type UserType = {
   metric: UserMetricType
   billing: UserBillingType
   store: UserStoreType
+  /** Date of last auth */
+  authAt: Scalars['DateTimeType']
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -3750,7 +3786,13 @@ export type AutomationActionFragmentFragment = {
   __typename?: 'AutomateActionType'
 } & Pick<
   AutomateActionType,
-  'id' | 'type' | 'params' | 'paramsDescription' | 'priority' | 'createdAt'
+  | 'id'
+  | 'type'
+  | 'params'
+  | 'paramsDescription'
+  | 'priority'
+  | 'createdAt'
+  | 'skipReason'
 >
 
 export type MonitoringAutomationsAutorestakeCreationHistoryQueryVariables =
@@ -3897,6 +3939,18 @@ export type AutomationHistoryQuery = { __typename?: 'Query' } & {
         pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
       }
     }
+  >
+}
+
+export type AutomationProductPriceFeedQueryVariables = Exact<{
+  network: Scalars['String']
+  id: Scalars['UuidType']
+}>
+
+export type AutomationProductPriceFeedQuery = { __typename?: 'Query' } & {
+  productPriceFeed: { __typename?: 'StoreProductPriceFeedType' } & Pick<
+    StoreProductPriceFeedType,
+    'price'
   >
 }
 
@@ -4179,6 +4233,7 @@ export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
           | 'link'
           | 'hidden'
           | 'deprecated'
+          | 'watcherId'
         > & {
             protocol: { __typename?: 'ProtocolType' } & Pick<
               ProtocolType,
@@ -5795,6 +5850,12 @@ export type StakingAutomatesContractFragmentFragment = {
             WalletMetricType,
             'stakedUSD'
           >
+          billing: { __typename?: 'WalletBillingType' } & {
+            balance: { __typename?: 'BillingBalanceType' } & Pick<
+              BillingBalanceType,
+              'lowFeeFunds'
+            >
+          }
         }
     >
     wallet: { __typename?: 'WalletBlockchainType' } & Pick<
@@ -5997,6 +6058,7 @@ export type StakingContractFragmentFragment = {
   | 'adapter'
   | 'layout'
   | 'deployBlockNumber'
+  | 'watcherId'
   | 'deprecated'
 > & {
     protocol: { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'id'>
@@ -6208,6 +6270,21 @@ export type UserFragment = { __typename?: 'UserType' } & Pick<
       >
     }
   }
+
+export type MonitoringWalletsRegisteringHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringWalletsRegisteringHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringWalletsRegisteringHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
+}
 
 export type WalletConfigQueryVariables = Exact<{ [key: string]: never }>
 

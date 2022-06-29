@@ -274,9 +274,9 @@ export const stakingApi = {
     ).then((res) => res.json()),
 
   scannerGetContract: (
-    contractId: string
+    watcherId: string
   ): Promise<{ startHeight: number; id: string } | null> =>
-    fetch(`${config.SCANNER_HOST}/contract/fid/${contractId}`).then(
-      async (res) => res.json()
+    fetch(`${config.SCANNER_HOST}/contract/${watcherId}`).then(async (res) =>
+      res.json()
     ),
 }

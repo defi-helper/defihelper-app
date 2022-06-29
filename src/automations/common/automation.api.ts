@@ -39,6 +39,8 @@ import {
   MonitoringAutomationsAutorestakeCreationHistoryQueryVariables,
   MonitoringAutomationsRunsHistoryQuery,
   MonitoringAutomationsRunsHistoryQueryVariables,
+  AutomationProductPriceFeedQuery,
+  AutomationProductPriceFeedQueryVariables,
 } from '~/api/_generated-types'
 import { Automates } from './automation.types'
 import {
@@ -58,6 +60,7 @@ import {
   AUTOMATION_DESCRIPTION,
   AUTOMATION_PRODUCTS,
   AUTOMATION_PRODUCTS_BALANCE,
+  AUTOMATION_PRODUCT_PRICE_FEED,
 } from './graphql'
 import { AUTOMATION_AUTORESTAKE_CREATION_HISTORY } from './graphql/automation-autorestake-creation-history.graphql'
 import { AUTOMATION_CREATION_HISTORY } from './graphql/automation-creation-history.graphql'
@@ -381,7 +384,7 @@ export const automationApi = {
         list: data?.products.list ?? [],
       })),
 
-  getBalance: (variables?: AutomationProductsBalanceQueryVariables) =>
+  getBalance: () =>
     getAPIClient()
       .request<
         AutomationProductsBalanceQuery,
@@ -389,7 +392,18 @@ export const automationApi = {
         AutomationProductsBalanceQueryVariables
       >({
         query: AUTOMATION_PRODUCTS_BALANCE.loc?.source.body ?? '',
-        variables,
       })
       .then(({ data }) => data?.me?.store.balance.notifications ?? 0),
+
+  productPriceFeed: (variables: AutomationProductPriceFeedQueryVariables) =>
+    getAPIClient()
+      .request<
+        AutomationProductPriceFeedQuery,
+        unknown,
+        AutomationProductPriceFeedQueryVariables
+      >({
+        query: AUTOMATION_PRODUCT_PRICE_FEED.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.productPriceFeed.price ?? 0),
 }

@@ -91,3 +91,15 @@ export const titlePink = style({
 export const subtitle = style({
   color: theme.colors.textColorGrey,
 })
+
+export const error = style({
+  opacity: 0.4,
+})
+
+export const errorLabel = style({
+  color: theme.colors.common.red1,
+})
+
+export const errorTrack = style({
+  backgroundColor: theme.colors.common.red1,
+})

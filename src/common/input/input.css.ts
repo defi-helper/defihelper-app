@@ -48,6 +48,7 @@ export const input = style({
   color: 'currentcolor',
   border: 'none',
   flexGrow: 1,
+  borderRadius: 8,
 
   '::placeholder': {
     color: 'inherit',
