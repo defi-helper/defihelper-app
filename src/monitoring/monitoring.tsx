@@ -85,7 +85,7 @@ export const Monitoring: React.VFC = () => {
                 color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
               },
             ]}
-            data={usersRegisteringHistory.map((point) => ({
+            data={walletsRegisteringHistory.map((point) => ({
               date: dateUtils.toDate(point.date),
               number: bignumberUtils.floor(point.number),
               format: bignumberUtils.format(point.number),

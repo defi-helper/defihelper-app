@@ -99,6 +99,7 @@ export const $dfhEarningsHistory = monitoringDomain
 export const fetchMetricsSyncFx = monitoringDomain.createEffect(async () => {
   const metricsFxList = [
     fetchUsersRegisteringHistoryFx(),
+    fetchWalletsRegisteringHistoryFx(),
     fetchAutomationsCreationHistoryFx(),
     fetchAutomationsAutorestakeCreationHistoryFx(),
     fetchAutomationsSuccessfulRunsHistoryFx(),
