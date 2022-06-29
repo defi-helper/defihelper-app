@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { useEffect, useState, cloneElement } from 'react'
 
 import { Button } from '~/common/button'
-import { Dialog } from '~/common/dialog'
+import { Dialog, useDialog } from '~/common/dialog'
 import { NumericalInput } from '~/common/numerical-input'
 import { AutomatesType } from '~/common/load-adapter'
 import { Typography } from '~/common/typography'
@@ -12,6 +12,7 @@ import { ButtonBase } from '~/common/button-base'
 import { toastsService } from '~/toasts'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './staking-migrate-dialog.css'
+import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 
 type FormValues = {
   amount: string
@@ -21,6 +22,7 @@ export type StakingMigrateDialogProps = {
   onConfirm: () => void
   methods?: AutomatesType['migrate']['methods']
   onLastStep: () => void
+  onCancel: () => void
 }
 
 enum Tabs {
@@ -67,6 +69,14 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
     return props.methods?.canTransfer(amount)
   }, [props.methods, amount])
+
+  const [openStopTransaction] = useDialog(StopTransactionDialog)
+
+  const handleStopTransaction = () => {
+    openStopTransaction()
+      .then(props.onCancel)
+      .catch((error) => console.error(error.message))
+  }
 
   const [transferState, onTransfer] = useAsyncFn(
     async (formValues: FormValues) => {
@@ -198,7 +208,14 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
   )
 
   return (
-    <Dialog className={styles.root}>
+    <Dialog
+      className={styles.root}
+      onClose={
+        transferState.loading || withdrawState.loading || depositState.loading
+          ? handleStopTransaction
+          : undefined
+      }
+    >
       <div className={styles.tabs}>
         {Object.entries(tabs).map(([tabName, tab]) => (
           <Typography

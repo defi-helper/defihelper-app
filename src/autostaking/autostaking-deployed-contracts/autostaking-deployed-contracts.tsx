@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { useMemo } from 'react'
 import { useMedia } from 'react-use'
-import { useStore, useGate } from 'effector-react'
+import { useStore } from 'effector-react'
 
 import { Paper } from '~/common/paper'
 import { AutostakingCarousel } from '~/autostaking/common/autostaking-carousel'
@@ -51,11 +51,6 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
 
     const wallet = walletNetworkModel.useWalletNetwork()
     const handleConnect = useWalletConnect()
-
-    useGate(
-      model.StakingAutomatesGate,
-      props.search ? { search: props.search } : null
-    )
 
     const isEmptyContracts = isEmpty(contracts)
 
@@ -232,12 +227,12 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
     return (
       <Component
         className={clsx(props.className, {
-          [styles.empty]: isEmptyContracts || loading,
+          [styles.empty]: isEmptyContracts && !loading,
         })}
         radius={isEmptyContracts || loading ? 8 : undefined}
       >
         {loading && isEmptyContracts && (
-          <div className={styles.loader}>
+          <div className={clsx(styles.loader, styles.empty)}>
             <Loader height="36" />
           </div>
         )}
