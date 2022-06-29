@@ -4,13 +4,14 @@ import { useForm, Controller } from 'react-hook-form'
 import { cloneElement, useEffect, useState } from 'react'
 
 import { Button } from '~/common/button'
-import { Dialog } from '~/common/dialog'
+import { Dialog, useDialog } from '~/common/dialog'
 import { NumericalInput } from '~/common/numerical-input'
 import { AutomatesType } from '~/common/load-adapter'
 import { Typography } from '~/common/typography'
 import { ButtonBase } from '~/common/button-base'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { toastsService } from '~/toasts'
+import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import * as styles from './staking-deposit-dialog.css'
 
 type FormValues = {
@@ -21,6 +22,7 @@ export type StakingDepositDialogProps = {
   onConfirm: () => void
   methods?: AutomatesType['deposit']['methods']
   onLastStep: () => void
+  onCancel: () => void
 }
 
 enum Tabs {
@@ -62,6 +64,14 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
 
     return props.methods?.canTransfer(amount)
   }, [props.methods, amount])
+
+  const [openStopTransaction] = useDialog(StopTransactionDialog)
+
+  const handleStopTransaction = () => {
+    openStopTransaction()
+      .then(props.onCancel)
+      .catch((error) => console.error(error.message))
+  }
 
   const [transferState, onTransfer] = useAsyncFn(
     async (formValues: FormValues) => {
@@ -156,7 +166,14 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
   )
 
   return (
-    <Dialog className={styles.root}>
+    <Dialog
+      className={styles.root}
+      onClose={
+        depositState.loading || transferState.loading
+          ? handleStopTransaction
+          : undefined
+      }
+    >
       <div className={styles.tabs}>
         {Object.entries(tabs).map(([tabName, tab]) => (
           <Typography

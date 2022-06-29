@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import omit from 'lodash.omit'
-import { animated, useTransition } from '@react-spring/web'
+import { useTransition } from '@react-spring/web'
 import { useMedia } from 'react-use'
 
 import { Portal } from '~/common/portal'
@@ -109,17 +109,11 @@ export const DialogProvider: React.FC = (props) => {
                 }}
               >
                 <node.Dialog
-                  {...node.props}
+                  {...(node.props as Record<string, unknown>)}
                   onCancel={handleClose(node.id)}
                   onConfirm={handleOnConfirm(node.id)}
                 />
               </AnimatedContext.Provider>
-              <animated.div
-                onMouseDown={handleClose(node.id)}
-                aria-hidden="true"
-                className={styles.backdrop}
-                style={{ opacity }}
-              />
             </div>
           </Portal>
         )

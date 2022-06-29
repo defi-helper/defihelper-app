@@ -4,17 +4,19 @@ import { useAsyncRetry } from 'react-use'
 
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
-import { Dialog } from '~/common/dialog'
+import { Dialog, useDialog } from '~/common/dialog'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
 import { DeployStep } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
+import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import { Typography } from '~/common/typography'
 import { toastsService } from '~/toasts'
 import * as styles from './autostaking-deploy-dialog.css'
 
 export type AutostakingDeployDialogProps = {
   onConfirm: (formValues: { address: string; inputs: string[] }) => void
+  onCancel: () => void
   steps: DeployStep[]
 }
 
@@ -23,6 +25,14 @@ const currentStepNumber = 0
 export const AutostakingDeployDialog: React.VFC<AutostakingDeployDialogProps> =
   (props) => {
     const [open, setOpen] = useState(false)
+
+    const [openStopTransaction] = useDialog(StopTransactionDialog)
+
+    const handleStopTransaction = () => {
+      openStopTransaction()
+        .then(props.onCancel)
+        .catch((error) => console.error(error.message))
+    }
 
     const { handleSubmit, formState, control, reset } = useForm()
 
@@ -75,7 +85,10 @@ export const AutostakingDeployDialog: React.VFC<AutostakingDeployDialogProps> =
     const handleToggle = () => setOpen(!open)
 
     return (
-      <Dialog className={styles.root}>
+      <Dialog
+        className={styles.root}
+        onClose={formState.isSubmitting ? handleStopTransaction : undefined}
+      >
         <div className={styles.mb}>
           <Typography
             variant="body2"
@@ -135,7 +148,12 @@ export const AutostakingDeployDialog: React.VFC<AutostakingDeployDialogProps> =
               </Typography>
             </>
           )}
-          <Button className={styles.button} type="submit" size="small">
+          <Button
+            className={styles.button}
+            type="submit"
+            size="small"
+            loading={formState.isSubmitting}
+          >
             deploy
           </Button>
         </form>
