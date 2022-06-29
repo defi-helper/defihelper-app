@@ -1980,6 +1980,7 @@ export type Query = {
   restakeStrategy: RestakeStrategyType
   treasury: TreasuryType
   monitoringUsersRegisteringHistory: Array<MonitoringStatisticsPointType>
+  monitoringWalletsRegisteringHistory: Array<MonitoringStatisticsPointType>
   monitoringAutomateRunHistory: Array<MonitoringStatisticsPointType>
   monitoringAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
@@ -2953,7 +2954,7 @@ export type UserNotificationType = {
   /** Contact */
   contact: Scalars['UuidType']
   /** Time */
-  time: Scalars['String']
+  time: Scalars['Int']
 }
 
 export enum UserNotificationTypeEnum {
@@ -3141,6 +3142,8 @@ export type UserType = {
   role: UserRoleEnum
   /** Current user locale */
   locale: LocaleEnum
+  /** Current user timezone */
+  timezone: Scalars['String']
   /** Is portfolio collected */
   isPorfolioCollected: Scalars['Boolean']
   tokenAliasesStakedMetrics: UserTokenAliasesStakedMetricsListType
@@ -3499,6 +3502,11 @@ export enum WalletExchangeTypeEnum {
   Coinex = 'coinex',
   Poloniex = 'poloniex',
   Ftx = 'ftx',
+  Binanceus = 'binanceus',
+  Bybit = 'bybit',
+  Lbank = 'lbank',
+  Ftxus = 'ftxus',
+  Gateio = 'gateio',
 }
 
 export type WalletExchangexListFilterInputType = {
@@ -6201,6 +6209,21 @@ export type UserFragment = { __typename?: 'UserType' } & Pick<
       >
     }
   }
+
+export type MonitoringWalletsRegisteringHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringWalletsRegisteringHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringWalletsRegisteringHistory: Array<
+    { __typename?: 'MonitoringStatisticsPointType' } & Pick<
+      MonitoringStatisticsPointType,
+      'date' | 'number'
+    >
+  >
+}
 
 export type WalletConfigQueryVariables = Exact<{ [key: string]: never }>
 

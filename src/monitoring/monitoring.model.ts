@@ -37,6 +37,12 @@ export const fetchUsersRegisteringHistoryFx = monitoringDomain.createEffect(
   }
 )
 
+export const fetchWalletsRegisteringHistoryFx = monitoringDomain.createEffect(
+  () => {
+    return usersApi.getWalletsRegisteringHistory({})
+  }
+)
+
 export const fetchAutomationsCreationHistoryFx = monitoringDomain.createEffect(
   () => {
     return automationApi.getAutomationsCreationHistory()
@@ -51,6 +57,10 @@ export const fetchAutomationsAutorestakeCreationHistoryFx =
 export const $usersRegisteringHistory = monitoringDomain
   .createStore<{ date: string; number: number }[]>([])
   .on(fetchUsersRegisteringHistoryFx.doneData, (_, payload) => payload)
+
+export const $walletsRegisteringHistory = monitoringDomain
+  .createStore<{ date: string; number: number }[]>([])
+  .on(fetchWalletsRegisteringHistoryFx.doneData, (_, payload) => payload)
 
 export const $automationsCreationHistory = monitoringDomain
   .createStore<{ date: string; number: number }[]>([])
