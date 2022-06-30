@@ -51,35 +51,40 @@ export const buyProductFx = automationProductsDomain.createEffect(
       networkProvider.getSigner()
     )
 
-    const tenPercent = bignumberUtils.mul(
-      bignumberUtils.div(params.product.priceUSD, 100),
-      10
-    )
+    const price = await automationApi.productPriceFeed({
+      network: params.chainId,
+      id: params.product.id,
+    })
 
-    const priceUSDWithPercetage = bignumberUtils.plus(
-      tenPercent,
-      params.product.priceUSD
-    )
+    if (!price) throw new Error('wrong price')
 
-    const priceUSD = bignumberUtils.toSend(priceUSDWithPercetage, 6)
+    const tenPercent = bignumberUtils.mul(bignumberUtils.div(price, 100), 10)
+
+    const priceWithPercetage = bignumberUtils.plus(tenPercent, price)
+
+    const priceNormalized = bignumberUtils.toSend(priceWithPercetage, 18)
 
     try {
       const gasLimit = bignumberUtils.estimateGas(
         await contract.estimateGas.buy(
           params.product.number,
           params.account,
-          priceUSD,
-          dateUtils.addTimestamp(3, 'second')
+          priceNormalized,
+          dateUtils.addTimestamp(3, 'second'),
+          {
+            value: priceNormalized,
+          }
         )
       )
 
       const transactionReceipt = await contract.buy(
         params.product.number,
         params.account,
-        priceUSD,
+        priceNormalized,
         dateUtils.addTimestamp(3, 'second'),
         {
           gasLimit,
+          value: priceNormalized,
         }
       )
 

@@ -13,6 +13,7 @@ import * as styles from './dialog.css'
 export type DialogProps = {
   className?: string
   onBack?: () => void
+  onClose?: () => void
 }
 
 const AnimatedPaper = animated(Paper)
@@ -34,20 +35,28 @@ export const Dialog: React.FC<DialogProps> = (props) => {
   const { animatedValue, onClose } = useAnimatedContext()
 
   return (
-    <AnimatedPaper
-      {...(animatedValue as AnimatedProps<object>)}
-      onMouseDown={handleOnClickContent}
-      className={clsx(styles.content, props.className)}
-      radius={8}
-      ref={handleSetContent}
-    >
-      <ButtonBase
-        onClick={props.onBack ?? onClose}
-        className={styles.closeButton}
+    <>
+      <AnimatedPaper
+        {...(animatedValue as AnimatedProps<object>)}
+        onMouseDown={handleOnClickContent}
+        className={clsx(styles.content, props.className)}
+        radius={8}
+        ref={handleSetContent}
       >
-        <Icon icon="close" width="44" height="44" />
-      </ButtonBase>
-      {props.children}
-    </AnimatedPaper>
+        <ButtonBase
+          onClick={props.onClose ?? props.onBack ?? onClose}
+          className={styles.closeButton}
+        >
+          <Icon icon="close" width="44" height="44" />
+        </ButtonBase>
+        {props.children}
+      </AnimatedPaper>
+      <animated.div
+        onMouseDown={props.onClose ?? onClose}
+        aria-hidden="true"
+        className={styles.backdrop}
+        style={{ opacity: animatedValue.style?.opacity }}
+      />
+    </>
   )
 }

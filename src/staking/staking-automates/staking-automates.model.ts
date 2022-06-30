@@ -115,6 +115,10 @@ export const $automatesContracts = stakingAutomatesDomain
     state.filter((contract) => contract.id !== params)
   )
 
+export const $automatesContractsLoaded = stakingAutomatesDomain
+  .createStore<boolean>(false)
+  .on(fetchAutomatesContractsFx.finally, () => true)
+
 type Gate = {
   protocolId?: string
   search?: string
@@ -166,3 +170,4 @@ const contractCreated = guard({
 
 $automatesContracts.on(contractCreated, (state, payload) => [...state, payload])
 $automatesContracts.reset(StakingAutomatesGate.close)
+$automatesContractsLoaded.reset(StakingAutomatesGate.close)

@@ -23,3 +23,9 @@ export const hiddenPaper = style({
 export const hiddenPaperButton = style({
   minWidth: 100,
 })
+
+export const loader = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+})

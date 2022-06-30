@@ -7,7 +7,7 @@ import { useNProgress } from '@tanem/react-nprogress'
 
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
-import { Dialog } from '~/common/dialog'
+import { Dialog, useDialog } from '~/common/dialog'
 import { Link } from '~/common/link'
 import { NumericalInput } from '~/common/numerical-input'
 import { Typography } from '~/common/typography'
@@ -17,6 +17,7 @@ import { history } from '~/common/history'
 import { AutomatesType } from '~/common/load-adapter'
 import { toastsService } from '~/toasts'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import * as styles from './autostaking-tabs-dialog.css'
 
 export type AutostakingTabsDialogProps = {
@@ -63,6 +64,14 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
 ) => {
   const { formState, control, handleSubmit, watch, setValue } =
     useForm<{ amount: string }>()
+
+  const [openStopTransaction] = useDialog(StopTransactionDialog)
+
+  const handleStopTransaction = () => {
+    openStopTransaction()
+      .then(props.onCancel)
+      .catch((error) => console.error(error.message))
+  }
 
   const [currentTab, setCurrentTab] = useState(Tabs.transfer)
 
@@ -179,7 +188,14 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
   }
 
   return (
-    <Dialog className={styles.root}>
+    <Dialog
+      className={styles.root}
+      onClose={
+        depositState.loading || transferState.loading || formState.isSubmitting
+          ? handleStopTransaction
+          : undefined
+      }
+    >
       <div className={styles.header}>
         <Typography
           variant="body2"

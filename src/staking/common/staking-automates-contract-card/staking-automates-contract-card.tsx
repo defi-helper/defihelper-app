@@ -24,7 +24,7 @@ export type StakingAutomatesContractCardProps = {
   balance: string
   onDeposit: () => void
   onRefund: () => void
-  onMigrate: () => void
+  onMigrate?: () => void
   onDelete: () => void
   onRun: () => void
   error?: boolean
@@ -35,6 +35,7 @@ export type StakingAutomatesContractCardProps = {
   refunding?: boolean
   migrating?: boolean
   running?: boolean
+  tokensIcons: Array<string | null>
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -52,6 +53,26 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
       <Paper className={clsx(styles.root, props.className)} radius={8}>
         <div className={styles.header}>
           <div className={styles.heading}>
+            <div className={styles.icons}>
+              {props.tokensIcons.map((logoUrl, index) =>
+                logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt=""
+                    key={String(index)}
+                    className={styles.icon}
+                  />
+                ) : (
+                  <Paper
+                    radius={24}
+                    key={String(index)}
+                    className={styles.paperIcon}
+                  >
+                    <Icon icon="unknownNetwork" width="16" height="16" />
+                  </Paper>
+                )
+              )}
+            </div>
             <Typography as="span">
               {props.title || cutAccount(props.address)}
             </Typography>
@@ -236,18 +257,22 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Button>
             </CanDemo>
 
-            <CanDemo>
-              <Button
-                size="small"
-                variant="light"
-                className={styles.refund}
-                onClick={props.onMigrate}
-                loading={props.migrating}
-                disabled={props.deleting || props.depositing || props.refunding}
-              >
-                Migrate
-              </Button>
-            </CanDemo>
+            {props.onMigrate && (
+              <CanDemo>
+                <Button
+                  size="small"
+                  variant="light"
+                  className={styles.refund}
+                  onClick={props.onMigrate}
+                  loading={props.migrating}
+                  disabled={
+                    props.deleting || props.depositing || props.refunding
+                  }
+                >
+                  Migrate
+                </Button>
+              </CanDemo>
+            )}
 
             <CanDemo>
               <Button
