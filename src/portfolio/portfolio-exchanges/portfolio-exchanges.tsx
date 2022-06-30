@@ -12,28 +12,10 @@ import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { Loader } from '~/common/loader'
 import { PortfolioAssetCard, PortfolioAssetsHeader } from '~/portfolio/common'
-import { WalletExchangeTypeEnum } from '~/api'
+import { cexTitles } from '~/settings/common/constants'
 
 export type PortfolioDeployedContractsProps = {
   className?: string
-}
-
-const titles = {
-  [WalletExchangeTypeEnum.Binance]: 'Binance',
-  [WalletExchangeTypeEnum.Binanceus]: 'Binance US',
-  [WalletExchangeTypeEnum.Huobi]: 'Huobi',
-  [WalletExchangeTypeEnum.Okex]: 'OKEx',
-  [WalletExchangeTypeEnum.Ascendex]: 'AscendEX',
-  [WalletExchangeTypeEnum.Mexc]: 'MEXC',
-  [WalletExchangeTypeEnum.Aax]: 'AAX',
-  [WalletExchangeTypeEnum.Bitmart]: 'Bitmart',
-  [WalletExchangeTypeEnum.Coinex]: 'Coinex',
-  [WalletExchangeTypeEnum.Poloniex]: 'Poloniex',
-  [WalletExchangeTypeEnum.Ftx]: 'FTX',
-  [WalletExchangeTypeEnum.Ftxus]: 'FTX US',
-  [WalletExchangeTypeEnum.Bybit]: 'Bybit',
-  [WalletExchangeTypeEnum.Lbank]: 'LBank',
-  [WalletExchangeTypeEnum.Gateio]: 'Gate.io',
 }
 
 export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
@@ -77,7 +59,7 @@ export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
                 <React.Fragment key={exchange.id}>
                   <div className={styles.tableRow}>
                     <Typography variant="body2">
-                      {titles[exchange.exchange]}
+                      {cexTitles[exchange.exchange]}
                     </Typography>
 
                     <Typography variant="body3">{exchange.account}</Typography>
