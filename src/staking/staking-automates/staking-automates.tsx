@@ -257,6 +257,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           return (
             <StakingAutomatesContractCard
               key={automatesContract.id}
+              restakeAt={automatesContract.restakeAt ?? null}
               tokensIcons={
                 automatesContract.contract?.tokens.stake.map(
                   ({ alias }) => alias?.logoUrl ?? null
