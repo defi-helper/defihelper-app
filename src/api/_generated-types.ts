@@ -37,9 +37,9 @@ export type AuthEthereumInputType = {
   /** Wallet address */
   address: Scalars['String']
   /** Message */
-  message: Scalars['String']
+  message?: Maybe<Scalars['String']>
   /** Signed message */
-  signature: Scalars['String']
+  signature?: Maybe<Scalars['String']>
   /** Code */
   code?: Maybe<Scalars['String']>
   /** Timezone */
@@ -64,9 +64,9 @@ export type AuthWavesInputType = {
   /** Wallet address */
   address: Scalars['String']
   /** Message */
-  message: Scalars['String']
+  message?: Maybe<Scalars['String']>
   /** Signed message */
-  signature: Scalars['String']
+  signature?: Maybe<Scalars['String']>
   /** Promo id */
   code?: Maybe<Scalars['String']>
   /** Timezone */
@@ -318,6 +318,8 @@ export type AutomateContractType = {
   /** Verification status */
   verification: AutomateContractVerificationStatusEnum
   rejectReason: Scalars['String']
+  /** restake at */
+  restakeAt?: Maybe<Scalars['DateTimeType']>
   metric: AutomateContractMetricType
   /** Date at archived contract */
   archivedAt?: Maybe<Scalars['DateTimeType']>
@@ -1658,6 +1660,10 @@ export type ProtocolLinkType = {
   value: Scalars['String']
 }
 
+export type ProtocolListFilterAutomateInputType = {
+  buyLiquidity?: Maybe<Scalars['Boolean']>
+}
+
 export type ProtocolListFilterInputType = {
   /** Target ID */
   id?: Maybe<Array<Scalars['UuidType']>>
@@ -1669,6 +1675,7 @@ export type ProtocolListFilterInputType = {
   hidden?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
   isDebank?: Maybe<Scalars['Boolean']>
+  automate?: Maybe<ProtocolListFilterAutomateInputType>
 }
 
 export type ProtocolListPaginationInputType = {
