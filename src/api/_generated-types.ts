@@ -840,7 +840,7 @@ export type ContractType = {
   /** Address */
   address: Scalars['String']
   /** Watcher id */
-  watcherId: Scalars['String']
+  watcherId?: Maybe<Scalars['String']>
   /** Contract deployment block number */
   deployBlockNumber?: Maybe<Scalars['String']>
   /** Usable automates */
