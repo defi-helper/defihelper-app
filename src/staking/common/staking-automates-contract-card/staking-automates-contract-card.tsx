@@ -14,6 +14,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { networksConfig } from '~/networks-config'
 import * as styles from './staking-automates-contract-card.css'
 import { CanDemo } from '~/auth/can-demo'
+import { dateUtils } from '~/common/date-utils'
 
 export type StakingAutomatesContractCardProps = {
   className?: string
@@ -30,6 +31,7 @@ export type StakingAutomatesContractCardProps = {
   error?: boolean
   apy?: string
   apyBoost?: string
+  restakeAt: string | null
   deleting?: boolean
   depositing?: boolean
   refunding?: boolean
@@ -163,6 +165,20 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
             <Typography variant="body2" as="span">
               ${bignumberUtils.format(props.balance)}
+            </Typography>
+          </div>
+          <div className={styles.row}>
+            <Typography
+              variant="body2"
+              as="span"
+              className={clsx(styles.infoTitle, styles.opacity)}
+            >
+              Restake at
+            </Typography>
+            <Typography variant="body2" as="span">
+              {props.restakeAt
+                ? dateUtils.format(props.restakeAt, 'DD MMM')
+                : '-'}
             </Typography>
           </div>
         </div>

@@ -12,6 +12,7 @@ import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { Loader } from '~/common/loader'
 import { PortfolioAssetCard, PortfolioAssetsHeader } from '~/portfolio/common'
+import { cexTitles } from '~/settings/common/constants'
 
 export type PortfolioDeployedContractsProps = {
   className?: string
@@ -57,7 +58,9 @@ export const PortfolioExchanges: React.VFC<PortfolioDeployedContractsProps> = (
               return (
                 <React.Fragment key={exchange.id}>
                   <div className={styles.tableRow}>
-                    <Typography variant="body2">Binance</Typography>
+                    <Typography variant="body2">
+                      {cexTitles[exchange.exchange]}
+                    </Typography>
 
                     <Typography variant="body3">{exchange.account}</Typography>
 

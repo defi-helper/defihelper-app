@@ -20,6 +20,7 @@ import { useDialog, UserRejectionError } from '~/common/dialog'
 import { toastsService } from '~/toasts'
 import { switchNetwork } from '~/wallets/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { networksConfig } from '~/networks-config'
 import * as stakingModel from '~/staking/staking-adapters/staking-adapters.model'
 import * as styles from './buy-liquidity.css'
 import * as model from './buy-liquidity.model'
@@ -70,7 +71,8 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
         id: isEmpty(protocolIds) ? undefined : protocolIds,
         blockchain: blockchain
           ? {
-              protocol: blockchain,
+              network: blockchain,
+              protocol: networksConfig[blockchain].blockchain,
             }
           : undefined,
       },
@@ -218,7 +220,7 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
           onChange={handleChooseBlockchain}
           clearable
         >
-          {Object.entries(BlockchainEnum).map(([title, value]) => (
+          {Object.entries(networksConfig).map(([value, { title }]) => (
             <SelectOption value={value} key={title}>
               {title}
             </SelectOption>

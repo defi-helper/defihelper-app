@@ -125,14 +125,14 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
       : [localValue].filter(Boolean)
 
     const renderValueArr = Array.isArray(renderValue)
-      ? renderValue
-          .filter((item) => typeof item === 'string')
-          .map((renderValueItem, index, arr) => (
-            <React.Fragment key={String(index)}>
-              {renderValueItem}
-              {arr.length - 1 === index ? '' : ', '}
-            </React.Fragment>
-          ))
+      ? renderValue.map((renderValueItem, index, arr) => (
+          <React.Fragment key={String(index)}>
+            {renderValueItem}
+            {arr.length - 1 === index || typeof renderValueItem === 'object'
+              ? ''
+              : ', '}
+          </React.Fragment>
+        ))
       : renderValue
 
     return (

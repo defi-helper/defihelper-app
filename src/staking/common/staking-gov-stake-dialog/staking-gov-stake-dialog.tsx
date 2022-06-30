@@ -130,6 +130,12 @@ export const StakingGovStakeDialog: React.VFC<StakingGovStakeDialogProps> = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApproved.value, approveState.value, amount])
 
+  useEffect(() => {
+    if (!isApproved.value) return
+
+    toastsService.info('tokens approved')
+  }, [isApproved.value])
+
   return (
     <Dialog className={styles.root}>
       <div className={styles.tabs}>
