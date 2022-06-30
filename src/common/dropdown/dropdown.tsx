@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { isValidElement, cloneElement, useRef } from 'react'
 import type { Placement, Modifier } from '@popperjs/core'
-import { useKey } from 'react-use'
+import { useKey, useMedia } from 'react-use'
 import isEmpty from 'lodash.isempty'
 
 import { useClickAway, usePopper, useForkRef } from '~/common/hooks'
@@ -55,6 +55,8 @@ export const Dropdown: React.VFC<DropdownProps> = (props) => {
     setReferenceElement(referenceElement ? null : target)
   }
 
+  const isDesktop = useMedia('(hover: hover)')
+
   useClickAway(localRef, handleOnTrigger.bind(null, null))
 
   useKey('Escape', handleOnTrigger.bind(null, null))
@@ -73,9 +75,14 @@ export const Dropdown: React.VFC<DropdownProps> = (props) => {
     <>
       {cloneElement(control, {
         ...control.props,
-        onMouseUp: trigger === 'click' ? handleOnTrigger : undefined,
-        onMouseEnter: trigger === 'hover' ? handleOnTrigger : undefined,
-        onMouseLeave: trigger === 'hover' ? handleOnTrigger : undefined,
+        onMouseUp:
+          trigger === 'click' || !isDesktop ? handleOnTrigger : undefined,
+        onMouseEnter:
+          isDesktop && trigger === 'hover' ? handleOnTrigger : undefined,
+        onMouseLeave:
+          isDesktop && trigger === 'hover'
+            ? handleOnTrigger.bind(null, null)
+            : undefined,
       })}
       {referenceElement && (
         <Portal>

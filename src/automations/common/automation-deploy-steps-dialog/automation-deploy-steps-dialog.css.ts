@@ -28,7 +28,7 @@ export const form = style({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  minHeight: 'calc(100% - 91px)',
+  flex: '1 0 auto',
 })
 
 export const loader = style({
