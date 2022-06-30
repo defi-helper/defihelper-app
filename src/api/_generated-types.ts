@@ -3942,6 +3942,18 @@ export type AutomationHistoryQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type AutomationProductPriceFeedQueryVariables = Exact<{
+  network: Scalars['String']
+  id: Scalars['UuidType']
+}>
+
+export type AutomationProductPriceFeedQuery = { __typename?: 'Query' } & {
+  productPriceFeed: { __typename?: 'StoreProductPriceFeedType' } & Pick<
+    StoreProductPriceFeedType,
+    'price'
+  >
+}
+
 export type AutomationProductsBalanceQueryVariables = Exact<{
   [key: string]: never
 }>

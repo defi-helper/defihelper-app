@@ -2,9 +2,8 @@ import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { useMemo } from 'react'
 import { useMedia } from 'react-use'
-import { useStore, useGate } from 'effector-react'
+import { useStore } from 'effector-react'
 
-import { AutostakingDeployedContractCard } from '~/autostaking/common/autostaking-deployed-contract-card'
 import { Paper } from '~/common/paper'
 import { AutostakingCarousel } from '~/autostaking/common/autostaking-carousel'
 import { Typography } from '~/common/typography'
@@ -21,6 +20,7 @@ import { parseError } from '~/common/parse-error'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import {
   StakingAdapterDialog,
+  StakingAutomatesContractCard,
   StakingDepositDialog,
   StakingErrorDialog,
   StakingRefundDialog,
@@ -51,11 +51,6 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
 
     const wallet = walletNetworkModel.useWalletNetwork()
     const handleConnect = useWalletConnect()
-
-    useGate(
-      model.StakingAutomatesGate,
-      props.search ? { search: props.search } : null
-    )
 
     const isEmptyContracts = isEmpty(contracts)
 
@@ -232,12 +227,12 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
     return (
       <Component
         className={clsx(props.className, {
-          [styles.empty]: isEmptyContracts || loading,
+          [styles.empty]: isEmptyContracts && !loading,
         })}
         radius={isEmptyContracts || loading ? 8 : undefined}
       >
         {loading && isEmptyContracts && (
-          <div className={styles.loader}>
+          <div className={clsx(styles.loader, styles.empty)}>
             <Loader height="36" />
           </div>
         )}
@@ -289,7 +284,7 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
                 handleRunManually(deployedContract)
 
               return (
-                <AutostakingDeployedContractCard
+                <StakingAutomatesContractCard
                   key={deployedContract.id}
                   title={deployedContract.contract?.name ?? ''}
                   address={deployedContract.address}
@@ -300,19 +295,19 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
                     ) ?? []
                   }
                   blockchain={deployedContract.contract?.blockchain ?? ''}
-                  value={
+                  balance={
                     deployedContract.contractWallet?.metric.stakedUSD ?? ''
                   }
                   apy={deployedContract.contract?.metric.aprYear}
                   apyBoost={deployedContract.contract?.metric.myAPYBoost}
                   onDelete={handleOnDelete(deployedContract.id)}
-                  onUnstake={wallet ? refund : connect}
+                  onRefund={wallet ? refund : connect}
                   onDeposit={wallet ? deposit : connect}
                   onRun={wallet ? run : connect}
                   deleting={deployedContract.deleting}
                   depositing={deployedContract.depositing}
                   running={deployedContract.running}
-                  unstaking={deployedContract.refunding}
+                  refunding={deployedContract.refunding}
                   error={
                     deployedContract.contractWallet?.billing?.balance
                       ?.lowFeeFunds

@@ -3,17 +3,19 @@ import { useAsyncFn, useAsyncRetry } from 'react-use'
 import { useEffect } from 'react'
 
 import { Button } from '~/common/button'
-import { Dialog } from '~/common/dialog'
+import { Dialog, useDialog } from '~/common/dialog'
 import { AutomatesType } from '~/common/load-adapter'
 import { Typography } from '~/common/typography'
 import { toastsService } from '~/toasts'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import * as styles from './staking-refund-dialog.css'
 
 export type StakingRefundDialogProps = {
   onConfirm: () => void
   methods?: AutomatesType['refund']['methods']
   onLastStep: () => void
+  onCancel: () => void
 }
 
 export const StakingRefundDialog: React.VFC<StakingRefundDialogProps> = (
@@ -22,6 +24,14 @@ export const StakingRefundDialog: React.VFC<StakingRefundDialogProps> = (
   const staked = useAsyncRetry(async () => {
     return props.methods?.staked()
   }, [props.methods])
+
+  const [openStopTransaction] = useDialog(StopTransactionDialog)
+
+  const handleStopTransaction = () => {
+    openStopTransaction()
+      .then(props.onCancel)
+      .catch((error) => console.error(error.message))
+  }
 
   const [refundState, onRefund] = useAsyncFn(async () => {
     if (!props.methods) return false
@@ -60,7 +70,10 @@ export const StakingRefundDialog: React.VFC<StakingRefundDialogProps> = (
   }, [refundState.value])
 
   return (
-    <Dialog className={styles.root}>
+    <Dialog
+      className={styles.root}
+      onClose={refundState.loading ? handleStopTransaction : undefined}
+    >
       <div className={styles.tabs}>
         <Typography
           variant="body3"
