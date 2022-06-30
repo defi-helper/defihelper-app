@@ -318,6 +318,8 @@ export type AutomateContractType = {
   /** Verification status */
   verification: AutomateContractVerificationStatusEnum
   rejectReason: Scalars['String']
+  /** restake at */
+  restakeAt?: Maybe<Scalars['DateTimeType']>
   metric: AutomateContractMetricType
   /** Date at archived contract */
   archivedAt?: Maybe<Scalars['DateTimeType']>
@@ -5796,6 +5798,7 @@ export type StakingAutomatesContractFragmentFragment = {
   | 'initParams'
   | 'verification'
   | 'rejectReason'
+  | 'restakeAt'
 > & {
     protocol: { __typename?: 'ProtocolType' } & Pick<
       ProtocolType,

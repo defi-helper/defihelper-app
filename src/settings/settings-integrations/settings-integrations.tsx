@@ -14,27 +14,10 @@ import { Paper } from '~/common/paper'
 import { SettingsIntegrationConnect } from '../common/settings-integration-connect'
 import * as styles from './settings-integrations.css'
 import * as model from './settings-integrations.model'
+import { cexTitles } from '../common/constants'
 
 export type SettingsIntegrationsProps = {
   className?: string
-}
-
-const titles = {
-  [WalletExchangeTypeEnum.Binance]: 'Binance',
-  [WalletExchangeTypeEnum.Binanceus]: 'Binance US',
-  [WalletExchangeTypeEnum.Huobi]: 'Huobi',
-  [WalletExchangeTypeEnum.Okex]: 'OKEx',
-  [WalletExchangeTypeEnum.Ascendex]: 'AscendEX',
-  [WalletExchangeTypeEnum.Mexc]: 'MEXC',
-  [WalletExchangeTypeEnum.Aax]: 'AAX',
-  [WalletExchangeTypeEnum.Bitmart]: 'Bitmart',
-  [WalletExchangeTypeEnum.Coinex]: 'Coinex',
-  [WalletExchangeTypeEnum.Poloniex]: 'Poloniex',
-  [WalletExchangeTypeEnum.Ftx]: 'FTX',
-  [WalletExchangeTypeEnum.Ftxus]: 'FTX US',
-  [WalletExchangeTypeEnum.Bybit]: 'Bybit',
-  [WalletExchangeTypeEnum.Lbank]: 'LBank',
-  [WalletExchangeTypeEnum.Gateio]: 'Gate.io',
 }
 
 export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
@@ -105,7 +88,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
                 icon={
                   <Icon icon={integration.exchange} width={28} height={28} />
                 }
-                platform={titles[integration.exchange]}
+                platform={cexTitles[integration.exchange]}
                 account={integration?.account}
                 onDisconnect={handleDisconnect(integration?.id)}
                 deleting={integration?.deleting}

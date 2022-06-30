@@ -286,6 +286,7 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
               return (
                 <StakingAutomatesContractCard
                   key={deployedContract.id}
+                  restakeAt={deployedContract.restakeAt ?? null}
                   title={deployedContract.contract?.name ?? ''}
                   address={deployedContract.address}
                   network={deployedContract.contract?.network ?? ''}
