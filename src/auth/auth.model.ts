@@ -99,6 +99,10 @@ export const authDemoFx = authDomain.createEffect(async () => {
   return data
 })
 
+authDemoFx.finally.watch(() => {
+  localStorage.removeItem('demo')
+})
+
 const userReady = delay({ source: fetchUserFx.finally, timeout: 500 })
 
 export const $userReady = authDomain
