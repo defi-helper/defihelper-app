@@ -1,13 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { ConnectorUpdate } from '@web3-react/types'
-import {
-  createStore,
-  createEffect,
-  guard,
-  sample,
-  createEvent,
-  UnitValue,
-} from 'effector'
+import { createStore, createEffect, guard, sample, createEvent } from 'effector'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { shallowEqual } from 'fast-equals'
@@ -21,7 +14,6 @@ import {
   connectorsByName,
   Wallet,
   SignMessagePayload,
-  walletApi,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { sidUtils } from '~/auth/common'
@@ -190,12 +182,6 @@ guard({
     Boolean(clock.account && clock.chainId) && !sidUtils.get(),
   target: signMessage,
 })
-
-export const getConfigFx = createEffect(walletApi.getConfig)
-
-export const $config = createStore<UnitValue<
-  typeof getConfigFx.doneData
-> | null>(null).on(getConfigFx.doneData, (_, payload) => payload)
 
 toastsService.forwardErrors(
   signMessageEthereumFx.failData,
