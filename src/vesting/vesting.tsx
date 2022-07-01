@@ -252,7 +252,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
       <WalletConnect fallback={<Button>Connect</Button>}>
         <div>
           <Typography variant="h3" className={styles.title}>
-            Pre-seed round
+            DFH Vesting contract
           </Typography>
           <Paper radius={8} className={styles.root}>
             {correctAccount ? (
