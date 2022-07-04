@@ -61,6 +61,7 @@ export const ProtocolTabs: React.VFC<ProtocolTabsProps> = (props) => {
         <ButtonBase
           className={styles.selectFz}
           onClick={handleChangeTab(tab.value)}
+          key={tab.title}
         >
           {tab.title}
         </ButtonBase>
@@ -77,6 +78,7 @@ export const ProtocolTabs: React.VFC<ProtocolTabsProps> = (props) => {
             props.value === tab.value && styles.active
           )}
           onClick={handleChangeTab(tab.value)}
+          key={tab.title}
         >
           {tab.count} {tab.title}
         </ButtonBase>

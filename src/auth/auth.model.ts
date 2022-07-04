@@ -1,9 +1,8 @@
 import { createDomain, sample, split, guard, restore } from 'effector'
 import { shallowEqual } from 'fast-equals'
 import { delay } from 'patronum/delay'
-
 import Cookies from 'js-cookie'
-import dayjs from 'dayjs'
+
 import {
   MeQuery,
   AuthEthMutation,
@@ -17,6 +16,7 @@ import { history } from '~/common/history'
 import { paths } from '~/paths'
 import { analytics } from '~/analytics'
 import { toastsService } from '~/toasts'
+import { dateUtils } from '~/common/date-utils'
 
 type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
 
@@ -60,7 +60,7 @@ export const authWavesFx = authDomain.createEffect(
   async (params: Omit<AuthWavesInputType, 'timezone'>) => {
     const { data, error } = await authApi.authWaves({
       ...params,
-      timezone: dayjs.tz.guess(),
+      timezone: dateUtils.timezone(),
       code: Cookies.get('dfh-parent-code'),
       merge: params.merge ?? false,
     })
@@ -78,7 +78,7 @@ export const authEthereumFx = authDomain.createEffect(
   async (input: Omit<AuthEthereumInputType, 'timezone'>) => {
     const { data, error } = await authApi.authEth({
       ...input,
-      timezone: dayjs.tz.guess(),
+      timezone: dateUtils.timezone(),
       code: Cookies.get('dfh-parent-code'),
       merge: input.merge ?? false,
     })
