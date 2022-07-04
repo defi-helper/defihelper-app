@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useMedia } from 'react-use'
 import {
   useParams,
@@ -64,22 +64,22 @@ const Grid: React.FC = (props) => {
 }
 
 const EARNINGS = [
-  <>
+  <React.Fragment key={1}>
     Your curent stake is <span className={styles.green}>↑12%</span> up to{' '}
     <span className={styles.lightGreen}>$216,397.2</span> for last week. Our
     model expects the growth of overall value because of growth of media
     activity and demand.
-  </>,
-  <>
+  </React.Fragment>,
+  <React.Fragment key={2}>
     However be aware of huge <span className={styles.red}>drop</span> of BAG
     price, which is possible due to the recent whales activity in past 2 days.
-  </>,
-  <>
+  </React.Fragment>,
+  <React.Fragment key={3}>
     Your curent stake is <span className={styles.green}>↑12%</span> up to{' '}
     <span className={styles.lightGreen}>$216,397.2</span> for last week. Our
     model expects the growth of overall value because of growth of media
     activity and demand.
-  </>,
+  </React.Fragment>,
 ]
 
 const HEIGHT = 300

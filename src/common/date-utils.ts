@@ -48,4 +48,11 @@ export const dateUtils = {
 
   after: (from: string | number | Date, to: string | number | Date) =>
     dayjs(from).isAfter(to),
+
+  timezone: () => dayjs.tz.guess(),
+
+  to: (
+    compared: string | number | dayjs.Dayjs | Date | null | undefined,
+    withoutSuffix?: boolean | undefined
+  ) => dayjs().to(compared, withoutSuffix),
 }

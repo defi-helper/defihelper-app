@@ -288,7 +288,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                 className="buy_lp"
                 disabled={props.deprecated}
               >
-                LP Tokens
+                ZAP
               </Button>
             }
             blockchain={props.blockchain}
@@ -307,7 +307,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                 loading={buyLpLoading}
                 className="buy_lp"
               >
-                LP Tokens
+                ZAP
               </Button>
             </CanDemo>
           </WalletConnect>
