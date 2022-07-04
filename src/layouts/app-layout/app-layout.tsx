@@ -56,7 +56,7 @@ const MENU: MenuItem[] = [
     icon: 'energy',
   },
   {
-    title: 'LP Tokens',
+    title: 'ZAP',
     path: paths.buyLp,
     icon: 'automation',
   },

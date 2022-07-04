@@ -184,7 +184,7 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
                 family="mono"
                 className={styles.title}
               >
-                BUY/SELL LP TOKENS
+                ZAP
               </Typography>
             </div>
             <div className={styles.description}>
