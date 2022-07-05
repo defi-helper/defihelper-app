@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { analytics } from '~/analytics'
 
 import { createComponent } from '~/common/create-component'
 import * as styles from './button-base.css'

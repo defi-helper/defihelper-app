@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import { analytics } from '~/analytics'
 
 import { ButtonBase } from '~/common/button-base'
 import { CircularProgress } from '~/common/circular-progress'
