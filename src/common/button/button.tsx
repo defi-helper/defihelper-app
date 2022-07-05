@@ -49,21 +49,6 @@ export const Button = createComponent(function Button<
       className={classNames}
       ref={ref as React.ForwardedRef<HTMLButtonElement>}
       {...restOfProps}
-      onClick={() => {
-        const parsedIdentifier = String(children)
-          .toLowerCase()
-          .replaceAll(' ', '_')
-          .replace(/[^a-z0-9_]/gi, '')
-
-        analytics.reportComponentClick(
-          props.reportIdentifier ?? parsedIdentifier,
-          window.location.pathname,
-          'button'
-        )
-        if (restOfProps.onClick) {
-          restOfProps.onClick()
-        }
-      }}
     >
       {loading && <CircularProgress className={styles.circularProgess} />}
       <span
