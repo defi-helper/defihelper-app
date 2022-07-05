@@ -47,8 +47,6 @@ const MENU: MenuItem[] = [
     title: 'Autostaking',
     path: paths.autostaking,
     icon: 'autostaking',
-    subject: 'User',
-    can: 'read',
   },
   {
     title: 'Automations',
@@ -56,7 +54,7 @@ const MENU: MenuItem[] = [
     icon: 'energy',
   },
   {
-    title: 'LP Tokens',
+    title: 'ZAP',
     path: paths.buyLp,
     icon: 'automation',
   },
@@ -96,7 +94,7 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
 
   const ability = useAbility()
 
-  const [hidden, setHide] = useLocalStorage('dfh:sidebar', false)
+  const [hidden, setHide] = useLocalStorage('sidebar', false)
 
   const [openSidebar, setOpenSidebar] = useState(false)
   const [sidebar, setSidebar] = useState<HTMLDivElement | null>(null)

@@ -281,7 +281,7 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                                   color="green"
                                   className={styles.contractButton}
                                 >
-                                  LP Tokens
+                                  ZAP
                                 </Button>
                               }
                             >
@@ -291,7 +291,7 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                                 className={styles.contractButton}
                                 onClick={handleOnBuyLP(contract)}
                               >
-                                LP Tokens
+                                ZAP
                               </Button>
                             </WalletConnect>
                           </div>

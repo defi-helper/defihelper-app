@@ -317,7 +317,9 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
                 }
               >
                 {(fetchedEvents ?? []).map((eventName) => (
-                  <SelectOption value={eventName}>{eventName}</SelectOption>
+                  <SelectOption value={eventName} key={eventName}>
+                    {eventName}
+                  </SelectOption>
                 ))}
               </Select>
             )}

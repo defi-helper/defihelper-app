@@ -182,7 +182,7 @@ export const Tokens: React.VFC = () => {
           </div>
           <div>
             {tokens.map((token) => (
-              <div className={styles.tableRow}>
+              <div className={styles.tableRow} key={token.id}>
                 <Typography variant="body2">
                   <Select
                     defaultValue={token.alias?.liquidity}

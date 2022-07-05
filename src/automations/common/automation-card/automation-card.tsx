@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
-import dayjs from 'dayjs'
 import { ButtonBase } from '~/common/button-base'
 import { Chip } from '~/common/chip'
 import { CircularProgress } from '~/common/circular-progress'
@@ -23,6 +22,7 @@ import { pluralize } from '~/common/pluralize'
 import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-card.css'
 import { CanDemo } from '~/auth/can-demo'
+import { dateUtils } from '~/common/date-utils'
 
 export type AutomationCardProps = {
   onEdit?: () => void
@@ -180,7 +180,7 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
       ) && (
         <Label
           title="Next Auto-Stake"
-          value={props.restakeIn ? dayjs().to(props.restakeIn) : '-'}
+          value={props.restakeIn ? dateUtils.to(props.restakeIn) : '-'}
           subtitle={networks}
           automation={automation}
           error={Boolean(props.skipReason)}

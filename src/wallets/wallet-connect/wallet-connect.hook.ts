@@ -41,10 +41,7 @@ export const useWalletSign = () => {
 
         if (!wallet.account) return
 
-        walletNetworkModel.signMessage({
-          chainId: String(wallet.chainId),
-          provider: wallet.provider,
-          account: wallet.account,
+        walletNetworkModel.activateWalletFx({
           connector: wallet.connector,
         })
       } catch (error) {

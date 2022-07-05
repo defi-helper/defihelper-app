@@ -174,6 +174,12 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
       toastsService.error(message)
     }, [approveState.error, buyState.error])
 
+    useEffect(() => {
+      if (isApproved.value === false || isApproved.value === undefined) return
+
+      toastsService.info('tokens approved')
+    }, [isApproved.value])
+
     return (
       <Dialog className={styles.root}>
         {!tokens.value ? (
@@ -189,7 +195,7 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
                 family="mono"
                 className={styles.title}
               >
-                BUY/SELL LP TOKENS
+                ZAP
               </Typography>
             </div>
             <div className={styles.description}>

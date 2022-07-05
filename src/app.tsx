@@ -1,12 +1,12 @@
 import { HelmetProvider } from 'react-helmet-async'
 import { ClientContext } from 'graphql-hooks'
+import { MatomoProvider, createInstance } from '@datapunt/matomo-tracker-react'
+import { YMInitializer } from 'react-yandex-metrika'
 
 import './app.css'
 import './assets/fonts/Basier-Circle-regular-webfont/stylesheet.css'
 import './assets/fonts/Basier-Square-Mono-Regular-Webfont/stylesheet.css'
 import './assets/fonts/Basier-Square-regular-webfont/stylesheet.css'
-import { MatomoProvider, createInstance } from '@datapunt/matomo-tracker-react'
-import { YMInitializer } from 'react-yandex-metrika'
 import { useEthereumNetwork } from './wallets/wallet-networks'
 import { Router } from './router'
 import { DialogProvider } from './common/dialog'
@@ -22,21 +22,21 @@ Sentry.init()
 
 const client = getAPIClient()
 
+const matomoCounterConfiguration = createInstance({
+  urlBase: config.MATOMO_URL,
+  siteId: config.MATOMO_SITE_ID,
+  disabled: config.IS_DEV,
+})
+
 export const App: React.VFC = () => {
   useEthereumNetwork()
-
-  const matomoCounterConfiguration = createInstance({
-    urlBase: 'https://defihelper.matomo.cloud',
-    siteId: 1,
-    disabled: config.IS_DEV,
-  })
 
   return (
     <ThemeProvider>
       <ErrorBoundary>
         {!config.IS_DEV && (
           <YMInitializer
-            accounts={[86006279]}
+            accounts={config.YANDEX_METRIC_ACCOUNTS}
             options={{ webvisor: true }}
             version="2"
           />
