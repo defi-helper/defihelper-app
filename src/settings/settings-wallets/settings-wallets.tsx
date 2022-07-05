@@ -176,6 +176,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     }
 
   const handleAddWallet = async () => {
+    analytics.log('portfolio_add_wallet_click')
     try {
       const wallet = await openWalletList()
 

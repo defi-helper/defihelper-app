@@ -14,6 +14,7 @@ import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
 import { ButtonBase } from '~/common/button-base'
 import * as styles from './staking-buy-liquidity-dialog.css'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { analytics } from '~/analytics'
 
 export type StakingBuyLiquidityDialogProps = {
   onConfirm: () => void
@@ -97,12 +98,19 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
         )
 
         await tx?.wait()
+        analytics.log('lp_tokens_purchase_success', {
+          amount: bignumberUtils.floor(formValues.amount),
+        })
 
         return true
       } catch (error) {
         if (error instanceof Error) {
           toastsService.error(error.message)
         }
+
+        analytics.log('lp_tokens_purchase_unsuccess', {
+          amount: bignumberUtils.floor(formValues.amount),
+        })
 
         return false
       }
@@ -139,6 +147,9 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
     }, [buyState.value])
 
     const handleOnSubmit = handleSubmit(async (formValues) => {
+      analytics.log('lp_tokens_pop_up_buy_click', {
+        amount: bignumberUtils.floor(formValues.amount),
+      })
       if (isApproved.value === true) {
         await onBuy(formValues)
       }

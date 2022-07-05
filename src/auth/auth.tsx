@@ -12,6 +12,7 @@ import { useDialog } from '~/common/dialog'
 import { AuthChangeNetworkDialog } from './common'
 import { UnsupportedChainError } from '~/wallets/common/unsupported-chain'
 import * as styles from './auth.css'
+import { analytics } from '~/analytics'
 
 export type AuthProps = {
   className?: string
@@ -22,6 +23,8 @@ export const Auth: React.VFC<AuthProps> = (props) => {
   const [openChangeNetworkDialog] = useDialog(AuthChangeNetworkDialog)
 
   const handleConnect = async () => {
+    analytics.log('porfolio_connect_wallet_click')
+
     try {
       const wallet = await openWalletList()
 

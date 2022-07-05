@@ -22,6 +22,7 @@ import { paths } from '~/paths'
 import { toastsService } from '~/toasts'
 import { dateUtils } from '~/common/date-utils'
 import { WavesKeeperConnector } from '~/wallets/common/waves-keeper-connector'
+import { analytics } from '~/analytics'
 
 type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
 
@@ -75,6 +76,12 @@ export const authWavesFx = createEffect(
     if (error?.graphQLErrors?.[0])
       throw new Error(error.graphQLErrors[0].message)
 
+    analytics.log('portfolio_connect_wallet_success', {
+      address: input.address,
+      network: input.network,
+      blockchain: 'waves',
+    })
+
     return data
   }
 )
@@ -103,6 +110,13 @@ export const authEthereumFx = createEffect(
     if (error?.fetchError) throw error.fetchError
     if (error?.graphQLErrors?.[0])
       throw new Error(error.graphQLErrors[0].message)
+
+    if (!data) throw new Error(ERROR_MESSAGE)
+    analytics.log('portfolio_connect_wallet_success', {
+      address: input.address,
+      network: input.chainId,
+      blockchain: 'ethereum',
+    })
 
     return data
   }

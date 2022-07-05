@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { analytics } from '~/analytics'
 
 import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
@@ -20,6 +21,7 @@ const INSTRUCTION = [
         href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
         target="_blank"
         size="medium"
+        onClick={() => analytics.log('auto_staking_read_article_click')}
       >
         read article
       </Button>
@@ -35,6 +37,7 @@ const INSTRUCTION = [
         href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
         target="_blank"
         size="medium"
+        onClick={() => analytics.log('auto_staking_read_watch_video_click')}
       >
         Watch video
       </Button>
@@ -50,6 +53,7 @@ const INSTRUCTION = [
         href="https://defihelper.io/static/media/Math_Behind_DeFiHelper.pdf"
         target="_blank"
         size="medium"
+        onClick={() => analytics.log('auto_staking_read_learn_more')}
       >
         learn more
       </Button>
