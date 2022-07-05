@@ -131,7 +131,7 @@ export const StakingGovStakeDialog: React.VFC<StakingGovStakeDialogProps> = (
   }, [isApproved.value, approveState.value, amount])
 
   useEffect(() => {
-    if (!isApproved.value) return
+    if (isApproved.value === false) return
 
     toastsService.info('tokens approved')
   }, [isApproved.value])

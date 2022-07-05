@@ -164,7 +164,7 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
     }, [approveState.error, buyState.error])
 
     useEffect(() => {
-      if (!isApproved.value) return
+      if (isApproved.value === false) return
 
       toastsService.info('tokens approved')
     }, [isApproved.value])

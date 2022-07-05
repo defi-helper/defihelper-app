@@ -11,7 +11,7 @@ import { setElementVars } from '@vanilla-extract/dynamic'
 import { ThemeModes, themeContract, themes } from './theme.css'
 import { ThemeContext, themeContext } from './theme.context'
 
-const THEME_KEY = 'dfh:theme'
+const THEME_KEY = 'theme'
 
 const isThemeModes = (themeMode: string): themeMode is ThemeModes => {
   return ['light', 'dark'].includes(themeMode)

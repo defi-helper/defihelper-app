@@ -1,6 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { ConnectorUpdate } from '@web3-react/types'
-import { createStore, createEffect, guard, sample, createEvent } from 'effector'
+import { createStore, createEffect, guard, sample } from 'effector'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { shallowEqual } from 'fast-equals'
@@ -13,10 +13,8 @@ import {
   SIGN_MESSAGE,
   connectorsByName,
   Wallet,
-  SignMessagePayload,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
-import { sidUtils } from '~/auth/common'
 import { BlockchainEnum } from '~/api/_generated-types'
 import { networksConfig } from '~/networks-config'
 import type { WavesKeeperConnector } from '~/wallets/common/waves-keeper-connector'
@@ -156,31 +154,10 @@ export const signMessageEthereumFx = createEffect(
   }
 )
 
-export const signMessage = createEvent<{
-  chainId: string
-  provider: unknown
-  account: string
-  connector: AbstractConnector
-}>()
-
 sample({
   source: $wallet.map((wallet) => wallet?.connector),
   clock: [signMessageEthereumFx.fail, signMessageWavesFx.fail],
   target: diactivateWalletFx,
-})
-
-guard({
-  clock: activateWalletFx.doneData.map(
-    ({ account, chainId, provider, connector }) => ({
-      account,
-      chainId,
-      provider,
-      connector,
-    })
-  ),
-  filter: (clock): clock is SignMessagePayload =>
-    Boolean(clock.account && clock.chainId) && !sidUtils.get(),
-  target: signMessage,
 })
 
 toastsService.forwardErrors(
