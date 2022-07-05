@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { analytics } from '~/analytics'
 
 import { ButtonBase } from '~/common/button-base'
 import { CircularProgress } from '~/common/circular-progress'
@@ -12,6 +13,7 @@ type Props<C extends React.ElementType = 'button'> = {
   disabled?: boolean
   size?: 'small' | 'medium' | 'large'
   as?: C
+  reportIdentifier?: string
 }
 
 export type ButtonProps<C extends React.ElementType = 'button'> = Props<C> &
@@ -47,6 +49,21 @@ export const Button = createComponent(function Button<
       className={classNames}
       ref={ref as React.ForwardedRef<HTMLButtonElement>}
       {...restOfProps}
+      onClick={() => {
+        const parsedIdentifier = String(children)
+          .toLowerCase()
+          .replaceAll(' ', '_')
+          .replace(/[^a-z0-9_]/gi, '')
+
+        analytics.reportComponentClick(
+          props.reportIdentifier ?? parsedIdentifier,
+          window.location.pathname,
+          'button'
+        )
+        if (restOfProps.onClick) {
+          restOfProps.onClick()
+        }
+      }}
     >
       {loading && <CircularProgress className={styles.circularProgess} />}
       <span

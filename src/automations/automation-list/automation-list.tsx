@@ -27,6 +27,7 @@ import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
 import { pluralize } from '~/common/pluralize'
 import { CanDemo } from '~/auth/can-demo'
+import { analytics } from '~/analytics'
 
 export type AutomationListProps = unknown
 
@@ -81,6 +82,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
 
   const handleAddAutomation = async () => {
     if (!wallet) return
+    analytics.amplitude.automationAdd()
 
     try {
       if (!dontShow) {

@@ -82,6 +82,7 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
 
   const handleSetType = (type: Types | null) => () => {
     setType(type)
+    analytics.amplitude.automationSectionSwitch(type)
   }
 
   const handleChangeTab = (tab: Tabs) => () => {

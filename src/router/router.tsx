@@ -5,6 +5,7 @@ import {
   Redirect,
 } from 'react-router-dom'
 
+import { useEffect } from 'react'
 import { CanRoute } from './can-route'
 import { paths } from '~/paths'
 import { history } from '~/common/history'
@@ -44,10 +45,17 @@ import { Tokens } from '~/tokens'
 import { Admin } from '~/admin'
 import { TokensAlias } from '~/tokens-alias'
 import { Trade } from '~/trade'
+import { analytics } from '~/analytics'
 
 export type RouterProps = unknown
 
 export const Router: React.VFC<RouterProps> = () => {
+  useEffect(() => {
+    history.listen(({ pathname, hash, search }) => {
+      analytics.reportPathChange(pathname, hash, search)
+    })
+  }, [])
+
   return (
     <BrowserRouter history={history}>
       <Switch>

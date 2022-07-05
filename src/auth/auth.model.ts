@@ -70,6 +70,12 @@ export const authWavesFx = authDomain.createEffect(
       throw new Error(error.graphQLErrors[0].message)
     if (!data) throw new Error(ERROR_MESSAGE)
 
+    analytics.amplitude.walletConnectedSuccessful({
+      address: params.address,
+      network: params.network,
+      blockchain: 'ethereum',
+    })
+
     return data
   }
 )
@@ -87,6 +93,11 @@ export const authEthereumFx = authDomain.createEffect(
     if (error?.graphQLErrors?.[0])
       throw new Error(error.graphQLErrors[0].message)
     if (!data) throw new Error(ERROR_MESSAGE)
+    analytics.amplitude.walletConnectedSuccessful({
+      address: input.address,
+      network: input.network,
+      blockchain: 'ethereum',
+    })
 
     return data
   }

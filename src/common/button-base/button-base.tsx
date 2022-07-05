@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { analytics } from '~/analytics'
 
 import { createComponent } from '~/common/create-component'
 import * as styles from './button-base.css'
@@ -29,6 +30,21 @@ export const ButtonBase = createComponent(function ButtonBase<
       ref={ref as React.ForwardedRef<HTMLButtonElement>}
       className={classNames}
       type={as === 'button' ? type : undefined}
+      onClick={() => {
+        const parsedIdentifier = String(props.children)
+          .toLowerCase()
+          .replaceAll(' ', '_')
+          .replace(/[^a-z0-9_]/gi, '')
+
+        analytics.reportComponentClick(
+          props.reportIdentifier ?? parsedIdentifier,
+          window.location.pathname,
+          'button_base'
+        )
+        if (restOfProps.onClick) {
+          restOfProps.onClick()
+        }
+      }}
     />
   )
 })
