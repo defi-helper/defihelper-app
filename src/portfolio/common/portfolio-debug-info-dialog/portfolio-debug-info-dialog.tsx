@@ -11,7 +11,7 @@ export const PortfolioDebugInfoDialog: React.VFC<{
       <Typography variant="h3">Debug info</Typography>
       <ul>
         {assets.map((row) => (
-          <li className={styles.listItem}>
+          <li className={styles.listItem} key={row.id}>
             <div>{row.id}</div>
             <div>
               [{row.symbol}] {row.name}

@@ -46,6 +46,9 @@ export const fetchProtocolsFx = createEffect(
           ...variables.filter,
           isDebank: false,
           hidden: false,
+          automate: {
+            buyLiquidity: true,
+          },
         },
       },
       signal

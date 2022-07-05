@@ -10,9 +10,9 @@ import {
 import { CanDemo } from '~/auth/can-demo'
 import { ButtonBase } from '~/common/button-base'
 import { Switch } from '~/common/switch'
-import * as styles from './settings-contact-card.css'
 import { Dropdown } from '~/common/dropdown'
 import { Button } from '~/common/button'
+import * as styles from './settings-contact-card.css'
 
 export type SettingsContactCardProps = {
   isConnected: boolean
@@ -127,6 +127,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
             <ButtonBase
               className={clsx(styles.dropdownItem)}
               onClick={() => handleUpdateNotification(!!props.notification, v)}
+              key={v}
             >
               {formatHour(v)}
             </ButtonBase>

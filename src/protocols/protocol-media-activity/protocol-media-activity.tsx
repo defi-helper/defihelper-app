@@ -27,17 +27,17 @@ export const ProtocolMediaActivity: React.VFC = () => {
   }
 
   useEffect(() => {
-    if (mediaActity.length) return
-
     model.fetchSocialPostsFx({
       ...params,
       offset: 0,
     })
-  }, [params, mediaActity])
+  }, [params])
 
   useEffect(() => {
     return () => model.reset()
   }, [])
+
+  if (isEmpty(mediaActity)) return <></>
 
   return (
     <div className={clsx(styles.root)}>

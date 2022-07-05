@@ -1,3 +1,7 @@
+const isDev =
+  process.env.REACT_APP_ENV === 'development' ||
+  process.env.NODE_ENV === 'development'
+
 module.exports = {
   extends: [
     'airbnb-typescript',
@@ -53,13 +57,9 @@ module.exports = {
     'no-redeclare': 'error',
     'no-shadow': 'off',
     '@typescript-eslint/no-shadow': ['error'],
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-    '@typescript-eslint/ban-ts-comment':
-      process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-    'no-console': [
-      process.env.NODE_ENV === 'production' ? 'error' : 'warn',
-      { allow: ['warn', 'error'] },
-    ],
+    'no-debugger': !isDev ? 'error' : 'warn',
+    '@typescript-eslint/ban-ts-comment': !isDev ? 'error' : 'warn',
+    'no-console': [!isDev ? 'error' : 'warn', { allow: ['warn', 'error'] }],
     'react/prop-types': 0,
     'import/prefer-default-export': 'off',
     'consistent-return': 0,
@@ -69,7 +69,7 @@ module.exports = {
     'react/state-in-constructor': ['error', 'never'],
     'react/react-in-jsx-scope': 0,
     'import/extensions': 0,
-    'no-unused-vars': 'error',
+    '@typescript-eslint/no-unused-vars': !isDev ? 'error' : 'warn',
     trailingComma: 'off',
     'react/require-default-props': 0,
     'react/jsx-fragments': 0,
@@ -83,5 +83,6 @@ module.exports = {
         functions: 'only-multiline',
       },
     ],
+    'react/jsx-key': ['error', { checkFragmentShorthand: true }],
   },
 }

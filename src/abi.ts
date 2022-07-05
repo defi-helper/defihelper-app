@@ -24,6 +24,7 @@ import TimelockInterface from '@defihelper/networks/abi/TimelockInterface.json'
 import Treasury from '@defihelper/networks/abi/Treasury.json'
 import Store from '@defihelper/networks/abi/Store.json'
 import Delegator from '@defihelper/networks/abi/Delegator.json'
+import Vesting from '@defihelper/networks/abi/Vesting.json'
 
 export const abi = {
   AggregatorV3Interface,
@@ -57,6 +58,7 @@ export const abi = {
   DelegatorLiquidity: Delegator,
   DelegatorMarketing: Delegator,
   DelegatorTeam: Delegator,
+  VestingPreSeedAdvisor: Vesting,
 } as const
 
 export type AbiKeys = keyof typeof abi

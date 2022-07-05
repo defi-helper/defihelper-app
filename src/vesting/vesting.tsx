@@ -92,9 +92,15 @@ const WALLET_MAP = new Map([
     },
   ],
   [
-    '0xdD52F3b42191c6A95630a949b8883c2e173bD78C'.toLowerCase(), // DEMO RINKEBY
+    '0xcdD67911FFee693412Af9E554670110997f1839F'.toLowerCase(),
     {
-      address: '0x28Fb0B64112F69b3d93ed250e8ae0fe7a22e79fD',
+      address: '0x0D41bcB99Daea7908a74C0873D5182823a52BD40',
+    },
+  ],
+  [
+    '0x19E8BC4a5537B26DA43438c8B11B3fE85FF5378A'.toLowerCase(), // DEMO
+    {
+      address: '0x58a1D9a847fd7104a14aE3D12095369Ad8e8E722',
     },
   ],
 ])
@@ -246,7 +252,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
       <WalletConnect fallback={<Button>Connect</Button>}>
         <div>
           <Typography variant="h3" className={styles.title}>
-            Pre-seed round
+            DFH Vesting contract
           </Typography>
           <Paper radius={8} className={styles.root}>
             {correctAccount ? (

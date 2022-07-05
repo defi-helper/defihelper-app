@@ -28,7 +28,7 @@ export const form = style({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  minHeight: 'calc(100% - 91px)',
+  flex: '1 0 auto',
 })
 
 export const loader = style({
@@ -66,6 +66,7 @@ export const img = style({
   width: 24,
   height: 24,
   marginRight: 5,
+  verticalAlign: 'middle',
 })
 
 export const imgPlaceHolder = style([
