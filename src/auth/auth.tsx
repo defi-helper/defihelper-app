@@ -23,7 +23,7 @@ export const Auth: React.VFC<AuthProps> = (props) => {
   const [openChangeNetworkDialog] = useDialog(AuthChangeNetworkDialog)
 
   const handleConnect = async () => {
-    analytics.amplitude.portfolioConnectWalletPreAuth()
+    analytics.log('porfolio_connect_wallet_click')
 
     try {
       const wallet = await openWalletList()

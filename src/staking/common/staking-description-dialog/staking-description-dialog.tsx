@@ -5,6 +5,7 @@ import { Checkbox } from '~/common/checkbox'
 import { Typography } from '~/common/typography'
 import { AutomationDialog } from '~/automations/common/automation-dialog'
 import * as styles from './staking-description-dialog.css'
+import { analytics } from '~/analytics'
 
 export type StakingDescriptionDialogProps = {
   onCancel: () => void
@@ -20,6 +21,7 @@ export const StakingDescriptionDialog: React.VFC<StakingDescriptionDialogProps> 
     }
 
     const handleConfirm = () => {
+      analytics.log('auto_staking_pop_up_start_click')
       props.onConfirm(checked)
     }
 

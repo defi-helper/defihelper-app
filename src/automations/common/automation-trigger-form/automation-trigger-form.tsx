@@ -131,7 +131,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
 
   const handleOnSubmit = handleSubmit((formValues) => {
     const { event, network, address, wallet, ...restofValues } = formValues
-    analytics.amplitude.automationSetup()
+    analytics.log('automations_add_automation_setup_click')
 
     if (props.defaultValues) {
       props.onUpdate({

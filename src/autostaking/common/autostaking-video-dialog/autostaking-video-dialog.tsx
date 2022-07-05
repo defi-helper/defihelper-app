@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { analytics } from '~/analytics'
 
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
@@ -24,6 +25,7 @@ export const AutostakingVideoDialog: React.VFC<AutostakingVideoDialogProps> = (
   const [dontShow, setDontShow] = useState(props.dontShowAgain ?? false)
 
   const handleDontShow = (event: React.ChangeEvent<HTMLInputElement>) => {
+    analytics.log('auto_staking_pop_up_don’t_show_this_again_checkbox_click')
     setDontShow(event.target.checked)
   }
 

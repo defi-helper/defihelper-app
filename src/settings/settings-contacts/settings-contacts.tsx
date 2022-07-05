@@ -55,12 +55,15 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           type: broker,
           confirmationCode: data.confirmationCode,
         })
+
+        analytics.log('settings_email_connect_click')
       } else {
         const result = await openContactForm({
           defaultValues: {
             broker,
           },
         })
+        analytics.log('settings_email_save_click')
 
         const data = await model.createUserContactFx({
           ...result,
@@ -94,7 +97,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
     }
 
   const handleToggleNotification = async (
-    { id: contact }: typeof contactList[number],
+    { id: contact, broker }: typeof contactList[number],
     type: UserNotificationTypeEnum,
     state: boolean,
     hour: number
@@ -106,7 +109,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
         hour,
         contact,
       })
-      analytics.onNotificationsEnabled()
+      analytics.log(`settings_${broker.toLowerCase()}_connect_click`)
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)

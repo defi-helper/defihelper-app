@@ -82,7 +82,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
 
   const handleAddAutomation = async () => {
     if (!wallet) return
-    analytics.amplitude.automationAdd()
+    analytics.log('automations_new_automations_click')
 
     try {
       if (!dontShow) {
@@ -105,6 +105,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
 
   const handleBuyProducts = async () => {
     if (!wallet?.account) return
+    analytics.log('automations_buy_click')
 
     try {
       await openAutomationProducts({

@@ -9,6 +9,18 @@ if (config.AMPLITUDE) {
 }
 
 export const analytics = {
+  async log(event: string, params = {}) {
+    try {
+      await Promise.all([
+        ym('reachGoal', event),
+        ReactGA.ga('event', event),
+        amplitudeInstance.logEvent(event, params),
+      ])
+    } catch (err) {
+      console.warn('unable to send analytics goal')
+    }
+  },
+
   async reportPathChange(path: string, hash: string, search: string) {
     const identifier = path
       .toLowerCase()
@@ -89,109 +101,5 @@ export const analytics = {
     } catch (err) {
       console.warn('unable to send analytics goal')
     }
-  },
-
-  amplitude: {
-    async walletConnectedSuccessful(payload: {
-      address: string
-      network: string
-      blockchain: string
-    }) {
-      try {
-        await amplitudeInstance.logEvent('wallet_connected_successful', payload)
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async addWallet() {
-      try {
-        await amplitudeInstance.logEvent('add_wallet')
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async telegramConnect() {
-      try {
-        await amplitudeInstance.logEvent('telegram_connect')
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async telegramOpen() {
-      try {
-        await amplitudeInstance.logEvent('telegram_open')
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async emailConnect() {
-      try {
-        await amplitudeInstance.logEvent('email_connect')
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async emailSave() {
-      try {
-        await amplitudeInstance.logEvent('email_save')
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async connectCex() {
-      try {
-        await amplitudeInstance.logEvent('connect_cex')
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async portfolioConnectWalletPreAuth() {
-      try {
-        await amplitudeInstance.logEvent('portfolio_connect_wallet_before_auth')
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async automationAdd() {
-      try {
-        await amplitudeInstance.logEvent('automation_add')
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async automationSetup() {
-      try {
-        await amplitudeInstance.logEvent('automation_setup')
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async automationSectionSwitch(value: string | null) {
-      try {
-        await amplitudeInstance.logEvent(
-          `automation_section_${value ?? 'none'}`
-        )
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
-
-    async automationByEventSection() {
-      try {
-        await amplitudeInstance.logEvent('automation_by_event_section')
-      } catch {
-        console.warn('unable to send analytics goal')
-      }
-    },
   },
 }

@@ -125,6 +125,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
     const handleMigrate =
       (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
       async () => {
+        analytics.log('auto_staking_migrate_tokens_click')
         model.migratingStart(contract.id)
 
         try {

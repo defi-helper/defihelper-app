@@ -44,7 +44,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   const assetsLoading = useStore(model.fetchAssetsByWalletFx.pending)
 
   const handleOpenAddWalletDialog = async () => {
-    analytics.amplitude.addWallet()
+    analytics.log('portfolio_add_wallet_click')
     try {
       const res = await openAddWalletDialog()
 
@@ -57,7 +57,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   }
 
   const handleOpenWalletList = async () => {
-    analytics.amplitude.addWallet()
+    analytics.log('portfolio_add_wallet_click')
     try {
       const wallet = await openWalletList()
 
