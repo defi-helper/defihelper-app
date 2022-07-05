@@ -34,22 +34,6 @@ export const analytics = {
     })
   },
 
-  async reportComponentClick(
-    identifier: string,
-    path: string,
-    component: string
-  ) {
-    try {
-      await amplitudeInstance.logEvent(`${component}_${identifier}`, {
-        path,
-        component,
-        source: 'app',
-      })
-    } catch {
-      console.warn('unable to send analytics goal')
-    }
-  },
-
   async onWalletConnected() {
     try {
       await Promise.all([
