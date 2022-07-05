@@ -194,40 +194,41 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                 GovReceiptSupportEnum.For,
                 GovReceiptSupportEnum.Abstain,
                 GovReceiptSupportEnum.Against,
-              ].includes(receipt.support))) && (
-            <div className={clsx(styles.voteInfo, styles.mb32)}>
-              <GovernanceVoteInfo
-                variant="for"
-                active={receipt?.support === GovReceiptSupportEnum.For}
-                total={bignumberUtils.total(
-                  governanceDetail.abstainVotes,
-                  governanceDetail.againstVotes,
-                  governanceDetail.forVotes
-                )}
-                count={governanceDetail.forVotes}
-              />
-              <GovernanceVoteInfo
-                variant="abstain"
-                active={receipt?.support === GovReceiptSupportEnum.Abstain}
-                total={bignumberUtils.total(
-                  governanceDetail.abstainVotes,
-                  governanceDetail.againstVotes,
-                  governanceDetail.forVotes
-                )}
-                count={governanceDetail.abstainVotes}
-              />
-              <GovernanceVoteInfo
-                variant="against"
-                active={receipt?.support === GovReceiptSupportEnum.Against}
-                total={bignumberUtils.total(
-                  governanceDetail.abstainVotes,
-                  governanceDetail.againstVotes,
-                  governanceDetail.forVotes
-                )}
-                count={governanceDetail.againstVotes}
-              />
-            </div>
-          )}
+              ].includes(receipt.support))) &&
+            receipt && (
+              <div className={clsx(styles.voteInfo, styles.mb32)}>
+                <GovernanceVoteInfo
+                  variant="for"
+                  active={receipt?.support === GovReceiptSupportEnum.For}
+                  total={bignumberUtils.total(
+                    governanceDetail.abstainVotes,
+                    governanceDetail.againstVotes,
+                    governanceDetail.forVotes
+                  )}
+                  count={governanceDetail.forVotes}
+                />
+                <GovernanceVoteInfo
+                  variant="abstain"
+                  active={receipt?.support === GovReceiptSupportEnum.Abstain}
+                  total={bignumberUtils.total(
+                    governanceDetail.abstainVotes,
+                    governanceDetail.againstVotes,
+                    governanceDetail.forVotes
+                  )}
+                  count={governanceDetail.abstainVotes}
+                />
+                <GovernanceVoteInfo
+                  variant="against"
+                  active={receipt?.support === GovReceiptSupportEnum.Against}
+                  total={bignumberUtils.total(
+                    governanceDetail.abstainVotes,
+                    governanceDetail.againstVotes,
+                    governanceDetail.forVotes
+                  )}
+                  count={governanceDetail.againstVotes}
+                />
+              </div>
+            )}
           {!bignumberUtils.gte(governanceDetail.forVotes, QUORUM_VOTES) && (
             <Typography
               variant="body1"
@@ -239,7 +240,8 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             </Typography>
           )}
           {governanceDetail.state === GovProposalStateEnum.Active &&
-            !receipt?.hasVoted && (
+            receipt &&
+            !receipt.hasVoted && (
               <div className={clsx(styles.voteButtons, styles.mb32)}>
                 <WalletConnect
                   fallback={
@@ -355,6 +357,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   address: governanceDetail.proposer,
                 })}
                 target="_blank"
+                underline="always"
               >
                 {cutAccount(governanceDetail.proposer)}
               </Link>
@@ -375,39 +378,48 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                 '(In order to be applied, the quorum of 4% (40 000 000 DFH) must be reached)'}
             </Typography>
             {governanceDetail.actions.map(
-              ({ target, callDatas, signature, id }) => (
-                <Typography key={id} className={styles.action} as="div">
-                  <Link
-                    href={buildExplorerUrl({
-                      network: config.DEFAULT_CHAIN_ID,
-                      address: target,
-                    })}
-                    target="_blank"
-                  >
-                    {cutAccount(target)}
-                  </Link>
-                  .{signature}(
-                  {callDatas.map((callData, index) => (
-                    <React.Fragment key={String(index)}>
-                      {isEthAddress(callData) ? (
+              ({ target, callDatas, signature, id }) => {
+                return (
+                  <Typography key={id} className={styles.action} as="div">
+                    <Link
+                      href={buildExplorerUrl({
+                        network: config.DEFAULT_CHAIN_ID,
+                        address: target,
+                      })}
+                      target="_blank"
+                      underline="always"
+                    >
+                      {cutAccount(target)}
+                    </Link>
+                    .{signature}(
+                    {callDatas.map((callData, index) => {
+                      const call = isEthAddress(callData) ? (
                         <Link
                           href={buildExplorerUrl({
                             network: config.DEFAULT_CHAIN_ID,
                             address: callData,
                           })}
                           target="_blank"
+                          underline="always"
+                          key={String(index)}
                         >
                           {cutAccount(callData)}
                         </Link>
                       ) : (
                         callData
-                      )}
-                      {callDatas.length - 1 === index ? '' : ', '}
-                    </React.Fragment>
-                  ))}
-                  )
-                </Typography>
-              )
+                      )
+
+                      return (
+                        <React.Fragment key={String(index)}>
+                          {call}
+                          {callDatas.length - 1 === index ? '' : ', '}
+                        </React.Fragment>
+                      )
+                    })}
+                    )
+                  </Typography>
+                )
+              }
             )}
           </Paper>
           <MarkdownRender>{governanceDetail.description}</MarkdownRender>
