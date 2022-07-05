@@ -8,8 +8,10 @@ import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { UserContactBrokerEnum } from '~/api/_generated-types'
+import { useDialog } from '~/common/dialog'
 import * as authModel from '~/auth/auth.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
+import { SettingsConversationDialog } from '~/settings/common'
 import * as styles from './settings-telegram.css'
 import * as model from './settings-telegram.model'
 
@@ -21,13 +23,14 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   const [noThanks, setNoThanks] = useLocalStorage('telegram', false)
   const loading = useStore(settingsContacts.fetchUserContactListFx.pending)
   const userReady = useStore(authModel.$userReady)
+  const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
 
   const contacts = useMemo(
     () => (userContact ? [...userContacts, userContact] : userContacts),
     [userContact, userContacts]
   )
 
-  const hasTelegram = contacts.some(
+  const telegram = contacts.find(
     ({ broker }) => broker === UserContactBrokerEnum.Telegram
   )
 
@@ -35,7 +38,12 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
 
   const handleHandleNoThanks = () => setNoThanks(true)
 
-  if (hasTelegram || noThanks || loading || !userReady) return <></>
+  if (telegram?.address || noThanks || loading || !userReady) return <></>
+
+  const handleOpenTelegram = () => {
+    openSettingsConversationDialog().catch(console.error)
+    model.openTelegram(undefined)
+  }
 
   return (
     <Paper radius={4} className={styles.root}>
@@ -81,7 +89,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
           color="primary"
           variant="contained"
           className={styles.button}
-          onClick={model.openTelegram}
+          onClick={handleOpenTelegram}
         >
           Turn on notifications
         </Button>

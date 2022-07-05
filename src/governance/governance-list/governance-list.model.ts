@@ -112,7 +112,7 @@ sample({
     filter: ([wallet, opened]) => opened && Boolean(wallet?.account),
   }),
   fn: ([wallet]) => ({
-    network: Number(wallet?.chainId),
+    network: Number(config.DEFAULT_CHAIN_ID),
     wallet: String(wallet?.account),
     contract: GOVERNOR_TOKEN,
   }),

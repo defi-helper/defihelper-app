@@ -200,7 +200,7 @@ sample({
   source: GovernanceDetailGate.state,
   clock: [queueFx.done, executeFx.done, castVoteFx.done, openedGate],
   fn: (proposalId, { params }) => ({
-    network: Number(params.chainId),
+    network: Number(config.DEFAULT_CHAIN_ID),
     contract: GOVERNOR_BRAVO,
     proposalId: Number(proposalId),
     wallet: params.account,

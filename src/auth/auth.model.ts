@@ -276,3 +276,14 @@ settingsWalletModel.$wallets.reset(logoutFx)
 
 authEthereumFx.failData.watch((error) => toastsService.error(error.message))
 authWavesFx.failData.watch((error) => toastsService.error(error.message))
+
+fetchUserFx.doneData.watch((data) => {
+  if (data === null) {
+    sidUtils.remove()
+  }
+})
+
+sample({
+  clock: open,
+  target: fetchUserFx,
+})

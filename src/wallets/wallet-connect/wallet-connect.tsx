@@ -38,9 +38,9 @@ export const WalletConnect: React.FC<WalletConnectProps> = (props) => {
   const currentWallet = wallets.find((wallet) => {
     return (
       (wallet.network === 'main'
-        ? wallet.address === activeWallet?.account
-        : wallet.address === activeWallet?.account?.toLowerCase()) &&
-      wallet.network === activeWallet?.chainId
+        ? wallet.address === activeWallet.account
+        : wallet.address === activeWallet.account?.toLowerCase()) &&
+      wallet.network === activeWallet.chainId
     )
   })
 
