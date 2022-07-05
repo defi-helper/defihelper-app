@@ -13,7 +13,6 @@ type Props<C extends React.ElementType = 'button'> = {
   disabled?: boolean
   size?: 'small' | 'medium' | 'large'
   as?: C
-  reportIdentifier?: string
 }
 
 export type ButtonProps<C extends React.ElementType = 'button'> = Props<C> &
