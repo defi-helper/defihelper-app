@@ -169,9 +169,9 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "cross-env REACT_APP_ENV=development && node ./generate-networks && craco start",
+    "start": "npx cross-env REACT_APP_ENV=development node ./generate-networks && craco start",
     "build": "node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco --max-old-space-size=4096 build",
-    "build-dev": "cross-env REACT_APP_ENV=development && node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
+    "build-dev": "cross-env REACT_APP_ENV=development node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
     "test": "craco test",
     "watch": "node ./watch.js",
     "eject": "react-scripts eject",
