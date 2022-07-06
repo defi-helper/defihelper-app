@@ -5,7 +5,11 @@ const path = require('path')
 
 require('dotenv').config({ path: path.resolve(process.cwd(), '.env') })
 
-const isDev = process.env.REACT_APP_ENV === 'development'
+const isDev =
+  process.env.REACT_APP_ENV !== undefined &&
+  process.env.REACT_APP_ENV === 'development'
+    ? undefined
+    : false
 const apiUrl = process.env.REACT_APP_API_URL
 
 const graphqlQuery = {
