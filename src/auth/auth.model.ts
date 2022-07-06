@@ -272,6 +272,7 @@ guard({
 })
 
 settingsWalletModel.$wallets.reset(logoutFx)
+walletNetworkModel.$wallet.reset(logoutFx)
 
 authEthereumFx.failData.watch((error) => toastsService.error(error.message))
 authWavesFx.failData.watch((error) => toastsService.error(error.message))
