@@ -17,6 +17,7 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
     }
     layout
     deployBlockNumber
+    watcherId
     deprecated
     tokens {
       stake {

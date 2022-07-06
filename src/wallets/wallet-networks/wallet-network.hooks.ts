@@ -33,6 +33,8 @@ export const useEagerConnect = () => {
     const lastConnector =
       connectorsByName[lastConnectorName]?.connector ?? connectors.injected
 
+    if (localStorage.demo) return
+
     if (isAuthorizable(lastConnector)) {
       lastConnector.isAuthorized().then((isAuthorized: boolean) => {
         if (isAuthorized) {

@@ -82,6 +82,19 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
 
   const handleSetType = (type: Types | null) => () => {
     setType(type)
+
+    switch (type) {
+      case 'ByEvent':
+        analytics.log('automations_add_automation_by_blockchain_event_click')
+        break
+
+      case 'ByTime':
+        analytics.log('automations_add_automation_by_time_click')
+        break
+
+      default:
+        throw new Error(`Unsupported type: ${type}`)
+    }
   }
 
   const handleChangeTab = (tab: Tabs) => () => {

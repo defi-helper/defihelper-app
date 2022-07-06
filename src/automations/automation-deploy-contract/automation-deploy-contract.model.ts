@@ -10,6 +10,7 @@ import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { authModel } from '~/auth'
+import { AutomateContractTypeEnum } from '~/api'
 
 type DeployParams = {
   inputs: string[]
@@ -122,6 +123,7 @@ export const deployFx = automationDeployContractDomain.createEffect(
         adapter: params.adapter,
         protocol: params.protocol,
         contract: params.contract,
+        type: AutomateContractTypeEnum.Autorestake,
         initParams: JSON.stringify({
           inputs: params.inputs,
         }),

@@ -5,7 +5,7 @@ import clsx from 'clsx'
 
 import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
-import { Dialog } from '~/common/dialog'
+import { Dialog, useDialog } from '~/common/dialog'
 import { AdapterStep } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
 import { Select, SelectOption } from '~/common/select'
@@ -16,12 +16,14 @@ import { MarkdownRender } from '~/common/markdown-render'
 import { toastsService } from '~/toasts'
 import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
 import * as styles from './staking-adapter-dialog.css'
+import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 
 export type StakingAdapterDialogProps = {
   onConfirm: () => void
   steps: AdapterStep[]
   onSubmit?: () => void
   onLastStep?: () => void
+  onCancel: () => void
 }
 
 export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
@@ -29,6 +31,14 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
 ) => {
   const { control, handleSubmit, formState, reset } = useForm()
   const [currentStepNumber, setCurrentStepNumber] = useState(0)
+
+  const [openStopTransaction] = useDialog(StopTransactionDialog)
+
+  const handleStopTransaction = () => {
+    openStopTransaction()
+      .then(props.onCancel)
+      .catch((error) => console.error(error.message))
+  }
 
   const steps = useAsyncRetry(async () => {
     const res = await Promise.all(
@@ -110,7 +120,14 @@ export const StakingAdapterDialog: React.FC<StakingAdapterDialogProps> = (
   }, [reset, props.steps, currentStep])
 
   return (
-    <Dialog className={styles.root}>
+    <Dialog
+      className={styles.root}
+      onClose={
+        formState.isSubmitting || sendState.loading
+          ? handleStopTransaction
+          : undefined
+      }
+    >
       {steps.loading ? (
         <div className={styles.loader}>
           <Loader height="36" />

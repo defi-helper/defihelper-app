@@ -14,6 +14,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { networksConfig } from '~/networks-config'
 import * as styles from './staking-automates-contract-card.css'
 import { CanDemo } from '~/auth/can-demo'
+import { dateUtils } from '~/common/date-utils'
 
 export type StakingAutomatesContractCardProps = {
   className?: string
@@ -24,17 +25,19 @@ export type StakingAutomatesContractCardProps = {
   balance: string
   onDeposit: () => void
   onRefund: () => void
-  onMigrate: () => void
+  onMigrate?: () => void
   onDelete: () => void
   onRun: () => void
   error?: boolean
   apy?: string
   apyBoost?: string
+  restakeAt: string | null
   deleting?: boolean
   depositing?: boolean
   refunding?: boolean
   migrating?: boolean
   running?: boolean
+  tokensIcons: Array<string | null>
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -52,6 +55,26 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
       <Paper className={clsx(styles.root, props.className)} radius={8}>
         <div className={styles.header}>
           <div className={styles.heading}>
+            <div className={styles.icons}>
+              {props.tokensIcons.map((logoUrl, index) =>
+                logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt=""
+                    key={String(index)}
+                    className={styles.icon}
+                  />
+                ) : (
+                  <Paper
+                    radius={24}
+                    key={String(index)}
+                    className={styles.paperIcon}
+                  >
+                    <Icon icon="unknownNetwork" width="16" height="16" />
+                  </Paper>
+                )
+              )}
+            </div>
             <Typography as="span">
               {props.title || cutAccount(props.address)}
             </Typography>
@@ -142,6 +165,20 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
             <Typography variant="body2" as="span">
               ${bignumberUtils.format(props.balance)}
+            </Typography>
+          </div>
+          <div className={styles.row}>
+            <Typography
+              variant="body2"
+              as="span"
+              className={clsx(styles.infoTitle, styles.opacity)}
+            >
+              Restake at
+            </Typography>
+            <Typography variant="body2" as="span">
+              {props.restakeAt
+                ? dateUtils.format(props.restakeAt, 'DD MMM')
+                : '-'}
             </Typography>
           </div>
         </div>
@@ -236,18 +273,22 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Button>
             </CanDemo>
 
-            <CanDemo>
-              <Button
-                size="small"
-                variant="light"
-                className={styles.refund}
-                onClick={props.onMigrate}
-                loading={props.migrating}
-                disabled={props.deleting || props.depositing || props.refunding}
-              >
-                Migrate
-              </Button>
-            </CanDemo>
+            {props.onMigrate && (
+              <CanDemo>
+                <Button
+                  size="small"
+                  variant="light"
+                  className={styles.refund}
+                  onClick={props.onMigrate}
+                  loading={props.migrating}
+                  disabled={
+                    props.deleting || props.depositing || props.refunding
+                  }
+                >
+                  Migrate
+                </Button>
+              </CanDemo>
+            )}
 
             <CanDemo>
               <Button

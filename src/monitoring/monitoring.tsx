@@ -13,6 +13,7 @@ import { networksConfig } from '~/networks-config'
 export const Monitoring: React.VFC = () => {
   const [themeMode] = useTheme()
   const usersRegisteringHistory = useStore(model.$usersRegisteringHistory)
+  const walletsRegisteringHistory = useStore(model.$walletsRegisteringHistory)
   const automationsCreationHistory = useStore(model.$automationsCreationHistory)
   const dfhProfitsPerNetwork = useStore(model.$dfhEarningsHistory)
   const automationsAutorestakeCreationHistory = useStore(
@@ -60,6 +61,37 @@ export const Monitoring: React.VFC = () => {
             }))}
             tooltipText="{format}"
             id="users_metric"
+            loading={false}
+          />
+        </Paper>
+
+        <Paper radius={8} className={styles.root}>
+          <div className={styles.titleWrapper}>
+            <Typography variant="h5" className={styles.title}>
+              Wallets
+            </Typography>
+
+            <Typography variant="h5" className={styles.total}>
+              {walletsRegisteringHistory[walletsRegisteringHistory.length - 1]
+                ?.number ?? 0}
+            </Typography>
+          </div>
+
+          <Chart
+            dataFields={[
+              {
+                valueY: 'number',
+                dateX: 'date',
+                color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
+              },
+            ]}
+            data={walletsRegisteringHistory.map((point) => ({
+              date: dateUtils.toDate(point.date),
+              number: bignumberUtils.floor(point.number),
+              format: bignumberUtils.format(point.number),
+            }))}
+            tooltipText="{format}"
+            id="wallets_metric"
             loading={false}
           />
         </Paper>
@@ -192,7 +224,7 @@ export const Monitoring: React.VFC = () => {
         </Paper>
 
         {Object.keys(dfhProfitsPerNetwork).map((network) => (
-          <Paper radius={8} className={styles.root}>
+          <Paper radius={8} className={styles.root} key={network}>
             <div className={styles.titleWrapper}>
               <Typography variant="h5" className={styles.title}>
                 {networksConfig[network].title} - comissions earned

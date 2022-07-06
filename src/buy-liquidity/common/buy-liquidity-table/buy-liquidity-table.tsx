@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { Sticky, StickyContainer } from 'react-sticky'
+import { analytics } from '~/analytics'
 
 import { BuyLiquidityProtocolsQuery, BuyLiquidityContractsQuery } from '~/api'
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -55,6 +56,7 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
   }
 
   const handleOnBuyLP = (contract: Contracts[number]) => () => {
+    analytics.log('lp_tokens_lp_token_click')
     props.onBuyLpClick?.(contract)
   }
 
@@ -279,7 +281,7 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                                   color="green"
                                   className={styles.contractButton}
                                 >
-                                  LP Tokens
+                                  ZAP
                                 </Button>
                               }
                             >
@@ -289,7 +291,7 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                                 className={styles.contractButton}
                                 onClick={handleOnBuyLP(contract)}
                               >
-                                LP Tokens
+                                ZAP
                               </Button>
                             </WalletConnect>
                           </div>

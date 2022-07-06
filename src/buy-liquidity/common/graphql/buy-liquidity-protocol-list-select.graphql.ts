@@ -7,7 +7,12 @@ export const BUY_LIQUIDITY_PROTOCOL_LIST_SELECT = gql`
     $pagination: ProtocolListPaginationInputType
   ) {
     protocols(
-      filter: { isDebank: false, hidden: false, search: $search }
+      filter: {
+        isDebank: false
+        hidden: false
+        search: $search
+        automate: { buyLiquidity: true }
+      }
       sort: $sort
       pagination: $pagination
     ) {

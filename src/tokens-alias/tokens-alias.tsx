@@ -25,7 +25,7 @@ export const TokensAlias: React.VFC = () => {
     searchParams.get('search') ?? undefined
   )
   const [hasLogo, setHasLogo] = useState<true | undefined>()
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(0)
   const [liquidity, setLiquidity] = useState<
     TokenAliasLiquidityEnum | undefined
   >()
@@ -120,7 +120,7 @@ export const TokensAlias: React.VFC = () => {
           </div>
           <div>
             {tokens.map((token) => (
-              <div className={styles.tableRow}>
+              <div className={styles.tableRow} key={token.id}>
                 <Typography variant="body2">
                   <img
                     src={

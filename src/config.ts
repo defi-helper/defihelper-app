@@ -5,6 +5,7 @@ const isDev =
 export const config = {
   ENV: process.env.NODE_ENV,
   SENTRY: process.env.REACT_APP_SENTRY,
+  AMPLITUDE: process.env.REACT_APP_AMPLITUDE,
   IS_DEV: isDev,
   DEFAULT_CHAIN_ID: isDev ? '4' : '1',
   PORTIS_ID: process.env.REACT_APP_PORTIS_ID,
@@ -24,4 +25,7 @@ export const config = {
   AMCHARTS_LICENCE: process.env.REACT_APP_AMCHARTS_LICENCE,
   FIX_SUM: 10000,
   MEDIUM_LINK: `https://defihelper.medium.com/auto-staking-explained-da5fbab082e0`,
+  YANDEX_METRIC_ACCOUNTS: [86006279] as number[],
+  MATOMO_URL: 'https://defihelper.matomo.cloud',
+  MATOMO_SITE_ID: 1,
 } as const

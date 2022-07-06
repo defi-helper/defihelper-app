@@ -55,6 +55,11 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       metric {
         stakedUSD
       }
+      billing {
+        balance {
+          lowFeeFunds
+        }
+      }
     }
     wallet {
       id
@@ -66,5 +71,6 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
     initParams
     verification
     rejectReason
+    restakeAt
   }
 `

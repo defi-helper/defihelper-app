@@ -14,7 +14,7 @@ import { BlockchainEnum } from '~/api/_generated-types'
 import { ReactComponent as WalletConnectIcon } from '~/assets/icons/wallets/wallet-connect.svg'
 // import { ReactComponent as PortisIcon } from '~/assets/icons/wallets/portis-wallet.svg'
 // import { ReactComponent as TrezorIcon } from '~/assets/icons/wallets/trezor-wallet.svg'
-// import { ReactComponent as BinanceIcon } from '~/assets/icons/wallets/binance-wallet.svg'
+import { ReactComponent as BinanceIcon } from '~/assets/icons/wallets/binance-wallet.svg'
 
 export enum ConnectorNames {
   MetaMask = 'MetaMask',
@@ -42,8 +42,8 @@ const METAMASK_LINK =
   'https://chrome.google.com/webstore/detail/nkbihfbeogaeaoehlefnkodbefgpgknn'
 const TRUST_MOBILE = 'https://trustwallet.com/'
 const METAMASK_MOBILE = 'https://metamask.io/'
-// const BINANCE_LINK =
-//   'https://chrome.google.com/webstore/detail/binance-wallet/fhbohimaelbohpjbbldcngcnapndodjp'
+const BINANCE_LINK =
+  'https://chrome.google.com/webstore/detail/binance-wallet/fhbohimaelbohpjbbldcngcnapndodjp'
 const WAVES_KEEPER_LINK =
   'https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo'
 
@@ -101,6 +101,14 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     available: () => Boolean(window.WavesKeeper),
     extensionLink: WAVES_KEEPER_LINK,
   },
+  [ConnectorNames.Binance]: {
+    connector: connectors.binance,
+    blockchain: 'ethereum',
+    logo: BinanceIcon,
+    networks: ethereumNetworks,
+    available: () => Boolean(window.BinanceChain),
+    extensionLink: BINANCE_LINK,
+  },
   ...(config.IS_DEV
     ? {
         [ConnectorNames.WavesExchange]: {
@@ -139,14 +147,6 @@ export const connectorsByName: Record<string, ConnectorByName> = {
   //   logo: TrezorIcon,
   //   networks: [String(config.DEFAULT_CHAIN_ID)],
   //   available: true,
-  // },
-  // [ConnectorNames.Binance]: {
-  //   connector: connectors.binance,
-  //   blockchain: 'ethereum',
-  //   logo: BinanceIcon,
-  //   networks: ethereumNetworks,
-  //   available: Boolean(window.BinanceChain),
-  //   extensionLink: BINANCE_LINK,
   // },
 }
 

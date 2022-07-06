@@ -257,6 +257,12 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           return (
             <StakingAutomatesContractCard
               key={automatesContract.id}
+              restakeAt={automatesContract.restakeAt ?? null}
+              tokensIcons={
+                automatesContract.contract?.tokens.stake.map(
+                  ({ alias }) => alias?.logoUrl ?? null
+                ) ?? []
+              }
               title={automatesContract.contract?.name ?? ''}
               address={automatesContract.address}
               network={automatesContract.contract?.network ?? ''}
@@ -274,6 +280,9 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               depositing={automatesContract.depositing}
               deleting={automatesContract.deleting}
               running={automatesContract.running}
+              error={
+                automatesContract.contractWallet?.billing.balance.lowFeeFunds
+              }
             />
           )
         })}
