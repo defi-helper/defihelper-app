@@ -111,7 +111,6 @@ export const authEthereumFx = createEffect(
     if (error?.graphQLErrors?.[0])
       throw new Error(error.graphQLErrors[0].message)
 
-    if (!data) throw new Error(ERROR_MESSAGE)
     analytics.log('portfolio_connect_wallet_success', {
       address: input.address,
       network: input.chainId,
