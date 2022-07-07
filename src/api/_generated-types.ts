@@ -725,6 +725,111 @@ export type ContractCreateInputType = {
   eventsToSubscribe?: Maybe<Array<Scalars['String']>>
 }
 
+export type ContractDebankListFilterInputType = {
+  id?: Maybe<Scalars['UuidType']>
+  protocol?: Maybe<Array<Scalars['UuidType']>>
+  hidden?: Maybe<Scalars['Boolean']>
+  search?: Maybe<Scalars['String']>
+}
+
+export type ContractDebankListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type ContractDebankListSortInputType = {
+  column: ContractDebankListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum ContractDebankListSortInputTypeColumnEnum {
+  Id = 'id',
+  Name = 'name',
+  Address = 'address',
+  CreatedAt = 'createdAt',
+  Tvl = 'tvl',
+  MyStaked = 'myStaked',
+}
+
+export type ContractDebankListType = {
+  __typename?: 'ContractDebankListType'
+  /** Elements */
+  list?: Maybe<Array<ContractDebankType>>
+  pagination: Pagination
+}
+
+export type ContractDebankMetricChartFilterInputType = {
+  /** Created at equals or greater */
+  dateAfter?: Maybe<Scalars['DateTimeType']>
+  /** Created at less */
+  dateBefore?: Maybe<Scalars['DateTimeType']>
+}
+
+export type ContractDebankMetricChartPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type ContractDebankMetricChartSortInputType = {
+  column: ContractDebankMetricChartSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum ContractDebankMetricChartSortInputTypeColumnEnum {
+  Date = 'date',
+  Value = 'value',
+}
+
+export type ContractDebankMetricFilterInputType = {
+  wallet?: Maybe<ContractDebankMetricWalletFilterInputType>
+}
+
+export type ContractDebankMetricWalletFilterInputType = {
+  type?: Maybe<Array<WalletBlockchainTypeEnum>>
+}
+
+export type ContractDebankType = {
+  __typename?: 'ContractDebankType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  protocol: ProtocolType
+  /** Layout name */
+  layout: Scalars['String']
+  /** Address */
+  address: Scalars['String']
+  /** Name */
+  name: Scalars['String']
+  /** Description */
+  description: Scalars['String']
+  /** View URL */
+  link?: Maybe<Scalars['String']>
+  /** Is hidden */
+  hidden: Scalars['Boolean']
+  /** Is deprecated */
+  deprecated: Scalars['Boolean']
+  metricChart: Array<MetricChartType>
+  metric: ContractMetricType
+  tokens: ContractTokenLinkType
+  /** Date of created account */
+  createdAt: Scalars['DateTimeType']
+}
+
+export type ContractDebankTypeMetricChartArgs = {
+  metric: Scalars['MetricColumnType']
+  group: MetricGroupEnum
+  filter?: Maybe<ContractDebankMetricChartFilterInputType>
+  sort?: Maybe<Array<ContractDebankMetricChartSortInputType>>
+  pagination?: Maybe<ContractDebankMetricChartPaginationInputType>
+}
+
+export type ContractDebankTypeMetricArgs = {
+  filter?: Maybe<ContractDebankMetricFilterInputType>
+}
+
 export type ContractListAutomateFilterInputType = {
   /** Has buy liquidity automate */
   buyLiquidity?: Maybe<Scalars['Boolean']>
@@ -1900,6 +2005,7 @@ export type ProtocolType = {
   previewPicture?: Maybe<Scalars['String']>
   favorite: Scalars['Boolean']
   contracts: ContractListType
+  contractsDebank: ContractDebankListType
   metricChart: Array<MetricChartType>
   metricChartProtocols: Array<MetricChartType>
   metricChartContracts: Array<MetricChartType>
@@ -1914,6 +2020,12 @@ export type ProtocolTypeContractsArgs = {
   filter?: Maybe<ContractListFilterInputType>
   sort?: Maybe<Array<ContractListSortInputType>>
   pagination?: Maybe<ContractListPaginationInputType>
+}
+
+export type ProtocolTypeContractsDebankArgs = {
+  filter?: Maybe<ContractDebankListFilterInputType>
+  sort?: Maybe<Array<ContractDebankListSortInputType>>
+  pagination?: Maybe<ContractDebankListPaginationInputType>
 }
 
 export type ProtocolTypeMetricChartArgs = {
@@ -5942,6 +6054,75 @@ export type StakingContractCreateMutation = { __typename?: 'Mutation' } & {
     __typename?: 'ContractType'
   } & StakingContractFragmentFragment
 }
+
+export type StakingContractDebankListQueryVariables = Exact<{
+  filter: ProtocolFilterInputType
+  contractFilter?: Maybe<ContractDebankListFilterInputType>
+  contractSort?: Maybe<
+    Array<ContractDebankListSortInputType> | ContractDebankListSortInputType
+  >
+  contractPagination?: Maybe<ContractDebankListPaginationInputType>
+}>
+
+export type StakingContractDebankListQuery = { __typename?: 'Query' } & {
+  protocol?: Maybe<
+    { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'adapter'> & {
+        contractsDebank: { __typename?: 'ContractDebankListType' } & {
+          list?: Maybe<
+            Array<
+              {
+                __typename?: 'ContractDebankType'
+              } & StakingContractDebankFragmentFragment
+            >
+          >
+          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+        }
+      }
+  >
+}
+
+export type StakingContractDebankFragmentFragment = {
+  __typename?: 'ContractDebankType'
+} & Pick<
+  ContractDebankType,
+  | 'id'
+  | 'address'
+  | 'name'
+  | 'description'
+  | 'link'
+  | 'hidden'
+  | 'createdAt'
+  | 'layout'
+  | 'deprecated'
+> & {
+    protocol: { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'id'>
+    tokens: { __typename?: 'ContractTokenLinkType' } & {
+      stake: Array<
+        { __typename?: 'TokenType' } & Pick<
+          TokenType,
+          'network' | 'address' | 'name'
+        > & {
+            alias?: Maybe<
+              { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
+            >
+          }
+      >
+      reward: Array<
+        { __typename?: 'TokenType' } & Pick<
+          TokenType,
+          'network' | 'address' | 'name'
+        > & {
+            alias?: Maybe<
+              { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
+            >
+          }
+      >
+    }
+    metric: { __typename?: 'ContractMetricType' } & Pick<
+      ContractMetricType,
+      'tvl' | 'myStaked' | 'myEarned'
+    >
+  }
 
 export type StakingContractDeleteMutationVariables = Exact<{
   id: Scalars['UuidType']

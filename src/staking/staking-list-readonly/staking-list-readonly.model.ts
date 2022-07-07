@@ -5,7 +5,11 @@ import {
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
 } from '~/api/_generated-types'
-import { Contract, stakingApi, StakingListPayload } from '~/staking/common'
+import {
+  ContractDebank,
+  stakingApi,
+  StakingListPayload,
+} from '~/staking/common'
 import { PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
@@ -22,9 +26,9 @@ export const stakingUpdateFx = stakingListDomain.createEffect(
   stakingUpdateModel.contractUpdate
 )
 
-export const fetchStakingListFx = stakingListDomain.createEffect(
+export const fetchDebankStakingListFx = stakingListDomain.createEffect(
   async (params: Params) => {
-    const data = await stakingApi.contractList({
+    const data = await stakingApi.contractDebankList({
       filter: {
         id: params.protocolId,
       },
@@ -41,10 +45,6 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
           column:
             params.sortColumn ?? ContractListSortInputTypeColumnEnum.MyStaked,
           order: params.sortOrder ?? SortOrderEnum.Desc,
-        },
-        {
-          column: ContractListSortInputTypeColumnEnum.AprYear,
-          order: SortOrderEnum.Desc,
         },
         {
           column: ContractListSortInputTypeColumnEnum.Name,
@@ -69,21 +69,18 @@ export const deleteStakingFx = stakingListDomain.createEffect(
   }
 )
 
-export const $contractList = stakingListDomain
-  .createStore<Contract[]>([])
-  .on(fetchStakingListFx.doneData, (state, payload) =>
+export const $contractDebankList = stakingListDomain
+  .createStore<ContractDebank[]>([])
+  .on(fetchDebankStakingListFx.doneData, (state, payload) =>
     state.concat(
       payload.contracts.map((contract) => ({
         ...contract,
-        type: 'Contract',
+        type: 'ContractDebank',
       }))
     )
   )
-  .on(deleteStakingFx.doneData, (state, payload) => {
-    return state.filter(({ id }) => id !== payload)
-  })
 
-export const $contractsListCopies = restore($contractList.updates, []).on(
+export const $contractsListCopies = restore($contractDebankList.updates, []).on(
   stakingUpdateFx.doneData,
   (state, payload) => {
     return state.map((contract) =>
@@ -103,9 +100,9 @@ export const useInfiniteScroll = createUseInfiniteScroll({
   domain: stakingListDomain,
   limit: 20,
   items: $contractsListCopies,
-  loading: fetchStakingListFx.pending,
+  loading: fetchDebankStakingListFx.pending,
 })
-$contractList.reset(useInfiniteScroll.reset)
+$contractDebankList.reset(useInfiniteScroll.reset)
 
 sample({
   clock: StakingListGate.state.updates,
@@ -132,18 +129,18 @@ guard({
     }),
   }),
   filter: ({ protocolId, opened }) => Boolean(protocolId) && opened,
-  target: fetchStakingListFx,
+  target: fetchDebankStakingListFx,
 })
 
 sample({
-  clock: fetchStakingListFx.doneData,
+  clock: fetchDebankStakingListFx.doneData,
   fn: (clock) => clock.pagination,
   target: useInfiniteScroll.totalElements,
 })
 
 toastsService.forwardErrors(
-  fetchStakingListFx.failData,
+  fetchDebankStakingListFx.failData,
   deleteStakingFx.failData
 )
 
-$contractList.reset(StakingListGate.close)
+$contractDebankList.reset(StakingListGate.close)
