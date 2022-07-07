@@ -230,7 +230,7 @@ sample({
 })
 
 sample({
-  clock: [authEthereumFx.doneData, authWavesFx.doneData],
+  clock: [authEthereumFx.doneData, authWavesFx.doneData, authDemoFx.doneData],
   target: saveUserFx,
 })
 
