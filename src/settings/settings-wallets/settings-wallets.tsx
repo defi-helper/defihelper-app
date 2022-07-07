@@ -182,8 +182,12 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
 
       if (!wallet.account) return
 
-      walletNetworkModel.activateWalletFx({
+      walletNetworkModel.signMessage({
         connector: wallet.connector,
+        chainId: wallet.chainId,
+        provider: wallet.provider,
+        blockchain: wallet.blockchain,
+        account: wallet.account,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -200,12 +204,12 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     return () => abortController.abort()
   }, [])
 
-  const paperCount = (wallets.nonEmpty.length ? 3 : 2) - wallets.nonEmpty.length
-
   const mergedWallets = [
     ...wallets.nonEmpty,
     ...(showEmpty || isEmpty(wallets.nonEmpty) ? wallets.empty : []),
   ]
+
+  const paperCount = (mergedWallets.length ? 3 : 2) - mergedWallets.length
 
   const handleShowEmpty = () => setShowEmpty(true)
 
@@ -278,7 +282,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
             <SettingsPaper key={String(index)} />
           ))}
       </div>
-      {!showEmpty && !isEmpty(wallets.empty) && (
+      {!showEmpty && !isEmpty(wallets.empty) && !isEmpty(wallets.nonEmpty) && (
         <ButtonBase
           onClick={handleShowEmpty}
           className={styles.showEmptyWallets}

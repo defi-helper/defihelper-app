@@ -1,6 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { ConnectorUpdate } from '@web3-react/types'
-import { createStore, createEffect, guard, sample } from 'effector'
+import { createStore, createEffect, guard, sample, createEvent } from 'effector'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { debounce } from 'patronum/debounce'
@@ -13,11 +13,13 @@ import {
   SIGN_MESSAGE,
   connectorsByName,
   Wallet,
+  SignMessagePayload,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
 import { BlockchainEnum } from '~/api/_generated-types'
 import { networksConfig } from '~/networks-config'
 import type { WavesKeeperConnector } from '~/wallets/common/waves-keeper-connector'
+import { sidUtils } from '~/auth/common/sid-utils'
 
 export type SignMessageEthereum = {
   chainId: string
@@ -106,9 +108,12 @@ export const diactivateWalletFx = createEffect(
 const activated = debounce({ source: activateWalletFx.doneData, timeout: 500 })
 const updated = debounce({ source: updateWalletFx.doneData, timeout: 500 })
 
+export const signMessage = createEvent<SignMessagePayload>()
+
 export const $wallet = createStore<Wallet | null>(null)
   .on(activated, (_, payload) => payload)
   .on(updated, (_, payload) => payload)
+  .on(signMessage, (state, payload) => (state === null ? payload : undefined))
   .reset(diactivateWalletFx)
 
 export const getNetwork = (provider: unknown, chainId?: string | number) => {
@@ -152,6 +157,21 @@ export const signMessageEthereumFx = createEffect(
     return { ...params, ...signedMessageData }
   }
 )
+
+guard({
+  clock: activated.map(
+    ({ account, chainId, provider, connector, blockchain }) => ({
+      account: account as string,
+      chainId,
+      provider,
+      connector,
+      blockchain,
+    })
+  ),
+  filter: (clock): clock is SignMessagePayload =>
+    Boolean(clock.account && clock.chainId) && !sidUtils.get(),
+  target: signMessage,
+})
 
 sample({
   source: $wallet.map((wallet) => wallet?.connector),

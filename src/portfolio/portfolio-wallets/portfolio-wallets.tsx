@@ -63,8 +63,12 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
 
       if (!wallet.account) return
 
-      walletNetworkModel.activateWalletFx({
+      walletNetworkModel.signMessage({
         connector: wallet.connector,
+        chainId: wallet.chainId,
+        provider: wallet.provider,
+        blockchain: wallet.blockchain,
+        account: wallet.account,
       })
     } catch (error) {
       if (error instanceof Error) {
