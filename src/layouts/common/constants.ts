@@ -27,7 +27,7 @@ export const SOCIAL_LINKS: Array<{
     icon: 'discord',
   },
   {
-    link: 'https://www.youtube.com/channel/UCrR-viomtFZndBdcJZFQe9g',
+    link: 'https://www.youtube.com/channel/UCLmBfSUb2Ip88W9jlxwQzgw',
     icon: 'youtube',
     width: 29,
     height: 20,
