@@ -3,7 +3,7 @@ import { ConnectorUpdate } from '@web3-react/types'
 import { createStore, createEffect, guard, sample } from 'effector'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
-import { shallowEqual } from 'fast-equals'
+import { debounce } from 'patronum/debounce'
 
 import {
   augmentConnectorUpdate,
@@ -103,14 +103,13 @@ export const diactivateWalletFx = createEffect(
   }
 )
 
+const activated = debounce({ source: activateWalletFx.doneData, timeout: 500 })
+const updated = debounce({ source: updateWalletFx.doneData, timeout: 500 })
+
 export const $wallet = createStore<Wallet | null>(null)
-  .on(activateWalletFx.doneData, (state, payload) => {
-    return shallowEqual(state, payload) ? undefined : payload
-  })
-  .on(updateWalletFx.doneData, (state, payload) => {
-    return shallowEqual(state, payload) ? undefined : payload
-  })
-  .reset(diactivateWalletFx.done)
+  .on(activated, (_, payload) => payload)
+  .on(updated, (_, payload) => payload)
+  .reset(diactivateWalletFx)
 
 export const getNetwork = (provider: unknown, chainId?: string | number) => {
   const createProvider = networks.get(String(chainId))
