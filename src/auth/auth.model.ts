@@ -153,12 +153,35 @@ export const $auth = createStore<Payload | null>(null)
   .reset(close)
 
 split({
-  source: walletNetworkModel.$wallet.updates,
+  source: guard({
+    clock: sample({
+      source: settingsWalletModel.$wallets,
+      clock: walletNetworkModel.signMessage,
+      fn: (wallets, signMessage) => ({ wallets, ...signMessage }),
+    }),
+    filter: (clock) => {
+      if (!clock.wallets.length) return true
+
+      return Boolean(
+        clock.account &&
+          clock.wallets?.every(({ address, network }) => {
+            if (clock.chainId === 'main' && address !== clock.account)
+              return true
+            if (clock.chainId === 'main' && address === clock.account)
+              return false
+
+            return (
+              (Number(network) !== Number(clock.chainId) &&
+                address === clock.account.toLowerCase()) ||
+              address !== clock.account.toLowerCase()
+            )
+          })
+      )
+    },
+  }),
   match: {
-    ethereum: (wallet) =>
-      Boolean(wallet && wallet.chainId !== 'main') && !sidUtils.get(),
-    waves: (wallet) =>
-      Boolean(wallet && wallet.chainId === 'main') && !sidUtils.get(),
+    ethereum: (wallet) => wallet.chainId !== 'main',
+    waves: (wallet) => wallet.chainId === 'main',
   },
   cases: {
     ethereum: authEthereumFx,
@@ -175,7 +198,7 @@ sample({
   }),
   fn: ({ chainId, account, provider }) => ({
     chainId,
-    account: account ?? '',
+    account: account as string,
     provider,
   }),
   target: walletNetworkModel.signMessageEthereumFx,
@@ -189,7 +212,7 @@ sample({
       Boolean(clock === null && result),
   }),
   fn: ({ account, provider, connector }) => ({
-    account: account ?? '',
+    account: account as string,
     provider,
     connector: connector as WavesKeeperConnector,
   }),
@@ -269,6 +292,28 @@ guard({
   clock: [$user.updates, saveUserFx.doneData],
   filter: (user) => Boolean(user),
   target: settingsWalletModel.fetchWalletListFx,
+})
+
+guard({
+  clock: sample({
+    source: settingsWalletModel.$wallets,
+    clock: walletNetworkModel.signMessage,
+    fn: (wallets, signMessage) => ({ wallets, ...signMessage }),
+  }),
+  filter: (clock) => {
+    return Boolean(
+      clock.account &&
+        clock.wallets?.some(({ address, network }) => {
+          const isWaves = clock.chainId === 'main'
+
+          return isWaves
+            ? clock.account === address && clock.chainId === network
+            : clock.account.toLowerCase() === address &&
+                clock.chainId === network
+        })
+    )
+  },
+  target: toastsService.info.prepend(() => 'Wallet already added!'),
 })
 
 settingsWalletModel.$wallets.reset(logoutFx)
