@@ -6,10 +6,9 @@ import {
   SortOrderEnum,
 } from '~/api/_generated-types'
 import {
-  Contract,
+  ContractDebank,
   stakingApi,
   StakingListPayload,
-  ContractDebank,
 } from '~/staking/common'
 import { PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
@@ -25,41 +24,6 @@ type Params = StakingListPayload & PaginationState
 
 export const stakingUpdateFx = stakingListDomain.createEffect(
   stakingUpdateModel.contractUpdate
-)
-
-export const fetchStakingListFx = stakingListDomain.createEffect(
-  async (params: Params) => {
-    const data = await stakingApi.contractList({
-      filter: {
-        id: params.protocolId,
-      },
-      contractFilter: {
-        hidden: params.hidden,
-        ...(params.search ? { search: params.search } : {}),
-      },
-      contractPagination: {
-        offset: params.offset,
-        limit: params.limit,
-      },
-      contractSort: [
-        {
-          column:
-            params.sortColumn ?? ContractListSortInputTypeColumnEnum.MyStaked,
-          order: params.sortOrder ?? SortOrderEnum.Desc,
-        },
-        {
-          column: ContractListSortInputTypeColumnEnum.AprYear,
-          order: SortOrderEnum.Desc,
-        },
-        {
-          column: ContractListSortInputTypeColumnEnum.Name,
-          order: SortOrderEnum.Asc,
-        },
-      ],
-    })
-
-    return data
-  }
 )
 
 export const fetchDebankStakingListFx = stakingListDomain.createEffect(
@@ -105,20 +69,6 @@ export const deleteStakingFx = stakingListDomain.createEffect(
   }
 )
 
-export const $contractList = stakingListDomain
-  .createStore<Contract[]>([])
-  .on(fetchStakingListFx.doneData, (state, payload) =>
-    state.concat(
-      payload.contracts.map((contract) => ({
-        ...contract,
-        type: 'Contract',
-      }))
-    )
-  )
-  .on(deleteStakingFx.doneData, (state, payload) => {
-    return state.filter(({ id }) => id !== payload)
-  })
-
 export const $contractDebankList = stakingListDomain
   .createStore<ContractDebank[]>([])
   .on(fetchDebankStakingListFx.doneData, (state, payload) =>
@@ -130,7 +80,7 @@ export const $contractDebankList = stakingListDomain
     )
   )
 
-export const $contractsListCopies = restore($contractList.updates, []).on(
+export const $contractsListCopies = restore($contractDebankList.updates, []).on(
   stakingUpdateFx.doneData,
   (state, payload) => {
     return state.map((contract) =>
@@ -150,9 +100,9 @@ export const useInfiniteScroll = createUseInfiniteScroll({
   domain: stakingListDomain,
   limit: 20,
   items: $contractsListCopies,
-  loading: fetchStakingListFx.pending,
+  loading: fetchDebankStakingListFx.pending,
 })
-$contractList.reset(useInfiniteScroll.reset)
+$contractDebankList.reset(useInfiniteScroll.reset)
 
 sample({
   clock: StakingListGate.state.updates,
@@ -179,18 +129,18 @@ guard({
     }),
   }),
   filter: ({ protocolId, opened }) => Boolean(protocolId) && opened,
-  target: [fetchStakingListFx, fetchDebankStakingListFx],
+  target: fetchDebankStakingListFx,
 })
 
 sample({
-  clock: fetchStakingListFx.doneData,
+  clock: fetchDebankStakingListFx.doneData,
   fn: (clock) => clock.pagination,
   target: useInfiniteScroll.totalElements,
 })
 
 toastsService.forwardErrors(
-  fetchStakingListFx.failData,
+  fetchDebankStakingListFx.failData,
   deleteStakingFx.failData
 )
 
-$contractList.reset(StakingListGate.close)
+$contractDebankList.reset(StakingListGate.close)
