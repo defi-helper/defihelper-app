@@ -240,8 +240,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             </Typography>
           )}
           {governanceDetail.state === GovProposalStateEnum.Active &&
-            receipt &&
-            !receipt.hasVoted && (
+            !receipt?.hasVoted && (
               <div className={clsx(styles.voteButtons, styles.mb32)}>
                 <WalletConnect
                   fallback={

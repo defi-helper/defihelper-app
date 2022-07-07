@@ -4,6 +4,7 @@ import {
   MetricChartType,
   SortOrderEnum,
   StakingContractFragmentFragment,
+  StakingContractDebankFragmentFragment,
 } from '~/api/_generated-types'
 
 export type StakingAutomatesContract = Exclude<
@@ -42,6 +43,10 @@ export type RegisterParams = {
 
 export type Contract = StakingContractFragmentFragment & {
   type: 'Contract'
+}
+
+export type ContractDebank = StakingContractDebankFragmentFragment & {
+  type: 'ContractDebank'
 }
 
 export type ContractMetric = {

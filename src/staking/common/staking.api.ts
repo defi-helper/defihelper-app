@@ -30,6 +30,7 @@ import {
   AutomationContractDeleteMutationVariables,
   ContractScannerRegisterMutationVariables,
   ContractScannerRegisterMutation,
+  StakingContractDebankListQuery,
 } from '~/api/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -49,6 +50,7 @@ import {
 } from './graphql'
 import { config } from '~/config'
 import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-scanner-register.graphql'
+import { STAKING_CONTRACT_DEBANK_LIST } from './graphql/staking-contract-debank-list.graphql'
 
 export interface WatcherEventListener {
   id: string
@@ -74,6 +76,21 @@ export const stakingApi = {
         adapter: data?.protocol?.adapter,
         contracts: data?.protocol?.contracts.list ?? [],
         pagination: data?.protocol?.contracts.pagination.count ?? 0,
+      })),
+
+  contractDebankList: (variables: StakingContractListQueryVariables) =>
+    getAPIClient()
+      .request<
+        StakingContractDebankListQuery,
+        unknown,
+        StakingContractListQueryVariables
+      >({
+        query: STAKING_CONTRACT_DEBANK_LIST.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => ({
+        contracts: data?.protocol?.contractsDebank.list ?? [],
+        pagination: data?.protocol?.contractsDebank.pagination.count ?? 0,
       })),
 
   contractDelete: (id: string) =>
