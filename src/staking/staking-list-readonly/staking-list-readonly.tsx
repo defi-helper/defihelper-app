@@ -30,9 +30,8 @@ export const StakingListReadonly: React.VFC<StakingListReadonlyProps> = (
   const [search, setSearch] = useState('')
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
-
-  const stakingList = useStore(model.$contractsListCopies)
-  const loading = useStore(model.fetchStakingListFx.pending)
+  const stakingList = useStore(model.$contractDebankList)
+  const loading = useStore(model.fetchDebankStakingListFx.pending)
 
   const searchDebounced = useDebounce(search, 1000)
 
@@ -46,17 +45,12 @@ export const StakingListReadonly: React.VFC<StakingListReadonlyProps> = (
     model.stakingUpdateFx({
       id: contract.id,
       input: {
-        blockchain: contract.blockchain,
-        network: contract.network,
         address: contract.address,
-        adapter: contract.adapter,
         name: contract.name,
         description: contract.description,
         link: contract.link,
         hidden: !contract.hidden,
         layout: contract.layout,
-        automates: contract.automate.adapters,
-        autorestakeAdapter: contract.automate.autorestake ?? undefined,
       },
     })
   }
@@ -110,9 +104,6 @@ export const StakingListReadonly: React.VFC<StakingListReadonlyProps> = (
         <Paper radius={8} className={styles.tableInner}>
           <div className={clsx(styles.tableHeader, styles.row)}>
             <Typography variant="body2">Pool</Typography>
-            <Typography variant="body2" align="right">
-              TVL
-            </Typography>
             <Typography variant="body2" align="right">
               Position
             </Typography>
