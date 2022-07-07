@@ -5,7 +5,12 @@ import {
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
 } from '~/api/_generated-types'
-import { Contract, stakingApi, StakingListPayload } from '~/staking/common'
+import {
+  Contract,
+  stakingApi,
+  StakingListPayload,
+  ContractDebank,
+} from '~/staking/common'
 import { PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
@@ -57,6 +62,37 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
   }
 )
 
+export const fetchDebankStakingListFx = stakingListDomain.createEffect(
+  async (params: Params) => {
+    const data = await stakingApi.contractDebankList({
+      filter: {
+        id: params.protocolId,
+      },
+      contractFilter: {
+        hidden: params.hidden,
+        ...(params.search ? { search: params.search } : {}),
+      },
+      contractPagination: {
+        offset: params.offset,
+        limit: params.limit,
+      },
+      contractSort: [
+        {
+          column:
+            params.sortColumn ?? ContractListSortInputTypeColumnEnum.MyStaked,
+          order: params.sortOrder ?? SortOrderEnum.Desc,
+        },
+        {
+          column: ContractListSortInputTypeColumnEnum.Name,
+          order: SortOrderEnum.Asc,
+        },
+      ],
+    })
+
+    return data
+  }
+)
+
 export const deleteStakingFx = stakingListDomain.createEffect(
   async (id: string) => {
     const isDeleted = await stakingApi.contractDelete(id)
@@ -82,6 +118,17 @@ export const $contractList = stakingListDomain
   .on(deleteStakingFx.doneData, (state, payload) => {
     return state.filter(({ id }) => id !== payload)
   })
+
+export const $contractDebankList = stakingListDomain
+  .createStore<ContractDebank[]>([])
+  .on(fetchDebankStakingListFx.doneData, (state, payload) =>
+    state.concat(
+      payload.contracts.map((contract) => ({
+        ...contract,
+        type: 'ContractDebank',
+      }))
+    )
+  )
 
 export const $contractsListCopies = restore($contractList.updates, []).on(
   stakingUpdateFx.doneData,
@@ -132,7 +179,7 @@ guard({
     }),
   }),
   filter: ({ protocolId, opened }) => Boolean(protocolId) && opened,
-  target: fetchStakingListFx,
+  target: [fetchStakingListFx, fetchDebankStakingListFx],
 })
 
 sample({

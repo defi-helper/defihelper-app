@@ -8,9 +8,8 @@ import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
-import { networksConfig } from '~/networks-config'
 import { paths } from '~/paths'
-import { Contract } from '~/staking/common/staking.types'
+import { ContractDebank } from '~/staking/common/staking.types'
 import * as styles from './staking-contract-card-readonly.css'
 
 export type StakingContractCardReadonlyProps = {
@@ -19,35 +18,17 @@ export type StakingContractCardReadonlyProps = {
   protocolAdapter: string
   onToggleContract: () => void
   onDelete: () => void
-} & Contract
+} & ContractDebank
 
 export const StakingContractCardReadonly: React.VFC<StakingContractCardReadonlyProps> =
   (props) => {
     const { metric } = props
 
-    const currentNetwork = networksConfig[props.network]
-
     return (
       <div className={clsx(styles.root, props.className)}>
         <div className={styles.tableCol}>
-          {currentNetwork && (
-            <div className={styles.coinIcons}>
-              <Icon className={styles.coinIcon} icon={currentNetwork.icon} />
-            </div>
-          )}
           <Typography variant="body2" as="div">
             {props.name}
-          </Typography>
-        </div>
-        <div>
-          <Typography
-            variant="body2"
-            as="div"
-            family="mono"
-            transform="uppercase"
-            align="right"
-          >
-            ${bignumberUtils.format(metric.tvl)}
           </Typography>
         </div>
         <div>
