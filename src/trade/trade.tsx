@@ -27,6 +27,8 @@ enum Selects {
   SmartSell = 'smart sell',
 }
 
+// new window.TradingView.widget({})
+
 export const Trade: React.VFC<TradeProps> = () => {
   const [currentSelect, setCurrentSelect] = useState(Selects.BuySell)
 
