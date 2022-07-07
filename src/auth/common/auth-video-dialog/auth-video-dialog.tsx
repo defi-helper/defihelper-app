@@ -42,16 +42,14 @@ export const AuthVideoDialog: React.VFC<AuthVideoDialogProps> = (props) => {
           allowFullScreen
         />
       </div>
-      {false && (
-        <Link
-          href="youtube.com"
-          target="_blank"
-          underline="always"
-          className={styles.title}
-        >
-          More videos
-        </Link>
-      )}
+      <Link
+        href="https://www.youtube.com/channel/UCrR-viomtFZndBdcJZFQe9g"
+        target="_blank"
+        underline="always"
+        className={styles.title}
+      >
+        More videos
+      </Link>
       <Typography variant="body2" weight="semibold" className={styles.title}>
         Important Notice
       </Typography>
@@ -94,15 +92,6 @@ export const AuthVideoDialog: React.VFC<AuthVideoDialogProps> = (props) => {
             underline="always"
           >
             Security audit by HashEx
-          </Link>
-        </div>
-        <div>
-          <Link
-            href="https://www.youtube.com/watch?v=pVTxnp0qujw"
-            target="_blank"
-            underline="always"
-          >
-            What Is DeFiHelper? A Complete Overview
           </Link>
         </div>
         <div>
