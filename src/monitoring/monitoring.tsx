@@ -224,7 +224,7 @@ export const Monitoring: React.VFC = () => {
         </Paper>
 
         {Object.keys(dfhProfitsPerNetwork).map((network) => (
-          <Paper radius={8} className={styles.root}>
+          <Paper radius={8} className={styles.root} key={network}>
             <div className={styles.titleWrapper}>
               <Typography variant="h5" className={styles.title}>
                 {networksConfig[network].title} - comissions earned
