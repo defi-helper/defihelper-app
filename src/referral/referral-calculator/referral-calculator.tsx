@@ -12,9 +12,9 @@ export type ReferralCalculatorProps = unknown
 
 export const ReferralCalculator: React.VFC<ReferralCalculatorProps> = () => {
   return (
-    <AppLayout title="Referral Program">
+    <AppLayout title="Share and EARN">
       <Typography variant="h3" className={styles.title}>
-        Referral Program
+        Share and EARN
       </Typography>
       <Typography
         variant="h3"
@@ -22,7 +22,7 @@ export const ReferralCalculator: React.VFC<ReferralCalculatorProps> = () => {
         transform="uppercase"
         className={styles.share}
       >
-        Share and EARN
+        Calculator
       </Typography>
       <Typography className={styles.subtitle}>
         Tell your friends about the platform and get additional income

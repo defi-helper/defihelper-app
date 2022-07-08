@@ -13,12 +13,14 @@ export type ReferralCarouselProps = {
   referralCode?: string
 }
 
+// DeFiHelper.io — your one-stop-shop dashboard for all things DeFi
+// DeFiHelper.io — compound your gains in DeFi & supercharge your profits
+// DeFiHelper.io — automate your DeFi investments & earn more!
 export const ReferralCarousel: React.FC<ReferralCarouselProps> = (props) => {
   const link = props.referralCode
     ? `https://defihelper.io/p/${props.referralCode}`
     : ''
-  const shareText = `With manual restaking, you may lose more than you could have earned due
-  to high transaction. ${link}`
+  const shareText = `DeFiHelper.io — your one-stop-shop dashboard for all things DeFi. ${link}`
 
   const settings = {
     dots: true,
@@ -117,7 +119,7 @@ export const ReferralCarousel: React.FC<ReferralCarouselProps> = (props) => {
     <Paper radius={8} className={styles.socialMedia}>
       <div className={styles.socialMediaDesktopRow}>
         <Typography variant="body2" className={styles.title}>
-          Text for Social Media
+          Spread the word about DeFiHelper
         </Typography>
         <Typography variant="body2" as="div">
           <Typography variant="inherit" className={styles.title}>
