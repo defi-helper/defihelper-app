@@ -92,7 +92,11 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
       async () => {
         try {
           if (!wallet?.account) return
-          analytics.log(`settings_${action}_network_${wallet?.chainId}`)
+          analytics.log(`settings_${action}_network_${wallet?.chainId}`, {
+            address: contract.contractWallet?.address,
+            network: contract.contractWallet?.network,
+            blockchain: 'ethereum',
+          })
 
           const adapter = await model.fetchAdapterFx({
             protocolAdapter: contract.protocol.adapter,
@@ -145,13 +149,27 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
               .catch(() => model.reset())
           }
 
-          analytics.log(`settings_success_${action}_network_${wallet?.chainId}`)
+          analytics.log(
+            `settings_success_${action}_network_${wallet?.chainId}`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+            }
+          )
         } catch (error) {
           if (error instanceof Error) {
             console.error(error.message)
           }
 
-          analytics.log(`settings_failure_${action}_network_${wallet?.chainId}`)
+          analytics.log(
+            `settings_failure_${action}_network_${wallet?.chainId}`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+            }
+          )
         }
       }
     const handleRunManually =
