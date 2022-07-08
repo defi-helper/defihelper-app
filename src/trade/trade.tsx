@@ -14,6 +14,7 @@ import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Button } from '~/common/button'
 import * as styles from './trade.css'
+import { TradeChart } from './trade-chart'
 
 export type TradeProps = unknown
 
@@ -26,8 +27,6 @@ enum Selects {
   BuySell = 'trade',
   SmartSell = 'smart sell',
 }
-
-// new window.TradingView.widget({})
 
 export const Trade: React.VFC<TradeProps> = () => {
   const [currentSelect, setCurrentSelect] = useState(Selects.BuySell)
@@ -118,7 +117,7 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Typography>
             </Typography>
           </div>
-          <img src="" alt="" className={styles.chartInner} />
+          <TradeChart className={styles.chartInner} />
         </Paper>
         <Paper radius={8} className={styles.selects}>
           <div className={styles.tradeSelectHeader}>

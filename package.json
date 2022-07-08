@@ -5,7 +5,7 @@
   "dependencies": {
     "@amcharts/amcharts4": "^4.10.21",
     "@binance-chain/bsc-connector": "^1.0.0",
-    "@bramus/pagination-sequence": "^1.0.4",
+    "@bramus/pagination-sequence": "^1.2.0",
     "@casl/ability": "^5.3.1",
     "@casl/react": "^2.3.0",
     "@craco/craco": "^6.1.2",
