@@ -1,4 +1,4 @@
-import { createDomain, guard, UnitValue } from 'effector'
+import { createDomain, guard, sample, UnitValue } from 'effector'
 import { createGate } from 'effector-react'
 
 import { settingsApi } from '~/settings/common'
@@ -190,6 +190,11 @@ export const $userContactList = settingsContactsDomain
 export const SettingsContactsGate = createGate({
   domain: settingsContactsDomain,
   name: 'SettingsContactsGate',
+})
+
+sample({
+  clock: createUserContactFx.done,
+  target: fetchUserNotificationsListFx,
 })
 
 guard({
