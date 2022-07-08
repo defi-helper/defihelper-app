@@ -37,11 +37,6 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
     portfolioAssetsModel.fetchUserInteractedProtocolsListFx.pending
   )
 
-  const assetsByPlatform = useStore(portfolioAssetsModel.$assetsByPlatform)
-  const openedPlatform = useStore(portfolioAssetsModel.$openedPlatform)
-  const assetsByPlatformLoading = useStore(
-    portfolioAssetsModel.fetchAssetsByPlatformFx.pending
-  )
   const [openPortfolioDebugInfo] = useDialog(PortfolioDebugInfoDialog)
   const assetsLoading = assetListLoading || assetByWalletLoading
 
@@ -193,15 +188,7 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
                 <>
                   {protocols.map((row, rowIndex) => (
                     <PortfolioPlatformCard
-                      assets={assetsByPlatform}
-                      isCollapsed={openedPlatform === row.id}
-                      loading={assetsByPlatformLoading}
                       key={String(rowIndex)}
-                      onToggle={() =>
-                        portfolioAssetsModel.openPlatform(
-                          openedPlatform === row.id ? null : row.id
-                        )
-                      }
                       protocol={row}
                     />
                   ))}
