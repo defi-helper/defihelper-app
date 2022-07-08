@@ -1,7 +1,44 @@
 import ym from 'react-yandex-metrika'
 import ReactGA from 'react-ga'
+import amplitude from 'amplitude-js'
+import TagManager from 'react-gtm-module'
+import { config } from '~/config'
+
+const amplitudeInstance = amplitude.getInstance()
+if (config.AMPLITUDE) {
+  amplitudeInstance.init(config.AMPLITUDE)
+}
 
 export const analytics = {
+  async log(event: string, params = {}) {
+    try {
+      await Promise.all([
+        ym('reachGoal', event),
+        ReactGA.ga('event', event),
+        amplitudeInstance.logEvent(event, params),
+        TagManager.dataLayer({
+          dataLayerName: event,
+          dataLayer: params,
+        }),
+      ])
+    } catch (err) {
+      console.warn('unable to send analytics goal')
+    }
+  },
+
+  async reportPathChange(path: string, hash: string, search: string) {
+    const identifier = path
+      .toLowerCase()
+      .replace(/^\/|\/$/g, '')
+      .replaceAll('/', '_')
+      .replace(/[^a-z0-9_]/gi, '')
+    analytics.log(`page_${identifier}`, {
+      hash,
+      path,
+      search,
+    })
+  },
+
   async onWalletConnected() {
     try {
       await Promise.all([
@@ -22,17 +59,6 @@ export const analytics = {
       console.warn('unable to send analytics goal')
     }
   },
-  async onDeposit() {
-    try {
-      await Promise.all([
-        ym('reachGoal', 'topped-up-balance'),
-        ReactGA.ga('event', 'topped_up_balance'),
-      ])
-    } catch (err) {
-      console.warn('unable to send analytics goal')
-    }
-  },
-
   async onAutoStakingEnabled() {
     try {
       await Promise.all([

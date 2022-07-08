@@ -3,7 +3,7 @@ import { ConnectorUpdate } from '@web3-react/types'
 import { createStore, createEffect, guard, sample, createEvent } from 'effector'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
-import { shallowEqual } from 'fast-equals'
+import { debounce } from 'patronum/debounce'
 
 import {
   augmentConnectorUpdate,
@@ -16,10 +16,10 @@ import {
   SignMessagePayload,
 } from '~/wallets/common'
 import { toastsService } from '~/toasts'
-import { sidUtils } from '~/auth/common'
 import { BlockchainEnum } from '~/api/_generated-types'
 import { networksConfig } from '~/networks-config'
 import type { WavesKeeperConnector } from '~/wallets/common/waves-keeper-connector'
+import { sidUtils } from '~/auth/common/sid-utils'
 
 export type SignMessageEthereum = {
   chainId: string
@@ -105,14 +105,16 @@ export const diactivateWalletFx = createEffect(
   }
 )
 
+const activated = debounce({ source: activateWalletFx.doneData, timeout: 500 })
+const updated = debounce({ source: updateWalletFx.doneData, timeout: 500 })
+
+export const signMessage = createEvent<SignMessagePayload>()
+
 export const $wallet = createStore<Wallet | null>(null)
-  .on(activateWalletFx.doneData, (state, payload) => {
-    return shallowEqual(state, payload) ? undefined : payload
-  })
-  .on(updateWalletFx.doneData, (state, payload) => {
-    return shallowEqual(state, payload) ? undefined : payload
-  })
-  .reset(diactivateWalletFx.done)
+  .on(activated, (_, payload) => payload)
+  .on(updated, (_, payload) => payload)
+  .on(signMessage, (state, payload) => (state === null ? payload : undefined))
+  .reset(diactivateWalletFx)
 
 export const getNetwork = (provider: unknown, chainId?: string | number) => {
   const createProvider = networks.get(String(chainId))
@@ -156,31 +158,25 @@ export const signMessageEthereumFx = createEffect(
   }
 )
 
-export const signMessage = createEvent<{
-  chainId: string
-  provider: unknown
-  account: string
-  connector: AbstractConnector
-}>()
-
-sample({
-  source: $wallet.map((wallet) => wallet?.connector),
-  clock: [signMessageEthereumFx.fail, signMessageWavesFx.fail],
-  target: diactivateWalletFx,
-})
-
 guard({
-  clock: activateWalletFx.doneData.map(
-    ({ account, chainId, provider, connector }) => ({
-      account,
+  clock: activated.map(
+    ({ account, chainId, provider, connector, blockchain }) => ({
+      account: account as string,
       chainId,
       provider,
       connector,
+      blockchain,
     })
   ),
   filter: (clock): clock is SignMessagePayload =>
     Boolean(clock.account && clock.chainId) && !sidUtils.get(),
   target: signMessage,
+})
+
+sample({
+  source: $wallet.map((wallet) => wallet?.connector),
+  clock: [signMessageEthereumFx.fail, signMessageWavesFx.fail],
+  target: diactivateWalletFx,
 })
 
 toastsService.forwardErrors(

@@ -86,7 +86,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
           className={styles.icon}
         />
         <Typography variant="body3" as="span">
-          {props.address}
+          {props.address ?? 'turn on notifications'}
         </Typography>
         <Typography variant="body3" as="div" className={styles.buttons}>
           <CanDemo>

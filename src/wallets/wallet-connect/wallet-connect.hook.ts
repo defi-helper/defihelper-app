@@ -9,13 +9,19 @@ export const useWalletConnect = () => {
   return useCallback(
     async (params: { blockchain?: string; network?: string }) => {
       try {
-        const walletData = await openWalletList({
+        const wallet = await openWalletList({
           blockchain: params.blockchain,
           network: params.network,
         })
 
-        walletNetworkModel.activateWalletFx({
-          connector: walletData.connector,
+        if (!wallet.account) return
+
+        walletNetworkModel.signMessage({
+          connector: wallet.connector,
+          chainId: wallet.chainId,
+          provider: wallet.provider,
+          blockchain: wallet.blockchain,
+          account: wallet.account,
         })
       } catch (error) {
         if (error instanceof Error) {
@@ -42,10 +48,11 @@ export const useWalletSign = () => {
         if (!wallet.account) return
 
         walletNetworkModel.signMessage({
-          chainId: String(wallet.chainId),
-          provider: wallet.provider,
-          account: wallet.account,
           connector: wallet.connector,
+          chainId: wallet.chainId,
+          provider: wallet.provider,
+          blockchain: wallet.blockchain,
+          account: wallet.account,
         })
       } catch (error) {
         if (error instanceof Error) {

@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { analytics } from '~/analytics'
 
 import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
@@ -11,8 +12,8 @@ export type AutostakingInstructionProps = {
 
 const INSTRUCTION = [
   {
-    title: 'What is auto-staking?',
-    text: 'Read our article and learn how our auto-staking feature works',
+    title: 'Auto-staking, explained',
+    text: 'The auto-staking feature helps increase the profitability (APY) of staking contracts across other DeFi protocols',
     link: (
       <Button
         color="green"
@@ -20,14 +21,15 @@ const INSTRUCTION = [
         href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
         target="_blank"
         size="medium"
+        onClick={() => analytics.log('auto_staking_read_article_click')}
       >
         read article
       </Button>
     ),
   },
   {
-    title: 'How to Enable auto-staking?',
-    text: 'Watch our complete tutorial, to make setting up auto-staking easy for you',
+    title: 'How to enable auto-staking in DeFiHelper',
+    text: 'Read or watch our detailed instructions on how to enable auto-staking in DeFiHelper',
     link: (
       <Button
         color="green"
@@ -35,14 +37,15 @@ const INSTRUCTION = [
         href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
         target="_blank"
         size="medium"
+        onClick={() => analytics.log('auto_staking_read_watch_video_click')}
       >
         Watch video
       </Button>
     ),
   },
   {
-    title: 'Math behind DeFiHelper',
-    text: "Learn more about DFH's algorithm, and how it works",
+    title: 'Math behind auto-staking',
+    text: 'Learn about the specific formula behind our auto-staking algorithm',
     link: (
       <Button
         color="green"
@@ -50,6 +53,7 @@ const INSTRUCTION = [
         href="https://defihelper.io/static/media/Math_Behind_DeFiHelper.pdf"
         target="_blank"
         size="medium"
+        onClick={() => analytics.log('auto_staking_read_learn_more')}
       >
         learn more
       </Button>

@@ -31,6 +31,7 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as model from '~/staking/staking-automates/staking-automates.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './autostaking-deployed-contracts.css'
+import { analytics } from '~/analytics'
 
 export type AutostakingDeployedContractsProps = {
   className?: string
@@ -91,6 +92,11 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
       async () => {
         try {
           if (!wallet?.account) return
+          analytics.log(`settings_${action}_network_${wallet?.chainId}`, {
+            address: contract.contractWallet?.address,
+            network: contract.contractWallet?.network,
+            blockchain: 'ethereum',
+          })
 
           const adapter = await model.fetchAdapterFx({
             protocolAdapter: contract.protocol.adapter,
@@ -142,10 +148,28 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
               .then(() => model.reset())
               .catch(() => model.reset())
           }
+
+          analytics.log(
+            `settings_success_${action}_network_${wallet?.chainId}`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+            }
+          )
         } catch (error) {
           if (error instanceof Error) {
             console.error(error.message)
           }
+
+          analytics.log(
+            `settings_failure_${action}_network_${wallet?.chainId}`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+            }
+          )
         }
       }
     const handleRunManually =

@@ -27,6 +27,7 @@ import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
 import { pluralize } from '~/common/pluralize'
 import { CanDemo } from '~/auth/can-demo'
+import { analytics } from '~/analytics'
 
 export type AutomationListProps = unknown
 
@@ -81,6 +82,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
 
   const handleAddAutomation = async () => {
     if (!wallet) return
+    analytics.log('automations_new_automations_click')
 
     try {
       if (!dontShow) {
@@ -103,6 +105,7 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
 
   const handleBuyProducts = async () => {
     if (!wallet?.account) return
+    analytics.log('automations_buy_click')
 
     try {
       await openAutomationProducts({

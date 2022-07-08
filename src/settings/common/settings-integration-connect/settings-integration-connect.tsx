@@ -20,6 +20,7 @@ import { Select, SelectOption } from '~/common/select'
 import * as styles from './settings-integration-connect.css'
 import { SettingsIntegrationGateioForm } from '../settings-integration-gateio-form'
 import { SettingsIntegrationLbankForm } from '../settings-integration-lbank-form'
+import { analytics } from '~/analytics'
 
 export type SettingsIntegrationConnectProps = {
   className?: string
@@ -99,6 +100,7 @@ export const SettingsIntegrationConnect: React.FC<SettingsIntegrationConnectProp
 
     const handleConnect = () => {
       setConnect(!connect)
+      analytics.log('settings_cex_connect')
     }
 
     const handleChangeForm = (event: React.ChangeEvent<HTMLInputElement>) => {

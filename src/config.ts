@@ -5,8 +5,9 @@ const isDev =
 export const config = {
   ENV: process.env.NODE_ENV,
   SENTRY: process.env.REACT_APP_SENTRY,
+  AMPLITUDE: process.env.REACT_APP_AMPLITUDE,
   IS_DEV: isDev,
-  DEFAULT_CHAIN_ID: isDev ? '4' : '1',
+  DEFAULT_CHAIN_ID: isDev ? '3' : '1',
   PORTIS_ID: process.env.REACT_APP_PORTIS_ID,
   FORTMATIC_KEY: process.env.REACT_APP_FORTMATIC_KEY,
   ETH_URL: '',

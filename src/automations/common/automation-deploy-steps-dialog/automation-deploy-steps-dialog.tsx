@@ -14,6 +14,7 @@ import { Input } from '~/common/input'
 import { MarkdownRender } from '~/common/markdown-render'
 import { toastsService } from '~/toasts'
 import * as styles from './automation-deploy-steps-dialog.css'
+import { analytics } from '~/analytics'
 
 export type AutomationDeployStepsDialogProps = {
   onConfirm: (formValues: { address: string; inputs: string[] }) => void
@@ -76,7 +77,10 @@ export const AutomationDeployStepsDialog: React.FC<AutomationDeployStepsDialogPr
       })
     }, [reset, props.steps, currentStep])
 
-    const handleEnableAdvancedMode = () => setAdvanced(!advanced)
+    const handleEnableAdvancedMode = () => {
+      analytics.log('auto_staking_pop_up_advanced_settings_click')
+      setAdvanced(!advanced)
+    }
 
     return (
       <Dialog className={styles.root}>

@@ -242,6 +242,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
     switchNetwork(contract.network).catch(console.error)
 
   const handleAutostake = (contract: typeof contracts[number]) => async () => {
+    analytics.log('auto_staking_auto_stake')
     model.autostakingStart(contract.id)
 
     try {

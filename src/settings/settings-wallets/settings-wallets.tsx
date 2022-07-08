@@ -95,7 +95,9 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
           provider: currentWallet.provider,
         })
 
-        analytics.onDeposit()
+        analytics.log('auto_staking_pop_up_success_defihelper_balance_top_up', {
+          amount: result.amount,
+        })
         await openSuccess({
           type: TransactionEnum.deposit,
         })
@@ -103,6 +105,8 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
         if (error instanceof Error) {
           console.error(error.message)
         }
+
+        analytics.log('auto_staking_pop_up_unsuccess_defihelper_balance_top_up')
       }
     }
   const handleRefund =
@@ -176,16 +180,18 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     }
 
   const handleAddWallet = async () => {
+    analytics.log('portfolio_add_wallet_click')
     try {
       const wallet = await openWalletList()
 
       if (!wallet.account) return
 
       walletNetworkModel.signMessage({
-        chainId: String(wallet.chainId),
-        provider: wallet.provider,
-        account: wallet.account,
         connector: wallet.connector,
+        chainId: wallet.chainId,
+        provider: wallet.provider,
+        blockchain: wallet.blockchain,
+        account: wallet.account,
       })
     } catch (error) {
       if (error instanceof Error) {
@@ -202,12 +208,12 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     return () => abortController.abort()
   }, [])
 
-  const paperCount = (wallets.nonEmpty.length ? 3 : 2) - wallets.nonEmpty.length
-
   const mergedWallets = [
     ...wallets.nonEmpty,
     ...(showEmpty || isEmpty(wallets.nonEmpty) ? wallets.empty : []),
   ]
+
+  const paperCount = (mergedWallets.length ? 3 : 2) - mergedWallets.length
 
   const handleShowEmpty = () => setShowEmpty(true)
 
@@ -280,7 +286,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
             <SettingsPaper key={String(index)} />
           ))}
       </div>
-      {!showEmpty && !isEmpty(wallets.empty) && (
+      {!showEmpty && !isEmpty(wallets.empty) && !isEmpty(wallets.nonEmpty) && (
         <ButtonBase
           onClick={handleShowEmpty}
           className={styles.showEmptyWallets}

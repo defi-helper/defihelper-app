@@ -12,6 +12,7 @@ import { useDialog } from '~/common/dialog'
 import { AuthChangeNetworkDialog } from './common'
 import { UnsupportedChainError } from '~/wallets/common/unsupported-chain'
 import * as styles from './auth.css'
+import { analytics } from '~/analytics'
 
 export type AuthProps = {
   className?: string
@@ -22,12 +23,19 @@ export const Auth: React.VFC<AuthProps> = (props) => {
   const [openChangeNetworkDialog] = useDialog(AuthChangeNetworkDialog)
 
   const handleConnect = async () => {
+    analytics.log('porfolio_connect_wallet_click')
+
     try {
       const wallet = await openWalletList()
 
       if (!wallet.account) return
-      walletNetworkModel.activateWalletFx({
+
+      walletNetworkModel.signMessage({
         connector: wallet.connector,
+        chainId: wallet.chainId,
+        provider: wallet.provider,
+        blockchain: wallet.blockchain,
+        account: wallet.account,
       })
     } catch (error) {
       if (error instanceof UnsupportedChainError) {
@@ -54,9 +62,8 @@ export const Auth: React.VFC<AuthProps> = (props) => {
           Setup your Portfolio
         </Typography>
         <Typography className={styles.subtitle}>
-          Connect your wallet first to track your funds cross-chain and automate
-          actions in various scenarios. You will be able to change it any time
-          in settings.
+          Connect your wallet to track your assets cross-chain and create
+          automations. You can change it any time in settings.
         </Typography>
         <div className={styles.list}>
           <Paper radius={8} className={styles.connect}>

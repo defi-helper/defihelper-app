@@ -28,6 +28,7 @@ import {
 } from './automation-trigger-form.validation'
 import * as styles from './automation-trigger-form.css'
 import { Select, SelectOption } from '~/common/select'
+import { analytics } from '~/analytics/analyticsWrapper'
 
 export type AutomationTriggerFormProps = {
   type: 'ByTime' | 'ByEvent'
@@ -130,6 +131,7 @@ export const AutomationTriggerForm: React.VFC<AutomationTriggerFormProps> = (
 
   const handleOnSubmit = handleSubmit((formValues) => {
     const { event, network, address, wallet, ...restofValues } = formValues
+    analytics.log('automations_add_automation_setup_click')
 
     if (props.defaultValues) {
       props.onUpdate({

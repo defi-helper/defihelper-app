@@ -1,32 +1,36 @@
-import { createDomain, sample, split, guard, restore } from 'effector'
+import {
+  createEffect,
+  createEvent,
+  createStore,
+  sample,
+  split,
+  guard,
+  restore,
+  StoreValue,
+  UnitValue,
+} from 'effector'
 import { shallowEqual } from 'fast-equals'
 import { delay } from 'patronum/delay'
 import Cookies from 'js-cookie'
 
-import {
-  MeQuery,
-  AuthEthMutation,
-  AuthWavesInputType,
-  AuthEthereumInputType,
-} from '~/api/_generated-types'
+import { MeQuery, AuthEthMutation } from '~/api/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { sidUtils, authApi } from './common'
 import { history } from '~/common/history'
 import { paths } from '~/paths'
-import { analytics } from '~/analytics'
 import { toastsService } from '~/toasts'
 import { dateUtils } from '~/common/date-utils'
+import { WavesKeeperConnector } from '~/wallets/common/waves-keeper-connector'
+import { analytics } from '~/analytics'
 
 type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
 
 const ERROR_MESSAGE = 'Unable to authenticate'
 
-export const authDomain = createDomain()
+export const fetchUserFx = createEffect(() => authApi.me())
 
-export const fetchUserFx = authDomain.createEffect(() => authApi.me())
-
-export const logoutFx = authDomain.createEffect(() => {
+export const logoutFx = createEffect(() => {
   sidUtils.remove()
 })
 
@@ -34,18 +38,15 @@ logoutFx.done.watch(() => {
   history.push(paths.portfolio)
 })
 
-export const saveUserFx = authDomain.createEffect(async (data: AuthData) => {
-  sidUtils.set(data.sid)
+export const saveUserFx = createEffect(async (data?: AuthData | null) => {
+  if (!data) throw new Error(ERROR_MESSAGE)
 
-  if (data.user.role === 'demo') {
-    localStorage.setItem('video', 'true')
-  }
+  sidUtils.set(data.sid)
 
   return data.user
 })
 
-export const $user = authDomain
-  .createStore<Exclude<MeQuery['me'], undefined>>(null)
+export const $user = createStore<Exclude<MeQuery['me'], undefined>>(null)
   .on(fetchUserFx.doneData, (state, payload) =>
     shallowEqual(state, payload) ? undefined : payload
   )
@@ -54,45 +55,73 @@ export const $user = authDomain
   )
   .reset(logoutFx.done)
 
-export const $userWallets = settingsWalletModel.$wallets.reset(logoutFx)
-
-export const authWavesFx = authDomain.createEffect(
-  async (params: Omit<AuthWavesInputType, 'timezone'>) => {
+export const authWavesFx = createEffect(
+  async (
+    input: UnitValue<typeof walletNetworkModel.signMessageWavesFx.doneData> & {
+      merge?: boolean
+    }
+  ) => {
     const { data, error } = await authApi.authWaves({
-      ...params,
+      network: input.network,
+      address: input.account,
+      signature: input.signature,
+      message: input.message,
+      publicKey: input.publicKey,
       timezone: dateUtils.timezone(),
       code: Cookies.get('dfh-parent-code'),
-      merge: params.merge ?? false,
+      merge: input.merge,
     })
 
     if (error?.fetchError) throw error.fetchError
     if (error?.graphQLErrors?.[0])
       throw new Error(error.graphQLErrors[0].message)
-    if (!data) throw new Error(ERROR_MESSAGE)
+
+    analytics.log('portfolio_connect_wallet_success', {
+      address: input.address,
+      network: input.network,
+      blockchain: 'waves',
+    })
 
     return data
   }
 )
 
-export const authEthereumFx = authDomain.createEffect(
-  async (input: Omit<AuthEthereumInputType, 'timezone'>) => {
+type WalletStore = Exclude<
+  Required<StoreValue<typeof walletNetworkModel.$wallet>>,
+  null
+>
+
+export const authEthereumFx = createEffect(
+  async (
+    input: UnitValue<
+      typeof walletNetworkModel.signMessageEthereumFx.doneData
+    > & { merge?: boolean }
+  ) => {
     const { data, error } = await authApi.authEth({
-      ...input,
+      network: input.chainId,
+      address: input.account,
+      signature: input.signature,
+      message: input.message,
       timezone: dateUtils.timezone(),
       code: Cookies.get('dfh-parent-code'),
-      merge: input.merge ?? false,
+      merge: input.merge,
     })
 
     if (error?.fetchError) throw error.fetchError
     if (error?.graphQLErrors?.[0])
       throw new Error(error.graphQLErrors[0].message)
-    if (!data) throw new Error(ERROR_MESSAGE)
+
+    analytics.log('portfolio_connect_wallet_success', {
+      address: input.address,
+      network: input.chainId,
+      blockchain: 'ethereum',
+    })
 
     return data
   }
 )
 
-export const authDemoFx = authDomain.createEffect(async () => {
+export const authDemoFx = createEffect(async () => {
   const data = await authApi.authDemo()
   if (!data) throw new Error(ERROR_MESSAGE)
 
@@ -100,90 +129,33 @@ export const authDemoFx = authDomain.createEffect(async () => {
 })
 
 authDemoFx.finally.watch(() => {
-  localStorage.removeItem('demo')
+  localStorage.removeItem('demo') // TODO: remove
 })
 
 const userReady = delay({ source: fetchUserFx.finally, timeout: 500 })
 
-export const $userReady = authDomain
-  .createStore(false)
-  .on(userReady, () => true)
+export const $userReady = createStore(false).on(userReady, () => true)
 
-sample({
-  clock: walletNetworkModel.signMessageEthereumFx.doneData,
-  fn: (clock) => ({
-    network: clock.chainId,
-    address: clock.address,
-    message: clock.message,
-    signature: clock.signature,
-  }),
-  target: authEthereumFx,
-})
+type Payload = {
+  openVideoDialog: () => Promise<unknown>
+  openMergeWalletsDialog: () => Promise<unknown>
+  openAuthSignMessageDialog: () => Promise<unknown>
+  closeAuthSignMessageDialog: () => void
+}
 
-sample({
-  clock: walletNetworkModel.signMessageWavesFx.doneData,
-  fn: (params): Omit<AuthWavesInputType, 'timezone'> => ({
-    network: params.network,
-    publicKey: params.publicKey,
-    address: params.address,
-    message: params.message,
-    signature: params.signature,
-  }),
-  target: authWavesFx,
-})
+export const open = createEvent<Payload>()
+export const close = createEvent()
 
-const $signedMessageEthereum = restore(
-  authEthereumFx.map((payload) => payload),
-  null
-).reset(logoutFx)
+const mergeModalFx = createEffect((fn: () => unknown) => fn())
 
-const $signedMessageWaves = restore(
-  authWavesFx.map((payload) => payload),
-  null
-).reset(logoutFx)
-
-const signedUserEthereum = guard({
-  clock: authEthereumFx.doneData,
-  filter: (clock): clock is AuthData =>
-    Boolean(clock) && sidUtils.get() !== clock.sid,
-})
-
-const signedUserWaves = guard({
-  clock: authWavesFx.doneData,
-  filter: (clock): clock is AuthData =>
-    Boolean(clock) && sidUtils.get() !== clock.sid,
-})
-
-const preparedUserDemo = guard({
-  clock: authDemoFx.doneData,
-  filter: (clock): clock is AuthData =>
-    Boolean(clock) && sidUtils.get() !== clock.sid,
-})
-
-const saveUser = sample({
-  clock: guard({
-    clock: sample({
-      source: $user,
-      clock: [signedUserWaves, signedUserEthereum, preparedUserDemo],
-      fn: (prevUser, nextUser) => ({ prevUser, nextUser }),
-    }),
-    filter: ({ prevUser, nextUser }) =>
-      prevUser === null || prevUser.id === nextUser.user.id,
-  }),
-  fn: ({ nextUser }) => nextUser,
-  target: saveUserFx,
-})
-
-fetchUserFx.doneData.watch((data) => {
-  if (data === null) {
-    sidUtils.remove()
-  }
-})
+export const $auth = createStore<Payload | null>(null)
+  .on(open, (_, payload) => payload)
+  .reset(close)
 
 split({
   source: guard({
     clock: sample({
-      source: $userWallets,
+      source: settingsWalletModel.$wallets,
       clock: walletNetworkModel.signMessage,
       fn: (wallets, signMessage) => ({ wallets, ...signMessage }),
     }),
@@ -208,18 +180,123 @@ split({
     },
   }),
   match: {
-    waves: (source) => source.chainId === 'main' && Boolean(source.provider),
-    ethereum: (source) => Boolean(source.provider),
+    ethereum: (wallet) => wallet.chainId !== 'main',
+    waves: (wallet) => wallet.chainId === 'main',
   },
   cases: {
-    waves: walletNetworkModel.signMessageWavesFx,
-    ethereum: walletNetworkModel.signMessageEthereumFx,
+    ethereum: authEthereumFx,
+    waves: authWavesFx,
   },
+})
+
+sample({
+  clock: guard({
+    source: walletNetworkModel.$wallet,
+    clock: authEthereumFx.doneData,
+    filter: (result, clock): result is WalletStore =>
+      Boolean(clock === null && result),
+  }),
+  fn: ({ chainId, account, provider }) => ({
+    chainId,
+    account: account as string,
+    provider,
+  }),
+  target: walletNetworkModel.signMessageEthereumFx,
+})
+
+sample({
+  clock: guard({
+    source: walletNetworkModel.$wallet,
+    clock: authWavesFx.doneData,
+    filter: (result, clock): result is WalletStore =>
+      Boolean(clock === null && result),
+  }),
+  fn: ({ account, provider, connector }) => ({
+    account: account as string,
+    provider,
+    connector: connector as WavesKeeperConnector,
+  }),
+  target: walletNetworkModel.signMessageWavesFx,
+})
+
+sample({
+  clock: walletNetworkModel.signMessageEthereumFx.doneData,
+  target: authEthereumFx,
+})
+
+sample({
+  clock: walletNetworkModel.signMessageWavesFx.doneData,
+  target: authWavesFx,
+})
+
+sample({
+  clock: [authEthereumFx.doneData, authWavesFx.doneData, authDemoFx.doneData],
+  target: saveUserFx,
+})
+
+sample({
+  clock: guard({
+    source: $auth,
+    clock: guard({
+      source: $user,
+      clock: [authWavesFx.doneData, authWavesFx.doneData],
+      filter: (prevUser, nextUser) =>
+        prevUser !== null && prevUser.id !== nextUser?.user.id,
+    }),
+    filter: (auth): auth is Payload => Boolean(auth),
+  }),
+  fn: ({ openMergeWalletsDialog }) => openMergeWalletsDialog,
+  target: mergeModalFx,
+})
+
+const $signedMessageEthereum = restore(
+  walletNetworkModel.signMessageEthereumFx.doneData.map((payload) => ({
+    ...payload,
+    merge: true,
+  })),
+  null
+).reset(logoutFx)
+
+const $signedMessageWaves = restore(
+  walletNetworkModel.signMessageWavesFx.doneData.map((payload) => ({
+    ...payload,
+    merge: true,
+  })),
+  null
+).reset(logoutFx)
+
+guard({
+  source: $signedMessageEthereum,
+  clock: mergeModalFx.done,
+  filter: (
+    source
+  ): source is UnitValue<
+    typeof walletNetworkModel.signMessageEthereumFx.doneData
+  > & { merge: boolean } => Boolean(source),
+  target: authEthereumFx,
+})
+
+guard({
+  source: $signedMessageWaves,
+  clock: mergeModalFx.done,
+  filter: (
+    source
+  ): source is UnitValue<
+    typeof walletNetworkModel.signMessageWavesFx.doneData
+  > & { merge: boolean } => Boolean(source),
+  target: authWavesFx,
+})
+
+guard({
+  source: $user,
+  clock: [$user.updates, saveUserFx.doneData],
+  filter: (user) => Boolean(user),
+  target: settingsWalletModel.fetchWalletListFx,
 })
 
 guard({
   clock: sample({
-    source: $userWallets,
+    source: settingsWalletModel.$wallets,
     clock: walletNetworkModel.signMessage,
     fn: (wallets, signMessage) => ({ wallets, ...signMessage }),
   }),
@@ -239,125 +316,19 @@ guard({
   target: toastsService.info.prepend(() => 'Wallet already added!'),
 })
 
-type Payload = {
-  openVideoDialog: () => Promise<unknown>
-  openMergeWalletsDialog: () => Promise<unknown>
-  openAuthSignMessageDialog: () => Promise<unknown>
-  closeAuthSignMessageDialog: () => void
-}
+settingsWalletModel.$wallets.reset(logoutFx)
+walletNetworkModel.$wallet.reset(logoutFx)
 
-export const open = authDomain.createEvent<Payload>()
-export const close = authDomain.createEvent()
+authEthereumFx.failData.watch((error) => toastsService.error(error.message))
+authWavesFx.failData.watch((error) => toastsService.error(error.message))
 
-export const $auth = authDomain
-  .createStore<Payload | null>(null)
-  .on(open, (_, payload) => payload)
-  .reset(close)
-
-const openModalFx = authDomain.createEffect((modal: () => Promise<unknown>) =>
-  modal()
-)
-
-const closeModalFx = authDomain.createEffect((fn: () => void) => fn())
-
-const sendAnalyticsEventFx = authDomain.createEffect(() =>
-  analytics.onWalletConnected()
-)
-
-sample({
-  clock: guard({
-    source: $auth,
-    clock: walletNetworkModel.signMessage,
-    filter: (modal): modal is Payload => Boolean(modal),
-  }),
-  fn: ({ openAuthSignMessageDialog }) => openAuthSignMessageDialog,
-  target: openModalFx,
+fetchUserFx.doneData.watch((data) => {
+  if (data === null) {
+    sidUtils.remove()
+  }
 })
 
 sample({
   clock: open,
   target: fetchUserFx,
 })
-
-sample({
-  clock: guard({
-    source: $auth,
-    clock: guard({
-      source: $user,
-      clock: [signedUserWaves, signedUserEthereum],
-      filter: (prevUser, { user: nextUser }) =>
-        prevUser !== null && prevUser.id !== nextUser.id,
-    }),
-    filter: (auth): auth is Payload => Boolean(auth),
-  }),
-  fn: ({ openMergeWalletsDialog }) => openMergeWalletsDialog,
-  target: openModalFx,
-})
-
-sample({
-  clock: [signedUserWaves, signedUserEthereum],
-  target: sendAnalyticsEventFx,
-})
-
-sample({
-  clock: guard({
-    source: $auth,
-    clock: [
-      signedUserWaves,
-      signedUserEthereum,
-      authEthereumFx.fail,
-      authWavesFx.fail,
-    ],
-    filter: (modal): modal is Payload => Boolean(modal),
-  }),
-  fn: ({ closeAuthSignMessageDialog }) => closeAuthSignMessageDialog,
-  target: closeModalFx,
-})
-
-guard({
-  source: $signedMessageEthereum.map((store) =>
-    store ? { ...store, merge: true } : null
-  ),
-  clock: openModalFx.done,
-  filter: (
-    source
-  ): source is Omit<AuthEthereumInputType, 'merge'> & { merge: boolean } =>
-    Boolean(source),
-  target: authEthereumFx,
-})
-
-guard({
-  source: $signedMessageWaves.map((store) =>
-    store ? { ...store, merge: true } : null
-  ),
-  clock: openModalFx.done,
-  filter: (
-    source
-  ): source is Omit<AuthWavesInputType, 'merge'> & { merge: boolean } =>
-    Boolean(source),
-  target: authWavesFx,
-})
-
-sample({
-  clock: guard({
-    source: [$auth, $user],
-    clock: saveUser,
-    filter: (source): source is [Payload, null] => {
-      const [auth, prevUser] = source
-
-      return Boolean(auth) && prevUser === null
-    },
-  }),
-  fn: ([{ openVideoDialog }]) => openVideoDialog,
-  target: openModalFx,
-})
-
-guard({
-  source: $user,
-  clock: [$user.updates, saveUserFx.doneData],
-  filter: (user) => Boolean(user),
-  target: settingsWalletModel.fetchWalletListFx,
-})
-
-authEthereumFx.failData.watch((error) => toastsService.error(error.message))
-authWavesFx.failData.watch((error) => toastsService.error(error.message))

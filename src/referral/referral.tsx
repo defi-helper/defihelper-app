@@ -25,16 +25,8 @@ export const Referral: React.VFC<ReferralProps> = () => {
   useGate(model.ReferralGate)
 
   return (
-    <AppLayout title="Referral Program">
+    <AppLayout title="Share and EARN">
       <Typography variant="h3" className={styles.title}>
-        Referral Program
-      </Typography>
-      <Typography
-        variant="h3"
-        family="mono"
-        transform="uppercase"
-        className={styles.share}
-      >
         Share and EARN
       </Typography>
       <Typography className={styles.subtitle}>
@@ -97,7 +89,8 @@ export const Referral: React.VFC<ReferralProps> = () => {
               $30
             </Typography>
             <Typography variant="body2" className={styles.cardFooterText}>
-              will be received each user after registration
+              both you and the new user will receive $30 after their
+              registration
             </Typography>
           </div>
         </Paper>

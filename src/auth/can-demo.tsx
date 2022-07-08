@@ -41,8 +41,13 @@ export const CanDemo: React.FC<CanDemoProps> = (props) => {
         const wallet = await openWalletList()
 
         if (!wallet.account) return
-        walletNetworkModel.activateWalletFx({
+
+        walletNetworkModel.signMessage({
           connector: wallet.connector,
+          chainId: wallet.chainId,
+          provider: wallet.provider,
+          blockchain: wallet.blockchain,
+          account: wallet.account,
         })
       } catch (error) {
         if (error instanceof UnsupportedChainError) {

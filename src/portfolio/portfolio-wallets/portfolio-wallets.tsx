@@ -29,6 +29,7 @@ import { Dropdown } from '~/common/dropdown'
 import * as model from './portfolio-wallets.model'
 import * as styles from './portfolio-wallets.css'
 import { CanDemo } from '~/auth/can-demo'
+import { analytics } from '~/analytics'
 
 export type PortfolioWalletsProps = {
   className?: string
@@ -43,6 +44,7 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   const assetsLoading = useStore(model.fetchAssetsByWalletFx.pending)
 
   const handleOpenAddWalletDialog = async () => {
+    analytics.log('portfolio_add_wallet_click')
     try {
       const res = await openAddWalletDialog()
 
@@ -55,16 +57,18 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   }
 
   const handleOpenWalletList = async () => {
+    analytics.log('portfolio_add_wallet_click')
     try {
       const wallet = await openWalletList()
 
       if (!wallet.account) return
 
       walletNetworkModel.signMessage({
-        chainId: String(wallet.chainId),
-        provider: wallet.provider,
-        account: wallet.account,
         connector: wallet.connector,
+        chainId: wallet.chainId,
+        provider: wallet.provider,
+        blockchain: wallet.blockchain,
+        account: wallet.account,
       })
     } catch (error) {
       if (error instanceof Error) {

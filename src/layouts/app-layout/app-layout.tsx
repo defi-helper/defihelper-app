@@ -44,7 +44,7 @@ const MENU: MenuItem[] = [
     icon: 'grid',
   },
   {
-    title: 'Autostaking',
+    title: 'Boost your APY',
     path: paths.autostaking,
     icon: 'autostaking',
   },
@@ -94,7 +94,7 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
 
   const ability = useAbility()
 
-  const [hidden, setHide] = useLocalStorage('dfh:sidebar', false)
+  const [hidden, setHide] = useLocalStorage('sidebar', false)
 
   const [openSidebar, setOpenSidebar] = useState(false)
   const [sidebar, setSidebar] = useState<HTMLDivElement | null>(null)
