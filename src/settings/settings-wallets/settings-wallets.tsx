@@ -95,7 +95,9 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
           provider: currentWallet.provider,
         })
 
-        analytics.onDeposit()
+        analytics.log('auto_staking_pop_up_success_defihelper_balance_top_up', {
+          amount: result.amount,
+        })
         await openSuccess({
           type: TransactionEnum.deposit,
         })
@@ -103,6 +105,8 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
         if (error instanceof Error) {
           console.error(error.message)
         }
+
+        analytics.log('auto_staking_pop_up_unsuccess_defihelper_balance_top_up')
       }
     }
   const handleRefund =
