@@ -95,7 +95,7 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
           Current APY
         </Typography>
         <Typography variant="body2">
-          +{bignumberUtils.formatMax(bignumberUtils.mul(props.apy, 100), 10000)}{' '}
+          {bignumberUtils.formatMax(bignumberUtils.mul(props.apy, 100), 10000)}{' '}
           %
         </Typography>
       </div>
@@ -107,7 +107,12 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
           </ButtonBase>
         </Typography>
         <Typography variant="body2" className={styles.green}>
-          + {bignumberUtils.formatMax(props.apyBoost, 10000)} %
+          +{' '}
+          {bignumberUtils.formatMax(
+            bignumberUtils.mul(props.apyBoost, 100),
+            10000
+          )}{' '}
+          %
         </Typography>
       </div>
       <Button
