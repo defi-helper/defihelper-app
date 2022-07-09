@@ -1,8 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-console */
-// Make requests to CryptoCompare API
+
+const ACCESS_TOKEN =
+  'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIyOWJlYjY2Mi05N2M1LTQ3OTUtOTUzNS00YWUyMWRhY2E0YjciLCJLZXlUeXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU3Mjk1MjYxLCJpc3MiOiJib29raXRlLmF1dGguc2VydmljZSJ9.IcfWs65qpFqROaj1UF5Fhwb3lNGsjPWYNrtoeuJRfmkSSEkaV9nVcEamiHTTafKrzI7nawkUjnlWVl0bzUljlrGZzCUeLkF-VDuFO1xtY90tGV3Hxj1986OkOOzeuZQUfYdpEgYjtwA-1s4-Xuk3XiwiClxdwuVShLeg_O8zBrMDPvfo32F4xxgB-mKQgBLEDMAEMuQSpBVTew0igGP07DsYMSA5tq_zP2nmLQzOgN8oD91e7BRV2Vv9faI2VZR3aa2YyFHd2yu3_8yEsk54VI9w8AY13RP3n3T9flOFPdKeoAXo23PZNu5I1Z0CftDQS2S96dFY6TymG2GrqV2LUw'
+
 export async function makeApiRequest(path: string) {
-  const response = await fetch(`https://min-api.cryptocompare.com/${path}`)
+  const response = await fetch(`https://whattofarm.io/ext-api/v1/${path}`, {
+    headers: {
+      Authorization: ACCESS_TOKEN,
+    },
+  })
 
   return response.json()
 }
@@ -37,59 +45,12 @@ const lastBarsCache = new Map()
 
 const configurationData = {
   supported_resolutions: ['1D', '1W', '1M'],
-  exchanges: [
-    {
-      value: 'Bitfinex',
-      name: 'Bitfinex',
-      desc: 'Bitfinex',
-    },
-    {
-      // `exchange` argument for the `searchSymbols` method, if a user selects this exchange
-      value: 'Kraken',
-
-      // filter name
-      name: 'Kraken',
-
-      // full exchange name displayed in the filter popup
-      desc: 'Kraken bitcoin exchange',
-    },
-  ],
-  symbols_types: [
-    {
-      name: 'crypto',
-
-      // `symbolType` argument for the `searchSymbols` method, if a user selects this symbol type
-      value: 'crypto',
-    },
-    // ...
-  ],
 }
 
 async function getAllSymbols() {
   const data = await makeApiRequest('data/v3/all/exchanges')
-  let allSymbols: Array<any> = []
+  const allSymbols: Array<any> = []
 
-  for (const exchange of configurationData.exchanges) {
-    const { pairs } = data.Data[exchange.value]
-
-    for (const leftPairPart of Object.keys(pairs)) {
-      const symbols = pairs[leftPairPart].map((rightPairPart: string) => {
-        const symbol = generateSymbol(
-          exchange.value,
-          leftPairPart,
-          rightPairPart
-        )
-        return {
-          symbol: symbol.short,
-          full_name: symbol.full,
-          description: symbol.short,
-          exchange: exchange.value,
-          type: 'crypto',
-        }
-      })
-      allSymbols = [...allSymbols, ...symbols]
-    }
-  }
   return allSymbols
 }
 
@@ -97,23 +58,6 @@ export default {
   onReady: (callback: (value: unknown) => void) => {
     console.log('[onReady]: Method call')
     setTimeout(() => callback(configurationData))
-  },
-
-  searchSymbols: async (
-    userInput: string,
-    exchange: string,
-    symbolType: string,
-    onResultReadyCallback: (value: unknown) => void
-  ) => {
-    console.log('[searchSymbols]: Method call')
-    const symbols = await getAllSymbols()
-    const newSymbols = symbols.filter((symbol) => {
-      const isExchangeValid = exchange === '' || symbol.exchange === exchange
-      const isFullSymbolContainsInput =
-        symbol.full_name.toLowerCase().indexOf(userInput.toLowerCase()) !== -1
-      return isExchangeValid && isFullSymbolContainsInput
-    })
-    onResultReadyCallback(newSymbols)
   },
 
   resolveSymbol: async (
@@ -218,6 +162,10 @@ export default {
       onErrorCallback(error)
     }
   },
+
+  subscribeBars: () => {},
+
+  unsubscribeBars: () => {},
 
   // subscribeBars: (
   //   symbolInfo,
