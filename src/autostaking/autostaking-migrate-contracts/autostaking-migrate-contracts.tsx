@@ -427,9 +427,8 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
         >
           {isEmptyContracts && !loading && (
             <Typography variant="h4">
-              We couldn&apos;t find any of your contracts on other services. We
-              regularly check for outside contracts, and as soon as we find a
-              match, you will see your contracts here with the migration option.
+              You don&apos;t have any contracts to migrate to our service right
+              now. We will notify you as soon as we will find the suitable one.
             </Typography>
           )}
           {loading && isEmptyContracts && (

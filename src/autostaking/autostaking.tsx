@@ -56,6 +56,8 @@ export const Autostaking: React.VFC<AutostakingProps> = () => {
   }, [currentTab])
 
   useEffect(() => {
+    if (!search) return
+
     attempt.current += 1
   }, [search])
 
