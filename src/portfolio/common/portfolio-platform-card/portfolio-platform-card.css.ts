@@ -51,7 +51,7 @@ export const platformLogo = style({
 
 export const platformColumnsList = style({
   display: 'grid',
-  gridTemplateColumns: '36% 20% 20% 20% 4%',
+  gridTemplateColumns: '36% 20% 20% 20%',
 })
 
 export const platformAssetsList = style({

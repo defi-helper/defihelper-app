@@ -15,6 +15,7 @@ import { SettingsIntegrationConnect } from '../common/settings-integration-conne
 import * as styles from './settings-integrations.css'
 import * as model from './settings-integrations.model'
 import { cexTitles } from '../common/constants'
+import { analytics } from '~/analytics'
 
 export type SettingsIntegrationsProps = {
   className?: string
@@ -49,7 +50,13 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
         })
 
         setCountRender(countRender + 1)
+        analytics.log('settings_cex_connected_success', {
+          type: integrationType,
+        })
       } catch (error) {
+        analytics.log('settings_cex_connected_failure', {
+          type: integrationType,
+        })
         if (error instanceof Error) {
           console.error(error.message)
         }

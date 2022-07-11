@@ -62,9 +62,8 @@ export const Auth: React.VFC<AuthProps> = (props) => {
           Setup your Portfolio
         </Typography>
         <Typography className={styles.subtitle}>
-          Connect your wallet first to track your funds cross-chain and automate
-          actions in various scenarios. You will be able to change it any time
-          in settings.
+          Connect your wallet to track your assets cross-chain and create
+          automations. You can change it any time in settings.
         </Typography>
         <div className={styles.list}>
           <Paper radius={8} className={styles.connect}>

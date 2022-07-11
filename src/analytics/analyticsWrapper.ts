@@ -59,17 +59,6 @@ export const analytics = {
       console.warn('unable to send analytics goal')
     }
   },
-  async onDeposit() {
-    try {
-      await Promise.all([
-        ym('reachGoal', 'topped-up-balance'),
-        ReactGA.ga('event', 'topped_up_balance'),
-      ])
-    } catch (err) {
-      console.warn('unable to send analytics goal')
-    }
-  },
-
   async onAutoStakingEnabled() {
     try {
       await Promise.all([

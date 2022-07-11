@@ -21,9 +21,9 @@ export const ReferralTransactions: React.VFC<ReferralTransactionsProps> =
     const isDesktop = useMedia('(min-width: 1440px)')
 
     return (
-      <AppLayout title="Referral Program">
+      <AppLayout title="Share and EARN">
         <Typography variant="h3" className={styles.title}>
-          Referral Program
+          Share and EARN
         </Typography>
         <Typography
           variant="h3"

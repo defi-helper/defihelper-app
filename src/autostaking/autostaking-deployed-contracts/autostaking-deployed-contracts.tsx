@@ -92,7 +92,11 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
       async () => {
         try {
           if (!wallet?.account) return
-          analytics.log(`settings_${action}_network_${wallet?.chainId}`)
+          analytics.log(`settings_${action}_network_${wallet?.chainId}`, {
+            address: contract.contractWallet?.address,
+            network: contract.contractWallet?.network,
+            blockchain: 'ethereum',
+          })
 
           const adapter = await model.fetchAdapterFx({
             protocolAdapter: contract.protocol.adapter,
@@ -145,13 +149,27 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
               .catch(() => model.reset())
           }
 
-          analytics.log(`settings_success_${action}_network_${wallet?.chainId}`)
+          analytics.log(
+            `settings_success_${action}_network_${wallet?.chainId}`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+            }
+          )
         } catch (error) {
           if (error instanceof Error) {
             console.error(error.message)
           }
 
-          analytics.log(`settings_failure_${action}_network_${wallet?.chainId}`)
+          analytics.log(
+            `settings_failure_${action}_network_${wallet?.chainId}`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+            }
+          )
         }
       }
     const handleRunManually =
@@ -244,9 +262,8 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
         )}
         {isEmptyContracts && !loading && (
           <Typography variant="h4">
-            We couldn&apos;t find any of your contracts on other services. We
-            regularly check for outside contracts, and as soon as we find a
-            match, you will see your contracts here with the deposit option.
+            You don&apos;t have any deployed auto-staking contracts in
+            DeFiHelper. Please try to deploy one.
           </Typography>
         )}
         {!isEmptyContracts && (

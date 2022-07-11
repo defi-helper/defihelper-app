@@ -165,9 +165,15 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
   useEffect(() => {
     if (transferState.value) {
       setCurrentTab(Tabs.deposit)
-      balanceOf.retry()
-      transferred.retry()
     }
+    const timeout = setTimeout(() => {
+      if (transferState.value) {
+        balanceOf.retry()
+        transferred.retry()
+      }
+    }, 1000)
+
+    return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transferState.value])
 

@@ -13,7 +13,7 @@ export type AuthVideoDialogProps = {
   onConfirm: (value: boolean) => void
 }
 
-const VIDEO_UD = 'VYgoIHapVEM'
+const VIDEO_UD = 'DkIH_DMhgcs'
 
 export const AuthVideoDialog: React.VFC<AuthVideoDialogProps> = (props) => {
   const [checked, setChecked] = useState(false)
@@ -42,16 +42,14 @@ export const AuthVideoDialog: React.VFC<AuthVideoDialogProps> = (props) => {
           allowFullScreen
         />
       </div>
-      {false && (
-        <Link
-          href="youtube.com"
-          target="_blank"
-          underline="always"
-          className={styles.title}
-        >
-          More videos
-        </Link>
-      )}
+      <Link
+        href="https://www.youtube.com/channel/UCLmBfSUb2Ip88W9jlxwQzgw"
+        target="_blank"
+        underline="always"
+        className={styles.title}
+      >
+        More videos
+      </Link>
       <Typography variant="body2" weight="semibold" className={styles.title}>
         Important Notice
       </Typography>

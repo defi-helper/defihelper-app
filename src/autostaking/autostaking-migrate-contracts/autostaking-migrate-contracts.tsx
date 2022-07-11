@@ -31,11 +31,11 @@ import { AutostakingVideoDialog } from '../common/autostaking-video-dialog'
 import { AutostakingBalanceDialog } from '../common/autostaking-balance-dialog'
 import { AutostakingDeployDialog } from '../common/autostaking-deploy-dialog'
 import { AutostakingTabsDialog } from '../common/autostaking-tabs-dialog'
+import { Loader } from '~/common/loader'
 import * as autostakingContractsModel from '~/autostaking/autostaking-contracts/autostaking-contracts.model'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as styles from './autostaking-migrate-contracts.css'
-import { Loader } from '~/common/loader'
 
 export type AutostakingMigrateContractsProps = {
   className?: string
@@ -129,16 +129,29 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
         model.migratingStart(contract.id)
 
         try {
-          if (!currentWallet?.account)
+          if (!currentWallet?.account || !user)
             return toastsService.error('wallet is not connected')
           if (!contract.automate.autorestake)
             return toastsService.error('adapter not found')
+
+          const deployedContracts =
+            await automatesModel.fetchAutomatesContractsFx({
+              userId: user.id,
+            })
+
+          const deployedContract = deployedContracts.list.find(
+            ({ contract: deployedStakingContract }) =>
+              deployedStakingContract?.id === contract.id
+          )
+
+          if (!deployedContract)
+            return toastsService.error('contract not found')
 
           const adapter = await automatesModel.fetchAdapterFx({
             protocolAdapter: contract.protocol.adapter,
             contractAdapter: contract.automate.autorestake,
             contractId: contract.id,
-            contractAddress: contract.address,
+            contractAddress: deployedContract.address,
             provider: currentWallet.provider,
             chainId: String(currentWallet.chainId),
             action: 'migrate',
@@ -322,7 +335,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
             protocolAdapter: contract.protocol.adapter,
             contractAdapter: contract.automate.autorestake,
             contractId: contract.id,
-            contractAddress: contract.address,
+            contractAddress: deployedContract.address,
             provider: currentWallet.provider,
             chainId: String(currentWallet.chainId),
             action: 'migrate',
@@ -427,9 +440,8 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
         >
           {isEmptyContracts && !loading && (
             <Typography variant="h4">
-              We couldn&apos;t find any of your contracts on other services. We
-              regularly check for outside contracts, and as soon as we find a
-              match, you will see your contracts here with the migration option.
+              You don&apos;t have any contracts to migrate to our service right
+              now. We will notify you as soon as we will find the suitable one.
             </Typography>
           )}
           {loading && isEmptyContracts && (

@@ -62,7 +62,6 @@ export const ProtocolCalculator: React.VFC<ProtocolCalculatorProps> = (
   }, [currentContract, throttledSum])
 
   const [lastHoldValue] = metrics?.hold.slice(-1) ?? []
-  const [lastRestakeValue] = metrics?.everyDay.slice(-1) ?? []
   const [lastAutostakingValue] = metrics?.optimal.slice(-1) ?? []
 
   const autostaking = bignumberUtils.format(
@@ -130,34 +129,6 @@ export const ProtocolCalculator: React.VFC<ProtocolCalculatorProps> = (
               >
                 {bignumberUtils.format(
                   bignumberUtils.mul(currentContract?.metric.aprYear, 100)
-                )}
-                % APY
-              </Typography>
-            </tr>
-            <tr className={styles.row}>
-              <Typography
-                as="th"
-                variant="body2"
-                className={clsx(styles.col, styles.fs14)}
-              >
-                Restake manualy
-              </Typography>
-              <Typography as="th" variant="body1" className={styles.col}>
-                ${bignumberUtils.format(lastRestakeValue?.v)}
-              </Typography>
-              <Typography
-                as="th"
-                variant="body1"
-                className={clsx(styles.red, styles.col)}
-              >
-                {bignumberUtils.format(
-                  bignumberUtils.mul(
-                    bignumberUtils.div(
-                      bignumberUtils.minus(lastRestakeValue?.v, value),
-                      value
-                    ),
-                    100
-                  )
                 )}
                 % APY
               </Typography>

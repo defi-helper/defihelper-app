@@ -93,14 +93,6 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     networks: [String(config.DEFAULT_CHAIN_ID)],
     available: () => true,
   },
-  [ConnectorNames.WavesKeeper]: {
-    connector: connectors.wavesKepper,
-    blockchain: 'waves',
-    logo: WavesKeeperIcon,
-    networks: wavesNetworks,
-    available: () => Boolean(window.WavesKeeper),
-    extensionLink: WAVES_KEEPER_LINK,
-  },
   [ConnectorNames.Binance]: {
     connector: connectors.binance,
     blockchain: 'ethereum',
@@ -108,6 +100,13 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     networks: ethereumNetworks,
     available: () => Boolean(window.BinanceChain),
     extensionLink: BINANCE_LINK,
+  },
+  [ConnectorNames.WalletConnect]: {
+    connector: connectors.walletconnect,
+    blockchain: 'ethereum',
+    logo: WalletConnectIcon,
+    networks: [String(config.DEFAULT_CHAIN_ID)],
+    available: () => true,
   },
   ...(config.IS_DEV
     ? {
@@ -118,12 +117,13 @@ export const connectorsByName: Record<string, ConnectorByName> = {
           networks: wavesNetworks,
           available: () => true,
         },
-        [ConnectorNames.WalletConnect]: {
-          connector: connectors.walletconnect,
-          blockchain: 'ethereum',
-          logo: WalletConnectIcon,
-          networks: [String(config.DEFAULT_CHAIN_ID)],
-          available: () => true,
+        [ConnectorNames.WavesKeeper]: {
+          connector: connectors.wavesKepper,
+          blockchain: 'waves',
+          logo: WavesKeeperIcon,
+          networks: wavesNetworks,
+          available: () => Boolean(window.WavesKeeper),
+          extensionLink: WAVES_KEEPER_LINK,
         },
       }
     : {}),

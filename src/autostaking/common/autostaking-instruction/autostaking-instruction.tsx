@@ -12,8 +12,8 @@ export type AutostakingInstructionProps = {
 
 const INSTRUCTION = [
   {
-    title: 'What is auto-staking?',
-    text: 'Read our article and learn how our auto-staking feature works',
+    title: 'Auto-staking, explained',
+    text: 'The auto-staking feature helps increase the profitability (APY) of staking contracts across other DeFi protocols',
     link: (
       <Button
         color="green"
@@ -28,8 +28,8 @@ const INSTRUCTION = [
     ),
   },
   {
-    title: 'How to Enable auto-staking?',
-    text: 'Watch our complete tutorial, to make setting up auto-staking easy for you',
+    title: 'How to enable auto-staking in DeFiHelper',
+    text: 'Read or watch our detailed instructions on how to enable auto-staking in DeFiHelper',
     link: (
       <Button
         color="green"
@@ -44,8 +44,8 @@ const INSTRUCTION = [
     ),
   },
   {
-    title: 'Math behind DeFiHelper',
-    text: "Learn more about DFH's algorithm, and how it works",
+    title: 'Math behind auto-staking',
+    text: 'Learn about the specific formula behind our auto-staking algorithm',
     link: (
       <Button
         color="green"

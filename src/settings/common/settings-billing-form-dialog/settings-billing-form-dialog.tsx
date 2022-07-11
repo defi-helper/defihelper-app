@@ -1,6 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 
 import { useForm } from 'react-hook-form'
+import { analytics } from '~/analytics'
 import { Button } from '~/common/button'
 import { Dialog } from '~/common/dialog'
 import { NumericalInput } from '~/common/numerical-input'
@@ -18,9 +19,10 @@ export type SettingsBillingFormDialogProps = {
 
 export const SettingsBillingFormDialog: React.VFC<SettingsBillingFormDialogProps> =
   (props) => {
-    const { register, formState, handleSubmit } = useForm<FormValues>({
-      resolver: yupResolver(settingsBillingFormSchema),
-    })
+    const { register, formState, handleSubmit, getValues } =
+      useForm<FormValues>({
+        resolver: yupResolver(settingsBillingFormSchema),
+      })
 
     return (
       <Dialog className={styles.root}>
@@ -38,7 +40,19 @@ export const SettingsBillingFormDialog: React.VFC<SettingsBillingFormDialogProps
             error={Boolean(formState.errors.amount?.message)}
           />
           <div className={styles.buttons}>
-            <Button type="submit">Submit</Button>
+            <Button
+              type="submit"
+              onClick={() => {
+                analytics.log(
+                  'auto_staking_pop_up_top_up_your_defihelper_balance_submit_click',
+                  {
+                    amount: getValues('amount'),
+                  }
+                )
+              }}
+            >
+              Submit
+            </Button>
             <Button variant="outlined" onClick={props.onCancel}>
               Cancel
             </Button>

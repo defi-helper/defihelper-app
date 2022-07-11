@@ -221,7 +221,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
                     ),
                   })}
                 >
-                  {bignumberUtils.gt(apyboostDifference, 0) && '+'}
+                  {bignumberUtils.gt(apyboostDifference, '0.001') && '+'}
                   {bignumberUtils.formatMax(
                     bignumberUtils.mul(apyboostDifference, 100),
                     10000

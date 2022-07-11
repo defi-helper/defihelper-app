@@ -1,4 +1,5 @@
 import { useGate, useStore } from 'effector-react'
+import { analytics } from '~/analytics'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { pluralize } from '~/common/pluralize'
 import { Typography } from '~/common/typography'
@@ -27,6 +28,7 @@ export const AutomationProducts: React.VFC<AutomationProductsProps> = (
   const products = useStore(model.$products)
 
   const handleBuyProduct = (product: typeof products[number]) => async () => {
+    analytics.log(`automations_topup_${product.number}_notifications_click`)
     try {
       await model.buyProductFx({
         account: props.account,
@@ -35,8 +37,10 @@ export const AutomationProducts: React.VFC<AutomationProductsProps> = (
         product,
       })
 
+      analytics.log(`automations_topup_${product.number}_notifications_success`)
       props.onConfirm()
     } catch (error) {
+      analytics.log(`automations_topup_${product.number}_notifications_failure`)
       if (error instanceof Error) {
         console.error(error.message)
       }
