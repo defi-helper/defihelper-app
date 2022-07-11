@@ -45,6 +45,8 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
     openVideoDialog().catch(console.error)
   }
 
+  const apyboostDifference = bignumberUtils.minus(props.apyBoost, props.apy)
+
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <ButtonBase
@@ -106,12 +108,17 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
             how it works?
           </ButtonBase>
         </Typography>
-        <Typography variant="body2" className={styles.green}>
-          +{' '}
+        <Typography
+          variant="body2"
+          className={clsx(
+            bignumberUtils.gt(apyboostDifference, '0.001') && styles.green
+          )}
+        >
+          {bignumberUtils.gt(apyboostDifference, '0.001') && '+'}
           {bignumberUtils.formatMax(
-            bignumberUtils.mul(props.apyBoost, 100),
+            bignumberUtils.mul(apyboostDifference, 100),
             10000
-          )}{' '}
+          )}
           %
         </Typography>
       </div>
