@@ -126,6 +126,7 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
           await tx?.wait()
 
           tokens.retry()
+          toastsService.info('tokens approved!')
 
           return true
         } catch (error) {
@@ -173,12 +174,6 @@ export const StakingBuyLiquidityDialog: React.FC<StakingBuyLiquidityDialogProps>
 
       toastsService.error(message)
     }, [approveState.error, buyState.error])
-
-    useEffect(() => {
-      if (isApproved.value === false || isApproved.value === undefined) return
-
-      toastsService.info('tokens approved')
-    }, [isApproved.value])
 
     return (
       <Dialog className={styles.root}>

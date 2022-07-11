@@ -45,6 +45,7 @@ import * as stakingAutomatesModel from '~/staking/staking-automates/staking-auto
 
 export type AutostakingContractsProps = {
   className?: string
+  onChangeTab: () => void
 }
 
 const sortIcon = (
@@ -320,6 +321,8 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
         steps: deployAdapter.deploy,
       })
 
+      props.onChangeTab()
+
       const deployedContract = await deployModel.deployFx({
         proxyAddress: stepsResult.address,
         inputs: stepsResult.inputs,
@@ -362,7 +365,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
           protocolAdapter: contract.protocol.adapter,
           contractAdapter: contract.automate.autorestake,
           contractId: contract.id,
-          contractAddress: contract.address,
+          contractAddress: deployedContract.address,
           provider: currentWallet.provider,
           chainId: String(currentWallet.chainId),
           action: 'migrate',

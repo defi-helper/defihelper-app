@@ -324,7 +324,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             protocolAdapter: props.protocolAdapter,
             contractAdapter: contract.automate.autorestake,
             contractId: contract.id,
-            contractAddress: contract.address,
+            contractAddress: deployedContract.address,
             provider: currentWallet.provider,
             chainId: String(currentWallet.chainId),
             action: 'migrate',
