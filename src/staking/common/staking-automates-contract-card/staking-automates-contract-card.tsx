@@ -177,7 +177,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
             <Typography variant="body2" as="span">
               {props.restakeAt
-                ? dateUtils.format(props.restakeAt, 'DD MMM HH:mm')
+                ? dateUtils.format(props.restakeAt, 'DD/MM HH:mm')
                 : '-'}
             </Typography>
           </div>

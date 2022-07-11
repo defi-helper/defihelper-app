@@ -22,7 +22,6 @@ import { pluralize } from '~/common/pluralize'
 import { safeJsonParse } from '../safe-json-parse'
 import * as styles from './automation-card.css'
 import { CanDemo } from '~/auth/can-demo'
-import { dateUtils } from '~/common/date-utils'
 
 export type AutomationCardProps = {
   onEdit?: () => void
@@ -175,17 +174,6 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
         automation={automation}
         error={Boolean(props.skipReason)}
       />
-      {props.conditions.some(
-        (v) => v.type === 'ethereumOptimalAutomateRun'
-      ) && (
-        <Label
-          title="Next Auto-Stake"
-          value={props.restakeIn ? dateUtils.to(props.restakeIn) : '-'}
-          subtitle={networks}
-          automation={automation}
-          error={Boolean(props.skipReason)}
-        />
-      )}
       {Boolean(props.actions.length) && (
         <Label
           title="Action"
