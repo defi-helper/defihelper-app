@@ -92,10 +92,12 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
       async () => {
         try {
           if (!wallet?.account) return
-          analytics.log(`settings_${action}_network_${wallet?.chainId}`, {
+          analytics.log(`settings_${action}_network_${wallet?.chainId}_click`, {
             address: contract.contractWallet?.address,
             network: contract.contractWallet?.network,
             blockchain: 'ethereum',
+            provider: wallet.provider,
+            chainId: String(wallet.chainId),
           })
 
           const adapter = await model.fetchAdapterFx({
@@ -150,26 +152,27 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
           }
 
           analytics.log(
-            `settings_success_${action}_network_${wallet?.chainId}`,
+            `settings_${action}_network_${wallet?.chainId}_success`,
             {
               address: contract.contractWallet?.address,
               network: contract.contractWallet?.network,
               blockchain: 'ethereum',
+              provider: wallet.provider,
+              chainId: String(wallet.chainId),
             }
           )
         } catch (error) {
           if (error instanceof Error) {
             console.error(error.message)
+            analytics.log(
+              `settings_${action}_network_${wallet?.chainId}_failure`,
+              {
+                address: contract.contractWallet?.address,
+                network: contract.contractWallet?.network,
+                blockchain: 'ethereum',
+              }
+            )
           }
-
-          analytics.log(
-            `settings_failure_${action}_network_${wallet?.chainId}`,
-            {
-              address: contract.contractWallet?.address,
-              network: contract.contractWallet?.network,
-              blockchain: 'ethereum',
-            }
-          )
         }
       }
     const handleRunManually =

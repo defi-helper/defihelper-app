@@ -13,6 +13,7 @@ import { toastsService } from '~/toasts'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './staking-migrate-dialog.css'
 import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
+import { analytics } from '~/analytics'
 
 type FormValues = {
   amount: string
@@ -81,6 +82,7 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
   const [transferState, onTransfer] = useAsyncFn(
     async (formValues: FormValues) => {
       if (!props.methods) return false
+      analytics.log('auto_staking_migrate_dialog_transfer_click')
 
       const { canTransfer: canTransferMethod, transfer } = props.methods
 
@@ -93,11 +95,13 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
         const { tx } = await transfer(formValues.amount)
 
         await tx?.wait()
+        analytics.log('auto_staking_migrate_dialog_transfer_success')
 
         return true
       } catch (error) {
         if (error instanceof Error) {
           toastsService.error(error.message)
+          analytics.log('auto_staking_migrate_dialog_transfer_failure')
         }
 
         return false
@@ -108,6 +112,7 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
   const [depositState, onDeposit] = useAsyncFn(async () => {
     if (!props.methods) return false
+    analytics.log('auto_staking_migrate_dialog_deposit_click')
 
     const { deposit, canDeposit: canDepositMethod } = props.methods
 
@@ -124,11 +129,13 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
       balanceOf.retry()
 
       props.onLastStep()
+      analytics.log('auto_staking_migrate_dialog_deposit_success')
 
       return true
     } catch (error) {
       if (error instanceof Error) {
         toastsService.error(error.message)
+        analytics.log('auto_staking_migrate_dialog_deposit_failure')
       }
 
       return false
@@ -138,6 +145,7 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
   const [withdrawState, onWithdraw] = useAsyncFn(async () => {
     if (!props.methods) return false
 
+    analytics.log('auto_staking_migrate_dialog_withdraw_click')
     const { withdraw, canWithdraw: canWithdrawMethod } = props.methods
 
     try {
@@ -150,10 +158,12 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
       await tx?.wait()
 
+      analytics.log('auto_staking_migrate_dialog_withdraw_success')
       return true
     } catch (error) {
       if (error instanceof Error) {
         toastsService.error(error.message)
+        analytics.log('auto_staking_migrate_dialog_withdraw_failure')
       }
 
       return false

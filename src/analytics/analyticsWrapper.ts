@@ -5,21 +5,22 @@ import TagManager from 'react-gtm-module'
 import { config } from '~/config'
 
 const amplitudeInstance = amplitude.getInstance()
-if (config.AMPLITUDE) {
-  amplitudeInstance.init(config.AMPLITUDE)
+if (config.IS_DEV) {
+  amplitudeInstance.init('b9898c691a1821d6c098d311329f7b03')
+  TagManager.initialize({
+    gtmId: 'GTM-NWWFXMV',
+  })
 }
 
 export const analytics = {
   async log(event: string, params = {}) {
     try {
       await Promise.all([
-        ym('reachGoal', event),
-        ReactGA.ga('event', event),
-        amplitudeInstance.logEvent(event, params),
         TagManager.dataLayer({
           dataLayerName: event,
           dataLayer: params,
         }),
+        amplitudeInstance.logEvent(event, params),
       ])
     } catch (err) {
       console.warn('unable to send analytics goal')

@@ -54,11 +54,11 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
           type: integrationType,
         })
       } catch (error) {
-        analytics.log('settings_cex_connected_failure', {
-          type: integrationType,
-        })
         if (error instanceof Error) {
           console.error(error.message)
+          analytics.log('settings_cex_connected_failure', {
+            type: integrationType,
+          })
         }
       }
     }

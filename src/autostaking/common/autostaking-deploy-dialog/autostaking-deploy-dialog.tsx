@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useAsyncRetry } from 'react-use'
+import { analytics } from '~/analytics'
 
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
@@ -51,6 +52,7 @@ export const AutostakingDeployDialog: React.VFC<AutostakingDeployDialogProps> =
 
     const handleOnSubmit = handleSubmit(async (formValues) => {
       if (!currentStep) return
+      analytics.log(`autostaking_deploy_click`)
 
       const values = formValues[currentStep.name]
 
@@ -67,9 +69,12 @@ export const AutostakingDeployDialog: React.VFC<AutostakingDeployDialogProps> =
           address: await getAddress(),
           inputs: values,
         })
+
+        analytics.log(`autostaking_deploy_success`)
       } catch (error) {
         if (error instanceof Error) {
           toastsService.error(error.message)
+          analytics.log(`autostaking_deploy_failure`)
         }
       }
     })
