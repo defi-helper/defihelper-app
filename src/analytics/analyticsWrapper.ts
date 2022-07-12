@@ -11,7 +11,7 @@ if (config.AMPLITUDE) {
 export const analytics = {
   async log(
     event: string,
-    params: { [key: string]: string | boolean | number } = {}
+    params: { [key: string]: string | boolean | number | undefined | null } = {}
   ) {
     try {
       await Promise.all([
