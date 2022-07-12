@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import clsx from 'clsx'
 
 import { Head } from '~/common/head'
@@ -15,6 +15,7 @@ import { Icon } from '~/common/icon'
 import { Button } from '~/common/button'
 import * as styles from './trade.css'
 import { TradeChart } from './trade-chart'
+import { tradeApi } from './common/trade.api'
 
 export type TradeProps = unknown
 
@@ -42,6 +43,10 @@ export const Trade: React.VFC<TradeProps> = () => {
 
     cb()
   }
+
+  useEffect(() => {
+    tradeApi.exchanges().then(console.log)
+  }, [])
 
   const SelectComponents = {
     [Selects.SmartSell]: <TradeSmartSell />,
