@@ -9,7 +9,10 @@ if (config.AMPLITUDE) {
 }
 
 export const analytics = {
-  async log(event: string, params = {}) {
+  async log(
+    event: string,
+    params: { [key: string]: string | boolean | number } = {}
+  ) {
     try {
       await Promise.all([
         window.dataLayer.push({
