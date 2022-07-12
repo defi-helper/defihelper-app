@@ -11,7 +11,6 @@ import { Icon, IconProps } from '~/common/icon'
 import { useBodyScrollLock } from '~/common/hooks'
 import { SettingsTelegram } from '~/settings/settings-telegram'
 import * as styles from './app-layout.css'
-import { analytics } from '~/analytics'
 
 export type AppLayoutProps = {
   title?: React.ReactNode
