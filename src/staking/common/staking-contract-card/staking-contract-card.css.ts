@@ -23,6 +23,12 @@ export const tableCol = style({
   alignItems: 'center',
 })
 
+export const contractName = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 4,
+})
+
 export const coinIcons = style({
   display: 'inline-flex',
   alignItems: 'center',

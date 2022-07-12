@@ -16,7 +16,7 @@ export type AutostakingVideoDialogProps = {
   onConfirm: () => void
 }
 
-const VIDEO_UD = 'VYgoIHapVEM'
+const VIDEO_UD = 'DkIH_DMhgcs'
 
 export const AutostakingVideoDialog: React.VFC<AutostakingVideoDialogProps> = (
   props

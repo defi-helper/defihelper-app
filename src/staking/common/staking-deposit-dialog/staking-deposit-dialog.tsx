@@ -57,7 +57,7 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
 
   const transferred = useAsyncRetry(async () => {
     return props.methods?.transferred()
-  }, [props.methods])
+  }, [props.methods, currentTab])
 
   const canTransfer = useAsyncRetry(async () => {
     if (bignumberUtils.eq(amount, 0)) return true
@@ -118,6 +118,8 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
 
       balanceOf.retry()
 
+      props.onLastStep()
+
       return true
     } catch (error) {
       if (error instanceof Error) {
@@ -133,8 +135,16 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
   useEffect(() => {
     if (transferState.value) {
       setCurrentTab(Tabs.deposit)
-      transferred.retry()
     }
+
+    const timeout = setTimeout(() => {
+      if (transferState.value) {
+        balanceOf.retry()
+        transferred.retry()
+      }
+    }, 1000)
+
+    return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transferState.value])
 

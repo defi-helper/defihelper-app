@@ -19,6 +19,7 @@ export type AutostakingDeployDialogProps = {
   onConfirm: (formValues: { address: string; inputs: string[] }) => void
   onCancel: () => void
   steps: DeployStep[]
+  onSubmit?: () => void
 }
 
 const currentStepNumber = 0

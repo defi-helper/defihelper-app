@@ -97,6 +97,8 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
         await tx?.wait()
         analytics.log('auto_staking_migrate_dialog_transfer_success')
 
+        props.onLastStep()
+
         return true
       } catch (error) {
         if (error instanceof Error) {
@@ -159,6 +161,8 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
       await tx?.wait()
 
       analytics.log('auto_staking_migrate_dialog_withdraw_success')
+      props.onLastStep()
+
       return true
     } catch (error) {
       if (error instanceof Error) {
@@ -185,9 +189,16 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
   useEffect(() => {
     if (transferState.value) {
       setCurrentTab(Tabs.deposit)
-      balanceOf.retry()
-      transferred.retry()
     }
+
+    const timeout = setTimeout(() => {
+      if (transferState.value) {
+        balanceOf.retry()
+        transferred.retry()
+      }
+    }, 1000)
+
+    return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transferState.value])
 

@@ -8,6 +8,7 @@ export const title = style({
 
 export const root = style({
   minWidth: 900,
+  overflowX: 'auto',
 })
 
 export const row = style({
