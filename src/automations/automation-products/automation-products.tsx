@@ -40,9 +40,11 @@ export const AutomationProducts: React.VFC<AutomationProductsProps> = (
       analytics.log(`automations_topup_${product.number}_notifications_success`)
       props.onConfirm()
     } catch (error) {
-      analytics.log(`automations_topup_${product.number}_notifications_failure`)
       if (error instanceof Error) {
         console.error(error.message)
+        analytics.log(
+          `automations_topup_${product.number}_notifications_failure`
+        )
       }
     }
   }
