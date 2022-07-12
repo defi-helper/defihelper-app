@@ -4,8 +4,8 @@ import amplitude from 'amplitude-js'
 import { config } from '~/config'
 
 const amplitudeInstance = amplitude.getInstance()
-if (config.IS_DEV) {
-  amplitudeInstance.init('b9898c691a1821d6c098d311329f7b03')
+if (config.AMPLITUDE) {
+  amplitudeInstance.init(config.AMPLITUDE)
 }
 
 export const analytics = {

@@ -105,8 +105,6 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
   }
 
   const handleToggleDemo = () => {
-    console.warn('1232131231232')
-    analytics.log('sadsda_dasasd_dsaad')
     authModel.logoutFx()
 
     if (user?.role !== 'demo') {
