@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import clsx from 'clsx'
+import isEmpty from 'lodash.isempty'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { Can } from '~/auth'
@@ -74,17 +75,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
       role="button"
       tabIndex={0}
     >
-      <div className={styles.tableCol}>
-        {currentNetwork && (
-          <div className={styles.coinIcons}>
-            <StakeRewardTokens
-              stakeTokens={props.tokens.stake}
-              rewardTokens={props.tokens.reward}
-              size={24}
-              tokenClassName={styles.contractIconBg}
-            />
-          </div>
-        )}
+      <div className={styles.contractName}>
         <Typography variant="body2" as="div">
           {props.name}
           {props.deprecated && (
@@ -103,6 +94,16 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           </Can>
           {props.error}
         </Typography>
+        {currentNetwork &&
+          !isEmpty([...props.tokens.stake, ...props.tokens.reward]) && (
+            <div className={styles.coinIcons}>
+              <StakeRewardTokens
+                stakeTokens={props.tokens.stake}
+                rewardTokens={props.tokens.reward}
+                tokenClassName={styles.contractIconBg}
+              />
+            </div>
+          )}
       </div>
       <div>
         <Typography
