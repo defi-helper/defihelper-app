@@ -44,7 +44,7 @@ const MENU: MenuItem[] = [
     icon: 'grid',
   },
   {
-    title: 'Autostaking',
+    title: 'Boost your APY',
     path: paths.autostaking,
     icon: 'autostaking',
   },

@@ -87,6 +87,7 @@ export const StakingGovStakeDialog: React.VFC<StakingGovStakeDialogProps> = (
         await tx?.wait()
 
         balanceOf.retry()
+        toastsService.info('tokens approved!')
 
         return true
       } catch (error) {
@@ -129,12 +130,6 @@ export const StakingGovStakeDialog: React.VFC<StakingGovStakeDialogProps> = (
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApproved.value, approveState.value, amount])
-
-  useEffect(() => {
-    if (isApproved.value === false || isApproved.value === undefined) return
-
-    toastsService.info('tokens approved')
-  }, [isApproved.value])
 
   return (
     <Dialog className={styles.root}>

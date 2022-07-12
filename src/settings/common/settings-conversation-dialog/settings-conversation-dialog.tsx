@@ -7,7 +7,7 @@ export const SettingsConversationDialog: React.VFC<SettingsConversationDialogPro
   () => {
     return (
       <Dialog className={styles.root}>
-        please, continue the conversation with bot
+        Please do not forget to push the START button in telegram bot
       </Dialog>
     )
   }

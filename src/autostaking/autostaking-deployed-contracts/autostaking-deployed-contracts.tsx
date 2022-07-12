@@ -265,9 +265,8 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
         )}
         {isEmptyContracts && !loading && (
           <Typography variant="h4">
-            We couldn&apos;t find any of your contracts on other services. We
-            regularly check for outside contracts, and as soon as we find a
-            match, you will see your contracts here with the deposit option.
+            You don&apos;t have any deployed auto-staking contracts in
+            DeFiHelper. Please try to deploy one.
           </Typography>
         )}
         {!isEmptyContracts && (

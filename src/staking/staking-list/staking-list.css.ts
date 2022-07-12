@@ -109,18 +109,7 @@ export const tableHeader = style({
   color: theme.colors.textColorGrey,
   borderBottom: `1px solid ${theme.colors.border}`,
   zIndex: 1,
-
-  ':before': {
-    content: '""',
-    background: `${theme.colors.paper}`,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: -1,
-    transition: 'opacity .3s ease-in-out',
-  },
+  background: `${theme.colors.paper}`,
 })
 
 export const listItem = style({

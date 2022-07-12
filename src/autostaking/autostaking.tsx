@@ -31,6 +31,10 @@ export const Autostaking: React.VFC<AutostakingProps> = () => {
     setSearch(event.target.value)
   }
 
+  const handleChangeTab = () => {
+    setCurrentTab(0)
+  }
+
   useEffect(() => {
     setSearch('')
   }, [currentTab])
@@ -56,6 +60,8 @@ export const Autostaking: React.VFC<AutostakingProps> = () => {
   }, [currentTab])
 
   useEffect(() => {
+    if (!search) return
+
     attempt.current += 1
   }, [search])
 
@@ -88,9 +94,12 @@ export const Autostaking: React.VFC<AutostakingProps> = () => {
           </AutostakingTabs.HeaderRight>
         </AutostakingTabs.Header>
         <AutostakingDeployedContracts search={searchThrottled} />
-        <AutostakingMigrateContracts search={searchThrottled} />
+        <AutostakingMigrateContracts
+          search={searchThrottled}
+          onChangeTab={handleChangeTab}
+        />
       </AutostakingTabs>
-      <AutostakingContracts />
+      <AutostakingContracts onChangeTab={handleChangeTab} />
     </AppLayout>
   )
 }
