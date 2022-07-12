@@ -186,9 +186,20 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
               onLastStep,
             })
           }
+
+          analytics.log('auto_staking_migrate_tokens_success', {
+            contractAddress: contract.address,
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
+          })
         } catch (error) {
           if (error instanceof Error) {
             console.error(error.message)
+            analytics.log('auto_staking_migrate_tokens_failure', {
+              contractAddress: contract.address,
+              provider: currentWallet?.provider,
+              chainId: String(currentWallet?.chainId),
+            })
           }
         } finally {
           model.migratingEnd()
@@ -198,6 +209,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
     const handleAutostake =
       (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
       async () => {
+        analytics.log('auto_staking_migrate_tokens_click')
         model.migratingStart(contract.id)
 
         try {
@@ -366,6 +378,12 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
 
           analytics.onAutoStakingEnabled()
           toastsService.success('success!')
+
+          analytics.log('auto_staking_migrate_tokens_success', {
+            contractAddress: contract.address,
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
+          })
         } catch (error) {
           if (
             error instanceof Error &&
@@ -373,6 +391,12 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
           ) {
             toastsService.error(error.message)
           }
+
+          analytics.log('auto_staking_migrate_tokens_failure', {
+            contractAddress: contract.address,
+            provider: currentWallet?.provider,
+            chainId: String(currentWallet?.chainId),
+          })
         } finally {
           model.migratingEnd()
         }

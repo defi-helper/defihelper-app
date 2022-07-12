@@ -1,7 +1,6 @@
 import ym from 'react-yandex-metrika'
 import ReactGA from 'react-ga'
 import amplitude from 'amplitude-js'
-import TagManager from 'react-gtm-module'
 import { config } from '~/config'
 
 const amplitudeInstance = amplitude.getInstance()
@@ -13,13 +12,11 @@ export const analytics = {
   async log(event: string, params = {}) {
     try {
       await Promise.all([
-        ym('reachGoal', event),
-        ReactGA.ga('event', event),
-        amplitudeInstance.logEvent(event, params),
-        TagManager.dataLayer({
-          dataLayerName: event,
-          dataLayer: params,
+        window.dataLayer.push({
+          event,
+          ...params,
         }),
+        amplitudeInstance.logEvent(event, params),
       ])
     } catch (err) {
       console.warn('unable to send analytics goal')

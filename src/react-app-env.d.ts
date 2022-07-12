@@ -22,7 +22,7 @@ interface Window {
     ) => void
     request?: (arg: Record<string, unknown>) => Promise<void>
   }
-  dataLayer?: string[]
+  dataLayer: { string: unknown }[]
   ym?: (id: number, type: string, event: string) => void
   axios: unknown
   ethers: unknown
