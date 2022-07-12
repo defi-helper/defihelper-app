@@ -103,7 +103,7 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
       </div>
       <div className={styles.item}>
         <Typography variant="body2" className={styles.grey}>
-          Boosted APY{' '}
+          APY Boost{' '}
           <ButtonBase className={styles.howItWorks} onClick={handleShowVideo}>
             how it works?
           </ButtonBase>
