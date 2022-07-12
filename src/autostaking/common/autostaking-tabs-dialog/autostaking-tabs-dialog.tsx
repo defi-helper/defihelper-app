@@ -103,6 +103,8 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
 
         await tx?.wait()
 
+        props.onLastStep()
+
         return true
       } catch (error) {
         if (error instanceof Error) {

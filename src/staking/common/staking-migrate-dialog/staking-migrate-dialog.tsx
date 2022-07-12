@@ -94,6 +94,8 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
         await tx?.wait()
 
+        props.onLastStep()
+
         return true
       } catch (error) {
         if (error instanceof Error) {
@@ -149,6 +151,8 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
       const { tx } = await withdraw()
 
       await tx?.wait()
+
+      props.onLastStep()
 
       return true
     } catch (error) {
