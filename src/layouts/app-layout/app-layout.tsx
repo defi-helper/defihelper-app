@@ -11,6 +11,7 @@ import { Icon, IconProps } from '~/common/icon'
 import { useBodyScrollLock } from '~/common/hooks'
 import { SettingsTelegram } from '~/settings/settings-telegram'
 import * as styles from './app-layout.css'
+import { analytics } from '~/analytics'
 
 export type AppLayoutProps = {
   title?: React.ReactNode
@@ -104,6 +105,8 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
   }
 
   const handleToggleDemo = () => {
+    console.warn('1232131231232')
+    analytics.log('sadsda_dasasd_dsaad')
     authModel.logoutFx()
 
     if (user?.role !== 'demo') {
