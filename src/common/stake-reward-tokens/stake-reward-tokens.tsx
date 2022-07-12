@@ -94,12 +94,12 @@ const TokenIcon = (props: {
 }
 
 export const StakeRewardTokens: React.VFC<StakeRewardTokensProps> = (props) => {
-  const { size = 20 } = props
+  const { stakeTokens, rewardTokens, size = 20 } = props
 
   return (
     <span className={styles.tokens}>
       <span className={styles.tokens}>
-        {props.stakeTokens?.map((token, index) => {
+        {stakeTokens?.map((token, index) => {
           return (
             <TokenInfo
               key={String(index)}
@@ -110,14 +110,16 @@ export const StakeRewardTokens: React.VFC<StakeRewardTokensProps> = (props) => {
           )
         })}
       </span>
-      <Icon
-        icon="arrowLongRight"
-        width={21}
-        height={16}
-        className={styles.tokenIconArrow}
-      />
+      {(stakeTokens || []).length > 0 && (rewardTokens || []).length > 0 && (
+        <Icon
+          icon="arrowLongRight"
+          width={21}
+          height={16}
+          className={styles.tokenIconArrow}
+        />
+      )}
       <span className={styles.tokens}>
-        {props.rewardTokens?.map((token, index) => {
+        {rewardTokens?.map((token, index) => {
           return (
             <TokenInfo
               key={String(index)}
