@@ -114,12 +114,18 @@ export const AutostakingMigrateCard: React.VFC<AutostakingMigrateCardProps> = (
             bignumberUtils.gt(apyboostDifference, '0.001') && styles.green
           )}
         >
-          {bignumberUtils.gt(apyboostDifference, '0.001') && '+'}
-          {bignumberUtils.formatMax(
-            bignumberUtils.mul(apyboostDifference, 100),
-            10000
+          {bignumberUtils.gt(apyboostDifference, '0.001') ? (
+            <>
+              +
+              {bignumberUtils.formatMax(
+                bignumberUtils.mul(apyboostDifference, 100),
+                10000
+              )}
+              %
+            </>
+          ) : (
+            '0'
           )}
-          %
         </Typography>
       </div>
       <Button
