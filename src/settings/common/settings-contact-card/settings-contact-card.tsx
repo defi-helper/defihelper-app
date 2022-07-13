@@ -134,6 +134,16 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
           ))}
         </Dropdown>
       </div>
+
+      <div className={styles.timezone}>
+        <Typography variant="body2" as="div">
+          Current time zone
+        </Typography>
+
+        <Typography variant="body2" as="div">
+          {props.currentTimezone}
+        </Typography>
+      </div>
     </Paper>
   )
 }

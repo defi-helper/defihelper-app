@@ -45,6 +45,12 @@ export const switcher = style({
   gap: 12,
 })
 
+export const timezone = style({
+  display: 'flex',
+  justifyContent: 'space-between',
+  marginTop: 16,
+})
+
 export const dropdownItem = style({
   justifyContent: 'flex-start',
 
