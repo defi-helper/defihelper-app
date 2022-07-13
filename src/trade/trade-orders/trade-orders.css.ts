@@ -114,7 +114,7 @@ export const tableHeadingsButton = style([
 export const tableRow = style([
   row,
   {
-    padding: '0 16px',
+    padding: 16,
 
     selectors: {
       '&:not(:last-child)': {
@@ -186,6 +186,10 @@ export const contractBalanceIcon = style([
     height: 16,
   },
 ])
+
+export const contractStatus = style({
+  marginBottom: 10,
+})
 
 export const contractActions = style({
   display: 'flex',
