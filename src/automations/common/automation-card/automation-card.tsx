@@ -30,7 +30,6 @@ export type AutomationCardProps = {
   onActivate: () => void
   deleting?: boolean
   editing?: boolean
-  restakeIn: string | null
   id: string
   className?: string
   type: AutomateTriggerTypeEnum
@@ -40,7 +39,6 @@ export type AutomationCardProps = {
   wallet: string
   walletNetwork: string
   name: string
-  skipReason?: string
 }
 
 type LabelProps = {
@@ -48,7 +46,6 @@ type LabelProps = {
   value?: React.ReactNode
   subtitle?: React.ReactNode
   automation: boolean
-  skipReason?: string
   error?: boolean
 }
 
@@ -67,11 +64,6 @@ const Label: React.VFC<LabelProps> = (props) => {
       <Typography variant="body3" className={styles.subtitle}>
         {props.subtitle}
       </Typography>
-      {props.skipReason && (
-        <Typography variant="body3" className={styles.errorLabel}>
-          {props.skipReason}
-        </Typography>
-      )}
     </div>
   )
 }
@@ -172,35 +164,19 @@ export const AutomationCard: React.VFC<AutomationCardProps> = (props) => {
         )}`}
         subtitle={networks}
         automation={automation}
-        error={Boolean(props.skipReason)}
       />
       {Boolean(props.actions.length) && (
-        <Label
-          title="Action"
-          value={actions}
-          automation={automation}
-          error={Boolean(props.skipReason)}
-        />
+        <Label title="Action" value={actions} automation={automation} />
       )}
       <Label
         title="Wallet"
         value={props.wallet}
         subtitle={networksConfig[props.walletNetwork]?.title}
         automation={automation}
-        skipReason={props.skipReason}
       />
 
       <CanDemo targetArgument="onChange">
-        <Switch
-          checked={props.skipReason ? !props.skipReason : props.active}
-          onChange={props.skipReason ? undefined : props.onActivate}
-          components={{
-            thumb: props.skipReason ? <span>!</span> : undefined,
-            track: props.skipReason ? (
-              <span className={styles.errorTrack} />
-            ) : undefined,
-          }}
-        />
+        <Switch checked={props.active} onChange={props.onActivate} />
       </CanDemo>
     </Paper>
   )
