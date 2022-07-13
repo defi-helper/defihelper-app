@@ -263,6 +263,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
                   ({ alias }) => alias?.logoUrl ?? null
                 ) ?? []
               }
+              protocol={automatesContract.protocol}
               title={automatesContract.contract?.name ?? ''}
               address={automatesContract.address}
               network={automatesContract.contract?.network ?? ''}

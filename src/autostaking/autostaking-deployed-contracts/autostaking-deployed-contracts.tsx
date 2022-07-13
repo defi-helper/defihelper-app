@@ -316,6 +316,7 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
                   title={deployedContract.contract?.name ?? ''}
                   address={deployedContract.address}
                   network={deployedContract.contract?.network ?? ''}
+                  protocol={deployedContract.protocol}
                   tokensIcons={
                     deployedContract.contract?.tokens.stake.map(
                       ({ alias }) => alias?.logoUrl ?? null

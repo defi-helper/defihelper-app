@@ -41,7 +41,7 @@ const TokenInfo = (props: {
       </ButtonBase>
     }
     className={styles.tokenInfo}
-    trigger="click"
+    trigger="hover"
   >
     {(close) => (
       <>

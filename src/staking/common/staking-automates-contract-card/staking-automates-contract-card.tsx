@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 
+import { Link as ReactRouterLink } from 'react-router-dom'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { ButtonBase } from '~/common/button-base'
@@ -15,6 +16,8 @@ import { networksConfig } from '~/networks-config'
 import * as styles from './staking-automates-contract-card.css'
 import { CanDemo } from '~/auth/can-demo'
 import { dateUtils } from '~/common/date-utils'
+import { paths } from '~/paths'
+import { title } from '../staking-adapter-dialog/staking-adapter-dialog.css'
 
 export type StakingAutomatesContractCardProps = {
   className?: string
@@ -23,6 +26,7 @@ export type StakingAutomatesContractCardProps = {
   network: string
   blockchain: string
   balance: string
+  protocol: { id: string; name: string; adapter: string }
   onDeposit: () => void
   onRefund: () => void
   onMigrate?: () => void
@@ -165,6 +169,27 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
             <Typography variant="body2" as="span">
               ${bignumberUtils.format(props.balance)}
+            </Typography>
+          </div>
+          <div className={styles.row}>
+            <Typography
+              variant="body2"
+              as="span"
+              className={clsx(styles.infoTitle, styles.opacity)}
+            >
+              Protocol
+            </Typography>
+            <Typography variant="body2" as="span">
+              <Link
+                as={ReactRouterLink}
+                to={
+                  props.protocol.adapter === 'debankByApiReadonly'
+                    ? paths.protocols.detailReadonly(props.protocol.id)
+                    : paths.protocols.detail(props.protocol.id)
+                }
+              >
+                {props.protocol.name}
+              </Link>
             </Typography>
           </div>
           <div className={styles.row}>

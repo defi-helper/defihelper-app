@@ -5906,7 +5906,7 @@ export type StakingAutomatesContractFragmentFragment = {
 > & {
     protocol: { __typename?: 'ProtocolType' } & Pick<
       ProtocolType,
-      'adapter' | 'name'
+      'id' | 'adapter' | 'name'
     >
     contract?: Maybe<
       { __typename?: 'ContractType' } & Pick<
