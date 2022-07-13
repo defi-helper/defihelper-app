@@ -1,30 +1,55 @@
+import axios from 'axios'
+
 const ACCESS_TOKEN =
-  'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIyOWJlYjY2Mi05N2M1LTQ3OTUtOTUzNS00YWUyMWRhY2E0YjciLCJLZXlUeXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU3NjQ4MjUwLCJpc3MiOiJib29raXRlLmF1dGguc2VydmljZSJ9.ntpZ4mNSSkp8HBSYS0OSN-0pzi6qnH_OAOyhj_UdNIZyqRWmFkLODtYtick2S0EahqrfaMBZpGggZdt0ZE7usMuunKJN0Ta8OzQYT-uL3bDM09n2ABewB2p8ERRRwKFb9MUK9BMAPu1w8tyN-pLrRVYI9pncKEqE8BbxX7Foz-y3Puyzl6yPEuNTo8xyfhkmswJ6_lHzYJBUEQO2_572BRw0bpUqsbQ1bZePivykxvJfVJJWTRz6wzZZnuqISuXKtWohh3D1oCZ46vhoNb_fr7OJPwrDPvbkTZoRK7UhJQOEOyNjozWykDgiPAe5A5qy9EqqOgJwSuhQnPx3x9G8Aw'
+  'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIyOWJlYjY2Mi05N2M1LTQ3OTUtOTUzNS00YWUyMWRhY2E0YjciLCJLZXlUeXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU3NzI4MDk2LCJpc3MiOiJib29raXRlLmF1dGguc2VydmljZSJ9.tvfGJmP_z5cnHsgD5ZTQABd_YyDGYGBJtkqItPRwmD168kkbaQ2R6UV0kiA_6GGQ4l578jguE9PF4hE_dZa-2PW4UkOe4ha1mX9CTWed-8n9ZIFaQkrBKjH5srnIiZriFThn4AhQeDv0MwCbgHBuakbzT9kH-lRPGEqoyT-W2BTzwfm-LGiP7WUfjGe8U0esgTrB3UqDZK7TxtntXvu2_UNEcrUWSnm0EuaV2NCZlLPFV8gpdB5kF5UsVe2qp0W2FE0h_1XdSB0j823Hku7j69RZCYfzm-ai25VxkCxt2fPFqvh-fl0cb9KNSuyyrp6DtaEZCxSuRxiBueu_7e6ghQ'
 
-const makeFetch = (url: string) => async (path: string) => {
-  const response = await fetch(`${url}${path}`, {
-    headers: {
-      Authorization: `Bearer ${ACCESS_TOKEN}`,
-    },
-  })
+const apiV1 = axios.create({
+  baseURL: 'https://whattofarm.io/ext-api/v1',
+  headers: {
+    Authorization: `Bearer ${ACCESS_TOKEN}`,
+  },
+})
 
-  return response.json()
+const apiV2 = axios.create({
+  baseURL: 'https://whattofarm.io/api/v2/',
+  headers: {
+    Authorization: `Bearer ${ACCESS_TOKEN}`,
+  },
+})
+
+type Exchange = {
+  DexAddress: string
+  Name: string
 }
 
-const v1 = makeFetch('https://whattofarm.io/ext-api/v1/')
-
-const v2 = makeFetch('https://whattofarm.io/api/v2/')
+type Response<T> = { code: 200 | 500 | 405; data?: T; message?: string }
 
 export const tradeApi = {
-  exchanges: () => v1('dex-info?networks=eth'),
+  exchanges: () =>
+    apiV1
+      .get<Response<Exchange[]>>('dex-info?networks=eth')
+      .then(({ data }) => data),
 
-  pairs: () =>
-    v1(
-      'pair-stat?network=eth&page=1&size=100&minLiquidity=10000&sortField=liquidity&sortDirection=desc'
-    ),
+  pairs: (
+    payload: {
+      excludedPairAddresses: string[]
+      pairAddresses: string[]
+    } = {
+      excludedPairAddresses: [],
+      pairAddresses: [],
+    }
+  ) =>
+    apiV1
+      .post<Response<{ list: any[] }>>(
+        'pair-stat?network=eth&page=1&size=100&minLiquidity=10000&sortField=liquidity&sortDirection=desc',
+        payload
+      )
+      .then(({ data }) => data),
 
   history: () =>
-    v2(
-      'open/chart/pair/history?symbol=0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE-USD&resolution=1&from=1656547469&to=1657627469&countback=18000'
-    ),
+    apiV2
+      .get(
+        'open/chart/pair/history?symbol=0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE-USD&resolution=1&from=1656547469&to=1657627469&countback=18000'
+      )
+      .then(({ data }) => data),
 }

@@ -158,3 +158,19 @@ export const approveTransactions = style([
     color: theme.colors.textColorGrey,
   },
 ])
+
+export const pairIcon = style({
+  width: 24,
+  height: 24,
+  verticalAlign: 'middle',
+
+  selectors: {
+    '&:not(:first-child)': {
+      marginLeft: -4,
+    },
+
+    '&:last-of-type': {
+      marginRight: 8,
+    },
+  },
+})
