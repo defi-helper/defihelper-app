@@ -40,6 +40,7 @@ import * as styles from './autostaking-migrate-contracts.css'
 export type AutostakingMigrateContractsProps = {
   className?: string
   search: string
+  onChangeTab: () => void
 }
 
 export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsProps> =
@@ -159,23 +160,14 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
 
           if (!adapter) return toastsService.error('adapter not found')
 
-          const findedWallet = wallets.find((wallet) => {
-            const sameAddreses =
-              String(currentWallet.chainId) === 'main'
-                ? currentWallet.account === wallet.address
-                : currentWallet.account?.toLowerCase() === wallet.address
+          const wallet = deployedContract.contractWallet
 
-            return (
-              sameAddreses && String(currentWallet.chainId) === wallet.network
-            )
-          })
-
-          if (!findedWallet) return toastsService.error('wrong wallet')
+          if (!wallet) return toastsService.error('wrong wallet')
 
           const onLastStep = () => {
             automatesModel
               .scanWalletMetricFx({
-                walletId: findedWallet.id,
+                walletId: wallet.id,
                 contractId: contract.id,
               })
               .catch(console.error)
@@ -194,9 +186,20 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
               onLastStep,
             })
           }
+
+          analytics.log('auto_staking_migrate_tokens_success', {
+            contractAddress: contract.address,
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
+          })
         } catch (error) {
           if (error instanceof Error) {
             console.error(error.message)
+            analytics.log('auto_staking_migrate_tokens_failure', {
+              contractAddress: contract.address,
+              provider: currentWallet?.provider,
+              chainId: String(currentWallet?.chainId),
+            })
           }
         } finally {
           model.migratingEnd()
@@ -206,6 +209,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
     const handleAutostake =
       (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
       async () => {
+        analytics.log('auto_staking_migrate_tokens_click')
         model.migratingStart(contract.id)
 
         try {
@@ -294,6 +298,8 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
             steps: deployAdapter.deploy,
           })
 
+          props.onChangeTab()
+
           const deployedContract = await deployModel.deployFx({
             proxyAddress: stepsResult.address,
             inputs: stepsResult.inputs,
@@ -341,12 +347,15 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
             action: 'migrate',
           })
 
-          if (!stakingAutomatesAdapter) throw new Error('something went wrong')
+          const { contractWallet } = deployedContract
+
+          if (!stakingAutomatesAdapter || !contractWallet)
+            throw new Error('something went wrong')
 
           const cb = () => {
             automatesModel
               .scanWalletMetricFx({
-                walletId: createdTrigger.wallet.id,
+                walletId: contractWallet.id,
                 contractId: contract.id,
               })
               .catch(console.error)
@@ -369,6 +378,12 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
 
           analytics.onAutoStakingEnabled()
           toastsService.success('success!')
+
+          analytics.log('auto_staking_migrate_tokens_success', {
+            contractAddress: contract.address,
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
+          })
         } catch (error) {
           if (
             error instanceof Error &&
@@ -376,6 +391,12 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
           ) {
             toastsService.error(error.message)
           }
+
+          analytics.log('auto_staking_migrate_tokens_failure', {
+            contractAddress: contract.address,
+            provider: currentWallet?.provider,
+            chainId: String(currentWallet?.chainId),
+          })
         } finally {
           model.migratingEnd()
         }

@@ -81,6 +81,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
   const handleDeposit =
     (wallet: typeof wallets.nonEmpty[number]) => async () => {
       try {
+        analytics.log('settings_wallet_defihelper_balance_top_up_click')
         await switchNetwork(wallet.network)
 
         if (!currentWallet?.account) return
@@ -95,8 +96,12 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
           provider: currentWallet.provider,
         })
 
-        analytics.log('auto_staking_pop_up_success_defihelper_balance_top_up', {
+        analytics.log('settings_wallet_defihelper_balance_top_up_success', {
+          blockchain: wallet.blockchain,
           amount: result.amount,
+          walletAddress: currentWallet.account,
+          chainId: String(currentWallet.chainId),
+          provider: currentWallet.provider,
         })
         await openSuccess({
           type: TransactionEnum.deposit,
@@ -104,13 +109,13 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
+          analytics.log('settings_wallet_defihelper_balance_top_up_failure')
         }
-
-        analytics.log('auto_staking_pop_up_unsuccess_defihelper_balance_top_up')
       }
     }
   const handleRefund =
     (wallet: typeof wallets.nonEmpty[number]) => async () => {
+      analytics.log('settings_wallet_defihelper_balance_refund_click')
       try {
         await switchNetwork(wallet.network)
 
@@ -129,9 +134,17 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
         await openSuccess({
           type: TransactionEnum.refund,
         })
+        analytics.log('settings_wallet_defihelper_balance_refund_success', {
+          blockchain: wallet.blockchain,
+          amount: result.amount,
+          walletAddress: currentWallet.account,
+          chainId: String(currentWallet.chainId),
+          provider: currentWallet.provider,
+        })
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
+          analytics.log('settings_wallet_defihelper_balance_refund_failure')
         }
       }
     }

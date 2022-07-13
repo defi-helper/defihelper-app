@@ -94,7 +94,10 @@ export const Autostaking: React.VFC<AutostakingProps> = () => {
           </AutostakingTabs.HeaderRight>
         </AutostakingTabs.Header>
         <AutostakingDeployedContracts search={searchThrottled} />
-        <AutostakingMigrateContracts search={searchThrottled} />
+        <AutostakingMigrateContracts
+          search={searchThrottled}
+          onChangeTab={handleChangeTab}
+        />
       </AutostakingTabs>
       <AutostakingContracts onChangeTab={handleChangeTab} />
     </AppLayout>

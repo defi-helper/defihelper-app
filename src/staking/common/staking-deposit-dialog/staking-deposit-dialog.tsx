@@ -118,6 +118,8 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
 
       balanceOf.retry()
 
+      props.onLastStep()
+
       return true
     } catch (error) {
       if (error instanceof Error) {

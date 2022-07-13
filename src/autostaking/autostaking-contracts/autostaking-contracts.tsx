@@ -66,10 +66,11 @@ const sortIcon = (
 
 const text = (
   <>
-    If there are no funds on the contract, we calculate an APY Boost of $10,000.
+    If there are no funds on the contract, we calculate an Boosted APY of
+    $10,000.
     <br />
     <br />
-    You&apos; ll see the real data after you run auto-staking on this contract.
+    You&apos;ll see the real data after you transfer money to this contract.
   </>
 )
 
@@ -565,7 +566,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                       : SortOrderEnum.Desc,
                 })}
               >
-                APY Boost{' '}
+                Boosted APY{' '}
                 {sortBy.column ===
                   ContractListSortInputTypeColumnEnum.AprBoosted &&
                   sortIcon(
