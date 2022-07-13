@@ -590,6 +590,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                   variant="body2"
                   className={styles.contractCardName}
                 >
+                  <Typography variant="inherit">{contract.name}</Typography>
                   <span className={styles.contractCardIcons}>
                     {networksConfig[contract.network]?.icon ? (
                       <Icon
@@ -609,7 +610,6 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                       tokenClassName={styles.contractIconBg}
                     />
                   </span>
-                  <Typography variant="inherit">{contract.name}</Typography>
                 </Typography>
                 <Typography
                   variant="body2"

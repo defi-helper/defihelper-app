@@ -177,6 +177,9 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                             variant="body2"
                             className={styles.contractCardName}
                           >
+                            <Typography variant="inherit">
+                              {contract.name}
+                            </Typography>
                             <span className={styles.contractCardIcons}>
                               {networksConfig[contract.network]?.icon ? (
                                 <Icon
@@ -201,9 +204,6 @@ export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
                                 rewardTokens={contract.tokens.reward}
                               />
                             </span>
-                            <Typography variant="inherit">
-                              {contract.name}
-                            </Typography>
                           </Typography>
                           <Typography
                             variant="body2"
