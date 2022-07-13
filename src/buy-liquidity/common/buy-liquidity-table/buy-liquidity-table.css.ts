@@ -213,8 +213,8 @@ export const contractCard = style([
 
 export const contractCardName = style({
   display: 'flex',
+  flexDirection: 'column',
   gap: 8,
-  alignItems: 'center',
   marginBottom: 8,
 
   '@media': {

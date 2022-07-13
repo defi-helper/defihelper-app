@@ -103,8 +103,8 @@ export const apyBoost = style({
 export const contractCardName = style({
   display: 'flex',
   gap: 8,
-  alignItems: 'center',
   marginBottom: 8,
+  flexDirection: 'column',
 
   '@media': {
     [theme.mediaQueries.down(959)]: {
