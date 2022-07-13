@@ -73,33 +73,30 @@ export const Dropdown: React.VFC<DropdownProps> = (props) => {
 
   return (
     <>
-      {cloneElement(
-        <>
-          {control}
-          <Portal>
-            <Paper
-              radius={8}
-              ref={popperRef}
-              {...popperAttributes}
-              style={popperStyles}
-              data-open="true"
-              className={clsx(styles.dropdown, props.className)}
-            >
-              {children}
-            </Paper>
-          </Portal>
-        </>,
-        {
-          ...control.props,
-          onMouseUp:
-            trigger === 'click' || !isDesktop ? handleOnTrigger : undefined,
-          onMouseEnter:
-            isDesktop && trigger === 'hover' ? handleOnTrigger : undefined,
-          onMouseLeave:
-            isDesktop && trigger === 'hover'
-              ? handleOnTrigger.bind(null, null)
-              : undefined,
-        }
+      {cloneElement(control, {
+        ...control.props,
+        onMouseUp:
+          trigger === 'click' || !isDesktop ? handleOnTrigger : undefined,
+        onMouseEnter:
+          isDesktop && trigger === 'hover' ? handleOnTrigger : undefined,
+        onMouseLeave:
+          isDesktop && trigger === 'hover'
+            ? handleOnTrigger.bind(null, null)
+            : undefined,
+      })}
+      {referenceElement && (
+        <Portal>
+          <Paper
+            radius={8}
+            ref={popperRef}
+            {...popperAttributes}
+            style={popperStyles}
+            data-open="true"
+            className={clsx(styles.dropdown, props.className)}
+          >
+            {children}
+          </Paper>
+        </Portal>
       )}
     </>
   )

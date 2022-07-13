@@ -17,7 +17,6 @@ import * as styles from './staking-automates-contract-card.css'
 import { CanDemo } from '~/auth/can-demo'
 import { dateUtils } from '~/common/date-utils'
 import { paths } from '~/paths'
-import { title } from '../staking-adapter-dialog/staking-adapter-dialog.css'
 
 export type StakingAutomatesContractCardProps = {
   className?: string
@@ -26,7 +25,7 @@ export type StakingAutomatesContractCardProps = {
   network: string
   blockchain: string
   balance: string
-  protocol: { id: string; name: string; adapter: string }
+  protocol?: { id: string; name: string; adapter: string }
   onDeposit: () => void
   onRefund: () => void
   onMigrate?: () => void
@@ -171,15 +170,15 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               ${bignumberUtils.format(props.balance)}
             </Typography>
           </div>
-          <div className={styles.row}>
-            <Typography
-              variant="body2"
-              as="span"
-              className={clsx(styles.infoTitle, styles.opacity)}
-            >
-              Protocol
-            </Typography>
-            <Typography variant="body2" as="span">
+          {props.protocol && (
+            <div className={styles.row}>
+              <Typography
+                variant="body2"
+                as="span"
+                className={clsx(styles.infoTitle, styles.opacity)}
+              >
+                Protocol
+              </Typography>
               <Link
                 as={ReactRouterLink}
                 to={
@@ -190,8 +189,8 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               >
                 {props.protocol.name}
               </Link>
-            </Typography>
-          </div>
+            </div>
+          )}
           <div className={styles.row}>
             <Typography
               variant="body2"
