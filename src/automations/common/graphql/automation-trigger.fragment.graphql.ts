@@ -20,7 +20,6 @@ export const AUTOMATION_TRIGGER_FRAGMENT = gql`
     name
     active
     lastCallAt
-    restakeAt
     createdAt
     conditions(
       filter: $conditionsFilter

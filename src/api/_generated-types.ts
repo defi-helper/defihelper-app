@@ -126,8 +126,6 @@ export type AutomateActionType = {
   paramsDescription: Scalars['String']
   /** Execution priority (ascending) */
   priority: Scalars['Int']
-  /** Skip reason */
-  skipReason?: Maybe<AutomateSkipReasonEnum>
   /** Created at date */
   createdAt: Scalars['DateTimeType']
 }
@@ -207,8 +205,6 @@ export type AutomateConditionType = {
   priority: Scalars['Int']
   /** Created at date */
   createdAt: Scalars['DateTimeType']
-  /** Next restake date */
-  restakeAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export enum AutomateConditionTypeEnum {
@@ -348,11 +344,6 @@ export type AutomateDescriptionType = {
   description: Scalars['String']
 }
 
-export enum AutomateSkipReasonEnum {
-  LowFeeFunds = 'LowFeeFunds',
-  NotAvailableNotification = 'NotAvailableNotification',
-}
-
 export type AutomateTriggerCallHistoryListFilterInputType = {
   hasError?: Maybe<Scalars['Boolean']>
 }
@@ -457,8 +448,6 @@ export type AutomateTriggerType = {
   lastCallAt?: Maybe<Scalars['DateTimeType']>
   /** Created at date */
   createdAt: Scalars['DateTimeType']
-  /** Next restake date */
-  restakeAt?: Maybe<Scalars['DateTimeType']>
   conditions: AutomateConditionListType
   actions: AutomateActionListType
   callHistory: AutomateTriggerCallHistoryListQuery
@@ -1297,6 +1286,7 @@ export type Mutation = {
   automateContractCreate: AutomateContractType
   automateContractUpdate: AutomateContractType
   automateContractDelete: Scalars['Boolean']
+  tradingAuth?: Maybe<TradingAuthType>
 }
 
 export type MutationUserUpdateArgs = {
@@ -2753,6 +2743,13 @@ export type TokenUpdateInputType = {
   priceFeed?: Maybe<TokenPriceFeedInputType>
 }
 
+export type TradingAuthType = {
+  __typename?: 'TradingAuthType'
+  accessToken: Scalars['String']
+  refreshToken: Scalars['String']
+  tokenExpired: Scalars['DateTimeType']
+}
+
 export type TreasuryType = {
   __typename?: 'TreasuryType'
   portfoliosCount: Scalars['Int']
@@ -3292,6 +3289,8 @@ export type UserType = {
   id: Scalars['UuidType']
   /** Access role */
   role: UserRoleEnum
+  /** User portfolio name */
+  name: Scalars['String']
   /** Current user locale */
   locale: LocaleEnum
   /** Current user timezone */
@@ -3355,6 +3354,7 @@ export type UserTypeTokenMetricChartArgs = {
 
 export type UserUpdateInputType = {
   role?: Maybe<UserRoleEnum>
+  name?: Maybe<Scalars['String']>
   locale?: Maybe<LocaleEnum>
 }
 
@@ -3905,13 +3905,7 @@ export type AutomationActionFragmentFragment = {
   __typename?: 'AutomateActionType'
 } & Pick<
   AutomateActionType,
-  | 'id'
-  | 'type'
-  | 'params'
-  | 'paramsDescription'
-  | 'priority'
-  | 'createdAt'
-  | 'skipReason'
+  'id' | 'type' | 'params' | 'paramsDescription' | 'priority' | 'createdAt'
 >
 
 export type MonitoringAutomationsAutorestakeCreationHistoryQueryVariables =
@@ -4222,14 +4216,7 @@ export type AutomationTriggerFragmentFragment = {
   __typename?: 'AutomateTriggerType'
 } & Pick<
   AutomateTriggerType,
-  | 'id'
-  | 'type'
-  | 'params'
-  | 'name'
-  | 'active'
-  | 'lastCallAt'
-  | 'restakeAt'
-  | 'createdAt'
+  'id' | 'type' | 'params' | 'name' | 'active' | 'lastCallAt' | 'createdAt'
 > & {
     wallet: { __typename?: 'WalletBlockchainType' } & Pick<
       WalletBlockchainType,
