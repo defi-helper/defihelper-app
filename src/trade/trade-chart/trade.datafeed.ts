@@ -34,6 +34,8 @@ const configurationData = {
   supported_resolutions: ['1D', '1W', '1M'],
 }
 
+const cache = new Map()
+
 export default {
   onReady: (callback: (value: unknown) => void) => {
     console.log('[onReady]: Method call')
@@ -78,6 +80,8 @@ export default {
     console.log('[getBars]: Method call', symbolInfo, resolution, from, to)
 
     try {
+      if (cache.has(symbolInfo.ticker)) return
+
       const data = await tradeApi.history(symbolInfo.ticker)
 
       const bars: Array<{
@@ -95,6 +99,8 @@ export default {
         time: Math.floor(item * 1000),
         volume: data.v[index] as number,
       }))
+
+      cache.set(symbolInfo.ticker, bars)
 
       if (bars.length < 1) {
         onHistoryCallback([], { noData: true })

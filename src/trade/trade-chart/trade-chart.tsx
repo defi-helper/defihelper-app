@@ -30,6 +30,7 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
         'header_symbol_search',
         'header_indicators',
         'header_compare',
+        'use_localstorage_for_settings',
       ],
     })
 

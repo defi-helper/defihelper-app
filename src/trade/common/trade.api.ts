@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const ACCESS_TOKEN =
-  'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIyOWJlYjY2Mi05N2M1LTQ3OTUtOTUzNS00YWUyMWRhY2E0YjciLCJLZXlUeXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU3ODA5MzI0LCJpc3MiOiJib29raXRlLmF1dGguc2VydmljZSJ9.gsIhvd36NZXblJ0zOWvhzNCNWPH3ITcMv70qLWnwPERqo0oGow_ydhBAw29iF3xZqoDQZ767cCe8prBknPcQI4h8bXlmwViM8vaTv1Q7TMnYsw9KORbiMI9BxHyVIaWzl_YPlWKGtxOQM2d2J0LT6KWsPa4ghh1Iv5y_VUWRuXBiXXhZLn67Nzv8fXlrxm-tFVMlsZDKLjh8kMc7o4cvRFGZclSd4ImrUtC3FuQAhaJlK3Wf3Gi0Coyry0BSIaVoLMC8ziB2gQ50uYF-I8DwocqzrbIQS9-cXaYemmLH9kBiuHlYisJ8FxVF_VI_ZA1CdK-JFUctSdb9dbYrDa3mJQ'
+  'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIyOWJlYjY2Mi05N2M1LTQ3OTUtOTUzNS00YWUyMWRhY2E0YjciLCJLZXlUeXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU3ODEyNjQwLCJpc3MiOiJib29raXRlLmF1dGguc2VydmljZSJ9.Qgcgf_trNySofK5nE8CQvhcWuZe41xukcrbFlhGiyBU2sSYolBpOEQrWuqEZHHel_kQtOEaLHKDBBvITPJHi9Cp78sKmO3ued-t1vyzNWo1n_upiRjdB1c3xlOpZp_ZExn0B_4SaZegkjeEy_bmytf1WlndqgeDcgnJ4y9i7sFUyx3GpjkmgYNYmDJsNtDjdYGiDo_6RLeYc0LnthSl_prpdeZ35zGW1MUYFzxuYfgqTik-YNmNi3MOdOwks1AaajgDvsmbzhNTauvof3XpJnNRoEB8jvfYsyati7RqQrCJuAQJ9vHgDx-NHzC7nYpSDOF5EhE1iockSfWcpbR8pNg'
 
 const apiV1 = axios.create({
   baseURL: 'https://whattofarm.io/ext-api/v1',
@@ -49,6 +49,7 @@ export const tradeApi = {
 
   history: (address: string) =>
     apiV2
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .get<any>(
         `open/chart/pair/history?symbol=${address}-USD&resolution=60&from=1656727091&to=1657807091&countback=300`
       )
