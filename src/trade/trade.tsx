@@ -36,7 +36,8 @@ enum Selects {
 export const Trade: React.VFC<TradeProps> = () => {
   const [currentSelect, setCurrentSelect] = useState(Selects.BuySell)
   const [currentTab, setCurrentTab] = useState(Tabs.Buy)
-  const [currentExchange, setCurrentExchange] = useState<string>('')
+  const [currentExchange, setCurrentExchange] = useState('')
+  const [currentPair, setCurrentPair] = useState('')
 
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
@@ -51,18 +52,24 @@ export const Trade: React.VFC<TradeProps> = () => {
   const handleChangeExchange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentExchange(event.target.value)
   }
+  const handleChangePair = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentPair(event.target.value)
+  }
 
   const exchanges = useStore(model.$exchanges)
   const pairs = useStore(model.$pairs)
   const wallets = useStore(settingsWalletModel.$wallets)
+  const history = useStore(model.$history)
 
   useEffect(() => {
     model.fetchExchangesFx()
   }, [])
 
   useEffect(() => {
-    model.fetchHistoryFx()
-  }, [])
+    if (!currentPair) return
+
+    model.fetchHistoryFx(currentPair)
+  }, [currentPair])
 
   useEffect(() => {
     model.fetchPairsFx()
@@ -129,10 +136,14 @@ export const Trade: React.VFC<TradeProps> = () => {
             </SelectOption>
           ))}
         </Select>
-        <Select label="Trading Pair">
+        <Select
+          label="Trading Pair"
+          value={currentPair}
+          onChange={handleChangePair}
+        >
           {pairs.map((pair) => (
             <SelectOption
-              value={pair.pairInfo?.poolAddress}
+              value={pair.pairInfo?.address}
               key={pair.pairInfo?.poolAddress + pair.pairInfo?.ticker}
             >
               <img
@@ -185,7 +196,7 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Typography>
             </Typography>
           </div>
-          <TradeChart className={styles.chartInner} />
+          <TradeChart className={styles.chartInner} data={history} />
         </Paper>
         <Paper radius={8} className={styles.selects}>
           <div className={styles.tradeSelectHeader}>

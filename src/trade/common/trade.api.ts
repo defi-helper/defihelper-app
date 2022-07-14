@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const ACCESS_TOKEN =
-  'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIyOWJlYjY2Mi05N2M1LTQ3OTUtOTUzNS00YWUyMWRhY2E0YjciLCJLZXlUeXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU3NzI4MDk2LCJpc3MiOiJib29raXRlLmF1dGguc2VydmljZSJ9.tvfGJmP_z5cnHsgD5ZTQABd_YyDGYGBJtkqItPRwmD168kkbaQ2R6UV0kiA_6GGQ4l578jguE9PF4hE_dZa-2PW4UkOe4ha1mX9CTWed-8n9ZIFaQkrBKjH5srnIiZriFThn4AhQeDv0MwCbgHBuakbzT9kH-lRPGEqoyT-W2BTzwfm-LGiP7WUfjGe8U0esgTrB3UqDZK7TxtntXvu2_UNEcrUWSnm0EuaV2NCZlLPFV8gpdB5kF5UsVe2qp0W2FE0h_1XdSB0j823Hku7j69RZCYfzm-ai25VxkCxt2fPFqvh-fl0cb9KNSuyyrp6DtaEZCxSuRxiBueu_7e6ghQ'
+  'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIyOWJlYjY2Mi05N2M1LTQ3OTUtOTUzNS00YWUyMWRhY2E0YjciLCJLZXlUeXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU3NzQ5MTAwLCJpc3MiOiJib29raXRlLmF1dGguc2VydmljZSJ9.RjS-R9xewiy9yilX9sWiP4Gj5qZG1wr7qMaCMCnixb-B4944zx5epSmp6RuNhYag6ZzZYFOmzH66XJM8-UUumgqqjbE5Qu9TLoslA7lyL9N8PNm19g1qBGr9ZYrIjmxByy6yfAZxpJSj4LZsAl5Aim4eaAudBKNRerqhPvVa8dq1-N8ZZcSi9ddyAD4SNb-1YOy8Y-FQxk3jnPdQQiMA-gxiQ-WudZpAnYPo0thlh5xNRUxysBKHczqp1x80hQEZ6DZEtO4mywmWyva4ktN16qRxJ2GRPwSvcinVQSJGfktfxGVqx9sL6NSNYq0pmQEtNGpXCX3Zc_YW3e-ewHvfyA'
 
 const apiV1 = axios.create({
   baseURL: 'https://whattofarm.io/ext-api/v1',
@@ -40,16 +40,17 @@ export const tradeApi = {
     }
   ) =>
     apiV1
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .post<Response<{ list: any[] }>>(
         'pair-stat?network=eth&page=1&size=100&minLiquidity=10000&sortField=liquidity&sortDirection=desc',
         payload
       )
       .then(({ data }) => data),
 
-  history: () =>
+  history: (address: string) =>
     apiV2
       .get(
-        'open/chart/pair/history?symbol=0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE-USD&resolution=1&from=1656547469&to=1657627469&countback=18000'
+        `open/chart/pair/history?symbol=${address}-USD&resolution=1&from=1656547469&to=1657627469&countback=18000`
       )
       .then(({ data }) => data),
 }
