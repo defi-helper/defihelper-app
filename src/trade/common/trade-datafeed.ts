@@ -48,7 +48,6 @@ const configurationData = {
 }
 
 async function getAllSymbols() {
-  const data = await makeApiRequest('data/v3/all/exchanges')
   const allSymbols: Array<any> = []
 
   return allSymbols

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable new-cap */
 import clsx from 'clsx'
 import { useEffect } from 'react'
@@ -8,6 +9,7 @@ import * as styles from './trade-chart.css'
 
 export type TradeChartProps = {
   className?: string
+  data: any[]
 }
 
 export const TradeChart: React.VFC<TradeChartProps> = (props) => {
