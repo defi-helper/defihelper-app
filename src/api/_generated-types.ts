@@ -1763,8 +1763,6 @@ export type ProtocolListFilterInputType = {
   /** Target ID */
   id?: Maybe<Array<Scalars['UuidType']>>
   blockchain?: Maybe<BlockchainFilterInputType>
-  /** Target user ID */
-  linked?: Maybe<Scalars['UuidType']>
   /** Is favorite */
   favorite?: Maybe<Scalars['Boolean']>
   hidden?: Maybe<Scalars['Boolean']>
@@ -2084,6 +2082,7 @@ export type Query = {
   users: UserListQuery
   protocol?: Maybe<ProtocolType>
   protocols: ProtocolListQuery
+  userProtocols: UserProtocolListQuery
   contracts: ContractListType
   proposal?: Maybe<ProposalType>
   proposals: ProposalListQuery
@@ -2134,6 +2133,11 @@ export type QueryProtocolsArgs = {
   filter?: Maybe<ProtocolListFilterInputType>
   sort?: Maybe<Array<ProtocolListSortInputType>>
   pagination?: Maybe<ProtocolListPaginationInputType>
+}
+
+export type QueryUserProtocolsArgs = {
+  filter?: Maybe<UserProtocolListFilterInputType>
+  pagination?: Maybe<UserProtocolListPaginationInputType>
 }
 
 export type QueryContractsArgs = {
@@ -3109,6 +3113,25 @@ export type UserNotificationType = {
 export enum UserNotificationTypeEnum {
   PortfolioMetrics = 'portfolioMetrics',
   AutomateCallNotEnoughFunds = 'automateCallNotEnoughFunds',
+}
+
+export type UserProtocolListFilterInputType = {
+  /** Target user ID */
+  userId: Scalars['UuidType']
+}
+
+export type UserProtocolListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserProtocolListQuery = {
+  __typename?: 'UserProtocolListQuery'
+  /** Elements */
+  list?: Maybe<Array<ProtocolType>>
+  pagination: Pagination
 }
 
 export type UserReferrerCodeType = {
@@ -4853,13 +4876,12 @@ export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
   }
 
 export type PortfolioProtocolsQueryVariables = Exact<{
-  filter?: Maybe<ProtocolListFilterInputType>
-  sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
-  pagination?: Maybe<ProtocolListPaginationInputType>
+  filter?: Maybe<UserProtocolListFilterInputType>
+  pagination?: Maybe<UserProtocolListPaginationInputType>
 }>
 
 export type PortfolioProtocolsQuery = { __typename?: 'Query' } & {
-  protocols: { __typename?: 'ProtocolListQuery' } & {
+  userProtocols: { __typename?: 'UserProtocolListQuery' } & {
     list?: Maybe<
       Array<
         { __typename?: 'ProtocolType' } & Pick<

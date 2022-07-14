@@ -2,11 +2,10 @@ import { gql } from 'urql'
 
 export const PORTFOLIO_PROTOCOLS = gql`
   query PortfolioProtocols(
-    $filter: ProtocolListFilterInputType
-    $sort: [ProtocolListSortInputType!]
-    $pagination: ProtocolListPaginationInputType
+    $filter: UserProtocolListFilterInputType
+    $pagination: UserProtocolListPaginationInputType
   ) {
-    protocols(filter: $filter, sort: $sort, pagination: $pagination) {
+    userProtocols(filter: $filter, pagination: $pagination) {
       list {
         id
         adapter
