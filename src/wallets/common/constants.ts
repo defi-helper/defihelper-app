@@ -76,7 +76,7 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     blockchain: 'ethereum',
     logo: TrustIcon,
     networks: ethereumNetworks,
-    available: () => IS_MOBILE ? Boolean(window.ethereum) : false,
+    available: () => (IS_MOBILE ? Boolean(window.ethereum) : false),
     extensionLink: TRUST_LINK,
   },
   [ConnectorNames.CoinBase]: {
