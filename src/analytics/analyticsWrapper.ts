@@ -5,7 +5,12 @@ import { config } from '~/config'
 
 const amplitudeInstance = amplitude.getInstance()
 if (config.AMPLITUDE) {
-  amplitudeInstance.init(config.AMPLITUDE)
+  amplitudeInstance.init(config.AMPLITUDE, undefined, {
+    includeFbclid: true,
+    includeReferrer: true,
+    includeUtm: true,
+    includeGclid: true,
+  })
 }
 
 export const analytics = {
