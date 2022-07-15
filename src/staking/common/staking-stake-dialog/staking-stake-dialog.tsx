@@ -13,6 +13,9 @@ import { ButtonBase } from '~/common/button-base'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { toastsService } from '~/toasts'
 import * as styles from './staking-stake-dialog.css'
+import { Paper } from '~/common/paper'
+import { history } from '~/common/history'
+import { paths } from '~/paths'
 
 type FormValues = {
   amount: string
@@ -20,8 +23,10 @@ type FormValues = {
 
 export type StakingStakeDialogProps = {
   onConfirm: () => void
+  onCancel: () => void
   methods?: AdapterActions['stake']['methods']
   onSubmit: () => void
+  hasBuyLp: boolean
 }
 
 export const StakingStakeDialog: React.VFC<StakingStakeDialogProps> = (
@@ -111,6 +116,13 @@ export const StakingStakeDialog: React.VFC<StakingStakeDialogProps> = (
     }
   })
 
+  const handleClickBuy = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+
+    props.onCancel()
+    history.push(paths.buyLp)
+  }
+
   useEffect(() => {
     if (stakeState.value) {
       props.onConfirm()
@@ -183,6 +195,17 @@ export const StakingStakeDialog: React.VFC<StakingStakeDialogProps> = (
             />
           )}
         />
+        {props.hasBuyLp && bignumberUtils.eq(balanceOf.value, 0) && (
+          <Paper radius={8} className={styles.buyLp}>
+            <Typography variant="body2">
+              You don&apos;t have LP tokens. Don&apos;t worry, buying LP tokens
+              is easier than it seems
+            </Typography>
+            <Button color="green" size="small" onClick={handleClickBuy}>
+              buy lp token
+            </Button>
+          </Paper>
+        )}
         <Button
           type="submit"
           loading={formState.isSubmitting}

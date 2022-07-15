@@ -36,7 +36,7 @@ export const button = style({
 })
 
 export const input = style({
-  marginBottom: 16,
+  marginBottom: 40,
 })
 
 export const activeTab = style({
@@ -71,4 +71,14 @@ export const radio = style({
 export const balance = style({
   color: theme.colors.common.blue1,
   marginLeft: 'auto',
+})
+
+export const buyLp = style({
+  background: theme.colors.common.black13,
+  color: theme.colors.common.white1,
+  padding: '24px 16px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: 24,
 })

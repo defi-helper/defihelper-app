@@ -377,8 +377,8 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
       const cb = () => {
         stakingAutomatesModel
           .scanWalletMetricFx({
-            walletId: createdTrigger.wallet.id,
-            contractId: contract.id,
+            wallet: createdTrigger.wallet.id,
+            contract: contract.id,
           })
           .catch(console.error)
       }
