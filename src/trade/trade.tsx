@@ -59,17 +59,10 @@ export const Trade: React.VFC<TradeProps> = () => {
   const exchanges = useStore(model.$exchanges)
   const pairs = useStore(model.$pairs)
   const wallets = useStore(settingsWalletModel.$wallets)
-  const history = useStore(model.$history)
 
   useEffect(() => {
     model.fetchExchangesFx()
   }, [])
-
-  useEffect(() => {
-    if (!currentPair) return
-
-    model.fetchHistoryFx(currentPair)
-  }, [currentPair])
 
   useEffect(() => {
     model.fetchPairsFx()
@@ -196,7 +189,7 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Typography>
             </Typography>
           </div>
-          <TradeChart className={styles.chartInner} data={history} />
+          <TradeChart className={styles.chartInner} symbol={currentPair} />
         </Paper>
         <Paper radius={8} className={styles.selects}>
           <div className={styles.tradeSelectHeader}>

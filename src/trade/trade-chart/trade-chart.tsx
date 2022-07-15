@@ -4,21 +4,23 @@ import clsx from 'clsx'
 import { useEffect } from 'react'
 
 import { dateUtils } from '~/common/date-utils'
-import DataFeed from '~/trade/common/trade-datafeed'
+import DataFeed from '~/trade/trade-chart/trade.datafeed'
 import * as styles from './trade-chart.css'
 
 export type TradeChartProps = {
   className?: string
-  data: any[]
+  symbol: string
 }
 
 export const TradeChart: React.VFC<TradeChartProps> = (props) => {
   useEffect(() => {
+    if (!props.symbol) return
+
     const tradingView = new window.TradingView.widget({
-      symbol: 'BTC/USD',
+      symbol: props.symbol,
       interval: '1D',
       timezone: dateUtils.timezone(),
-      container_id: 'tv_chart_container',
+      container: 'tv_chart_container',
       locale: 'en',
       datafeed: DataFeed,
       library_path: 'charting_library/charting_library/',
@@ -28,13 +30,14 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
         'header_symbol_search',
         'header_indicators',
         'header_compare',
+        'use_localstorage_for_settings',
       ],
     })
 
     return () => {
       tradingView.remove()
     }
-  }, [])
+  }, [props.symbol])
 
   return (
     <div
