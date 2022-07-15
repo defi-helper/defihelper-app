@@ -31,6 +31,7 @@ export type SignMessageWaves = {
   provider: unknown
   account: string
   connector: WavesKeeperConnector
+  chainId: string
 }
 
 const networks = new Map<string, typeof createEthereumProvider>(
