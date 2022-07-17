@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-
 const ERROR = 'AdapterFn not loaded'
 
 const moduleExports = {
@@ -68,7 +67,7 @@ export interface AutomationAdapterActions {
   }
 }
 
-type Transaction = { wait: () => Promise<unknown> }
+type Transaction = { wait: () => Promise<{ transactionHash?: string }> }
 
 export type AdapterStep = {
   can: (...args: unknown[]) => Promise<boolean | Error>
@@ -185,7 +184,7 @@ export type AdapterFn = (
 
 export type AutomatesType = {
   contract: string
-  run: () => Promise<{ wait: () => Promise<unknown> }>
+  run: () => Promise<{ wait: () => Promise<{ transactionHash?: string }> }>
 } & AutomationAdapterActions
 
 export type DeployStep = {
@@ -193,7 +192,7 @@ export type DeployStep = {
   info: () => Promise<AdapterInfo>
   name: string
   send: (...args: unknown[]) => Promise<{
-    tx: { wait: () => Promise<unknown> }
+    tx: { wait: () => Promise<{ transactionHash?: string }> }
     getAddress: () => Promise<string>
   }>
 }
@@ -210,13 +209,13 @@ export type BuyLiquidity = {
     approve(
       tokenAddress: string,
       amount: string
-    ): Promise<{ tx?: { wait: () => Promise<unknown> } }>
+    ): Promise<{ tx?: { wait: () => Promise<{ transactionHash?: string }> } }>
     canBuy(tokenAddress: string, amount: string): Promise<boolean | Error>
     buy(
       tokenAddress: string,
       amount: string,
       slippage: string
-    ): Promise<{ tx?: { wait: () => Promise<unknown> } }>
+    ): Promise<{ tx?: { wait: () => Promise<{ transactionHash?: string }> } }>
   }
 }
 
