@@ -13,7 +13,7 @@ export const title = style({
 export const balance = style([title, style({})])
 
 export const selectList = style({
-  minHeight: 'calc(100% - 70px)',
+  flex: '1 0 auto',
 })
 
 export const grey = style({

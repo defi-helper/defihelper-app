@@ -6,6 +6,9 @@ export const root = style({
   width: 360,
   height: 568,
   padding: '24px 32px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
 })
 
 export const header = style({
