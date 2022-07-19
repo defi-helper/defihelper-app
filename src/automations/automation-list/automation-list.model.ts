@@ -86,13 +86,17 @@ export const $triggers = automationListDomain
     }))
   })
   .on(automationUpdateModel.createActionFx.doneData, (state, payload) => {
-    return state.map((trigger) => ({
-      ...trigger,
-      actions: {
-        ...trigger.actions,
-        list: [...(trigger.actions.list ?? []), payload],
-      },
-    }))
+    return state.map((trigger) => {
+      if (trigger.id !== payload.triggerId) return trigger
+
+      return {
+        ...trigger,
+        actions: {
+          ...trigger.actions,
+          list: [...(trigger.actions.list ?? []), payload],
+        },
+      }
+    })
   })
   .on(automationUpdateModel.updateConditionFx.doneData, (state, payload) => {
     return state.map((trigger) => ({
@@ -106,13 +110,17 @@ export const $triggers = automationListDomain
     }))
   })
   .on(automationUpdateModel.createConditionFx.doneData, (state, payload) => {
-    return state.map((trigger) => ({
-      ...trigger,
-      conditions: {
-        ...trigger.conditions,
-        list: [...(trigger.conditions.list ?? []), payload],
-      },
-    }))
+    return state.map((trigger) => {
+      if (trigger.id !== payload.triggerId) return trigger
+
+      return {
+        ...trigger,
+        conditions: {
+          ...trigger.conditions,
+          list: [...(trigger.conditions.list ?? []), payload],
+        },
+      }
+    })
   })
   .on(
     [
@@ -210,18 +218,9 @@ export const $descriptions = restore(fetchDescriptionFx.doneData, null).reset(
   AutomationListGate.close
 )
 
-export const fetchBalanceFx = automationListDomain.createEffect(() =>
-  automationApi.getBalance()
-)
-
-export const $balance = restore(fetchBalanceFx.doneData, 0).reset(
-  authModel.logoutFx,
-  AutomationListGate.close
-)
-
 sample({
   clock: AutomationListGate.open,
-  target: [fetchDescriptionFx, fetchBalanceFx],
+  target: [fetchDescriptionFx],
 })
 
 sample({

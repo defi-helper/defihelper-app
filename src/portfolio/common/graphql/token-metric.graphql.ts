@@ -48,16 +48,6 @@ export const TOKEN_METRIC = gql`
         date
         sum
       }
-      onWallets: metricChart(
-        metric: earnedUSD
-        group: $group
-        filter: { dateAfter: $metricDateAfter, dateBefore: $metricDateBefore }
-        pagination: $pagination
-        sort: $sort
-      ) {
-        date
-        sum
-      }
     }
   }
 `

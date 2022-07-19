@@ -38,8 +38,9 @@ export type SettingsWalletsProps = {
   className?: string
 }
 
-export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
+export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
   const wallets = useStore(model.$walletsWithMetrics)
+  const networksWithBalance = useStore(model.$networksWithBalance)
   const loading = useStore(model.fetchWalletListMetricsFx.pending)
 
   const [openRenameWallet] = useDialog(SettingsRenameWalletDialog)
@@ -234,6 +235,7 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
     <div className={clsx(styles.root, props.className)}>
       <SettingsHeader className={styles.header}>
         <Typography variant="h3">Wallets and Funds</Typography>
+        {props.children}
         <CanDemo>
           <Button
             color="blue"
@@ -268,6 +270,9 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
               network: wallet.network,
             })
 
+            const deposit = currentWallet ? handleDeposit(wallet) : connect
+            const refund = currentWallet ? handleRefund(wallet) : connect
+
             return (
               <SettingsWalletCard
                 key={wallet.id}
@@ -278,8 +283,12 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
                 worth={wallet.metric?.worth ?? '0'}
                 automations={String(wallet.triggersCount ?? 0)}
                 statisticsCollectedAt={wallet.statisticsCollectedAt}
-                onDeposit={currentWallet ? handleDeposit(wallet) : connect}
-                onRefund={currentWallet ? handleRefund(wallet) : connect}
+                onDeposit={
+                  networksWithBalance[wallet.network] ? deposit : undefined
+                }
+                onRefund={
+                  networksWithBalance[wallet.network] ? refund : undefined
+                }
                 onRename={currentWallet ? handleRename(wallet) : connect}
                 onUpdateStatistics={handleUpdateStatistics(wallet)}
                 onDelete={handleDelete(wallet)}

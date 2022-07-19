@@ -270,6 +270,17 @@ export const $walletsWithMetrics = combine(
       )
 )
 
+export const $networksWithBalance = walletListDomain.createStore(
+  Object.entries(contracts)
+    .filter(([, obj]) => 'Balance' in obj)
+    .reduce<Record<string, boolean>>((acc, [network]) => {
+      return {
+        [network]: true,
+        ...acc,
+      }
+    }, {})
+)
+
 export const updated = walletListDomain.createEvent()
 
 sample({

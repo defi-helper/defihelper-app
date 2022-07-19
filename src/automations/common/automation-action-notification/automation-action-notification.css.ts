@@ -4,7 +4,7 @@ export const root = style({
   display: 'flex',
   flexDirection: 'column',
   width: '100%',
-  minHeight: 'calc(100% - 70px)',
+  flex: '1 0 auto',
 })
 
 export const input = style({

@@ -17,15 +17,12 @@ import { AutomationTriggerDescriptionDialog } from '~/automations/common/automat
 import { Icon } from '~/common/icon'
 import { AutomationUpdate } from '~/automations/automation-update'
 import { ConfirmDialog } from '~/common/confirm-dialog'
-import { AutomationProducts } from '../automation-products'
 import { Loader } from '~/common/loader'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { SearchDialog } from '~/common/search-dialog'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './automation-list.css'
 import * as model from './automation-list.model'
-import { pluralize } from '~/common/pluralize'
 import { CanDemo } from '~/auth/can-demo'
 import { analytics } from '~/analytics'
 
@@ -36,8 +33,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const loading = useStore(model.fetchTriggersFx.pending)
   const contracts = useStore(model.$contracts)
   const descriptions = useStore(model.$descriptions)
-  const balanceLoading = useStore(model.fetchBalanceFx.pending)
-  const balance = useStore(model.$balance)
 
   const [dontShow, setDontShow] = useLocalStorage('dontShowAutomation', false)
   const [search, setSearch] = useState('')
@@ -45,7 +40,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
   const [openAutomationTrigger] = useDialog(AutomationUpdate)
   const [openDescriptionDialog] = useDialog(AutomationTriggerDescriptionDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
-  const [openAutomationProducts] = useDialog(AutomationProducts)
   const [openSearchDialog] = useDialog(SearchDialog)
 
   const wallet = walletNetworkModel.useWalletNetwork()
@@ -103,24 +97,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
     }
   }
 
-  const handleBuyProducts = async () => {
-    if (!wallet?.account) return
-    analytics.log('automations_buy_click')
-
-    try {
-      await openAutomationProducts({
-        balance,
-        account: wallet.account,
-        chainId: String(wallet.chainId),
-        provider: wallet.provider,
-      })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
-  }
-
   const handleSearchMobile = async () => {
     try {
       const result = await openSearchDialog()
@@ -144,12 +120,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
       title="Automations"
       action={
         <div className={styles.action}>
-          <Paper radius={8} className={styles.countMobile}>
-            <Icon icon="automation" width="16" height="16" />
-            <Typography variant="body3" className={styles.countTitle}>
-              {balanceLoading ? '...' : balance}
-            </Typography>
-          </Paper>
           <ButtonBase
             className={styles.searchButton}
             onClick={handleSearchMobile}
@@ -174,18 +144,6 @@ export const AutomationList: React.VFC<AutomationListProps> = () => {
           <Typography variant="h3" family="square" className={styles.title}>
             Automations
           </Typography>
-          <Paper radius={8} className={styles.countDesktop}>
-            <Typography variant="body2">
-              {balanceLoading ? '...' : bignumberUtils.format(balance)}{' '}
-              {pluralize(balance, 'Notification')}
-              <Typography variant="inherit" className={styles.left}>
-                left
-              </Typography>
-            </Typography>
-          </Paper>
-          <WalletConnect fallback={<Button>Buy</Button>}>
-            <Button onClick={handleBuyProducts}>Buy</Button>
-          </WalletConnect>
 
           <Input
             placeholder="Search"

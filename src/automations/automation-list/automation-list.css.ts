@@ -38,27 +38,9 @@ export const grid = style({
   },
 })
 
-export const countDesktop = style({
-  marginLeft: 'auto',
-  display: 'flex',
-  alignItems: 'center',
-  padding: '0 12px',
-})
-
-export const countMobile = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 4,
-  padding: 4,
-})
-
-export const countTitle = style({
-  fontSize: 12,
-  lineHeight: '16px',
-})
-
 export const searchDesktop = style({
   maxWidth: 211,
+  marginLeft: 'auto',
 })
 
 export const action = style({
@@ -71,6 +53,7 @@ export const searchButton = style({
   backgroundColor: theme.colors.paper,
   padding: 4,
   borderRadius: 6,
+  marginLeft: 'auto',
 })
 
 export const addAutomations = style({

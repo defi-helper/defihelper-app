@@ -4954,12 +4954,6 @@ export type TokenMetricQuery = { __typename?: 'Query' } & {
           'date' | 'sum'
         >
       >
-      onWallets: Array<
-        { __typename?: 'MetricChartType' } & Pick<
-          MetricChartType,
-          'date' | 'sum'
-        >
-      >
     }
   >
 }
