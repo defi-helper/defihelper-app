@@ -7,6 +7,10 @@ export const tokens = style({
   alignItems: 'center',
 })
 
+export const wrap = style({
+  position: 'relative',
+})
+
 export const buttonIcon = style({
   selectors: {
     '&:not(:first-child)': {
@@ -27,24 +31,29 @@ export const link = style({
   verticalAlign: 'middle',
 })
 
-export const tokenInfo = style({
-  maxWidth: 276,
-  width: '100%',
-  display: 'grid',
-  gridTemplateColumns: '24px 1fr',
-  gap: 8,
-})
-
-globalStyle(`${tokenInfo} div${icon}`, {
-  background: theme.colors.background,
-})
-
 export const tokenIconArrow = style({
   margin: '0 6px',
 })
 
-export const tokenInfoClose = style({
+export const dropdown = style({
   position: 'absolute',
-  right: 0,
-  top: 0,
+  display: 'none',
+  flexDirection: 'column',
+  padding: 16,
+  border: `1px solid ${theme.colors.border}`,
+  boxShadow: '0px 8px 24px rgba(10, 18, 19, 0.4)',
+  zIndex: 100,
+  width: 276,
+  gridTemplateColumns: '24px 1fr',
+  gap: 8,
+  top: '100%',
+  left: 0,
+})
+
+globalStyle(`${wrap}:hover ${dropdown}`, {
+  display: 'grid',
+})
+
+globalStyle(`${dropdown} div${icon}`, {
+  background: theme.colors.background,
 })

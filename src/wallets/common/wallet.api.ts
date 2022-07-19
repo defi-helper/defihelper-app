@@ -10,14 +10,11 @@ import { WALLET_METRIC_SCAN } from '~/wallets/common/graphql/wallet-metric-scan.
 import { WALLET_CONFIG } from './graphql'
 
 export const walletApi = {
-  scanWalletMetric: (wallet: string, contract: string) =>
+  scanWalletMetric: (variables: WalletMetricScanMutationVariables) =>
     getAPIClient()
       .request<WalletMetricScanMutation, WalletMetricScanMutationVariables>({
         query: WALLET_METRIC_SCAN.loc?.source.body ?? '',
-        variables: {
-          wallet,
-          contract,
-        },
+        variables,
       })
       .then(({ data }) => data?.walletMetricScan),
 

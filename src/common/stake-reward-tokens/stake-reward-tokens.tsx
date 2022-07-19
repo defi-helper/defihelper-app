@@ -3,7 +3,6 @@ import { cloneElement } from 'react'
 
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { ButtonBase } from '~/common/button-base'
-import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
@@ -30,46 +29,42 @@ const TokenInfo = (props: {
   icon: JSX.Element
   token: Token
   tokenClassName?: string
+  height: number
 }) => (
-  <Dropdown
-    control={
-      <ButtonBase className={styles.buttonIcon}>
-        {cloneElement(props.icon, {
-          ...props.icon.props,
-          className: clsx(props.icon.props.className, props.tokenClassName),
-        })}
-      </ButtonBase>
-    }
-    className={styles.tokenInfo}
-    trigger="click"
+  <div
+    className={styles.wrap}
+    style={{
+      height: props.height,
+    }}
   >
-    {(close) => (
-      <>
-        <ButtonBase onClick={close} className={styles.tokenInfoClose}>
-          <Icon icon="close" width={34} height={34} />
-        </ButtonBase>
-        {props.icon}
-        <div>
-          <Typography variant="body2" family="mono">
-            {props.token.name}
-          </Typography>
-          <Typography variant="body2" family="mono">
-            <Link
-              target="_blank"
-              color="blue"
-              className={styles.link}
-              href={buildExplorerUrl({
-                address: props.token.address,
-                network: props.token.network,
-              })}
-            >
-              Explorer <Icon icon="link" width="1em" height="1em" />
-            </Link>
-          </Typography>
-        </div>
-      </>
-    )}
-  </Dropdown>
+    <ButtonBase className={styles.buttonIcon}>
+      {cloneElement(props.icon, {
+        ...props.icon.props,
+        className: clsx(props.icon.props.className, props.tokenClassName),
+      })}
+    </ButtonBase>
+    <Paper radius={8} className={styles.dropdown}>
+      {props.icon}
+      <div>
+        <Typography variant="body2" family="mono">
+          {props.token.name}
+        </Typography>
+        <Typography variant="body2" family="mono">
+          <Link
+            target="_blank"
+            color="blue"
+            className={styles.link}
+            href={buildExplorerUrl({
+              address: props.token.address,
+              network: props.token.network,
+            })}
+          >
+            Explorer <Icon icon="link" width="1em" height="1em" />
+          </Link>
+        </Typography>
+      </div>
+    </Paper>
+  </div>
 )
 
 const TokenIcon = (props: {
@@ -102,6 +97,7 @@ export const StakeRewardTokens: React.VFC<StakeRewardTokensProps> = (props) => {
         {props.stakeTokens?.map((token, index) => {
           return (
             <TokenInfo
+              height={size}
               key={String(index)}
               icon={<TokenIcon size={size} token={token} />}
               token={token}
@@ -120,6 +116,7 @@ export const StakeRewardTokens: React.VFC<StakeRewardTokensProps> = (props) => {
         {props.rewardTokens?.map((token, index) => {
           return (
             <TokenInfo
+              height={size}
               key={String(index)}
               icon={<TokenIcon size={size} token={token} />}
               token={token}

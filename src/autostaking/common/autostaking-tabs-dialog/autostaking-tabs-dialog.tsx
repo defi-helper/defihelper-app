@@ -24,7 +24,7 @@ export type AutostakingTabsDialogProps = {
   onConfirm: () => void
   onCancel: () => void
   methods?: AutomatesType['migrate']['methods']
-  onLastStep: () => void
+  onLastStep: (txHash?: string) => void
 }
 
 enum Tabs {
@@ -101,9 +101,9 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
 
         const { tx } = await transfer(formValues.amount)
 
-        await tx?.wait()
+        const result = await tx?.wait()
 
-        props.onLastStep()
+        props.onLastStep(result.transactionHash)
 
         return true
       } catch (error) {
@@ -130,13 +130,13 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
 
       const { tx } = await deposit()
 
-      await tx?.wait()
+      const result = await tx?.wait()
 
       balanceOf.retry()
 
       setCurrentTab(Tabs.success)
 
-      props.onLastStep()
+      props.onLastStep(result.transactionHash)
 
       return true
     } catch (error) {

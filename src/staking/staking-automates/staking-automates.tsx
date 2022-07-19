@@ -28,6 +28,7 @@ import {
   useOnTokenMetricUpdatedSubscription,
   useOnWalletMetricUpdatedSubscription,
 } from '~/portfolio/common'
+import { settingsWalletModel } from '~/settings/settings-wallets'
 
 export type StakingAutomatesProps = {
   className?: string
@@ -36,7 +37,8 @@ export type StakingAutomatesProps = {
 
 export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [openErrorDialog] = useDialog(StakingErrorDialog)
-  const wallet = walletNetworkModel.useWalletNetwork()
+  const currentWallet = walletNetworkModel.useWalletNetwork()
+  const wallets = useStore(settingsWalletModel.$wallets)
   const user = useStore(authModel.$user)
   const handleConnect = useWalletConnect()
   const [openAdapter] = useDialog(StakingAdapterDialog)
@@ -76,27 +78,47 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     (contract: typeof automatesContracts[number], action: model.ActionType) =>
     async () => {
       try {
-        if (!wallet?.account) return
+        if (!currentWallet?.account) return
 
         const adapter = await model.fetchAdapterFx({
           protocolAdapter: contract.protocol.adapter,
           contractAdapter: contract.adapter,
           contractId: contract.id,
           contractAddress: contract.address,
-          provider: wallet.provider,
-          chainId: String(wallet.chainId),
+          provider: currentWallet.provider,
+          chainId: String(currentWallet.chainId),
           action,
         })
 
-        if (!adapter || action === 'run') return
+        const findedWallet = wallets.find((wallet) => {
+          const sameAddreses =
+            String(currentWallet?.chainId) === 'main'
+              ? currentWallet?.account === wallet.address
+              : currentWallet?.account?.toLowerCase() === wallet.address
 
-        const onLastStep = () => {
+          return (
+            sameAddreses && String(currentWallet?.chainId) === wallet.network
+          )
+        })
+
+        if (!adapter || action === 'run' || !findedWallet) return
+
+        const onLastStep = (txId?: string) => {
           if (!contract.contract || !contract.contractWallet) return
 
           model
             .scanWalletMetricFx({
-              walletId: contract.contractWallet.id,
-              contractId: contract.contract.id,
+              wallet: contract.contractWallet.id,
+              contract: contract.contract.id,
+              txId,
+            })
+            .catch(console.error)
+
+          model
+            .scanWalletMetricFx({
+              wallet: findedWallet.id,
+              contract: contract.id,
+              txId,
             })
             .catch(console.error)
         }
@@ -148,31 +170,52 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
         )
           throw new Error('not enough money')
 
-        if (!wallet?.account) return
+        if (!currentWallet?.account) return
 
         const adapter = await model.fetchAdapterFx({
           protocolAdapter: contract.protocol.adapter,
           contractAdapter: contract.adapter,
           contractId: contract.id,
           contractAddress: contract.address,
-          provider: wallet.provider,
-          chainId: String(wallet.chainId),
+          provider: currentWallet.provider,
+          chainId: String(currentWallet.chainId),
           action: 'run',
         })
 
-        if (!adapter) return
+        const findedWallet = wallets.find((wallet) => {
+          const sameAddreses =
+            String(currentWallet?.chainId) === 'main'
+              ? currentWallet?.account === wallet.address
+              : currentWallet?.account?.toLowerCase() === wallet.address
+
+          return (
+            sameAddreses && String(currentWallet?.chainId) === wallet.network
+          )
+        })
+
+        if (!adapter || !findedWallet) return
 
         const tx = await adapter.run()
+
+        const result = await tx.wait()
+
         if (contract.contract && contract.contractWallet) {
           model
             .scanWalletMetricFx({
-              walletId: contract.contractWallet.id,
-              contractId: contract.contract.id,
+              wallet: contract.contractWallet.id,
+              contract: contract.contract.id,
+              txId: result.transactionHash,
+            })
+            .catch(console.error)
+
+          model
+            .scanWalletMetricFx({
+              wallet: findedWallet.id,
+              contract: contract.id,
+              txId: result.transactionHash,
             })
             .catch(console.error)
         }
-
-        await tx.wait()
       } catch (error) {
         const { message } = parseError(error)
 
@@ -221,16 +264,16 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           })
 
           const isNotSameAddresses = (
-            String(wallet?.chainId) === 'main'
-              ? wallet?.account !== automatesContract.wallet.address
-              : wallet?.account?.toLowerCase() !==
+            String(currentWallet?.chainId) === 'main'
+              ? currentWallet?.account !== automatesContract.wallet.address
+              : currentWallet?.account?.toLowerCase() !==
                 automatesContract.wallet.address
           )
             ? handleWrongAddress(automatesContract)
             : null
 
           const wrongNetwork =
-            String(wallet?.chainId) !== automatesContract.wallet.network
+            String(currentWallet?.chainId) !== automatesContract.wallet.network
               ? handleSwitchNetwork(automatesContract)
               : null
 
@@ -270,10 +313,10 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               balance={automatesContract.contractWallet?.metric.stakedUSD ?? ''}
               apy={automatesContract.contract?.metric.aprYear}
               apyBoost={automatesContract.contract?.metric.myAPYBoost}
-              onMigrate={wallet ? migrate : connect}
-              onDeposit={wallet ? deposit : connect}
-              onRefund={wallet ? refund : connect}
-              onRun={wallet ? run : connect}
+              onMigrate={currentWallet ? migrate : connect}
+              onDeposit={currentWallet ? deposit : connect}
+              onRefund={currentWallet ? refund : connect}
+              onRun={currentWallet ? run : connect}
               onDelete={handleDelete(automatesContract.id)}
               refunding={automatesContract.refunding}
               migrating={automatesContract.migrating}

@@ -5,7 +5,6 @@ import {
   sample,
   split,
   guard,
-  restore,
   StoreValue,
   UnitValue,
 } from 'effector'
@@ -194,7 +193,7 @@ sample({
     source: walletNetworkModel.$wallet,
     clock: authEthereumFx.doneData,
     filter: (result, clock): result is WalletStore =>
-      Boolean(clock === null && result),
+      Boolean(clock === null && result) && !sidUtils.get(),
   }),
   fn: ({ chainId, account, provider }) => ({
     chainId,
@@ -209,28 +208,32 @@ sample({
     source: walletNetworkModel.$wallet,
     clock: authWavesFx.doneData,
     filter: (result, clock): result is WalletStore =>
-      Boolean(clock === null && result),
+      Boolean(clock === null && result) && !sidUtils.get(),
   }),
-  fn: ({ account, provider, connector }) => ({
+  fn: ({ account, provider, connector, chainId }) => ({
     account: account as string,
     provider,
     connector: connector as WavesKeeperConnector,
+    chainId,
   }),
   target: walletNetworkModel.signMessageWavesFx,
 })
 
-sample({
+guard({
   clock: walletNetworkModel.signMessageEthereumFx.doneData,
+  filter: () => sidUtils.get() === null,
   target: authEthereumFx,
 })
 
-sample({
+guard({
   clock: walletNetworkModel.signMessageWavesFx.doneData,
+  filter: () => sidUtils.get() === null,
   target: authWavesFx,
 })
 
-sample({
+guard({
   clock: [authEthereumFx.doneData, authWavesFx.doneData, authDemoFx.doneData],
+  filter: (auth) => auth?.sid === sidUtils.get() || sidUtils.get() === null,
   target: saveUserFx,
 })
 
@@ -239,9 +242,11 @@ sample({
     source: $auth,
     clock: guard({
       source: $user,
-      clock: [authWavesFx.doneData, authWavesFx.doneData],
+      clock: [authEthereumFx.doneData, authWavesFx.doneData],
       filter: (prevUser, nextUser) =>
-        prevUser !== null && prevUser.id !== nextUser?.user.id,
+        prevUser !== null &&
+        prevUser.id !== nextUser?.user.id &&
+        Boolean(sidUtils.get()),
     }),
     filter: (auth): auth is Payload => Boolean(auth),
   }),
@@ -249,41 +254,62 @@ sample({
   target: mergeModalFx,
 })
 
-const $signedMessageEthereum = restore(
-  walletNetworkModel.signMessageEthereumFx.doneData.map((payload) => ({
-    ...payload,
-    merge: true,
-  })),
-  null
-).reset(logoutFx)
-
-const $signedMessageWaves = restore(
-  walletNetworkModel.signMessageWavesFx.doneData.map((payload) => ({
-    ...payload,
-    merge: true,
-  })),
-  null
-).reset(logoutFx)
+guard({
+  source: walletNetworkModel.$wallet.map((wallet) =>
+    wallet
+      ? {
+          chainId: wallet.chainId,
+          account: wallet.account,
+          provider: wallet.provider,
+        }
+      : null
+  ),
+  clock: mergeModalFx.done,
+  filter: (wallet): wallet is walletNetworkModel.SignMessageEthereum =>
+    wallet?.chainId !== 'main',
+  target: walletNetworkModel.signMessageEthereumFx,
+})
 
 guard({
-  source: $signedMessageEthereum,
+  source: walletNetworkModel.$wallet.map((wallet) =>
+    wallet
+      ? {
+          provider: wallet.provider,
+          account: wallet.account,
+          connector: wallet.connector,
+          chainId: wallet.chainId,
+        }
+      : null
+  ),
   clock: mergeModalFx.done,
+  filter: (wallet): wallet is walletNetworkModel.SignMessageWaves =>
+    wallet?.chainId === 'main',
+  target: walletNetworkModel.signMessageWavesFx,
+})
+
+guard({
+  clock: walletNetworkModel.signMessageEthereumFx.doneData.map((payload) => ({
+    ...payload,
+    merge: true,
+  })),
   filter: (
     source
   ): source is UnitValue<
     typeof walletNetworkModel.signMessageEthereumFx.doneData
-  > & { merge: boolean } => Boolean(source),
+  > & { merge: boolean } => Boolean(source) && Boolean(sidUtils.get()),
   target: authEthereumFx,
 })
 
 guard({
-  source: $signedMessageWaves,
-  clock: mergeModalFx.done,
+  clock: walletNetworkModel.signMessageWavesFx.doneData.map((payload) => ({
+    ...payload,
+    merge: true,
+  })),
   filter: (
     source
   ): source is UnitValue<
     typeof walletNetworkModel.signMessageWavesFx.doneData
-  > & { merge: boolean } => Boolean(source),
+  > & { merge: boolean } => Boolean(source) && Boolean(sidUtils.get()),
   target: authWavesFx,
 })
 
