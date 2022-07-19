@@ -167,8 +167,8 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
           const onLastStep = () => {
             automatesModel
               .scanWalletMetricFx({
-                walletId: wallet.id,
-                contractId: contract.id,
+                wallet: wallet.id,
+                contract: contract.id,
               })
               .catch(console.error)
           }
@@ -352,11 +352,20 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
           if (!stakingAutomatesAdapter || !contractWallet)
             throw new Error('something went wrong')
 
-          const cb = () => {
+          const cb = (txId?: string) => {
             automatesModel
               .scanWalletMetricFx({
-                walletId: contractWallet.id,
-                contractId: contract.id,
+                wallet: contractWallet.id,
+                contract: contract.id,
+                txId,
+              })
+              .catch(console.error)
+
+            automatesModel
+              .scanWalletMetricFx({
+                wallet: findedWallet.id,
+                contract: contract.id,
+                txId,
               })
               .catch(console.error)
           }
@@ -372,8 +381,8 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
               // @ts-ignore
               steps: stakingAutomatesAdapter.migrate,
             })
-              .catch(cb)
-              .then(cb)
+              .catch(() => cb())
+              .then(() => cb())
           }
 
           analytics.onAutoStakingEnabled()

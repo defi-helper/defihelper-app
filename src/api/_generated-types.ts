@@ -5906,7 +5906,7 @@ export type StakingAutomatesContractFragmentFragment = {
 > & {
     protocol: { __typename?: 'ProtocolType' } & Pick<
       ProtocolType,
-      'adapter' | 'name'
+      'id' | 'adapter' | 'name'
     >
     contract?: Maybe<
       { __typename?: 'ContractType' } & Pick<
@@ -6500,6 +6500,7 @@ export type WalletConfigQuery = { __typename?: 'Query' } & {
 export type WalletMetricScanMutationVariables = Exact<{
   wallet: Scalars['UuidType']
   contract: Scalars['UuidType']
+  txId?: Maybe<Scalars['String']>
 }>
 
 export type WalletMetricScanMutation = { __typename?: 'Mutation' } & Pick<

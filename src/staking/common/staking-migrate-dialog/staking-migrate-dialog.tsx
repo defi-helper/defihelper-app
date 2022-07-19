@@ -22,7 +22,7 @@ type FormValues = {
 export type StakingMigrateDialogProps = {
   onConfirm: () => void
   methods?: AutomatesType['migrate']['methods']
-  onLastStep: () => void
+  onLastStep: (txHash?: string) => void
   onCancel: () => void
 }
 
@@ -94,10 +94,10 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
         const { tx } = await transfer(formValues.amount)
 
-        await tx?.wait()
+        const result = await tx?.wait()
         analytics.log('auto_staking_migrate_dialog_transfer_success')
 
-        props.onLastStep()
+        props.onLastStep(result.transactionHash)
 
         return true
       } catch (error) {
@@ -126,11 +126,11 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
       const { tx } = await deposit()
 
-      await tx?.wait()
+      const result = await tx?.wait()
 
       balanceOf.retry()
 
-      props.onLastStep()
+      props.onLastStep(result.transactionHash)
       analytics.log('auto_staking_migrate_dialog_deposit_success')
 
       return true

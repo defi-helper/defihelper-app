@@ -14,7 +14,7 @@ import * as styles from './staking-refund-dialog.css'
 export type StakingRefundDialogProps = {
   onConfirm: () => void
   methods?: AutomatesType['refund']['methods']
-  onLastStep: () => void
+  onLastStep: (txHash?: string) => void
   onCancel: () => void
 }
 
@@ -46,11 +46,11 @@ export const StakingRefundDialog: React.VFC<StakingRefundDialogProps> = (
 
       const { tx } = await refund()
 
-      await tx?.wait()
+      const result = await tx?.wait()
 
       staked.retry()
 
-      props.onLastStep()
+      props.onLastStep(result.transactionHash)
 
       return true
     } catch (error) {

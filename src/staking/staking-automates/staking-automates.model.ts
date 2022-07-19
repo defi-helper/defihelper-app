@@ -33,11 +33,6 @@ type FetchAutomatesParams = {
   search?: string
 }
 
-type ScanWalletMetricParams = {
-  walletId: string
-  contractId: string
-}
-
 const LOAD_TYPES: Record<
   ActionType,
   'migrating' | 'depositing' | 'refunding' | 'running'
@@ -66,9 +61,7 @@ export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
 )
 
 export const scanWalletMetricFx = stakingAutomatesDomain.createEffect(
-  (params: ScanWalletMetricParams) => {
-    return walletApi.scanWalletMetric(params.walletId, params.contractId)
-  }
+  walletApi.scanWalletMetric
 )
 
 export const fetchAdapterFx = stakingAutomatesDomain.createEffect(

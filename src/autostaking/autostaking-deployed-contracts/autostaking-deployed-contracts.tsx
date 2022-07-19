@@ -28,10 +28,11 @@ import {
 import { useDialog } from '~/common/dialog'
 import { switchNetwork } from '~/wallets/common'
 import { ConfirmDialog } from '~/common/confirm-dialog'
+import { analytics } from '~/analytics'
+import { settingsWalletModel } from '~/settings/settings-wallets'
 import * as model from '~/staking/staking-automates/staking-automates.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './autostaking-deployed-contracts.css'
-import { analytics } from '~/analytics'
 
 export type AutostakingDeployedContractsProps = {
   className?: string
@@ -43,6 +44,7 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
     const contracts = useStore(model.$automatesContracts)
     const loading = useStore(model.fetchAutomatesContractsFx.pending)
     const user = useStore(authModel.$user)
+    const wallets = useStore(settingsWalletModel.$wallets)
 
     const [openConfirmDialog] = useDialog(ConfirmDialog)
     const [openErrorDialog] = useDialog(StakingErrorDialog)
@@ -50,7 +52,7 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
     const [openDepositDialog] = useDialog(StakingDepositDialog)
     const [openRefundDialog] = useDialog(StakingRefundDialog)
 
-    const wallet = walletNetworkModel.useWalletNetwork()
+    const currentWallet = walletNetworkModel.useWalletNetwork()
     const handleConnect = useWalletConnect()
 
     const isEmptyContracts = isEmpty(contracts)
@@ -91,34 +93,57 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
       ) =>
       async () => {
         try {
-          if (!wallet?.account) return
-          analytics.log(`settings_${action}_network_${wallet?.chainId}_click`, {
-            address: contract.contractWallet?.address,
-            network: contract.contractWallet?.network,
-            blockchain: 'ethereum',
-            provider: wallet.provider,
-            chainId: String(wallet.chainId),
-          })
+          if (!currentWallet?.account) return
+          analytics.log(
+            `settings_${action}_network_${currentWallet?.chainId}_click`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+              provider: currentWallet.provider,
+              chainId: String(currentWallet.chainId),
+            }
+          )
 
           const adapter = await model.fetchAdapterFx({
             protocolAdapter: contract.protocol.adapter,
             contractAdapter: contract.adapter,
             contractId: contract.id,
             contractAddress: contract.address,
-            provider: wallet.provider,
-            chainId: String(wallet.chainId),
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
             action,
           })
 
-          if (!adapter || action === 'run') return
+          const findedWallet = wallets.find((wallet) => {
+            const sameAddreses =
+              String(currentWallet.chainId) === 'main'
+                ? currentWallet.account === wallet.address
+                : currentWallet.account?.toLowerCase() === wallet.address
 
-          const onLastStep = () => {
+            return (
+              sameAddreses && String(currentWallet.chainId) === wallet.network
+            )
+          })
+
+          if (!adapter || action === 'run' || !findedWallet) return
+
+          const onLastStep = (txId?: string) => {
             if (!contract.contract || !contract.contractWallet) return
 
             model
               .scanWalletMetricFx({
-                walletId: contract.contractWallet.id,
-                contractId: contract.contract.id,
+                wallet: contract.contractWallet.id,
+                contract: contract.contract.id,
+                txId,
+              })
+              .catch(console.error)
+
+            model
+              .scanWalletMetricFx({
+                wallet: findedWallet.id,
+                contract: contract.id,
+                txId,
               })
               .catch(console.error)
           }
@@ -152,20 +177,20 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
           }
 
           analytics.log(
-            `settings_${action}_network_${wallet?.chainId}_success`,
+            `settings_${action}_network_${currentWallet?.chainId}_success`,
             {
               address: contract.contractWallet?.address,
               network: contract.contractWallet?.network,
               blockchain: 'ethereum',
-              provider: wallet.provider,
-              chainId: String(wallet.chainId),
+              provider: currentWallet.provider,
+              chainId: String(currentWallet.chainId),
             }
           )
         } catch (error) {
           if (error instanceof Error) {
             console.error(error.message)
             analytics.log(
-              `settings_${action}_network_${wallet?.chainId}_failure`,
+              `settings_${action}_network_${currentWallet?.chainId}_failure`,
               {
                 address: contract.contractWallet?.address,
                 network: contract.contractWallet?.network,
@@ -186,31 +211,52 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
           )
             throw new Error('not enough money')
 
-          if (!wallet?.account) return
+          const findedWallet = wallets.find((wallet) => {
+            const sameAddreses =
+              String(currentWallet?.chainId) === 'main'
+                ? currentWallet?.account === wallet.address
+                : currentWallet?.account?.toLowerCase() === wallet.address
+
+            return (
+              sameAddreses && String(currentWallet?.chainId) === wallet.network
+            )
+          })
+
+          if (!currentWallet?.account || !findedWallet) return
 
           const adapter = await model.fetchAdapterFx({
             protocolAdapter: contract.protocol.adapter,
             contractAdapter: contract.adapter,
             contractId: contract.id,
             contractAddress: contract.address,
-            provider: wallet.provider,
-            chainId: String(wallet.chainId),
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
             action: 'run',
           })
 
           if (!adapter) return
 
           const tx = await adapter.run()
+
+          const trasactionReceipt = await tx.wait()
+
           if (contract.contract && contract.contractWallet) {
             model
               .scanWalletMetricFx({
-                walletId: contract.contractWallet.id,
-                contractId: contract.contract.id,
+                wallet: contract.contractWallet.id,
+                contract: contract.contract.id,
+                txId: trasactionReceipt.transactionHash,
+              })
+              .catch(console.error)
+
+            model
+              .scanWalletMetricFx({
+                wallet: findedWallet.id,
+                contract: contract.id,
+                txId: trasactionReceipt.transactionHash,
               })
               .catch(console.error)
           }
-
-          await tx.wait()
         } catch (error) {
           const { message } = parseError(error)
 
@@ -281,16 +327,17 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
               })
 
               const isNotSameAddresses = (
-                String(wallet?.chainId) === 'main'
-                  ? wallet?.account !== deployedContract.wallet.address
-                  : wallet?.account?.toLowerCase() !==
+                String(currentWallet?.chainId) === 'main'
+                  ? currentWallet?.account !== deployedContract.wallet.address
+                  : currentWallet?.account?.toLowerCase() !==
                     deployedContract.wallet.address
               )
                 ? handleWrongAddress(deployedContract)
                 : null
 
               const wrongNetwork =
-                String(wallet?.chainId) !== deployedContract.wallet.network
+                String(currentWallet?.chainId) !==
+                deployedContract.wallet.network
                   ? handleSwitchNetwork(deployedContract)
                   : null
 
@@ -316,6 +363,7 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
                   title={deployedContract.contract?.name ?? ''}
                   address={deployedContract.address}
                   network={deployedContract.contract?.network ?? ''}
+                  protocol={deployedContract.protocol}
                   tokensIcons={
                     deployedContract.contract?.tokens.stake.map(
                       ({ alias }) => alias?.logoUrl ?? null
@@ -328,9 +376,9 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
                   apy={deployedContract.contract?.metric.aprYear}
                   apyBoost={deployedContract.contract?.metric.myAPYBoost}
                   onDelete={handleOnDelete(deployedContract.id)}
-                  onRefund={wallet ? refund : connect}
-                  onDeposit={wallet ? deposit : connect}
-                  onRun={wallet ? run : connect}
+                  onRefund={currentWallet ? refund : connect}
+                  onDeposit={currentWallet ? deposit : connect}
+                  onRun={currentWallet ? run : connect}
                   deleting={deployedContract.deleting}
                   depositing={deployedContract.depositing}
                   running={deployedContract.running}

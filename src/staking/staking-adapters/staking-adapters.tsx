@@ -103,8 +103,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
 
           stakingAutomatesModel
             .scanWalletMetricFx({
-              walletId: findedWallet.id,
-              contractId: props.contractId,
+              wallet: findedWallet.id,
+              contract: props.contractId,
             })
             .catch(console.error)
         }
@@ -140,6 +140,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             stake: () =>
               openStakeDialog({
                 methods: contract.actions?.stake.methods,
+                hasBuyLp: Boolean(props.buyLiquidity?.pair),
                 onSubmit: () => {
                   model.stake({ wallet, contractId: props.contractId })
 

@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
+import { useStore } from 'effector-react'
 
 import { Head } from '~/common/head'
 import { AppLayout } from '~/layouts'
@@ -13,7 +14,12 @@ import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Button } from '~/common/button'
+import { TradeChart } from './trade-chart'
+import { cutAccount } from '~/common/cut-account'
+import { networksConfig } from '~/networks-config'
+import { settingsWalletModel } from '~/settings/settings-wallets'
 import * as styles from './trade.css'
+import * as model from './trade.model'
 
 export type TradeProps = unknown
 
@@ -29,8 +35,9 @@ enum Selects {
 
 export const Trade: React.VFC<TradeProps> = () => {
   const [currentSelect, setCurrentSelect] = useState(Selects.BuySell)
-
   const [currentTab, setCurrentTab] = useState(Tabs.Buy)
+  const [currentExchange, setCurrentExchange] = useState('')
+  const [currentPair, setCurrentPair] = useState('')
 
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
@@ -41,6 +48,29 @@ export const Trade: React.VFC<TradeProps> = () => {
 
     cb()
   }
+
+  const handleChangeExchange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentExchange(event.target.value)
+  }
+  const handleChangePair = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentPair(event.target.value)
+  }
+
+  const exchanges = useStore(model.$exchanges)
+  const pairs = useStore(model.$pairs)
+  const wallets = useStore(settingsWalletModel.$wallets)
+
+  useEffect(() => {
+    model.fetchExchangesFx()
+  }, [])
+
+  useEffect(() => {
+    model.fetchPairsFx()
+  }, [])
+
+  useEffect(() => {
+    return () => model.reset()
+  }, [])
 
   const SelectComponents = {
     [Selects.SmartSell]: <TradeSmartSell />,
@@ -76,13 +106,56 @@ export const Trade: React.VFC<TradeProps> = () => {
       </Typography>
       <div className={styles.header}>
         <Select label="Wallet">
-          <SelectOption value="SelectOption">test</SelectOption>
+          {wallets.map((wallet) => (
+            <SelectOption value="SelectOption" key={wallet.id}>
+              {networksConfig[wallet.network] && (
+                <Icon
+                  icon={networksConfig[wallet.network].icon}
+                  className={styles.pairIcon}
+                />
+              )}
+              {cutAccount(wallet.address)}
+            </SelectOption>
+          ))}
         </Select>
-        <Select label="Exchange">
-          <SelectOption value="SelectOption">test</SelectOption>
+        <Select
+          label="Exchange"
+          onChange={handleChangeExchange}
+          value={currentExchange}
+        >
+          {exchanges.map((exchange) => (
+            <SelectOption value={exchange.DexAddress} key={exchange.DexAddress}>
+              {exchange.Name}
+            </SelectOption>
+          ))}
         </Select>
-        <Select label="Trading Pair">
-          <SelectOption value="SelectOption">test</SelectOption>
+        <Select
+          label="Trading Pair"
+          value={currentPair}
+          onChange={handleChangePair}
+        >
+          {pairs.map((pair) => (
+            <SelectOption
+              value={pair.pairInfo?.address}
+              key={pair.pairInfo?.poolAddress + pair.pairInfo?.ticker}
+            >
+              <img
+                alt=""
+                src={`https://whattofarm.io/assets/dex/${pair.pairInfo?.lpToken?.network?.name}.svg`}
+                width="24"
+                height="24"
+                className={styles.pairIcon}
+              />
+              <img
+                alt=""
+                src={`https://whattofarm.io/assets/dex/${pair.pairInfo?.icon}.svg`}
+                width="24"
+                height="24"
+                className={styles.pairIcon}
+              />
+              {pair.pairInfo?.ticker}
+            </SelectOption>
+          ))}
         </Select>
       </div>
       <div className={styles.content}>
@@ -95,24 +168,28 @@ export const Trade: React.VFC<TradeProps> = () => {
               <Typography
                 variant="inherit"
                 className={styles.chartTitle}
-                as="span"
+                as="div"
               >
                 24h change
               </Typography>
-              <Typography variant="inherit">+ 13% | +4 085$</Typography>
+              <Typography variant="inherit" as="div">
+                + 13% | +4 085$
+              </Typography>
             </Typography>
             <Typography variant="body3" className={styles.chartMetric} as="div">
               <Typography
                 variant="inherit"
                 className={styles.chartTitle}
-                as="span"
+                as="div"
               >
                 24h volume (USD)
               </Typography>
-              <Typography variant="inherit">5 259 687 158.42$</Typography>
+              <Typography variant="inherit" as="div">
+                5 259 687 158.42$
+              </Typography>
             </Typography>
           </div>
-          <img src="" alt="" className={styles.chartInner} />
+          <TradeChart className={styles.chartInner} symbol={currentPair} />
         </Paper>
         <Paper radius={8} className={styles.selects}>
           <div className={styles.tradeSelectHeader}>

@@ -5,8 +5,8 @@ import { useUpdateEffect } from 'react-use'
 import { generate } from '@bramus/pagination-sequence'
 import clsx from 'clsx'
 
-import { ButtonBase } from '../button-base'
-import { Icon } from '../icon'
+import { ButtonBase } from '~/common/button-base'
+import { Icon } from '~/common/icon'
 import * as styles from './pagination.css'
 
 export type PaginationProps = {
