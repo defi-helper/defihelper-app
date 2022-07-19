@@ -37,16 +37,9 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
     formValues: Record<string, string>
   ) => {
     try {
-      const objectKeys: string[] = []
-      const objectValues: string[] = []
-
-      Object.entries(formValues).map(([i, v]) =>
-        Promise.all([objectKeys.push(i), objectValues.push(v)])
-      )
-
       await model.connectIntegrationApiExchangeFx({
-        objectKeys,
-        objectValues,
+        objectKeys: Object.keys(formValues),
+        objectValues: Object.values(formValues),
         type,
       })
 
