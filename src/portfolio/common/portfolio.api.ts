@@ -155,9 +155,9 @@ export const portfolioApi = {
         variables,
       })
       .then(({ data }) => ({
-        list: (data?.protocols.list ?? [])
+        list: (data?.userProtocols.list ?? [])
           .filter((v) => v.metric.myStaked !== '0')
           .sort((v) => Number(v.metric.myStaked)),
-        count: data?.protocols.pagination.count ?? 0,
+        count: data?.userProtocols.pagination.count ?? 0,
       })),
 }

@@ -8,7 +8,7 @@ import * as styles from './portfolio-platform-card.css'
 export type PortfolioAssetCardProps = {
   className?: string
   protocol: Exclude<
-    PortfolioProtocolsQuery['protocols']['list'],
+    PortfolioProtocolsQuery['userProtocols']['list'],
     null | undefined
   >[number]
 }

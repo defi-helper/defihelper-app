@@ -45,7 +45,7 @@ export const fetchUserInteractedProtocolsListFx =
   portfolioAssetsDomain.createEffect((userId: string) =>
     portfolioApi.getProtocolList({
       filter: {
-        linked: userId,
+        userId,
       },
     })
   )
