@@ -22,7 +22,6 @@ import { WalletExchangeTypeEnum } from '~/api'
 import { Select, SelectOption } from '~/common/select'
 import * as styles from './settings-integration-connect.css'
 import { analytics } from '~/analytics'
-import { SettingsIntegrationBybitForm } from '../settings-integration-bybit-form'
 
 export type SettingsIntegrationConnectProps = {
   className?: string
