@@ -32,36 +32,30 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
 
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
-  const handleConnectIntegration =
-    (integrationType: WalletExchangeTypeEnum) =>
-    async (formValues: Record<string, string>) => {
-      try {
-        const objectKeys: string[] = []
-        const objectValues: string[] = []
+  const handleConnectIntegration = async (
+    type: WalletExchangeTypeEnum,
+    formValues: Record<string, string>
+  ) => {
+    try {
+      await model.connectIntegrationApiExchangeFx({
+        objectKeys: Object.keys(formValues),
+        objectValues: Object.values(formValues),
+        type,
+      })
 
-        Object.entries(formValues).map(([i, v]) =>
-          Promise.all([objectKeys.push(i), objectValues.push(v)])
-        )
-
-        await model.connectIntegrationApiExchangeFx({
-          objectKeys,
-          objectValues,
-          type: integrationType,
+      setCountRender(countRender + 1)
+      analytics.log('settings_cex_connected_success', {
+        type,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+        analytics.log('settings_cex_connected_failure', {
+          type,
         })
-
-        setCountRender(countRender + 1)
-        analytics.log('settings_cex_connected_success', {
-          type: integrationType,
-        })
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message)
-          analytics.log('settings_cex_connected_failure', {
-            type: integrationType,
-          })
-        }
       }
     }
+  }
 
   const handleDisconnect = (integrationId?: string) => async () => {
     if (!integrationId) return
@@ -102,7 +96,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
               />
             ))}
             <SettingsIntegrationConnect
-              onConnect={handleConnectIntegration(WalletExchangeTypeEnum.Aax)}
+              onConnect={handleConnectIntegration}
               connecting={Boolean(connectAdding)}
               countRender={countRender}
             />

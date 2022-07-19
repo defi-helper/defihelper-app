@@ -94,22 +94,18 @@ export const Users: React.VFC<UsersProps> = () => {
               <Typography variant="body3">
                 {user.role}
                 {' · '}
-                {user.role !== UserRoleEnum.Admin && (
-                  <>
-                    <ButtonBase
-                      className={styles.adminActionButton}
-                      onClick={handleChangeRole(user)}
-                    >
-                      Edit
-                    </ButtonBase>
-                    <ButtonBase
-                      className={styles.adminActionButton}
-                      onClick={handleLoginAsUser(user)}
-                    >
-                      Login
-                    </ButtonBase>
-                  </>
-                )}
+                <ButtonBase
+                  className={styles.adminActionButton}
+                  onClick={handleChangeRole(user)}
+                >
+                  Edit
+                </ButtonBase>
+                <ButtonBase
+                  className={styles.adminActionButton}
+                  onClick={handleLoginAsUser(user)}
+                >
+                  Login
+                </ButtonBase>
               </Typography>
               <Typography variant="body3">{user.createdAt}</Typography>
             </div>

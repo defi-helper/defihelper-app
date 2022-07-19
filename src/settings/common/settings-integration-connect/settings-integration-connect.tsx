@@ -25,7 +25,10 @@ import { analytics } from '~/analytics'
 
 export type SettingsIntegrationConnectProps = {
   className?: string
-  onConnect: (value: Record<string, string>) => void
+  onConnect: (
+    exchange: WalletExchangeTypeEnum,
+    value: Record<string, string>
+  ) => void
   connecting: boolean
   countRender: number
 }
@@ -35,7 +38,7 @@ const forms: Record<string, { title: string; form: React.ElementType }> = {
     title: 'Binance',
     form: SettingsIntegrationBinanceForm,
   },
-  [WalletExchangeTypeEnum.Ftxus]: {
+  [WalletExchangeTypeEnum.Binanceus]: {
     title: 'Binance US',
     form: SettingsIntegrationBinanceForm,
   },
@@ -112,10 +115,13 @@ export const SettingsIntegrationConnect: React.FC<SettingsIntegrationConnectProp
       formValuesRef.current = formValues
     }
 
-    const handleOnSubmit = (values: Record<string, string>) => {
+    const handleOnSubmit = (
+      exchange: string,
+      values: Record<string, string>
+    ) => {
       if (isEmpty(values)) return
 
-      props.onConnect(values)
+      props.onConnect(exchange as WalletExchangeTypeEnum, values)
     }
 
     useEffect(() => {
@@ -139,7 +145,7 @@ export const SettingsIntegrationConnect: React.FC<SettingsIntegrationConnectProp
           size="small"
           onClick={
             connect
-              ? () => handleOnSubmit(formValuesRef.current)
+              ? () => handleOnSubmit(form, formValuesRef.current)
               : handleConnect
           }
           loading={props.connecting}
