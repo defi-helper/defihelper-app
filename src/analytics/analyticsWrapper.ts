@@ -1,4 +1,3 @@
-import ym from 'react-yandex-metrika'
 import ReactGA from 'react-ga'
 import amplitude from 'amplitude-js'
 import { config } from '~/config'
@@ -46,30 +45,21 @@ export const analytics = {
 
   async onWalletConnected() {
     try {
-      await Promise.all([
-        ym('reachGoal', 'wallet-connected'),
-        ReactGA.ga('event', 'wallet_connected'),
-      ])
+      await Promise.all([ReactGA.ga('event', 'wallet_connected')])
     } catch (err) {
       console.warn('unable to send analytics goal')
     }
   },
   async onAutomationCreated() {
     try {
-      await Promise.all([
-        ym('reachGoal', 'automation-created'),
-        ReactGA.ga('event', 'automation_created'),
-      ])
+      await Promise.all([ReactGA.ga('event', 'automation_created')])
     } catch (err) {
       console.warn('unable to send analytics goal')
     }
   },
   async onAutoStakingEnabled() {
     try {
-      await Promise.all([
-        ym('reachGoal', 'auto-staking-enabled'),
-        ReactGA.ga('event', 'auto_staking_enabled'),
-      ])
+      await Promise.all([ReactGA.ga('event', 'auto_staking_enabled')])
     } catch (err) {
       console.warn('unable to send analytics goal')
     }
@@ -77,10 +67,7 @@ export const analytics = {
 
   async onNotificationsEnabled() {
     try {
-      await Promise.all([
-        ym('reachGoal', 'auto-staking-enabled'),
-        ReactGA.ga('event', 'auto_staking_enabled'),
-      ])
+      await Promise.all([ReactGA.ga('event', 'auto_staking_enabled')])
     } catch (err) {
       console.warn('unable to send analytics goal')
     }

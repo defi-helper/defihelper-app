@@ -4,6 +4,7 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
   fragment stakingAutomatesContractFragment on AutomateContractType {
     id
     protocol {
+      id
       adapter
       name
     }

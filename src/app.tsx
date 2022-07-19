@@ -1,7 +1,6 @@
 import { HelmetProvider } from 'react-helmet-async'
 import { ClientContext } from 'graphql-hooks'
 import { MatomoProvider, createInstance } from '@datapunt/matomo-tracker-react'
-import { YMInitializer } from 'react-yandex-metrika'
 
 import './app.css'
 import './assets/fonts/Basier-Circle-regular-webfont/stylesheet.css'
@@ -34,13 +33,6 @@ export const App: React.VFC = () => {
   return (
     <ThemeProvider>
       <ErrorBoundary>
-        {!config.IS_DEV && (
-          <YMInitializer
-            accounts={config.YANDEX_METRIC_ACCOUNTS}
-            options={{ webvisor: true }}
-            version="2"
-          />
-        )}
         <MatomoProvider value={matomoCounterConfiguration}>
           <ClientContext.Provider value={client}>
             <HelmetProvider>

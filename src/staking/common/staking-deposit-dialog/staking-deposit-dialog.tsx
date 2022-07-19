@@ -21,7 +21,7 @@ type FormValues = {
 export type StakingDepositDialogProps = {
   onConfirm: () => void
   methods?: AutomatesType['deposit']['methods']
-  onLastStep: () => void
+  onLastStep: (txHash?: string) => void
   onCancel: () => void
 }
 
@@ -114,11 +114,11 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
 
       const { tx } = await deposit()
 
-      await tx?.wait()
+      const result = await tx?.wait()
 
       balanceOf.retry()
 
-      props.onLastStep()
+      props.onLastStep(result.transactionHash)
 
       return true
     } catch (error) {

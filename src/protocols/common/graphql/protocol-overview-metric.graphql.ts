@@ -10,7 +10,9 @@ export const PROTOCOL_OVERVIEW_METRIC = gql`
     $metricSort: [ProtocolMetricChartContractsSortInputType!]
     $metricPagination: ProtocolMetricChartContractsPaginationInputType
     $metricDebankPagination: ProtocolMetricChartProtocolsPaginationInputType
-    $metricDebankSort: [ProtocolMetricChartProtocolsSortInputType!]
+    $metricDebankSort: [ProtocolMetricChartProtocolsSortInputType!] = [
+      { column: date, order: asc }
+    ]
     $metricDebankFilter: ProtocolMetricChartProtocolsFilterInputType
   ) {
     protocol(filter: $filter) {

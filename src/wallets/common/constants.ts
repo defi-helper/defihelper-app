@@ -40,8 +40,8 @@ const IS_ANDROID = /Android/i.test(navigator.userAgent)
 
 const METAMASK_LINK =
   'https://chrome.google.com/webstore/detail/nkbihfbeogaeaoehlefnkodbefgpgknn'
-const TRUST_MOBILE = 'https://trustwallet.com/'
-const METAMASK_MOBILE = 'https://metamask.io/'
+const TRUST_LINK = 'https://trustwallet.com/download'
+const METAMASK_MOBILE = 'https://metamask.io/download'
 const BINANCE_LINK =
   'https://chrome.google.com/webstore/detail/binance-wallet/fhbohimaelbohpjbbldcngcnapndodjp'
 const WAVES_KEEPER_LINK =
@@ -76,8 +76,8 @@ export const connectorsByName: Record<string, ConnectorByName> = {
     blockchain: 'ethereum',
     logo: TrustIcon,
     networks: ethereumNetworks,
-    available: () => Boolean(window.ethereum),
-    extensionLink: IS_MOBILE ? TRUST_MOBILE : METAMASK_LINK,
+    available: () => (IS_MOBILE ? Boolean(window.ethereum) : false),
+    extensionLink: TRUST_LINK,
   },
   [ConnectorNames.CoinBase]: {
     connector: connectors.walletlink,

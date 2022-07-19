@@ -31,6 +31,7 @@ interface Window {
   ethersMulticall: unknown
   BinanceChain?: unknown
   uniswap3: unknown
+  TradingView: any
 }
 
 declare module 'remarkable-react' {

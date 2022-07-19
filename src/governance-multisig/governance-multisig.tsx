@@ -267,7 +267,9 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
 
   return (
     <AppLayout>
-      <WalletConnect fallback={<Button>Connect</Button>} />
+      <WalletConnect fallback={<Button>Connect</Button>}>
+        <></>
+      </WalletConnect>
       {changeNetwork.error?.message}
       {isOwner.loading && 'loading...'}
       {isOwner.value === true && !changeNetwork.error?.message && (
