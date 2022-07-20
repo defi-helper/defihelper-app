@@ -6,6 +6,8 @@ export const root = style({})
 
 export const header = style({
   marginBottom: 16,
+  justifyContent: 'flex-start',
+  gap: 20,
 
   '@media': {
     [theme.mediaQueries.md()]: {

@@ -58,7 +58,10 @@ export const createActionFx = automationUpdateDomain.createEffect(
 
     if (!data) throw new Error('not created')
 
-    return data
+    return {
+      ...data,
+      triggerId: input.trigger,
+    }
   }
 )
 
@@ -84,7 +87,10 @@ export const createConditionFx = automationUpdateDomain.createEffect(
 
     if (!data) throw new Error('not created')
 
-    return data
+    return {
+      ...data,
+      triggerId: input.trigger,
+    }
   }
 )
 

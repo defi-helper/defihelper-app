@@ -25,8 +25,8 @@ export type SettingsWalletCardProps = {
   blockchain: string
   automations: string
   worth: string
-  onDeposit: () => void
-  onRefund: () => void
+  onDeposit?: () => void
+  onRefund?: () => void
   onRename: () => void
   onDelete: () => void
   onUpdateStatistics: () => void
@@ -248,30 +248,34 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
           </Typography>
         </div>
         <div className={styles.buttons}>
-          <CanDemo>
-            <Button
-              size="small"
-              className={styles.deposit}
-              onClick={props.onDeposit}
-              loading={props.depositing}
-              disabled={props.editing || props.deleting || props.refunding}
-            >
-              Deposit
-            </Button>
-          </CanDemo>
+          {props.onDeposit && (
+            <CanDemo>
+              <Button
+                size="small"
+                className={styles.deposit}
+                onClick={props.onDeposit}
+                loading={props.depositing}
+                disabled={props.editing || props.deleting || props.refunding}
+              >
+                Deposit
+              </Button>
+            </CanDemo>
+          )}
 
-          <CanDemo>
-            <Button
-              size="small"
-              variant="light"
-              className={styles.refund}
-              onClick={props.onRefund}
-              loading={props.refunding}
-              disabled={props.editing || props.deleting || props.depositing}
-            >
-              Refund
-            </Button>
-          </CanDemo>
+          {props.onRefund && (
+            <CanDemo>
+              <Button
+                size="small"
+                variant="light"
+                className={styles.refund}
+                onClick={props.onRefund}
+                loading={props.refunding}
+                disabled={props.editing || props.deleting || props.depositing}
+              >
+                Refund
+              </Button>
+            </CanDemo>
+          )}
           {props.error && (
             <Dropdown
               control={

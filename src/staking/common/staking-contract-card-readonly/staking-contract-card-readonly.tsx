@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import clsx from 'clsx'
+import isEmpty from 'lodash.isempty'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { Can } from '~/auth'
@@ -7,6 +8,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
+import { StakeRewardTokens } from '~/common/stake-reward-tokens'
 import { Typography } from '~/common/typography'
 import { paths } from '~/paths'
 import { ContractDebank } from '~/staking/common/staking.types'
@@ -30,6 +32,15 @@ export const StakingContractCardReadonly: React.VFC<StakingContractCardReadonlyP
           <Typography variant="body2" as="div">
             {props.name}
           </Typography>
+          {!isEmpty([...props.tokens.stake, ...props.tokens.reward]) && (
+            <div className={styles.coinIcons}>
+              <StakeRewardTokens
+                stakeTokens={props.tokens.stake}
+                rewardTokens={props.tokens.reward}
+                tokenClassName={styles.contractIconBg}
+              />
+            </div>
+          )}
         </div>
         <div>
           <Typography

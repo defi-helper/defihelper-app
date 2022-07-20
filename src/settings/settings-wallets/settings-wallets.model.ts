@@ -9,6 +9,7 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { toastsService } from '~/toasts'
 import { parseError } from '~/common/parse-error'
+import { analytics } from '~/analytics'
 
 type ChainIdEnum = keyof typeof contracts
 
@@ -125,15 +126,37 @@ export const depositFx = walletListDomain.createEffect(
     const balance = await networkProvider.getBalance(account)
 
     if (balance.lt(amountNormalized)) {
+      analytics.log('settings_wallet_defihelper_balance_top_up_failure', {
+        blockchain: 'ethereum',
+        amount: amountNormalized,
+        walletAddress: params.walletAddress,
+        chainId: params.chainId,
+      })
       throw new Error('not enough funds')
     }
 
     try {
+      analytics.log(
+        'settings_wallet_defihelper_balance_top_up_send_transaction',
+        {
+          blockchain: 'ethereum',
+          amount: amountNormalized,
+          walletAddress: params.walletAddress,
+          chainId: params.chainId,
+        }
+      )
       const transactionReceipt = await balanceContract.deposit(account, {
         value: amountNormalized,
       })
 
       const result = await transactionReceipt.wait()
+
+      analytics.log('settings_wallet_defihelper_balance_top_up_success', {
+        blockchain: 'ethereum',
+        amount: amountNormalized,
+        walletAddress: params.walletAddress,
+        chainId: params.chainId,
+      })
       await settingsApi.billingTransferCreate({
         input: {
           blockchain: params.blockchain,
@@ -162,14 +185,41 @@ export const refundFx = walletListDomain.createEffect(
     const balance = await balanceContract.netBalanceOf(account)
 
     if (balance.lt(amountNormalized)) {
+      analytics.log('settings_wallet_defihelper_balance_refund_failure', {
+        blockchain: 'ethereum',
+        amount: amountNormalized,
+        walletAddress: params.walletAddress,
+        chainId: params.chainId,
+      })
       throw new Error('not enough money')
     }
 
+    analytics.log(
+      'settings_wallet_defihelper_balance_refund_send_transaction',
+      {
+        blockchain: 'ethereum',
+        amount: amountNormalized,
+        walletAddress: params.walletAddress,
+        chainId: params.chainId,
+      }
+    )
     try {
       const transactionReceipt = await balanceContract.refund(amountNormalized)
 
       await transactionReceipt.wait()
+      analytics.log('settings_wallet_defihelper_balance_refund_success', {
+        blockchain: 'ethereum',
+        amount: amountNormalized,
+        walletAddress: params.walletAddress,
+        chainId: params.chainId,
+      })
     } catch (error) {
+      analytics.log('settings_wallet_defihelper_balance_refund_failure', {
+        blockchain: 'ethereum',
+        amount: amountNormalized,
+        walletAddress: params.walletAddress,
+        chainId: params.chainId,
+      })
       throw parseError(error)
     }
   }
@@ -268,6 +318,17 @@ export const $walletsWithMetrics = combine(
           empty: [] as WalletWithMetrics[],
         }
       )
+)
+
+export const $networksWithBalance = walletListDomain.createStore(
+  Object.entries(contracts)
+    .filter(([, obj]) => 'Balance' in obj)
+    .reduce<Record<string, boolean>>((acc, [network]) => {
+      return {
+        [network]: true,
+        ...acc,
+      }
+    }, {})
 )
 
 export const updated = walletListDomain.createEvent()
