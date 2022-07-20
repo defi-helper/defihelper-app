@@ -96,20 +96,12 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
           provider: currentWallet.provider,
         })
 
-        analytics.log('settings_wallet_defihelper_balance_top_up_success', {
-          blockchain: wallet.blockchain,
-          amount: result.amount,
-          walletAddress: currentWallet.account,
-          chainId: String(currentWallet.chainId),
-          provider: currentWallet.provider,
-        })
         await openSuccess({
           type: TransactionEnum.deposit,
         })
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
-          analytics.log('settings_wallet_defihelper_balance_top_up_failure')
         }
       }
     }
@@ -134,17 +126,9 @@ export const SettingsWallets: React.VFC<SettingsWalletsProps> = (props) => {
         await openSuccess({
           type: TransactionEnum.refund,
         })
-        analytics.log('settings_wallet_defihelper_balance_refund_success', {
-          blockchain: wallet.blockchain,
-          amount: result.amount,
-          walletAddress: currentWallet.account,
-          chainId: String(currentWallet.chainId),
-          provider: currentWallet.provider,
-        })
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
-          analytics.log('settings_wallet_defihelper_balance_refund_failure')
         }
       }
     }
