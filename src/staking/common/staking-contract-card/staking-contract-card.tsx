@@ -15,6 +15,7 @@ import { paths } from '~/paths'
 import { StakingListRowSyncIndicator } from '~/staking/common/staking-list-row-sync-indicator'
 import { FreshMetrics, Contract } from '~/staking/common/staking.types'
 import { isExcludedAdapter } from '../constants'
+import { StakingFreshMetrics } from '../staking-fresh-metrics'
 import { WatcherEventListener } from '../staking.api'
 import * as styles from './staking-contract-card.css'
 
@@ -61,6 +62,10 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
   const currentNetwork = networksConfig[props.network]
 
   const isExcludedContract = isExcludedAdapter(props.adapter)
+
+  const freshMetricsIcon = !isEmpty(props.freshMetrics[props.id]) && (
+    <StakingFreshMetrics className={styles.freshMetricsIcon} />
+  )
 
   return (
     <div
@@ -114,6 +119,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           align="right"
         >
           ${bignumberUtils.format(metric.tvl)}
+          {freshMetricsIcon}
         </Typography>
       </div>
       <div>
@@ -129,13 +135,14 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             '-'
           ) : (
             <>
-              {bignumberUtils.formatMax(apy, 10000)}%{' '}
+              {bignumberUtils.formatMax(apy, 10000)}%
               <ButtonBase
                 onClick={props.onOpenApy}
                 className={styles.apyButton}
               >
                 <Icon icon="calculator" width="20" height="20" />
               </ButtonBase>
+              {freshMetricsIcon}
             </>
           )}
         </Typography>
@@ -168,6 +175,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           align="right"
         >
           ${bignumberUtils.format(metric.myStaked)}
+          {freshMetricsIcon}
         </Typography>
       </div>
       <div>
@@ -178,9 +186,14 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           transform="uppercase"
           align="right"
         >
-          {isExcludedContract
-            ? '-'
-            : `$${bignumberUtils.format(metric.myEarned)}`}
+          {isExcludedContract ? (
+            '-'
+          ) : (
+            <>
+              ${bignumberUtils.format(metric.myEarned)}
+              {freshMetricsIcon}
+            </>
+          )}
         </Typography>
       </div>
       <div className={clsx(styles.tableCol)}>
