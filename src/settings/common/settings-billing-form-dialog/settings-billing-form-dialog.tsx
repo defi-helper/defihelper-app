@@ -44,7 +44,7 @@ export const SettingsBillingFormDialog: React.VFC<SettingsBillingFormDialogProps
               type="submit"
               onClick={() => {
                 analytics.log(
-                  'auto_staking_pop_up_top_up_your_defihelper_balance_submit_click',
+                  'settings_wallet_defihelper_balance_top_up_amount_submit_click',
                   {
                     amount: getValues('amount'),
                   }
