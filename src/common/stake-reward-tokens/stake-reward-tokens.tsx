@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import isEmpty from 'lodash.isempty'
 import { cloneElement } from 'react'
 
 import { buildExplorerUrl } from '~/common/build-explorer-url'
@@ -90,6 +91,9 @@ const TokenIcon = (props: {
 
 export const StakeRewardTokens: React.VFC<StakeRewardTokensProps> = (props) => {
   const { size = 20 } = props
+
+  if (isEmpty([...(props.stakeTokens ?? []), ...(props.stakeTokens ?? [])]))
+    return <></>
 
   return (
     <span className={styles.tokens}>
