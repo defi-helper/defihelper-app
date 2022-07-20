@@ -37,7 +37,7 @@ export const coinIcons = style({
 
 export const apyButton = style({
   verticalAlign: 'middle',
-  marginLeft: 10,
+  marginLeft: 8,
 })
 
 export const autostakingCol = style({
@@ -76,4 +76,8 @@ export const grey = style({
 
 export const contractIconBg = style({
   background: theme.colors.background,
+})
+
+export const freshMetricsIcon = style({
+  marginLeft: 8,
 })

@@ -13,6 +13,7 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       id
       protocol {
         id
+        adapter
       }
       adapter
       layout

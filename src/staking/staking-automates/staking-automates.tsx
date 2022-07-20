@@ -1,3 +1,4 @@
+import { useInterval } from 'react-use'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useMemo } from 'react'
@@ -48,6 +49,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const [openRefundDialog] = useDialog(StakingRefundDialog)
 
   const automatesContracts = useStore(model.$automatesContracts)
+  const { metrics } = useStore(model.$freshMetrics)
 
   const handleDelete = (contractId: string) => async () => {
     try {
@@ -249,6 +251,15 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     }
   }, variables)
 
+  useInterval(
+    () => {
+      if (currentWallet) {
+        model.fetchMetrics(currentWallet)
+      }
+    },
+    currentWallet ? 15000 : null
+  )
+
   if (isEmpty(automatesContracts)) return <></>
 
   return (
@@ -326,6 +337,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               error={
                 automatesContract.contractWallet?.billing.balance.lowFeeFunds
               }
+              freshMetrics={metrics[automatesContract.id]}
             />
           )
         })}

@@ -1,3 +1,4 @@
+import isEmpty from 'lodash.isempty'
 import clsx from 'clsx'
 
 import { Link as ReactRouterLink } from 'react-router-dom'
@@ -12,11 +13,13 @@ import { Link } from '~/common/link'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { CircularProgress } from '~/common/circular-progress'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { networksConfig } from '~/networks-config'
-import * as styles from './staking-automates-contract-card.css'
 import { CanDemo } from '~/auth/can-demo'
 import { dateUtils } from '~/common/date-utils'
 import { paths } from '~/paths'
+import { networksConfig } from '~/networks-config'
+import { FreshMetrics } from '~/staking/common/staking.types'
+import { StakingFreshMetrics } from '~/staking/common/staking-fresh-metrics'
+import * as styles from './staking-automates-contract-card.css'
 
 export type StakingAutomatesContractCardProps = {
   className?: string
@@ -41,6 +44,7 @@ export type StakingAutomatesContractCardProps = {
   migrating?: boolean
   running?: boolean
   tokensIcons: Array<string | null>
+  freshMetrics?: FreshMetrics
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -167,7 +171,11 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               Balance
             </Typography>
             <Typography variant="body2" as="span">
-              ${bignumberUtils.format(props.balance)}
+              $
+              {bignumberUtils.format(
+                props.freshMetrics?.myStaked ?? props.balance
+              )}{' '}
+              {!isEmpty(props.freshMetrics) && <StakingFreshMetrics />}
             </Typography>
           </div>
           {props.protocol && (
