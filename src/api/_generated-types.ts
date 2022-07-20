@@ -5919,7 +5919,10 @@ export type StakingAutomatesContractFragmentFragment = {
         | 'events'
         | 'createdAt'
       > & {
-          protocol: { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'id'>
+          protocol: { __typename?: 'ProtocolType' } & Pick<
+            ProtocolType,
+            'id' | 'adapter'
+          >
           automate: { __typename?: 'ContractAutomatesType' } & Pick<
             ContractAutomatesType,
             'adapters' | 'autorestake'

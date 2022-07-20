@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { useMemo } from 'react'
-import { useMedia } from 'react-use'
+import { useInterval, useMedia } from 'react-use'
 import { useStore } from 'effector-react'
 
 import { Paper } from '~/common/paper'
@@ -45,6 +45,7 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
     const loading = useStore(model.fetchAutomatesContractsFx.pending)
     const user = useStore(authModel.$user)
     const wallets = useStore(settingsWalletModel.$wallets)
+    const { metrics } = useStore(model.$freshMetrics)
 
     const [openConfirmDialog] = useDialog(ConfirmDialog)
     const [openErrorDialog] = useDialog(StakingErrorDialog)
@@ -266,6 +267,15 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
         }
       }
 
+    useInterval(
+      () => {
+        if (currentWallet) {
+          model.fetchMetrics(currentWallet)
+        }
+      },
+      currentWallet ? 15000 : null
+    )
+
     const variables = useMemo(() => {
       if (!user) return undefined
 
@@ -387,6 +397,7 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
                     deployedContract.contractWallet?.billing?.balance
                       ?.lowFeeFunds
                   }
+                  freshMetrics={metrics[deployedContract.id]}
                 />
               )
             })}

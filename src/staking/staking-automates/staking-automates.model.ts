@@ -1,19 +1,22 @@
-import { createDomain, sample, guard } from 'effector'
+import { createDomain, sample, guard, UnitValue, StoreValue } from 'effector'
 import { createGate } from 'effector-react'
 import omit from 'lodash.omit'
 
 import { authModel } from '~/auth'
-import { loadAdapter } from '~/common/load-adapter'
+import { Adapters, loadAdapter } from '~/common/load-adapter'
 import { UserType } from '~/api/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import {
   buildAdaptersUrl,
+  FreshMetrics,
   stakingApi,
   StakingAutomatesContract,
 } from '../common'
-import { walletApi } from '~/wallets/common'
+import { Wallet, walletApi } from '~/wallets/common'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { settingsWalletModel } from '~/settings/settings-wallets'
 
 export type ActionType = 'deposit' | 'migrate' | 'refund' | 'run'
 
@@ -160,6 +163,123 @@ const contractCreated = guard({
   }),
   filter: ({ opened }) => opened,
 }).map(({ contract }) => contract)
+
+export const fetchMetrics = stakingAutomatesDomain.createEvent<Wallet>()
+
+export const fetchMetricsFx = stakingAutomatesDomain.createEffect(
+  async (params: {
+    contracts: StakingAutomatesContract[]
+    wallet: Wallet
+    wallets: StoreValue<typeof settingsWalletModel.$wallets>
+  }) => {
+    const networkProvider = walletNetworkModel.getNetwork(
+      params.wallet.provider,
+      String(params.wallet.chainId)
+    )
+
+    const result = await params.contracts.reduce<
+      Promise<{
+        metrics: Record<string, FreshMetrics>
+        errors: Record<string, string>
+      }>
+    >(
+      async (acc, contract) => {
+        const previousAcc = await acc
+
+        try {
+          if (!contract.contract) return previousAcc
+
+          const adapter = await loadAdapter(
+            buildAdaptersUrl(contract.contract.adapter)
+          )
+
+          const adapterFn =
+            adapter[
+              contract.contract.adapter as keyof Omit<Adapters, 'automates'>
+            ]
+
+          if (!adapterFn) return previousAcc
+
+          const adapterObj = await adapterFn(
+            networkProvider,
+            contract.address,
+            {
+              blockNumber: 'latest',
+              signer: networkProvider?.getSigner(),
+            }
+          )
+
+          const walletMetricsPromise = await Promise.all(
+            params.wallets.map((wallet) => adapterObj.wallet(wallet.address))
+          )
+
+          const walletMetrics = walletMetricsPromise.reduce(
+            (accum, wallet) => {
+              return {
+                stakingUSD: bignumberUtils.plus(
+                  accum.stakingUSD,
+                  wallet.metrics.stakingUSD
+                ),
+                earnedUSD: bignumberUtils.plus(
+                  accum.earnedUSD,
+                  wallet.metrics.earnedUSD
+                ),
+              }
+            },
+            {
+              stakingUSD: '0',
+              earnedUSD: '0',
+            }
+          )
+
+          previousAcc.metrics = {
+            ...previousAcc.metrics,
+            [contract.id]: {
+              contractId: contract.id,
+              tvl: adapterObj.metrics.tvl,
+              aprYear: adapterObj.metrics.aprYear,
+              myStaked: walletMetrics.stakingUSD,
+              myEarned: walletMetrics.earnedUSD,
+            },
+          }
+        } catch (error) {
+          if (!(error instanceof Error)) return previousAcc
+
+          previousAcc.errors = {
+            ...previousAcc.errors,
+            [contract.id]: `${error.name}: ${error.message}`,
+          }
+        }
+
+        return previousAcc
+      },
+      Promise.resolve({
+        errors: {},
+        metrics: {},
+      })
+    )
+
+    return result
+  }
+)
+
+export const $freshMetrics = stakingAutomatesDomain
+  .createStore<UnitValue<typeof fetchMetricsFx.doneData>>({
+    errors: {},
+    metrics: {},
+  })
+  .on(fetchMetricsFx.doneData, (_, payload) => payload)
+
+guard({
+  clock: sample({
+    source: [$automatesContracts, settingsWalletModel.$wallets],
+    clock: fetchMetrics,
+    fn: ([contracts, wallets], wallet) => ({ contracts, wallets, wallet }),
+  }),
+  filter: ({ contracts, wallets, wallet }) =>
+    Boolean(contracts.length && wallets.length && wallet.account),
+  target: fetchMetricsFx,
+})
 
 $automatesContracts.on(contractCreated, (state, payload) => [...state, payload])
 $automatesContracts.reset(StakingAutomatesGate.close)
