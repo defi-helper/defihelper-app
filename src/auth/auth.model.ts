@@ -231,8 +231,9 @@ guard({
   target: authWavesFx,
 })
 
-sample({
+guard({
   clock: [authEthereumFx.doneData, authWavesFx.doneData, authDemoFx.doneData],
+  filter: (data) => Boolean(data),
   target: saveUserFx,
 })
 
