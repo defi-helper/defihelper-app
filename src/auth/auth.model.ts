@@ -231,9 +231,8 @@ guard({
   target: authWavesFx,
 })
 
-guard({
+sample({
   clock: [authEthereumFx.doneData, authWavesFx.doneData, authDemoFx.doneData],
-  filter: (auth) => auth?.sid === sidUtils.get() || sidUtils.get() === null,
   target: saveUserFx,
 })
 
@@ -315,7 +314,7 @@ guard({
 
 guard({
   source: $user,
-  clock: [$user.updates, saveUserFx.doneData],
+  clock: [$user.updates, saveUserFx.finally],
   filter: (user) => Boolean(user),
   target: settingsWalletModel.fetchWalletListFx,
 })
