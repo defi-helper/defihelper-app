@@ -192,7 +192,7 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
     event.preventDefault()
 
     props.onCancel()
-    history.push(paths.buyLp)
+    history.push(paths.LPTokens)
   }
 
   return (

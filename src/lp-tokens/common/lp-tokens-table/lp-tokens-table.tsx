@@ -19,7 +19,7 @@ import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { StakingApyDialog } from '~/staking/common'
 import { WalletConnect } from '~/wallets/wallet-connect'
-import * as styles from './buy-liquidity-table.css'
+import * as styles from './lp-tokens-table.css'
 
 type Contracts = Exclude<
   Exclude<
@@ -29,7 +29,7 @@ type Contracts = Exclude<
   null | undefined
 >
 
-export type BuyLiquidityTableProps = {
+export type LPTokensTableProps = {
   className?: string
   onProtocolClick?: (protocolId: string) => void
   onBuyLpClick?: (contract: Contracts[number]) => void
@@ -46,7 +46,7 @@ export type BuyLiquidityTableProps = {
   contractsHasNextPage: boolean
 }
 
-export const BuyLiquidityTable: React.VFC<BuyLiquidityTableProps> = (props) => {
+export const LPTokensTable: React.VFC<LPTokensTableProps> = (props) => {
   const [openApyDialog] = useDialog(StakingApyDialog)
 
   const handleOnProtocolClick = (protocolId: string) => () => {

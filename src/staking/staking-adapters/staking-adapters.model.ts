@@ -129,7 +129,15 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     const adapterObj = await loadAdapter(buildAdaptersUrl('dfh'))
 
-    const result = await adapterObj.automates.buyLiquidity(
+    const buyLiquidity = await adapterObj.automates.buyLiquidity(
+      networkProvider.getSigner(),
+      currentNetwork.BuyLiquidity.address,
+      {
+        router: params.router,
+        pair: params.pair,
+      }
+    )
+    const sellLiquidity = await adapterObj.automates.sellLiquidity(
       networkProvider.getSigner(),
       currentNetwork.BuyLiquidity.address,
       {
@@ -139,7 +147,8 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
     )
 
     return {
-      adapter: result,
+      buyLiquidity,
+      sellLiquidity,
       tokens,
     }
   }

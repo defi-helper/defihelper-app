@@ -3,7 +3,6 @@ import networks from '@defihelper/networks/contracts.json'
 
 import {
   Contract,
-  StakingBuyLiquidityDialog,
   isExcludedAdapter,
   StakingSuccessDialog,
   StakingStakeDialog,
@@ -27,6 +26,7 @@ import * as stakingAutomatesModel from '~/staking/staking-automates/staking-auto
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
 import { CanDemo } from '~/auth/can-demo'
+import { LPTokensBuySellDialog } from '~/lp-tokens/common/lp-tokens-buy-sell-dialog'
 
 export type StakingAdaptersProps = {
   className?: string
@@ -50,7 +50,7 @@ const isGovernance = (adapter: string) => {
 }
 
 export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
-  const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
+  const [openBuyLiquidity] = useDialog(LPTokensBuySellDialog)
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
   const [openStakeDialog] = useDialog(StakingStakeDialog)
   const [openUnstakeDialog] = useDialog(StakingUnstakeDialog)
@@ -206,7 +206,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
     })
 
     try {
-      const { adapter, tokens } = await model.buyLPFx({
+      const { sellLiquidity, buyLiquidity, tokens } = await model.buyLPFx({
         account: wallet.account,
         provider: wallet.provider,
         chainId: props.network,
@@ -217,7 +217,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       })
 
       await openBuyLiquidity({
-        buyLiquidityAdapter: adapter,
+        buyLiquidityAdapter: buyLiquidity,
+        sellLiquidityAdapter: sellLiquidity,
         tokens,
       })
 

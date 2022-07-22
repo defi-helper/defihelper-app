@@ -120,7 +120,7 @@ export const StakingStakeDialog: React.VFC<StakingStakeDialogProps> = (
     event.preventDefault()
 
     props.onCancel()
-    history.push(paths.buyLp)
+    history.push(paths.LPTokens)
   }
 
   useEffect(() => {

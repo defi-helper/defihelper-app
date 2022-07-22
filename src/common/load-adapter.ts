@@ -219,6 +219,23 @@ export type BuyLiquidity = {
   }
 }
 
+export type SellLiquidity = {
+  name: string
+  methods: {
+    balanceOf(): Promise<string>
+    isApproved(amount: string): Promise<boolean | Error>
+    approve(
+      amount: string
+    ): Promise<{ tx?: { wait: () => Promise<{ transactionHash?: string }> } }>
+    canSell(amount: string): Promise<boolean | Error>
+    sell(
+      tokenAddress: string,
+      amount: string,
+      slippage: number | string
+    ): Promise<{ tx?: { wait: () => Promise<{ transactionHash?: string }> } }>
+  }
+}
+
 export type Adapters = {
   staking: AdapterFn
   swopfiStaking: AdapterFn
@@ -243,6 +260,11 @@ export type Adapters = {
       contractAddress: string,
       payload: unknown
     ) => Promise<BuyLiquidity>
+    sellLiquidity: (
+      signer: unknown,
+      contractAddress: string,
+      payload: unknown
+    ) => Promise<SellLiquidity>
   }
 }
 
