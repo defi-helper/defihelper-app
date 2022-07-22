@@ -2142,7 +2142,7 @@ export type QueryProtocolsArgs = {
 }
 
 export type QueryUserProtocolsArgs = {
-  filter?: Maybe<UserProtocolListFilterInputType>
+  filter: UserProtocolListFilterInputType
   sort?: Maybe<Array<UserProtocolListSortInputType>>
   pagination?: Maybe<UserProtocolListPaginationInputType>
 }
@@ -3128,7 +3128,7 @@ export enum UserNotificationTypeEnum {
 
 export type UserProtocolListFilterInputType = {
   /** Target user ID */
-  userId: Scalars['UuidType']
+  user: Scalars['UuidType']
   /** Only hidden/visible */
   hidden?: Maybe<Scalars['Boolean']>
 }
@@ -4904,7 +4904,7 @@ export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
   }
 
 export type PortfolioProtocolsQueryVariables = Exact<{
-  filter?: Maybe<UserProtocolListFilterInputType>
+  filter: UserProtocolListFilterInputType
   sort?: Maybe<
     Array<UserProtocolListSortInputType> | UserProtocolListSortInputType
   >

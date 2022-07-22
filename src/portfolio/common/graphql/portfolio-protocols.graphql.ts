@@ -2,7 +2,7 @@ import { gql } from 'urql'
 
 export const PORTFOLIO_PROTOCOLS = gql`
   query PortfolioProtocols(
-    $filter: UserProtocolListFilterInputType
+    $filter: UserProtocolListFilterInputType!
     $sort: [UserProtocolListSortInputType!]
     $pagination: UserProtocolListPaginationInputType
   ) {

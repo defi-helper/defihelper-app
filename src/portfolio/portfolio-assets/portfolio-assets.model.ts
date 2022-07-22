@@ -42,10 +42,10 @@ export const PortfolioAssetsGate = createGate<string | null>({
 })
 
 export const fetchUserInteractedProtocolsListFx =
-  portfolioAssetsDomain.createEffect((userId: string) =>
+  portfolioAssetsDomain.createEffect((user: string) =>
     portfolioApi.getProtocolList({
       filter: {
-        userId,
+        user,
       },
     })
   )
