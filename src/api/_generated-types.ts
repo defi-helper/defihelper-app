@@ -1185,6 +1185,13 @@ export enum LocaleEnum {
   RuRu = 'ruRU',
 }
 
+export type MetricChangeType = {
+  __typename?: 'MetricChangeType'
+  day: Scalars['String']
+  week: Scalars['String']
+  month: Scalars['String']
+}
+
 export type MetricChartType = {
   __typename?: 'MetricChartType'
   date: Scalars['DateTimeType']
@@ -1763,8 +1770,6 @@ export type ProtocolListFilterInputType = {
   /** Target ID */
   id?: Maybe<Array<Scalars['UuidType']>>
   blockchain?: Maybe<BlockchainFilterInputType>
-  /** Target user ID */
-  linked?: Maybe<Scalars['UuidType']>
   /** Is favorite */
   favorite?: Maybe<Scalars['Boolean']>
   hidden?: Maybe<Scalars['Boolean']>
@@ -1795,7 +1800,6 @@ export type ProtocolListSortInputType = {
 export enum ProtocolListSortInputTypeColumnEnum {
   Id = 'id',
   Name = 'name',
-  Address = 'address',
   CreatedAt = 'createdAt',
 }
 
@@ -2084,6 +2088,7 @@ export type Query = {
   users: UserListQuery
   protocol?: Maybe<ProtocolType>
   protocols: ProtocolListQuery
+  userProtocols: UserProtocolListQuery
   contracts: ContractListType
   proposal?: Maybe<ProposalType>
   proposals: ProposalListQuery
@@ -2134,6 +2139,12 @@ export type QueryProtocolsArgs = {
   filter?: Maybe<ProtocolListFilterInputType>
   sort?: Maybe<Array<ProtocolListSortInputType>>
   pagination?: Maybe<ProtocolListPaginationInputType>
+}
+
+export type QueryUserProtocolsArgs = {
+  filter?: Maybe<UserProtocolListFilterInputType>
+  sort?: Maybe<Array<UserProtocolListSortInputType>>
+  pagination?: Maybe<UserProtocolListPaginationInputType>
 }
 
 export type QueryContractsArgs = {
@@ -3084,9 +3095,13 @@ export enum UserMetricChartSortInputTypeColumnEnum {
 export type UserMetricType = {
   __typename?: 'UserMetricType'
   balanceUSD: Scalars['String']
+  balanceUSDChange: MetricChangeType
   stakedUSD: Scalars['String']
+  stakedUSDChange: MetricChangeType
   earnedUSD: Scalars['String']
+  earnedUSDChange: MetricChangeType
   worth: Scalars['String']
+  worthChange: MetricChangeType
   apy: Scalars['String']
 }
 
@@ -3109,6 +3124,38 @@ export type UserNotificationType = {
 export enum UserNotificationTypeEnum {
   PortfolioMetrics = 'portfolioMetrics',
   AutomateCallNotEnoughFunds = 'automateCallNotEnoughFunds',
+}
+
+export type UserProtocolListFilterInputType = {
+  /** Target user ID */
+  userId: Scalars['UuidType']
+  /** Only hidden/visible */
+  hidden?: Maybe<Scalars['Boolean']>
+}
+
+export type UserProtocolListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type UserProtocolListQuery = {
+  __typename?: 'UserProtocolListQuery'
+  /** Elements */
+  list?: Maybe<Array<ProtocolType>>
+  pagination: Pagination
+}
+
+export type UserProtocolListSortInputType = {
+  column: UserProtocolListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum UserProtocolListSortInputTypeColumnEnum {
+  Id = 'id',
+  Name = 'name',
+  CreatedAt = 'createdAt',
 }
 
 export type UserReferrerCodeType = {
@@ -3315,7 +3362,7 @@ export type UserType = {
 }
 
 export type UserTypeTokenAliasesStakedMetricsArgs = {
-  filter?: Maybe<UserTokenAliasesStakedMetricsListFilterInputType>
+  filter: UserTokenAliasesStakedMetricsListFilterInputType
   pagination?: Maybe<UserTokenAliasesStakedMetricsListPaginationInputType>
 }
 
@@ -3737,10 +3784,14 @@ export type WalletMetricFilterInputType = {
 export type WalletMetricType = {
   __typename?: 'WalletMetricType'
   stakedUSD: Scalars['String']
+  stakedUSDChange: MetricChangeType
   earnedUSD: Scalars['String']
+  earnedUSDChange: MetricChangeType
   balance: Scalars['String']
   usd: Scalars['String']
+  usdChange: MetricChangeType
   worth: Scalars['String']
+  worthChange: MetricChangeType
 }
 
 export type WalletMetricUpdatedEvent = {
@@ -4853,13 +4904,15 @@ export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
   }
 
 export type PortfolioProtocolsQueryVariables = Exact<{
-  filter?: Maybe<ProtocolListFilterInputType>
-  sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
-  pagination?: Maybe<ProtocolListPaginationInputType>
+  filter?: Maybe<UserProtocolListFilterInputType>
+  sort?: Maybe<
+    Array<UserProtocolListSortInputType> | UserProtocolListSortInputType
+  >
+  pagination?: Maybe<UserProtocolListPaginationInputType>
 }>
 
 export type PortfolioProtocolsQuery = { __typename?: 'Query' } & {
-  protocols: { __typename?: 'ProtocolListQuery' } & {
+  userProtocols: { __typename?: 'UserProtocolListQuery' } & {
     list?: Maybe<
       Array<
         { __typename?: 'ProtocolType' } & Pick<
@@ -4876,12 +4929,7 @@ export type PortfolioProtocolsQuery = { __typename?: 'Query' } & {
         > & {
             metric: { __typename?: 'ProtocolMetricType' } & Pick<
               ProtocolMetricType,
-              | 'tvl'
-              | 'myAPY'
-              | 'myStaked'
-              | 'myEarned'
-              | 'myMinUpdatedAt'
-              | 'myAPYBoost'
+              'myAPY' | 'myStaked' | 'myEarned'
             >
           }
       >
