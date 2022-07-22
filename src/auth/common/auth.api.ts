@@ -16,10 +16,11 @@ import { AUTH_DEMO } from './graphql/auth-demo.graphql'
 import { AUTH_THROUGH_ADMIN } from './graphql/auth-through-admin.graphql'
 
 export const authApi = {
-  me: () =>
+  me: (variables: MeQueryVariables) =>
     getAPIClient()
       .request<MeQuery, unknown, MeQueryVariables>({
         query: ME.loc?.source.body ?? '',
+        variables,
       })
       .then(({ data }) => data?.me),
 

@@ -27,7 +27,13 @@ type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
 
 const ERROR_MESSAGE = 'Unable to authenticate'
 
-export const fetchUserFx = createEffect(() => authApi.me())
+export const fetchUserFx = createEffect(() =>
+  authApi.me({
+    input: {
+      timezone: dateUtils.timezone(),
+    },
+  })
+)
 
 export const logoutFx = createEffect(() => {
   sidUtils.remove()
