@@ -11,7 +11,7 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
 import { toastsService } from '~/toasts'
-import { config } from '~/config'
+// import { config } from '~/config'
 import { authModel } from '~/auth'
 
 type Product = Exclude<
@@ -26,7 +26,7 @@ type BuyProductParams = {
   product: Product
 }
 
-const contracts = networks[config.DEFAULT_CHAIN_ID].Store
+const contracts = networks['43114'].StoreUpgradable // networks[config.DEFAULT_CHAIN_ID].StoreUpgradable
 
 export const automationProductsDomain = createDomain()
 
@@ -47,7 +47,7 @@ export const buyProductFx = automationProductsDomain.createEffect(
 
     const contract = new ethers.Contract(
       contracts.address,
-      abi.Store.abi,
+      abi.StoreUpgradable.abi,
       networkProvider.getSigner()
     )
 

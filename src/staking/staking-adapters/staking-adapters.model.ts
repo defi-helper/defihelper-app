@@ -39,14 +39,14 @@ export const isNetworkKey = (
   return network in networks
 }
 
-type BuyLiquidity = {
-  BuyLiquidity: { address: string; deployBlockNumber: number }
+type LPTokensManager = {
+  LPTokensManager: { address: string; deployBlockNumber: number }
 }
 
 export const isBuyLiquidity = (
   network: Record<string, unknown>
-): network is BuyLiquidity => {
-  return 'BuyLiquidity' in network
+): network is LPTokensManager => {
+  return 'LPTokensManager' in network
 }
 
 export const stakingAdaptersDomain = createDomain()
@@ -115,7 +115,7 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     if (!isNetworkKey(network)) throw new Error('wrong network')
 
-    const currentNetwork = networks[network]
+    const currentNetwork = networks['43114'] // networks[network]
 
     if (!isBuyLiquidity(currentNetwork))
       throw new Error('does not have a BuyLiquidity contract')
@@ -131,7 +131,7 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     const result = await adapterObj.automates.buyLiquidity(
       networkProvider.getSigner(),
-      currentNetwork.BuyLiquidity.address,
+      currentNetwork.LPTokensManager.address,
       {
         router: params.router,
         pair: params.pair,
