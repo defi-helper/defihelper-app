@@ -17,7 +17,7 @@ import * as styles from './lp-tokens-sell-form.css'
 
 export type LPTokensSellFormProps = {
   onConfirm: () => void
-  onSubmit?: () => void
+  onSubmit?: (transactionHash?: string | undefined) => void
   onCancel: () => void
   sellLiquidityAdapter: SellLiquidity
   tokens: {
@@ -96,10 +96,12 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
         formValues.slippage
       )
 
-      await tx?.wait()
+      const result = await tx?.wait()
       analytics.log('lp_tokens_purchase_success', {
         amount: bignumberUtils.floor(formValues.amount),
       })
+
+      props.onSubmit?.(result?.transactionHash)
 
       return true
     } catch (error) {

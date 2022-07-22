@@ -12,7 +12,7 @@ import * as styles from './lp-tokens-buy-sell-dialog.css'
 export type LPTokensBuySellDialogProps = {
   onConfirm: () => void
   onCancel: () => void
-  onSubmit?: () => void
+  onSubmit?: (transactionHash?: string | undefined) => void
   buyLiquidityAdapter: BuyLiquidity
   sellLiquidityAdapter: SellLiquidity
   tokens: {

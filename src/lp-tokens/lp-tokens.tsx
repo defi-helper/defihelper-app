@@ -20,9 +20,11 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { networksConfig } from '~/networks-config'
 import { LPTokensSell } from './lp-tokens-sell'
 import { LPTokensBuySellDialog } from './common/lp-tokens-buy-sell-dialog'
+import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as stakingModel from '~/staking/staking-adapters/staking-adapters.model'
 import * as styles from './lp-tokens.css'
 import * as model from './lp-tokens.model'
+import { settingsWalletModel } from '~/settings/settings-wallets'
 
 export type LPTokensProps = unknown
 
@@ -59,7 +61,8 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
   const [openBuySellDialog] = useDialog(LPTokensBuySellDialog)
 
-  const wallet = walletNetworkModel.useWalletNetwork()
+  const currentWallet = walletNetworkModel.useWalletNetwork()
+  const wallets = useStore(settingsWalletModel.$wallets)
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -149,7 +152,7 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
   }
 
   const handleBuyLiquidity = async (contract: typeof contracts[number]) => {
-    if (!wallet?.account || !contract.automate.buyLiquidity) return
+    if (!currentWallet?.account || !contract.automate.buyLiquidity) return
 
     await switchNetwork(contract.network).catch((error) => {
       if (error instanceof Error) {
@@ -160,8 +163,8 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
     try {
       const { buyLiquidity, sellLiquidity, tokens } =
         await stakingModel.buyLPFx({
-          account: wallet.account,
-          provider: wallet.provider,
+          account: currentWallet.account,
+          provider: currentWallet.provider,
           chainId: contract.network,
           router: contract.automate.buyLiquidity.router,
           pair: contract.automate.buyLiquidity.pair,
@@ -169,11 +172,33 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
           protocol: contract.blockchain,
         })
 
+      const findedWallet = wallets.find((wallet) => {
+        const sameAddreses =
+          String(currentWallet.chainId) === 'main'
+            ? currentWallet.account === wallet.address
+            : currentWallet.account?.toLowerCase() === wallet.address
+
+        return sameAddreses && String(currentWallet.chainId) === wallet.network
+      })
+
+      if (!findedWallet) throw new Error('wallet is not connected')
+
+      const cb = (txId?: string) => {
+        stakingAutomatesModel
+          .scanWalletMetricFx({
+            wallet: findedWallet.id,
+            contract: contract.id,
+            txId,
+          })
+          .catch(console.error)
+      }
+
       await openBuySellDialog({
         buyLiquidityAdapter: buyLiquidity,
         sellLiquidityAdapter: sellLiquidity,
         tokens,
-      })
+        onSubmit: cb,
+      }).catch(console.error)
 
       await openSuccessDialog({
         type: 'buyLiquidity',
