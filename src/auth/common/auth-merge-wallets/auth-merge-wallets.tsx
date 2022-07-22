@@ -13,7 +13,8 @@ export const AuthMergeWallets: React.VFC<AuthMergeWalletsProps> = (props) => {
     <Dialog className={styles.root}>
       <div className={styles.text}>
         <Typography variant="body2" as="div">
-          Account already exists! Do you want to merge it?
+          Account already exists! Do you want to merge it? You will need to sign
+          the transaction to proof the ownership of the address.
         </Typography>
       </div>
       <div className={styles.actions}>
