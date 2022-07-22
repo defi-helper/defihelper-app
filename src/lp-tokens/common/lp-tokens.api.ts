@@ -11,7 +11,7 @@ import { BUY_LIQUIDITY_CONTRACT_LIST } from './graphql/buy-liquidity-contract-li
 import { BUY_LIQUIDITY_PROTOCOL_LIST_SELECT } from './graphql/buy-liquidity-protocol-list-select.graphql'
 import { BUY_LIQUIDITY_PROTOCOL_LIST } from './graphql/buy-liquidity-protocol-list.graphql'
 
-export const buyLiquidityApi = {
+export const lpTokensApi = {
   protocols: (
     variables: BuyLiquidityProtocolsQueryVariables,
     signal: AbortSignal

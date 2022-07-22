@@ -37,7 +37,7 @@ import { ReferralTransactions } from '~/referral/referral-transactions'
 import { ReferralCalculator } from '~/referral/referral-calculator'
 import { Vesting } from '~/vesting'
 import { Monitoring } from '~/monitoring'
-import { BuyLiquidity } from '~/buy-liquidity'
+import { LPTokens } from '~/lp-tokens'
 import { DemoForward } from '~/demo-forward'
 import { Bridges } from '~/bridges'
 import { Autostaking } from '~/autostaking'
@@ -142,8 +142,8 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.referral.list}>
           <Referral />
         </PrivateRoute>
-        <Route path={paths.buyLp}>
-          <BuyLiquidity />
+        <Route path={paths.LPTokens}>
+          <LPTokens />
         </Route>
         <CanRoute action="read" subject="User" path={paths.users}>
           <Users />

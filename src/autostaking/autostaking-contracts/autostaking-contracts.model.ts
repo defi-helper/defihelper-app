@@ -17,7 +17,7 @@ import {
 } from '~/api'
 import { automationApi } from '~/automations/common/automation.api'
 import { autostakingApi } from '~/autostaking/common/autostaking.api'
-import { buyLiquidityApi } from '~/buy-liquidity/common/buy-liquidity.api'
+import { lpTokensApi } from '~/lp-tokens/common/lp-tokens.api'
 import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
 
 export const fetchContractsFx = createEffect(
@@ -93,7 +93,7 @@ export const fetchProtocolsSelectFx = createEffect(
     signal,
     ...variables
   }: BuyLiquidityProtocolsSelectQueryVariables & { signal: AbortSignal }) =>
-    buyLiquidityApi.protocolsSelect(variables, signal)
+    lpTokensApi.protocolsSelect(variables, signal)
 )
 
 export const $protocolsSelect = createStore<
