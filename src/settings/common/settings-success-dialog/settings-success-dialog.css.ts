@@ -16,7 +16,7 @@ export const title = style({
 })
 
 export const description = style({
-  color: theme.colors.danger,
+  color: theme.colors.common.red1,
   fontSize: 14,
   lineHeight: '20px',
   marginBottom: 16,
