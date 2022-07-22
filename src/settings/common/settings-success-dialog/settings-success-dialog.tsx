@@ -31,12 +31,16 @@ export const SettingsSuccessDialog: React.VFC<SettingsSuccessDialogProps> = (
 ) => {
   return (
     <Dialog className={styles.root}>
-      <Typography align="center" className={styles.title}>
-        {TITLES[props.type]}
-      </Typography>
+      <Typography className={styles.title}>{TITLES[props.type]}</Typography>
+
+      {props.type === UserContactBrokerEnum.Telegram && (
+        <Typography className={styles.description}>
+          don&apos;t forget to press START in the chat to confirm your username
+        </Typography>
+      )}
       <div className={styles.actions}>
         {props.type === UserContactBrokerEnum.Email && (
-          <Button onClick={props.onConfirm} className={styles.button}>
+          <Button onClick={props.onConfirm} size="small">
             Continue
           </Button>
         )}
@@ -45,7 +49,7 @@ export const SettingsSuccessDialog: React.VFC<SettingsSuccessDialogProps> = (
             as="a"
             href={`https://t.me/${config.TELEGRAM_BOT_USERNAME}?start=${props.confirmationCode}`}
             target="_blank"
-            className={styles.button}
+            size="small"
           >
             Open telegram
           </Button>
