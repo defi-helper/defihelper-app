@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css'
+import { theme } from '~/common/theme'
 
 export const root = style({
   width: 352,
@@ -9,14 +10,19 @@ export const root = style({
 })
 
 export const title = style({
-  marginBottom: 10,
+  marginBottom: 16,
+  fontSize: 16,
+  lineHeight: '24px',
+})
+
+export const description = style({
+  color: theme.colors.danger,
+  fontSize: 14,
+  lineHeight: '20px',
+  marginBottom: 16,
+  fontFamily: theme.fonts.mono,
 })
 
 export const actions = style({
-  display: 'flex',
-  gap: 8,
-})
-
-export const button = style({
   width: '100%',
 })
