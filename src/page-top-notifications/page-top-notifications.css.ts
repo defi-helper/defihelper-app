@@ -19,7 +19,7 @@ export const notificationContainer = style({
 })
 
 export const notificaionText = style({
-  color: theme.colors.textColorPrimary,
+  color: theme.colors.common.white1,
   fontSize: 14,
   lineHeight: '20px',
   display: 'flex',
@@ -40,6 +40,7 @@ export const mobileActions = style({
 
 export const learnMoreButton = style({
   background: theme.colors.common.black1,
+  color: theme.colors.common.white1,
   padding: '6px 34.5px',
   borderRadius: 6,
   fontSize: 12,
