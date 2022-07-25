@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -11,6 +11,11 @@ export const title = style({
       display: 'block',
     },
   },
+})
+
+export const generatingBody = style({
+  display: 'flex',
+  flexDirection: 'column',
 })
 
 export const generatingTitle = style({
@@ -119,4 +124,75 @@ export const instructionCardIcon = style({
   width: 147,
   height: 147,
   zIndex: -1,
+})
+
+export const contacts = style({
+  display: 'flex',
+  padding: 16,
+  marginBottom: 16,
+  gap: 16,
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: 24,
+      marginBottom: 32,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+  },
+})
+
+export const contactsText = style({
+  maxWidth: 652,
+  marginRight: 'auto',
+})
+
+export const contactsButton = style({})
+
+globalStyle(`${contactsButton} span`, {
+  gap: 8,
+})
+
+export const videoWrap = style({
+  position: 'relative',
+  overflow: 'hidden',
+  width: '100%',
+  paddingTop: '56.25%',
+  borderRadius: 16,
+  zIndex: 0,
+  margin: '0 auto',
+  marginBottom: 16,
+  order: -1,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      order: 'unset',
+      marginBottom: 0,
+    },
+  },
+})
+
+export const video = style({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  zIndex: -1,
+})
+
+export const generatingMobile = style({
+  order: -2,
+  marginBottom: 24,
+})
+
+export const generatingMobileText = style({
+  marginBottom: 16,
+})
+
+export const generatingMobileTitle = style({
+  marginBottom: 16,
+  color: theme.colors.textColorGrey,
 })
