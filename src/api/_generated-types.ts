@@ -667,8 +667,8 @@ export type ConfigWavesNetworkType = {
   icon: ConfigWavesNetworkIconEnum
 }
 
-export type ContractAutomatesBuyLiquidityType = {
-  __typename?: 'ContractAutomatesBuyLiquidityType'
+export type ContractAutomateBuyLiquidityType = {
+  __typename?: 'ContractAutomateBuyLiquidityType'
   /** Liquidity pool router address */
   router: Scalars['String']
   /** Target pool address */
@@ -682,7 +682,9 @@ export type ContractAutomatesType = {
   /** Autorestake adapter name */
   autorestake?: Maybe<Scalars['String']>
   /** Buy liquidity automate config */
-  buyLiquidity?: Maybe<ContractAutomatesBuyLiquidityType>
+  buyLiquidity?: Maybe<ContractAutomateBuyLiquidityType>
+  /** Liquidity pool tokens manager automate config */
+  lpTokensManager?: Maybe<ContractAutomateBuyLiquidityType>
 }
 
 export type ContractCreateInputType = {
@@ -4607,9 +4609,9 @@ export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
                   automate: { __typename?: 'ContractAutomatesType' } & {
                     buyLiquidity?: Maybe<
                       {
-                        __typename?: 'ContractAutomatesBuyLiquidityType'
+                        __typename?: 'ContractAutomateBuyLiquidityType'
                       } & Pick<
-                        ContractAutomatesBuyLiquidityType,
+                        ContractAutomateBuyLiquidityType,
                         'router' | 'pair'
                       >
                     >
@@ -4890,7 +4892,12 @@ export type PortfolioAssetByProtocolFragment = {
     metric: { __typename?: 'TokenAliasMetricType' } & Pick<
       TokenAliasMetricType,
       'myPortfolioPercent' | 'myUSD' | 'myBalance'
-    >
+    > & {
+        myUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+          MetricChangeType,
+          'day' | 'week'
+        >
+      }
   }
 
 export type PortfolioAssetByWalletFragment = {
@@ -4903,7 +4910,12 @@ export type PortfolioAssetByWalletFragment = {
   metric: { __typename?: 'WalletTokenAliasMetricType' } & Pick<
     WalletTokenAliasMetricType,
     'portfolioPercent' | 'usd' | 'balance'
-  >
+  > & {
+      usdChange: { __typename?: 'MetricChangeType' } & Pick<
+        MetricChangeType,
+        'day' | 'week'
+      >
+    }
 }
 
 export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
@@ -4913,7 +4925,12 @@ export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
     metric: { __typename?: 'TokenAliasMetricType' } & Pick<
       TokenAliasMetricType,
       'myPortfolioPercent' | 'myUSD' | 'myBalance'
-    >
+    > & {
+        myUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+          MetricChangeType,
+          'day' | 'week'
+        >
+      }
   }
 
 export type PortfolioProtocolsQueryVariables = Exact<{
@@ -6323,8 +6340,8 @@ export type StakingContractFragmentFragment = {
       'adapters' | 'autorestake'
     > & {
         buyLiquidity?: Maybe<
-          { __typename?: 'ContractAutomatesBuyLiquidityType' } & Pick<
-            ContractAutomatesBuyLiquidityType,
+          { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
+            ContractAutomateBuyLiquidityType,
             'router' | 'pair'
           >
         >

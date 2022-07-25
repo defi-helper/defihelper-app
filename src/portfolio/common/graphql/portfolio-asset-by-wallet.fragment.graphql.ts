@@ -13,6 +13,10 @@ export const PORTFOLIO_ASSET_BY_WALLET_FRAGMENT = gql`
       portfolioPercent
       usd
       balance
+      usdChange {
+        day
+        week
+      }
     }
   }
 `

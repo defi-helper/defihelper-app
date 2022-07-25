@@ -30,6 +30,7 @@ export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
         myPortfolioPercent: asset.metric.portfolioPercent,
         myBalance: asset.metric.balance,
         myUSD: asset.metric.usd,
+        myUSDChange: asset.metric.usdChange,
       },
       tokenAlias: asset.tokenAlias,
     } as PortfolioAssetFragment
@@ -72,6 +73,18 @@ export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
       </Typography>
       <Typography variant="body2" align="right">
         ${bignumberUtils.format(asset.metric.myUSD)}
+      </Typography>
+      <Typography variant="body2" align="right">
+        {bignumberUtils.mul(
+          bignumberUtils.minus(asset.metric.myUSDChange.day),
+          100
+        )}
+      </Typography>
+      <Typography variant="body2" align="right">
+        {bignumberUtils.mul(
+          bignumberUtils.minus(asset.metric.myUSDChange.week),
+          100
+        )}
       </Typography>
     </div>
   )
