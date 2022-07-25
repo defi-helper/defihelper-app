@@ -152,7 +152,7 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
   }
 
   const handleBuyLiquidity = async (contract: typeof contracts[number]) => {
-    if (!currentWallet?.account || !contract.automate.buyLiquidity) return
+    if (!currentWallet?.account) return
 
     await switchNetwork(contract.network).catch((error) => {
       if (error instanceof Error) {
@@ -160,14 +160,24 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
       }
     })
 
+    const router =
+      contract.automate.buyLiquidity?.router ??
+      contract.automate.lpTokensManager?.router
+
+    const pair =
+      contract.automate.buyLiquidity?.pair ??
+      contract.automate.lpTokensManager?.pair
+
+    if (!router || !pair) return
+
     try {
       const { buyLiquidity, sellLiquidity, tokens } =
         await stakingModel.buyLPFx({
           account: currentWallet.account,
           provider: currentWallet.provider,
           chainId: contract.network,
-          router: contract.automate.buyLiquidity.router,
-          pair: contract.automate.buyLiquidity.pair,
+          router,
+          pair,
           network: contract.network,
           protocol: contract.blockchain,
         })

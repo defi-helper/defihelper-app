@@ -46,6 +46,10 @@ export const BUY_LIQUIDITY_CONTRACT_LIST = gql`
               router
               pair
             }
+            lpTokensManager {
+              router
+              pair
+            }
           }
           metric(filter: { wallet: { type: [wallet] } }) {
             tvl
