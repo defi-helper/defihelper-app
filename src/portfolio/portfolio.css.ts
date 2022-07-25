@@ -14,19 +14,13 @@ export const title = style({
 })
 
 export const generatingTitle = style({
-  marginBottom: 8,
+  marginBottom: 24,
 
   '@media': {
     [theme.mediaQueries.lg()]: {
-      fontSize: 48,
+      fontSize: 40,
     },
   },
-})
-
-export const generatingDescription = style({
-  color: theme.colors.textColorGrey,
-  maxWidth: 728,
-  marginBottom: 48,
 })
 
 export const cards = style({
@@ -67,4 +61,62 @@ export const loader = style({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+})
+
+export const instructions = style({
+  display: 'grid',
+  gap: 16,
+  marginBottom: 16,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      gap: 24,
+      gridTemplateColumns: '1fr 1fr 1fr',
+      marginBottom: 24,
+    },
+  },
+})
+
+export const instructionCard = style({
+  padding: 16,
+  position: 'relative',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  zIndex: 0,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: 24,
+    },
+  },
+})
+
+export const green = style({
+  color: theme.colors.textColorGreen,
+})
+
+export const instructionCardTitle = style([
+  green,
+  {
+    marginBottom: 8,
+  },
+])
+
+export const instructionCardText = style({
+  marginBottom: 'auto',
+})
+
+export const instructionCardButton = style({
+  marginTop: 16,
+})
+
+export const instructionCardIcon = style({
+  position: 'absolute',
+  right: 0,
+  bottom: 0,
+  opacity: 0.18,
+  width: 147,
+  height: 147,
+  zIndex: -1,
 })

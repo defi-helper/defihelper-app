@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useLocalStorage, useMedia, useMount } from 'react-use'
@@ -27,8 +27,13 @@ import { PortfolioExchanges } from '~/portfolio/portfolio-exchanges'
 import { useOnWalletCreatedSubscription } from '~/settings/common'
 import { OnboardTooltip } from '~/common/onboard-tooltip'
 import { theme } from '~/common/theme'
+import { ReactComponent as DollarIcon } from '~/assets/icons/dollar.svg'
+import { ReactComponent as EasyIcon } from '~/assets/icons/easy.svg'
+import { ReactComponent as WifiIcon } from '~/assets/icons/wifi.svg'
 import * as styles from './portfolio.css'
 import * as model from './portfolio.model'
+import { Button } from '~/common/button'
+import { Paper } from '~/common/paper'
 
 export type PortfolioProps = unknown
 
@@ -61,6 +66,64 @@ const STEPS: (Step & { action?: () => JSX.Element; closeButton?: string })[] = [
     content: 'Connect as many wallets as you want',
     placement: 'bottom',
     closeButton: 'okay, thanks',
+  },
+]
+
+const INSTRUCTION = [
+  {
+    title: 'Work offline',
+    text: (
+      <>
+        Portfolio manager works even without a wallet connected: get analysis of
+        protocols and token, recieve investment recommendations and management
+        even before you connect
+      </>
+    ),
+    button: (
+      <Button color="green" size="small">
+        learn more
+      </Button>
+    ),
+    icon: WifiIcon,
+  },
+  {
+    title: 'Easy to use. Easy to earn',
+    text: (
+      <>
+        Create automated investment strategies without having to know coding:
+        <Typography variant="inherit" className={styles.green}>
+          &apos;Take Profit&apos;, &apos;Stop Loss&apos;, &apos;Send a
+          Notification If
+        </Typography>{' '}
+        {'<'}Condition{'>'} and many others already available at automation
+        wizard
+      </>
+    ),
+    button: (
+      <Button color="green" size="small">
+        try automations
+      </Button>
+    ),
+    icon: EasyIcon,
+  },
+  {
+    title: 'Earn more. Much more',
+    text: (
+      <>
+        The auto-staking feature increases your profits by restaking tokens
+        exactly when rewards are higher than the fees. Earn up to{' '}
+        <Typography variant="inherit" className={styles.green}>
+          168%
+        </Typography>{' '}
+        more!
+      </>
+    ),
+    button: (
+      <Button color="green" size="small">
+        try automations
+      </Button>
+    ),
+    icon: DollarIcon,
   },
 ]
 
@@ -151,7 +214,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
         </div>
       )}
 
-      {portfolioCollected && (
+      {!portfolioCollected && (
         <>
           <Joyride
             run={run}
@@ -214,7 +277,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           </ForceRenderOrLazyLoad>
         </>
       )}
-      {!loading && !portfolioCollected && (
+      {!(!loading && !portfolioCollected) && (
         <>
           <Typography variant="h3" className={styles.title}>
             Portfolio
@@ -225,14 +288,31 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
             transform="uppercase"
             className={styles.generatingTitle}
           >
-            Generating Portfolio...
+            Your portfolio is generating now...
           </Typography>
-          <Typography className={styles.generatingDescription}>
-            The building process can take up to 1 hour. Add contacts so you can
-            recieve notifications about any actions. You will be notified when
-            portfolio is ready. You will be able to change it any time in
-            settings.
-          </Typography>
+          <div className={styles.instructions}>
+            {INSTRUCTION.map((instructionItem) => (
+              <Paper
+                key={instructionItem.title}
+                radius={8}
+                className={styles.instructionCard}
+              >
+                <Typography className={styles.instructionCardTitle}>
+                  {instructionItem.title}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  className={styles.instructionCardText}
+                >
+                  {instructionItem.text}
+                </Typography>
+                {cloneElement(instructionItem.button, {
+                  className: styles.instructionCardButton,
+                })}
+                <instructionItem.icon className={styles.instructionCardIcon} />
+              </Paper>
+            ))}
+          </div>
           <LazyLoad height={HEIGHT}>
             <SettingsContacts withHeader={false} />
           </LazyLoad>
