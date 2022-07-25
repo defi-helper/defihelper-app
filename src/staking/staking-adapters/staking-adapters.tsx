@@ -1,5 +1,4 @@
 import { useStore } from 'effector-react'
-import networks from '@defihelper/networks/contracts.json'
 
 import {
   Contract,
@@ -263,14 +262,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
     }
   }
 
-  const currentNetworkConfig = model.isNetworkKey(props.network)
-    ? networks[props.network]
-    : {}
-
   const hasBuyLiquidity =
-    model.isNetworkKey(props.network) &&
-    model.isBuyLiquidity(currentNetworkConfig) &&
-    Boolean(props.buyLiquidity)
+    model.isNetworkKey(props.network) && Boolean(props.buyLiquidity)
 
   return (
     <div className={styles.root}>
