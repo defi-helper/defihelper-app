@@ -16,6 +16,14 @@ type RequiredNonNullableObject<T extends object> = {
   [P in keyof Required<T>]: NonNullable<T[P]>
 }
 
+const getContractName = (contractName: string) => {
+  if (contractName === 'TreasuryUpgradable') return 'TreasuryV1'
+
+  if (contractName === 'StoreUpgradable') return 'StoreV1'
+
+  return contractName
+}
+
 export const fetchAbiFx = governanceMultisig.createEffect(
   async (wallet: RequiredNonNullableObject<Wallet>) => {
     const networks = Object.fromEntries(
@@ -43,8 +51,11 @@ export const fetchAbiFx = governanceMultisig.createEffect(
 
       try {
         previousAcc[contractName] = {
-          abi: (await import(`@defihelper/networks/abi/${contractName}.json`))
-            .abi,
+          abi: (
+            await import(
+              `@defihelper/networks/abi/${getContractName(contractName)}.json`
+            )
+          ).abi,
           address,
         }
 
