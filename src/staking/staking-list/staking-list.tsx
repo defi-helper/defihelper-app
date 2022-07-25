@@ -743,7 +743,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                             ? handleSwitchNetwork(stakingListItem)
                             : handleAutostake(stakingListItem)
                         }
-                        buyLiquidity={stakingListItem.automate.buyLiquidity}
+                        buyLiquidity={
+                          stakingListItem.automate.buyLiquidity ??
+                          stakingListItem.automate.lpTokensManager
+                        }
                         autostakingLoading={
                           autostaking[stakingListItem.address]
                         }
