@@ -11,7 +11,7 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { dateUtils } from '~/common/date-utils'
 import { toastsService } from '~/toasts'
-import { config } from '~/config'
+// import { config } from '~/config'
 import { authModel } from '~/auth'
 
 type Product = Exclude<
@@ -26,7 +26,7 @@ type BuyProductParams = {
   product: Product
 }
 
-const contracts = networks[config.DEFAULT_CHAIN_ID].Store
+const contracts = networks['43114'].StoreUpgradable // networks[config.DEFAULT_CHAIN_ID].StoreUpgradable
 
 export const automationProductsDomain = createDomain()
 
@@ -47,22 +47,15 @@ export const buyProductFx = automationProductsDomain.createEffect(
 
     const contract = new ethers.Contract(
       contracts.address,
-      abi.Store.abi,
+      abi.StoreUpgradable.abi,
       networkProvider.getSigner()
     )
 
-    const price = await automationApi.productPriceFeed({
-      network: params.chainId,
-      id: params.product.id,
-    })
+    const price = (await contract.price(params.product.number)).toString()
 
-    if (!price) throw new Error('wrong price')
-
-    const tenPercent = bignumberUtils.mul(bignumberUtils.div(price, 100), 10)
-
-    const priceWithPercetage = bignumberUtils.plus(tenPercent, price)
-
-    const priceNormalized = bignumberUtils.toSend(priceWithPercetage, 18)
+    const priceNormalized = bignumberUtils.floor(
+      bignumberUtils.mul(price, 1.05)
+    )
 
     try {
       const gasLimit = bignumberUtils.estimateGas(

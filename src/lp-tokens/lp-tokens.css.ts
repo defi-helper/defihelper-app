@@ -92,3 +92,7 @@ export const protocolIcon = style({
   height: 24,
   marginRight: 8,
 })
+
+export const sell = style({
+  marginBottom: 40,
+})

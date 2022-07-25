@@ -55,7 +55,7 @@ const MENU: MenuItem[] = [
   },
   {
     title: 'ZAP',
-    path: paths.buyLp,
+    path: paths.LPTokens,
     icon: 'automation',
   },
   {

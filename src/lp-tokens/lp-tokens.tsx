@@ -10,22 +10,23 @@ import { Head } from '~/common/head'
 import { Select, SelectOption } from '~/common/select'
 import { Input } from '~/common/input'
 import { Button } from '~/common/button'
-import { BuyLiquidityTable } from './common/buy-liquidity-table'
+import { LPTokensTable } from './common/lp-tokens-table'
 import { BlockchainEnum } from '~/api'
-import {
-  StakingBuyLiquidityDialog,
-  StakingSuccessDialog,
-} from '~/staking/common'
+import { StakingSuccessDialog } from '~/staking/common'
 import { useDialog, UserRejectionError } from '~/common/dialog'
 import { toastsService } from '~/toasts'
 import { switchNetwork } from '~/wallets/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { networksConfig } from '~/networks-config'
+import { LPTokensSell } from './lp-tokens-sell'
+import { LPTokensBuySellDialog } from './common/lp-tokens-buy-sell-dialog'
+import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as stakingModel from '~/staking/staking-adapters/staking-adapters.model'
-import * as styles from './buy-liquidity.css'
-import * as model from './buy-liquidity.model'
+import * as styles from './lp-tokens.css'
+import * as model from './lp-tokens.model'
+import { settingsWalletModel } from '~/settings/settings-wallets'
 
-export type BuyLiquidityProps = unknown
+export type LPTokensProps = unknown
 
 const INSTRUCTION = [
   {
@@ -42,7 +43,7 @@ const INSTRUCTION = [
   },
 ]
 
-export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
+export const LPTokens: React.VFC<LPTokensProps> = () => {
   const protocols = useStore(model.$protocols)
   const protocolsSelect = useStore(model.$protocolsSelect)
   const contracts = useStore(model.$contracts)
@@ -57,10 +58,11 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
   const contractListLoading = useStore(model.fetchContractsFx.pending)
   const protocolSelectLoading = useStore(model.fetchProtocolsSelectFx.pending)
 
-  const [openBuyLiquidity] = useDialog(StakingBuyLiquidityDialog)
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
+  const [openBuySellDialog] = useDialog(LPTokensBuySellDialog)
 
-  const wallet = walletNetworkModel.useWalletNetwork()
+  const currentWallet = walletNetworkModel.useWalletNetwork()
+  const wallets = useStore(settingsWalletModel.$wallets)
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -150,7 +152,7 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
   }
 
   const handleBuyLiquidity = async (contract: typeof contracts[number]) => {
-    if (!wallet?.account || !contract.automate.buyLiquidity) return
+    if (!currentWallet?.account) return
 
     await switchNetwork(contract.network).catch((error) => {
       if (error instanceof Error) {
@@ -158,21 +160,55 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
       }
     })
 
+    const router =
+      contract.automate.buyLiquidity?.router ??
+      contract.automate.lpTokensManager?.router
+
+    const pair =
+      contract.automate.buyLiquidity?.pair ??
+      contract.automate.lpTokensManager?.pair
+
+    if (!router || !pair) return
+
     try {
-      const { adapter, tokens } = await stakingModel.buyLPFx({
-        account: wallet.account,
-        provider: wallet.provider,
-        chainId: contract.network,
-        router: contract.automate.buyLiquidity.router,
-        pair: contract.automate.buyLiquidity.pair,
-        network: contract.network,
-        protocol: contract.blockchain,
+      const { buyLiquidity, sellLiquidity, tokens } =
+        await stakingModel.buyLPFx({
+          account: currentWallet.account,
+          provider: currentWallet.provider,
+          chainId: contract.network,
+          router,
+          pair,
+          network: contract.network,
+          protocol: contract.blockchain,
+        })
+
+      const findedWallet = wallets.find((wallet) => {
+        const sameAddreses =
+          String(currentWallet.chainId) === 'main'
+            ? currentWallet.account === wallet.address
+            : currentWallet.account?.toLowerCase() === wallet.address
+
+        return sameAddreses && String(currentWallet.chainId) === wallet.network
       })
 
-      await openBuyLiquidity({
-        buyLiquidityAdapter: adapter,
+      if (!findedWallet) throw new Error('wallet is not connected')
+
+      const cb = (txId?: string) => {
+        stakingAutomatesModel
+          .scanWalletMetricFx({
+            wallet: findedWallet.id,
+            contract: contract.id,
+            txId,
+          })
+          .catch(console.error)
+      }
+
+      await openBuySellDialog({
+        buyLiquidityAdapter: buyLiquidity,
+        sellLiquidityAdapter: sellLiquidity,
         tokens,
-      })
+        onSubmit: cb,
+      }).catch(console.error)
 
       await openSuccessDialog({
         type: 'buyLiquidity',
@@ -213,6 +249,7 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
           </Paper>
         ))}
       </div>
+      {false && <LPTokensSell className={styles.sell} />}
       <div className={styles.selects}>
         <Select
           placeholder="Choose blockchain"
@@ -276,7 +313,7 @@ export const BuyLiquidity: React.VFC<BuyLiquidityProps> = () => {
           ))}
         </Select>
       </div>
-      <BuyLiquidityTable
+      <LPTokensTable
         protocols={protocols}
         onProtocolClick={setOpenedProtocol}
         openedProtocol={openedProtocol}

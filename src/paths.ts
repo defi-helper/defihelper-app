@@ -60,7 +60,7 @@ export const paths = {
   tokens: '/admin/tokens',
   tokensAlias: '/admin/tokens-alias',
 
-  buyLp: '/buy-liquidity',
+  LPTokens: '/buy-liquidity',
 
   bridges: '/bridges',
 

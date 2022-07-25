@@ -2,11 +2,11 @@ import { gql } from 'urql'
 
 export const PORTFOLIO_PROTOCOLS = gql`
   query PortfolioProtocols(
-    $filter: ProtocolListFilterInputType
-    $sort: [ProtocolListSortInputType!]
-    $pagination: ProtocolListPaginationInputType
+    $filter: UserProtocolListFilterInputType!
+    $sort: [UserProtocolListSortInputType!]
+    $pagination: UserProtocolListPaginationInputType
   ) {
-    protocols(filter: $filter, sort: $sort, pagination: $pagination) {
+    userProtocols(filter: $filter, sort: $sort, pagination: $pagination) {
       list {
         id
         adapter
@@ -18,12 +18,9 @@ export const PORTFOLIO_PROTOCOLS = gql`
         createdAt
         favorite
         metric {
-          tvl
           myAPY
           myStaked
           myEarned
-          myMinUpdatedAt
-          myAPYBoost
         }
       }
       pagination {

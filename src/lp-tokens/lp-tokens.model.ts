@@ -14,7 +14,7 @@ import {
   ContractListSortInputTypeColumnEnum,
 } from '~/api'
 import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
-import { buyLiquidityApi } from './common/buy-liquidity.api'
+import { lpTokensApi } from './common/lp-tokens.api'
 
 export const resetProtocolsSelect = createEvent()
 
@@ -23,7 +23,7 @@ export const fetchProtocolsSelectFx = createEffect(
     signal,
     ...variables
   }: BuyLiquidityProtocolsSelectQueryVariables & { signal: AbortSignal }) =>
-    buyLiquidityApi.protocolsSelect(variables, signal)
+    lpTokensApi.protocolsSelect(variables, signal)
 )
 
 export const $protocolsSelect = createStore<
@@ -39,7 +39,7 @@ export const fetchProtocolsFx = createEffect(
     signal,
     ...variables
   }: BuyLiquidityProtocolsQueryVariables & { signal: AbortSignal }) =>
-    buyLiquidityApi.protocols(
+    lpTokensApi.protocols(
       {
         ...variables,
         filter: {
@@ -68,7 +68,7 @@ export const fetchContractsFx = createEffect(
     signal,
     ...variables
   }: BuyLiquidityContractsQueryVariables & { signal: AbortSignal }) =>
-    buyLiquidityApi.contracts(
+    lpTokensApi.contracts(
       {
         ...variables,
         contractFilter: {

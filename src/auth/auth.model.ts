@@ -27,7 +27,13 @@ type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
 
 const ERROR_MESSAGE = 'Unable to authenticate'
 
-export const fetchUserFx = createEffect(() => authApi.me())
+export const fetchUserFx = createEffect(() =>
+  authApi.me({
+    input: {
+      timezone: dateUtils.timezone(),
+    },
+  })
+)
 
 export const logoutFx = createEffect(() => {
   sidUtils.remove()
@@ -233,7 +239,7 @@ guard({
 
 guard({
   clock: [authEthereumFx.doneData, authWavesFx.doneData, authDemoFx.doneData],
-  filter: (auth) => auth?.sid === sidUtils.get() || sidUtils.get() === null,
+  filter: (data) => Boolean(data),
   target: saveUserFx,
 })
 
@@ -315,7 +321,7 @@ guard({
 
 guard({
   source: $user,
-  clock: [$user.updates, saveUserFx.doneData],
+  clock: [$user.updates, saveUserFx.finally],
   filter: (user) => Boolean(user),
   target: settingsWalletModel.fetchWalletListFx,
 })
