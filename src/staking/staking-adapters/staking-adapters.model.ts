@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createDomain, restore } from 'effector'
 import networks from '@defihelper/networks/contracts.json'
 import isEmpty from 'lodash.isempty'
@@ -37,16 +38,6 @@ export const isNetworkKey = (
   network: string
 ): network is keyof typeof networks => {
   return network in networks
-}
-
-type LPTokensManager = {
-  LPTokensManager: { address: string; deployBlockNumber: number }
-}
-
-export const isBuyLiquidity = (
-  network: Record<string, unknown>
-): network is LPTokensManager => {
-  return 'LPTokensManager' in network
 }
 
 export const stakingAdaptersDomain = createDomain()
@@ -115,10 +106,9 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     if (!isNetworkKey(network)) throw new Error('wrong network')
 
-    const currentNetwork = networks['43114'] // networks[network]
-
-    if (!isBuyLiquidity(currentNetwork))
-      throw new Error('does not have a BuyLiquidity contract')
+    const currentAddress =
+      (networks[network] as any).LPTokensManager.address ??
+      (networks[network] as any).BuyLiquidity.address
 
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,
@@ -131,7 +121,7 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     const buyLiquidity = await adapterObj.automates.buyLiquidity(
       networkProvider.getSigner(),
-      currentNetwork.BuyLiquidity.address,
+      currentAddress,
       {
         router: params.router,
         pair: params.pair,
@@ -139,7 +129,7 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
     )
     const sellLiquidity = await adapterObj.automates.sellLiquidity(
       networkProvider.getSigner(),
-      currentNetwork.LPTokensManager.address,
+      currentAddress,
       {
         router: params.router,
         pair: params.pair,
