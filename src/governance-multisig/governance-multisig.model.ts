@@ -39,15 +39,19 @@ export const fetchAbiFx = governanceMultisig.createEffect(
     return Object.entries(currentNetwork).reduce<
       Promise<Record<string, { abi: ContractInterface; address: string }>>
     >(async (acc, [contractName, { address }]) => {
-      const previousAcc = await acc
+      try {
+        const previousAcc = await acc
 
-      previousAcc[contractName] = {
-        abi: (await import(`@defihelper/networks/abi/${contractName}.json`))
-          .abi,
-        address,
+        previousAcc[contractName] = {
+          abi: (await import(`@defihelper/networks/abi/${contractName}.json`))
+            .abi,
+          address,
+        }
+
+        return await acc
+      } catch (error) {
+        return acc
       }
-
-      return acc
     }, Promise.resolve({}))
   }
 )
