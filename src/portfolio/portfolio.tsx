@@ -105,8 +105,7 @@ const INSTRUCTION = [
           &apos;Take Profit&apos;, &apos;Stop Loss&apos;, &apos;Send a
           Notification If
         </Typography>{' '}
-        {'<'}Condition{'>'} and many others already available at automation
-        wizard
+        &lt;Condition&gt; and many others already available at automation wizard
       </>
     ),
     button: (
