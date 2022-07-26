@@ -56,7 +56,9 @@ export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
     )
 
     const adapterContract =
-      adapterObj[contract.adapter as keyof Omit<Adapters, 'automates'>]
+      adapterObj[
+        contract.adapter as keyof Omit<Adapters, 'automates' | 'store'>
+      ]
 
     const adapter = await adapterContract(networkProvider, contract.address, {
       blockNumber: 'latest',

@@ -43,7 +43,7 @@ export const buyProductFx = automationProductsDomain.createEffect(
       throw new Error('networkprovider is null')
     }
 
-    const result = await adapterObj.automates.store(
+    const result = await adapterObj.store(
       networkProvider.getSigner(),
       contracts.address
     )

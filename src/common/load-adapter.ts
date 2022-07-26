@@ -242,6 +242,14 @@ export type Adapters = {
   masterChef: AdapterFn
   xJoe: AdapterFn
   tom: AdapterFn
+  store: (
+    signer: unknown,
+    contractAddress: string
+  ) => Promise<{
+    name: string
+    canBuy(product: number | string): Promise<true | Error>
+    buy(product: number | string): Promise<{ tx: Transaction }>
+  }>
   automates: Record<
     string,
     (signer: unknown, contractAddress: unknown) => Promise<AutomatesType>
@@ -265,14 +273,6 @@ export type Adapters = {
       contractAddress: string,
       payload: unknown
     ) => Promise<SellLiquidity>
-    store: (
-      signer: unknown,
-      contractAddress: string
-    ) => Promise<{
-      name: string
-      canBuy(product: number | string): Promise<true | Error>
-      buy(product: number | string): Promise<{ tx: Transaction }>
-    }>
   }
 }
 
