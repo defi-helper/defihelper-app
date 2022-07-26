@@ -12,7 +12,7 @@ export const root = style([
   {
     gap: 24,
     maxHeight: 370,
-    overflowY: 'auto',
+    overflowY: 'hidden',
     overflowX: 'hidden',
     padding: '0 10px',
   },

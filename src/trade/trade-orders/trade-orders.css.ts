@@ -31,6 +31,21 @@ export const bodyInner = style({
   width: 1100,
 })
 
+export const noOrders = style({
+  color: theme.colors.textColorGrey,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 8,
+  alignItems: 'center',
+  padding: '32px 0',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '64px 0',
+    },
+  },
+})
+
 export const title = style({
   marginRight: 'auto',
 })

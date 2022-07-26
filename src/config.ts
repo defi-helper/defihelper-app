@@ -27,4 +27,5 @@ export const config = {
   MEDIUM_LINK: `https://defihelper.medium.com/auto-staking-explained-da5fbab082e0`,
   MATOMO_URL: 'https://defihelper.matomo.cloud',
   MATOMO_SITE_ID: 1,
+  UNISENDER_API: `https://api.unisender.com/ru/api/subscribe?format=json&api_key=${process.env.REACT_APP_UNISENDER_API}`,
 } as const

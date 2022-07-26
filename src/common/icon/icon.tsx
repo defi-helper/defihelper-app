@@ -100,6 +100,7 @@ import { ReactComponent as SwapIcon } from '~/assets/icons/swap.svg'
 import { ReactComponent as MinusIcon } from '~/assets/icons/minus.svg'
 import { ReactComponent as InfoIcon } from '~/assets/icons/info.svg'
 import { ReactComponent as LightIcon } from '~/assets/icons/light.svg'
+import { ReactComponent as OrderIcon } from '~/assets/icons/order.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -211,6 +212,7 @@ const ICONS = {
   minus: MinusIcon,
   info: InfoIcon,
   light: LightIcon,
+  order: OrderIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

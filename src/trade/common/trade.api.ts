@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+import { config } from '~/config'
+
 const ACCESS_TOKEN =
   'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIyOWJlYjY2Mi05N2M1LTQ3OTUtOTUzNS00YWUyMWRhY2E0YjciLCJLZXlUeXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU3ODE1MDkwLCJpc3MiOiJib29raXRlLmF1dGguc2VydmljZSJ9.Jam_3Z9T4lu12Yg5_5Egwc6ak0mTKyH7QK3ZbfbRJiGAmb317--L0edvgoNtxDLDB92nTnwhLVPenNf7RzfckJW6XkDnLOe_jENW3U8BXEESkIL-IDjVrUiZyZEmKCh0mUvSJ9e5GAbuixRGGZPXFrFM2yECQln86rGMbczSigjgnXLLzFGBdb4VM62zxuSNZo4Unul19Qf8ByN5oo0syGLkqr2SM2eTHZK3Y2lVlvWpx_0TOHVtx0Z3L20zX4rDhU8yBcXpLiqwkIxfeVFHOSb_rh87jeEGcYvh5CAOfgv_NLB0vuV5yf9Yr6RygTwi99G2PB7aGb3BaUcRxK6Ygw'
 
@@ -54,4 +56,23 @@ export const tradeApi = {
         `open/chart/pair/history?symbol=${address}-USD&resolution=60&from=1656727091&to=1657807091&countback=300`
       )
       .then(({ data }) => data),
+
+  sendForm: <T>(listId: string, formValues: T) => {
+    const query = Object.entries(formValues)
+      .flatMap(([key, value]) => {
+        return `fields[${key}]=${value}`
+      })
+      .join('&')
+
+    return fetch(
+      `${config.UNISENDER_API}&list_ids=${listId}&${query}&double_optin=3`,
+      {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'content-type': 'text/plain',
+        },
+      }
+    )
+  },
 }
