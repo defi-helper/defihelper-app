@@ -265,6 +265,14 @@ export type Adapters = {
       contractAddress: string,
       payload: unknown
     ) => Promise<SellLiquidity>
+    store: (
+      signer: unknown,
+      contractAddress: string
+    ) => Promise<{
+      name: string
+      canBuy(product: number | string): Promise<true | Error>
+      buy(product: number | string): Promise<{ tx: Transaction }>
+    }>
   }
 }
 
