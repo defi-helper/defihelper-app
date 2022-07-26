@@ -31,7 +31,9 @@ interface Window {
   ethersMulticall: unknown
   BinanceChain?: unknown
   uniswap3: unknown
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TradingView: any
+  mode: 'dev' | 'prod'
 }
 
 declare module 'remarkable-react' {
