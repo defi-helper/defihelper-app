@@ -13,6 +13,7 @@ import { dateUtils } from '~/common/date-utils'
 import { toastsService } from '~/toasts'
 // import { config } from '~/config'
 import { authModel } from '~/auth'
+import { config } from '~/config'
 
 type Product = Exclude<
   AutomationProductsQuery['products']['list'],
@@ -56,6 +57,19 @@ export const buyProductFx = automationProductsDomain.createEffect(
     const priceNormalized = bignumberUtils.floor(
       bignumberUtils.mul(price, 1.05)
     )
+
+    if (config.IS_DEV) {
+      // eslint-disable-next-line no-console
+      console.log(
+        params.product.number,
+        params.account,
+        priceNormalized,
+        dateUtils.addTimestamp(3, 'second'),
+        {
+          value: priceNormalized,
+        }
+      )
+    }
 
     try {
       const gasLimit = bignumberUtils.estimateGas(
