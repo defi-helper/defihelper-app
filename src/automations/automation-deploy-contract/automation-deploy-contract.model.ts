@@ -78,7 +78,7 @@ export const fetchDeployAdapterFx = automationDeployContractDomain.createEffect(
 
     const adapterContract = adapterObj.automates.deploy[params.contract]
 
-    const network = networks[params.chainId as '3']
+    const network = networks[params.chainId as '5']
 
     const adapter = await adapterContract(
       networkProvider?.getSigner(),
