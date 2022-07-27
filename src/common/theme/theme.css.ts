@@ -98,7 +98,7 @@ const light: Theme = {
     attention: palette.white1,
     primary: palette.black1,
     secondary: palette.white1,
-    tertiary: palette.grey5,
+    tertiary: palette.grey4,
     paper: palette.grey4,
     separator: palette.grey4,
     border: palette.black10,
