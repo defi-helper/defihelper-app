@@ -34,7 +34,7 @@ export const fetchAbiFx = governanceMultisig.createEffect(
       )
     ) as Record<
       string,
-      { [key: string]: { address: string; deployBlockNumber: number } }
+      { [key: string]: { address: string; blockNumber: number } }
     >
 
     const currentNetwork = networks[wallet.chainId]
