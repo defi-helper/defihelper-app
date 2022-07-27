@@ -2,7 +2,7 @@ import { style } from '@vanilla-extract/css'
 
 export const root = style({
   display: 'grid',
-  gridTemplateColumns: '10% 40% 20% 15% 15%',
+  gridTemplateColumns: '10% 30% 20% 10% 10% 10% 10%',
 
   selectors: {
     '&:not(:last-child)': {
