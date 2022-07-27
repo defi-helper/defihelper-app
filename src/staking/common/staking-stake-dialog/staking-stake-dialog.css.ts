@@ -74,7 +74,7 @@ export const balance = style({
 })
 
 export const buyLp = style({
-  background: theme.colors.common.black13,
+  background: theme.colors.tertiary,
   color: theme.colors.common.white1,
   padding: '24px 16px',
   display: 'flex',

@@ -16,6 +16,7 @@ type Theme = {
     attention: string
     primary: string
     secondary: string
+    tertiary: string
     paper: string
     separator: string
     border: string
@@ -42,6 +43,7 @@ export const themeContract = createThemeContract<Theme>({
     attention: '',
     primary: '',
     secondary: '',
+    tertiary: '',
     paper: '',
     separator: '',
     border: '',
@@ -69,6 +71,7 @@ const dark: Theme = {
     attention: palette.white1,
     primary: palette.white1,
     secondary: palette.black1,
+    tertiary: palette.black13,
     paper: palette.black2,
     separator: palette.black2,
     border: palette.black7,
@@ -95,6 +98,7 @@ const light: Theme = {
     attention: palette.white1,
     primary: palette.black1,
     secondary: palette.white1,
+    tertiary: palette.grey5,
     paper: palette.grey4,
     separator: palette.grey4,
     border: palette.black10,

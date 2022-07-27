@@ -5,7 +5,7 @@ import { theme } from '~/common/theme'
 export const root = style({
   width: 360,
   height: 568,
-  padding: '24px 32px',
+  padding: '32px 24px 24px',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
@@ -13,8 +13,9 @@ export const root = style({
 
 export const header = style({
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'center',
   marginBottom: 24,
+  width: '100%',
 })
 
 export const title = style({
