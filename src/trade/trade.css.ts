@@ -87,6 +87,39 @@ export const chartInner = style({
 
 export const selects = style({
   padding: '10px 6px',
+  position: 'relative',
+})
+
+export const selectsBody = style({
+  filter: 'blur(4px)',
+  background: theme.colors.blur,
+  pointerEvents: 'none',
+})
+
+export const beta = style({
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+  zIndex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 24,
+})
+
+export const betaTitle = style({
+  maxWidth: 275,
+})
+
+export const betaForm = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+  width: '100%',
+  maxWidth: 320,
 })
 
 export const tradeSellSelect = style({

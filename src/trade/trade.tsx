@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
+import { useForm } from 'react-hook-form'
 
 import { Head } from '~/common/head'
 import { AppLayout } from '~/layouts'
@@ -18,8 +19,10 @@ import { TradeChart } from './trade-chart'
 import { cutAccount } from '~/common/cut-account'
 import { networksConfig } from '~/networks-config'
 import { settingsWalletModel } from '~/settings/settings-wallets'
+import { Input } from '~/common/input'
 import * as styles from './trade.css'
 import * as model from './trade.model'
+import { tradeApi } from './common/trade.api'
 
 export type TradeProps = unknown
 
@@ -34,6 +37,9 @@ enum Selects {
 }
 
 export const Trade: React.VFC<TradeProps> = () => {
+  const { register, handleSubmit, formState, reset } =
+    useForm<{ email: string }>()
+
   const [currentSelect, setCurrentSelect] = useState(Selects.BuySell)
   const [currentTab, setCurrentTab] = useState(Tabs.Buy)
   const [currentExchange, setCurrentExchange] = useState('')
@@ -97,6 +103,16 @@ export const Trade: React.VFC<TradeProps> = () => {
       </>
     ),
   }
+
+  const handleOnSubmit = handleSubmit(async (formValues) => {
+    try {
+      await tradeApi.sendForm('2', formValues)
+
+      reset({ email: '' })
+    } catch {
+      console.error('something went wrong')
+    }
+  })
 
   return (
     <AppLayout title="Trade">
@@ -192,74 +208,107 @@ export const Trade: React.VFC<TradeProps> = () => {
           <TradeChart className={styles.chartInner} symbol={currentPair} />
         </Paper>
         <Paper radius={8} className={styles.selects}>
-          <div className={styles.tradeSelectHeader}>
-            <Dropdown
-              control={(open) => (
-                <Typography
-                  variant="body3"
-                  as={ButtonBase}
-                  transform="uppercase"
-                  family="mono"
-                  className={styles.tradeSellSelect}
-                >
-                  {currentSelect}
-                  <Icon
-                    icon={open ? 'arrowUp' : 'arrowDown'}
-                    width="16"
-                    height="16"
-                  />
-                </Typography>
-              )}
-              placement="bottom-start"
-              offset={[0, 8]}
-            >
-              {(close) =>
-                Object.values(Selects).map((select) => (
+          <div className={styles.selectsBody}>
+            <div className={styles.tradeSelectHeader}>
+              <Dropdown
+                control={(open) => (
                   <Typography
                     variant="body3"
-                    key={select}
-                    onClick={handleChangeSelect(select, close)}
                     as={ButtonBase}
                     transform="uppercase"
+                    family="mono"
+                    className={styles.tradeSellSelect}
                   >
-                    {select}
+                    {currentSelect}
+                    <Icon
+                      icon={open ? 'arrowUp' : 'arrowDown'}
+                      width="16"
+                      height="16"
+                    />
                   </Typography>
-                ))
-              }
-            </Dropdown>
-            <Typography
-              variant="body3"
-              as="div"
-              className={styles.currentBalance}
-              align="right"
-            >
-              <Typography variant="inherit" as="div" align="right">
-                Current Balance
-              </Typography>
-              <Typography
-                variant="inherit"
-                as={ButtonBase}
-                align="right"
-                className={styles.currentBalanceValue}
+                )}
+                placement="bottom-start"
+                offset={[0, 8]}
               >
-                0.50000 ВТС
+                {(close) =>
+                  Object.values(Selects).map((select) => (
+                    <Typography
+                      variant="body3"
+                      key={select}
+                      onClick={handleChangeSelect(select, close)}
+                      as={ButtonBase}
+                      transform="uppercase"
+                    >
+                      {select}
+                    </Typography>
+                  ))
+                }
+              </Dropdown>
+              <Typography
+                variant="body3"
+                as="div"
+                className={styles.currentBalance}
+                align="right"
+              >
+                <Typography variant="inherit" as="div" align="right">
+                  Current Balance
+                </Typography>
+                <Typography
+                  variant="inherit"
+                  as={ButtonBase}
+                  align="right"
+                  className={styles.currentBalanceValue}
+                >
+                  0.50000 ВТС
+                </Typography>
               </Typography>
-            </Typography>
+            </div>
+            {SelectComponents[currentSelect]}
+            <div className={styles.buttons}>
+              <Typography
+                className={styles.approveTransactions}
+                variant="body3"
+                as="div"
+              >
+                Approve transactions{' '}
+                <Icon icon="info" width="1em" height="1em" />
+              </Typography>
+              <Button color="green">Approve USDT</Button>
+              <Button color="green">Approve ETH</Button>
+              <Button color="green" className={styles.fullWidth}>
+                Create Order
+              </Button>
+            </div>
           </div>
-          {SelectComponents[currentSelect]}
-          <div className={styles.buttons}>
+          <div className={styles.beta}>
             <Typography
-              className={styles.approveTransactions}
-              variant="body3"
-              as="div"
+              variant="body2"
+              align="center"
+              family="mono"
+              className={styles.betaTitle}
             >
-              Approve transactions <Icon icon="info" width="1em" height="1em" />
+              Trade section is currently at the beta stage. Please leave your
+              email address to try it first.
             </Typography>
-            <Button color="green">Approve USDT</Button>
-            <Button color="green">Approve ETH</Button>
-            <Button color="green" className={styles.fullWidth}>
-              Create Order
-            </Button>
+            <form
+              noValidate
+              autoComplete="off"
+              className={styles.betaForm}
+              onSubmit={handleOnSubmit}
+            >
+              <Input
+                placeholder="hello@defihelper.io"
+                {...register('email', {
+                  required: true,
+                  pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
+                })}
+                error={Boolean(formState.errors.email?.message)}
+                helperText={formState.errors.email?.message}
+              />
+              <Button color="green" type="submit">
+                join
+              </Button>
+            </form>
           </div>
         </Paper>
       </div>

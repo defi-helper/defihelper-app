@@ -22,6 +22,7 @@ type Theme = {
     primaryButtonBorder: string
     switchTrack: string
     assetsPlatformActive: string
+    blur: string
   }
   fonts: {
     square: string
@@ -47,6 +48,7 @@ export const themeContract = createThemeContract<Theme>({
     primaryButtonBorder: '',
     switchTrack: '',
     assetsPlatformActive: '',
+    blur: '',
   },
 
   fonts: {
@@ -73,6 +75,7 @@ const dark: Theme = {
     primaryButtonBorder: palette.grey2,
     switchTrack: palette.white3,
     assetsPlatformActive: palette.black2Darken,
+    blur: palette.black12,
   },
   fonts: {
     square: "'Basier Square', sans-serif",
@@ -98,6 +101,7 @@ const light: Theme = {
     primaryButtonBorder: palette.black9,
     switchTrack: palette.black11,
     assetsPlatformActive: palette.grey4Darken,
+    blur: palette.white2,
   },
   fonts: {
     square: "'Basier Square', sans-serif",
