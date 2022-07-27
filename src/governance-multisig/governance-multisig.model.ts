@@ -17,9 +17,9 @@ type RequiredNonNullableObject<T extends object> = {
 }
 
 const getContractName = (contractName: string) => {
-  if (contractName === 'TreasuryUpgradable') return 'TreasuryV1'
+  if (contractName === 'TreasuryUpgradable') return 'TreasuryV2'
 
-  if (contractName === 'StoreUpgradable') return 'StoreV1'
+  if (contractName === 'StoreUpgradable') return 'StoreV2'
 
   return contractName
 }
