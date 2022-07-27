@@ -4,10 +4,6 @@ import { useEffect, useMemo, useState } from 'react'
 import omit from 'lodash.omit'
 
 import { AutomationDialog } from '~/automations/common/automation-dialog'
-import {
-  AutomationSelectList,
-  AutomationSelectListItem,
-} from '~/automations/common/automation-select-list'
 import { ButtonBase } from '~/common/button-base'
 import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
@@ -332,14 +328,31 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
       }
     >
       {!currentType ? (
-        <AutomationSelectList>
-          <AutomationSelectListItem onClick={handleSetType('ByTime')}>
-            By time
-          </AutomationSelectListItem>
-          <AutomationSelectListItem onClick={handleSetType('ByEvent')}>
-            By blockchain event
-          </AutomationSelectListItem>
-        </AutomationSelectList>
+        <div className={styles.select}>
+          <ButtonBase
+            className={styles.selectOption}
+            onClick={handleSetType('ByTime')}
+          >
+            <Typography as="div" variant="body2">
+              By time
+            </Typography>
+            <Typography as="div" variant="body3">
+              Create an automation that will perform every hour
+            </Typography>
+          </ButtonBase>
+          <ButtonBase
+            className={styles.selectOption}
+            onClick={handleSetType('ByEvent')}
+          >
+            <Typography as="div" variant="body2">
+              By blockchain event
+            </Typography>
+            <Typography as="div" variant="body3">
+              Create an automation that will track the blockchain event
+              (transaction)
+            </Typography>
+          </ButtonBase>
+        </div>
       ) : (
         <>
           {currentTab === Tabs.Trigger && (
