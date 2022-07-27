@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import { useState, useEffect } from 'react'
 import { useAsyncFn, useAsyncRetry } from 'react-use'
 import { Controller, useForm } from 'react-hook-form'
-import { useNProgress } from '@tanem/react-nprogress'
 
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
@@ -18,6 +17,7 @@ import { AutomatesType } from '~/common/load-adapter'
 import { toastsService } from '~/toasts'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
+import { Progress } from '~/common/progress'
 import * as styles from './autostaking-tabs-dialog.css'
 
 export type AutostakingTabsDialogProps = {
@@ -31,30 +31,6 @@ enum Tabs {
   transfer,
   deposit,
   success,
-}
-
-const LENGTH = 20
-
-const Loader = (props: { loading: boolean }) => {
-  const { progress } = useNProgress({
-    isAnimating: props.loading,
-  })
-
-  if (!props.loading) return <></>
-
-  return (
-    <div className={styles.loader}>
-      {Array.from({ length: LENGTH }, (_, i) => i).map((index) => (
-        <div
-          key={index}
-          className={clsx(
-            styles.loaderItem,
-            Math.floor(progress * LENGTH) >= index && styles.loaderItemActive
-          )}
-        />
-      ))}
-    </div>
-  )
 }
 
 type FormValues = { amount: string }
@@ -286,7 +262,7 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
                   </Typography>
                 </>
               )}
-              <Loader loading={transferState.loading} />
+              <Progress loading={transferState.loading} />
             </>
           )}
           {currentTab === Tabs.deposit && (
@@ -295,7 +271,7 @@ export const AutostakingTabsDialog: React.VFC<AutostakingTabsDialogProps> = (
                 To start earning rewards you need to stake your tokens to the
                 protocol&apos;s contract.
               </Typography>
-              <Loader loading={depositState.loading} />
+              <Progress loading={depositState.loading} />
             </>
           )}
           {currentTab === Tabs.success && (

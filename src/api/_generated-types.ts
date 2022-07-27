@@ -4615,6 +4615,14 @@ export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
                         'router' | 'pair'
                       >
                     >
+                    lpTokensManager?: Maybe<
+                      {
+                        __typename?: 'ContractAutomateBuyLiquidityType'
+                      } & Pick<
+                        ContractAutomateBuyLiquidityType,
+                        'router' | 'pair'
+                      >
+                    >
                   }
                   metric: { __typename?: 'ContractMetricType' } & Pick<
                     ContractMetricType,
@@ -6340,6 +6348,12 @@ export type StakingContractFragmentFragment = {
       'adapters' | 'autorestake'
     > & {
         buyLiquidity?: Maybe<
+          { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
+            ContractAutomateBuyLiquidityType,
+            'router' | 'pair'
+          >
+        >
+        lpTokensManager?: Maybe<
           { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
             ContractAutomateBuyLiquidityType,
             'router' | 'pair'

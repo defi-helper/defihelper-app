@@ -70,21 +70,6 @@ export const button = style({
   marginTop: 30,
 })
 
-export const loader = style({
-  display: 'flex',
-  gap: 4,
-})
-
-export const loaderItem = style({
-  width: 16,
-  height: 24,
-  border: `1px solid ${theme.colors.common.blue1}`,
-})
-
-export const loaderItemActive = style({
-  background: theme.colors.common.blue1,
-})
-
 export const success = style({
   display: 'flex',
   flexDirection: 'column',

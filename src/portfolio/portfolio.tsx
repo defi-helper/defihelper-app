@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useLocalStorage, useMedia, useMount } from 'react-use'
@@ -19,14 +19,29 @@ import {
   useOnWalletMetricUpdatedSubscription,
 } from './common'
 import { PortfolioDeployedContracts } from './portfolio-deployed-contracts'
-import { SettingsContacts } from '~/settings/settings-contacts'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Loader } from '~/common/loader'
 import { authModel } from '~/auth'
 import { PortfolioExchanges } from '~/portfolio/portfolio-exchanges'
-import { useOnWalletCreatedSubscription } from '~/settings/common'
+import {
+  SettingsContactFormDialog,
+  SettingsConversationDialog,
+  SettingsSuccessDialog,
+  useOnWalletCreatedSubscription,
+} from '~/settings/common'
 import { OnboardTooltip } from '~/common/onboard-tooltip'
 import { theme } from '~/common/theme'
+import { ReactComponent as DollarIcon } from '~/assets/icons/dollar.svg'
+import { ReactComponent as EasyIcon } from '~/assets/icons/easy.svg'
+import { ReactComponent as WifiIcon } from '~/assets/icons/wifi.svg'
+import { Button } from '~/common/button'
+import { Paper } from '~/common/paper'
+import { Icon } from '~/common/icon'
+import { Progress } from '~/common/progress'
+import { analytics } from '~/analytics'
+import { UserContactBrokerEnum } from '~/api'
+import { useDialog } from '~/common/dialog'
+import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './portfolio.css'
 import * as model from './portfolio.model'
 
@@ -64,6 +79,65 @@ const STEPS: (Step & { action?: () => JSX.Element; closeButton?: string })[] = [
   },
 ]
 
+const INSTRUCTION = [
+  {
+    title: 'Work offline',
+    text: (
+      <>
+        Portfolio manager works even without a wallet connected: get analysis of
+        protocols and token, recieve investment recommendations and management
+        even before you connect
+      </>
+    ),
+    button: (
+      <Button color="green" size="small">
+        learn more
+      </Button>
+    ),
+    icon: WifiIcon,
+  },
+  {
+    title: 'Easy to use. Easy to earn',
+    text: (
+      <>
+        Create automated investment strategies without having to know coding:
+        <Typography variant="inherit" className={styles.green}>
+          &apos;Take Profit&apos;, &apos;Stop Loss&apos;, &apos;Send a
+          Notification If
+        </Typography>{' '}
+        &lt;Condition&gt; and many others already available at automation wizard
+      </>
+    ),
+    button: (
+      <Button color="green" size="small">
+        try automations
+      </Button>
+    ),
+    icon: EasyIcon,
+  },
+  {
+    title: 'Earn more. Much more',
+    text: (
+      <>
+        The auto-staking feature increases your profits by restaking tokens
+        exactly when rewards are higher than the fees. Earn up to{' '}
+        <Typography variant="inherit" className={styles.green}>
+          168%
+        </Typography>{' '}
+        more!
+      </>
+    ),
+    button: (
+      <Button color="green" size="small">
+        try automations
+      </Button>
+    ),
+    icon: DollarIcon,
+  },
+]
+
+const VIDEO_UD = 'VYgoIHapVEM'
+
 const ForceRenderOrLazyLoad = (
   props: LazyLoadProps & { forceRender: boolean }
 ) => {
@@ -85,10 +159,15 @@ const ForceRenderOrLazyLoad = (
 export const Portfolio: React.VFC<PortfolioProps> = () => {
   const portfolioCollected = useStore(model.$portfolioCollected)
   const loading = useStore(model.fetchPortfolioCollectedFx.pending)
+  const [openContactForm] = useDialog(SettingsContactFormDialog)
+  const [openSuccess] = useDialog(SettingsSuccessDialog)
+  const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
 
   const user = useStore(authModel.$user)
 
   const isDesktop = useMedia('(min-width: 960px)')
+
+  const contactList = useStore(settingsContacts.$userContactList)
 
   const [runLocalStorage, setLocalStorage] = useLocalStorage(
     'portfolioOnBoarding',
@@ -141,6 +220,62 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
       settingsWalletModel.updated()
     }
   }, variables)
+
+  useGate(settingsContacts.SettingsContactsGate)
+
+  const handleOpenContactForm = (broker: UserContactBrokerEnum) => async () => {
+    try {
+      if (!user) return
+
+      if (broker === UserContactBrokerEnum.Telegram) {
+        const data = await settingsContacts.createUserContactFx({
+          address: '',
+          broker,
+          name: 'telegram',
+        })
+
+        await openSettingsConversationDialog().catch(console.error)
+
+        await openSuccess({
+          type: broker,
+          confirmationCode: data.confirmationCode,
+        })
+
+        analytics.log('settings_email_connect_click')
+      } else {
+        const result = await openContactForm({
+          defaultValues: {
+            broker,
+          },
+        })
+        analytics.log('settings_email_save_click')
+
+        const data = await settingsContacts.createUserContactFx({
+          ...result,
+          broker,
+          name: result.address ?? 'telegram',
+        })
+
+        await openSuccess({
+          type: broker,
+          confirmationCode: data.confirmationCode,
+        })
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
+  const contactsMap = contactList.reduce((acc, contact) => {
+    acc.set(contact.broker, contact)
+
+    return acc
+  }, new Map<UserContactBrokerEnum, typeof contactList[number]>())
+
+  const telegram = contactsMap.get(UserContactBrokerEnum.Telegram)
+  const email = contactsMap.get(UserContactBrokerEnum.Email)
 
   return (
     <AppLayout title="Portfolio">
@@ -219,23 +354,105 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           <Typography variant="h3" className={styles.title}>
             Portfolio
           </Typography>
-          <Typography
-            variant="h3"
-            family="mono"
-            transform="uppercase"
-            className={styles.generatingTitle}
-          >
-            Generating Portfolio...
-          </Typography>
-          <Typography className={styles.generatingDescription}>
-            The building process can take up to 1 hour. Add contacts so you can
-            recieve notifications about any actions. You will be notified when
-            portfolio is ready. You will be able to change it any time in
-            settings.
-          </Typography>
-          <LazyLoad height={HEIGHT}>
-            <SettingsContacts withHeader={false} />
-          </LazyLoad>
+          <div className={styles.generatingBody}>
+            {!isDesktop && (
+              <div className={styles.generatingMobile}>
+                <Typography
+                  variant="body2"
+                  className={styles.generatingMobileText}
+                >
+                  You portfolio is generating now. For now you can take a look
+                  at DFH features and leave your contacts - we&apos;ll send a
+                  notification when your portfolio is ready.
+                </Typography>
+                <Typography
+                  variant="body3"
+                  family="mono"
+                  transform="uppercase"
+                  className={styles.generatingMobileTitle}
+                >
+                  generating...
+                </Typography>
+                <Progress loading={!portfolioCollected} />
+              </div>
+            )}
+            {isDesktop && (
+              <Typography
+                variant="h3"
+                family="mono"
+                transform="uppercase"
+                className={styles.generatingTitle}
+              >
+                Your portfolio is generating now...
+              </Typography>
+            )}
+            <div className={styles.instructions}>
+              {INSTRUCTION.map((instructionItem) => (
+                <Paper
+                  key={instructionItem.title}
+                  radius={8}
+                  className={styles.instructionCard}
+                >
+                  <Typography className={styles.instructionCardTitle}>
+                    {instructionItem.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    className={styles.instructionCardText}
+                  >
+                    {instructionItem.text}
+                  </Typography>
+                  {cloneElement(instructionItem.button, {
+                    className: styles.instructionCardButton,
+                  })}
+                  <instructionItem.icon
+                    className={styles.instructionCardIcon}
+                  />
+                </Paper>
+              ))}
+            </div>
+            {(!email || !telegram) && (
+              <Paper radius={8} className={styles.contacts}>
+                <Typography variant="body2" className={styles.contactsText}>
+                  No need to wait while your portfolio is generating. We&apos;ll
+                  send you a notification if you connect your telegram or email.
+                  No spam, we promise.
+                </Typography>
+                {!telegram && (
+                  <Button
+                    size="small"
+                    className={styles.contactsButton}
+                    onClick={handleOpenContactForm(
+                      UserContactBrokerEnum.Telegram
+                    )}
+                  >
+                    <Icon icon="telegram" width="20" height="20" /> connect
+                    telegram
+                  </Button>
+                )}
+                {!email && (
+                  <Button
+                    size="small"
+                    className={styles.contactsButton}
+                    onClick={handleOpenContactForm(UserContactBrokerEnum.Email)}
+                  >
+                    <Icon icon="email" width="20" height="20" /> connect email
+                  </Button>
+                )}
+              </Paper>
+            )}
+            <div className={styles.videoWrap}>
+              <iframe
+                className={styles.video}
+                scrolling="no"
+                title="This is a unique title"
+                src={`https://www.youtube.com/embed/${VIDEO_UD}?autoplay=0`}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
         </>
       )}
     </AppLayout>

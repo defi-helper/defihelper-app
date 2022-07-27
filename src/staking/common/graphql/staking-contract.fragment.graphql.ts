@@ -44,6 +44,10 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
         router
         pair
       }
+      lpTokensManager {
+        router
+        pair
+      }
     }
     metric(filter: { wallet: { type: [wallet] } }) {
       tvl
