@@ -22,17 +22,30 @@ type BuyProductParams = {
   product: Product
 }
 
-const contracts = networks['43114'].StoreUpgradable // networks[config.DEFAULT_CHAIN_ID].StoreUpgradable
-
 export const automationProductsDomain = createDomain()
 
 export const fetchProductsFx = automationProductsDomain.createEffect(() =>
   automationApi.getProducts()
 )
 
+type Networks = typeof networks
+
+const isStoreUpgradable = (
+  network: Networks[keyof Networks]
+): network is Networks['43114'] => {
+  return 'StoreUpgradable' in network
+}
+
 export const buyProductFx = automationProductsDomain.createEffect(
   async (params: BuyProductParams) => {
     const adapterObj = await loadAdapter(buildAdaptersUrl('dfh'))
+
+    const network = networks[params.chainId as keyof Networks]
+
+    if (!isStoreUpgradable(network) || !network)
+      throw new Error('network does not have a StoreUpgradable')
+
+    const contracts = network.StoreUpgradable
 
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,

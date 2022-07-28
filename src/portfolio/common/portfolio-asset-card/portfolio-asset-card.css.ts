@@ -1,8 +1,9 @@
 import { style } from '@vanilla-extract/css'
+import { theme } from '~/common/theme'
 
 export const root = style({
   display: 'grid',
-  gridTemplateColumns: '10% 40% 20% 15% 15%',
+  gridTemplateColumns: '10% 30% 20% 10% 10% 10% 10%',
 
   selectors: {
     '&:not(:last-child)': {
@@ -28,4 +29,12 @@ export const assetLogoPlaceholder = style({
 export const assetLogo = style({
   width: 24,
   height: 24,
+})
+
+export const changePlus = style({
+  color: theme.colors.common.green2,
+})
+
+export const changeMinus = style({
+  color: theme.colors.common.red1,
 })

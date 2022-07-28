@@ -4900,7 +4900,12 @@ export type PortfolioAssetByProtocolFragment = {
     metric: { __typename?: 'TokenAliasMetricType' } & Pick<
       TokenAliasMetricType,
       'myPortfolioPercent' | 'myUSD' | 'myBalance'
-    >
+    > & {
+        myUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+          MetricChangeType,
+          'day' | 'week'
+        >
+      }
   }
 
 export type PortfolioAssetByWalletFragment = {
@@ -4913,7 +4918,12 @@ export type PortfolioAssetByWalletFragment = {
   metric: { __typename?: 'WalletTokenAliasMetricType' } & Pick<
     WalletTokenAliasMetricType,
     'portfolioPercent' | 'usd' | 'balance'
-  >
+  > & {
+      usdChange: { __typename?: 'MetricChangeType' } & Pick<
+        MetricChangeType,
+        'day' | 'week'
+      >
+    }
 }
 
 export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
@@ -4923,7 +4933,12 @@ export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
     metric: { __typename?: 'TokenAliasMetricType' } & Pick<
       TokenAliasMetricType,
       'myPortfolioPercent' | 'myUSD' | 'myBalance'
-    >
+    > & {
+        myUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+          MetricChangeType,
+          'day' | 'week'
+        >
+      }
   }
 
 export type PortfolioProtocolsQueryVariables = Exact<{

@@ -4,6 +4,7 @@ import clsx from 'clsx'
 import { useEffect } from 'react'
 
 import { dateUtils } from '~/common/date-utils'
+import { config } from '~/config'
 import DataFeed from '~/trade/trade-chart/trade.datafeed'
 import * as styles from './trade-chart.css'
 
@@ -23,7 +24,7 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
       container: 'tv_chart_container',
       locale: 'en',
       datafeed: DataFeed,
-      library_path: 'charting_library/charting_library/',
+      library_path: `${config.TRADING_VIEW}charting_library/`,
       autosize: true,
       fullscreen: false,
       disabled_features: [
