@@ -34,15 +34,15 @@ export type LPTokensProps = unknown
 const INSTRUCTION = [
   {
     title: '1. Choose protocol',
-    text: "Select a protocol and look for the 'Buy LP' button",
+    text: "Select a protocol and look for the 'ZAP' button",
   },
   {
     title: '2. Choose contract',
     text: 'Choose a contract based on our TVL and APY data',
   },
   {
-    title: "3. Press 'Buy LP' button",
-    text: "Click on the 'Buy LP' button to invest in a certain pool",
+    title: "3. Press 'ZAP' button",
+    text: "Click on the 'ZAP' button to invest in a certain pool",
   },
 ]
 
