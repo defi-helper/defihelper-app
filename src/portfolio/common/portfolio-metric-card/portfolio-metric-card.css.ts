@@ -16,3 +16,19 @@ export const title = style({
   display: 'flex',
   alignItems: 'center',
 })
+
+export const today = style({
+  color: theme.colors.common.blue1,
+})
+
+export const changes = style({
+  fontSize: 16,
+})
+
+export const positive = style({
+  color: theme.colors.common.green2,
+})
+
+export const negative = style({
+  color: theme.colors.common.red1,
+})

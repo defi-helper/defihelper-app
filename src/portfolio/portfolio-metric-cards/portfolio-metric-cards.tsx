@@ -42,6 +42,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
             </Dropdown>
           </>
         }
+        valueChanged={metric?.worthChange.day}
         value={
           loading && !metric ? (
             <Loader height="1em" />
@@ -84,6 +85,7 @@ export const PortfolioMetricCards: React.VFC<PortfolioMetricCardsProps> = (
       />
       <PortfolioMetricCard
         title="Total Unclaimed"
+        valueChanged={metric?.earnedUSDChange.day}
         value={
           loading && !metric ? (
             <Loader height="1em" />

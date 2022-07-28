@@ -4851,7 +4851,24 @@ export type MyMetricQuery = { __typename?: 'Query' } & {
       metric: { __typename?: 'UserMetricType' } & Pick<
         UserMetricType,
         'stakedUSD' | 'earnedUSD' | 'worth' | 'apy'
-      >
+      > & {
+          balanceUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+            MetricChangeType,
+            'week' | 'day'
+          >
+          stakedUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+            MetricChangeType,
+            'week' | 'day'
+          >
+          earnedUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+            MetricChangeType,
+            'week' | 'day'
+          >
+          worthChange: { __typename?: 'MetricChangeType' } & Pick<
+            MetricChangeType,
+            'week' | 'day'
+          >
+        }
     }
   >
 }
@@ -5864,7 +5881,12 @@ export type WalletListMetricsQuery = { __typename?: 'Query' } & {
                 metric: { __typename?: 'WalletMetricType' } & Pick<
                   WalletMetricType,
                   'stakedUSD' | 'earnedUSD' | 'usd' | 'worth'
-                >
+                > & {
+                    worthChange: { __typename?: 'MetricChangeType' } & Pick<
+                      MetricChangeType,
+                      'week' | 'day'
+                    >
+                  }
                 billing: { __typename?: 'WalletBillingType' } & {
                   balance: { __typename?: 'BillingBalanceType' } & Pick<
                     BillingBalanceType,

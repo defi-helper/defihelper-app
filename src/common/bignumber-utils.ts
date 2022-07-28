@@ -95,4 +95,6 @@ export const bignumberUtils = {
     new BigNumber(num1 || 0).div(num2 || 1).toString(10),
 
   isNaN: (num?: string | number | null) => new BigNumber(num || 0).isNaN(),
+  isZero: (num?: string | number | null) =>
+    new BigNumber(num || 0).mod(num || 0).isZero(),
 }
