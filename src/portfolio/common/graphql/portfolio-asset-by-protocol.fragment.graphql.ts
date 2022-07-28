@@ -9,6 +9,10 @@ export const PORTFOLIO_ASSET_BY_PROTOCOL_FRAGMENT = gql`
       myPortfolioPercent
       myUSD
       myBalance
+      myUSDChange {
+        day
+        week
+      }
     }
   }
 `

@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 
+import React from 'react'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
 import {
@@ -18,6 +19,20 @@ export type PortfolioAssetCardProps = {
     | PortfolioAssetByProtocolFragment
 }
 
+const PercentChangeRender: React.FC<{ value: string }> = ({ value }) => {
+  const calculated = bignumberUtils.format(
+    bignumberUtils.mul(bignumberUtils.minus(value, 1), 100),
+    2
+  )
+  const isPositive = bignumberUtils.gte(calculated, 0)
+
+  return (
+    <span className={isPositive ? styles.changePlus : styles.changeMinus}>
+      {isPositive ? '+' : '-'}
+      {calculated}%
+    </span>
+  )
+}
 export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
   props
 ) => {
@@ -30,6 +45,7 @@ export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
         myPortfolioPercent: asset.metric.portfolioPercent,
         myBalance: asset.metric.balance,
         myUSD: asset.metric.usd,
+        myUSDChange: asset.metric.usdChange,
       },
       tokenAlias: asset.tokenAlias,
     } as PortfolioAssetFragment
@@ -72,6 +88,12 @@ export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
       </Typography>
       <Typography variant="body2" align="right">
         ${bignumberUtils.format(asset.metric.myUSD)}
+      </Typography>
+      <Typography variant="body2" align="right">
+        <PercentChangeRender value={asset.metric.myUSDChange.day} />
+      </Typography>
+      <Typography variant="body2" align="right">
+        <PercentChangeRender value={asset.metric.myUSDChange.week} />
       </Typography>
     </div>
   )
