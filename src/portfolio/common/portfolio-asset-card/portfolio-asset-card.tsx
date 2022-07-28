@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 
 import React from 'react'
-import BigNumber from 'bignumber.js'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
 import {
