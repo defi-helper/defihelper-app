@@ -3,7 +3,7 @@ import isEmpty from 'lodash.isempty'
 import { Sticky, StickyContainer } from 'react-sticky'
 import { analytics } from '~/analytics'
 
-import { BuyLiquidityProtocolsQuery, BuyLiquidityContractsQuery } from '~/api'
+import { BuyLiquidityProtocolsQuery } from '~/api'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
@@ -19,25 +19,18 @@ import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { StakingApyDialog } from '~/staking/common'
 import { WalletConnect } from '~/wallets/wallet-connect'
+import { LPContracts } from '../lp-tokens.types'
 import * as styles from './lp-tokens-table.css'
-
-type Contracts = Exclude<
-  Exclude<
-    BuyLiquidityContractsQuery['protocol'],
-    null | undefined
-  >['contracts']['list'],
-  null | undefined
->
 
 export type LPTokensTableProps = {
   className?: string
   onProtocolClick?: (protocolId: string) => void
-  onBuyLpClick?: (contract: Contracts[number]) => void
+  onBuyLpClick?: (contract: LPContracts[number]) => void
   protocols: Exclude<
     BuyLiquidityProtocolsQuery['protocols']['list'],
     null | undefined
   >
-  contracts: Contracts
+  contracts: LPContracts
   openedProtocol: string
   protocolListLoading?: boolean
   contractListLoading?: boolean
@@ -55,12 +48,12 @@ export const LPTokensTable: React.VFC<LPTokensTableProps> = (props) => {
     )
   }
 
-  const handleOnBuyLP = (contract: Contracts[number]) => () => {
+  const handleOnBuyLP = (contract: LPContracts[number]) => () => {
     analytics.log('lp_tokens_lp_token_click')
     props.onBuyLpClick?.(contract)
   }
 
-  const handleOpenApy = (metric: Contracts[number]['metric']) => async () => {
+  const handleOpenApy = (metric: LPContracts[number]['metric']) => async () => {
     const apr = {
       '1d': metric.aprDay,
       '7d': metric.aprWeek,
