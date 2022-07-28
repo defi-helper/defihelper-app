@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 
+import React from 'react'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
 import {
@@ -18,6 +19,25 @@ export type PortfolioAssetCardProps = {
     | PortfolioAssetByProtocolFragment
 }
 
+const PercentChangeRender: React.FC<{ value: string }> = ({ value }) => {
+  const calculated = bignumberUtils.format(
+    bignumberUtils.mul(bignumberUtils.minus(value, 1), 100),
+    2
+  )
+
+  return (
+    <span
+      className={
+        bignumberUtils.gte(calculated, 0)
+          ? styles.changePlus
+          : styles.changeMinus
+      }
+    >
+      {bignumberUtils.gte(calculated, 0) ? '+' : '-'}
+      {calculated}%
+    </span>
+  )
+}
 export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
   props
 ) => {
@@ -75,16 +95,10 @@ export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
         ${bignumberUtils.format(asset.metric.myUSD)}
       </Typography>
       <Typography variant="body2" align="right">
-        {bignumberUtils.mul(
-          bignumberUtils.minus(asset.metric.myUSDChange.day),
-          100
-        )}
+        <PercentChangeRender value={asset.metric.myUSDChange.day} />
       </Typography>
       <Typography variant="body2" align="right">
-        {bignumberUtils.mul(
-          bignumberUtils.minus(asset.metric.myUSDChange.week),
-          100
-        )}
+        <PercentChangeRender value={asset.metric.myUSDChange.week} />
       </Typography>
     </div>
   )

@@ -1,4 +1,5 @@
 import { style } from '@vanilla-extract/css'
+import { theme } from '~/common/theme'
 
 export const root = style({
   display: 'grid',
@@ -28,4 +29,12 @@ export const assetLogoPlaceholder = style({
 export const assetLogo = style({
   width: 24,
   height: 24,
+})
+
+export const changePlus = style({
+  color: theme.colors.common.green2,
+})
+
+export const changeMinus = style({
+  color: theme.colors.common.red1,
 })
