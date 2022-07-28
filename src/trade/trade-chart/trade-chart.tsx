@@ -4,7 +4,6 @@ import clsx from 'clsx'
 import { useEffect } from 'react'
 
 import { dateUtils } from '~/common/date-utils'
-import { config } from '~/config'
 import DataFeed from '~/trade/trade-chart/trade.datafeed'
 import * as styles from './trade-chart.css'
 
