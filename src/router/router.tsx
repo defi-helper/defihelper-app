@@ -169,9 +169,9 @@ export const Router: React.VFC<RouterProps> = () => {
         <PrivateRoute path={paths.admin}>
           <Admin />
         </PrivateRoute>
-        <PrivateRoute path={paths.trade}>
+        <Route path={paths.trade}>
           <Trade />
-        </PrivateRoute>
+        </Route>
         <Route>
           <NotFound />
         </Route>
