@@ -17,15 +17,16 @@ export const PortfolioMetricCard: React.VFC<PortfolioMetricCardProps> = (
 ) => {
   const calculated = bignumberUtils.format(
     bignumberUtils.mul(bignumberUtils.minus(props.valueChanged, 1), 100),
-    2
+    2,
+    false
   )
 
   const rawContibutedPercent = bignumberUtils.floor(
     bignumberUtils.mul(bignumberUtils.minus(props.valueChanged, 1), 100)
   )
-  const isPositive =
-    bignumberUtils.gte(rawContibutedPercent, 0) ||
-    bignumberUtils.isZero(rawContibutedPercent)
+
+  const isZero = bignumberUtils.isZero(bignumberUtils.floor(props.valueChanged))
+  const isPositive = bignumberUtils.gte(rawContibutedPercent, 0) || isZero
 
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
@@ -41,11 +42,17 @@ export const PortfolioMetricCard: React.VFC<PortfolioMetricCardProps> = (
           variant="body1"
           className={clsx(
             styles.changes,
-            styles[isPositive ? 'positive' : 'negative']
+            styles[isPositive || isZero ? 'positive' : 'negative']
           )}
         >
-          {isPositive ? '+' : '-'}
-          {calculated}% <span className={styles.today}>today</span>
+          {isZero ? (
+            '-'
+          ) : (
+            <>
+              {isPositive && '+'}
+              {calculated}% <span className={styles.today}>today</span>
+            </>
+          )}
         </Typography>
       )}
     </Paper>
