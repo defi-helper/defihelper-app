@@ -23,6 +23,7 @@ import { tradeApi } from './common/trade.api'
 import * as styles from './trade.css'
 import * as model from './trade.model'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { config } from '~/config'
 
 export type TradeProps = unknown
 
@@ -258,7 +259,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           <TradeChart className={styles.chartInner} symbol={currentPair} />
         </Paper>
         <Paper radius={8} className={styles.selects}>
-          <div className={styles.selectsBody}>
+          <div className={clsx(!config.IS_DEV && styles.selectsBody)}>
             <div className={styles.tradeSelectHeader}>
               <Dropdown
                 control={(open) => (
@@ -330,36 +331,38 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Button>
             </div>
           </div>
-          <div className={styles.beta}>
-            <Typography
-              variant="body2"
-              align="center"
-              family="mono"
-              className={styles.betaTitle}
-            >
-              Trade section is currently at the beta stage. Please leave your
-              email address to try it first.
-            </Typography>
-            <form
-              noValidate
-              autoComplete="off"
-              className={styles.betaForm}
-              onSubmit={handleOnSubmit}
-            >
-              <Input
-                placeholder="hello@defihelper.io"
-                {...register('email', {
-                  required: true,
-                  pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
-                })}
-                error={Boolean(formState.errors.email?.message)}
-                helperText={formState.errors.email?.message}
-              />
-              <Button color="green" type="submit">
-                join
-              </Button>
-            </form>
-          </div>
+          {!config.IS_DEV && (
+            <div className={styles.beta}>
+              <Typography
+                variant="body2"
+                align="center"
+                family="mono"
+                className={styles.betaTitle}
+              >
+                Trade section is currently at the beta stage. Please leave your
+                email address to try it first.
+              </Typography>
+              <form
+                noValidate
+                autoComplete="off"
+                className={styles.betaForm}
+                onSubmit={handleOnSubmit}
+              >
+                <Input
+                  placeholder="hello@defihelper.io"
+                  {...register('email', {
+                    required: true,
+                    pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
+                  })}
+                  error={Boolean(formState.errors.email?.message)}
+                  helperText={formState.errors.email?.message}
+                />
+                <Button color="green" type="submit">
+                  join
+                </Button>
+              </form>
+            </div>
+          )}
         </Paper>
       </div>
       <TradeOrders />

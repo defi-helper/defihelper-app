@@ -1,4 +1,5 @@
 import { useToggle } from 'react-use'
+import clsx from 'clsx'
 
 import { Icon } from '~/common/icon'
 import { NumericalInput } from '~/common/numerical-input'
@@ -9,6 +10,7 @@ import { TradePlusMinus } from '~/trade/common/trade-plus-minus'
 import { TradeSlider } from '~/trade/common/trade-slider'
 import { TradePercentagePicker } from '~/trade/common/trade-percentage-picker'
 import * as styles from './trade-buy-sell.css'
+import { config } from '~/config'
 
 export type TradeBuySellProps = {
   className?: string
@@ -19,7 +21,7 @@ export const TradeBuySell: React.VFC<TradeBuySellProps> = () => {
   const [stopLoss, toggleStopLoss] = useToggle(false)
 
   return (
-    <div className={styles.root}>
+    <div className={clsx(styles.root, !config.IS_DEV && styles.overflow)}>
       <div className={styles.inputGroup}>
         <NumericalInput label="Amount" rightSide={<>BTC</>} />
         <NumericalInput label="Market price" rightSide={<>USDT</>} />
