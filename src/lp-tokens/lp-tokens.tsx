@@ -174,13 +174,9 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
       }
     })
 
-    const router =
-      contract.automate.buyLiquidity?.router ??
-      contract.automate.lpTokensManager?.router
+    const router = contract.automate.lpTokensManager?.router
 
-    const pair =
-      contract.automate.buyLiquidity?.pair ??
-      contract.automate.lpTokensManager?.pair
+    const pair = contract.automate.lpTokensManager?.pair
 
     if (!router || !pair) return
 
