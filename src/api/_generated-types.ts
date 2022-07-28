@@ -681,8 +681,6 @@ export type ContractAutomatesType = {
   adapters: Array<Scalars['String']>
   /** Autorestake adapter name */
   autorestake?: Maybe<Scalars['String']>
-  /** Buy liquidity automate config */
-  buyLiquidity?: Maybe<ContractAutomateBuyLiquidityType>
   /** Liquidity pool tokens manager automate config */
   lpTokensManager?: Maybe<ContractAutomateBuyLiquidityType>
 }
@@ -822,8 +820,8 @@ export type ContractDebankTypeMetricArgs = {
 }
 
 export type ContractListAutomateFilterInputType = {
-  /** Has buy liquidity automate */
-  buyLiquidity?: Maybe<Scalars['Boolean']>
+  /** Has LP tokens manager automate */
+  lpTokensManager?: Maybe<Scalars['Boolean']>
   /** Has autorestake automate */
   autorestake?: Maybe<Scalars['Boolean']>
   /** Is autorestake automate candidate */
@@ -1770,7 +1768,7 @@ export type ProtocolLinkType = {
 }
 
 export type ProtocolListFilterAutomateInputType = {
-  buyLiquidity?: Maybe<Scalars['Boolean']>
+  lpTokensManager?: Maybe<Scalars['Boolean']>
 }
 
 export type ProtocolListFilterInputType = {
@@ -4606,12 +4604,6 @@ export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
               >
             }
             automate: { __typename?: 'ContractAutomatesType' } & {
-              buyLiquidity?: Maybe<
-                { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
-                  ContractAutomateBuyLiquidityType,
-                  'router' | 'pair'
-                >
-              >
               lpTokensManager?: Maybe<
                 { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
                   ContractAutomateBuyLiquidityType,
@@ -6357,12 +6349,6 @@ export type StakingContractFragmentFragment = {
       ContractAutomatesType,
       'adapters' | 'autorestake'
     > & {
-        buyLiquidity?: Maybe<
-          { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
-            ContractAutomateBuyLiquidityType,
-            'router' | 'pair'
-          >
-        >
         lpTokensManager?: Maybe<
           { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
             ContractAutomateBuyLiquidityType,
