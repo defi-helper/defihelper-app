@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 
 import React from 'react'
+import BigNumber from 'bignumber.js'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
 import {
@@ -24,7 +25,13 @@ const PercentChangeRender: React.FC<{ value: string }> = ({ value }) => {
     bignumberUtils.mul(bignumberUtils.minus(value, 1), 100),
     2
   )
-  const isPositive = bignumberUtils.gte(calculated, 0)
+
+  const rawContibutedPercent = bignumberUtils.floor(
+    bignumberUtils.mul(bignumberUtils.minus(value, 1), 100)
+  )
+  const isPositive =
+    bignumberUtils.gte(rawContibutedPercent, 0) ||
+    bignumberUtils.isZero(rawContibutedPercent)
 
   return (
     <span className={isPositive ? styles.changePlus : styles.changeMinus}>
