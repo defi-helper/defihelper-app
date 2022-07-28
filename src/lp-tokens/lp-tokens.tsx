@@ -208,7 +208,7 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
         sellLiquidityAdapter: sellLiquidity,
         tokens,
         onSubmit: cb,
-      }).catch(console.error)
+      })
 
       await openSuccessDialog({
         type: 'buyLiquidity',

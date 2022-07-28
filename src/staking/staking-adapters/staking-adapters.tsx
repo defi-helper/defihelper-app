@@ -250,7 +250,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         sellLiquidityAdapter: sellLiquidity,
         tokens,
         onSubmit: cb,
-      }).catch(console.error)
+      })
 
       await openSuccessDialog({
         type: 'buyLiquidity',
