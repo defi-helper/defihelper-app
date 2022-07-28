@@ -108,9 +108,9 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     if (!isNetworkKey(network)) throw new Error('wrong network')
 
-    const currentAddress =
-      (networks[network] as any).LPTokensManager.address ??
-      (networks[network] as any).BuyLiquidity.address
+    const currentAddress = (networks[network] as any)?.LPTokensManager?.address
+
+    if (!currentAddress) throw new Error('does not have a LPTokensManager')
 
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,
