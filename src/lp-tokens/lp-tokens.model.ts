@@ -47,7 +47,7 @@ export const fetchProtocolsFx = createEffect(
           isDebank: false,
           hidden: false,
           automate: {
-            buyLiquidity: true,
+            lpTokensManager: true,
           },
         },
       },
@@ -75,7 +75,7 @@ export const fetchContractsFx = createEffect(
           ...variables.filter,
           hidden: false,
           automate: {
-            buyLiquidity: true,
+            lpTokensManager: true,
           },
         },
         sort: [

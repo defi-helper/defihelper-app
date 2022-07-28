@@ -38,10 +38,6 @@ export const BUY_LIQUIDITY_CONTRACT_LIST = gql`
           }
         }
         automate {
-          buyLiquidity {
-            router
-            pair
-          }
           lpTokensManager {
             router
             pair

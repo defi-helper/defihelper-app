@@ -40,7 +40,7 @@ export type StakingAdaptersProps = {
   deprecated: boolean
   autorestake?: string
   prototypeAddress?: string
-  buyLiquidity: Contract['automate']['buyLiquidity']
+  buyLiquidity: Contract['automate']['lpTokensManager']
 }
 
 const isGovernance = (adapter: string) => {
