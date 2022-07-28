@@ -22,6 +22,7 @@ import { Input } from '~/common/input'
 import { tradeApi } from './common/trade.api'
 import * as styles from './trade.css'
 import * as model from './trade.model'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type TradeProps = unknown
 
@@ -144,7 +145,13 @@ export const Trade: React.VFC<TradeProps> = () => {
     }
   })
 
-  console.log(pairs)
+  const pairMap = pairs.reduce((acc, pair) => {
+    acc.set(pair.pairInfo?.address, pair)
+
+    return acc
+  }, new Map<string, typeof pairs[number]>())
+
+  const currentPairObj = pairMap.get(currentPair)
 
   return (
     <AppLayout title="Trade">
@@ -220,7 +227,7 @@ export const Trade: React.VFC<TradeProps> = () => {
         <Paper radius={8} className={styles.chart}>
           <div className={styles.chartHeader}>
             <div>
-              <Typography>BTC/USDT</Typography>
+              <Typography>{currentPairObj?.pairInfo?.ticker ?? '-'}</Typography>
             </div>
             <Typography variant="body3" className={styles.chartMetric} as="div">
               <Typography
@@ -231,7 +238,8 @@ export const Trade: React.VFC<TradeProps> = () => {
                 24h change
               </Typography>
               <Typography variant="inherit" as="div">
-                + 13% | +4 085$
+                {bignumberUtils.format(currentPairObj?.pricePercentCount?.h24)}%
+                | {bignumberUtils.format(currentPairObj?.liquidityCount?.h24)}$
               </Typography>
             </Typography>
             <Typography variant="body3" className={styles.chartMetric} as="div">
@@ -243,7 +251,7 @@ export const Trade: React.VFC<TradeProps> = () => {
                 24h volume (USD)
               </Typography>
               <Typography variant="inherit" as="div">
-                5 259 687 158.42$
+                {bignumberUtils.format(currentPairObj?.volumeCount?.h24)}$
               </Typography>
             </Typography>
           </div>

@@ -8,6 +8,22 @@ export const MY_METRIC = gql`
         earnedUSD
         worth
         apy
+        balanceUSDChange {
+          week
+          day
+        }
+        stakedUSDChange {
+          week
+          day
+        }
+        earnedUSDChange {
+          week
+          day
+        }
+        worthChange {
+          week
+          day
+        }
       }
     }
   }

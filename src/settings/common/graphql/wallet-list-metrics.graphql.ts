@@ -15,6 +15,10 @@ export const WALLET_LIST_METRICS = gql`
             earnedUSD
             usd
             worth
+            worthChange {
+              week
+              day
+            }
           }
           billing {
             balance {

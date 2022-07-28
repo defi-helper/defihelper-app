@@ -4560,86 +4560,74 @@ export type GovernanceVotesQuery = { __typename?: 'Query' } & {
 }
 
 export type BuyLiquidityContractsQueryVariables = Exact<{
-  filter: ProtocolFilterInputType
-  contractFilter?: Maybe<ContractListFilterInputType>
-  contractSort?: Maybe<
-    Array<ContractListSortInputType> | ContractListSortInputType
-  >
-  contractPagination?: Maybe<ContractListPaginationInputType>
+  filter?: Maybe<ContractListFilterInputType>
+  sort?: Maybe<Array<ContractListSortInputType> | ContractListSortInputType>
+  pagination?: Maybe<ContractListPaginationInputType>
 }>
 
 export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
-  protocol?: Maybe<
-    { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'adapter'> & {
-        contracts: { __typename?: 'ContractListType' } & {
-          list?: Maybe<
-            Array<
-              { __typename?: 'ContractType' } & Pick<
-                ContractType,
-                'id' | 'address' | 'name' | 'network' | 'blockchain'
-              > & {
-                  tokens: { __typename?: 'ContractTokenLinkType' } & {
-                    stake: Array<
-                      { __typename?: 'TokenType' } & Pick<
-                        TokenType,
-                        'network' | 'address' | 'name'
-                      > & {
-                          alias?: Maybe<
-                            { __typename?: 'TokenAlias' } & Pick<
-                              TokenAlias,
-                              'logoUrl'
-                            >
-                          >
-                        }
-                    >
-                    reward: Array<
-                      { __typename?: 'TokenType' } & Pick<
-                        TokenType,
-                        'network' | 'address' | 'name'
-                      > & {
-                          alias?: Maybe<
-                            { __typename?: 'TokenAlias' } & Pick<
-                              TokenAlias,
-                              'logoUrl'
-                            >
-                          >
-                        }
-                    >
-                  }
-                  automate: { __typename?: 'ContractAutomatesType' } & {
-                    buyLiquidity?: Maybe<
-                      {
-                        __typename?: 'ContractAutomateBuyLiquidityType'
-                      } & Pick<
-                        ContractAutomateBuyLiquidityType,
-                        'router' | 'pair'
-                      >
-                    >
-                    lpTokensManager?: Maybe<
-                      {
-                        __typename?: 'ContractAutomateBuyLiquidityType'
-                      } & Pick<
-                        ContractAutomateBuyLiquidityType,
-                        'router' | 'pair'
-                      >
-                    >
-                  }
-                  metric: { __typename?: 'ContractMetricType' } & Pick<
-                    ContractMetricType,
-                    | 'tvl'
-                    | 'aprDay'
-                    | 'aprWeek'
-                    | 'aprMonth'
-                    | 'aprYear'
-                    | 'myStaked'
-                  >
-                }
+  contracts: { __typename?: 'ContractListType' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'ContractType' } & Pick<
+          ContractType,
+          'id' | 'address' | 'name' | 'network' | 'blockchain'
+        > & {
+            protocol: { __typename?: 'ProtocolType' } & Pick<
+              ProtocolType,
+              'adapter'
             >
-          >
-          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-        }
-      }
-  >
+            tokens: { __typename?: 'ContractTokenLinkType' } & {
+              stake: Array<
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'network' | 'address' | 'name'
+                > & {
+                    alias?: Maybe<
+                      { __typename?: 'TokenAlias' } & Pick<
+                        TokenAlias,
+                        'logoUrl'
+                      >
+                    >
+                  }
+              >
+              reward: Array<
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'network' | 'address' | 'name'
+                > & {
+                    alias?: Maybe<
+                      { __typename?: 'TokenAlias' } & Pick<
+                        TokenAlias,
+                        'logoUrl'
+                      >
+                    >
+                  }
+              >
+            }
+            automate: { __typename?: 'ContractAutomatesType' } & {
+              buyLiquidity?: Maybe<
+                { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
+                  ContractAutomateBuyLiquidityType,
+                  'router' | 'pair'
+                >
+              >
+              lpTokensManager?: Maybe<
+                { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
+                  ContractAutomateBuyLiquidityType,
+                  'router' | 'pair'
+                >
+              >
+            }
+            metric: { __typename?: 'ContractMetricType' } & Pick<
+              ContractMetricType,
+              'tvl' | 'aprDay' | 'aprWeek' | 'aprMonth' | 'aprYear' | 'myStaked'
+            >
+          }
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
 }
 
 export type BuyLiquidityProtocolsSelectQueryVariables = Exact<{
@@ -4863,7 +4851,24 @@ export type MyMetricQuery = { __typename?: 'Query' } & {
       metric: { __typename?: 'UserMetricType' } & Pick<
         UserMetricType,
         'stakedUSD' | 'earnedUSD' | 'worth' | 'apy'
-      >
+      > & {
+          balanceUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+            MetricChangeType,
+            'week' | 'day'
+          >
+          stakedUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+            MetricChangeType,
+            'week' | 'day'
+          >
+          earnedUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+            MetricChangeType,
+            'week' | 'day'
+          >
+          worthChange: { __typename?: 'MetricChangeType' } & Pick<
+            MetricChangeType,
+            'week' | 'day'
+          >
+        }
     }
   >
 }
@@ -4900,7 +4905,12 @@ export type PortfolioAssetByProtocolFragment = {
     metric: { __typename?: 'TokenAliasMetricType' } & Pick<
       TokenAliasMetricType,
       'myPortfolioPercent' | 'myUSD' | 'myBalance'
-    >
+    > & {
+        myUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+          MetricChangeType,
+          'day' | 'week'
+        >
+      }
   }
 
 export type PortfolioAssetByWalletFragment = {
@@ -4913,7 +4923,12 @@ export type PortfolioAssetByWalletFragment = {
   metric: { __typename?: 'WalletTokenAliasMetricType' } & Pick<
     WalletTokenAliasMetricType,
     'portfolioPercent' | 'usd' | 'balance'
-  >
+  > & {
+      usdChange: { __typename?: 'MetricChangeType' } & Pick<
+        MetricChangeType,
+        'day' | 'week'
+      >
+    }
 }
 
 export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
@@ -4923,7 +4938,12 @@ export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
     metric: { __typename?: 'TokenAliasMetricType' } & Pick<
       TokenAliasMetricType,
       'myPortfolioPercent' | 'myUSD' | 'myBalance'
-    >
+    > & {
+        myUSDChange: { __typename?: 'MetricChangeType' } & Pick<
+          MetricChangeType,
+          'day' | 'week'
+        >
+      }
   }
 
 export type PortfolioProtocolsQueryVariables = Exact<{
@@ -5861,7 +5881,12 @@ export type WalletListMetricsQuery = { __typename?: 'Query' } & {
                 metric: { __typename?: 'WalletMetricType' } & Pick<
                   WalletMetricType,
                   'stakedUSD' | 'earnedUSD' | 'usd' | 'worth'
-                >
+                > & {
+                    worthChange: { __typename?: 'MetricChangeType' } & Pick<
+                      MetricChangeType,
+                      'week' | 'day'
+                    >
+                  }
                 billing: { __typename?: 'WalletBillingType' } & {
                   balance: { __typename?: 'BillingBalanceType' } & Pick<
                     BillingBalanceType,
