@@ -1,24 +1,15 @@
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { Sticky, StickyContainer } from 'react-sticky'
-import { analytics } from '~/analytics'
 
+import { analytics } from '~/analytics'
 import { BuyLiquidityProtocolsQuery } from '~/api'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { buildExplorerUrl } from '~/common/build-explorer-url'
-import { Button } from '~/common/button'
-import { ButtonBase } from '~/common/button-base'
-import { cutAccount } from '~/common/cut-account'
-import { useDialog } from '~/common/dialog'
 import { Icon } from '~/common/icon'
-import { Link } from '~/common/link'
 import { Loader } from '~/common/loader'
 import { Paper } from '~/common/paper'
-import { StakeRewardTokens } from '~/common/stake-reward-tokens'
 import { Typography } from '~/common/typography'
-import { networksConfig } from '~/networks-config'
-import { StakingApyDialog } from '~/staking/common'
-import { WalletConnect } from '~/wallets/wallet-connect'
+import { LPTokensContracts } from '../lp-tokens-contracts'
 import { LPContracts } from '../lp-tokens.types'
 import * as styles from './lp-tokens-table.css'
 
@@ -37,40 +28,19 @@ export type LPTokensTableProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contractsSentryRef: any
   contractsHasNextPage: boolean
+  onOpenApy: (contract: LPContracts[number]['metric']) => void
 }
 
 export const LPTokensTable: React.VFC<LPTokensTableProps> = (props) => {
-  const [openApyDialog] = useDialog(StakingApyDialog)
-
   const handleOnProtocolClick = (protocolId: string) => () => {
     props.onProtocolClick?.(
       props.openedProtocol === protocolId ? '' : protocolId
     )
   }
 
-  const handleOnBuyLP = (contract: LPContracts[number]) => () => {
+  const handleOnBuyLP = (contract: LPContracts[number]) => {
     analytics.log('lp_tokens_lp_token_click')
     props.onBuyLpClick?.(contract)
-  }
-
-  const handleOpenApy = (metric: LPContracts[number]['metric']) => async () => {
-    const apr = {
-      '1d': metric.aprDay,
-      '7d': metric.aprWeek,
-      '30d': metric.aprMonth,
-      '365d(APY)': metric.aprYear,
-    }
-
-    try {
-      await openApyDialog({
-        apr,
-        staked: metric.myStaked,
-      })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
   }
 
   return (
@@ -141,165 +111,14 @@ export const LPTokensTable: React.VFC<LPTokensTableProps> = (props) => {
                   }}
                 </Sticky>
                 {opened && (
-                  <div className={styles.contracts}>
-                    <div className={styles.contractHeader}>
-                      <Typography variant="body2">Pool</Typography>
-                      <Typography variant="body2">TVL</Typography>
-                      <Typography variant="body2">APY</Typography>
-                      <Typography variant="body2">LP Token Address</Typography>
-                    </div>
-                    {!props.contractListLoading && isEmpty(props.contracts) && (
-                      <div>
-                        <Paper
-                          radius={8}
-                          className={clsx(styles.empty, styles.emptyContracts)}
-                        >
-                          No contracts found
-                        </Paper>
-                      </div>
-                    )}
-                    {props.contracts.map((contract, contractIndex) => {
-                      return (
-                        <Paper
-                          radius={8}
-                          className={styles.contractCard}
-                          key={contract.id + String(contractIndex)}
-                        >
-                          <Typography
-                            as="div"
-                            variant="body2"
-                            className={styles.contractCardName}
-                          >
-                            <Typography variant="inherit">
-                              {contract.name}
-                            </Typography>
-                            <span className={styles.contractCardIcons}>
-                              {networksConfig[contract.network]?.icon ? (
-                                <Icon
-                                  icon={networksConfig[contract.network].icon}
-                                  width="20"
-                                  height="20"
-                                  className={styles.contractNetworkIcon}
-                                />
-                              ) : (
-                                <Paper
-                                  className={styles.contractUnknownNetworkIcon}
-                                >
-                                  <Icon
-                                    icon="unknownNetwork"
-                                    width="16"
-                                    height="16"
-                                  />
-                                </Paper>
-                              )}
-                              <StakeRewardTokens
-                                stakeTokens={contract.tokens.stake}
-                                rewardTokens={contract.tokens.reward}
-                              />
-                            </span>
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            className={styles.contractCardTextRow}
-                          >
-                            <Typography
-                              variant="inherit"
-                              className={styles.grey}
-                            >
-                              TVL
-                            </Typography>
-                            <Typography variant="inherit">
-                              ${bignumberUtils.format(contract.metric.tvl)}
-                            </Typography>
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            className={styles.contractCardTextRow}
-                          >
-                            <Typography
-                              variant="inherit"
-                              className={styles.grey}
-                            >
-                              APY
-                            </Typography>
-                            <Typography variant="inherit">
-                              {bignumberUtils.formatMax(
-                                bignumberUtils.mul(
-                                  contract.metric.aprYear,
-                                  100
-                                ),
-                                10000
-                              )}
-                              %
-                              <ButtonBase
-                                onClick={handleOpenApy(contract.metric)}
-                                className={styles.apyButton}
-                              >
-                                <Icon
-                                  icon="calculator"
-                                  width="20"
-                                  height="20"
-                                />
-                              </ButtonBase>
-                            </Typography>
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            className={styles.contractCardTextRow}
-                          >
-                            <Typography
-                              variant="inherit"
-                              className={styles.grey}
-                            >
-                              LP Token Address
-                            </Typography>{' '}
-                            <Link
-                              target="_blank"
-                              color="blue"
-                              className={styles.contractCardLink}
-                              href={buildExplorerUrl({
-                                address: contract.address,
-                                network: contract.network,
-                              })}
-                            >
-                              {cutAccount(contract.address)}{' '}
-                              <Icon icon="link" width="1em" height="1em" />
-                            </Link>
-                          </Typography>
-                          <div className={styles.contractButtonWrap}>
-                            <WalletConnect
-                              fallback={
-                                <Button
-                                  size="medium"
-                                  color="green"
-                                  className={styles.contractButton}
-                                >
-                                  ZAP
-                                </Button>
-                              }
-                            >
-                              <Button
-                                size="medium"
-                                color="green"
-                                className={styles.contractButton}
-                                onClick={handleOnBuyLP(contract)}
-                              >
-                                ZAP
-                              </Button>
-                            </WalletConnect>
-                          </div>
-                        </Paper>
-                      )
-                    })}
-                    {props.contractsHasNextPage && (
-                      <div
-                        className={styles.listItemLoader}
-                        ref={props.contractsSentryRef}
-                      >
-                        <Loader height="36" />
-                      </div>
-                    )}
-                  </div>
+                  <LPTokensContracts
+                    contracts={props.contracts}
+                    contractListLoading={props.contractListLoading}
+                    contractsSentryRef={props.contractsSentryRef}
+                    contractsHasNextPage={props.contractsHasNextPage}
+                    onBuyLP={handleOnBuyLP}
+                    onOpenApy={props.onOpenApy}
+                  />
                 )}
               </StickyContainer>
             </li>

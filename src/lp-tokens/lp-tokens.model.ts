@@ -71,14 +71,14 @@ export const fetchContractsFx = createEffect(
     lpTokensApi.contracts(
       {
         ...variables,
-        contractFilter: {
-          ...variables.contractFilter,
+        filter: {
+          ...variables.filter,
           hidden: false,
           automate: {
             buyLiquidity: true,
           },
         },
-        contractSort: [
+        sort: [
           {
             column: ContractListSortInputTypeColumnEnum.AprYear,
             order: SortOrderEnum.Desc,

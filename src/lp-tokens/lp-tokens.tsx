@@ -12,7 +12,7 @@ import { Input } from '~/common/input'
 import { Button } from '~/common/button'
 import { LPTokensTable } from './common/lp-tokens-table'
 import { BlockchainEnum } from '~/api'
-import { StakingSuccessDialog } from '~/staking/common'
+import { StakingApyDialog, StakingSuccessDialog } from '~/staking/common'
 import { useDialog, UserRejectionError } from '~/common/dialog'
 import { toastsService } from '~/toasts'
 import { switchNetwork } from '~/wallets/common'
@@ -22,9 +22,12 @@ import { LPTokensSell } from './lp-tokens-sell'
 import { LPTokensBuySellDialog } from './common/lp-tokens-buy-sell-dialog'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as stakingModel from '~/staking/staking-adapters/staking-adapters.model'
+import { settingsWalletModel } from '~/settings/settings-wallets'
 import * as styles from './lp-tokens.css'
 import * as model from './lp-tokens.model'
-import { settingsWalletModel } from '~/settings/settings-wallets'
+import { LPContracts } from './common/lp-tokens.types'
+import { LPTokensContracts } from './common/lp-tokens-contracts'
+import { useDebounce } from '~/common/hooks'
 
 export type LPTokensProps = unknown
 
@@ -50,9 +53,10 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
 
   const [protocolIds, setProtocolIds] = useState<string[]>([])
   const protocolIdsRef = useRef<string[]>([])
-  const [search, setSearch] = useState('')
+  const [searchProtocol, setSearchProtocol] = useState('')
   const [openedProtocol, setOpenedProtocol] = useState('')
   const [blockchain, setBlockChain] = useState<BlockchainEnum | null>(null)
+  const [searchPool, setSearchPool] = useState('')
 
   const protocolListLoading = useStore(model.fetchProtocolsFx.pending)
   const contractListLoading = useStore(model.fetchContractsFx.pending)
@@ -60,9 +64,12 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
 
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
   const [openBuySellDialog] = useDialog(LPTokensBuySellDialog)
+  const [openApyDialog] = useDialog(StakingApyDialog)
 
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
+
+  const searchPoolDebounced = useDebounce(searchPool, 500)
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -89,16 +96,19 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
   const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
 
   useEffect(() => {
-    if (!openedProtocol) return
+    const filter = {
+      protocol: openedProtocol ? [openedProtocol] : undefined,
+      search: !isEmpty(searchPoolDebounced) ? searchPoolDebounced : undefined,
+    }
+
+    if (isEmpty(Object.values(filter).filter(Boolean))) return
 
     const abortController = new AbortController()
 
     model.fetchContractsFx({
       signal: abortController.signal,
-      filter: {
-        id: openedProtocol,
-      },
-      contractPagination: {
+      filter,
+      pagination: {
         offset: contractsOffset,
       },
     })
@@ -106,28 +116,28 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
     return () => {
       abortController.abort()
     }
-  }, [openedProtocol, contractsOffset])
+  }, [openedProtocol, contractsOffset, searchPoolDebounced])
 
   useEffect(() => {
     return () => {
       model.resetContracts()
       model.useInfiniteScrollContracts.reset()
     }
-  }, [openedProtocol])
+  }, [openedProtocol, searchPool])
 
   useEffect(() => {
     const abortController = new AbortController()
 
     model.fetchProtocolsSelectFx({
       signal: abortController.signal,
-      search: search || undefined,
+      search: searchProtocol || undefined,
     })
 
     return () => {
       abortController.abort()
       model.resetProtocolsSelect()
     }
-  }, [search])
+  }, [searchProtocol])
 
   const handleFilterByProtocolId = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.split(',').filter(Boolean)
@@ -143,8 +153,12 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
     setProtocolIds(protocolIdsRef.current)
   }
 
-  const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value)
+  const handleSearchProtocol = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchProtocol(event.target.value)
+  }
+
+  const handleSearchPool = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearchPool(event.target.value)
   }
 
   const handleChooseBlockchain = (event: ChangeEvent<HTMLInputElement>) => {
@@ -220,6 +234,26 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
     }
   }
 
+  const handleOpenApy = async (metric: LPContracts[number]['metric']) => {
+    const apr = {
+      '1d': metric.aprDay,
+      '7d': metric.aprWeek,
+      '30d': metric.aprMonth,
+      '365d(APY)': metric.aprYear,
+    }
+
+    try {
+      await openApyDialog({
+        apr,
+        staked: metric.myStaked,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+
   const [contractsSentryRef] = model.useInfiniteScrollContracts()
   const contractsHasNextPage =
     useStore(model.useInfiniteScrollContracts.hasNextPage) ||
@@ -272,8 +306,8 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
           header={
             <Input
               placeholder="Search"
-              value={search}
-              onChange={handleSearch}
+              value={searchProtocol}
+              onChange={handleSearchProtocol}
             />
           }
           footer={
@@ -312,18 +346,37 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
             </SelectOption>
           ))}
         </Select>
+        <Input
+          placeholder="Search"
+          className={styles.search}
+          value={searchPool}
+          onChange={handleSearchPool}
+        />
       </div>
-      <LPTokensTable
-        protocols={protocols}
-        onProtocolClick={setOpenedProtocol}
-        openedProtocol={openedProtocol}
-        protocolListLoading={protocolListLoading}
-        contracts={contracts}
-        contractListLoading={contractListLoading}
-        onBuyLpClick={handleBuyLiquidity}
-        contractsSentryRef={contractsSentryRef}
-        contractsHasNextPage={contractsHasNextPage}
-      />
+      {isEmpty(searchPool) && (
+        <LPTokensTable
+          protocols={protocols}
+          onProtocolClick={setOpenedProtocol}
+          openedProtocol={openedProtocol}
+          protocolListLoading={protocolListLoading}
+          contracts={contracts}
+          contractListLoading={contractListLoading}
+          onBuyLpClick={handleBuyLiquidity}
+          contractsSentryRef={contractsSentryRef}
+          contractsHasNextPage={contractsHasNextPage}
+          onOpenApy={handleOpenApy}
+        />
+      )}
+      {!isEmpty(searchPool) && (
+        <LPTokensContracts
+          contracts={contracts}
+          contractListLoading={contractListLoading}
+          contractsSentryRef={contractsSentryRef}
+          contractsHasNextPage={contractsHasNextPage}
+          onOpenApy={handleOpenApy}
+          onBuyLP={handleBuyLiquidity}
+        />
+      )}
     </AppLayout>
   )
 }
