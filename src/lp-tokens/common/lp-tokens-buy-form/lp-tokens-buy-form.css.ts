@@ -17,11 +17,6 @@ export const loader = style({
   margin: 'auto',
 })
 
-export const button = style({
-  marginTop: 'auto',
-  marginBottom: 8,
-})
-
 export const input = style({
   marginBottom: 16,
 })
@@ -59,4 +54,18 @@ export const imgPlaceHolder = style([
 export const balance = style({
   color: theme.colors.common.blue1,
   marginLeft: 'auto',
+})
+
+export const wrap = style({
+  marginTop: 'auto',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 8,
+})
+
+export const error = style({
+  background: theme.colors.common.red1,
+  color: theme.colors.common.white1,
+  borderRadius: 8,
+  padding: 8,
 })

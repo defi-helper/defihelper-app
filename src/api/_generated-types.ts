@@ -4560,86 +4560,74 @@ export type GovernanceVotesQuery = { __typename?: 'Query' } & {
 }
 
 export type BuyLiquidityContractsQueryVariables = Exact<{
-  filter: ProtocolFilterInputType
-  contractFilter?: Maybe<ContractListFilterInputType>
-  contractSort?: Maybe<
-    Array<ContractListSortInputType> | ContractListSortInputType
-  >
-  contractPagination?: Maybe<ContractListPaginationInputType>
+  filter?: Maybe<ContractListFilterInputType>
+  sort?: Maybe<Array<ContractListSortInputType> | ContractListSortInputType>
+  pagination?: Maybe<ContractListPaginationInputType>
 }>
 
 export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
-  protocol?: Maybe<
-    { __typename?: 'ProtocolType' } & Pick<ProtocolType, 'adapter'> & {
-        contracts: { __typename?: 'ContractListType' } & {
-          list?: Maybe<
-            Array<
-              { __typename?: 'ContractType' } & Pick<
-                ContractType,
-                'id' | 'address' | 'name' | 'network' | 'blockchain'
-              > & {
-                  tokens: { __typename?: 'ContractTokenLinkType' } & {
-                    stake: Array<
-                      { __typename?: 'TokenType' } & Pick<
-                        TokenType,
-                        'network' | 'address' | 'name'
-                      > & {
-                          alias?: Maybe<
-                            { __typename?: 'TokenAlias' } & Pick<
-                              TokenAlias,
-                              'logoUrl'
-                            >
-                          >
-                        }
-                    >
-                    reward: Array<
-                      { __typename?: 'TokenType' } & Pick<
-                        TokenType,
-                        'network' | 'address' | 'name'
-                      > & {
-                          alias?: Maybe<
-                            { __typename?: 'TokenAlias' } & Pick<
-                              TokenAlias,
-                              'logoUrl'
-                            >
-                          >
-                        }
-                    >
-                  }
-                  automate: { __typename?: 'ContractAutomatesType' } & {
-                    buyLiquidity?: Maybe<
-                      {
-                        __typename?: 'ContractAutomateBuyLiquidityType'
-                      } & Pick<
-                        ContractAutomateBuyLiquidityType,
-                        'router' | 'pair'
-                      >
-                    >
-                    lpTokensManager?: Maybe<
-                      {
-                        __typename?: 'ContractAutomateBuyLiquidityType'
-                      } & Pick<
-                        ContractAutomateBuyLiquidityType,
-                        'router' | 'pair'
-                      >
-                    >
-                  }
-                  metric: { __typename?: 'ContractMetricType' } & Pick<
-                    ContractMetricType,
-                    | 'tvl'
-                    | 'aprDay'
-                    | 'aprWeek'
-                    | 'aprMonth'
-                    | 'aprYear'
-                    | 'myStaked'
-                  >
-                }
+  contracts: { __typename?: 'ContractListType' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'ContractType' } & Pick<
+          ContractType,
+          'id' | 'address' | 'name' | 'network' | 'blockchain'
+        > & {
+            protocol: { __typename?: 'ProtocolType' } & Pick<
+              ProtocolType,
+              'adapter'
             >
-          >
-          pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-        }
-      }
-  >
+            tokens: { __typename?: 'ContractTokenLinkType' } & {
+              stake: Array<
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'network' | 'address' | 'name'
+                > & {
+                    alias?: Maybe<
+                      { __typename?: 'TokenAlias' } & Pick<
+                        TokenAlias,
+                        'logoUrl'
+                      >
+                    >
+                  }
+              >
+              reward: Array<
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'network' | 'address' | 'name'
+                > & {
+                    alias?: Maybe<
+                      { __typename?: 'TokenAlias' } & Pick<
+                        TokenAlias,
+                        'logoUrl'
+                      >
+                    >
+                  }
+              >
+            }
+            automate: { __typename?: 'ContractAutomatesType' } & {
+              buyLiquidity?: Maybe<
+                { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
+                  ContractAutomateBuyLiquidityType,
+                  'router' | 'pair'
+                >
+              >
+              lpTokensManager?: Maybe<
+                { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
+                  ContractAutomateBuyLiquidityType,
+                  'router' | 'pair'
+                >
+              >
+            }
+            metric: { __typename?: 'ContractMetricType' } & Pick<
+              ContractMetricType,
+              'tvl' | 'aprDay' | 'aprWeek' | 'aprMonth' | 'aprYear' | 'myStaked'
+            >
+          }
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
 }
 
 export type BuyLiquidityProtocolsSelectQueryVariables = Exact<{
