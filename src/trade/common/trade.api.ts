@@ -20,19 +20,24 @@ const apiV2 = axios.create({
 })
 
 type Exchange = {
-  DexAddress: string
+  Icon: string
   Name: string
 }
 
 type Response<T> = { code: 200 | 500 | 405; data?: T; message?: string }
 
 export const tradeApi = {
-  exchanges: () =>
+  exchanges: (networks: string[]) =>
     apiV1
-      .get<Response<Exchange[]>>('dex-info?networks=eth')
+      .get<Response<Exchange[]>>('dex-info', {
+        params: {
+          networks,
+        },
+      })
       .then(({ data }) => data),
 
   pairs: (
+    network: string[],
     payload: {
       excludedPairAddresses: string[]
       pairAddresses: string[]
@@ -44,8 +49,13 @@ export const tradeApi = {
     apiV1
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .post<Response<{ list: any[] }>>(
-        'pair-stat?network=eth&page=1&size=100&minLiquidity=10000&sortField=liquidity&sortDirection=desc',
-        payload
+        'pair-stat?page=1&size=100&minLiquidity=10000&sortField=liquidity&sortDirection=desc',
+        payload,
+        {
+          params: {
+            network,
+          },
+        }
       )
       .then(({ data }) => data),
 

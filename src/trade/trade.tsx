@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import { useForm } from 'react-hook-form'
@@ -16,13 +16,12 @@ import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Button } from '~/common/button'
 import { TradeChart } from './trade-chart'
-import { cutAccount } from '~/common/cut-account'
 import { networksConfig } from '~/networks-config'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Input } from '~/common/input'
+import { tradeApi } from './common/trade.api'
 import * as styles from './trade.css'
 import * as model from './trade.model'
-import { tradeApi } from './common/trade.api'
 
 export type TradeProps = unknown
 
@@ -44,6 +43,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentTab, setCurrentTab] = useState(Tabs.Buy)
   const [currentExchange, setCurrentExchange] = useState('')
   const [currentPair, setCurrentPair] = useState('')
+  const [currentWallet, setCurrentWallet] = useState('')
 
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
@@ -61,22 +61,52 @@ export const Trade: React.VFC<TradeProps> = () => {
   const handleChangePair = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentPair(event.target.value)
   }
+  const handleChangeWallet = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentWallet(event.target.value)
+  }
 
   const exchanges = useStore(model.$exchanges)
   const pairs = useStore(model.$pairs)
   const wallets = useStore(settingsWalletModel.$wallets)
 
-  useEffect(() => {
-    model.fetchExchangesFx()
-  }, [])
+  const walletsMap = useMemo(
+    () =>
+      wallets
+        .filter((wallet) => Boolean(model.networks[wallet.network]))
+        .reduce((acc, wallet) => {
+          acc.set(wallet.id, wallet)
+
+          return acc
+        }, new Map<string, typeof wallets[number]>()),
+    [wallets]
+  )
+
+  const wallet = useMemo(
+    () => walletsMap.get(currentWallet),
+    [currentWallet, walletsMap]
+  )
 
   useEffect(() => {
-    model.fetchPairsFx()
-  }, [])
+    if (!wallet) return
+
+    model.fetchExchangesFx(wallet.network)
+  }, [wallet])
+
+  useEffect(() => {
+    if (!wallet) return
+
+    model.fetchPairsFx(wallet.network)
+  }, [wallet])
 
   useEffect(() => {
     return () => model.reset()
   }, [])
+
+  useEffect(() => {
+    if (!wallets[0]) return
+
+    setCurrentWallet(wallets[0].id)
+  }, [wallets])
 
   const SelectComponents = {
     [Selects.SmartSell]: <TradeSmartSell />,
@@ -114,6 +144,8 @@ export const Trade: React.VFC<TradeProps> = () => {
     }
   })
 
+  console.log(pairs)
+
   return (
     <AppLayout title="Trade">
       <Head title="Trade" />
@@ -121,18 +153,24 @@ export const Trade: React.VFC<TradeProps> = () => {
         Trade
       </Typography>
       <div className={styles.header}>
-        <Select label="Wallet">
-          {wallets.map((wallet, index) => (
-            <SelectOption value="SelectOption" key={String(index)}>
-              {networksConfig[wallet.network] && (
-                <Icon
-                  icon={networksConfig[wallet.network].icon}
-                  className={styles.pairIcon}
-                />
-              )}
-              {cutAccount(wallet.address)}
-            </SelectOption>
-          ))}
+        <Select
+          label="Wallet"
+          value={currentWallet}
+          onChange={handleChangeWallet}
+        >
+          {wallets
+            .filter(({ network }) => Boolean(model.networks[network]))
+            .map(({ network, id, name }, index) => (
+              <SelectOption value={id} key={String(index)}>
+                {networksConfig[network] && (
+                  <Icon
+                    icon={networksConfig[network].icon}
+                    className={styles.pairIcon}
+                  />
+                )}
+                {name}
+              </SelectOption>
+            ))}
         </Select>
         <Select
           label="Exchange"
@@ -140,7 +178,14 @@ export const Trade: React.VFC<TradeProps> = () => {
           value={currentExchange}
         >
           {exchanges.map((exchange, index) => (
-            <SelectOption value={exchange.DexAddress} key={String(index)}>
+            <SelectOption value={exchange.Icon} key={String(index)}>
+              <img
+                alt=""
+                src={`${exchange.Icon}.svg`}
+                width="24"
+                height="24"
+                className={styles.pairIcon}
+              />
               {exchange.Name}
             </SelectOption>
           ))}
