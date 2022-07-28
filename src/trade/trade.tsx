@@ -122,8 +122,8 @@ export const Trade: React.VFC<TradeProps> = () => {
       </Typography>
       <div className={styles.header}>
         <Select label="Wallet">
-          {wallets.map((wallet) => (
-            <SelectOption value="SelectOption" key={wallet.id}>
+          {wallets.map((wallet, index) => (
+            <SelectOption value="SelectOption" key={String(index)}>
               {networksConfig[wallet.network] && (
                 <Icon
                   icon={networksConfig[wallet.network].icon}
@@ -139,8 +139,8 @@ export const Trade: React.VFC<TradeProps> = () => {
           onChange={handleChangeExchange}
           value={currentExchange}
         >
-          {exchanges.map((exchange) => (
-            <SelectOption value={exchange.DexAddress} key={exchange.DexAddress}>
+          {exchanges.map((exchange, index) => (
+            <SelectOption value={exchange.DexAddress} key={String(index)}>
               {exchange.Name}
             </SelectOption>
           ))}
@@ -150,11 +150,8 @@ export const Trade: React.VFC<TradeProps> = () => {
           value={currentPair}
           onChange={handleChangePair}
         >
-          {pairs.map((pair) => (
-            <SelectOption
-              value={pair.pairInfo?.address}
-              key={pair.pairInfo?.poolAddress + pair.pairInfo?.ticker}
-            >
+          {pairs.map((pair, index) => (
+            <SelectOption value={pair.pairInfo?.address} key={String(index)}>
               <img
                 alt=""
                 src={`https://whattofarm.io/assets/dex/${pair.pairInfo?.lpToken?.network?.name}.svg`}
