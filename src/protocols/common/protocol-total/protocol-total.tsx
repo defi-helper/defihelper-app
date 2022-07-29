@@ -19,6 +19,29 @@ export type ProtocolTotalProps = Exclude<
   readonly?: boolean
 }
 
+const PercentChangeRender: React.FC<{ value: string }> = ({ value }) => {
+  const contibutedPercent = bignumberUtils.toFixed(
+    bignumberUtils.mul(bignumberUtils.minus(value, 1), 100),
+    2
+  )
+
+  const isPositive = bignumberUtils.gte(contibutedPercent, 0)
+
+  if (
+    contibutedPercent.replace(/\D/g, '') === '0' ||
+    value.replace(/\D/g, '') === '0'
+  ) {
+    return <>-</>
+  }
+
+  return (
+    <span className={isPositive ? styles.changePlus : styles.changeMinus}>
+      {isPositive && '+'}
+      {contibutedPercent}%
+    </span>
+  )
+}
+
 export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
   return (
     <div className={clsx(styles.total, props.className)}>
@@ -29,6 +52,9 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
         <Typography variant="h4">
           ${bignumberUtils.format(props.myStaked)}
         </Typography>
+        <Typography variant="body2" className={styles.valueChange}>
+          <PercentChangeRender value={props.myStakedChange.day} />
+        </Typography>
       </Paper>
       <Paper radius={8} className={styles.totalItem}>
         <Typography variant="body2" className={styles.totalTitle}>
@@ -36,6 +62,9 @@ export const ProtocolTotal: React.VFC<ProtocolTotalProps> = (props) => {
         </Typography>
         <Typography variant="h4">
           ${bignumberUtils.format(props.myEarned)}
+        </Typography>
+        <Typography variant="body2" className={styles.valueChange}>
+          <PercentChangeRender value={props.myEarnedChange.day} />
         </Typography>
       </Paper>
       {!props.readonly ? (

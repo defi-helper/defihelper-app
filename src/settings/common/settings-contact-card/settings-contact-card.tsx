@@ -55,7 +55,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
         <div className={styles.subtitle}>
           <Typography variant="body3" as="span">
             Connect your {props.type} account to receive smart notifications
-            about your portfolio changes
+            about your portfolio
           </Typography>
         </div>
         <div>

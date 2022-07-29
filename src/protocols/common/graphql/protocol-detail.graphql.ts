@@ -14,6 +14,12 @@ export const PROTOCOL_DETAIL = gql`
         myEarned
         myMinUpdatedAt
         myAPYBoost
+        myStakedChange {
+          day
+        }
+        myEarnedChange {
+          day
+        }
       }
       contracts(
         filter: { hidden: $hidden }

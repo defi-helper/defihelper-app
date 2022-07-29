@@ -1,4 +1,4 @@
-import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useLocalStorage, useMedia, useMount } from 'react-use'
@@ -89,11 +89,6 @@ const INSTRUCTION = [
         even before you connect
       </>
     ),
-    button: (
-      <Button color="green" size="small">
-        learn more
-      </Button>
-    ),
     icon: WifiIcon,
   },
   {
@@ -108,11 +103,6 @@ const INSTRUCTION = [
         &lt;Condition&gt; and many others already available at automation wizard
       </>
     ),
-    button: (
-      <Button color="green" size="small">
-        try automations
-      </Button>
-    ),
     icon: EasyIcon,
   },
   {
@@ -126,11 +116,6 @@ const INSTRUCTION = [
         </Typography>{' '}
         more!
       </>
-    ),
-    button: (
-      <Button color="green" size="small">
-        try automations
-      </Button>
     ),
     icon: DollarIcon,
   },
@@ -402,9 +387,6 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
                   >
                     {instructionItem.text}
                   </Typography>
-                  {cloneElement(instructionItem.button, {
-                    className: styles.instructionCardButton,
-                  })}
                   <instructionItem.icon
                     className={styles.instructionCardIcon}
                   />
@@ -415,8 +397,8 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
               <Paper radius={8} className={styles.contacts}>
                 <Typography variant="body2" className={styles.contactsText}>
                   No need to wait while your portfolio is generating. We&apos;ll
-                  send you a notification if you connect your telegram or email.
-                  No spam, we promise.
+                  send you daily updates of your portfolio value via telegram or
+                  email. No spam, we promise.
                 </Typography>
                 {!telegram && (
                   <Button
