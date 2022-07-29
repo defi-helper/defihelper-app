@@ -35,18 +35,16 @@ const MENU: MenuItem[] = [
     title: 'Trade',
     path: paths.trade,
     icon: 'trade',
-    subject: 'User',
-    can: 'read',
-  },
-  {
-    title: 'Protocols',
-    path: paths.protocols.list,
-    icon: 'grid',
   },
   {
     title: 'Invest',
     path: paths.autostaking,
     icon: 'autostaking',
+  },
+  {
+    title: 'Protocols',
+    path: paths.protocols.list,
+    icon: 'grid',
   },
   {
     title: 'Automations',
@@ -76,7 +74,7 @@ const MENU: MenuItem[] = [
   {
     title: 'Referral Program',
     path: paths.referral.list,
-    icon: 'affilate',
+    icon: 'affiliate',
     subject: 'User',
     can: 'read',
   },

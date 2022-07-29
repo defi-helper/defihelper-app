@@ -73,7 +73,7 @@ import { ReactComponent as AscendexIcon } from '~/assets/icons/exchange/ascendex
 import { ReactComponent as MexcIcon } from '~/assets/icons/exchange/mexc.svg'
 import { ReactComponent as PoloniexIcon } from '~/assets/icons/exchange/poloniex.svg'
 import { ReactComponent as FtxIcon } from '~/assets/icons/exchange/ftx.svg'
-import { ReactComponent as AffilateIcon } from '~/assets/icons/affilate.svg'
+import { ReactComponent as AffiliateIcon } from '~/assets/icons/affiliate.svg'
 import { ReactComponent as CupIcon } from '~/assets/icons/cup.svg'
 import { ReactComponent as LinkedinIcon } from '~/assets/icons/linkedin.svg'
 import { ReactComponent as FacebookIcon } from '~/assets/icons/facebook.svg'
@@ -185,7 +185,7 @@ const ICONS = {
   ascendex: AscendexIcon,
   coinex: CoinexIcon,
   mexc: MexcIcon,
-  affilate: AffilateIcon,
+  affiliate: AffiliateIcon,
   poloniex: PoloniexIcon,
   cup: CupIcon,
   linkedin: LinkedinIcon,
