@@ -1,4 +1,4 @@
-import { cloneElement, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
 import { useLocalStorage, useMedia, useMount } from 'react-use'
