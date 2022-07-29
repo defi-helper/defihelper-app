@@ -24,6 +24,7 @@ import * as styles from './trade.css'
 import * as model from './trade.model'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { config } from '~/config'
+import { WalletConnect } from '~/wallets/wallet-connect'
 
 export type TradeProps = unknown
 
@@ -161,25 +162,51 @@ export const Trade: React.VFC<TradeProps> = () => {
         Trade
       </Typography>
       <div className={styles.header}>
-        <Select
-          label="Wallet"
-          value={currentWallet}
-          onChange={handleChangeWallet}
+        <WalletConnect
+          fallback={
+            <div>
+              <Typography
+                as="span"
+                variant="body3"
+                family="mono"
+                transform="uppercase"
+                className={styles.connectWalletLabel}
+              >
+                Wallet
+              </Typography>
+              <div className={styles.connectWalletInput}>
+                <Icon icon="plus" width={20} height={20} />
+                <div>Connect Wallet</div>
+                <Icon
+                  icon="arrowDown"
+                  height={18}
+                  width={18}
+                  className={styles.connectWalletArrow}
+                />
+              </div>
+            </div>
+          }
         >
-          {wallets
-            .filter(({ network }) => Boolean(model.networks[network]))
-            .map(({ network, id, name }, index) => (
-              <SelectOption value={id} key={String(index)}>
-                {networksConfig[network] && (
-                  <Icon
-                    icon={networksConfig[network].icon}
-                    className={styles.pairIcon}
-                  />
-                )}
-                {name}
-              </SelectOption>
-            ))}
-        </Select>
+          <Select
+            label="Wallet"
+            value={currentWallet}
+            onChange={handleChangeWallet}
+          >
+            {wallets
+              .filter(({ network }) => Boolean(model.networks[network]))
+              .map(({ network, id, name }, index) => (
+                <SelectOption value={id} key={String(index)}>
+                  {networksConfig[network] && (
+                    <Icon
+                      icon={networksConfig[network].icon}
+                      className={styles.pairIcon}
+                    />
+                  )}
+                  {name}
+                </SelectOption>
+              ))}
+          </Select>
+        </WalletConnect>
         <Select
           label="Exchange"
           onChange={handleChangeExchange}
