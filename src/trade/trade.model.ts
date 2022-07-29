@@ -4,8 +4,19 @@ import { tradeApi } from './common/trade.api'
 
 export const reset = createEvent()
 
-export const fetchPairsFx = createEffect(async () => {
-  const { data, message } = await tradeApi.pairs()
+export const networks: Record<string, string> = {
+  1: 'eth',
+  137: 'matic',
+  56: 'bsc',
+  250: 'fantom',
+  42161: 'arbitrum',
+  25: 'cronos',
+  43114: 'avalanch',
+  106: 'velas',
+}
+
+export const fetchPairsFx = createEffect(async (network: string) => {
+  const { data, message } = await tradeApi.pairs([networks[network]])
 
   if (!data || message) throw new Error(message ?? 'something went wrong')
 
@@ -16,8 +27,8 @@ export const $pairs = createStore<UnitValue<typeof fetchPairsFx.doneData>>([])
   .on(fetchPairsFx.doneData, (_, payload) => payload)
   .reset(reset)
 
-export const fetchExchangesFx = createEffect(async () => {
-  const { data, message } = await tradeApi.exchanges()
+export const fetchExchangesFx = createEffect(async (network: string) => {
+  const { data, message } = await tradeApi.exchanges([networks[network]])
 
   if (!data || message) throw new Error(message ?? 'something went wrong')
 

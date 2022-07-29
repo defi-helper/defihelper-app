@@ -84,6 +84,8 @@ export default {
 
       const data = await tradeApi.history(symbolInfo.ticker)
 
+      console.log(data)
+
       const bars: Array<{
         time: number
         low: number
