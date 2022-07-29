@@ -245,7 +245,7 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
       {currentTab === Tabs.deposit && (
         <>
           <Typography variant="body2">
-            Transferred: {bignumberUtils.format(transferred.value)}
+            Transferred: {transferred.value}
           </Typography>
           {cloneElement(button, {
             onClick: onDeposit,

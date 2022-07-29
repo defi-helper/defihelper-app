@@ -303,7 +303,7 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
       {currentTab === Tabs.deposit && (
         <>
           <Typography variant="body2">
-            Transferred: {bignumberUtils.format(transferred.value)}
+            Transferred: {transferred.value}
           </Typography>
           {cloneElement(button, {
             onClick: onDeposit,

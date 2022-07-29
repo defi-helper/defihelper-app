@@ -35,16 +35,14 @@ export const LPTokensContracts: React.VFC<LPTokensContractsProps> = (props) => {
   return (
     <>
       {!props.contractListLoading && isEmpty(props.contracts) && (
-        <div>
-          <Paper radius={8} className={styles.empty}>
-            <Icon icon="noResults" />
-            <Typography align="center">No results :(</Typography>
-            <Typography variant="body2" align="center">
-              We could not find any pools for your query. Try to reset filters,
-              search another pool or change your query
-            </Typography>
-          </Paper>
-        </div>
+        <Paper radius={8} className={styles.empty}>
+          <Icon icon="noResults" />
+          <Typography align="center">No results :(</Typography>
+          <Typography variant="body2" align="center">
+            We could not find any pools for your query. Try to reset filters,
+            search another pool or change your query
+          </Typography>
+        </Paper>
       )}
       {!isEmpty(props.contracts) && (
         <div className={styles.contracts}>

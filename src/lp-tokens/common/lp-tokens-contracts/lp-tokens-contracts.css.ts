@@ -22,7 +22,7 @@ export const empty = style({
   alignItems: 'center',
   width: '100%',
   maxWidth: 540,
-  margin: '0 auto',
+  margin: '16px auto',
   flexDirection: 'column',
   gap: 8,
   padding: 24,
