@@ -37,12 +37,12 @@ const INSTRUCTION = [
     text: "Select a protocol and look for the 'ZAP' button",
   },
   {
-    title: '2. Choose contract',
+    title: '2. Find a contract',
     text: 'Choose a contract based on our TVL and APY data',
   },
   {
     title: "3. Press 'ZAP' button",
-    text: "Click on the 'ZAP' button to invest in a certain pool",
+    text: "Click on the 'ZAP' button to easily buy or sell LP tokens",
   },
 ]
 
@@ -263,7 +263,7 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
         <Typography variant="h3">ZAP</Typography>
       </div>
       <Typography variant="h4" className={styles.subtitle}>
-        Buying liquidity pool tokens is as easy as 1-2-3
+        Manage liquidity pool tokens is as easy as 1-2-3
       </Typography>
       <div className={styles.instruction}>
         {INSTRUCTION.map((instructionItem) => (
