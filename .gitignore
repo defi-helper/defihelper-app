@@ -26,4 +26,4 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/public/charting_library
+/public/tradingview

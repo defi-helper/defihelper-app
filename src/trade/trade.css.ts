@@ -207,3 +207,51 @@ export const pairIcon = style({
     },
   },
 })
+
+export const connectWalletLabel = style({
+  color: theme.colors.textColorGrey,
+  marginBottom: 4,
+})
+
+export const connectWalletInput = style({
+  display: 'flex',
+  alignItems: 'center',
+  width: 'inherit',
+  height: 'inherit',
+  outline: 'none',
+  border: `1px solid ${theme.colors.border}`,
+  textTransform: 'inherit',
+  fontFamily: theme.fonts.square,
+  backgroundColor: theme.colors.paper,
+  borderRadius: 8,
+  fontSize: 16,
+  lineHeight: '24px',
+  padding: '8px 16px',
+  color: 'currentcolor',
+  transition: 'border .2s ease-in-out',
+  minHeight: 42,
+  paddingRight: 40,
+  position: 'relative',
+  gap: 8,
+
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      ':hover': {
+        borderColor: theme.colors.textColorGrey,
+      },
+    },
+  },
+
+  ':focus': {
+    borderColor: theme.colors.textColorPrimary,
+  },
+})
+
+export const connectWalletArrow = style({
+  position: 'absolute',
+  right: 16,
+  top: 0,
+  bottom: 0,
+  margin: 'auto',
+  background: theme.colors.paper,
+})
