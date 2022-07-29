@@ -5,6 +5,7 @@ import { theme } from '~/common/theme'
 export const title = style({
   marginBottom: 28,
   display: 'none',
+  cursor: 'pointer',
 
   '@media': {
     [theme.mediaQueries.md()]: {
@@ -114,6 +115,19 @@ export const instructionCardText = style({
 
 export const instructionCardButton = style({
   marginTop: 16,
+})
+
+export const nameInput = style({
+  maxWidth: 200,
+  marginBottom: 26,
+})
+
+export const nameInputSaveButton = style({
+  marginLeft: 32,
+})
+
+export const nameInputCancelButton = style({
+  marginLeft: 16,
 })
 
 export const instructionCardIcon = style({
