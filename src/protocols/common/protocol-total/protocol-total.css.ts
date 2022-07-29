@@ -28,6 +28,10 @@ export const total = style({
   },
 })
 
+export const valueChange = style({
+  fontSize: 16,
+})
+
 export const totalTitle = style({
   color: theme.colors.textColorGrey,
   marginBottom: 4,
@@ -39,6 +43,14 @@ export const totalItem = style({
 
 export const link = style({
   color: theme.colors.textColorGreen,
+})
+
+export const changePlus = style({
+  color: theme.colors.common.green2,
+})
+
+export const changeMinus = style({
+  color: theme.colors.common.red1,
 })
 
 export const more = style([
