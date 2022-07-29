@@ -15,13 +15,18 @@ export const networks: Record<string, string> = {
   106: 'velas',
 }
 
-export const fetchPairsFx = createEffect(async (network: string) => {
-  const { data, message } = await tradeApi.pairs([networks[network]])
+export const fetchPairsFx = createEffect(
+  async (params: { network: string; exchange: string }) => {
+    const { data, message } = await tradeApi.pairs(
+      [networks[params.network]],
+      [params.exchange]
+    )
 
-  if (!data || message) throw new Error(message ?? 'something went wrong')
+    if (!data || message) throw new Error(message ?? 'something went wrong')
 
-  return data.list
-})
+    return data.list
+  }
+)
 
 export const $pairs = createStore<UnitValue<typeof fetchPairsFx.doneData>>([])
   .on(fetchPairsFx.doneData, (_, payload) => payload)

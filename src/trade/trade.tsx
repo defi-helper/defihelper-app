@@ -96,20 +96,34 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [wallet])
 
   useEffect(() => {
-    if (!wallet) return
+    if (!wallet || !currentExchange) return
 
-    model.fetchPairsFx(wallet.network)
-  }, [wallet])
+    model.fetchPairsFx({
+      network: wallet.network,
+      exchange: currentExchange,
+    })
+  }, [wallet, currentExchange])
 
   useEffect(() => {
     return () => model.reset()
   }, [])
 
   useEffect(() => {
-    if (!wallets[0]) return
+    const [firstWallet] = wallets.filter(({ network }) =>
+      Boolean(model.networks[network])
+    )
 
-    setCurrentWallet(wallets[0].id)
+    if (!firstWallet) return
+
+    setCurrentWallet(firstWallet.id)
   }, [wallets])
+  useEffect(() => {
+    const [firstExchange] = exchanges
+
+    if (!firstExchange) return
+
+    setCurrentExchange(firstExchange.Name)
+  }, [exchanges])
 
   const SelectComponents = {
     [Selects.SmartSell]: <TradeSmartSell />,
@@ -213,7 +227,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           value={currentExchange}
         >
           {exchanges.map((exchange, index) => (
-            <SelectOption value={exchange.Icon} key={String(index)}>
+            <SelectOption value={exchange.Name} key={String(index)}>
               <img
                 alt=""
                 src={`${exchange.Icon}.svg`}

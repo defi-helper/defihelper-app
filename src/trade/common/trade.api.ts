@@ -31,13 +31,14 @@ export const tradeApi = {
     apiV1
       .get<Response<Exchange[]>>('dex-info', {
         params: {
-          networks,
+          networks: networks.join(','),
         },
       })
       .then(({ data }) => data),
 
   pairs: (
     network: string[],
+    pool: string[],
     payload: {
       excludedPairAddresses: string[]
       pairAddresses: string[]
@@ -53,7 +54,8 @@ export const tradeApi = {
         payload,
         {
           params: {
-            network,
+            network: network.join(','),
+            pool: pool.join(','),
           },
         }
       )
