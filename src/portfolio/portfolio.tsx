@@ -89,11 +89,6 @@ const INSTRUCTION = [
         even before you connect
       </>
     ),
-    button: (
-      <Button color="green" size="small">
-        learn more
-      </Button>
-    ),
     icon: WifiIcon,
   },
   {
@@ -108,11 +103,6 @@ const INSTRUCTION = [
         &lt;Condition&gt; and many others already available at automation wizard
       </>
     ),
-    button: (
-      <Button color="green" size="small">
-        try automations
-      </Button>
-    ),
     icon: EasyIcon,
   },
   {
@@ -126,11 +116,6 @@ const INSTRUCTION = [
         </Typography>{' '}
         more!
       </>
-    ),
-    button: (
-      <Button color="green" size="small">
-        try automations
-      </Button>
     ),
     icon: DollarIcon,
   },
@@ -402,9 +387,6 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
                   >
                     {instructionItem.text}
                   </Typography>
-                  {cloneElement(instructionItem.button, {
-                    className: styles.instructionCardButton,
-                  })}
                   <instructionItem.icon
                     className={styles.instructionCardIcon}
                   />
