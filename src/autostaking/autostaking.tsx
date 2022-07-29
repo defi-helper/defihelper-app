@@ -66,11 +66,11 @@ export const Autostaking: React.VFC<AutostakingProps> = () => {
   }, [search])
 
   return (
-    <AppLayout title="Boost your APY">
-      <Head title="Boost your APY" />
+    <AppLayout title="Invest">
+      <Head title="Invest" />
       <div className={styles.header}>
         <Icon icon="settings" className={styles.headerIcon} />
-        <Typography variant="h3">Boost your APY</Typography>
+        <Typography variant="h3">Invest</Typography>
       </div>
       <AutostakingInstruction />
       <AutostakingTabs
