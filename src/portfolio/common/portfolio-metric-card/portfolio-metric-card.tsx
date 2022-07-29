@@ -13,15 +13,15 @@ export type PortfolioMetricCardProps = {
 }
 
 const ValueChangeRender: React.FC<{ value?: string }> = ({ value }) => {
-  const rawContibutedPercent = bignumberUtils.toFixed(
+  const contibutedPercent = bignumberUtils.toFixed(
     bignumberUtils.mul(bignumberUtils.minus(value, 1), 100),
     2
   )
 
-  const isPositive = bignumberUtils.gte(rawContibutedPercent, 0)
+  const isPositive = bignumberUtils.gte(contibutedPercent, 0)
 
   if (
-    rawContibutedPercent.replace(/\D/g, '') === '0' ||
+    contibutedPercent.replace(/\D/g, '') === '0' ||
     value?.replace(/\D/g, '') === '0'
   ) {
     return (
@@ -40,7 +40,7 @@ const ValueChangeRender: React.FC<{ value?: string }> = ({ value }) => {
       )}
     >
       {isPositive && '+'}
-      {rawContibutedPercent}% <span className={styles.today}>today</span>
+      {contibutedPercent}% <span className={styles.today}>today</span>
     </Typography>
   )
 }
