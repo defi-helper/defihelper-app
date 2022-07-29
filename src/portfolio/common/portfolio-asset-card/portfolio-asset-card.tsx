@@ -20,15 +20,15 @@ export type PortfolioAssetCardProps = {
 }
 
 const PercentChangeRender: React.FC<{ value: string }> = ({ value }) => {
-  const rawContibutedPercent = bignumberUtils.toFixed(
+  const contibutedPercent = bignumberUtils.toFixed(
     bignumberUtils.mul(bignumberUtils.minus(value, 1), 100),
     2
   )
 
-  const isPositive = bignumberUtils.gte(rawContibutedPercent, 0)
+  const isPositive = bignumberUtils.gte(contibutedPercent, 0)
 
   if (
-    rawContibutedPercent.replace(/\D/g, '') === '0' ||
+    contibutedPercent.replace(/\D/g, '') === '0' ||
     value.replace(/\D/g, '') === '0'
   ) {
     return <>-</>
@@ -37,7 +37,7 @@ const PercentChangeRender: React.FC<{ value: string }> = ({ value }) => {
   return (
     <span className={isPositive ? styles.changePlus : styles.changeMinus}>
       {isPositive && '+'}
-      {rawContibutedPercent}%
+      {contibutedPercent}%
     </span>
   )
 }
