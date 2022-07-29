@@ -2771,8 +2771,8 @@ export type TokenUpdateInputType = {
 export type TradingAuthType = {
   __typename?: 'TradingAuthType'
   accessToken: Scalars['String']
-  refreshToken: Scalars['String']
-  tokenExpired: Scalars['DateTimeType']
+  refreshToken?: Maybe<Scalars['String']>
+  tokenExpired?: Maybe<Scalars['DateTimeType']>
 }
 
 export type TreasuryType = {
@@ -6488,6 +6488,17 @@ export type TokenFragment = { __typename?: 'TokenType' } & Pick<
         >)
     >
   }
+
+export type TradeAuthMutationVariables = Exact<{ [key: string]: never }>
+
+export type TradeAuthMutation = { __typename?: 'Mutation' } & {
+  tradingAuth?: Maybe<
+    { __typename?: 'TradingAuthType' } & Pick<
+      TradingAuthType,
+      'accessToken' | 'tokenExpired'
+    >
+  >
+}
 
 export type UsersQueryVariables = Exact<{
   filter?: Maybe<UserListFilterInputType>
