@@ -1,22 +1,20 @@
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 
+import {
+  getAPIClient,
+  TradeAuthMutation,
+  TradeAuthMutationVariables,
+} from '~/api'
+import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
-
-const ACCESS_TOKEN =
-  'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIyOWJlYjY2Mi05N2M1LTQ3OTUtOTUzNS00YWUyMWRhY2E0YjciLCJLZXlUeXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU5MTgxOTI0LCJpc3MiOiJib29raXRlLmF1dGguc2VydmljZSJ9.rXAzayGUcE8pIDfO_JLD1YsgcHj1SxaaKtiesDq5-sQuBZCT6Yvz7Xhxsv2VseMrA0AlzCgaQrybfjEkp-w-woEmaL6pOAgUGHqKMMy8zUYdgfL6qh2i2n_wCtimEKxVufHuM5zhiPEqdk2n4qyG54-_8vneUqwQuIfKleWAsn2pk_ujWNg1iuZ-lGxWDJUFBZSgGnwj1ixFlzU1qsb4I4MbPdMb1zptyQw5a_vawXVGQEVoFcQCd_dVq2rykITeKE0SB9-R4UacBakzGXhuVEW_JtZkVsXhEi1PbkqFNB-RtNGfWWQIkoI9_TYsTZc21byzQx-I8743VDGGQj1MNA'
+import { TRADE_AUTH } from './graphql/trade-auth.graphql'
 
 const apiV1 = axios.create({
   baseURL: 'https://whattofarm.io/ext-api/v1',
-  headers: {
-    Authorization: `Bearer ${ACCESS_TOKEN}`,
-  },
 })
 
 const apiV2 = axios.create({
   baseURL: 'https://whattofarm.io/api/v2/',
-  headers: {
-    Authorization: `Bearer ${ACCESS_TOKEN}`,
-  },
 })
 
 type Exchange = {
@@ -87,4 +85,62 @@ export const tradeApi = {
       }
     )
   },
+
+  loginWhattofarm: () =>
+    getAPIClient()
+      .request<TradeAuthMutation, unknown, TradeAuthMutationVariables>({
+        query: TRADE_AUTH.loc?.source.body ?? '',
+      })
+      .then(({ data }) => data?.tradingAuth),
 }
+
+const authRequestInterceptor = async (axiosConfig: AxiosRequestConfig) => {
+  const whattofarm = JSON.parse(localStorage.getItem('whattofarm') ?? '{}')
+
+  if (
+    whattofarm?.accessToken &&
+    whattofarm.tokenExpired &&
+    !dateUtils.isAfter(whattofarm.tokenExpired)
+  ) {
+    Object.assign(axiosConfig.headers, {
+      Authorization: `Bearer ${whattofarm?.accessToken}`,
+    })
+  }
+
+  return axiosConfig
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const authResponseInterceptor = async (error: any) => {
+  const errorConfig = error?.config
+
+  if (error?.response?.status !== 200 && !errorConfig?.sent) {
+    errorConfig.sent = true
+
+    const result = await tradeApi.loginWhattofarm()
+
+    if (result?.accessToken) {
+      errorConfig.headers = {
+        ...errorConfig.headers,
+        authorization: `Bearer ${result?.accessToken}`,
+      }
+    }
+
+    if (result) {
+      localStorage.setItem('whattofarm', JSON.stringify(result))
+    }
+
+    return axios(errorConfig)
+  }
+
+  return Promise.reject(error)
+}
+
+apiV1.interceptors.request.use(authRequestInterceptor, (r) => Promise.reject(r))
+apiV2.interceptors.request.use(authRequestInterceptor, (r) => Promise.reject(r))
+apiV1.interceptors.response.use((response) => response, authResponseInterceptor)
+apiV2.interceptors.response.use((response) => response, authResponseInterceptor)
+
+// headers: {
+//   Authorization: `Bearer ${ACCESS_TOKEN}`,
+// },

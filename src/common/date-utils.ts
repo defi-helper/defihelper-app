@@ -37,8 +37,9 @@ export const dateUtils = {
     return date.format(format)
   },
 
-  isBeforeNow: (date: number | string) => dayjs(date).isBefore(dayjs()),
-  isAfterNow: (date: number | string) => dayjs(date).isAfter(dayjs()),
+  isAfter: (date: number | string) => dayjs().isAfter(date),
+
+  isSame: (date: number | string) => dayjs().isSame(date),
 
   addTimestamp: (value: number, unit?: OpUnitType) =>
     dayjs().add(value, unit).unix(),
