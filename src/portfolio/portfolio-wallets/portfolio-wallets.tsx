@@ -36,29 +36,24 @@ export type PortfolioWalletsProps = {
 }
 
 const WalletWorthChanges: React.FC<{ value?: string }> = ({ value }) => {
-  const calculated = bignumberUtils.format(
+  const rawContibutedPercent = bignumberUtils.toFixed(
     bignumberUtils.mul(bignumberUtils.minus(value, 1), 100),
-    2,
-    false
+    2
   )
 
-  const rawContibutedPercent = bignumberUtils.floor(
-    bignumberUtils.mul(bignumberUtils.minus(value, 1), 100)
-  )
   const isPositive = bignumberUtils.gte(rawContibutedPercent, 0)
 
-  if (!value) {
-    return <>?</>
-  }
-
-  if (bignumberUtils.isZero(bignumberUtils.floor(value))) {
-    return <span className={styles.positive}>+0%</span>
+  if (
+    rawContibutedPercent.replace(/\D/g, '') === '0' ||
+    value?.replace(/\D/g, '') === '0'
+  ) {
+    return <>-</>
   }
 
   return (
     <span className={isPositive ? styles.positive : styles.negative}>
       {isPositive && '+'}
-      {calculated}%
+      {rawContibutedPercent}%
     </span>
   )
 }
