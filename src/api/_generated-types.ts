@@ -3937,7 +3937,7 @@ export type MeQuery = { __typename?: 'Query' } & {
 
 export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
   UserType,
-  'id' | 'role' | 'createdAt' | 'timezone'
+  'id' | 'role' | 'name' | 'createdAt' | 'timezone'
 >
 
 export type AutomationActionCreateMutationVariables = Exact<{

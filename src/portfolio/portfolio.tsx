@@ -44,6 +44,8 @@ import { useDialog } from '~/common/dialog'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './portfolio.css'
 import * as model from './portfolio.model'
+import { Input } from '~/common/input'
+import { CanDemo } from '~/auth/can-demo'
 
 export type PortfolioProps = unknown
 
@@ -141,6 +143,60 @@ const ForceRenderOrLazyLoad = (
   )
 }
 
+const PortfolioNameEditor: React.FC<{
+  name: string
+  onChange: (name: string) => void
+}> = (props) => {
+  const [toggle, setToggle] = useState(false)
+  const [name, setName] = useState(props.name === '' ? 'Portfolio' : props.name)
+
+  const handleSave = () => {
+    props.onChange(name)
+    setToggle(false)
+  }
+
+  if (!toggle) {
+    return (
+      <Typography
+        variant="h3"
+        className={styles.title}
+        onClick={() => setToggle(true)}
+      >
+        {name}
+      </Typography>
+    )
+  }
+
+  return (
+    <>
+      <Input
+        placeholder="Portfolio name"
+        value={name}
+        className={styles.nameInput}
+        onChange={(e) => setName(e.target.value)}
+        maxLength={64}
+      />
+
+      <CanDemo>
+        <Button
+          className={styles.nameInputSaveButton}
+          size="small"
+          onClick={handleSave}
+        >
+          Save
+        </Button>
+      </CanDemo>
+      <Button
+        className={styles.nameInputCancelButton}
+        size="small"
+        onClick={() => setToggle(false)}
+      >
+        Cancel
+      </Button>
+    </>
+  )
+}
+
 export const Portfolio: React.VFC<PortfolioProps> = () => {
   const portfolioCollected = useStore(model.$portfolioCollected)
   const loading = useStore(model.fetchPortfolioCollectedFx.pending)
@@ -159,6 +215,11 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     true
   )
   const [run, setRun] = useState(false)
+
+  const handleUpdatePortfolioName = async (name: string) => {
+    if (!user) return
+    await model.updatePortfolioNameFx({ id: user.id, input: { name } })
+  }
 
   useEffect(() => {
     if (!portfolioCollected || !runLocalStorage || !isDesktop) return
@@ -291,9 +352,12 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
             }}
             tooltipComponent={OnboardTooltip}
           />
-          <Typography variant="h3" className={styles.title}>
-            Portfolio
-          </Typography>
+
+          <PortfolioNameEditor
+            name={user?.name ?? ''}
+            onChange={(name) => handleUpdatePortfolioName(name)}
+          />
+
           <ForceRenderOrLazyLoad forceRender={Boolean(runLocalStorage)}>
             <PortfolioMetricCards className={styles.cards} />
           </ForceRenderOrLazyLoad>
