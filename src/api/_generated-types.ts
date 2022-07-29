@@ -906,7 +906,9 @@ export type ContractMetricType = {
   aprYear: Scalars['String']
   aprWeekReal?: Maybe<Scalars['String']>
   myStaked: Scalars['String']
+  myStakedChange: MetricChangeType
   myEarned: Scalars['String']
+  myEarnedChange: MetricChangeType
   myAPYBoost: Scalars['String']
 }
 
@@ -1914,7 +1916,9 @@ export type ProtocolMetricType = {
   uniqueWalletsCount: Scalars['String']
   myAPY: Scalars['String']
   myStaked: Scalars['String']
+  myStakedChange: MetricChangeType
   myEarned: Scalars['String']
+  myEarnedChange: MetricChangeType
   myAPYBoost: Scalars['String']
   myMinUpdatedAt?: Maybe<Scalars['DateTimeType']>
 }
@@ -5171,7 +5175,16 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
           | 'myEarned'
           | 'myMinUpdatedAt'
           | 'myAPYBoost'
-        >
+        > & {
+            myStakedChange: { __typename?: 'MetricChangeType' } & Pick<
+              MetricChangeType,
+              'day'
+            >
+            myEarnedChange: { __typename?: 'MetricChangeType' } & Pick<
+              MetricChangeType,
+              'day'
+            >
+          }
         contracts: { __typename?: 'ContractListType' } & {
           list?: Maybe<
             Array<{ __typename?: 'ContractType' } & Pick<ContractType, 'id'>>
