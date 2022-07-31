@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import isEmpty from 'lodash.isempty'
 import { useState } from 'react'
 import { Sticky, StickyContainer } from 'react-sticky'
 
@@ -25,6 +26,8 @@ enum Tabs {
 }
 
 export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
+  const orders: string[] = []
+
   const [currentTab, setCurrentTab] = useState(Tabs.Active)
 
   const handleChangeTab = (tab: Tabs) => () => {
@@ -68,134 +71,163 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         </Sticky>
         <div className={styles.body}>
           <div className={styles.bodyInner}>
-            <div className={styles.tableHeadings}>
-              <Typography
-                as={ButtonBase}
-                className={styles.tableHeadingsButton}
-              >
-                Pair
-              </Typography>
-              <Typography
-                as={ButtonBase}
-                className={styles.tableHeadingsButton}
-              >
-                Volume
-              </Typography>
-              <Typography
-                as={ButtonBase}
-                className={styles.tableHeadingsButton}
-              >
-                Created Date
-              </Typography>
-              <Typography
-                as={ButtonBase}
-                className={styles.tableHeadingsButton}
-              >
-                Status
-              </Typography>
-              <Typography
-                as={ButtonBase}
-                className={styles.tableHeadingsButton}
-              >
-                Profit/Loss
-              </Typography>
-              <Typography as="div" className={styles.tableHeadingsButton}>
-                Actions
-              </Typography>
-            </div>
-            <div className={styles.tableRow}>
-              <div>
-                <Typography
-                  variant="body2"
-                  as="div"
-                  className={styles.contractName}
-                >
-                  <div className={styles.contractIcons}>
-                    <Paper className={styles.contractUnknownTokenIcon}>
-                      <Icon icon="unknownNetwork" width="16" height="16" />
-                    </Paper>
-                    <img src="" className={styles.contractIcon} alt="" />
-                  </div>
-                  BTC/USDT
+            {isEmpty(orders) && (
+              <div className={styles.noOrders}>
+                <Icon icon="order" />
+                <Typography variant="body3" align="center">
+                  Your open orders will be here
                 </Typography>
-                <Typography className={styles.contractAddress} as="div">
-                  <Icon icon="binance" width="22" height="22" />
-                  <Link
-                    href={buildExplorerUrl({
-                      address: '0xD001e8B722ab435277087f68A8cb5f565d9085Af',
-                      network: '1',
-                    })}
-                    target="_blank"
+              </div>
+            )}
+            {!isEmpty(orders) && (
+              <>
+                <div className={styles.tableHeadings}>
+                  <Typography
+                    as={ButtonBase}
+                    className={styles.tableHeadingsButton}
                   >
-                    {cutAccount('0xD001e8B722ab435277087f68A8cb5f565d9085Af')}
-                  </Link>
-                </Typography>
-              </div>
-              <div>
-                <div className={styles.contractBalance}>
-                  <Paper className={styles.contractBalanceIcon}>
-                    <Icon icon="unknownNetwork" width="16" height="16" />
-                  </Paper>
-                  <Typography className={styles.fs12} as="div">
-                    {bignumberUtils.format('11111')} BTC
+                    Pair
+                  </Typography>
+                  <Typography
+                    as={ButtonBase}
+                    className={styles.tableHeadingsButton}
+                  >
+                    Volume
+                  </Typography>
+                  <Typography
+                    as={ButtonBase}
+                    className={styles.tableHeadingsButton}
+                  >
+                    Created Date
+                  </Typography>
+                  <Typography
+                    as={ButtonBase}
+                    className={styles.tableHeadingsButton}
+                  >
+                    Status
+                  </Typography>
+                  <Typography
+                    as={ButtonBase}
+                    className={styles.tableHeadingsButton}
+                  >
+                    Profit/Loss
+                  </Typography>
+                  <Typography as="div" className={styles.tableHeadingsButton}>
+                    Actions
                   </Typography>
                 </div>
-                <div className={styles.contractBalance}>
-                  <img src="" className={styles.contractBalanceIcon} alt="" />
-                  <Typography className={styles.fs12} as="div">
-                    {bignumberUtils.format('11111')} USDT
-                  </Typography>
-                </div>
-              </div>
-              <div>
-                <div className={styles.contractBalance}>
-                  <Typography className={styles.fs12} as="div">
-                    {dateUtils.format(new Date(), 'DD/MM/YY  h:mma')}
-                  </Typography>
-                </div>
-                <div className={styles.contractBalance}>
-                  <Typography className={styles.fs12} as="div">
-                    ID 15940502
-                  </Typography>
-                </div>
-              </div>
-              <TradeStatusChart
-                stopLoss="100"
-                takeProfit="200"
-                buy="150"
-                className={styles.contractStatus}
-              />
-              <div>
-                <div className={styles.contractBalance}>
-                  <img src="" className={styles.contractBalanceIcon} alt="" />
-                  <Typography className={styles.fs12} as="div">
-                    {bignumberUtils.format('11111')}
-                  </Typography>
-                </div>
-                <div className={styles.contractBalance}>
-                  <Typography className={styles.fs12} as="div">
-                    {bignumberUtils.format('11111')} /{' '}
-                    {bignumberUtils.format('11111')}
-                  </Typography>
-                </div>
-              </div>
-              <div className={styles.contractActions}>
-                <ButtonBase>
-                  <Icon width={16} height={16} icon="swap" />
-                </ButtonBase>
-                <ButtonBase>
-                  <Icon width={16} height={16} icon="arrowUp" />
-                </ButtonBase>
-                <ButtonBase>
-                  <Icon
-                    width={16}
-                    height={16}
-                    icon="dots"
-                    className={styles.dots}
-                  />
-                </ButtonBase>
-              </div>
-            </div>
+                {orders.map((order) => (
+                  <div key={order} className={styles.tableRow}>
+                    <div>
+                      <Typography
+                        variant="body2"
+                        as="div"
+                        className={styles.contractName}
+                      >
+                        <div className={styles.contractIcons}>
+                          <Paper className={styles.contractUnknownTokenIcon}>
+                            <Icon
+                              icon="unknownNetwork"
+                              width="16"
+                              height="16"
+                            />
+                          </Paper>
+                          <img src="" className={styles.contractIcon} alt="" />
+                        </div>
+                        BTC/USDT
+                      </Typography>
+                      <Typography className={styles.contractAddress} as="div">
+                        <Icon icon="binance" width="22" height="22" />
+                        <Link
+                          href={buildExplorerUrl({
+                            address:
+                              '0xD001e8B722ab435277087f68A8cb5f565d9085Af',
+                            network: '1',
+                          })}
+                          target="_blank"
+                        >
+                          {cutAccount(
+                            '0xD001e8B722ab435277087f68A8cb5f565d9085Af'
+                          )}
+                        </Link>
+                      </Typography>
+                    </div>
+                    <div>
+                      <div className={styles.contractBalance}>
+                        <Paper className={styles.contractBalanceIcon}>
+                          <Icon icon="unknownNetwork" width="16" height="16" />
+                        </Paper>
+                        <Typography className={styles.fs12} as="div">
+                          {bignumberUtils.format('11111')} BTC
+                        </Typography>
+                      </div>
+                      <div className={styles.contractBalance}>
+                        <img
+                          src=""
+                          className={styles.contractBalanceIcon}
+                          alt=""
+                        />
+                        <Typography className={styles.fs12} as="div">
+                          {bignumberUtils.format('11111')} USDT
+                        </Typography>
+                      </div>
+                    </div>
+                    <div>
+                      <div className={styles.contractBalance}>
+                        <Typography className={styles.fs12} as="div">
+                          {dateUtils.format(new Date(), 'DD/MM/YY  h:mma')}
+                        </Typography>
+                      </div>
+                      <div className={styles.contractBalance}>
+                        <Typography className={styles.fs12} as="div">
+                          ID 15940502
+                        </Typography>
+                      </div>
+                    </div>
+                    <TradeStatusChart
+                      stopLoss="100"
+                      takeProfit="200"
+                      buy="150"
+                      className={styles.contractStatus}
+                    />
+                    <div>
+                      <div className={styles.contractBalance}>
+                        <img
+                          src=""
+                          className={styles.contractBalanceIcon}
+                          alt=""
+                        />
+                        <Typography className={styles.fs12} as="div">
+                          {bignumberUtils.format('11111')}
+                        </Typography>
+                      </div>
+                      <div className={styles.contractBalance}>
+                        <Typography className={styles.fs12} as="div">
+                          {bignumberUtils.format('11111')} /{' '}
+                          {bignumberUtils.format('11111')}
+                        </Typography>
+                      </div>
+                    </div>
+                    <div className={styles.contractActions}>
+                      <ButtonBase>
+                        <Icon width={16} height={16} icon="swap" />
+                      </ButtonBase>
+                      <ButtonBase>
+                        <Icon width={16} height={16} icon="arrowUp" />
+                      </ButtonBase>
+                      <ButtonBase>
+                        <Icon
+                          width={16}
+                          height={16}
+                          icon="dots"
+                          className={styles.dots}
+                        />
+                      </ButtonBase>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>

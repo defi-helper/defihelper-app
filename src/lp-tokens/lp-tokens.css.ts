@@ -67,20 +67,43 @@ export const instructionCardTitle = style({
 })
 
 export const selects = style({
-  display: 'grid',
+  display: 'flex',
   gap: 8,
   marginBottom: 64,
+  flexWrap: 'wrap',
 
   '@media': {
     [theme.mediaQueries.md()]: {
       marginBottom: 32,
       gap: 16,
-      gridTemplateColumns: '296px 296px',
     },
   },
 })
 
-export const select = style({})
+export const select = style({
+  width: '100%',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      maxWidth: 200,
+    },
+
+    [theme.mediaQueries.lg()]: {
+      maxWidth: 296,
+    },
+  },
+})
+
+export const search = style([
+  select,
+  {
+    '@media': {
+      [theme.mediaQueries.md()]: {
+        marginLeft: 'auto',
+      },
+    },
+  },
+])
 
 export const apply = style({
   justifyContent: 'center',

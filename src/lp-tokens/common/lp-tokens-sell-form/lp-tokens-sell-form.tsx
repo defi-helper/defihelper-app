@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAsyncFn, useAsyncRetry } from 'react-use'
 import { useForm, Controller } from 'react-hook-form'
 
@@ -36,6 +36,8 @@ type FormValues = {
 const SLIPPAGE = ['0.1', '0.5', '1']
 
 export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
+  const [error, setError] = useState(false)
+
   const { control, handleSubmit, formState, watch, setValue } =
     useForm<FormValues>({
       defaultValues: {
@@ -84,6 +86,8 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
   const [sellState, onSell] = useAsyncFn(async (formValues: FormValues) => {
     const { sell, canSell } = props.sellLiquidityAdapter.methods
 
+    setError(false)
+
     try {
       const can = await canSell(formValues.amount)
 
@@ -104,10 +108,8 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
       props.onSubmit?.(result?.transactionHash)
 
       return true
-    } catch (error) {
-      if (error instanceof Error) {
-        toastsService.error(error.message)
-      }
+    } catch {
+      setError(true)
 
       analytics.log('lp_tokens_purchase_unsuccess', {
         amount: bignumberUtils.floor(formValues.amount),
@@ -121,6 +123,8 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
     async (formValues: FormValues) => {
       const { approve } = props.sellLiquidityAdapter.methods
 
+      setError(false)
+
       try {
         const { tx } = await approve(formValues.amount)
 
@@ -130,10 +134,8 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
         toastsService.info('tokens approved!')
 
         return true
-      } catch (error) {
-        if (error instanceof Error) {
-          toastsService.error(error.message)
-        }
+      } catch {
+        setError(true)
 
         return false
       }
@@ -171,9 +173,9 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
   useEffect(() => {
     const message = approveState.error?.message ?? sellState.error?.message
 
-    if (!message) return
+    if (!message) return setError(false)
 
-    toastsService.error(message)
+    setError(true)
   }, [approveState.error, sellState.error])
 
   return (
@@ -284,18 +286,22 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
                 </div>
               )}
             />
-            <Button
-              type="submit"
-              loading={formState.isSubmitting}
-              className={styles.button}
-            >
-              {isApproved.value === true && 'Sell'}
-              {isApproved.value === false && 'Approve'}
-              {isApproved.value instanceof Error && 'Approve'}
-            </Button>
-            <Button variant="outlined" onClick={props.onCancel}>
-              Cancel
-            </Button>
+            <div className={styles.wrap}>
+              {error && (
+                <Typography variant="body3" as="div" className={styles.error}>
+                  Your transaction is failed due to current market conditions.
+                  You can try to change the slippage or use another token
+                </Typography>
+              )}
+              <Button type="submit" loading={formState.isSubmitting}>
+                {isApproved.value === true && 'Sell'}
+                {isApproved.value === false && 'Approve'}
+                {isApproved.value instanceof Error && 'Approve'}
+              </Button>
+              <Button variant="outlined" onClick={props.onCancel}>
+                Cancel
+              </Button>
+            </div>
           </form>
         </>
       )}

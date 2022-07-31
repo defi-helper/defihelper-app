@@ -21,6 +21,7 @@ window.uniswap3 = {
   core: Uniswap3Core,
   sdk: Uniswap3SDK,
 }
+window.mode = config.IS_DEV ? 'dev' : 'prod'
 
 if (!config.IS_DEV) {
   const root = document.getElementsByTagName('head')[0]

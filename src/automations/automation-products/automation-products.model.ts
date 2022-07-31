@@ -1,18 +1,14 @@
 import { createDomain, sample } from 'effector'
 import { createGate } from 'effector-react'
 import networks from '@defihelper/networks/contracts.json'
-import { ethers } from 'ethers'
 
-import { abi } from '~/abi'
-import { parseError } from '~/common/parse-error'
 import { AutomationProductsQuery } from '~/api/_generated-types'
 import { automationApi } from '../common/automation.api'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { bignumberUtils } from '~/common/bignumber-utils'
-import { dateUtils } from '~/common/date-utils'
 import { toastsService } from '~/toasts'
-// import { config } from '~/config'
 import { authModel } from '~/auth'
+import { loadAdapter } from '~/common/load-adapter'
+import { buildAdaptersUrl } from '~/staking/common'
 
 type Product = Exclude<
   AutomationProductsQuery['products']['list'],
@@ -26,16 +22,24 @@ type BuyProductParams = {
   product: Product
 }
 
-const contracts = networks['43114'].StoreUpgradable // networks[config.DEFAULT_CHAIN_ID].StoreUpgradable
-
 export const automationProductsDomain = createDomain()
 
 export const fetchProductsFx = automationProductsDomain.createEffect(() =>
   automationApi.getProducts()
 )
 
+type Networks = typeof networks
+
 export const buyProductFx = automationProductsDomain.createEffect(
   async (params: BuyProductParams) => {
+    const adapterObj = await loadAdapter(buildAdaptersUrl('dfh'))
+
+    const network = networks[params.chainId as keyof Networks]
+
+    const contract = network?.StoreUpgradable
+
+    if (!contract) throw new Error('does not have a storeupgradable')
+
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,
       params.chainId
@@ -45,46 +49,18 @@ export const buyProductFx = automationProductsDomain.createEffect(
       throw new Error('networkprovider is null')
     }
 
-    const contract = new ethers.Contract(
-      contracts.address,
-      abi.StoreUpgradable.abi,
-      networkProvider.getSigner()
+    const result = await adapterObj.store(
+      networkProvider.getSigner(),
+      contract.address
     )
 
-    const price = (await contract.price(params.product.number)).toString()
+    const can = await result.canBuy(params.product.number)
 
-    const priceNormalized = bignumberUtils.floor(
-      bignumberUtils.mul(price, 1.05)
-    )
+    if (can instanceof Error) throw can
 
-    try {
-      const gasLimit = bignumberUtils.estimateGas(
-        await contract.estimateGas.buy(
-          params.product.number,
-          params.account,
-          priceNormalized,
-          dateUtils.addTimestamp(3, 'second'),
-          {
-            value: priceNormalized,
-          }
-        )
-      )
+    const { tx } = await result.buy(params.product.number)
 
-      const transactionReceipt = await contract.buy(
-        params.product.number,
-        params.account,
-        priceNormalized,
-        dateUtils.addTimestamp(3, 'second'),
-        {
-          gasLimit,
-          value: priceNormalized,
-        }
-      )
-
-      await transactionReceipt.wait()
-    } catch (error) {
-      throw parseError(error)
-    }
+    await tx.wait()
   }
 )
 

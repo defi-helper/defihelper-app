@@ -17,9 +17,9 @@ type RequiredNonNullableObject<T extends object> = {
 }
 
 const getContractName = (contractName: string) => {
-  if (contractName === 'TreasuryUpgradable') return 'TreasuryV1'
+  if (contractName === 'TreasuryUpgradable') return 'TreasuryV2'
 
-  if (contractName === 'StoreUpgradable') return 'StoreV1'
+  if (contractName === 'StoreUpgradable') return 'StoreV2'
 
   return contractName
 }
@@ -34,7 +34,7 @@ export const fetchAbiFx = governanceMultisig.createEffect(
       )
     ) as Record<
       string,
-      { [key: string]: { address: string; deployBlockNumber: number } }
+      { [key: string]: { address: string; blockNumber: number } }
     >
 
     const currentNetwork = networks[wallet.chainId]

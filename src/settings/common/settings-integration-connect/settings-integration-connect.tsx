@@ -136,8 +136,8 @@ export const SettingsIntegrationConnect: React.FC<SettingsIntegrationConnectProp
         <div className={styles.text}>
           <Typography className={styles.title}>Add new integration</Typography>
           <Typography variant="body2">
-            Integrating with exchanges allows you to track your balances from
-            them.
+            Connect your CEX exchange account to track all your balances in one
+            place
           </Typography>
         </div>
         <Button

@@ -77,7 +77,7 @@ export const lpTokensApi = {
         }
       )
       .then(({ data }) => ({
-        list: data?.protocol?.contracts.list ?? [],
-        count: data?.protocol?.contracts.pagination.count ?? 0,
+        list: data?.contracts.list ?? [],
+        count: data?.contracts.pagination.count ?? 0,
       })),
 }

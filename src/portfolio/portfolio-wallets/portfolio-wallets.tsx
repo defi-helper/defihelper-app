@@ -35,6 +35,29 @@ export type PortfolioWalletsProps = {
   className?: string
 }
 
+const WalletWorthChanges: React.FC<{ value?: string }> = ({ value }) => {
+  const contibutedPercent = bignumberUtils.toFixed(
+    bignumberUtils.mul(bignumberUtils.minus(value, 1), 100),
+    2
+  )
+
+  const isPositive = bignumberUtils.gte(contibutedPercent, 0)
+
+  if (
+    contibutedPercent.replace(/\D/g, '') === '0' ||
+    value?.replace(/\D/g, '') === '0'
+  ) {
+    return <>-</>
+  }
+
+  return (
+    <span className={isPositive ? styles.positive : styles.negative}>
+      {isPositive && '+'}
+      {contibutedPercent}%
+    </span>
+  )
+}
+
 export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
   const [openAddWalletDialog] = useDialog(PortfolioAddWalletDialog)
   const [openWalletList] = useWalletList()
@@ -140,6 +163,14 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
             <Typography variant="body3" align="right">
               Value
             </Typography>
+
+            <Typography variant="body3" align="right">
+              Value 24h
+            </Typography>
+
+            <Typography variant="body3" align="right">
+              Value 7d
+            </Typography>
           </div>
           <div className={styles.tableBody}>
             {[...wallets.nonEmpty, ...wallets.empty].map((wallet) => (
@@ -175,6 +206,18 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                   </Typography>
                   <Typography variant="body2" as="div" align="right">
                     ${bignumberUtils.format(wallet.metric?.worth)}
+                  </Typography>
+
+                  <Typography variant="body2" as="div" align="right">
+                    <WalletWorthChanges
+                      value={wallet.metric?.worthChange.day}
+                    />
+                  </Typography>
+
+                  <Typography variant="body2" as="div" align="right">
+                    <WalletWorthChanges
+                      value={wallet.metric?.worthChange.week}
+                    />
                   </Typography>
                   <ButtonBase
                     onClick={handleOpenWallet(

@@ -18,7 +18,7 @@ export const title = style({
 export const tabs = style({
   display: 'grid',
   gridTemplateColumns: '1fr 1fr',
-  background: theme.colors.common.black13,
+  background: theme.colors.tertiary,
   marginBottom: 16,
   borderRadius: 8,
   padding: 2,

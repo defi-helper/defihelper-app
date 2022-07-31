@@ -67,3 +67,19 @@ export const itemSubtitle = style({
   width: '100%',
   color: theme.colors.textColorGrey,
 })
+
+export const select = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+})
+
+export const selectOption = style({
+  borderRadius: 8,
+  width: '100%',
+  flexDirection: 'column',
+  gap: 8,
+  padding: 16,
+  alignItems: 'flex-start',
+  background: theme.colors.tertiary,
+})

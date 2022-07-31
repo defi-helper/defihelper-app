@@ -87,6 +87,39 @@ export const chartInner = style({
 
 export const selects = style({
   padding: '10px 6px',
+  position: 'relative',
+})
+
+export const selectsBody = style({
+  filter: 'blur(4px)',
+  background: theme.colors.blur,
+  pointerEvents: 'none',
+})
+
+export const beta = style({
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+  zIndex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 24,
+})
+
+export const betaTitle = style({
+  maxWidth: 275,
+})
+
+export const betaForm = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+  width: '100%',
+  maxWidth: 320,
 })
 
 export const tradeSellSelect = style({
@@ -173,4 +206,52 @@ export const pairIcon = style({
       marginRight: 8,
     },
   },
+})
+
+export const connectWalletLabel = style({
+  color: theme.colors.textColorGrey,
+  marginBottom: 4,
+})
+
+export const connectWalletInput = style({
+  display: 'flex',
+  alignItems: 'center',
+  width: 'inherit',
+  height: 'inherit',
+  outline: 'none',
+  border: `1px solid ${theme.colors.border}`,
+  textTransform: 'inherit',
+  fontFamily: theme.fonts.square,
+  backgroundColor: theme.colors.paper,
+  borderRadius: 8,
+  fontSize: 16,
+  lineHeight: '24px',
+  padding: '8px 16px',
+  color: 'currentcolor',
+  transition: 'border .2s ease-in-out',
+  minHeight: 42,
+  paddingRight: 40,
+  position: 'relative',
+  gap: 8,
+
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      ':hover': {
+        borderColor: theme.colors.textColorGrey,
+      },
+    },
+  },
+
+  ':focus': {
+    borderColor: theme.colors.textColorPrimary,
+  },
+})
+
+export const connectWalletArrow = style({
+  position: 'absolute',
+  right: 16,
+  top: 0,
+  bottom: 0,
+  margin: 'auto',
+  background: theme.colors.paper,
 })

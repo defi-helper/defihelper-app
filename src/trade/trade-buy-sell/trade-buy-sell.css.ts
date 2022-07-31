@@ -18,6 +18,10 @@ export const root = style([
   },
 ])
 
+export const overflow = style({
+  overflow: 'hidden',
+})
+
 export const inputGroup = style([
   flex,
   {

@@ -692,7 +692,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                         size="small"
                         className={styles.autostakeButton}
                       >
-                        auto-stake
+                        invest
                       </Button>
                     }
                   >
@@ -707,7 +707,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                       }
                       loading={contract.autostakingLoading}
                     >
-                      auto-stake
+                      invest
                     </Button>
                   </WalletConnect>
                 </div>

@@ -18,10 +18,11 @@ export const AutomationDialog: React.FC<AutomationDialogProps> = (props) => {
     >
       <div className={styles.header}>
         <Typography
-          variant="body3"
+          variant="body2"
           transform="uppercase"
           family="mono"
           as="div"
+          align="center"
           className={styles.title}
         >
           {props.title}

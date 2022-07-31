@@ -56,7 +56,9 @@ export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
     )
 
     const adapterContract =
-      adapterObj[contract.adapter as keyof Omit<Adapters, 'automates'>]
+      adapterObj[
+        contract.adapter as keyof Omit<Adapters, 'automates' | 'store'>
+      ]
 
     const adapter = await adapterContract(networkProvider, contract.address, {
       blockNumber: 'latest',
@@ -106,9 +108,9 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     if (!isNetworkKey(network)) throw new Error('wrong network')
 
-    const currentAddress =
-      (networks[network] as any).LPTokensManager.address ??
-      (networks[network] as any).BuyLiquidity.address
+    const currentAddress = (networks[network] as any)?.LPTokensManager?.address
+
+    if (!currentAddress) throw new Error('does not have a LPTokensManager')
 
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,

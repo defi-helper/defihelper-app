@@ -2,67 +2,58 @@ import { gql } from 'urql'
 
 export const BUY_LIQUIDITY_CONTRACT_LIST = gql`
   query BuyLiquidityContracts(
-    $filter: ProtocolFilterInputType!
-    $contractFilter: ContractListFilterInputType
-    $contractSort: [ContractListSortInputType!] = [
+    $filter: ContractListFilterInputType
+    $sort: [ContractListSortInputType!] = [
       { column: myStaked, order: desc }
       { column: name, order: asc }
     ]
-    $contractPagination: ContractListPaginationInputType
+    $pagination: ContractListPaginationInputType
   ) {
-    protocol(filter: $filter) {
-      adapter
-      contracts(
-        filter: $contractFilter
-        sort: $contractSort
-        pagination: $contractPagination
-      ) {
-        list {
-          id
-          address
-          name
-          network
-          blockchain
-          tokens {
-            stake {
-              alias {
-                logoUrl
-              }
-              network
-              address
-              name
+    contracts(filter: $filter, sort: $sort, pagination: $pagination) {
+      list {
+        id
+        address
+        name
+        network
+        blockchain
+        protocol {
+          adapter
+        }
+        tokens {
+          stake {
+            alias {
+              logoUrl
             }
-            reward {
-              alias {
-                logoUrl
-              }
-              network
-              address
-              name
-            }
+            network
+            address
+            name
           }
-          automate {
-            buyLiquidity {
-              router
-              pair
+          reward {
+            alias {
+              logoUrl
             }
-            lpTokensManager {
-              router
-              pair
-            }
-          }
-          metric(filter: { wallet: { type: [wallet] } }) {
-            tvl
-            aprDay
-            aprWeek
-            aprMonth
-            aprYear
-            myStaked
+            network
+            address
+            name
           }
         }
-        pagination {
-          count
+        automate {
+          lpTokensManager {
+            router
+            pair
+          }
         }
+        metric(filter: { wallet: { type: [wallet] } }) {
+          tvl
+          aprDay
+          aprWeek
+          aprMonth
+          aprYear
+          myStaked
+        }
+      }
+      pagination {
+        count
       }
     }
   }

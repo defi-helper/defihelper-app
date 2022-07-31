@@ -73,6 +73,9 @@ export const bignumberUtils = {
   gt: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isGreaterThan(num2 || 0),
 
+  toFixed: (num1?: string | number | null, decimals = 2) =>
+    new BigNumber(num1 || 0).toFixed(decimals),
+
   lt: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isLessThan(num2 || 0),
 
@@ -95,4 +98,6 @@ export const bignumberUtils = {
     new BigNumber(num1 || 0).div(num2 || 1).toString(10),
 
   isNaN: (num?: string | number | null) => new BigNumber(num || 0).isNaN(),
+  isZero: (num?: string | number | null) =>
+    new BigNumber(num || 0).mod(num || 0).isZero(),
 }

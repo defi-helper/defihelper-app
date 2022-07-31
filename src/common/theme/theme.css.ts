@@ -16,12 +16,14 @@ type Theme = {
     attention: string
     primary: string
     secondary: string
+    tertiary: string
     paper: string
     separator: string
     border: string
     primaryButtonBorder: string
     switchTrack: string
     assetsPlatformActive: string
+    blur: string
   }
   fonts: {
     square: string
@@ -41,12 +43,14 @@ export const themeContract = createThemeContract<Theme>({
     attention: '',
     primary: '',
     secondary: '',
+    tertiary: '',
     paper: '',
     separator: '',
     border: '',
     primaryButtonBorder: '',
     switchTrack: '',
     assetsPlatformActive: '',
+    blur: '',
   },
 
   fonts: {
@@ -67,12 +71,14 @@ const dark: Theme = {
     attention: palette.white1,
     primary: palette.white1,
     secondary: palette.black1,
+    tertiary: palette.black13,
     paper: palette.black2,
     separator: palette.black2,
     border: palette.black7,
     primaryButtonBorder: palette.grey2,
     switchTrack: palette.white3,
     assetsPlatformActive: palette.black2Darken,
+    blur: palette.black12,
   },
   fonts: {
     square: "'Basier Square', sans-serif",
@@ -92,12 +98,14 @@ const light: Theme = {
     attention: palette.white1,
     primary: palette.black1,
     secondary: palette.white1,
+    tertiary: palette.white1,
     paper: palette.grey4,
     separator: palette.grey4,
     border: palette.black10,
     primaryButtonBorder: palette.black9,
     switchTrack: palette.black11,
     assetsPlatformActive: palette.grey4Darken,
+    blur: palette.white2,
   },
   fonts: {
     square: "'Basier Square', sans-serif",
