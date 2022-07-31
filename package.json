@@ -12,7 +12,7 @@
     "@datapunt/matomo-tracker-react": "^0.5.1",
     "@defihelper/docs": "^0.0.3",
     "@defihelper/ethers-multicall": "^0.3.2",
-    "@defihelper/networks": "^1.0.20",
+    "@defihelper/networks": "^1.0.26",
     "@defihelper/provider-keeper": "^0.1.5-dfh",
     "@defihelper/react-joyride": "^2.4.1-dfh",
     "@ethersproject/abi": "^5.4.0",
@@ -169,7 +169,7 @@
   },
   "scripts": {
     "start": "npx cross-env REACT_APP_ENV=development node ./generate-networks && craco start",
-    "build": "node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco --max-old-space-size=4096 build",
+    "build": "node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false npx cross-env NODE_OPTIONS='--max-old-space-size=4096' craco build",
     "build-dev": "cross-env REACT_APP_ENV=development node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
     "test": "craco test",
     "watch": "node ./watch.js",
