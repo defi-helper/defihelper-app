@@ -31,6 +31,24 @@ const ValueChangeRender: React.FC<{ value?: string }> = ({ value }) => {
     )
   }
 
+  if (bignumberUtils.gte(contibutedPercent, 1000)) {
+    return (
+      <Typography variant="body1" className={styles.positive}>
+        <span className={styles.positive}>1000%+</span>{' '}
+        <span className={styles.today}>today</span>
+      </Typography>
+    )
+  }
+
+  if (bignumberUtils.lte(contibutedPercent, -1000)) {
+    return (
+      <Typography variant="body1" className={styles.negative}>
+        <span className={styles.positive}>-1000%</span>{' '}
+        <span className={styles.today}>today</span>
+      </Typography>
+    )
+  }
+
   return (
     <Typography
       variant="body1"
@@ -56,7 +74,6 @@ export const PortfolioMetricCard: React.VFC<PortfolioMetricCardProps> = (
       <Typography variant="h3" family="mono">
         {props.value}
       </Typography>
-
       {props.valueChanged && <ValueChangeRender value={props.valueChanged} />}
     </Paper>
   )

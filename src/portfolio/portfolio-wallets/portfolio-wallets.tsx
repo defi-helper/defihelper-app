@@ -50,6 +50,14 @@ const WalletWorthChanges: React.FC<{ value?: string }> = ({ value }) => {
     return <>-</>
   }
 
+  if (bignumberUtils.gte(contibutedPercent, 1000)) {
+    return <span className={styles.positive}>1000%+</span>
+  }
+
+  if (bignumberUtils.lte(contibutedPercent, -1000)) {
+    return <span className={styles.negative}>-1000%</span>
+  }
+
   return (
     <span className={isPositive ? styles.positive : styles.negative}>
       {isPositive && '+'}
