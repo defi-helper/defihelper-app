@@ -3,14 +3,20 @@ import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'
 import { portfolioApi } from './common/portfolio.api'
+import { usersApi } from '~/users/common/users.api'
 import * as portfolioAssetsModel from './portfolio-assets/portfolio-assets.model'
 import * as portfolioCoinModel from './portfolio-coin-balance/portfolio-coin-balance.model'
 import * as portfolioMetricCardsModel from './portfolio-metric-cards/portfolio-metric-cards.model'
+import { UserUpdateMutationVariables } from '~/api'
 
 export const portfolio = createDomain()
 
 export const fetchPortfolioCollectedFx = portfolio.createEffect(() =>
   portfolioApi.isPorfolioCollected()
+)
+
+export const updatePortfolioNameFx = portfolio.createEffect(
+  (input: UserUpdateMutationVariables) => usersApi.updateUser(input)
 )
 
 export const portfolioUpdated = portfolio.createEvent()

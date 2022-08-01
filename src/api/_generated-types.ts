@@ -681,8 +681,6 @@ export type ContractAutomatesType = {
   adapters: Array<Scalars['String']>
   /** Autorestake adapter name */
   autorestake?: Maybe<Scalars['String']>
-  /** Buy liquidity automate config */
-  buyLiquidity?: Maybe<ContractAutomateBuyLiquidityType>
   /** Liquidity pool tokens manager automate config */
   lpTokensManager?: Maybe<ContractAutomateBuyLiquidityType>
 }
@@ -720,6 +718,7 @@ export type ContractDebankListFilterInputType = {
   id?: Maybe<Scalars['UuidType']>
   protocol?: Maybe<Array<Scalars['UuidType']>>
   hidden?: Maybe<Scalars['Boolean']>
+  deprecated?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
 
@@ -822,8 +821,8 @@ export type ContractDebankTypeMetricArgs = {
 }
 
 export type ContractListAutomateFilterInputType = {
-  /** Has buy liquidity automate */
-  buyLiquidity?: Maybe<Scalars['Boolean']>
+  /** Has LP tokens manager automate */
+  lpTokensManager?: Maybe<Scalars['Boolean']>
   /** Has autorestake automate */
   autorestake?: Maybe<Scalars['Boolean']>
   /** Is autorestake automate candidate */
@@ -835,6 +834,7 @@ export type ContractListFilterInputType = {
   protocol?: Maybe<Array<Scalars['UuidType']>>
   blockchain?: Maybe<BlockchainFilterInputType>
   hidden?: Maybe<Scalars['Boolean']>
+  deprecated?: Maybe<Scalars['Boolean']>
   userLink?: Maybe<ContractUserLinkTypeEnum>
   automate?: Maybe<ContractListAutomateFilterInputType>
   search?: Maybe<Scalars['String']>
@@ -908,7 +908,9 @@ export type ContractMetricType = {
   aprYear: Scalars['String']
   aprWeekReal?: Maybe<Scalars['String']>
   myStaked: Scalars['String']
+  myStakedChange: MetricChangeType
   myEarned: Scalars['String']
+  myEarnedChange: MetricChangeType
   myAPYBoost: Scalars['String']
 }
 
@@ -1770,7 +1772,7 @@ export type ProtocolLinkType = {
 }
 
 export type ProtocolListFilterAutomateInputType = {
-  buyLiquidity?: Maybe<Scalars['Boolean']>
+  lpTokensManager?: Maybe<Scalars['Boolean']>
 }
 
 export type ProtocolListFilterInputType = {
@@ -1916,7 +1918,9 @@ export type ProtocolMetricType = {
   uniqueWalletsCount: Scalars['String']
   myAPY: Scalars['String']
   myStaked: Scalars['String']
+  myStakedChange: MetricChangeType
   myEarned: Scalars['String']
+  myEarnedChange: MetricChangeType
   myAPYBoost: Scalars['String']
   myMinUpdatedAt?: Maybe<Scalars['DateTimeType']>
 }
@@ -2769,8 +2773,8 @@ export type TokenUpdateInputType = {
 export type TradingAuthType = {
   __typename?: 'TradingAuthType'
   accessToken: Scalars['String']
-  refreshToken: Scalars['String']
-  tokenExpired: Scalars['DateTimeType']
+  refreshToken?: Maybe<Scalars['String']>
+  tokenExpired?: Maybe<Scalars['DateTimeType']>
 }
 
 export type TreasuryType = {
@@ -3935,7 +3939,7 @@ export type MeQuery = { __typename?: 'Query' } & {
 
 export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
   UserType,
-  'id' | 'role' | 'createdAt' | 'timezone'
+  'id' | 'role' | 'name' | 'createdAt' | 'timezone'
 >
 
 export type AutomationActionCreateMutationVariables = Exact<{
@@ -4606,12 +4610,6 @@ export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
               >
             }
             automate: { __typename?: 'ContractAutomatesType' } & {
-              buyLiquidity?: Maybe<
-                { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
-                  ContractAutomateBuyLiquidityType,
-                  'router' | 'pair'
-                >
-              >
               lpTokensManager?: Maybe<
                 { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
                   ContractAutomateBuyLiquidityType,
@@ -5179,7 +5177,16 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
           | 'myEarned'
           | 'myMinUpdatedAt'
           | 'myAPYBoost'
-        >
+        > & {
+            myStakedChange: { __typename?: 'MetricChangeType' } & Pick<
+              MetricChangeType,
+              'day'
+            >
+            myEarnedChange: { __typename?: 'MetricChangeType' } & Pick<
+              MetricChangeType,
+              'day'
+            >
+          }
         contracts: { __typename?: 'ContractListType' } & {
           list?: Maybe<
             Array<{ __typename?: 'ContractType' } & Pick<ContractType, 'id'>>
@@ -5466,7 +5473,55 @@ export type ProposalQueryVariables = Exact<{
 }>
 
 export type ProposalQuery = { __typename?: 'Query' } & {
-  proposal?: Maybe<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
+  proposal?: Maybe<
+    { __typename?: 'ProposalType' } & Pick<
+      ProposalType,
+      | 'id'
+      | 'title'
+      | 'description'
+      | 'status'
+      | 'releasedAt'
+      | 'plannedAt'
+      | 'tags'
+      | 'updatedAt'
+      | 'createdAt'
+    > & {
+        author?: Maybe<
+          { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'>
+        >
+        votes: { __typename?: 'VoteListType' } & {
+          list?: Maybe<
+            Array<
+              { __typename?: 'VoteType' } & Pick<
+                VoteType,
+                'id' | 'updatedAt' | 'createdAt'
+              > & {
+                  user: { __typename?: 'UserType' } & Pick<
+                    UserType,
+                    'id' | 'createdAt'
+                  > & {
+                      wallets: { __typename?: 'WalletListType' } & {
+                        list?: Maybe<
+                          Array<
+                            { __typename?: 'WalletBlockchainType' } & Pick<
+                              WalletBlockchainType,
+                              | 'id'
+                              | 'blockchain'
+                              | 'network'
+                              | 'address'
+                              | 'publicKey'
+                              | 'createdAt'
+                            >
+                          >
+                        >
+                      }
+                    }
+                }
+            >
+          >
+        }
+      }
+  >
 }
 
 export type ProposalsByStatusQueryVariables = Exact<{
@@ -5562,32 +5617,35 @@ export type ProposalUpdateMutation = { __typename?: 'Mutation' } & {
 export type ProposalVoteFragmentFragment = { __typename?: 'VoteType' } & Pick<
   VoteType,
   'id' | 'updatedAt' | 'createdAt'
-> & {
-    user: { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'> & {
-        wallets: { __typename?: 'WalletListType' } & {
-          list?: Maybe<
-            Array<
-              { __typename?: 'WalletBlockchainType' } & Pick<
-                WalletBlockchainType,
-                | 'id'
-                | 'blockchain'
-                | 'network'
-                | 'address'
-                | 'publicKey'
-                | 'createdAt'
-              >
-            >
-          >
-        }
-      }
-  }
+> & { user: { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'> }
 
 export type ProposalVoteMutationVariables = Exact<{
   proposal: Scalars['UuidType']
 }>
 
 export type ProposalVoteMutation = { __typename?: 'Mutation' } & {
-  vote: { __typename?: 'VoteType' } & ProposalVoteFragmentFragment
+  vote: { __typename?: 'VoteType' } & Pick<
+    VoteType,
+    'id' | 'updatedAt' | 'createdAt'
+  > & {
+      user: { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'> & {
+          wallets: { __typename?: 'WalletListType' } & {
+            list?: Maybe<
+              Array<
+                { __typename?: 'WalletBlockchainType' } & Pick<
+                  WalletBlockchainType,
+                  | 'id'
+                  | 'blockchain'
+                  | 'network'
+                  | 'address'
+                  | 'publicKey'
+                  | 'createdAt'
+                >
+              >
+            >
+          }
+        }
+    }
 }
 
 export type ProposalFragmentFragment = { __typename?: 'ProposalType' } & Pick<
@@ -6357,12 +6415,6 @@ export type StakingContractFragmentFragment = {
       ContractAutomatesType,
       'adapters' | 'autorestake'
     > & {
-        buyLiquidity?: Maybe<
-          { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
-            ContractAutomateBuyLiquidityType,
-            'router' | 'pair'
-          >
-        >
         lpTokensManager?: Maybe<
           { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
             ContractAutomateBuyLiquidityType,
@@ -6489,6 +6541,17 @@ export type TokenFragment = { __typename?: 'TokenType' } & Pick<
         >)
     >
   }
+
+export type TradeAuthMutationVariables = Exact<{ [key: string]: never }>
+
+export type TradeAuthMutation = { __typename?: 'Mutation' } & {
+  tradingAuth?: Maybe<
+    { __typename?: 'TradingAuthType' } & Pick<
+      TradingAuthType,
+      'accessToken' | 'tokenExpired'
+    >
+  >
+}
 
 export type UsersQueryVariables = Exact<{
   filter?: Maybe<UserListFilterInputType>

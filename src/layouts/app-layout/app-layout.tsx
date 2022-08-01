@@ -39,14 +39,14 @@ const MENU: MenuItem[] = [
     can: 'read',
   },
   {
+    title: 'Invest',
+    path: paths.autostaking,
+    icon: 'autostaking',
+  },
+  {
     title: 'Protocols',
     path: paths.protocols.list,
     icon: 'grid',
-  },
-  {
-    title: 'Boost your APY',
-    path: paths.autostaking,
-    icon: 'autostaking',
   },
   {
     title: 'Automations',
@@ -76,7 +76,7 @@ const MENU: MenuItem[] = [
   {
     title: 'Referral Program',
     path: paths.referral.list,
-    icon: 'affilate',
+    icon: 'affiliate',
     subject: 'User',
     can: 'read',
   },

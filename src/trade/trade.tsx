@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import { useForm } from 'react-hook-form'
@@ -16,13 +16,15 @@ import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Button } from '~/common/button'
 import { TradeChart } from './trade-chart'
-import { cutAccount } from '~/common/cut-account'
 import { networksConfig } from '~/networks-config'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Input } from '~/common/input'
+import { tradeApi } from './common/trade.api'
 import * as styles from './trade.css'
 import * as model from './trade.model'
-import { tradeApi } from './common/trade.api'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { config } from '~/config'
+import { WalletConnect } from '~/wallets/wallet-connect'
 
 export type TradeProps = unknown
 
@@ -44,6 +46,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentTab, setCurrentTab] = useState(Tabs.Buy)
   const [currentExchange, setCurrentExchange] = useState('')
   const [currentPair, setCurrentPair] = useState('')
+  const [currentWallet, setCurrentWallet] = useState('')
 
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
@@ -61,22 +64,66 @@ export const Trade: React.VFC<TradeProps> = () => {
   const handleChangePair = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentPair(event.target.value)
   }
+  const handleChangeWallet = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentWallet(event.target.value)
+  }
 
   const exchanges = useStore(model.$exchanges)
   const pairs = useStore(model.$pairs)
   const wallets = useStore(settingsWalletModel.$wallets)
 
-  useEffect(() => {
-    model.fetchExchangesFx()
-  }, [])
+  const walletsMap = useMemo(
+    () =>
+      wallets
+        .filter((wallet) => Boolean(model.networks[wallet.network]))
+        .reduce((acc, wallet) => {
+          acc.set(wallet.id, wallet)
+
+          return acc
+        }, new Map<string, typeof wallets[number]>()),
+    [wallets]
+  )
+
+  const wallet = useMemo(
+    () => walletsMap.get(currentWallet),
+    [currentWallet, walletsMap]
+  )
 
   useEffect(() => {
-    model.fetchPairsFx()
-  }, [])
+    if (!wallet) return
+
+    model.fetchExchangesFx(wallet.network)
+  }, [wallet])
+
+  useEffect(() => {
+    if (!wallet || !currentExchange) return
+
+    model.fetchPairsFx({
+      network: wallet.network,
+      exchange: currentExchange,
+    })
+  }, [wallet, currentExchange])
 
   useEffect(() => {
     return () => model.reset()
   }, [])
+
+  useEffect(() => {
+    const [firstWallet] = wallets.filter(({ network }) =>
+      Boolean(model.networks[network])
+    )
+
+    if (!firstWallet) return
+
+    setCurrentWallet(firstWallet.id)
+  }, [wallets])
+  useEffect(() => {
+    const [firstExchange] = exchanges
+
+    if (!firstExchange) return
+
+    setCurrentExchange(firstExchange.Name)
+  }, [exchanges])
 
   const SelectComponents = {
     [Selects.SmartSell]: <TradeSmartSell />,
@@ -114,6 +161,14 @@ export const Trade: React.VFC<TradeProps> = () => {
     }
   })
 
+  const pairMap = pairs.reduce((acc, pair) => {
+    acc.set(pair.pairInfo?.address, pair)
+
+    return acc
+  }, new Map<string, typeof pairs[number]>())
+
+  const currentPairObj = pairMap.get(currentPair)
+
   return (
     <AppLayout title="Trade">
       <Head title="Trade" />
@@ -121,26 +176,65 @@ export const Trade: React.VFC<TradeProps> = () => {
         Trade
       </Typography>
       <div className={styles.header}>
-        <Select label="Wallet">
-          {wallets.map((wallet, index) => (
-            <SelectOption value="SelectOption" key={String(index)}>
-              {networksConfig[wallet.network] && (
+        <WalletConnect
+          fallback={
+            <div>
+              <Typography
+                as="span"
+                variant="body3"
+                family="mono"
+                transform="uppercase"
+                className={styles.connectWalletLabel}
+              >
+                Wallet
+              </Typography>
+              <div className={styles.connectWalletInput}>
+                <Icon icon="plus" width={20} height={20} />
+                <div>Connect Wallet</div>
                 <Icon
-                  icon={networksConfig[wallet.network].icon}
-                  className={styles.pairIcon}
+                  icon="arrowDown"
+                  height={18}
+                  width={18}
+                  className={styles.connectWalletArrow}
                 />
-              )}
-              {cutAccount(wallet.address)}
-            </SelectOption>
-          ))}
-        </Select>
+              </div>
+            </div>
+          }
+        >
+          <Select
+            label="Wallet"
+            value={currentWallet}
+            onChange={handleChangeWallet}
+          >
+            {wallets
+              .filter(({ network }) => Boolean(model.networks[network]))
+              .map(({ network, id, name }, index) => (
+                <SelectOption value={id} key={String(index)}>
+                  {networksConfig[network] && (
+                    <Icon
+                      icon={networksConfig[network].icon}
+                      className={styles.pairIcon}
+                    />
+                  )}
+                  {name}
+                </SelectOption>
+              ))}
+          </Select>
+        </WalletConnect>
         <Select
           label="Exchange"
           onChange={handleChangeExchange}
           value={currentExchange}
         >
           {exchanges.map((exchange, index) => (
-            <SelectOption value={exchange.DexAddress} key={String(index)}>
+            <SelectOption value={exchange.Name} key={String(index)}>
+              <img
+                alt=""
+                src={`${exchange.Icon}.svg`}
+                width="24"
+                height="24"
+                className={styles.pairIcon}
+              />
               {exchange.Name}
             </SelectOption>
           ))}
@@ -175,7 +269,7 @@ export const Trade: React.VFC<TradeProps> = () => {
         <Paper radius={8} className={styles.chart}>
           <div className={styles.chartHeader}>
             <div>
-              <Typography>BTC/USDT</Typography>
+              <Typography>{currentPairObj?.pairInfo?.ticker ?? '-'}</Typography>
             </div>
             <Typography variant="body3" className={styles.chartMetric} as="div">
               <Typography
@@ -186,7 +280,8 @@ export const Trade: React.VFC<TradeProps> = () => {
                 24h change
               </Typography>
               <Typography variant="inherit" as="div">
-                + 13% | +4 085$
+                {bignumberUtils.format(currentPairObj?.pricePercentCount?.h24)}%
+                | {bignumberUtils.format(currentPairObj?.liquidityCount?.h24)}$
               </Typography>
             </Typography>
             <Typography variant="body3" className={styles.chartMetric} as="div">
@@ -198,14 +293,14 @@ export const Trade: React.VFC<TradeProps> = () => {
                 24h volume (USD)
               </Typography>
               <Typography variant="inherit" as="div">
-                5 259 687 158.42$
+                {bignumberUtils.format(currentPairObj?.volumeCount?.h24)}$
               </Typography>
             </Typography>
           </div>
           <TradeChart className={styles.chartInner} symbol={currentPair} />
         </Paper>
         <Paper radius={8} className={styles.selects}>
-          <div className={styles.selectsBody}>
+          <div className={clsx(!config.IS_DEV && styles.selectsBody)}>
             <div className={styles.tradeSelectHeader}>
               <Dropdown
                 control={(open) => (
@@ -277,36 +372,38 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Button>
             </div>
           </div>
-          <div className={styles.beta}>
-            <Typography
-              variant="body2"
-              align="center"
-              family="mono"
-              className={styles.betaTitle}
-            >
-              Trade section is currently at the beta stage. Please leave your
-              email address to try it first.
-            </Typography>
-            <form
-              noValidate
-              autoComplete="off"
-              className={styles.betaForm}
-              onSubmit={handleOnSubmit}
-            >
-              <Input
-                placeholder="hello@defihelper.io"
-                {...register('email', {
-                  required: true,
-                  pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
-                })}
-                error={Boolean(formState.errors.email?.message)}
-                helperText={formState.errors.email?.message}
-              />
-              <Button color="green" type="submit">
-                join
-              </Button>
-            </form>
-          </div>
+          {!config.IS_DEV && (
+            <div className={styles.beta}>
+              <Typography
+                variant="body2"
+                align="center"
+                family="mono"
+                className={styles.betaTitle}
+              >
+                Trade section is currently at the beta stage. Please leave your
+                email address to try it first.
+              </Typography>
+              <form
+                noValidate
+                autoComplete="off"
+                className={styles.betaForm}
+                onSubmit={handleOnSubmit}
+              >
+                <Input
+                  placeholder="hello@defihelper.io"
+                  {...register('email', {
+                    required: true,
+                    pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
+                  })}
+                  error={Boolean(formState.errors.email?.message)}
+                  helperText={formState.errors.email?.message}
+                />
+                <Button color="green" type="submit">
+                  join
+                </Button>
+              </form>
+            </div>
+          )}
         </Paper>
       </div>
       <TradeOrders />

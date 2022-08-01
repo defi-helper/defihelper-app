@@ -1,38 +1,42 @@
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 
+import {
+  getAPIClient,
+  TradeAuthMutation,
+  TradeAuthMutationVariables,
+} from '~/api'
+import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
-
-const ACCESS_TOKEN =
-  'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiIyOWJlYjY2Mi05N2M1LTQ3OTUtOTUzNS00YWUyMWRhY2E0YjciLCJLZXlUeXBlIjoiYWNjZXNzIiwiZXhwIjoxNjU5MDM5MzkyLCJpc3MiOiJib29raXRlLmF1dGguc2VydmljZSJ9.DshwgwW5a8QOiZ062TsMIamhbyfyKBmNpWWrlmr2trfvYxOXortz6spy8V3PWHPCBerAXpKSTcEjfphJmeHM2KTKn10pXOGaUt_mcZ5xM2TUUCGeMnSOw0ZbdlFEEeojlH9e0U22e7EF1KMA2bpvRKnZCrM4SmC2oF_PrUkE2-ImiI_-Z2y3sAPL4_efjlrjCkPrFd4K9ST7IPAu63-k9F4PYyCUdlsJbvM2bDwxTGVzM66xdO0pZpkehS-bjgJ8fkboYDU8ULUrYlqb3yKmla2nCE-3SXq8_NI5j0d4uITP_yZ9emi7xFPG4972VdW63x5E9Eqyi-riAcwxyq-ZKQ'
+import { TRADE_AUTH } from './graphql/trade-auth.graphql'
 
 const apiV1 = axios.create({
   baseURL: 'https://whattofarm.io/ext-api/v1',
-  headers: {
-    Authorization: `Bearer ${ACCESS_TOKEN}`,
-  },
 })
 
 const apiV2 = axios.create({
   baseURL: 'https://whattofarm.io/api/v2/',
-  headers: {
-    Authorization: `Bearer ${ACCESS_TOKEN}`,
-  },
 })
 
 type Exchange = {
-  DexAddress: string
+  Icon: string
   Name: string
 }
 
 type Response<T> = { code: 200 | 500 | 405; data?: T; message?: string }
 
 export const tradeApi = {
-  exchanges: () =>
+  exchanges: (networks: string[]) =>
     apiV1
-      .get<Response<Exchange[]>>('dex-info?networks=eth')
+      .get<Response<Exchange[]>>('dex-info', {
+        params: {
+          networks: networks.join(','),
+        },
+      })
       .then(({ data }) => data),
 
   pairs: (
+    network: string[],
+    pool: string[],
     payload: {
       excludedPairAddresses: string[]
       pairAddresses: string[]
@@ -44,8 +48,14 @@ export const tradeApi = {
     apiV1
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .post<Response<{ list: any[] }>>(
-        'pair-stat?network=eth&page=1&size=100&minLiquidity=10000&sortField=liquidity&sortDirection=desc',
-        payload
+        'pair-stat?page=1&size=100&minLiquidity=10000&sortField=liquidity&sortDirection=desc',
+        payload,
+        {
+          params: {
+            network: network.join(','),
+            pool: pool.join(','),
+          },
+        }
       )
       .then(({ data }) => data),
 
@@ -75,4 +85,62 @@ export const tradeApi = {
       }
     )
   },
+
+  loginWhattofarm: () =>
+    getAPIClient()
+      .request<TradeAuthMutation, unknown, TradeAuthMutationVariables>({
+        query: TRADE_AUTH.loc?.source.body ?? '',
+      })
+      .then(({ data }) => data?.tradingAuth),
 }
+
+const authRequestInterceptor = async (axiosConfig: AxiosRequestConfig) => {
+  const whattofarm = JSON.parse(localStorage.getItem('whattofarm') ?? '{}')
+
+  if (
+    whattofarm?.accessToken &&
+    whattofarm.tokenExpired &&
+    !dateUtils.isAfter(whattofarm.tokenExpired)
+  ) {
+    Object.assign(axiosConfig.headers, {
+      Authorization: `Bearer ${whattofarm?.accessToken}`,
+    })
+  }
+
+  return axiosConfig
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const authResponseInterceptor = async (error: any) => {
+  const errorConfig = error?.config
+
+  if (error?.response?.status !== 200 && !errorConfig?.sent) {
+    errorConfig.sent = true
+
+    const result = await tradeApi.loginWhattofarm()
+
+    if (result?.accessToken) {
+      errorConfig.headers = {
+        ...errorConfig.headers,
+        authorization: `Bearer ${result?.accessToken}`,
+      }
+    }
+
+    if (result) {
+      localStorage.setItem('whattofarm', JSON.stringify(result))
+    }
+
+    return axios(errorConfig)
+  }
+
+  return Promise.reject(error)
+}
+
+apiV1.interceptors.request.use(authRequestInterceptor, (r) => Promise.reject(r))
+apiV2.interceptors.request.use(authRequestInterceptor, (r) => Promise.reject(r))
+apiV1.interceptors.response.use((response) => response, authResponseInterceptor)
+apiV2.interceptors.response.use((response) => response, authResponseInterceptor)
+
+// headers: {
+//   Authorization: `Bearer ${ACCESS_TOKEN}`,
+// },

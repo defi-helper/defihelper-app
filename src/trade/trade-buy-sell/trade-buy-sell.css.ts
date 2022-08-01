@@ -12,11 +12,15 @@ export const root = style([
   {
     gap: 24,
     maxHeight: 370,
-    overflowY: 'hidden',
+    overflowY: 'auto',
     overflowX: 'hidden',
     padding: '0 10px',
   },
 ])
+
+export const overflow = style({
+  overflow: 'hidden',
+})
 
 export const inputGroup = style([
   flex,

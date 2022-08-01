@@ -1,18 +1,22 @@
-import { createDomain, sample } from 'effector'
+import { createDomain, sample, UnitValue } from 'effector'
 import { createGate } from 'effector-react'
 
-import { Unwrap } from '~/common/types'
 import { roadmapApi } from '~/roadmap/common'
 
 const proposalDetailDomain = createDomain()
 
 export const fetchProposalFx = proposalDetailDomain.createEffect(
-  (proposalId: string) =>
-    roadmapApi.proposalDetail({
+  async (proposalId: string) => {
+    const data = await roadmapApi.proposalDetail({
       filter: {
         id: proposalId,
       },
     })
+
+    if (!data) throw new Error('not found')
+
+    return data
+  }
 )
 
 const ERROR_MESSAGE = "can't vote"
@@ -41,10 +45,10 @@ export const unvoteProposalFx = proposalDetailDomain.createEffect(
 )
 
 export const $proposalDetail = proposalDetailDomain
-  .createStore<Unwrap<ReturnType<typeof roadmapApi.proposalDetail>>>(null)
+  .createStore<UnitValue<typeof fetchProposalFx.doneData> | null>(null)
   .on(fetchProposalFx.doneData, (_, payload) => payload)
-  .on(voteProposalFx.doneData, (state, payload) =>
-    state
+  .on(voteProposalFx.doneData, (state, payload) => {
+    return state
       ? {
           ...state,
           votes: {
@@ -52,7 +56,7 @@ export const $proposalDetail = proposalDetailDomain
           },
         }
       : state
-  )
+  })
   .on(unvoteProposalFx.done, (state, { params }) =>
     state
       ? {

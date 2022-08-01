@@ -6,16 +6,6 @@ export const PROPOSAL_VOTE_FRAGMENT = gql`
     user {
       id
       createdAt
-      wallets {
-        list {
-          id
-          blockchain
-          network
-          address
-          publicKey
-          createdAt
-        }
-      }
     }
     updatedAt
     createdAt

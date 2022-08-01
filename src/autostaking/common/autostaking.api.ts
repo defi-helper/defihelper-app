@@ -27,7 +27,13 @@ export const autostakingApi = {
       >(
         {
           query: AUTOSTAKING_STAKING_CONTRACTS.loc?.source.body ?? '',
-          variables,
+          variables: {
+            ...variables,
+            filter: {
+              ...variables.filter,
+              deprecated: false,
+            },
+          },
         },
         {
           fetchOptionsOverrides: {

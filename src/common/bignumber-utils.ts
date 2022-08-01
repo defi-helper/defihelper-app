@@ -73,6 +73,9 @@ export const bignumberUtils = {
   gt: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isGreaterThan(num2 || 0),
 
+  toFixed: (num1?: string | number | null, decimals = 2) =>
+    new BigNumber(num1 || 0).toFixed(decimals),
+
   lt: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isLessThan(num2 || 0),
 

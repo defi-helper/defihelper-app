@@ -69,7 +69,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
           weight="bold"
           className={styles.alertSubtitle}
         >
-          Auto-stake notifications
+          Daily portfolio notifications
         </Typography>
         <div className={styles.alertText}>
           <Typography variant="inherit" as="div">

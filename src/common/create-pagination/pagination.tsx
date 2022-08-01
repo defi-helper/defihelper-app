@@ -23,7 +23,7 @@ export const Pagination: React.VFC<PaginationProps> = (props) => {
 
   const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE)
 
-  const items = generate(currentPage, pages)
+  const items = generate(currentPage, pages || 1)
 
   useUpdateEffect(() => {
     props.changePage(currentPage - 1)

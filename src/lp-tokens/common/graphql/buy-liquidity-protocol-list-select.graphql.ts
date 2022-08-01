@@ -11,7 +11,7 @@ export const BUY_LIQUIDITY_PROTOCOL_LIST_SELECT = gql`
         isDebank: false
         hidden: false
         search: $search
-        automate: { buyLiquidity: true }
+        automate: { lpTokensManager: true }
       }
       sort: $sort
       pagination: $pagination

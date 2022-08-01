@@ -73,8 +73,7 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
           )}
           {!loading && isEmpty(history) && (
             <Typography variant="body2" align="center" className={styles.empty}>
-              Your transaction history of all automated actions and
-              notifications for all connected wallets will be displayed here.
+              Your transaction history will be displayed here.
             </Typography>
           )}
           <>

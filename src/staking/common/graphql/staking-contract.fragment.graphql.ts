@@ -40,10 +40,6 @@ export const STAKING_CONTRACT_FRAGMENT = gql`
     automate {
       adapters
       autorestake
-      buyLiquidity {
-        router
-        pair
-      }
       lpTokensManager {
         router
         pair
