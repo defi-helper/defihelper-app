@@ -718,6 +718,7 @@ export type ContractDebankListFilterInputType = {
   id?: Maybe<Scalars['UuidType']>
   protocol?: Maybe<Array<Scalars['UuidType']>>
   hidden?: Maybe<Scalars['Boolean']>
+  deprecated?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
 
@@ -833,6 +834,7 @@ export type ContractListFilterInputType = {
   protocol?: Maybe<Array<Scalars['UuidType']>>
   blockchain?: Maybe<BlockchainFilterInputType>
   hidden?: Maybe<Scalars['Boolean']>
+  deprecated?: Maybe<Scalars['Boolean']>
   userLink?: Maybe<ContractUserLinkTypeEnum>
   automate?: Maybe<ContractListAutomateFilterInputType>
   search?: Maybe<Scalars['String']>
@@ -5471,7 +5473,55 @@ export type ProposalQueryVariables = Exact<{
 }>
 
 export type ProposalQuery = { __typename?: 'Query' } & {
-  proposal?: Maybe<{ __typename?: 'ProposalType' } & ProposalFragmentFragment>
+  proposal?: Maybe<
+    { __typename?: 'ProposalType' } & Pick<
+      ProposalType,
+      | 'id'
+      | 'title'
+      | 'description'
+      | 'status'
+      | 'releasedAt'
+      | 'plannedAt'
+      | 'tags'
+      | 'updatedAt'
+      | 'createdAt'
+    > & {
+        author?: Maybe<
+          { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'>
+        >
+        votes: { __typename?: 'VoteListType' } & {
+          list?: Maybe<
+            Array<
+              { __typename?: 'VoteType' } & Pick<
+                VoteType,
+                'id' | 'updatedAt' | 'createdAt'
+              > & {
+                  user: { __typename?: 'UserType' } & Pick<
+                    UserType,
+                    'id' | 'createdAt'
+                  > & {
+                      wallets: { __typename?: 'WalletListType' } & {
+                        list?: Maybe<
+                          Array<
+                            { __typename?: 'WalletBlockchainType' } & Pick<
+                              WalletBlockchainType,
+                              | 'id'
+                              | 'blockchain'
+                              | 'network'
+                              | 'address'
+                              | 'publicKey'
+                              | 'createdAt'
+                            >
+                          >
+                        >
+                      }
+                    }
+                }
+            >
+          >
+        }
+      }
+  >
 }
 
 export type ProposalsByStatusQueryVariables = Exact<{
@@ -5567,32 +5617,35 @@ export type ProposalUpdateMutation = { __typename?: 'Mutation' } & {
 export type ProposalVoteFragmentFragment = { __typename?: 'VoteType' } & Pick<
   VoteType,
   'id' | 'updatedAt' | 'createdAt'
-> & {
-    user: { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'> & {
-        wallets: { __typename?: 'WalletListType' } & {
-          list?: Maybe<
-            Array<
-              { __typename?: 'WalletBlockchainType' } & Pick<
-                WalletBlockchainType,
-                | 'id'
-                | 'blockchain'
-                | 'network'
-                | 'address'
-                | 'publicKey'
-                | 'createdAt'
-              >
-            >
-          >
-        }
-      }
-  }
+> & { user: { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'> }
 
 export type ProposalVoteMutationVariables = Exact<{
   proposal: Scalars['UuidType']
 }>
 
 export type ProposalVoteMutation = { __typename?: 'Mutation' } & {
-  vote: { __typename?: 'VoteType' } & ProposalVoteFragmentFragment
+  vote: { __typename?: 'VoteType' } & Pick<
+    VoteType,
+    'id' | 'updatedAt' | 'createdAt'
+  > & {
+      user: { __typename?: 'UserType' } & Pick<UserType, 'id' | 'createdAt'> & {
+          wallets: { __typename?: 'WalletListType' } & {
+            list?: Maybe<
+              Array<
+                { __typename?: 'WalletBlockchainType' } & Pick<
+                  WalletBlockchainType,
+                  | 'id'
+                  | 'blockchain'
+                  | 'network'
+                  | 'address'
+                  | 'publicKey'
+                  | 'createdAt'
+                >
+              >
+            >
+          }
+        }
+    }
 }
 
 export type ProposalFragmentFragment = { __typename?: 'ProposalType' } & Pick<
