@@ -27,6 +27,37 @@ export const PortfolioMetricCard: React.VFC<PortfolioMetricCardProps> = (
     bignumberUtils.gte(rawContibutedPercent, 0) ||
     bignumberUtils.isZero(rawContibutedPercent)
 
+  let appliedView = (
+    <Typography
+      variant="body1"
+      className={clsx(
+        styles.changes,
+        styles[isPositive ? 'positive' : 'negative']
+      )}
+    >
+      {isPositive ? '+' : '-'}
+      {calculated}% <span className={styles.today}>today</span>
+    </Typography>
+  )
+
+  if (bignumberUtils.gte(rawContibutedPercent, 1000)) {
+    appliedView = (
+      <Typography variant="body1" className={styles.positive}>
+        <span className={styles.positive}>1000%+</span>{' '}
+        <span className={styles.today}>today</span>
+      </Typography>
+    )
+  }
+
+  if (bignumberUtils.lte(rawContibutedPercent, -1000)) {
+    appliedView = (
+      <Typography variant="body1" className={styles.negative}>
+        <span className={styles.positive}>-1000%</span>{' '}
+        <span className={styles.today}>today</span>
+      </Typography>
+    )
+  }
+
   return (
     <Paper radius={8} className={clsx(styles.root, props.className)}>
       <Typography variant="body2" className={styles.title}>
@@ -36,18 +67,7 @@ export const PortfolioMetricCard: React.VFC<PortfolioMetricCardProps> = (
         {props.value}
       </Typography>
 
-      {props.valueChanged && (
-        <Typography
-          variant="body1"
-          className={clsx(
-            styles.changes,
-            styles[isPositive ? 'positive' : 'negative']
-          )}
-        >
-          {isPositive ? '+' : '-'}
-          {calculated}% <span className={styles.today}>today</span>
-        </Typography>
-      )}
+      {props.valueChanged && appliedView}
     </Paper>
   )
 }
