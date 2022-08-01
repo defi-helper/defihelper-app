@@ -34,6 +34,14 @@ const PercentChangeRender: React.FC<{ value: string }> = ({ value }) => {
     return <>-</>
   }
 
+  if (bignumberUtils.gte(contibutedPercent, 1000)) {
+    return <span className={styles.changePlus}>1000%+</span>
+  }
+
+  if (bignumberUtils.lte(contibutedPercent, -1000)) {
+    return <span className={styles.changeMinus}>-1000%</span>
+  }
+
   return (
     <span className={isPositive ? styles.changePlus : styles.changeMinus}>
       {isPositive && '+'}
