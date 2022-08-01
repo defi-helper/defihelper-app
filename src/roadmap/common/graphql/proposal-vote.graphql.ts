@@ -1,12 +1,25 @@
 import { gql } from 'urql'
 
-import { PROPOSAL_VOTE_FRAGMENT } from './proposal-vote.fragment.graphql'
-
 export const PROPOSAL_VOTE = gql`
   mutation ProposalVote($proposal: UuidType!) {
     vote(proposal: $proposal) {
-      ...proposalVoteFragment
+      id
+      user {
+        id
+        createdAt
+        wallets {
+          list {
+            id
+            blockchain
+            network
+            address
+            publicKey
+            createdAt
+          }
+        }
+      }
+      updatedAt
+      createdAt
     }
   }
-  ${PROPOSAL_VOTE_FRAGMENT}
 `
