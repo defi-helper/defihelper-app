@@ -7,6 +7,7 @@ export const USER_UPDATE = gql`
       role
       id
       role
+      name
       createdAt
     }
   }
