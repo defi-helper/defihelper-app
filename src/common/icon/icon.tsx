@@ -79,6 +79,7 @@ import { ReactComponent as LinkedinIcon } from '~/assets/icons/linkedin.svg'
 import { ReactComponent as FacebookIcon } from '~/assets/icons/facebook.svg'
 import { ReactComponent as FantomIcon } from '~/assets/icons/blockchains/fantom.svg'
 import { ReactComponent as CronosIcon } from '~/assets/icons/blockchains/cronos.svg'
+import { ReactComponent as EditIcon } from '~/assets/icons/edit.svg'
 import { ReactComponent as ArbitrumIcon } from '~/assets/icons/blockchains/arbitrum.svg'
 import { ReactComponent as MoonbeamIcon } from '~/assets/icons/blockchains/moonbeam.svg'
 import { ReactComponent as AuroraIcon } from '~/assets/icons/blockchains/aurora.svg'
@@ -215,6 +216,7 @@ const ICONS = {
   light: LightIcon,
   order: OrderIcon,
   noResults: NoResultsIcon,
+  edit: EditIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {
