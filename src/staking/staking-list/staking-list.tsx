@@ -45,13 +45,13 @@ import { theme } from '~/common/theme'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { analytics } from '~/analytics'
 import { AutostakingVideoDialog } from '~/autostaking/common/autostaking-video-dialog'
-import { AutostakingBalanceDialog } from '~/autostaking/common/autostaking-balance-dialog'
 import { AutostakingDeployDialog } from '~/autostaking/common/autostaking-deploy-dialog'
 import { AutostakingTabsDialog } from '~/autostaking/common/autostaking-tabs-dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import * as autostakingContractsModel from '~/autostaking/autostaking-contracts/autostaking-contracts.model'
 import * as model from './staking-list.model'
 import * as styles from './staking-list.css'
+import { settingsWalletModel } from '~/settings/settings-wallets'
+import { SettingsWalletBalanceDialog } from '~/settings/common'
 
 export type StakingListProps = {
   protocolId: string
@@ -141,7 +141,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openApyDialog] = useDialog(StakingApyDialog)
   const [openAutostakingVideoDialog] = useDialog(AutostakingVideoDialog)
-  const [openAutostakingBalanceDialog] = useDialog(AutostakingBalanceDialog)
+  const [openAutostakingBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
   const [openAutostakingDeployDialog] = useDialog(AutostakingDeployDialog)
   const [openAutostakingTabsDialog] = useDialog(AutostakingTabsDialog)
 
@@ -207,7 +207,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         if (
           !contract.automate.autorestake ||
           !prototypeAddress ||
-          !currentWallet
+          !currentWallet ||
+          !currentWallet.chainId
         )
           return
 
@@ -241,11 +242,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         )
           throw Error('wallet is not connected')
 
-        const billingBalance =
-          await autostakingContractsModel.fetchBillingBalanceFx({
-            blockchain: contract.blockchain,
-            network: contract.network,
-          })
+        const billingBalance = await settingsWalletModel.fetchBillingBalanceFx({
+          blockchain: contract.blockchain,
+          network: contract.network,
+        })
 
         if (
           bignumberUtils.lte(
@@ -253,19 +253,26 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
             billingBalance.recomendedIncome
           )
         ) {
-          await openAutostakingBalanceDialog({
-            balance: String(metric.billing.balance.netBalance),
+          const adapter = await settingsWalletModel.loadAdapterFx({
+            provider: currentWallet.provider,
+            chainId: currentWallet.chainId,
+          })
+
+          const result = await openAutostakingBalanceDialog({
             network: findedWallet.network,
             wallet: findedWallet.address,
             ...billingBalance,
-            onSubmit: (result) =>
-              walletsModel.depositFx({
-                blockchain: findedWallet.blockchain,
-                amount: result.amount,
-                walletAddress: findedWallet.address,
-                chainId: String(currentWallet.chainId),
-                provider: currentWallet.provider,
-              }),
+            variant: 'deposit',
+            adapter,
+          })
+
+          await walletsModel.depositFx({
+            blockchain: findedWallet.blockchain,
+            amount: result.amount,
+            walletAddress: findedWallet.address,
+            chainId: String(currentWallet.chainId),
+            provider: currentWallet.provider,
+            transactionHash: result.transactionHash,
           })
         }
 

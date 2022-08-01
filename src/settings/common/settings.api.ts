@@ -34,6 +34,8 @@ import {
   WalletListMetricsQuery,
   WalletUpdateStatisticsMutation,
   WalletUpdateStatisticsMutationVariables,
+  BillingBalanceQueryVariables,
+  BillingBalanceQuery,
 } from '~/api/_generated-types'
 import {
   USER_CONTACTS,
@@ -51,9 +53,10 @@ import {
   INTEGRATION_API_CONNECT,
   INTEGRATION_DISCONNECT,
   WALLET_LIST_METRICS,
+  BILLING_TRANSFER_CREATE,
+  WALLET_UPDATE_STATISTICS,
+  BILLING_BALANCE,
 } from './graphql'
-import { BILLING_TRANSFER_CREATE } from '~/settings/common/graphql/billing-transfer-create.graphql'
-import { WALLET_UPDATE_STATISTICS } from './graphql/wallet-update-statistics.graphql'
 
 export const settingsApi = {
   userNotificationsList: () =>
@@ -277,5 +280,17 @@ export const settingsApi = {
       .then(({ data }) => ({
         list: data?.me?.billing.transfers.list ?? [],
         count: data?.me?.billing.transfers.pagination.count ?? 0,
+      })),
+
+  billingBalance: (variables: BillingBalanceQueryVariables) =>
+    getAPIClient()
+      .request<BillingBalanceQuery, unknown, BillingBalanceQueryVariables>({
+        query: BILLING_BALANCE.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => ({
+        priceUSD: data?.billingBalance.priceUSD,
+        recomendedIncome: data?.billingBalance.recomendedIncome,
+        token: data?.billingBalance.token,
       })),
 }

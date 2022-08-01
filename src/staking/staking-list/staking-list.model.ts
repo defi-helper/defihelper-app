@@ -402,7 +402,10 @@ export const fetchMetricsFx = stakingListDomain.createEffect(
 
           const adapterFn =
             adapter[
-              contract.adapter as keyof Omit<Adapters, 'automates' | 'store'>
+              contract.adapter as keyof Omit<
+                Adapters,
+                'automates' | 'store' | 'balance'
+              >
             ]
 
           if (!adapterFn) return previousAcc
