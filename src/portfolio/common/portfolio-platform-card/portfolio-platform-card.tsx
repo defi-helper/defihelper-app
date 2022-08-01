@@ -1,9 +1,12 @@
 import clsx from 'clsx'
 
+import { Link as ReactRouterLink } from 'react-router-dom'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
 import { PortfolioProtocolsQuery } from '~/api/_generated-types'
 import * as styles from './portfolio-platform-card.css'
+import { Link } from '~/common/link'
+import { paths } from '~/paths'
 
 export type PortfolioAssetCardProps = {
   className?: string
@@ -30,7 +33,16 @@ export const PortfolioPlatformCard: React.VFC<PortfolioAssetCardProps> = (
             ) : (
               <div className={styles.platformLogoPlaceholder} />
             )}
-            {props.protocol.name}
+            <Link
+              as={ReactRouterLink}
+              to={
+                props.protocol.adapter === 'debankByApiReadonly'
+                  ? paths.protocols.detailReadonly(props.protocol.id)
+                  : paths.protocols.detail(props.protocol.id)
+              }
+            >
+              {props.protocol.name}
+            </Link>
           </Typography>
 
           <Typography variant="body2" align="right">
