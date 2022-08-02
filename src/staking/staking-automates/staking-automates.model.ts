@@ -197,7 +197,7 @@ export const fetchMetricsFx = stakingAutomatesDomain.createEffect(
             adapter[
               contract.contract.adapter as keyof Omit<
                 Adapters,
-                'automates' | 'store'
+                'automates' | 'store' | 'balance'
               >
             ]
 

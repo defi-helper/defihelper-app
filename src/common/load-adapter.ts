@@ -67,7 +67,7 @@ export interface AutomationAdapterActions {
   }
 }
 
-type Transaction = { wait: () => Promise<{ transactionHash?: string }> }
+type Transaction = { wait: () => Promise<{ transactionHash: string }> }
 
 export type AdapterStep = {
   can: (...args: unknown[]) => Promise<boolean | Error>
@@ -236,6 +236,16 @@ export type SellLiquidity = {
   }
 }
 
+export type BalanceAdapter = {
+  name: string
+  balance(): Promise<string>
+  netBalance(): Promise<string>
+  canDeposit(amount: string): Promise<true | Error>
+  deposit(amount: string): Promise<{ tx: Transaction }>
+  canRefund(amount: string): Promise<true | Error>
+  refund(amount: string): Promise<{ tx: Transaction }>
+}
+
 export type Adapters = {
   staking: AdapterFn
   swopfiStaking: AdapterFn
@@ -250,6 +260,7 @@ export type Adapters = {
     canBuy(product: number | string): Promise<true | Error>
     buy(product: number | string): Promise<{ tx: Transaction }>
   }>
+  balance: (signer: unknown, contractAddress: string) => Promise<BalanceAdapter>
   automates: Record<
     string,
     (signer: unknown, contractAddress: unknown) => Promise<AutomatesType>
