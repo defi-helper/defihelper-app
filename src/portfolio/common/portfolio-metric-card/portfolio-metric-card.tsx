@@ -24,11 +24,7 @@ const ValueChangeRender: React.FC<{ value?: string }> = ({ value }) => {
     contibutedPercent.replace(/\D/g, '') === '0' ||
     value?.replace(/\D/g, '') === '0'
   ) {
-    return (
-      <Typography variant="body1" className={clsx(styles.changes)}>
-        -
-      </Typography>
-    )
+    return <Typography variant="body1" className={clsx(styles.changes)} />
   }
 
   if (bignumberUtils.gte(contibutedPercent, 1000)) {
