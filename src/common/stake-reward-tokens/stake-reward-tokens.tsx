@@ -47,7 +47,7 @@ const TokenInfo = (props: {
     <Paper radius={8} className={styles.dropdown}>
       {props.icon}
       <div>
-        <Typography variant="body2" family="mono">
+        <Typography variant="body2" family="mono" className={styles.tokenName}>
           {props.token.name}
         </Typography>
         <Typography variant="body2" family="mono">

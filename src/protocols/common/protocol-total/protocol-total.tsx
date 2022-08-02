@@ -31,7 +31,7 @@ const PercentChangeRender: React.FC<{ value: string }> = ({ value }) => {
     contibutedPercent.replace(/\D/g, '') === '0' ||
     value.replace(/\D/g, '') === '0'
   ) {
-    return <>-</>
+    return <></>
   }
 
   return (
