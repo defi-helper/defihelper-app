@@ -31,7 +31,7 @@ export function parseFullSymbol(fullSymbol: string) {
 }
 
 const configurationData = {
-  supported_resolutions: ['1D', '1W', '1M'],
+  supported_resolutions: ['1m', '5m', '15m', '1h', '4h'],
 }
 
 const cache = new Map()
@@ -46,15 +46,17 @@ export default {
     symbolName: string,
     onSymbolResolvedCallback: (value: unknown) => void
   ) => {
+    const [addresses, ticker, exchange] = symbolName.split('/')
+
     console.log('[resolveSymbol]: Method call', symbolName)
     const symbolInfo = {
-      ticker: symbolName,
-      name: symbolName,
-      description: symbolName,
-      type: symbolName,
+      ticker,
+      name: ticker,
+      description: ticker,
+      type: ticker,
       session: '24x7',
       timezone: 'Etc/UTC',
-      exchange: symbolName,
+      exchange,
       minmov: 1,
       pricescale: 100,
       has_intraday: false,
@@ -63,6 +65,7 @@ export default {
       supported_resolutions: configurationData.supported_resolutions,
       volume_precision: 2,
       data_status: 'streaming',
+      addresses,
     }
 
     console.log('[resolveSymbol]: Symbol resolved', symbolName)
@@ -80,11 +83,9 @@ export default {
     console.log('[getBars]: Method call', symbolInfo, resolution, from, to)
 
     try {
-      if (cache.has(symbolInfo.ticker)) return
+      if (cache.has(symbolInfo.addresses)) return
 
-      const data = await tradeApi.history(symbolInfo.ticker)
-
-      console.log(data)
+      const data = await tradeApi.history(symbolInfo.addresses, from, to)
 
       const bars: Array<{
         time: number
@@ -102,7 +103,7 @@ export default {
         volume: data.v[index] as number,
       }))
 
-      cache.set(symbolInfo.ticker, bars)
+      cache.set(symbolInfo.addresses, bars)
 
       if (bars.length < 1) {
         onHistoryCallback([], { noData: true })

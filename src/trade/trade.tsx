@@ -25,6 +25,7 @@ import * as model from './trade.model'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { config } from '~/config'
 import { WalletConnect } from '~/wallets/wallet-connect'
+import { toastsService } from '~/toasts'
 
 export type TradeProps = unknown
 
@@ -124,6 +125,13 @@ export const Trade: React.VFC<TradeProps> = () => {
 
     setCurrentExchange(firstExchange.Name)
   }, [exchanges])
+  useEffect(() => {
+    const [firstPair] = pairs
+
+    if (!firstPair) return
+
+    setCurrentPair(firstPair.pairInfo?.address ?? '')
+  }, [pairs])
 
   const SelectComponents = {
     [Selects.SmartSell]: <TradeSmartSell />,
@@ -156,6 +164,8 @@ export const Trade: React.VFC<TradeProps> = () => {
       await tradeApi.sendForm('2', formValues)
 
       reset({ email: '' })
+
+      toastsService.success(`Thank you! We will notify you about our updates.`)
     } catch {
       console.error('something went wrong')
     }
@@ -268,7 +278,25 @@ export const Trade: React.VFC<TradeProps> = () => {
       <div className={styles.content}>
         <Paper radius={8} className={styles.chart}>
           <div className={styles.chartHeader}>
-            <div>
+            <div className={styles.ticker}>
+              {currentPairObj && (
+                <div className={styles.tickerIcons}>
+                  <img
+                    alt=""
+                    src={`https://whattofarm.io/assets/dex/${currentPairObj?.pairInfo?.lpToken?.network?.name}.svg`}
+                    width="24"
+                    height="24"
+                    className={styles.pairIcon}
+                  />
+                  <img
+                    alt=""
+                    src={`https://whattofarm.io/assets/dex/${currentPairObj?.pairInfo?.icon}.svg`}
+                    width="24"
+                    height="24"
+                    className={styles.pairIcon}
+                  />
+                </div>
+              )}
               <Typography>{currentPairObj?.pairInfo?.ticker ?? '-'}</Typography>
             </div>
             <Typography variant="body3" className={styles.chartMetric} as="div">
@@ -297,7 +325,12 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Typography>
             </Typography>
           </div>
-          <TradeChart className={styles.chartInner} symbol={currentPair} />
+          <TradeChart
+            className={styles.chartInner}
+            address={currentPairObj?.pairInfo?.address}
+            ticker={currentPairObj?.pairInfo?.ticker}
+            exchange={currentExchange}
+          />
         </Paper>
         <Paper radius={8} className={styles.selects}>
           <div className={clsx(!config.IS_DEV && styles.selectsBody)}>

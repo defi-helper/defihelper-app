@@ -9,15 +9,17 @@ import * as styles from './trade-chart.css'
 
 export type TradeChartProps = {
   className?: string
-  symbol: string
+  address: string
+  ticker: string
+  exchange: string
 }
 
 export const TradeChart: React.VFC<TradeChartProps> = (props) => {
   useEffect(() => {
-    if (!props.symbol) return
+    if (!props.address || !props.ticker || !props.exchange) return
 
     const tradingView = new window.TradingView.widget({
-      symbol: props.symbol,
+      symbol: [props.address, props.ticker, props.exchange].join('/'),
       interval: '1D',
       timezone: dateUtils.timezone(),
       container: 'tv_chart_container',
@@ -37,7 +39,7 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
     return () => {
       tradingView.remove()
     }
-  }, [props.symbol])
+  }, [props.address, props.ticker, props.exchange])
 
   return (
     <div

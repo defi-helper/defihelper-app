@@ -59,12 +59,16 @@ export const tradeApi = {
       )
       .then(({ data }) => data),
 
-  history: (address: string) =>
+  history: (address: string, from: string, to: string, resolution = '60') =>
     apiV2
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .get<any>(
-        `open/chart/pair/history?symbol=${address}-USD&resolution=60&from=1656727091&to=1657807091&countback=300`
-      )
+      .get<any>(`open/chart/pair/history?symbol=${address}-USD&countback=300`, {
+        params: {
+          resolution,
+          from,
+          to,
+        },
+      })
       .then(({ data }) => data),
 
   sendForm: <T>(listId: string, formValues: T) => {

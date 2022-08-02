@@ -255,3 +255,14 @@ export const connectWalletArrow = style({
   margin: 'auto',
   background: theme.colors.paper,
 })
+
+export const ticker = style({
+  display: 'flex',
+  gap: 8,
+})
+
+export const tickerIcons = style({
+  display: 'flex',
+  width: 44,
+  alignItems: 'center',
+})
