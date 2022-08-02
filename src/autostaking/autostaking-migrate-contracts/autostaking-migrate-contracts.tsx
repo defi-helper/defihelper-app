@@ -94,6 +94,8 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
     }, [isDesktop, isTablet, isPhone])
 
     useEffect(() => {
+      if (!user) return
+
       const abortController = new AbortController()
 
       model.fetchContractsFx({
@@ -106,15 +108,17 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
 
         abortController.abort()
       }
-    }, [props.search])
+    }, [props.search, user])
 
     useEffect(() => {
+      if (!user) return
+
       const abortController = new AbortController()
 
       model.fetchHiddenContractsFx({ signal: abortController.signal })
 
       return () => abortController.abort()
-    }, [])
+    }, [user])
 
     useEffect(() => {
       return () => {
