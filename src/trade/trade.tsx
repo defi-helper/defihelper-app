@@ -328,12 +328,15 @@ export const Trade: React.VFC<TradeProps> = () => {
           <TradeChart
             className={styles.chartInner}
             address={currentPairObj?.pairInfo?.address}
-            ticker={currentPairObj?.pairInfo?.ticker}
-            exchange={currentExchange}
           />
         </Paper>
         <Paper radius={8} className={styles.selects}>
-          <div className={clsx(!config.IS_DEV && styles.selectsBody)}>
+          <div
+            className={clsx(
+              styles.selectsBody,
+              !config.IS_DEV && styles.selectsBodyBlur
+            )}
+          >
             <div className={styles.tradeSelectHeader}>
               <Dropdown
                 control={(open) => (
