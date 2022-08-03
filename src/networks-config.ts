@@ -11,10 +11,10 @@ type Network = {
   coin: string
   decimals?: number
   blockchain: BlockchainEnum
-  rpcUrls?: string[]
+  rpcUrls?: string[] | null
   chainId: number | string
   icon: Icon
   testnet: boolean
 }
 
-export const networksConfig = networks as Record<string, Network>
+export const networksConfig = networks as unknown as Record<string, Network>

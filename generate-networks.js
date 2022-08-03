@@ -28,6 +28,7 @@ const graphqlQuery = {
           decimals
           blockchain
           icon
+          rpcUrls
         }
         waves(filter: {
           testnet: $testnet
