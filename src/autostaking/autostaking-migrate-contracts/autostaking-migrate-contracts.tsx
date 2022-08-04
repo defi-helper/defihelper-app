@@ -28,7 +28,6 @@ import {
 import { analytics } from '~/analytics'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { AutostakingVideoDialog } from '../common/autostaking-video-dialog'
-import { AutostakingBalanceDialog } from '../common/autostaking-balance-dialog'
 import { AutostakingDeployDialog } from '../common/autostaking-deploy-dialog'
 import { AutostakingTabsDialog } from '../common/autostaking-tabs-dialog'
 import { Loader } from '~/common/loader'
@@ -36,6 +35,8 @@ import * as autostakingContractsModel from '~/autostaking/autostaking-contracts/
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as styles from './autostaking-migrate-contracts.css'
+import { settingsWalletModel } from '~/settings/settings-wallets'
+import { SettingsWalletBalanceDialog } from '~/settings/common'
 
 export type AutostakingMigrateContractsProps = {
   className?: string
@@ -57,7 +58,9 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
     const [openMigrateDialog] = useDialog(StakingMigrateDialog)
     const [openAdapter] = useDialog(StakingAdapterDialog)
     const [openAutostakingVideoDialog] = useDialog(AutostakingVideoDialog)
-    const [openAutostakingBalanceDialog] = useDialog(AutostakingBalanceDialog)
+    const [openAutostakingBalanceDialog] = useDialog(
+      SettingsWalletBalanceDialog
+    )
     const [openAutostakingDeployDialog] = useDialog(AutostakingDeployDialog)
     const [openAutostakingTabsDialog] = useDialog(AutostakingTabsDialog)
     const currentWallet = walletNetworkModel.useWalletNetwork()
@@ -94,6 +97,8 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
     }, [isDesktop, isTablet, isPhone])
 
     useEffect(() => {
+      if (!user) return
+
       const abortController = new AbortController()
 
       model.fetchContractsFx({
@@ -106,15 +111,17 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
 
         abortController.abort()
       }
-    }, [props.search])
+    }, [props.search, user])
 
     useEffect(() => {
+      if (!user) return
+
       const abortController = new AbortController()
 
       model.fetchHiddenContractsFx({ signal: abortController.signal })
 
       return () => abortController.abort()
-    }, [])
+    }, [user])
 
     useEffect(() => {
       return () => {
@@ -223,7 +230,8 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
           if (
             !contract.automate.autorestake ||
             !prototypeAddress ||
-            !currentWallet
+            !currentWallet ||
+            !currentWallet.chainId
           )
             return
 
@@ -258,7 +266,7 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
             throw Error('wallet is not connected')
 
           const billingBalance =
-            await autostakingContractsModel.fetchBillingBalanceFx({
+            await settingsWalletModel.fetchBillingBalanceFx({
               blockchain: contract.blockchain,
               network: contract.network,
             })
@@ -269,19 +277,26 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
               billingBalance.recomendedIncome
             )
           ) {
-            await openAutostakingBalanceDialog({
-              balance: String(metric.billing.balance.netBalance),
+            const adapter = await settingsWalletModel.loadAdapterFx({
+              provider: currentWallet.provider,
+              chainId: currentWallet.chainId,
+            })
+
+            const result = await openAutostakingBalanceDialog({
               network: findedWallet.network,
               wallet: findedWallet.address,
               ...billingBalance,
-              onSubmit: (result) =>
-                walletsModel.depositFx({
-                  blockchain: findedWallet.blockchain,
-                  amount: result.amount,
-                  walletAddress: findedWallet.address,
-                  chainId: String(currentWallet.chainId),
-                  provider: currentWallet.provider,
-                }),
+              adapter,
+              variant: 'deposit',
+            })
+
+            await walletsModel.depositFx({
+              blockchain: findedWallet.blockchain,
+              amount: result.amount,
+              walletAddress: findedWallet.address,
+              chainId: String(currentWallet.chainId),
+              provider: currentWallet.provider,
+              transactionHash: result.transactionHash,
             })
           }
 
@@ -496,50 +511,43 @@ export const AutostakingMigrateContracts: React.VFC<AutostakingMigrateContractsP
                 count={contracts.length}
                 slidesToShow={slidesToShow}
               >
-                {contracts
-                  .filter((contract) =>
-                    bignumberUtils.gt(
-                      bignumberUtils.mul(contract.metric.myAPYBoost, 100),
-                      1
-                    )
+                {contracts.map((contract) => {
+                  const connect = handleConnect.bind(null, {
+                    blockchain: contract.blockchain,
+                    network: contract.network,
+                  })
+
+                  const wrongNetwork =
+                    String(wallet?.chainId) !== contract.network
+                      ? handleSwitchNetwork(contract)
+                      : null
+
+                  const position = automatesContractsMap.get(contract.id)
+
+                  const migrate = bignumberUtils.gt(position, 0)
+                    ? handleMigrate(contract)
+                    : handleAutostake(contract)
+
+                  return (
+                    <AutostakingMigrateCard
+                      key={contract.id}
+                      title={contract.name}
+                      balance={contract.metric.myStaked}
+                      tokenIcons={
+                        contract.tokens.stake.map(
+                          ({ alias }) => alias?.logoUrl ?? null
+                        ) ?? []
+                      }
+                      protocol={contract.protocol.name}
+                      apy={contract.metric.aprYear}
+                      apyBoost={contract.metric.myAPYBoost}
+                      onMigrate={!wallet ? connect : wrongNetwork ?? migrate}
+                      onHide={handleHide(contract)}
+                      hidding={contract.hidding}
+                      migrating={contract.migrating}
+                    />
                   )
-                  .map((contract) => {
-                    const connect = handleConnect.bind(null, {
-                      blockchain: contract.blockchain,
-                      network: contract.network,
-                    })
-
-                    const wrongNetwork =
-                      String(wallet?.chainId) !== contract.network
-                        ? handleSwitchNetwork(contract)
-                        : null
-
-                    const position = automatesContractsMap.get(contract.id)
-
-                    const migrate = bignumberUtils.gt(position, 0)
-                      ? handleMigrate(contract)
-                      : handleAutostake(contract)
-
-                    return (
-                      <AutostakingMigrateCard
-                        key={contract.id}
-                        title={contract.name}
-                        balance={contract.metric.myStaked}
-                        tokenIcons={
-                          contract.tokens.stake.map(
-                            ({ alias }) => alias?.logoUrl ?? null
-                          ) ?? []
-                        }
-                        protocol={contract.protocol.name}
-                        apy={contract.metric.aprYear}
-                        apyBoost={contract.metric.myAPYBoost}
-                        onMigrate={!wallet ? connect : wrongNetwork ?? migrate}
-                        onHide={handleHide(contract)}
-                        hidding={contract.hidding}
-                        migrating={contract.migrating}
-                      />
-                    )
-                  })}
+                })}
               </AutostakingCarousel>
             </>
           )}

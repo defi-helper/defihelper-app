@@ -13,7 +13,7 @@ import {
   SettingsPaper,
   SettingsRenameWalletDialog,
   SettingsConfirmDialog,
-  SettingsBillingFormDialog,
+  SettingsWalletBalanceDialog,
   SettingsWalletLoading,
   SettingsSuccessDialog,
   TransactionEnum,
@@ -45,7 +45,7 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
 
   const [openRenameWallet] = useDialog(SettingsRenameWalletDialog)
   const [openConfirm] = useDialog(SettingsConfirmDialog)
-  const [openBillingForm] = useDialog(SettingsBillingFormDialog)
+  const [openBillingForm] = useDialog(SettingsWalletBalanceDialog)
   const [openSuccess] = useDialog(SettingsSuccessDialog)
   const [showEmpty, setShowEmpty] = useState(false)
 
@@ -85,9 +85,27 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
         analytics.log('settings_wallet_defihelper_balance_top_up_click')
         await switchNetwork(wallet.network)
 
-        if (!currentWallet?.account) return
+        if (!currentWallet?.account || !currentWallet.chainId) return
 
-        const result = await openBillingForm()
+        const balanceAdapter = await model.loadAdapterFx({
+          provider: currentWallet.provider,
+          chainId: currentWallet.chainId,
+        })
+
+        const billingBalance = await model.fetchBillingBalanceFx({
+          blockchain: wallet.blockchain,
+          network: wallet.network,
+        })
+
+        const result = await openBillingForm({
+          adapter: balanceAdapter,
+          recomendedIncome: billingBalance.recomendedIncome,
+          priceUSD: billingBalance.priceUSD,
+          wallet: currentWallet.account,
+          network: currentWallet.chainId,
+          token: billingBalance.token,
+          variant: TransactionEnum.deposit,
+        })
 
         await model.depositFx({
           blockchain: wallet.blockchain,
@@ -95,6 +113,7 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
           walletAddress: currentWallet.account,
           chainId: String(currentWallet.chainId),
           provider: currentWallet.provider,
+          transactionHash: result.transactionHash,
         })
 
         await openSuccess({
@@ -112,9 +131,27 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
       try {
         await switchNetwork(wallet.network)
 
-        if (!currentWallet?.account) return
+        if (!currentWallet?.account || !currentWallet.chainId) return
 
-        const result = await openBillingForm()
+        const balanceAdapter = await model.loadAdapterFx({
+          provider: currentWallet.provider,
+          chainId: currentWallet.chainId,
+        })
+
+        const billingBalance = await model.fetchBillingBalanceFx({
+          blockchain: wallet.blockchain,
+          network: wallet.network,
+        })
+
+        const result = await openBillingForm({
+          adapter: balanceAdapter,
+          recomendedIncome: billingBalance.recomendedIncome,
+          priceUSD: billingBalance.priceUSD,
+          wallet: currentWallet.account,
+          network: currentWallet.chainId,
+          token: billingBalance.token,
+          variant: TransactionEnum.refund,
+        })
 
         await model.refundFx({
           blockchain: wallet.blockchain,

@@ -8,5 +8,5 @@ export const GovProposalStateEnumColors = {
   [GovProposalStateEnum.Succeeded]: 'green',
   [GovProposalStateEnum.Queued]: 'purple',
   [GovProposalStateEnum.Executed]: 'green',
-  [GovProposalStateEnum.Expired]: 'green',
+  [GovProposalStateEnum.Expired]: 'grey',
 } as const

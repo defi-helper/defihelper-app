@@ -4373,18 +4373,6 @@ export type AutomationTriggersQuery = { __typename?: 'Query' } & {
   }
 }
 
-export type BillingBalanceQueryVariables = Exact<{
-  blockchain: BlockchainEnum
-  network: Scalars['String']
-}>
-
-export type BillingBalanceQuery = { __typename?: 'Query' } & {
-  billingBalance: { __typename?: 'BalanceMetaType' } & Pick<
-    BalanceMetaType,
-    'token' | 'recomendedIncome' | 'priceUSD'
-  >
-}
-
 export type AutostakingStakingContractsQueryVariables = Exact<{
   filter?: Maybe<ContractListFilterInputType>
   sort?: Maybe<Array<ContractListSortInputType> | ContractListSortInputType>
@@ -5670,6 +5658,18 @@ export type ProposalFragmentFragment = { __typename?: 'ProposalType' } & Pick<
     }
   }
 
+export type BillingBalanceQueryVariables = Exact<{
+  blockchain: BlockchainEnum
+  network: Scalars['String']
+}>
+
+export type BillingBalanceQuery = { __typename?: 'Query' } & {
+  billingBalance: { __typename?: 'BalanceMetaType' } & Pick<
+    BalanceMetaType,
+    'token' | 'recomendedIncome' | 'priceUSD'
+  >
+}
+
 export type BillingTransferCreateMutationVariables = Exact<{
   input: BillingTransferCreateInputType
 }>
@@ -6589,7 +6589,7 @@ export type UserUpdateMutationVariables = Exact<{
 export type UserUpdateMutation = { __typename?: 'Mutation' } & {
   userUpdate: { __typename?: 'UserType' } & Pick<
     UserType,
-    'id' | 'role' | 'createdAt'
+    'id' | 'role' | 'name' | 'createdAt'
   >
 }
 

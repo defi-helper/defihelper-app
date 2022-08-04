@@ -67,11 +67,11 @@ export const authWavesFx = createEffect(
     }
   ) => {
     const { data, error } = await authApi.authWaves({
-      network: input.network,
+      network: input.chainId,
       address: input.account,
       signature: input.signature,
       message: input.message,
-      publicKey: input.publicKey,
+      publicKey: input.connector.publicKey ?? input.publicKey,
       timezone: dateUtils.timezone(),
       code: Cookies.get('dfh-parent-code'),
       merge: input.merge,
@@ -83,7 +83,7 @@ export const authWavesFx = createEffect(
 
     analytics.log('portfolio_connect_wallet_success', {
       address: input.address,
-      network: input.network,
+      network: input.chainId,
       blockchain: 'waves',
     })
 
