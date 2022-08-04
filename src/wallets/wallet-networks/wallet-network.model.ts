@@ -68,21 +68,6 @@ const saveLastConnectorFx = createEffect((connector: string) => {
   localStorage.connector = connector
 })
 
-guard({
-  clock: sample({
-    clock: activateWalletFx,
-    fn: (clock) => {
-      const connectorName = Object.entries(connectorsByName).find(
-        ([, { connector }]) => connector === clock.connector
-      )
-
-      return connectorName?.[0]
-    },
-  }),
-  filter: (clock): clock is string => typeof clock === 'string',
-  target: saveLastConnectorFx,
-})
-
 export const updateWalletFx = createEffect(
   async (params: {
     connector: AbstractConnector
@@ -172,6 +157,21 @@ guard({
   filter: (clock): clock is SignMessagePayload =>
     Boolean(clock.account && clock.chainId) && !sidUtils.get(),
   target: signMessage,
+})
+
+guard({
+  clock: sample({
+    clock: [signMessage, activateWalletFx],
+    fn: (clock) => {
+      const connectorName = Object.entries(connectorsByName).find(
+        ([, { connector }]) => connector === clock.connector
+      )
+
+      return connectorName?.[0]
+    },
+  }),
+  filter: (clock): clock is string => typeof clock === 'string',
+  target: saveLastConnectorFx,
 })
 
 sample({
