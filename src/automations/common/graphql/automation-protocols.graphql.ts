@@ -5,7 +5,7 @@ export const AUTOMATION_PROTOCOLS = gql`
     $filter: ProtocolListFilterInputType
     $pagination: ProtocolListPaginationInputType = { limit: 100, offset: 0 }
     $contractPagination: ContractListPaginationInputType = {
-      limit: 100
+      limit: 1000
       offset: 0
     }
   ) {
@@ -14,7 +14,10 @@ export const AUTOMATION_PROTOCOLS = gql`
         id
         name
         icon
-        contracts(pagination: $contractPagination) {
+        contracts(
+          pagination: $contractPagination
+          filter: { hidden: false, deprecated: false }
+        ) {
           list {
             id
             blockchain
