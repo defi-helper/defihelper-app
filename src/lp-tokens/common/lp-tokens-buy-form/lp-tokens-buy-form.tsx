@@ -163,9 +163,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
   })
 
   useEffect(() => {
-    if (isApproved.value === false) {
-      isApproved.retry()
-    }
+    isApproved.retry()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApproved.value, approveState.value, amount])
 

@@ -92,7 +92,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
       const can = await canSell(formValues.amount)
 
       if (can instanceof Error) throw can
-      if (!can) throw new Error("can't buy")
+      if (!can) throw new Error("can't sell")
 
       const { tx } = await sell(
         formValues.token,
@@ -164,9 +164,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
   })
 
   useEffect(() => {
-    if (isApproved.value === false) {
-      isApproved.retry()
-    }
+    isApproved.retry()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApproved.value, approveState.value, amount])
 
