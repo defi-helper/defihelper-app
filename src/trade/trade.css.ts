@@ -82,7 +82,7 @@ export const chartTitle = style({
 
 export const chartInner = style({
   width: '100%',
-  height: 570,
+  height: 653,
 })
 
 export const selects = style({
@@ -91,6 +91,12 @@ export const selects = style({
 })
 
 export const selectsBody = style({
+  display: 'flex',
+  flexDirection: 'column',
+  minHeight: '100%',
+})
+
+export const selectsBodyBlur = style({
   filter: 'blur(4px)',
   background: theme.colors.blur,
   pointerEvents: 'none',
@@ -175,6 +181,7 @@ export const buttons = style({
   gridTemplateColumns: '1fr 1fr',
   padding: '12px 10px 0 10px',
   gap: 8,
+  marginTop: 'auto',
 })
 
 export const fullWidth = style({
@@ -254,4 +261,15 @@ export const connectWalletArrow = style({
   bottom: 0,
   margin: 'auto',
   background: theme.colors.paper,
+})
+
+export const ticker = style({
+  display: 'flex',
+  gap: 8,
+})
+
+export const tickerIcons = style({
+  display: 'flex',
+  width: 44,
+  alignItems: 'center',
 })

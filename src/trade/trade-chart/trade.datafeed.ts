@@ -31,14 +31,18 @@ export function parseFullSymbol(fullSymbol: string) {
 }
 
 const configurationData = {
-  supported_resolutions: ['1D', '1W', '1M'],
+  supports_search: false,
+  supports_group_request: true,
+  supported_resolutions: ['1', '5', '15', '60', '240', 'D'],
+  supports_marks: false,
+  supports_timescale_marks: false,
 }
 
 const cache = new Map()
 
 export default {
   onReady: (callback: (value: unknown) => void) => {
-    console.log('[onReady]: Method call')
+    console.log('[onReady]: Method call', configurationData)
     setTimeout(() => callback(configurationData))
   },
 
@@ -76,44 +80,37 @@ export default {
     onHistoryCallback: (...value: unknown[]) => void,
     onErrorCallback: (...value: unknown[]) => void
   ) => {
-    const { from, to } = periodParams
+    const { from, to, countBack } = periodParams
+
     console.log('[getBars]: Method call', symbolInfo, resolution, from, to)
 
     try {
-      if (cache.has(symbolInfo.ticker)) return
+      const { data } = await tradeApi.history(
+        symbolInfo.ticker,
+        from,
+        to,
+        countBack
+      )
 
-      const data = await tradeApi.history(symbolInfo.ticker)
-
-      console.log(data)
-
-      const bars: Array<{
-        time: number
-        low: number
-        high: number
-        open: number
-        close: number
-        volume: number
-      }> = data.t.map((item: number, index: number) => ({
-        close: data.c[index],
-        low: data.l[index] as number,
-        high: data.h[index] as number,
-        open: data.o[index] as number,
-        time: Math.floor(item * 1000),
-        volume: data.v[index] as number,
+      const bars = data.map((item: any) => ({
+        close: item.CloseUsdPrice0,
+        low: item.MinUsdPrice0,
+        high: item.MaxUsdPrice0,
+        open: item.OpenUsdPrice0,
+        time: new Date(item.TS).getTime(),
+        volume: item.Volume0,
       }))
 
       cache.set(symbolInfo.ticker, bars)
 
-      if (bars.length < 1) {
-        onHistoryCallback([], { noData: true })
-      } else {
-        onHistoryCallback(bars, { noData: false })
-      }
+      onHistoryCallback(bars, { noData: false })
     } catch (error) {
       console.log('[getBars]: Get error', error)
       onErrorCallback(error)
     }
   },
+
+  searchSymbols: () => {},
 
   subscribeBars: () => {},
 

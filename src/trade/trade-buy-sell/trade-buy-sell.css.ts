@@ -11,7 +11,7 @@ export const root = style([
   flex,
   {
     gap: 24,
-    maxHeight: 370,
+    maxHeight: 449,
     overflowY: 'auto',
     overflowX: 'hidden',
     padding: '0 10px',
