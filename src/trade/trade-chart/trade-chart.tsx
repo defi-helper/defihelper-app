@@ -4,7 +4,6 @@ import clsx from 'clsx'
 import { useEffect } from 'react'
 
 import { useTheme } from '~/common/theme'
-import DataFeed from '~/trade/trade-chart/trade.datafeed'
 import * as styles from './trade-chart.css'
 
 export type TradeChartProps = {
@@ -36,7 +35,10 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       container: 'tv_chart_container',
       locale: 'en',
-      datafeed: DataFeed,
+      datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
+        `https://whattofarm.io/api/v2/open/chart/pair`,
+        20000
+      ),
       library_path: `tradingview/charting_library/`,
       autosize: true,
       fullscreen: false,

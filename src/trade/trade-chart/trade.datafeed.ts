@@ -80,7 +80,7 @@ export default {
     onHistoryCallback: (...value: unknown[]) => void,
     onErrorCallback: (...value: unknown[]) => void
   ) => {
-    const { from, to } = periodParams
+    const { from, to, countBack } = periodParams
 
     console.log('[getBars]: Method call', symbolInfo, resolution, from, to)
 
@@ -88,11 +88,11 @@ export default {
       const { data } = await tradeApi.history(
         symbolInfo.ticker,
         from,
-        to
-        // resolution.replace(/\D/g, '')
+        to,
+        countBack
       )
 
-      const bars = data.map((item) => ({
+      const bars = data.map((item: any) => ({
         close: item.CloseUsdPrice0,
         low: item.MinUsdPrice0,
         high: item.MaxUsdPrice0,

@@ -55,42 +55,26 @@ export const tradeApi = {
       )
       .then(({ data }) => data),
 
-  history: (address: string, from: string, to: string, resolution = '60') =>
+  history: (
+    address: string,
+    from: string,
+    to: string,
+    countback: number,
+    resolution = '60'
+  ) =>
     apiV1
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .get<
-        Response<
-          {
-            Address: string
-            ClosePrice0: number
-            ClosePrice1: number
-            CloseUsdPrice0: number
-            CloseUsdPrice1: number
-            MaxPrice0: number
-            MaxPrice1: number
-            MaxUsdPrice0: number
-            MaxUsdPrice1: number
-            MinPrice0: number
-            MinPrice1: number
-            MinUsdPrice0: number
-            MinUsdPrice1: number
-            OpenPrice0: number
-            OpenPrice1: number
-            OpenUsdPrice0: number
-            OpenUsdPrice1: number
-            SwapCount: number
-            TS: string
-            Volume0: number
-            Volume1: number
-          }[]
-        >
-      >(`/pair-bin?symbol=${address}`, {
-        params: {
-          resolution,
-          from,
-          to,
-        },
-      })
+      .get<any>(
+        `https://whattofarm.io/api/v2/open/chart/pair/history?symbol=${address}-USD`,
+        {
+          params: {
+            resolution,
+            from,
+            to,
+            countback,
+          },
+        }
+      )
       .then(({ data }) => data),
 
   sendForm: <T>(listId: string, formValues: T) => {
