@@ -20,9 +20,7 @@ export const CanDemo: React.FC<CanDemoProps> = (props) => {
   const [openWalletList] = useWalletList()
   const [openChangeNetworkDialog] = useDialog(AuthChangeNetworkDialog)
 
-  if (!React.isValidElement(props.children)) {
-    throw new Error('invalid element')
-  }
+  if (!React.isValidElement(props.children)) return <></>
 
   if (ability.can('read', 'NonDemo')) {
     return props.children

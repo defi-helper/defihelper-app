@@ -58,6 +58,7 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
       },
       contractFilter: {
         hidden: params.hidden,
+        deprecated: params.hidden,
         ...(params.search ? { search: params.search } : {}),
       },
       contractPagination: {
