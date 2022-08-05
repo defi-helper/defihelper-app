@@ -304,12 +304,9 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
                 worth={wallet.metric?.worth ?? '0'}
                 automations={String(wallet.triggersCount ?? 0)}
                 statisticsCollectedAt={wallet.statisticsCollectedAt}
-                onDeposit={
-                  networksWithBalance[wallet.network] ? deposit : undefined
-                }
-                onRefund={
-                  networksWithBalance[wallet.network] ? refund : undefined
-                }
+                hasContract={Boolean(networksWithBalance[wallet.network])}
+                onDeposit={deposit}
+                onRefund={refund}
                 onRename={currentWallet ? handleRename(wallet) : connect}
                 onUpdateStatistics={handleUpdateStatistics(wallet)}
                 onDelete={handleDelete(wallet)}

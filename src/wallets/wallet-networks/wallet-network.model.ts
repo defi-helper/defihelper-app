@@ -99,7 +99,9 @@ export const signMessage = createEvent<SignMessagePayload>()
 export const $wallet = createStore<Wallet | null>(null)
   .on(activated, (_, payload) => payload)
   .on(updated, (_, payload) => payload)
-  .on(signMessage, (state, payload) => (state === null ? payload : undefined))
+  .on(signMessage, (state, payload) =>
+    state === null || state.account !== payload.account ? payload : undefined
+  )
   .reset(diactivateWalletFx)
 
 export const getNetwork = (provider: unknown, chainId?: string | number) => {

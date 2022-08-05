@@ -38,6 +38,7 @@ export type SettingsWalletCardProps = {
   editing?: boolean
   depositing?: boolean
   refunding?: boolean
+  hasContract: boolean
 }
 
 export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
@@ -181,74 +182,78 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
         </div>
       </div>
       <div className={clsx(styles.footer, props.error && styles.error)}>
-        <div className={styles.row}>
-          <Typography variant="body2" as="span" className={styles.infoTitle}>
-            <Typography variant="inherit" className={styles.opacity}>
-              Fee Funds
-            </Typography>
-            <Dropdown
-              control={
-                <ButtonBase className={clsx(styles.opacity)}>
-                  <Icon className={styles.question} icon="question" />
-                </ButtonBase>
-              }
-              placement="top"
-              className={styles.questionDropdown}
-              offset={[0, 8]}
-            >
-              <Typography variant="inherit">
-                In order to execute every automated action in the blockchain,
-                such as Auto-staking, provide us with your Fee Balance.{' '}
-                <Link
-                  target="_blank"
-                  href="https://defihelper.medium.com/how-does-defihelper-work-a-detailed-explanation-5153dbcea2c7"
-                  className={styles.howItWorks}
-                >
-                  Learn more on How It Works
-                </Link>
+        {props.hasContract && (
+          <div className={styles.row}>
+            <Typography variant="body2" as="span" className={styles.infoTitle}>
+              <Typography variant="inherit" className={styles.opacity}>
+                Fee Funds
               </Typography>
-            </Dropdown>
-          </Typography>
-          <Typography variant="body2" as="span">
-            {bignumberUtils.format(props.feeFunds)}{' '}
-            {networksConfig[props.network]?.coin}
-          </Typography>
-        </div>
-        <div className={styles.row}>
-          <Typography variant="body2" as="span" className={styles.infoTitle}>
-            <Typography variant="inherit" className={styles.opacity}>
-              Locked
+              <Dropdown
+                control={
+                  <ButtonBase className={clsx(styles.opacity)}>
+                    <Icon className={styles.question} icon="question" />
+                  </ButtonBase>
+                }
+                placement="top"
+                className={styles.questionDropdown}
+                offset={[0, 8]}
+              >
+                <Typography variant="inherit">
+                  In order to execute every automated action in the blockchain,
+                  such as Auto-staking, provide us with your Fee Balance.{' '}
+                  <Link
+                    target="_blank"
+                    href="https://defihelper.medium.com/how-does-defihelper-work-a-detailed-explanation-5153dbcea2c7"
+                    className={styles.howItWorks}
+                  >
+                    Learn more on How It Works
+                  </Link>
+                </Typography>
+              </Dropdown>
             </Typography>
-            <Dropdown
-              control={
-                <ButtonBase className={clsx(styles.opacity)}>
-                  <Icon className={styles.question} icon="question" />
-                </ButtonBase>
-              }
-              placement="top"
-              className={styles.questionDropdown}
-              offset={[0, 8]}
-            >
-              <Typography variant="inherit">
-                We are currently clarifying your balance. You need to wait 3-5
-                minutes for balance update{' '}
-                <Link
-                  target="_blank"
-                  href="https://defihelper.medium.com/how-does-defihelper-work-a-detailed-explanation-5153dbcea2c7"
-                  className={styles.howItWorks}
-                >
-                  Learn more on How It Works
-                </Link>
+            <Typography variant="body2" as="span">
+              {bignumberUtils.format(props.feeFunds)}{' '}
+              {networksConfig[props.network]?.coin}
+            </Typography>
+          </div>
+        )}
+        {props.hasContract && (
+          <div className={styles.row}>
+            <Typography variant="body2" as="span" className={styles.infoTitle}>
+              <Typography variant="inherit" className={styles.opacity}>
+                Locked
               </Typography>
-            </Dropdown>
-          </Typography>
-          <Typography variant="body2" as="span">
-            {bignumberUtils.format(props.locked)}{' '}
-            {networksConfig[props.network]?.coin}
-          </Typography>
-        </div>
+              <Dropdown
+                control={
+                  <ButtonBase className={clsx(styles.opacity)}>
+                    <Icon className={styles.question} icon="question" />
+                  </ButtonBase>
+                }
+                placement="top"
+                className={styles.questionDropdown}
+                offset={[0, 8]}
+              >
+                <Typography variant="inherit">
+                  We are currently clarifying your balance. You need to wait 3-5
+                  minutes for balance update{' '}
+                  <Link
+                    target="_blank"
+                    href="https://defihelper.medium.com/how-does-defihelper-work-a-detailed-explanation-5153dbcea2c7"
+                    className={styles.howItWorks}
+                  >
+                    Learn more on How It Works
+                  </Link>
+                </Typography>
+              </Dropdown>
+            </Typography>
+            <Typography variant="body2" as="span">
+              {bignumberUtils.format(props.locked)}{' '}
+              {networksConfig[props.network]?.coin}
+            </Typography>
+          </div>
+        )}
         <div className={styles.buttons}>
-          {props.onDeposit && (
+          {props.hasContract && (
             <CanDemo>
               <Button
                 size="small"
@@ -262,7 +267,7 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             </CanDemo>
           )}
 
-          {props.onRefund && (
+          {props.hasContract && (
             <CanDemo>
               <Button
                 size="small"
