@@ -133,5 +133,3 @@ export const fetchContractAddressesFx = createEffect(
     )
   }
 )
-
-export const fetchBillingBalanceFx = createEffect(autostakingApi.billingBalance)

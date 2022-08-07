@@ -58,6 +58,7 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
       },
       contractFilter: {
         hidden: params.hidden,
+        deprecated: params.hidden,
         ...(params.search ? { search: params.search } : {}),
       },
       contractPagination: {
@@ -402,7 +403,10 @@ export const fetchMetricsFx = stakingListDomain.createEffect(
 
           const adapterFn =
             adapter[
-              contract.adapter as keyof Omit<Adapters, 'automates' | 'store'>
+              contract.adapter as keyof Omit<
+                Adapters,
+                'automates' | 'store' | 'balance'
+              >
             ]
 
           if (!adapterFn) return previousAcc

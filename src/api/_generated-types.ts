@@ -6589,7 +6589,7 @@ export type UserUpdateMutationVariables = Exact<{
 export type UserUpdateMutation = { __typename?: 'Mutation' } & {
   userUpdate: { __typename?: 'UserType' } & Pick<
     UserType,
-    'id' | 'role' | 'createdAt'
+    'id' | 'role' | 'name' | 'createdAt'
   >
 }
 

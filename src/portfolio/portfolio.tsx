@@ -46,6 +46,7 @@ import * as styles from './portfolio.css'
 import * as model from './portfolio.model'
 import { Input } from '~/common/input'
 import { CanDemo } from '~/auth/can-demo'
+import { ButtonBase } from '~/common/button-base'
 
 export type PortfolioProps = unknown
 
@@ -157,12 +158,11 @@ const PortfolioNameEditor: React.FC<{
 
   if (!toggle) {
     return (
-      <Typography
-        variant="h3"
-        className={styles.title}
-        onClick={() => setToggle(true)}
-      >
-        {name}
+      <Typography variant="h3" className={styles.title}>
+        {name}{' '}
+        <ButtonBase onClick={() => setToggle(true)}>
+          <Icon icon="edit" className={styles.editIcon} />
+        </ButtonBase>
       </Typography>
     )
   }

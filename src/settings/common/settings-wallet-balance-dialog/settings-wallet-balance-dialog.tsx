@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form'
+import { useAsyncRetry } from 'react-use'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 
@@ -7,28 +8,29 @@ import { ButtonBase } from '~/common/button-base'
 import { cutAccount } from '~/common/cut-account'
 import { Dialog, useDialog } from '~/common/dialog'
 import { Link } from '~/common/link'
+import { BalanceAdapter } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
 import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import { Typography } from '~/common/typography'
-import * as styles from './autostaking-balance-dialog.css'
+import * as styles from './settings-wallet-balance-dialog.css'
 
 type FormValues = {
   amount: string
 }
 
-export type AutostakingBalanceDialogProps = {
-  onConfirm: () => void
-  balance: string
+export type SettingsWalletBalanceDialogProps = {
+  onConfirm: (formValues: FormValues & { transactionHash: string }) => void
   network: string
   wallet: string
   priceUSD: string | undefined
   recomendedIncome: string | undefined
   token: string | undefined
-  onSubmit: (formValues: FormValues) => Promise<void>
   onCancel: () => void
+  adapter: BalanceAdapter
+  variant: 'deposit' | 'refund'
 }
 
-export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> =
+export const SettingsWalletBalanceDialog: React.VFC<SettingsWalletBalanceDialogProps> =
   (props) => {
     const { register, handleSubmit, formState, setValue } =
       useForm<FormValues>()
@@ -43,8 +45,19 @@ export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> 
 
     const handleOnSubmit = handleSubmit(async (formValues) => {
       try {
-        await props.onSubmit(formValues)
-        props.onConfirm()
+        const canMap = {
+          deposit: props.adapter.canDeposit,
+          refund: props.adapter.canRefund,
+        }
+        const can = canMap[props.variant](formValues.amount)
+
+        if (can instanceof Error) throw can
+
+        const result = await props.adapter[props.variant](formValues.amount)
+
+        const { transactionHash } = await result.tx.wait()
+
+        props.onConfirm({ ...formValues, transactionHash })
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
@@ -55,6 +68,11 @@ export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> 
     const handleRecommendedIncome = () => {
       setValue('amount', props.recomendedIncome ?? '0')
     }
+
+    const balance = useAsyncRetry(
+      () => props.adapter.netBalance(),
+      [props.adapter.netBalance]
+    )
 
     return (
       <Dialog
@@ -116,9 +134,9 @@ export const AutostakingBalanceDialog: React.VFC<AutostakingBalanceDialogProps> 
               </Link>
             </Typography>
             <Typography variant="body2">
-              {bignumberUtils.format(props.balance)} {props.token} ($
+              {bignumberUtils.format(balance.value)} {props.token} ($
               {bignumberUtils.format(
-                bignumberUtils.mul(props.balance, props.priceUSD)
+                bignumberUtils.mul(balance.value, props.priceUSD)
               )}
               )
             </Typography>

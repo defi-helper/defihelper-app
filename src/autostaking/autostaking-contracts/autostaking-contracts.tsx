@@ -26,7 +26,6 @@ import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { StakingAdapterDialog, StakingApyDialog } from '~/staking/common'
 import { AutostakingVideoDialog } from '~/autostaking/common/autostaking-video-dialog'
-import { AutostakingBalanceDialog } from '~/autostaking/common/autostaking-balance-dialog'
 import { AutostakingDeployDialog } from '~/autostaking/common/autostaking-deploy-dialog'
 import { AutostakingTabsDialog } from '../common/autostaking-tabs-dialog'
 import { toastsService } from '~/toasts'
@@ -42,6 +41,8 @@ import * as model from './autostaking-contracts.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
+import { settingsWalletModel } from '~/settings/settings-wallets'
+import { SettingsWalletBalanceDialog } from '~/settings/common'
 
 export type AutostakingContractsProps = {
   className?: string
@@ -93,7 +94,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
 ) => {
   const [openApyDialog] = useDialog(StakingApyDialog)
   const [openAutostakingVideoDialog] = useDialog(AutostakingVideoDialog)
-  const [openAutostakingBalanceDialog] = useDialog(AutostakingBalanceDialog)
+  const [openAutostakingBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
   const [openAutostakingDeployDialog] = useDialog(AutostakingDeployDialog)
   const [openAutostakingTabsDialog] = useDialog(AutostakingTabsDialog)
   const [openAdapter] = useDialog(StakingAdapterDialog)
@@ -254,7 +255,12 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
       })
       const { prototypeAddress = undefined } = addresses[contract.id]
 
-      if (!contract.automate.autorestake || !prototypeAddress || !currentWallet)
+      if (
+        !contract.automate.autorestake ||
+        !prototypeAddress ||
+        !currentWallet ||
+        !currentWallet.chainId
+      )
         return
 
       if (!enableAutostakingVideo) {
@@ -282,7 +288,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
       if (!metric || typeof metric?.billing.balance.netBalance === 'undefined')
         throw Error('wallet is not connected')
 
-      const billingBalance = await model.fetchBillingBalanceFx({
+      const billingBalance = await settingsWalletModel.fetchBillingBalanceFx({
         blockchain: contract.blockchain,
         network: contract.network,
       })
@@ -293,19 +299,28 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
           billingBalance.recomendedIncome
         )
       ) {
-        await openAutostakingBalanceDialog({
-          balance: String(metric.billing.balance.netBalance),
+        const adapter = await settingsWalletModel.loadAdapterFx({
+          provider: currentWallet.provider,
+          chainId: currentWallet.chainId,
+        })
+
+        const result = await openAutostakingBalanceDialog({
           network: findedWallet.network,
           wallet: findedWallet.address,
-          ...billingBalance,
-          onSubmit: (result) =>
-            walletsModel.depositFx({
-              blockchain: findedWallet.blockchain,
-              amount: result.amount,
-              walletAddress: findedWallet.address,
-              chainId: String(currentWallet.chainId),
-              provider: currentWallet.provider,
-            }),
+          adapter,
+          priceUSD: billingBalance.priceUSD,
+          token: billingBalance.token,
+          recomendedIncome: billingBalance.recomendedIncome,
+          variant: 'deposit',
+        })
+
+        await walletsModel.depositFx({
+          blockchain: findedWallet.blockchain,
+          amount: result.amount,
+          walletAddress: findedWallet.address,
+          chainId: String(currentWallet.chainId),
+          provider: currentWallet.provider,
+          transactionHash: result.transactionHash,
         })
       }
 

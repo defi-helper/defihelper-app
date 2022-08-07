@@ -13,16 +13,12 @@ const apiV1 = axios.create({
   baseURL: 'https://whattofarm.io/ext-api/v1',
 })
 
-const apiV2 = axios.create({
-  baseURL: 'https://whattofarm.io/api/v2/',
-})
-
 type Exchange = {
   Icon: string
   Name: string
 }
 
-type Response<T> = { code: 200 | 500 | 405; data?: T; message?: string }
+type Response<T> = { code: 200 | 500 | 405; data: T; message?: string }
 
 export const tradeApi = {
   exchanges: (networks: string[]) =>
@@ -59,11 +55,25 @@ export const tradeApi = {
       )
       .then(({ data }) => data),
 
-  history: (address: string) =>
-    apiV2
+  history: (
+    address: string,
+    from: string,
+    to: string,
+    countback: number,
+    resolution = '60'
+  ) =>
+    apiV1
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .get<any>(
-        `open/chart/pair/history?symbol=${address}-USD&resolution=60&from=1656727091&to=1657807091&countback=300`
+        `https://whattofarm.io/api/v2/open/chart/pair/history?symbol=${address}-USD`,
+        {
+          params: {
+            resolution,
+            from,
+            to,
+            countback,
+          },
+        }
       )
       .then(({ data }) => data),
 
@@ -137,10 +147,4 @@ const authResponseInterceptor = async (error: any) => {
 }
 
 apiV1.interceptors.request.use(authRequestInterceptor, (r) => Promise.reject(r))
-apiV2.interceptors.request.use(authRequestInterceptor, (r) => Promise.reject(r))
 apiV1.interceptors.response.use((response) => response, authResponseInterceptor)
-apiV2.interceptors.response.use((response) => response, authResponseInterceptor)
-
-// headers: {
-//   Authorization: `Bearer ${ACCESS_TOKEN}`,
-// },

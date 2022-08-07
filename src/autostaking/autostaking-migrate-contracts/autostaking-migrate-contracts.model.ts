@@ -11,6 +11,7 @@ import {
   ContractUserLinkTypeEnum,
 } from '~/api'
 import { autostakingApi } from '~/autostaking/common/autostaking.api'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export const fetchContractsFx = createEffect(
   async ({
@@ -150,11 +151,24 @@ export const $contractsWithLoading = combine(
   $unlinkLoading,
   $migratingContract,
   (contracts, unlinkLoading, migratingContract) =>
-    contracts.map((contract) => ({
-      ...contract,
-      hidding: unlinkLoading[contract.id],
-      migrating: migratingContract === contract.id,
-    }))
+    contracts
+      .map((contract) => ({
+        ...contract,
+        hidding: unlinkLoading[contract.id],
+        migrating: migratingContract === contract.id,
+      }))
+      .filter((contract) =>
+        bignumberUtils.gt(
+          bignumberUtils.mul(
+            bignumberUtils.minus(
+              contract.metric.myAPYBoost,
+              contract.metric.aprYear
+            ),
+            100
+          ),
+          1
+        )
+      )
 )
 
 export const $hiddenContractsWithLoading = combine(

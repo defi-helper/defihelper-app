@@ -16,6 +16,14 @@ type Options = {
 }
 
 export const buildExplorerUrl = (options: Options) => {
+  if (['main', 'test'].includes(options.network)) {
+    return [
+      explorers[options.network],
+      options.address ? 'addresses' : 'transactions',
+      options.address ? options.address : options.tx,
+    ].join('/')
+  }
+
   return [
     explorers[options.network],
     options.address ? 'address' : 'tx',

@@ -3,41 +3,66 @@
 import clsx from 'clsx'
 import { useEffect } from 'react'
 
-import { dateUtils } from '~/common/date-utils'
-import DataFeed from '~/trade/trade-chart/trade.datafeed'
+import { useTheme } from '~/common/theme'
 import * as styles from './trade-chart.css'
 
 export type TradeChartProps = {
   className?: string
-  symbol: string
+  address: string
 }
 
 export const TradeChart: React.VFC<TradeChartProps> = (props) => {
+  const [themeMode = 'light'] = useTheme()
+
   useEffect(() => {
-    if (!props.symbol) return
+    localStorage.setItem(
+      'tradingview.IntervalWidget.quicks',
+      JSON.stringify(['1', '5', '15', '60', '240', 'D'])
+    )
+    localStorage.setItem(
+      'tradingview.StyleWidget.quicks',
+      JSON.stringify([1, 2])
+    )
+    localStorage.setItem('tradingview.chart.lastUsedStyle', '1')
+
+    if (!props.address) return
+
+    const [firstChar, ...restChars] = Array.from(themeMode)
 
     const tradingView = new window.TradingView.widget({
-      symbol: props.symbol,
-      interval: '1D',
-      timezone: dateUtils.timezone(),
+      symbol: props.address,
+      interval: '60',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       container: 'tv_chart_container',
       locale: 'en',
-      datafeed: DataFeed,
+      datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
+        `https://whattofarm.io/api/v2/open/chart/pair`,
+        20000
+      ),
       library_path: `tradingview/charting_library/`,
       autosize: true,
       fullscreen: false,
+      theme: [firstChar.toLocaleUpperCase(), ...restChars].join(''),
+      client_id: 'tradingview.com',
+      user_id: 'public_user_id',
+      overrides: {
+        'mainSeriesProperties.statusViewStyle.symbolTextSource':
+          'ticker-and-description',
+        'mainSeriesProperties.priceAxisProperties.autoScale': true,
+      },
       disabled_features: [
         'header_symbol_search',
-        'header_indicators',
         'header_compare',
-        'use_localstorage_for_settings',
+        'header_fullscreen_button',
       ],
+      charts_storage_url: 'https://saveload.tradingview.com',
+      charts_storage_api_version: '1.1',
     })
 
     return () => {
       tradingView.remove()
     }
-  }, [props.symbol])
+  }, [props.address, themeMode])
 
   return (
     <div

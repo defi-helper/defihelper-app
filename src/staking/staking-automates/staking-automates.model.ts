@@ -190,14 +190,14 @@ export const fetchMetricsFx = stakingAutomatesDomain.createEffect(
           if (!contract.contract) return previousAcc
 
           const adapter = await loadAdapter(
-            buildAdaptersUrl(contract.contract.adapter)
+            buildAdaptersUrl(contract.protocol.adapter)
           )
 
           const adapterFn =
             adapter[
               contract.contract.adapter as keyof Omit<
                 Adapters,
-                'automates' | 'store'
+                'automates' | 'store' | 'balance'
               >
             ]
 
@@ -205,7 +205,7 @@ export const fetchMetricsFx = stakingAutomatesDomain.createEffect(
 
           const adapterObj = await adapterFn(
             networkProvider,
-            contract.address,
+            contract.contract.address,
             {
               blockNumber: 'latest',
               signer: networkProvider?.getSigner(),

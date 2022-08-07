@@ -5,13 +5,16 @@ import { theme } from '~/common/theme'
 export const title = style({
   marginBottom: 28,
   display: 'none',
-  cursor: 'pointer',
 
   '@media': {
     [theme.mediaQueries.md()]: {
       display: 'block',
     },
   },
+})
+
+export const editIcon = style({
+  width: 24,
 })
 
 export const generatingBody = style({

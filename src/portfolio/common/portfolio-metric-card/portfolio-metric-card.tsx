@@ -24,11 +24,7 @@ const ValueChangeRender: React.FC<{ value?: string }> = ({ value }) => {
     contibutedPercent.replace(/\D/g, '') === '0' ||
     value?.replace(/\D/g, '') === '0'
   ) {
-    return (
-      <Typography variant="body1" className={clsx(styles.changes)}>
-        -
-      </Typography>
-    )
+    return <Typography variant="body1" className={clsx(styles.changes)} />
   }
 
   if (bignumberUtils.gte(contibutedPercent, 1000)) {
@@ -43,7 +39,7 @@ const ValueChangeRender: React.FC<{ value?: string }> = ({ value }) => {
   if (bignumberUtils.lte(contibutedPercent, -1000)) {
     return (
       <Typography variant="body1" className={styles.negative}>
-        <span className={styles.positive}>-1000%</span>{' '}
+        <span className={styles.negative}>-1000%</span>{' '}
         <span className={styles.today}>today</span>
       </Typography>
     )

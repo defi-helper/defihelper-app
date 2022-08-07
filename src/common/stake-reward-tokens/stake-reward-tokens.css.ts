@@ -26,6 +26,11 @@ export const icon = style({
   justifyContent: 'center',
 })
 
+export const tokenName = style({
+  wordWrap: 'break-word',
+  width: '215px',
+})
+
 export const link = style({
   alignItems: 'center',
   verticalAlign: 'middle',

@@ -44,6 +44,7 @@ const WalletWorthChanges: React.FC<{ value?: string }> = ({ value }) => {
   const isPositive = bignumberUtils.gte(contibutedPercent, 0)
 
   if (
+    !value ||
     contibutedPercent.replace(/\D/g, '') === '0' ||
     value?.replace(/\D/g, '') === '0'
   ) {

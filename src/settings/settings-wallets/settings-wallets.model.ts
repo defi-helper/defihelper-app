@@ -1,17 +1,14 @@
 import { createDomain, sample, UnitValue, combine, StoreValue } from 'effector'
 import contracts from '@defihelper/networks/contracts.json'
-import { ethers } from 'ethers'
-import Balance from '@defihelper/networks/abi/Balance.json'
 
 import { BlockchainEnum, WalletFragmentFragment } from '~/api/_generated-types'
 import { settingsApi } from '~/settings/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { toastsService } from '~/toasts'
-import { parseError } from '~/common/parse-error'
 import { analytics } from '~/analytics'
-
-type ChainIdEnum = keyof typeof contracts
+import { buildAdaptersUrl } from '~/staking/common/build-adapters-url'
+import { loadAdapter } from '~/common/load-adapter'
 
 type Params = {
   amount: string
@@ -80,148 +77,71 @@ export const updateStatisticsWalletFx = walletListDomain.createEffect(
   }
 )
 
-const isChainId = (chainId: unknown): chainId is ChainIdEnum =>
-  String(chainId) in contracts
-
-const createContract = (
-  provider: unknown,
-  chainId: string | number,
-  account: string
-) => {
-  const networkProvider = walletNetworkModel.getNetwork(provider, chainId)
-
-  if (!isChainId(chainId) || !networkProvider) {
-    throw new Error('chainId does not support')
-  }
-
-  if (!account) {
-    throw new Error('Account is required')
-  }
-
-  const contract = contracts[chainId]
-
-  const balanceContract = new ethers.Contract(
-    contract.Balance.address,
-    Balance.abi,
-    networkProvider.getSigner()
-  )
-
-  return {
-    networkProvider,
-    account,
-    balanceContract,
-  }
-}
-
-export const depositFx = walletListDomain.createEffect(
-  async (params: Params) => {
-    const { networkProvider, account, balanceContract } = createContract(
+export const loadAdapterFx = walletListDomain.createEffect(
+  async (params: { provider: unknown; chainId: string }) => {
+    const networkProvider = walletNetworkModel.getNetwork(
       params.provider,
-      params.chainId,
-      params.walletAddress
+      params.chainId
     )
 
-    const amountNormalized = bignumberUtils.toSend(params.amount, 18)
+    const contract = contracts[params.chainId as keyof typeof contracts]
 
-    const balance = await networkProvider.getBalance(account)
+    if (!networkProvider) throw new Error('something went wrong')
+    if (!contract)
+      throw new Error('current network does not have Balance contract')
 
-    if (balance.lt(amountNormalized)) {
-      analytics.log('settings_wallet_defihelper_balance_top_up_failure', {
-        blockchain: 'ethereum',
-        amount: amountNormalized,
+    const { balance } = await loadAdapter(buildAdaptersUrl('dfh'))
+
+    return balance(networkProvider.getSigner(), contract.Balance.address)
+  }
+)
+
+export const depositFx = walletListDomain.createEffect(
+  async (params: Params & { transactionHash: string }) => {
+    analytics.log(
+      'settings_wallet_defihelper_balance_top_up_send_transaction',
+      {
+        blockchain: params.blockchain,
+        amount: params.amount,
         walletAddress: params.walletAddress,
         chainId: params.chainId,
-      })
-      throw new Error('not enough funds')
-    }
-
-    try {
-      analytics.log(
-        'settings_wallet_defihelper_balance_top_up_send_transaction',
-        {
-          blockchain: 'ethereum',
-          amount: amountNormalized,
-          walletAddress: params.walletAddress,
-          chainId: params.chainId,
-        }
-      )
-      const transactionReceipt = await balanceContract.deposit(account, {
-        value: amountNormalized,
-      })
-
-      const result = await transactionReceipt.wait()
-
-      analytics.log('settings_wallet_defihelper_balance_top_up_success', {
-        blockchain: 'ethereum',
-        amount: amountNormalized,
-        walletAddress: params.walletAddress,
-        chainId: params.chainId,
-      })
-      await settingsApi.billingTransferCreate({
-        input: {
-          blockchain: params.blockchain,
-          network: params.chainId,
-          account: params.walletAddress,
-          amount: params.amount,
-          tx: result.transactionHash,
-        },
-      })
-    } catch (error) {
-      throw parseError(error)
-    }
+      }
+    )
+    analytics.log('settings_wallet_defihelper_balance_top_up_success', {
+      blockchain: params.blockchain,
+      amount: params.amount,
+      walletAddress: params.walletAddress,
+      chainId: params.chainId,
+    })
+    await settingsApi.billingTransferCreate({
+      input: {
+        blockchain: params.blockchain,
+        network: params.chainId,
+        account: params.walletAddress,
+        amount: params.amount,
+        tx: params.transactionHash,
+      },
+    })
   }
 )
 
 export const refundFx = walletListDomain.createEffect(
   async (params: Params) => {
-    const { account, balanceContract } = createContract(
-      params.provider,
-      params.chainId,
-      params.walletAddress
-    )
-
-    const amountNormalized = bignumberUtils.toSend(params.amount, 18)
-
-    const balance = await balanceContract.netBalanceOf(account)
-
-    if (balance.lt(amountNormalized)) {
-      analytics.log('settings_wallet_defihelper_balance_refund_failure', {
-        blockchain: 'ethereum',
-        amount: amountNormalized,
-        walletAddress: params.walletAddress,
-        chainId: params.chainId,
-      })
-      throw new Error('not enough money')
-    }
-
     analytics.log(
       'settings_wallet_defihelper_balance_refund_send_transaction',
       {
-        blockchain: 'ethereum',
-        amount: amountNormalized,
+        blockchain: params.blockchain,
+        amount: params.amount,
         walletAddress: params.walletAddress,
         chainId: params.chainId,
       }
     )
-    try {
-      const transactionReceipt = await balanceContract.refund(amountNormalized)
-
-      await transactionReceipt.wait()
-      analytics.log('settings_wallet_defihelper_balance_refund_success', {
-        blockchain: 'ethereum',
-        amount: amountNormalized,
-        walletAddress: params.walletAddress,
-        chainId: params.chainId,
-      })
-    } catch (error) {
-      analytics.log('settings_wallet_defihelper_balance_refund_failure', {
-        blockchain: 'ethereum',
-        amount: amountNormalized,
-        walletAddress: params.walletAddress,
-        chainId: params.chainId,
-      })
-      throw parseError(error)
-    }
+    analytics.log('settings_wallet_defihelper_balance_refund_success', {
+      blockchain: params.blockchain,
+      amount: params.amount,
+      walletAddress: params.walletAddress,
+      chainId: params.chainId,
+    })
   }
 )
 
@@ -318,6 +238,10 @@ export const $walletsWithMetrics = combine(
           empty: [] as WalletWithMetrics[],
         }
       )
+)
+
+export const fetchBillingBalanceFx = walletListDomain.createEffect(
+  settingsApi.billingBalance
 )
 
 export const $networksWithBalance = walletListDomain.createStore(
