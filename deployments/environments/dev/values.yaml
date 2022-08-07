@@ -7,8 +7,22 @@ replicaCount: 1
 images:
   app:
     name: app
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
+        cpu: 100m
   prerenderer:
     name: prerenderer
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 10m
+      limits:
+        memory: 128Mi
+        cpu: 100m
 
 service:
   type: ClusterIP
