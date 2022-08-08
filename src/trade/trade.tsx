@@ -426,7 +426,7 @@ export const Trade: React.VFC<TradeProps> = () => {
                 onSubmit={handleOnSubmit}
               >
                 <Input
-                  placeholder="hello@defihelper.io"
+                  placeholder="youremail@gmail.com"
                   {...register('email', {
                     required: true,
                     pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
