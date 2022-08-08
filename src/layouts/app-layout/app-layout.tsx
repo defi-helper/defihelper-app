@@ -35,8 +35,6 @@ const MENU: MenuItem[] = [
     title: 'Trade',
     path: paths.trade,
     icon: 'trade',
-    subject: 'User',
-    can: 'read',
   },
   {
     title: 'Invest',

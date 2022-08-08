@@ -83,6 +83,11 @@ export const chartTitle = style({
 export const chartInner = style({
   width: '100%',
   height: 653,
+
+  vars: {
+    '--tv-color-platform-background': 'black',
+    '--tv-color-pane-background': 'black',
+  },
 })
 
 export const selects = style({
