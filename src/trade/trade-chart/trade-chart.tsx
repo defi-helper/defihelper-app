@@ -3,12 +3,14 @@
 import clsx from 'clsx'
 import { useEffect } from 'react'
 
+import { Loader } from '~/common/loader'
 import { useTheme } from '~/common/theme'
 import * as styles from './trade-chart.css'
 
 export type TradeChartProps = {
   className?: string
   address: string
+  loading?: boolean
 }
 
 export const TradeChart: React.VFC<TradeChartProps> = (props) => {
@@ -64,7 +66,11 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
     }
   }, [props.address, themeMode])
 
-  return (
+  return props.loading ? (
+    <div className={styles.loader}>
+      <Loader height={36} />
+    </div>
+  ) : (
     <div
       className={clsx(styles.root, props.className)}
       id="tv_chart_container"

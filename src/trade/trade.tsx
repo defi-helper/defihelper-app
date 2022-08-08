@@ -72,6 +72,8 @@ export const Trade: React.VFC<TradeProps> = () => {
   const exchanges = useStore(model.$exchanges)
   const pairs = useStore(model.$pairs)
   const wallets = useStore(settingsWalletModel.$wallets)
+  const loadingExchanges = useStore(model.fetchExchangesFx.pending)
+  const loadingPairs = useStore(model.fetchPairsFx.pending)
 
   const walletsMap = useMemo(
     () =>
@@ -256,20 +258,6 @@ export const Trade: React.VFC<TradeProps> = () => {
         >
           {pairs.map((pair, index) => (
             <SelectOption value={pair.pairInfo?.address} key={String(index)}>
-              <img
-                alt=""
-                src={`https://whattofarm.io/assets/dex/${pair.pairInfo?.lpToken?.network?.name}.svg`}
-                width="24"
-                height="24"
-                className={styles.pairIcon}
-              />
-              <img
-                alt=""
-                src={`https://whattofarm.io/assets/dex/${pair.pairInfo?.icon}.svg`}
-                width="24"
-                height="24"
-                className={styles.pairIcon}
-              />
               {pair.pairInfo?.ticker}
             </SelectOption>
           ))}
@@ -279,7 +267,7 @@ export const Trade: React.VFC<TradeProps> = () => {
         <Paper radius={8} className={styles.chart}>
           <div className={styles.chartHeader}>
             <div className={styles.ticker}>
-              {currentPairObj && (
+              {false && currentPairObj && (
                 <div className={styles.tickerIcons}>
                   <img
                     alt=""
@@ -309,7 +297,7 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Typography>
               <Typography variant="inherit" as="div">
                 {bignumberUtils.format(currentPairObj?.pricePercentCount?.h24)}%
-                | {bignumberUtils.format(currentPairObj?.liquidityCount?.h24)}$
+                | ${bignumberUtils.format(currentPairObj?.liquidityCount?.h24)}
               </Typography>
             </Typography>
             <Typography variant="body3" className={styles.chartMetric} as="div">
@@ -321,13 +309,26 @@ export const Trade: React.VFC<TradeProps> = () => {
                 24h volume (USD)
               </Typography>
               <Typography variant="inherit" as="div">
-                {bignumberUtils.format(currentPairObj?.volumeCount?.h24)}$
+                ${bignumberUtils.format(currentPairObj?.volumeCount?.h24)}
+              </Typography>
+            </Typography>
+            <Typography variant="body3" className={styles.chartMetric} as="div">
+              <Typography
+                variant="inherit"
+                className={styles.chartTitle}
+                as="div"
+              >
+                24h liquidity (USD)
+              </Typography>
+              <Typography variant="inherit" as="div">
+                ${bignumberUtils.format(currentPairObj?.liquidityCount?.h24)}
               </Typography>
             </Typography>
           </div>
           <TradeChart
             className={styles.chartInner}
             address={currentPairObj?.pairInfo?.address}
+            loading={loadingExchanges || loadingPairs}
           />
         </Paper>
         <Paper radius={8} className={styles.selects}>

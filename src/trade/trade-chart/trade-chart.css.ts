@@ -16,3 +16,13 @@ globalStyle(`${root} iframe`, {
   height: '100%',
   zIndex: -1,
 })
+
+export const loader = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '100%',
+  height: '100%',
+  minHeight: 300,
+})
