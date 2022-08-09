@@ -93,16 +93,14 @@ export const Trade: React.VFC<TradeProps> = () => {
   )
 
   useEffect(() => {
-    if (!wallet) return
-
-    model.fetchExchangesFx(wallet.network)
+    model.fetchExchangesFx(wallet?.network ?? config.DEFAULT_CHAIN_ID)
   }, [wallet])
 
   useEffect(() => {
-    if (!wallet || !currentExchange) return
+    if (!currentExchange) return
 
     model.fetchPairsFx({
-      network: wallet.network,
+      network: wallet?.network ?? config.DEFAULT_CHAIN_ID,
       exchange: currentExchange,
     })
   }, [wallet, currentExchange])
