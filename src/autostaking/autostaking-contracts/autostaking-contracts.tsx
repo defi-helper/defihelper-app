@@ -65,15 +65,7 @@ const sortIcon = (
   return <Icon icon={icon} width="18" />
 }
 
-const text = (
-  <>
-    If there are no funds on the contract, we calculate an Boosted APY of
-    $10,000.
-    <br />
-    <br />
-    You&apos;ll see the real data after you transfer money to this contract.
-  </>
-)
+const text = <>Actual 7-day annualized percentage rate</>
 
 const dropdown = (
   <Dropdown
