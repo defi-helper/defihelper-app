@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
@@ -20,12 +22,12 @@ import { networksConfig } from '~/networks-config'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Input } from '~/common/input'
 import { tradeApi } from './common/trade.api'
-import * as styles from './trade.css'
-import * as model from './trade.model'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { config } from '~/config'
-import { WalletConnect } from '~/wallets/wallet-connect'
 import { toastsService } from '~/toasts'
+import { useWalletConnect } from '~/wallets/wallet-connect'
+import * as styles from './trade.css'
+import * as model from './trade.model'
 
 export type TradeProps = unknown
 
@@ -49,6 +51,8 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentPair, setCurrentPair] = useState('')
   const [currentWallet, setCurrentWallet] = useState('')
 
+  const handleConnect = useWalletConnect()
+
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
   }
@@ -71,19 +75,23 @@ export const Trade: React.VFC<TradeProps> = () => {
 
   const exchanges = useStore(model.$exchanges)
   const pairs = useStore(model.$pairs)
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const settingsWallets = useStore(settingsWalletModel.$wallets)
   const loadingExchanges = useStore(model.fetchExchangesFx.pending)
   const loadingPairs = useStore(model.fetchPairsFx.pending)
 
+  const wallets = useMemo(
+    () =>
+      settingsWallets.filter(({ network }) => Boolean(model.networks[network])),
+    [settingsWallets]
+  )
+
   const walletsMap = useMemo(
     () =>
-      wallets
-        .filter((wallet) => Boolean(model.networks[wallet.network]))
-        .reduce((acc, wallet) => {
-          acc.set(wallet.id, wallet)
+      wallets.reduce((acc, wallet) => {
+        acc.set(wallet.id, wallet)
 
-          return acc
-        }, new Map<string, typeof wallets[number]>()),
+        return acc
+      }, new Map<string, typeof wallets[number]>()),
     [wallets]
   )
 
@@ -186,51 +194,50 @@ export const Trade: React.VFC<TradeProps> = () => {
         Trade
       </Typography>
       <div className={styles.header}>
-        <WalletConnect
-          fallback={
-            <div>
-              <Typography
-                as="span"
-                variant="body3"
-                family="mono"
-                transform="uppercase"
-                className={styles.connectWalletLabel}
-              >
-                Wallet
-              </Typography>
-              <div className={styles.connectWalletInput}>
-                <Icon icon="plus" width={20} height={20} />
-                <div>Connect Wallet</div>
-                <Icon
-                  icon="arrowDown"
-                  height={18}
-                  width={18}
-                  className={styles.connectWalletArrow}
-                />
-              </div>
-            </div>
-          }
-        >
+        {wallets.length ? (
           <Select
             label="Wallet"
             value={currentWallet}
             onChange={handleChangeWallet}
           >
-            {wallets
-              .filter(({ network }) => Boolean(model.networks[network]))
-              .map(({ network, id, name }, index) => (
-                <SelectOption value={id} key={String(index)}>
-                  {networksConfig[network] && (
-                    <Icon
-                      icon={networksConfig[network].icon}
-                      className={styles.pairIcon}
-                    />
-                  )}
-                  {name}
-                </SelectOption>
-              ))}
+            {wallets.map(({ network, id, name }, index) => (
+              <SelectOption value={id} key={String(index)}>
+                {networksConfig[network] && (
+                  <Icon
+                    icon={networksConfig[network].icon}
+                    className={styles.pairIcon}
+                  />
+                )}
+                {name}
+              </SelectOption>
+            ))}
           </Select>
-        </WalletConnect>
+        ) : (
+          <div>
+            <Typography
+              as="span"
+              variant="body3"
+              family="mono"
+              transform="uppercase"
+              className={styles.connectWalletLabel}
+            >
+              Wallet
+            </Typography>
+            <div
+              className={styles.connectWalletInput}
+              onClick={handleConnect.bind(null, undefined)}
+            >
+              <Icon icon="plus" width={20} height={20} />
+              <div>Connect Wallet</div>
+              <Icon
+                icon="arrowDown"
+                height={18}
+                width={18}
+                className={styles.connectWalletArrow}
+              />
+            </div>
+          </div>
+        )}
         <Select
           label="Exchange"
           onChange={handleChangeExchange}
