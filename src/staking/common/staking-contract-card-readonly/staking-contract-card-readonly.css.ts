@@ -8,14 +8,6 @@ export const root = style({
 
 export const clickable = style({
   cursor: 'pointer',
-
-  '@media': {
-    [theme.mediaQueries.hover()]: {
-      ':hover': {
-        opacity: 0.6,
-      },
-    },
-  },
 })
 
 export const tableCol = style({
