@@ -19,7 +19,7 @@ export const fetchPairsFx = createEffect(
   async (params: { network: string; exchange: string }) => {
     const { data, message } = await tradeApi.pairs(
       [networks[params.network]],
-      [params.exchange.toLowerCase()]
+      [params.exchange]
     )
 
     if (!data || message) throw new Error(message ?? 'something went wrong')
