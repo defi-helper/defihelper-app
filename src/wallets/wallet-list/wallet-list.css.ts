@@ -7,6 +7,13 @@ export const root = style({
   padding: '24px 16px',
 })
 
+export const title = style({
+  padding: '8px 16px',
+  marginTop: -20,
+  color: theme.colors.textColorGreen,
+  marginBottom: 10,
+})
+
 export const icon = style({
   width: 20,
   height: 20,

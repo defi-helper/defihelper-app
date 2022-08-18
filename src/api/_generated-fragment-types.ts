@@ -7,6 +7,10 @@ export interface PossibleTypesResultData {
 }
 const result: PossibleTypesResultData = {
   possibleTypes: {
+    SmartTradeOrderCallDataType: [
+      'SmartTradeMockHandlerCallDataType',
+      'SmartTradeSwapHandlerCallDataType',
+    ],
     TokenPriceFeedType: [
       'TokenPriceFeedCoingeckoIdType',
       'TokenPriceFeedCoingeckoAddressType',

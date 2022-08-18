@@ -334,15 +334,13 @@ guard({
   }),
   filter: (clock) => {
     return Boolean(
-      clock.account &&
-        clock.wallets?.some(({ address, network }) => {
-          const isWaves = clock.chainId === 'main'
+      clock.wallets?.some(({ address, network }) => {
+        const isWaves = clock.chainId === 'main'
 
-          return isWaves
-            ? clock.account === address && clock.chainId === network
-            : clock.account.toLowerCase() === address &&
-                clock.chainId === network
-        })
+        return isWaves
+          ? clock.account === address && clock.chainId === network
+          : clock.account.toLowerCase() === address && clock.chainId === network
+      })
     )
   },
   target: toastsService.info.prepend(() => 'Wallet already added!'),

@@ -32,7 +32,9 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { Loader } from '~/common/loader'
 import * as model from './governance-detail.model'
+import * as listModel from '~/governance/governance-list/governance-list.model'
 import * as styles from './governance-detail.css'
+import { GovernanceAttentionDialog } from '../common/governance-attention-dialog'
 
 export type GovernanceDetailProps = unknown
 
@@ -42,6 +44,7 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const params = useParams<{ governanceId: string }>()
 
   const [openGovernanceReasonDialog] = useDialog(GovernanceReasonDialog)
+  const [openGovernanceAttentionDialog] = useDialog(GovernanceAttentionDialog)
 
   const loading = useStore(model.fetchGovernanceProposalFx.pending)
   const governanceDetail = useStore(model.$governanceDetail)
@@ -95,37 +98,36 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
 
   const loadingCastVote = useStore(model.castVoteFx.pending)
 
-  const handleVoteFor = async () => {
+  const handleCastVote = (support: model.CastVotes) => async () => {
+    if (!wallet?.account || !wallet.chainId) return
+
     try {
-      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
-
-      if (!wallet?.account) return
-
-      model.castVoteFx({
-        proposalId: Number(params.governanceId),
-        support: model.CastVotes.for,
-        account: wallet.account,
-        chainId: String(wallet.chainId),
-        provider: wallet.provider,
-        cache: false,
+      const votes = await listModel.fetchGovernanceVotesFx({
+        network: Number(wallet.chainId),
+        contract: listModel.GOVERNOR_TOKEN,
+        wallet: wallet.account,
       })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
+
+      if (bignumberUtils.eq(votes?.votes, 0)) {
+        await openGovernanceAttentionDialog()
+        return
       }
+    } catch {
+      return
     }
-  }
-  const handleVoteAbstain = async () => {
+
     try {
       await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
-      if (!wallet?.account) return
+      let reason: string | undefined
 
-      const reason = await openGovernanceReasonDialog()
+      if (support === model.CastVotes.abstain) {
+        reason = await openGovernanceReasonDialog()
+      }
 
       model.castVoteFx({
         proposalId: Number(params.governanceId),
-        support: model.CastVotes.abstain,
+        support,
         reason,
         account: wallet.account,
         chainId: String(wallet.chainId),
@@ -138,26 +140,10 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
       }
     }
   }
-  const handleVoteAgainst = async () => {
-    try {
-      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
 
-      if (!wallet?.account) return
-
-      model.castVoteFx({
-        proposalId: Number(params.governanceId),
-        support: model.CastVotes.against,
-        account: wallet.account,
-        chainId: String(wallet.chainId),
-        provider: wallet.provider,
-        cache: false,
-      })
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
-  }
+  const handleVoteFor = handleCastVote(model.CastVotes.for)
+  const handleVoteAbstain = handleCastVote(model.CastVotes.abstain)
+  const handleVoteAgainst = handleCastVote(model.CastVotes.against)
 
   return (
     <AppLayout title={loading ? 'loading...' : governanceDetail?.title}>
@@ -189,46 +175,46 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             GovProposalStateEnum.Expired,
             GovProposalStateEnum.Succeeded,
           ].includes(governanceDetail.state) ||
-            (receipt?.hasVoted &&
+            (receipt &&
+              receipt.hasVoted &&
               [
                 GovReceiptSupportEnum.For,
                 GovReceiptSupportEnum.Abstain,
                 GovReceiptSupportEnum.Against,
-              ].includes(receipt.support))) &&
-            receipt && (
-              <div className={clsx(styles.voteInfo, styles.mb32)}>
-                <GovernanceVoteInfo
-                  variant="for"
-                  active={receipt?.support === GovReceiptSupportEnum.For}
-                  total={bignumberUtils.total(
-                    governanceDetail.abstainVotes,
-                    governanceDetail.againstVotes,
-                    governanceDetail.forVotes
-                  )}
-                  count={governanceDetail.forVotes}
-                />
-                <GovernanceVoteInfo
-                  variant="abstain"
-                  active={receipt?.support === GovReceiptSupportEnum.Abstain}
-                  total={bignumberUtils.total(
-                    governanceDetail.abstainVotes,
-                    governanceDetail.againstVotes,
-                    governanceDetail.forVotes
-                  )}
-                  count={governanceDetail.abstainVotes}
-                />
-                <GovernanceVoteInfo
-                  variant="against"
-                  active={receipt?.support === GovReceiptSupportEnum.Against}
-                  total={bignumberUtils.total(
-                    governanceDetail.abstainVotes,
-                    governanceDetail.againstVotes,
-                    governanceDetail.forVotes
-                  )}
-                  count={governanceDetail.againstVotes}
-                />
-              </div>
-            )}
+              ].includes(receipt.support))) && (
+            <div className={clsx(styles.voteInfo, styles.mb32)}>
+              <GovernanceVoteInfo
+                variant="for"
+                active={receipt?.support === GovReceiptSupportEnum.For}
+                total={bignumberUtils.total(
+                  governanceDetail.abstainVotes,
+                  governanceDetail.againstVotes,
+                  governanceDetail.forVotes
+                )}
+                count={governanceDetail.forVotes}
+              />
+              <GovernanceVoteInfo
+                variant="abstain"
+                active={receipt?.support === GovReceiptSupportEnum.Abstain}
+                total={bignumberUtils.total(
+                  governanceDetail.abstainVotes,
+                  governanceDetail.againstVotes,
+                  governanceDetail.forVotes
+                )}
+                count={governanceDetail.abstainVotes}
+              />
+              <GovernanceVoteInfo
+                variant="against"
+                active={receipt?.support === GovReceiptSupportEnum.Against}
+                total={bignumberUtils.total(
+                  governanceDetail.abstainVotes,
+                  governanceDetail.againstVotes,
+                  governanceDetail.forVotes
+                )}
+                count={governanceDetail.againstVotes}
+              />
+            </div>
+          )}
           {!bignumberUtils.gte(governanceDetail.forVotes, QUORUM_VOTES) && (
             <Typography
               variant="body1"

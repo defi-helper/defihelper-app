@@ -28,7 +28,17 @@ export const tradeApi = {
           networks: networks.join(','),
         },
       })
-      .then(({ data }) => data),
+      .then(({ data }) => ({
+        data: data.data.map(({ Name, ...rest }) => {
+          const [firstChar, ...restChars] = Array.from(Name)
+
+          return {
+            Name: [firstChar.toLocaleUpperCase(), ...restChars].join(''),
+            ...rest,
+          }
+        }),
+        message: data.message,
+      })),
 
   pairs: (
     network: string[],
@@ -44,7 +54,7 @@ export const tradeApi = {
     apiV1
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .post<Response<{ list: any[] }>>(
-        'pair-stat?page=1&size=100&minLiquidity=10000&sortField=liquidity&sortDirection=desc',
+        'pair-stat?page=1&size=100&minLiquidity=10000&sortField=vol&sortDirection=desc',
         payload,
         {
           params: {

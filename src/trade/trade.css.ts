@@ -83,6 +83,11 @@ export const chartTitle = style({
 export const chartInner = style({
   width: '100%',
   height: 653,
+
+  vars: {
+    '--tv-color-platform-background': 'black',
+    '--tv-color-pane-background': 'black',
+  },
 })
 
 export const selects = style({
@@ -234,7 +239,7 @@ export const connectWalletInput = style({
   fontSize: 16,
   lineHeight: '24px',
   padding: '8px 16px',
-  color: 'currentcolor',
+  color: 'currentColor',
   transition: 'border .2s ease-in-out',
   minHeight: 42,
   paddingRight: 40,

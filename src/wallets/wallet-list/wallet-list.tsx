@@ -41,6 +41,14 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
 
   return (
     <Dialog className={styles.root}>
+      <Typography
+        variant="body3"
+        transform="uppercase"
+        family="mono"
+        className={styles.title}
+      >
+        connect wallet
+      </Typography>
       <ul className={styles.list}>
         {Object.entries(connectorsByName)
           .filter(

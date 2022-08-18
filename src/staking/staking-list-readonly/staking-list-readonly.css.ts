@@ -111,9 +111,19 @@ export const tableHeader = style({
 })
 
 export const listItem = style({
+  transition: 'background-color .3s ease-in-out',
+
   selectors: {
     '&:not(:last-child)': {
       borderBottom: `1px solid ${theme.colors.border}`,
+    },
+  },
+
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      ':hover': {
+        background: theme.colors.border,
+      },
     },
   },
 })

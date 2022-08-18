@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
@@ -20,12 +22,12 @@ import { networksConfig } from '~/networks-config'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Input } from '~/common/input'
 import { tradeApi } from './common/trade.api'
-import * as styles from './trade.css'
-import * as model from './trade.model'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { config } from '~/config'
-import { WalletConnect } from '~/wallets/wallet-connect'
 import { toastsService } from '~/toasts'
+import { useWalletConnect } from '~/wallets/wallet-connect'
+import * as styles from './trade.css'
+import * as model from './trade.model'
 
 export type TradeProps = unknown
 
@@ -49,6 +51,8 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentPair, setCurrentPair] = useState('')
   const [currentWallet, setCurrentWallet] = useState('')
 
+  const handleConnect = useWalletConnect()
+
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
   }
@@ -71,17 +75,23 @@ export const Trade: React.VFC<TradeProps> = () => {
 
   const exchanges = useStore(model.$exchanges)
   const pairs = useStore(model.$pairs)
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const settingsWallets = useStore(settingsWalletModel.$wallets)
+  const loadingExchanges = useStore(model.fetchExchangesFx.pending)
+  const loadingPairs = useStore(model.fetchPairsFx.pending)
+
+  const wallets = useMemo(
+    () =>
+      settingsWallets.filter(({ network }) => Boolean(model.networks[network])),
+    [settingsWallets]
+  )
 
   const walletsMap = useMemo(
     () =>
-      wallets
-        .filter((wallet) => Boolean(model.networks[wallet.network]))
-        .reduce((acc, wallet) => {
-          acc.set(wallet.id, wallet)
+      wallets.reduce((acc, wallet) => {
+        acc.set(wallet.id, wallet)
 
-          return acc
-        }, new Map<string, typeof wallets[number]>()),
+        return acc
+      }, new Map<string, typeof wallets[number]>()),
     [wallets]
   )
 
@@ -91,16 +101,14 @@ export const Trade: React.VFC<TradeProps> = () => {
   )
 
   useEffect(() => {
-    if (!wallet) return
-
-    model.fetchExchangesFx(wallet.network)
+    model.fetchExchangesFx(wallet?.network ?? config.DEFAULT_CHAIN_ID)
   }, [wallet])
 
   useEffect(() => {
-    if (!wallet || !currentExchange) return
+    if (!currentExchange) return
 
     model.fetchPairsFx({
-      network: wallet.network,
+      network: wallet?.network ?? config.DEFAULT_CHAIN_ID,
       exchange: currentExchange,
     })
   }, [wallet, currentExchange])
@@ -186,56 +194,67 @@ export const Trade: React.VFC<TradeProps> = () => {
         Trade
       </Typography>
       <div className={styles.header}>
-        <WalletConnect
-          fallback={
-            <div>
-              <Typography
-                as="span"
-                variant="body3"
-                family="mono"
-                transform="uppercase"
-                className={styles.connectWalletLabel}
-              >
-                Wallet
-              </Typography>
-              <div className={styles.connectWalletInput}>
-                <Icon icon="plus" width={20} height={20} />
-                <div>Connect Wallet</div>
-                <Icon
-                  icon="arrowDown"
-                  height={18}
-                  width={18}
-                  className={styles.connectWalletArrow}
-                />
-              </div>
-            </div>
-          }
-        >
+        {wallets.length ? (
           <Select
             label="Wallet"
             value={currentWallet}
             onChange={handleChangeWallet}
           >
-            {wallets
-              .filter(({ network }) => Boolean(model.networks[network]))
-              .map(({ network, id, name }, index) => (
-                <SelectOption value={id} key={String(index)}>
-                  {networksConfig[network] && (
-                    <Icon
-                      icon={networksConfig[network].icon}
-                      className={styles.pairIcon}
-                    />
-                  )}
-                  {name}
-                </SelectOption>
-              ))}
+            {wallets.map(({ network, id, name }, index) => (
+              <SelectOption value={id} key={String(index)}>
+                {networksConfig[network] && (
+                  <Icon
+                    icon={networksConfig[network].icon}
+                    className={styles.pairIcon}
+                  />
+                )}
+                {name}
+              </SelectOption>
+            ))}
           </Select>
-        </WalletConnect>
+        ) : (
+          <div>
+            <Typography
+              as="span"
+              variant="body3"
+              family="mono"
+              transform="uppercase"
+              className={styles.connectWalletLabel}
+            >
+              Wallet
+            </Typography>
+            <div
+              className={styles.connectWalletInput}
+              onClick={handleConnect.bind(null, undefined)}
+            >
+              <Icon icon="plus" width={20} height={20} />
+              <div>Connect Wallet</div>
+              <Icon
+                icon="arrowDown"
+                height={18}
+                width={18}
+                className={styles.connectWalletArrow}
+              />
+            </div>
+          </div>
+        )}
         <Select
           label="Exchange"
           onChange={handleChangeExchange}
           value={currentExchange}
         >
+          {config.IS_DEV && (
+            <SelectOption value="Uniswap dev">
+              <img
+                alt=""
+                src="0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D.svg"
+                width="24"
+                height="24"
+                className={styles.pairIcon}
+              />
+              Uniswap dev
+            </SelectOption>
+          )}
           {exchanges.map((exchange, index) => (
             <SelectOption value={exchange.Name} key={String(index)}>
               <img
@@ -254,22 +273,13 @@ export const Trade: React.VFC<TradeProps> = () => {
           value={currentPair}
           onChange={handleChangePair}
         >
+          {config.IS_DEV && (
+            <SelectOption value="0x18Ba91505DBa079329f2d318aAaEE742787750a4">
+              Pair dev
+            </SelectOption>
+          )}
           {pairs.map((pair, index) => (
             <SelectOption value={pair.pairInfo?.address} key={String(index)}>
-              <img
-                alt=""
-                src={`https://whattofarm.io/assets/dex/${pair.pairInfo?.lpToken?.network?.name}.svg`}
-                width="24"
-                height="24"
-                className={styles.pairIcon}
-              />
-              <img
-                alt=""
-                src={`https://whattofarm.io/assets/dex/${pair.pairInfo?.icon}.svg`}
-                width="24"
-                height="24"
-                className={styles.pairIcon}
-              />
               {pair.pairInfo?.ticker}
             </SelectOption>
           ))}
@@ -279,7 +289,7 @@ export const Trade: React.VFC<TradeProps> = () => {
         <Paper radius={8} className={styles.chart}>
           <div className={styles.chartHeader}>
             <div className={styles.ticker}>
-              {currentPairObj && (
+              {false && currentPairObj && (
                 <div className={styles.tickerIcons}>
                   <img
                     alt=""
@@ -309,7 +319,7 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Typography>
               <Typography variant="inherit" as="div">
                 {bignumberUtils.format(currentPairObj?.pricePercentCount?.h24)}%
-                | {bignumberUtils.format(currentPairObj?.liquidityCount?.h24)}$
+                | ${bignumberUtils.format(currentPairObj?.liquidityCount?.h24)}
               </Typography>
             </Typography>
             <Typography variant="body3" className={styles.chartMetric} as="div">
@@ -321,13 +331,26 @@ export const Trade: React.VFC<TradeProps> = () => {
                 24h volume (USD)
               </Typography>
               <Typography variant="inherit" as="div">
-                {bignumberUtils.format(currentPairObj?.volumeCount?.h24)}$
+                ${bignumberUtils.format(currentPairObj?.volumeCount?.h24)}
+              </Typography>
+            </Typography>
+            <Typography variant="body3" className={styles.chartMetric} as="div">
+              <Typography
+                variant="inherit"
+                className={styles.chartTitle}
+                as="div"
+              >
+                24h liquidity (USD)
+              </Typography>
+              <Typography variant="inherit" as="div">
+                ${bignumberUtils.format(currentPairObj?.liquidityCount?.h24)}
               </Typography>
             </Typography>
           </div>
           <TradeChart
             className={styles.chartInner}
             address={currentPairObj?.pairInfo?.address}
+            loading={loadingExchanges || loadingPairs}
           />
         </Paper>
         <Paper radius={8} className={styles.selects}>
@@ -426,7 +449,7 @@ export const Trade: React.VFC<TradeProps> = () => {
                 onSubmit={handleOnSubmit}
               >
                 <Input
-                  placeholder="hello@defihelper.io"
+                  placeholder="youremail@gmail.com"
                   {...register('email', {
                     required: true,
                     pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,

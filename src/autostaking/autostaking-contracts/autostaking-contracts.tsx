@@ -43,6 +43,8 @@ import * as deployModel from '~/automations/automation-deploy-contract/automatio
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { SettingsWalletBalanceDialog } from '~/settings/common'
+import { useQueryParams } from '~/common/hooks'
+import { autostakingApi } from '../common/autostaking.api'
 
 export type AutostakingContractsProps = {
   className?: string
@@ -65,15 +67,7 @@ const sortIcon = (
   return <Icon icon={icon} width="18" />
 }
 
-const text = (
-  <>
-    If there are no funds on the contract, we calculate an Boosted APY of
-    $10,000.
-    <br />
-    <br />
-    You&apos;ll see the real data after you transfer money to this contract.
-  </>
-)
+const text = <>Actual 7-day annualized percentage rate</>
 
 const dropdown = (
   <Dropdown
@@ -92,6 +86,8 @@ const dropdown = (
 export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   props
 ) => {
+  const initialContractId = useQueryParams().get('contractId')
+
   const [openApyDialog] = useDialog(StakingApyDialog)
   const [openAutostakingVideoDialog] = useDialog(AutostakingVideoDialog)
   const [openAutostakingBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
@@ -427,6 +423,38 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const handleSort = (sort: typeof sortBy) => () => {
     setSort(sort)
   }
+
+  useEffect(() => {
+    if (!initialContractId) return
+
+    const abortController = new AbortController()
+
+    const handle = async () => {
+      const contractList = await autostakingApi.contracts(
+        {
+          filter: {
+            id: initialContractId,
+          },
+        },
+        abortController.signal
+      )
+
+      const [contract] = contractList.list
+
+      if (!contract) return
+
+      handleAutostake({ ...contract, autostakingLoading: false })().catch(
+        console.error
+      )
+    }
+
+    handle().catch(console.error)
+
+    return () => {
+      abortController.abort()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialContractId])
 
   return (
     <div className={clsx(styles.root, props.className)}>
