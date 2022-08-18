@@ -255,18 +255,22 @@ export const Trade: React.VFC<TradeProps> = () => {
               Uniswap dev
             </SelectOption>
           )}
-          {exchanges.map((exchange, index) => (
-            <SelectOption value={exchange.Name} key={String(index)}>
-              <img
-                alt=""
-                src={`${exchange.Icon}.svg`}
-                width="24"
-                height="24"
-                className={styles.pairIcon}
-              />
-              {exchange.Name}
-            </SelectOption>
-          ))}
+          {exchanges.map((exchange, index) => {
+            const [firstChar, ...restChars] = Array.from(exchange.Name)
+
+            return (
+              <SelectOption value={exchange.Name} key={String(index)}>
+                <img
+                  alt=""
+                  src={`${exchange.Icon}.svg`}
+                  width="24"
+                  height="24"
+                  className={styles.pairIcon}
+                />
+                {[firstChar.toLocaleUpperCase(), ...restChars].join('')}
+              </SelectOption>
+            )
+          })}
         </Select>
         <Select
           label="Trading Pair"
