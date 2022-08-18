@@ -175,46 +175,46 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
             GovProposalStateEnum.Expired,
             GovProposalStateEnum.Succeeded,
           ].includes(governanceDetail.state) ||
-            (receipt?.hasVoted &&
+            (receipt &&
+              receipt.hasVoted &&
               [
                 GovReceiptSupportEnum.For,
                 GovReceiptSupportEnum.Abstain,
                 GovReceiptSupportEnum.Against,
-              ].includes(receipt.support))) &&
-            receipt && (
-              <div className={clsx(styles.voteInfo, styles.mb32)}>
-                <GovernanceVoteInfo
-                  variant="for"
-                  active={receipt?.support === GovReceiptSupportEnum.For}
-                  total={bignumberUtils.total(
-                    governanceDetail.abstainVotes,
-                    governanceDetail.againstVotes,
-                    governanceDetail.forVotes
-                  )}
-                  count={governanceDetail.forVotes}
-                />
-                <GovernanceVoteInfo
-                  variant="abstain"
-                  active={receipt?.support === GovReceiptSupportEnum.Abstain}
-                  total={bignumberUtils.total(
-                    governanceDetail.abstainVotes,
-                    governanceDetail.againstVotes,
-                    governanceDetail.forVotes
-                  )}
-                  count={governanceDetail.abstainVotes}
-                />
-                <GovernanceVoteInfo
-                  variant="against"
-                  active={receipt?.support === GovReceiptSupportEnum.Against}
-                  total={bignumberUtils.total(
-                    governanceDetail.abstainVotes,
-                    governanceDetail.againstVotes,
-                    governanceDetail.forVotes
-                  )}
-                  count={governanceDetail.againstVotes}
-                />
-              </div>
-            )}
+              ].includes(receipt.support))) && (
+            <div className={clsx(styles.voteInfo, styles.mb32)}>
+              <GovernanceVoteInfo
+                variant="for"
+                active={receipt?.support === GovReceiptSupportEnum.For}
+                total={bignumberUtils.total(
+                  governanceDetail.abstainVotes,
+                  governanceDetail.againstVotes,
+                  governanceDetail.forVotes
+                )}
+                count={governanceDetail.forVotes}
+              />
+              <GovernanceVoteInfo
+                variant="abstain"
+                active={receipt?.support === GovReceiptSupportEnum.Abstain}
+                total={bignumberUtils.total(
+                  governanceDetail.abstainVotes,
+                  governanceDetail.againstVotes,
+                  governanceDetail.forVotes
+                )}
+                count={governanceDetail.abstainVotes}
+              />
+              <GovernanceVoteInfo
+                variant="against"
+                active={receipt?.support === GovReceiptSupportEnum.Against}
+                total={bignumberUtils.total(
+                  governanceDetail.abstainVotes,
+                  governanceDetail.againstVotes,
+                  governanceDetail.forVotes
+                )}
+                count={governanceDetail.againstVotes}
+              />
+            </div>
+          )}
           {!bignumberUtils.gte(governanceDetail.forVotes, QUORUM_VOTES) && (
             <Typography
               variant="body1"

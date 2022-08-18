@@ -243,6 +243,18 @@ export const Trade: React.VFC<TradeProps> = () => {
           onChange={handleChangeExchange}
           value={currentExchange}
         >
+          {config.IS_DEV && (
+            <SelectOption value="Uniswap dev">
+              <img
+                alt=""
+                src="0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D.svg"
+                width="24"
+                height="24"
+                className={styles.pairIcon}
+              />
+              Uniswap dev
+            </SelectOption>
+          )}
           {exchanges.map((exchange, index) => (
             <SelectOption value={exchange.Name} key={String(index)}>
               <img
@@ -261,6 +273,11 @@ export const Trade: React.VFC<TradeProps> = () => {
           value={currentPair}
           onChange={handleChangePair}
         >
+          {config.IS_DEV && (
+            <SelectOption value="0x18Ba91505DBa079329f2d318aAaEE742787750a4">
+              Pair dev
+            </SelectOption>
+          )}
           {pairs.map((pair, index) => (
             <SelectOption value={pair.pairInfo?.address} key={String(index)}>
               {pair.pairInfo?.ticker}

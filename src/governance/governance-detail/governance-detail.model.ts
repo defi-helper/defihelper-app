@@ -171,7 +171,7 @@ sample({
 const openedGate = sample({
   clock: guard({
     source: [walletNetworkModel.$wallet, GovernanceDetailGate.status],
-    clock: [walletNetworkModel.$wallet, GovernanceDetailGate.open],
+    clock: [walletNetworkModel.$wallet.updates, GovernanceDetailGate.open],
     filter: (
       params
     ): params is [
