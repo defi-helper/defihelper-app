@@ -29,14 +29,7 @@ export const tradeApi = {
         },
       })
       .then(({ data }) => ({
-        data: data.data.map(({ Name, ...rest }) => {
-          const [firstChar, ...restChars] = Array.from(Name)
-
-          return {
-            Name: [firstChar.toLocaleUpperCase(), ...restChars].join(''),
-            ...rest,
-          }
-        }),
+        data: data.data,
         message: data.message,
       })),
 
