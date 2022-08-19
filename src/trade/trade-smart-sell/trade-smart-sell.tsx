@@ -4,29 +4,38 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
 import { NumericalInput } from '~/common/numerical-input'
 import { Typography } from '~/common/typography'
-import { Icon } from '~/common/icon'
 import { Switch } from '~/common/switch'
 import { TradeInput } from '~/trade/common/trade-input'
-import { TradePlusMinus } from '~/trade/common/trade-plus-minus'
 import { TradeSlider } from '~/trade/common/trade-slider'
 import { TradePercentagePicker } from '~/trade/common/trade-percentage-picker'
+import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
 import * as styles from './trade-smart-sell.css'
 
 export type TradeSmartSellProps = {
   className?: string
+  router?: SmartTradeRouter['methods']
+  swap?: SmartTradeSwapHandler['methods']
+  tokens?: {
+    address: string
+    name: string
+    symbol: string
+  }[]
 }
 
-export const TradeSmartSell: React.VFC<TradeSmartSellProps> = () => {
+export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const [takeProfit, toggleTakeProfit] = useToggle(false)
   const [stopLoss, toggleStopLoss] = useToggle(false)
 
   return (
     <div className={styles.root}>
       <div className={styles.inputGroup}>
-        <NumericalInput label="Unit" rightSide="BTC" />
+        <NumericalInput label="Unit" rightSide={props.tokens?.[0]?.symbol} />
         <TradePercentagePicker />
         <div>
-          <NumericalInput label="Bought price" rightSide="USDT" />
+          <NumericalInput
+            label="Bought price"
+            rightSide={props.tokens?.[1]?.symbol}
+          />
           <Typography
             variant="body3"
             as="div"
@@ -35,11 +44,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = () => {
           >
             Current Price:{' '}
             <ButtonBase className={styles.currentPriceButton}>
-              {bignumberUtils.format('54903')} USDT
+              {bignumberUtils.format('54903')} {props.tokens?.[1]?.symbol}
             </ButtonBase>
           </Typography>
         </div>
-        <NumericalInput label="Total" rightSide="USDT" />
+        <NumericalInput label="Total" rightSide={props.tokens?.[1]?.symbol} />
       </div>
       <div className={styles.inputGroup}>
         <div className={styles.trailingBuyTitle}>
@@ -54,7 +63,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = () => {
         </div>
         {takeProfit && (
           <>
-            <NumericalInput rightSide={<>USDT</>} />
+            <NumericalInput rightSide={props.tokens?.[1]?.symbol} />
             <div className={styles.trailingBuy}>
               <TradeInput
                 className={styles.trailingBuyInput}
@@ -62,35 +71,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = () => {
                 rightSide={<>%</>}
               />
               <TradeSlider className={styles.slider} />
-            </div>
-            <div className={styles.trailingBuyTitle}>
-              <Typography
-                variant="body3"
-                as="label"
-                transform="uppercase"
-                family="mono"
-                className={styles.trailingBuyLabel}
-              >
-                Trailing take profit
-                <Icon icon="info" width="1em" height="1em" />
-              </Typography>
-              <Switch size="small" />
-            </div>
-            <div className={styles.trailingBuy}>
-              <Typography
-                variant="body3"
-                as="label"
-                className={styles.trailingBuyLabel}
-              >
-                Follow max price with deviation [%]
-                <Icon icon="info" width="1em" height="1em" />
-              </Typography>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide={<>%</>}
-              />
-              <TradeSlider className={styles.slider} reverse />
             </div>
           </>
         )}
@@ -104,7 +84,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = () => {
         </div>
         {stopLoss && (
           <>
-            <NumericalInput rightSide={<>USDT</>} />
+            <NumericalInput rightSide={props.tokens?.[1]?.symbol} />
             <div className={styles.trailingBuy}>
               <TradeInput
                 className={styles.trailingBuyInput}
@@ -112,48 +92,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = () => {
                 rightSide={<>%</>}
               />
               <TradeSlider className={styles.slider} reverse />
-            </div>
-            <div className={styles.trailingBuy}>
-              <div className={styles.trailingBuyTitle}>
-                <Typography
-                  variant="body3"
-                  as="label"
-                  transform="uppercase"
-                  family="mono"
-                  className={styles.trailingBuyLabel}
-                >
-                  Trailing Stop Loss
-                  <Icon icon="info" width="1em" height="1em" />
-                </Typography>
-                <Switch size="small" />
-              </div>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide={<>%</>}
-              />
-              <TradeSlider className={styles.slider} reverse />
-            </div>
-            <div className={styles.trailingBuy}>
-              <div className={styles.trailingBuyTitle}>
-                <Typography
-                  variant="body3"
-                  as="label"
-                  transform="uppercase"
-                  family="mono"
-                  className={styles.trailingBuyLabel}
-                >
-                  Stop Loss timeout
-                  <Icon icon="info" width="1em" height="1em" />
-                </Typography>
-                <Switch size="small" />
-              </div>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide="Sec"
-              />
-              <TradePlusMinus />
             </div>
           </>
         )}

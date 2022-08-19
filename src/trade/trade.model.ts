@@ -1,5 +1,9 @@
 import { createStore, createEffect, createEvent, UnitValue } from 'effector'
+import contracts from '@defihelper/networks/contracts.json'
 
+import { loadAdapter } from '~/common/load-adapter'
+import { buildAdaptersUrl } from '~/staking/common'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { tradeApi } from './common/trade.api'
 
 export const reset = createEvent()
@@ -52,4 +56,46 @@ export const $history = createStore<UnitValue<
   typeof fetchHistoryFx.doneData
 > | null>(null)
   .on(fetchHistoryFx.doneData, (_, payload) => payload)
+  .reset(reset)
+
+export const fetchAdapterFx = createEffect(
+  async (params: { provider: unknown; chainId: string }) => {
+    const networkProvider = walletNetworkModel.getNetwork(
+      params.provider,
+      params.chainId
+    )
+
+    const contract = contracts[params.chainId as keyof typeof contracts]
+
+    if (!('SmartTradeRouter' in contract)) throw new Error('wrong chain id')
+    if (!('SmartTradeSwapHandler' in contract))
+      throw new Error('wrong chain id')
+
+    if (!networkProvider) throw new Error('provider is not defined')
+
+    const { automates } = await loadAdapter(buildAdaptersUrl('dfh'))
+
+    const { smartTrade } = automates
+
+    return {
+      router: (
+        await smartTrade.router(
+          networkProvider.getSigner(),
+          contract.SmartTradeRouter.address
+        )
+      ).methods,
+      swap: (
+        await smartTrade.swapHandler(
+          networkProvider.getSigner(),
+          contract.SmartTradeSwapHandler.address
+        )
+      ).methods,
+    }
+  }
+)
+
+export const $adapter = createStore<UnitValue<
+  typeof fetchAdapterFx.doneData
+> | null>(null)
+  .on(fetchAdapterFx.doneData, (_, payload) => payload)
   .reset(reset)

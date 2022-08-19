@@ -1,52 +1,40 @@
 import { useToggle } from 'react-use'
 import clsx from 'clsx'
 
-import { Icon } from '~/common/icon'
 import { NumericalInput } from '~/common/numerical-input'
 import { Switch } from '~/common/switch'
 import { Typography } from '~/common/typography'
 import { TradeInput } from '~/trade/common/trade-input'
-import { TradePlusMinus } from '~/trade/common/trade-plus-minus'
 import { TradeSlider } from '~/trade/common/trade-slider'
 import { TradePercentagePicker } from '~/trade/common/trade-percentage-picker'
-import * as styles from './trade-buy-sell.css'
 import { config } from '~/config'
+import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
+import * as styles from './trade-buy-sell.css'
 
 export type TradeBuySellProps = {
   className?: string
+  router?: SmartTradeRouter['methods']
+  swap?: SmartTradeSwapHandler['methods']
+  tokens?: {
+    address: string
+    name: string
+    symbol: string
+  }[]
 }
 
-export const TradeBuySell: React.VFC<TradeBuySellProps> = () => {
+export const TradeBuySell: React.VFC<TradeBuySellProps> = (props) => {
   const [takeProfit, toggleTakeProfit] = useToggle(false)
   const [stopLoss, toggleStopLoss] = useToggle(false)
 
   return (
     <div className={clsx(styles.root, !config.IS_DEV && styles.overflow)}>
       <div className={styles.inputGroup}>
-        <NumericalInput label="Amount" rightSide={<>BTC</>} />
-        <NumericalInput label="Market price" rightSide={<>USDT</>} />
-        <div className={styles.trailingBuy}>
-          <div className={styles.trailingBuyTitle}>
-            <Typography
-              variant="body3"
-              as="label"
-              transform="uppercase"
-              family="mono"
-              className={styles.trailingBuyLabel}
-            >
-              Trailing buy
-              <Icon icon="info" width="1em" height="1em" />
-            </Typography>
-            <Switch size="small" />
-          </div>
-          <TradeInput
-            className={styles.trailingBuyInput}
-            negativeOrPositive
-            rightSide={<>%</>}
-          />
-          <TradePlusMinus />
-        </div>
-        <NumericalInput label="Total" rightSide="USDT" />
+        <NumericalInput label="Amount" rightSide={props.tokens?.[0]?.symbol} />
+        <NumericalInput
+          label="Market price"
+          rightSide={props.tokens?.[1]?.symbol}
+        />
+        <NumericalInput label="Total" rightSide={props.tokens?.[1]?.symbol} />
         <TradePercentagePicker />
       </div>
       <div className={styles.inputGroup}>
@@ -62,7 +50,7 @@ export const TradeBuySell: React.VFC<TradeBuySellProps> = () => {
         </div>
         {takeProfit && (
           <>
-            <NumericalInput rightSide="USDT" />
+            <NumericalInput rightSide={props.tokens?.[1]?.symbol} />
             <div className={styles.trailingBuy}>
               <TradeInput
                 className={styles.trailingBuyInput}
@@ -70,35 +58,6 @@ export const TradeBuySell: React.VFC<TradeBuySellProps> = () => {
                 rightSide={<>%</>}
               />
               <TradeSlider className={styles.slider} />
-            </div>
-            <div className={styles.trailingBuyTitle}>
-              <Typography
-                variant="body3"
-                as="label"
-                transform="uppercase"
-                family="mono"
-                className={styles.trailingBuyLabel}
-              >
-                Trailing take profit
-                <Icon icon="info" width="1em" height="1em" />
-              </Typography>
-              <Switch size="small" />
-            </div>
-            <div className={styles.trailingBuy}>
-              <Typography
-                variant="body3"
-                as="label"
-                className={styles.trailingBuyLabel}
-              >
-                Follow max price with deviation [%]
-                <Icon icon="info" width="1em" height="1em" />
-              </Typography>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide={<>%</>}
-              />
-              <TradeSlider className={styles.slider} reverse />
             </div>
           </>
         )}
@@ -112,7 +71,7 @@ export const TradeBuySell: React.VFC<TradeBuySellProps> = () => {
         </div>
         {stopLoss && (
           <>
-            <NumericalInput rightSide={<>USDT</>} />
+            <NumericalInput rightSide={props.tokens?.[1]?.symbol} />
             <div className={styles.trailingBuy}>
               <TradeInput
                 className={styles.trailingBuyInput}
@@ -120,48 +79,6 @@ export const TradeBuySell: React.VFC<TradeBuySellProps> = () => {
                 rightSide={<>%</>}
               />
               <TradeSlider className={styles.slider} reverse />
-            </div>
-            <div className={styles.trailingBuy}>
-              <div className={styles.trailingBuyTitle}>
-                <Typography
-                  variant="body3"
-                  as="label"
-                  transform="uppercase"
-                  family="mono"
-                  className={styles.trailingBuyLabel}
-                >
-                  Trailing Stop Loss
-                  <Icon icon="info" width="1em" height="1em" />
-                </Typography>
-                <Switch size="small" />
-              </div>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide={<>%</>}
-              />
-              <TradeSlider className={styles.slider} reverse />
-            </div>
-            <div className={styles.trailingBuy}>
-              <div className={styles.trailingBuyTitle}>
-                <Typography
-                  variant="body3"
-                  as="label"
-                  transform="uppercase"
-                  family="mono"
-                  className={styles.trailingBuyLabel}
-                >
-                  Stop Loss timeout
-                  <Icon icon="info" width="1em" height="1em" />
-                </Typography>
-                <Switch size="small" />
-              </div>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide="Sec"
-              />
-              <TradePlusMinus />
             </div>
           </>
         )}

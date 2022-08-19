@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useEffect, useMemo, useState } from 'react'
+import { useAsyncRetry } from 'react-use'
+import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import { useForm } from 'react-hook-form'
@@ -28,6 +29,7 @@ import { toastsService } from '~/toasts'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import * as styles from './trade.css'
 import * as model from './trade.model'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
 
 export type TradeProps = unknown
 
@@ -49,7 +51,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentTab, setCurrentTab] = useState(Tabs.Buy)
   const [currentExchange, setCurrentExchange] = useState('')
   const [currentPair, setCurrentPair] = useState('')
-  const [currentWallet, setCurrentWallet] = useState('')
+  const [currentWalletAddress, setCurrentWalletAddress] = useState('')
 
   const handleConnect = useWalletConnect()
 
@@ -70,7 +72,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     setCurrentPair(event.target.value)
   }
   const handleChangeWallet = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentWallet(event.target.value)
+    setCurrentWalletAddress(event.target.value)
   }
 
   const exchanges = useStore(model.$exchanges)
@@ -78,6 +80,8 @@ export const Trade: React.VFC<TradeProps> = () => {
   const settingsWallets = useStore(settingsWalletModel.$wallets)
   const loadingExchanges = useStore(model.fetchExchangesFx.pending)
   const loadingPairs = useStore(model.fetchPairsFx.pending)
+  const adapter = useStore(model.$adapter)
+  const currentWallet = walletNetworkModel.useWalletNetwork()
 
   const wallets = useMemo(
     () =>
@@ -96,8 +100,8 @@ export const Trade: React.VFC<TradeProps> = () => {
   )
 
   const wallet = useMemo(
-    () => walletsMap.get(currentWallet),
-    [currentWallet, walletsMap]
+    () => walletsMap.get(currentWalletAddress),
+    [currentWalletAddress, walletsMap]
   )
 
   useEffect(() => {
@@ -124,7 +128,7 @@ export const Trade: React.VFC<TradeProps> = () => {
 
     if (!firstWallet) return
 
-    setCurrentWallet(firstWallet.id)
+    setCurrentWalletAddress(firstWallet.id)
   }, [wallets])
   useEffect(() => {
     const [firstExchange] = exchanges
@@ -141,8 +145,29 @@ export const Trade: React.VFC<TradeProps> = () => {
     setCurrentPair(firstPair.pairInfo?.address ?? '')
   }, [pairs])
 
+  const pairMap = useMemo(
+    () =>
+      pairs.reduce((acc, pair) => {
+        acc.set(pair.pairInfo?.address, pair)
+
+        return acc
+      }, new Map<string, typeof pairs[number]>()),
+    [pairs]
+  )
+
+  const currentPairObj = useMemo(
+    () => pairMap.get(currentPair),
+    [pairMap, currentPair]
+  )
+
   const SelectComponents = {
-    [Selects.SmartSell]: <TradeSmartSell />,
+    [Selects.SmartSell]: (
+      <TradeSmartSell
+        router={adapter?.router}
+        swap={adapter?.swap}
+        tokens={currentPairObj?.pairInfo?.tokens}
+      />
+    ),
     [Selects.BuySell]: (
       <>
         <div className={styles.tabs}>
@@ -162,7 +187,11 @@ export const Trade: React.VFC<TradeProps> = () => {
             </Typography>
           ))}
         </div>
-        <TradeBuySell />
+        <TradeBuySell
+          router={adapter?.router}
+          swap={adapter?.swap}
+          tokens={currentPairObj?.pairInfo?.tokens}
+        />
       </>
     ),
   }
@@ -179,13 +208,20 @@ export const Trade: React.VFC<TradeProps> = () => {
     }
   })
 
-  const pairMap = pairs.reduce((acc, pair) => {
-    acc.set(pair.pairInfo?.address, pair)
+  useEffect(() => {
+    if (!currentWallet?.provider || !currentWallet.chainId) return
 
-    return acc
-  }, new Map<string, typeof pairs[number]>())
+    model.fetchAdapterFx({
+      provider: currentWallet.provider,
+      chainId: currentWallet.chainId,
+    })
+  }, [currentWallet])
 
-  const currentPairObj = pairMap.get(currentPair)
+  const balanceOf = useAsyncRetry(async () => {
+    return adapter?.router.balanceOf(currentPair)
+  }, [adapter?.router, currentPair])
+
+  console.log(currentPairObj?.pairInfo?.tokens)
 
   return (
     <AppLayout title="Trade">
@@ -197,7 +233,7 @@ export const Trade: React.VFC<TradeProps> = () => {
         {wallets.length ? (
           <Select
             label="Wallet"
-            value={currentWallet}
+            value={currentWalletAddress}
             onChange={handleChangeWallet}
           >
             {wallets.map(({ network, id, name }, index) => (
@@ -410,7 +446,8 @@ export const Trade: React.VFC<TradeProps> = () => {
                   align="right"
                   className={styles.currentBalanceValue}
                 >
-                  0.50000 ВТС
+                  {bignumberUtils.format(balanceOf.value)}{' '}
+                  {currentPairObj?.pairInfo?.tokens?.[0]?.symbol}
                 </Typography>
               </Typography>
             </div>
@@ -424,8 +461,12 @@ export const Trade: React.VFC<TradeProps> = () => {
                 Approve transactions{' '}
                 <Icon icon="info" width="1em" height="1em" />
               </Typography>
-              <Button color="green">Approve USDT</Button>
-              <Button color="green">Approve ETH</Button>
+              <Button color="green">
+                Approve {currentPairObj?.pairInfo?.tokens?.[0]?.symbol}
+              </Button>
+              <Button color="green">
+                Approve {currentPairObj?.pairInfo?.tokens?.[1]?.symbol}
+              </Button>
               <Button color="green" className={styles.fullWidth}>
                 Create Order
               </Button>
