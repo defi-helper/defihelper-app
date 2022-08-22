@@ -6,7 +6,7 @@ import * as styles from './trade-slider.css'
 
 export type TradeSliderProps = React.ComponentProps<typeof Slider>
 
-export const TradeSlider: React.VFC<TradeSliderProps> = (props) => {
+export const TradeSlider = (props: TradeSliderProps) => {
   const { className, ...restProps } = props
 
   return (

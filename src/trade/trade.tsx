@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import { useForm } from 'react-hook-form'
@@ -26,15 +26,15 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { config } from '~/config'
 import { toastsService } from '~/toasts'
 import { useWalletConnect } from '~/wallets/wallet-connect'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { TradeInput } from './common/trade-input'
+import { TradePlusMinus } from './common/trade-plus-minus'
 import * as styles from './trade.css'
 import * as model from './trade.model'
 
 export type TradeProps = unknown
 
-enum Tabs {
-  Buy = 'buy',
-  Sell = 'sell',
-}
+const Tabs = ['buy', 'sell']
 
 enum Selects {
   BuySell = 'trade',
@@ -45,15 +45,17 @@ export const Trade: React.VFC<TradeProps> = () => {
   const { register, handleSubmit, formState, reset } =
     useForm<{ email: string }>()
 
-  const [currentSelect, setCurrentSelect] = useState(Selects.BuySell)
-  const [currentTab, setCurrentTab] = useState(Tabs.Buy)
+  const [currentSelect, setCurrentSelect] = useState(Selects.SmartSell)
+  const [currentTab, setCurrentTab] = useState(0)
   const [currentExchange, setCurrentExchange] = useState('')
   const [currentPair, setCurrentPair] = useState('')
-  const [currentWallet, setCurrentWallet] = useState('')
+  const [currentWalletAddress, setCurrentWalletAddress] = useState('')
+  const [currentSlippage, setCurrentSlippage] = useState('1')
+  const [transactionDeadline, setTransactionDeadline] = useState('30')
 
   const handleConnect = useWalletConnect()
 
-  const handleChangeTab = (tab: Tabs) => () => {
+  const handleChangeTab = (tab: number) => () => {
     setCurrentTab(tab)
   }
 
@@ -70,7 +72,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     setCurrentPair(event.target.value)
   }
   const handleChangeWallet = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentWallet(event.target.value)
+    setCurrentWalletAddress(event.target.value)
   }
 
   const exchanges = useStore(model.$exchanges)
@@ -78,6 +80,9 @@ export const Trade: React.VFC<TradeProps> = () => {
   const settingsWallets = useStore(settingsWalletModel.$wallets)
   const loadingExchanges = useStore(model.fetchExchangesFx.pending)
   const loadingPairs = useStore(model.fetchPairsFx.pending)
+  const adapter = useStore(model.$adapter)
+  const currentWallet = walletNetworkModel.useWalletNetwork()
+  const history = useStore(model.$history)
 
   const wallets = useMemo(
     () =>
@@ -96,8 +101,8 @@ export const Trade: React.VFC<TradeProps> = () => {
   )
 
   const wallet = useMemo(
-    () => walletsMap.get(currentWallet),
-    [currentWallet, walletsMap]
+    () => walletsMap.get(currentWalletAddress),
+    [currentWalletAddress, walletsMap]
   )
 
   useEffect(() => {
@@ -124,7 +129,7 @@ export const Trade: React.VFC<TradeProps> = () => {
 
     if (!firstWallet) return
 
-    setCurrentWallet(firstWallet.id)
+    setCurrentWalletAddress(firstWallet.id)
   }, [wallets])
   useEffect(() => {
     const [firstExchange] = exchanges
@@ -141,28 +146,93 @@ export const Trade: React.VFC<TradeProps> = () => {
     setCurrentPair(firstPair.pairInfo?.address ?? '')
   }, [pairs])
 
+  const pairMap = useMemo(
+    () =>
+      pairs.reduce((acc, pair) => {
+        acc.set(pair.pairInfo?.address, pair)
+
+        return acc
+      }, new Map<string, typeof pairs[number]>()),
+    [pairs]
+  )
+
+  const currentPairObj = useMemo(
+    () => pairMap.get(currentPair),
+    [pairMap, currentPair]
+  )
+  const exchangesMap = useMemo(
+    () =>
+      exchanges.reduce((acc, exchange) => {
+        acc.set(exchange.Name, exchange)
+
+        return acc
+      }, new Map<string, typeof exchanges[number]>()),
+    [exchanges]
+  )
+
+  const currentExchangeObj = useMemo(
+    () => exchangesMap.get(currentExchange),
+    [exchangesMap, currentExchange]
+  )
+
+  const tokens = useMemo(() => {
+    const tokensCp = [...(currentPairObj?.pairInfo?.tokens ?? [])]
+
+    return currentTab > 0 ? tokensCp.reverse() : tokensCp
+  }, [currentPairObj, currentTab])
+
+  const tokensTab = (currentPairObj?.pairInfo?.tokens ?? []).map(
+    ({ symbol }) => symbol
+  )
+
+  const tabNames = {
+    [Selects.SmartSell]: tokensTab,
+    [Selects.BuySell]: Tabs,
+  }
+
+  const tabs = tabNames[currentSelect].length ? (
+    <div className={styles.tabs}>
+      {tabNames[currentSelect].map((tab, index) => (
+        <Typography
+          key={tab}
+          onClick={handleChangeTab(index)}
+          className={clsx(
+            styles.tabItem,
+            currentTab === index && styles.tabItemActive
+          )}
+          as={ButtonBase}
+          transform="uppercase"
+          variant="body2"
+        >
+          {tab}
+        </Typography>
+      ))}
+    </div>
+  ) : null
+
   const SelectComponents = {
-    [Selects.SmartSell]: <TradeSmartSell />,
+    [Selects.SmartSell]: (
+      <>
+        {tabs}
+        <TradeSmartSell
+          router={adapter?.router}
+          swap={adapter?.swap}
+          tokens={tokens}
+          price={history?.h?.at(-1)}
+          exchangeAddress={currentExchangeObj?.Address}
+          transactionDeadline={transactionDeadline}
+          slippage={currentSlippage}
+        />
+      </>
+    ),
     [Selects.BuySell]: (
       <>
-        <div className={styles.tabs}>
-          {Object.values(Tabs).map((tab) => (
-            <Typography
-              key={tab}
-              onClick={handleChangeTab(tab)}
-              className={clsx(styles.tabItem, {
-                [styles.tabBuy]: tab === Tabs.Buy && Tabs.Buy === currentTab,
-                [styles.tabSell]: tab === Tabs.Sell && Tabs.Sell === currentTab,
-              })}
-              as={ButtonBase}
-              transform="uppercase"
-              variant="body2"
-            >
-              {tab}
-            </Typography>
-          ))}
-        </div>
-        <TradeBuySell />
+        {tabs}
+        <TradeBuySell
+          router={adapter?.router}
+          swap={adapter?.swap}
+          tokens={tokens}
+        />
       </>
     ),
   }
@@ -179,13 +249,20 @@ export const Trade: React.VFC<TradeProps> = () => {
     }
   })
 
-  const pairMap = pairs.reduce((acc, pair) => {
-    acc.set(pair.pairInfo?.address, pair)
+  useEffect(() => {
+    if (!currentWallet?.provider || !currentWallet.chainId) return
 
-    return acc
-  }, new Map<string, typeof pairs[number]>())
+    model.fetchAdapterFx({
+      provider: currentWallet.provider,
+      chainId: currentWallet.chainId,
+    })
+  }, [currentWallet])
 
-  const currentPairObj = pairMap.get(currentPair)
+  useEffect(() => {
+    if (!currentPairObj?.pairInfo?.address) return
+
+    model.fetchHistoryFx({ address: currentPairObj.pairInfo.address })
+  }, [currentPairObj?.pairInfo?.address])
 
   return (
     <AppLayout title="Trade">
@@ -197,7 +274,7 @@ export const Trade: React.VFC<TradeProps> = () => {
         {wallets.length ? (
           <Select
             label="Wallet"
-            value={currentWallet}
+            value={currentWalletAddress}
             onChange={handleChangeWallet}
           >
             {wallets.map(({ network, id, name }, index) => (
@@ -243,18 +320,6 @@ export const Trade: React.VFC<TradeProps> = () => {
           onChange={handleChangeExchange}
           value={currentExchange}
         >
-          {config.IS_DEV && (
-            <SelectOption value="Uniswap dev">
-              <img
-                alt=""
-                src="0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D.svg"
-                width="24"
-                height="24"
-                className={styles.pairIcon}
-              />
-              Uniswap dev
-            </SelectOption>
-          )}
           {exchanges.map((exchange, index) => {
             const [firstChar, ...restChars] = Array.from(exchange.Name)
 
@@ -277,11 +342,6 @@ export const Trade: React.VFC<TradeProps> = () => {
           value={currentPair}
           onChange={handleChangePair}
         >
-          {config.IS_DEV && (
-            <SelectOption value="0x18Ba91505DBa079329f2d318aAaEE742787750a4">
-              Pair dev
-            </SelectOption>
-          )}
           {pairs.map((pair, index) => (
             <SelectOption value={pair.pairInfo?.address} key={String(index)}>
               {pair.pairInfo?.ticker}
@@ -399,41 +459,67 @@ export const Trade: React.VFC<TradeProps> = () => {
                   ))
                 }
               </Dropdown>
-              <Typography
-                variant="body3"
-                as="div"
-                className={styles.currentBalance}
-                align="right"
+              <Dropdown
+                control={
+                  <ButtonBase>
+                    <Icon icon="settings" width={24} height={24} />
+                  </ButtonBase>
+                }
+                placement="bottom-end"
+                className={styles.transactionSettings}
               >
-                <Typography variant="inherit" as="div" align="right">
-                  Current Balance
+                <Typography
+                  variant="body2"
+                  className={styles.transactionSettingsTitle}
+                >
+                  Transactions Settings
                 </Typography>
                 <Typography
-                  variant="inherit"
-                  as={ButtonBase}
-                  align="right"
-                  className={styles.currentBalanceValue}
+                  variant="body3"
+                  className={styles.transactionSettingsRowTitle}
                 >
-                  0.50000 ВТС
+                  Slippage
                 </Typography>
-              </Typography>
+                <div className={styles.transactionSettingsRow}>
+                  <TradeInput
+                    rightSide="%"
+                    value={currentSlippage}
+                    onChange={({ currentTarget }) =>
+                      setCurrentSlippage(currentTarget.value)
+                    }
+                  />
+                  <ButtonBase
+                    className={styles.transactionSettingsButton}
+                    onClick={() => setCurrentSlippage('1')}
+                  >
+                    Auto
+                  </ButtonBase>
+                </div>
+                <Typography
+                  variant="body3"
+                  className={styles.transactionSettingsRowTitle}
+                >
+                  Transaction deadline
+                </Typography>
+                <div className={styles.transactionSettingsRow}>
+                  <TradeInput
+                    rightSide="min"
+                    value={transactionDeadline}
+                    onChange={({ currentTarget }) =>
+                      setTransactionDeadline(currentTarget.value)
+                    }
+                  />
+                  <TradePlusMinus
+                    onPlus={(value) => setTransactionDeadline(String(value))}
+                    onMinus={(value) => setTransactionDeadline(String(value))}
+                    min={1}
+                    max={100}
+                    value={Number(transactionDeadline)}
+                  />
+                </div>
+              </Dropdown>
             </div>
             {SelectComponents[currentSelect]}
-            <div className={styles.buttons}>
-              <Typography
-                className={styles.approveTransactions}
-                variant="body3"
-                as="div"
-              >
-                Approve transactions{' '}
-                <Icon icon="info" width="1em" height="1em" />
-              </Typography>
-              <Button color="green">Approve USDT</Button>
-              <Button color="green">Approve ETH</Button>
-              <Button color="green" className={styles.fullWidth}>
-                Create Order
-              </Button>
-            </div>
           </div>
           {!config.IS_DEV && (
             <div className={styles.beta}>
