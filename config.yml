@@ -9,6 +9,8 @@ config:
     DateTimeType: string
     MetricColumnType: string
     UuidType: string
+    BigNumberType: string
+    EthereumAddressType: string
 generates:
   src/api/_generated-fragment-types.ts:
     plugins:

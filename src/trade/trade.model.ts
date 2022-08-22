@@ -50,7 +50,9 @@ export const $exchanges = createStore<
   .on(fetchExchangesFx.doneData, (_, payload) => payload)
   .reset(reset)
 
-export const fetchHistoryFx = createEffect(tradeApi.history)
+export const fetchHistoryFx = createEffect((params: { address: string }) =>
+  tradeApi.history(params.address, '1660012666', '1661164666', 320, '60')
+)
 
 export const $history = createStore<UnitValue<
   typeof fetchHistoryFx.doneData

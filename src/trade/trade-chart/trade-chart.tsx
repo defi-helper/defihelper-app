@@ -9,7 +9,7 @@ import * as styles from './trade-chart.css'
 
 export type TradeChartProps = {
   className?: string
-  address: string
+  address?: string
   loading?: boolean
 }
 

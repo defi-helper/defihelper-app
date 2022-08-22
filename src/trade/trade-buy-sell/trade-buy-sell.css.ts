@@ -2,6 +2,12 @@ import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
+export const form = style({
+  flex: '1 0 auto',
+  display: 'flex',
+  flexDirection: 'column',
+})
+
 export const flex = style({
   display: 'flex',
   flexDirection: 'column',
@@ -64,3 +70,26 @@ export const takeProfitLabel = style([
 export const slider = style({
   maxWidth: 'calc(100% - 108px)',
 })
+
+export const buttons = style({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  padding: '12px 10px 0 10px',
+  gap: 8,
+  marginTop: 'auto',
+})
+
+export const fullWidth = style({
+  gridColumnStart: 1,
+  gridColumnEnd: 3,
+})
+
+export const approveTransactions = style([
+  fullWidth,
+  {
+    display: 'flex',
+    gap: 8,
+    alignItems: 'center',
+    color: theme.colors.textColorGrey,
+  },
+])

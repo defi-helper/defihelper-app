@@ -1,6 +1,7 @@
 import clsx from 'clsx'
+import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Sticky, StickyContainer } from 'react-sticky'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -13,8 +14,10 @@ import { Input } from '~/common/input'
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
+import { networksConfig } from '~/networks-config'
 import { TradeStatusChart } from '~/trade/common/trade-status-chart'
 import * as styles from './trade-orders.css'
+import * as model from './trade-orders.model'
 
 export type TradeOrdersProps = {
   className?: string
@@ -26,13 +29,21 @@ enum Tabs {
 }
 
 export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
-  const orders: string[] = []
+  const orders = useStore(model.$orders)
 
   const [currentTab, setCurrentTab] = useState(Tabs.Active)
 
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
   }
+
+  useEffect(() => {
+    model.fetchOrdersFx({})
+
+    return () => {
+      model.reset()
+    }
+  }, [])
 
   return (
     <StickyContainer>
@@ -71,7 +82,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         </Sticky>
         <div className={styles.body}>
           <div className={styles.bodyInner}>
-            {isEmpty(orders) && (
+            {isEmpty(orders?.list) && (
               <div className={styles.noOrders}>
                 <Icon icon="order" />
                 <Typography variant="body3" align="center">
@@ -79,7 +90,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                 </Typography>
               </div>
             )}
-            {!isEmpty(orders) && (
+            {!isEmpty(orders?.list) && (
               <>
                 <div className={styles.tableHeadings}>
                   <Typography
@@ -116,8 +127,8 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     Actions
                   </Typography>
                 </div>
-                {orders.map((order) => (
-                  <div key={order} className={styles.tableRow}>
+                {orders?.list.map((order) => (
+                  <div key={order.id} className={styles.tableRow}>
                     <div>
                       <Typography
                         variant="body2"
@@ -125,71 +136,96 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                         className={styles.contractName}
                       >
                         <div className={styles.contractIcons}>
-                          <Paper className={styles.contractUnknownTokenIcon}>
-                            <Icon
-                              icon="unknownNetwork"
-                              width="16"
-                              height="16"
-                            />
-                          </Paper>
-                          <img src="" className={styles.contractIcon} alt="" />
+                          {order.tokens.map(({ token }) => (
+                            <React.Fragment key={token.id}>
+                              {token.alias?.logoUrl ? (
+                                <img
+                                  src={token.alias?.logoUrl}
+                                  className={styles.contractIcon}
+                                  alt=""
+                                />
+                              ) : (
+                                <Paper
+                                  className={styles.contractUnknownTokenIcon}
+                                >
+                                  <Icon
+                                    icon="unknownNetwork"
+                                    width="16"
+                                    height="16"
+                                  />
+                                </Paper>
+                              )}
+                            </React.Fragment>
+                          ))}
                         </div>
-                        BTC/USDT
+                        {order.tokens
+                          .map(({ token }) => token.symbol)
+                          .join('/')}
                       </Typography>
                       <Typography className={styles.contractAddress} as="div">
-                        <Icon icon="binance" width="22" height="22" />
+                        {networksConfig[order.owner.network] && (
+                          <Icon
+                            icon={networksConfig[order.owner.network].icon}
+                            width="22"
+                            height="22"
+                          />
+                        )}
                         <Link
                           href={buildExplorerUrl({
-                            address:
-                              '0xD001e8B722ab435277087f68A8cb5f565d9085Af',
-                            network: '1',
+                            address: order.owner.address,
+                            network: order.owner.network,
                           })}
                           target="_blank"
                         >
-                          {cutAccount(
-                            '0xD001e8B722ab435277087f68A8cb5f565d9085Af'
-                          )}
+                          {cutAccount(order.owner.address)}
                         </Link>
                       </Typography>
                     </div>
                     <div>
-                      <div className={styles.contractBalance}>
-                        <Paper className={styles.contractBalanceIcon}>
-                          <Icon icon="unknownNetwork" width="16" height="16" />
-                        </Paper>
-                        <Typography className={styles.fs12} as="div">
-                          {bignumberUtils.format('11111')} BTC
-                        </Typography>
-                      </div>
-                      <div className={styles.contractBalance}>
-                        <img
-                          src=""
-                          className={styles.contractBalanceIcon}
-                          alt=""
-                        />
-                        <Typography className={styles.fs12} as="div">
-                          {bignumberUtils.format('11111')} USDT
-                        </Typography>
-                      </div>
+                      {order.tokens.map(({ token }) => (
+                        <div className={styles.contractBalance} key={token.id}>
+                          {token.alias?.logoUrl ? (
+                            <img
+                              src={token.alias?.logoUrl}
+                              className={styles.contractBalanceIcon}
+                              alt=""
+                            />
+                          ) : (
+                            <Paper className={styles.contractBalanceIcon}>
+                              <Icon
+                                icon="unknownNetwork"
+                                width="16"
+                                height="16"
+                              />
+                            </Paper>
+                          )}
+                          <Typography className={styles.fs12} as="div">
+                            {bignumberUtils.format('0')} {token.symbol}
+                          </Typography>
+                        </div>
+                      ))}
                     </div>
                     <div>
                       <div className={styles.contractBalance}>
                         <Typography className={styles.fs12} as="div">
-                          {dateUtils.format(new Date(), 'DD/MM/YY  h:mma')}
+                          {dateUtils.format(order.createdAt, 'DD/MM/YY  h:mma')}
                         </Typography>
                       </div>
                       <div className={styles.contractBalance}>
                         <Typography className={styles.fs12} as="div">
-                          ID 15940502
+                          ID {order.number}
                         </Typography>
                       </div>
                     </div>
-                    <TradeStatusChart
-                      stopLoss="100"
-                      takeProfit="200"
-                      buy="150"
-                      className={styles.contractStatus}
-                    />
+                    {false && (
+                      <TradeStatusChart
+                        stopLoss="100"
+                        takeProfit="200"
+                        buy="150"
+                        className={styles.contractStatus}
+                      />
+                    )}
+                    <div />
                     <div>
                       <div className={styles.contractBalance}>
                         <img
