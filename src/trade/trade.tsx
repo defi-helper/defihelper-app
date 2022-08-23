@@ -29,8 +29,11 @@ import { useWalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { TradeInput } from './common/trade-input'
 import { TradePlusMinus } from './common/trade-plus-minus'
+import { useDialog } from '~/common/dialog'
+import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './trade.css'
 import * as model from './trade.model'
+import * as tradeOrdersModel from './trade-orders/trade-orders.model'
 
 export type TradeProps = unknown
 
@@ -52,6 +55,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentWalletAddress, setCurrentWalletAddress] = useState('')
   const [currentSlippage, setCurrentSlippage] = useState('1')
   const [transactionDeadline, setTransactionDeadline] = useState('30')
+  const [openConfirmDialog] = useDialog(ConfirmDialog)
 
   const handleConnect = useWalletConnect()
 
@@ -210,6 +214,8 @@ export const Trade: React.VFC<TradeProps> = () => {
     </div>
   ) : null
 
+  const price = history?.h?.at(-1) ?? 0
+
   const SelectComponents = {
     [Selects.SmartSell]: (
       <>
@@ -218,7 +224,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           router={adapter?.router}
           swap={adapter?.swap}
           tokens={tokens}
-          price={history?.h?.at(-1)}
+          price={price}
           exchangeAddress={currentExchangeObj?.Address}
           transactionDeadline={transactionDeadline}
           slippage={currentSlippage}
@@ -259,10 +265,26 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [currentWallet])
 
   useEffect(() => {
-    if (!currentPairObj?.pairInfo?.address) return
+    model.fetchHistoryFx({
+      address: '0x7EFaEf62fDdCCa950418312c6C91Aef321375A00',
+    })
+  }, [])
 
-    model.fetchHistoryFx({ address: currentPairObj.pairInfo.address })
-  }, [currentPairObj?.pairInfo?.address])
+  const handleCancelOrder = async (id: number | string) => {
+    try {
+      await openConfirmDialog()
+
+      const can = await adapter?.router.canCancelOrder(id)
+
+      if (can instanceof Error) throw can
+
+      await adapter?.router.cancelOrder(id)
+
+      tradeOrdersModel.cancelOrder(String(id))
+    } catch {
+      console.error('error')
+    }
+  }
 
   return (
     <AppLayout title="Trade">
@@ -555,7 +577,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           )}
         </Paper>
       </div>
-      <TradeOrders />
+      <TradeOrders price={price} onCancelOrder={handleCancelOrder} />
     </AppLayout>
   )
 }

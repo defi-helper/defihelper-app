@@ -3,12 +3,14 @@ import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
 import React, { useEffect, useState } from 'react'
 import { Sticky, StickyContainer } from 'react-sticky'
+import { SmartTradeSwapHandlerCallDataType } from '~/api'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { ButtonBase } from '~/common/button-base'
 import { cutAccount } from '~/common/cut-account'
 import { dateUtils } from '~/common/date-utils'
+import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
 import { Link } from '~/common/link'
@@ -21,11 +23,19 @@ import * as model from './trade-orders.model'
 
 export type TradeOrdersProps = {
   className?: string
+  price: number
+  onCancelOrder: (id: number | string) => void
 }
 
 enum Tabs {
   Active = 'active',
   History = 'history',
+}
+
+const hasBoughtPrice = (
+  callData: Record<string, unknown>
+): callData is SmartTradeSwapHandlerCallDataType => {
+  return 'boughtPrice' in callData
 }
 
 export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
@@ -127,141 +137,168 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     Actions
                   </Typography>
                 </div>
-                {orders?.list.map((order) => (
-                  <div key={order.id} className={styles.tableRow}>
-                    <div>
-                      <Typography
-                        variant="body2"
-                        as="div"
-                        className={styles.contractName}
-                      >
-                        <div className={styles.contractIcons}>
-                          {order.tokens.map(({ token }) => (
-                            <React.Fragment key={token.id}>
-                              {token.alias?.logoUrl ? (
-                                <img
-                                  src={token.alias?.logoUrl}
-                                  className={styles.contractIcon}
-                                  alt=""
-                                />
-                              ) : (
-                                <Paper
-                                  className={styles.contractUnknownTokenIcon}
-                                >
-                                  <Icon
-                                    icon="unknownNetwork"
-                                    width="16"
-                                    height="16"
-                                  />
-                                </Paper>
-                              )}
-                            </React.Fragment>
-                          ))}
-                        </div>
-                        {order.tokens
-                          .map(({ token }) => token.symbol)
-                          .join('/')}
-                      </Typography>
-                      <Typography className={styles.contractAddress} as="div">
-                        {networksConfig[order.owner.network] && (
-                          <Icon
-                            icon={networksConfig[order.owner.network].icon}
-                            width="22"
-                            height="22"
-                          />
-                        )}
-                        <Link
-                          href={buildExplorerUrl({
-                            address: order.owner.address,
-                            network: order.owner.network,
-                          })}
-                          target="_blank"
+                {orders?.list.map((order) => {
+                  const stopLossTakeProfit = hasBoughtPrice(order.callData)
+                    ? bignumberUtils.minus(
+                        props.price,
+                        order.callData.boughtPrice
+                      )
+                    : '0'
+
+                  return (
+                    <div key={order.id} className={styles.tableRow}>
+                      <div>
+                        <Typography
+                          variant="body2"
+                          as="div"
+                          className={styles.contractName}
                         >
-                          {cutAccount(order.owner.address)}
-                        </Link>
-                      </Typography>
-                    </div>
-                    <div>
-                      {order.tokens.map(({ token }) => (
-                        <div className={styles.contractBalance} key={token.id}>
-                          {token.alias?.logoUrl ? (
-                            <img
-                              src={token.alias?.logoUrl}
-                              className={styles.contractBalanceIcon}
-                              alt=""
+                          <div className={styles.contractIcons}>
+                            {order.tokens.map(({ token }) => (
+                              <React.Fragment key={token.id}>
+                                {token.alias?.logoUrl ? (
+                                  <img
+                                    src={token.alias?.logoUrl}
+                                    className={styles.contractIcon}
+                                    alt=""
+                                  />
+                                ) : (
+                                  <Paper
+                                    className={styles.contractUnknownTokenIcon}
+                                  >
+                                    <Icon
+                                      icon="unknownNetwork"
+                                      width="16"
+                                      height="16"
+                                    />
+                                  </Paper>
+                                )}
+                              </React.Fragment>
+                            ))}
+                          </div>
+                          {order.tokens
+                            .map(({ token }) => token.symbol)
+                            .join('/')}
+                        </Typography>
+                        <Typography className={styles.contractAddress} as="div">
+                          {networksConfig[order.owner.network] && (
+                            <Icon
+                              icon={networksConfig[order.owner.network].icon}
+                              width="22"
+                              height="22"
                             />
-                          ) : (
-                            <Paper className={styles.contractBalanceIcon}>
-                              <Icon
-                                icon="unknownNetwork"
-                                width="16"
-                                height="16"
-                              />
-                            </Paper>
                           )}
+                          <Link
+                            href={buildExplorerUrl({
+                              address: order.owner.address,
+                              network: order.owner.network,
+                            })}
+                            target="_blank"
+                          >
+                            {cutAccount(order.owner.address)}
+                          </Link>
+                        </Typography>
+                      </div>
+                      <div>
+                        {order.tokens.map(({ token }) => (
+                          <div
+                            className={styles.contractBalance}
+                            key={token.id}
+                          >
+                            {token.alias?.logoUrl ? (
+                              <img
+                                src={token.alias?.logoUrl}
+                                className={styles.contractBalanceIcon}
+                                alt=""
+                              />
+                            ) : (
+                              <Paper className={styles.contractBalanceIcon}>
+                                <Icon
+                                  icon="unknownNetwork"
+                                  width="16"
+                                  height="16"
+                                />
+                              </Paper>
+                            )}
+                            <Typography className={styles.fs12} as="div">
+                              {bignumberUtils.format('0')} {token.symbol}
+                            </Typography>
+                          </div>
+                        ))}
+                      </div>
+                      <div>
+                        <div className={styles.contractBalance}>
                           <Typography className={styles.fs12} as="div">
-                            {bignumberUtils.format('0')} {token.symbol}
+                            {dateUtils.format(
+                              order.createdAt,
+                              'DD/MM/YY  h:mma'
+                            )}
                           </Typography>
                         </div>
-                      ))}
-                    </div>
-                    <div>
-                      <div className={styles.contractBalance}>
-                        <Typography className={styles.fs12} as="div">
-                          {dateUtils.format(order.createdAt, 'DD/MM/YY  h:mma')}
-                        </Typography>
+                        <div className={styles.contractBalance}>
+                          <Typography className={styles.fs12} as="div">
+                            ID {order.number}
+                          </Typography>
+                        </div>
                       </div>
-                      <div className={styles.contractBalance}>
-                        <Typography className={styles.fs12} as="div">
-                          ID {order.number}
-                        </Typography>
-                      </div>
-                    </div>
-                    {false && (
-                      <TradeStatusChart
-                        stopLoss="100"
-                        takeProfit="200"
-                        buy="150"
-                        className={styles.contractStatus}
-                      />
-                    )}
-                    <div />
-                    <div>
-                      <div className={styles.contractBalance}>
-                        <img
-                          src=""
-                          className={styles.contractBalanceIcon}
-                          alt=""
+                      {false && (
+                        <TradeStatusChart
+                          stopLoss="100"
+                          takeProfit="200"
+                          buy="150"
+                          className={styles.contractStatus}
                         />
-                        <Typography className={styles.fs12} as="div">
-                          {bignumberUtils.format('11111')}
-                        </Typography>
+                      )}
+                      <div />
+                      <div>
+                        <div className={styles.contractBalance}>
+                          <Icon
+                            className={styles.contractBalanceIcon}
+                            icon="USDT"
+                          />
+                          <Typography className={styles.fs12} as="div">
+                            {bignumberUtils.format(props.price)}
+                          </Typography>
+                        </div>
+                        <div className={styles.contractBalance}>
+                          <Typography className={styles.fs12} as="div">
+                            {bignumberUtils.format(stopLossTakeProfit)}$ /{' '}
+                            {bignumberUtils.format(
+                              bignumberUtils.div(
+                                stopLossTakeProfit,
+                                props.price
+                              )
+                            )}
+                            %
+                          </Typography>
+                        </div>
                       </div>
-                      <div className={styles.contractBalance}>
-                        <Typography className={styles.fs12} as="div">
-                          {bignumberUtils.format('11111')} /{' '}
-                          {bignumberUtils.format('11111')}
-                        </Typography>
+                      <div className={styles.contractActions}>
+                        <ButtonBase>
+                          <Icon width={16} height={16} icon="swap" />
+                        </ButtonBase>
+                        <Dropdown
+                          control={
+                            <ButtonBase>
+                              <Icon
+                                width={16}
+                                height={16}
+                                icon="dots"
+                                className={styles.dots}
+                              />
+                            </ButtonBase>
+                          }
+                        >
+                          <ButtonBase
+                            onClick={() => props.onCancelOrder(order.number)}
+                          >
+                            Cancel order
+                          </ButtonBase>
+                        </Dropdown>
                       </div>
                     </div>
-                    <div className={styles.contractActions}>
-                      <ButtonBase>
-                        <Icon width={16} height={16} icon="swap" />
-                      </ButtonBase>
-                      <ButtonBase>
-                        <Icon width={16} height={16} icon="arrowUp" />
-                      </ButtonBase>
-                      <ButtonBase>
-                        <Icon
-                          width={16}
-                          height={16}
-                          icon="dots"
-                          className={styles.dots}
-                        />
-                      </ButtonBase>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </>
             )}
           </div>

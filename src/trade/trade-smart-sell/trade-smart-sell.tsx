@@ -238,7 +238,17 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               />
             )}
           />
-          <TradePercentagePicker />
+          <TradePercentagePicker
+            onChange={(value) =>
+              setValue(
+                'unit',
+                bignumberUtils.mul(
+                  balanceOf.value,
+                  bignumberUtils.div(value, 100)
+                )
+              )
+            }
+          />
           <div>
             <Controller
               control={control}
@@ -260,7 +270,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             >
               Current Price:{' '}
               <ButtonBase className={styles.currentPriceButton}>
-                {bignumberUtils.format(props.price)} {props.tokens?.[1]?.symbol}
+                {bignumberUtils.format(props.price)} USDT
               </ButtonBase>
             </Typography>
           </div>
