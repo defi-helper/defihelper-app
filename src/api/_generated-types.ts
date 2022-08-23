@@ -6744,7 +6744,7 @@ export type TradeCreateOrderMutation = { __typename?: 'Mutation' } & {
       callData:
         | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
             SmartTradeMockHandlerCallDataType,
-            'tokenIn'
+            'amountIn' | 'amountOut'
           >)
         | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
             SmartTradeSwapHandlerCallDataType,
@@ -6825,7 +6825,7 @@ export type TradeOrderListQuery = { __typename?: 'Query' } & {
             callData:
               | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
                   SmartTradeMockHandlerCallDataType,
-                  'tokenIn'
+                  'amountIn' | 'amountOut'
                 >)
               | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
                   SmartTradeSwapHandlerCallDataType,
