@@ -16,7 +16,6 @@ import {
   Wallet,
   SignMessagePayload,
 } from '~/wallets/common'
-import { toastsService } from '~/toasts'
 import { BlockchainEnum } from '~/api/_generated-types'
 import { networksConfig } from '~/networks-config'
 import type { WavesKeeperConnector } from '~/wallets/common/waves-keeper-connector'
@@ -196,11 +195,3 @@ sample({
   clock: [signMessageEthereumFx.fail, signMessageWavesFx.fail],
   target: diactivateWalletFx,
 })
-
-toastsService.forwardErrors(
-  signMessageEthereumFx.failData,
-  signMessageWavesFx.failData,
-  diactivateWalletFx.failData,
-  updateWalletFx.failData,
-  activateWalletFx.failData
-)
