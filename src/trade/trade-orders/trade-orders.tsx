@@ -3,7 +3,10 @@ import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
 import React, { useEffect, useState } from 'react'
 import { Sticky, StickyContainer } from 'react-sticky'
-import { SmartTradeSwapHandlerCallDataType } from '~/api'
+import {
+  SmartTradeMockHandlerCallDataType,
+  SmartTradeSwapHandlerCallDataType,
+} from '~/api'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
@@ -36,6 +39,12 @@ const hasBoughtPrice = (
   callData: Record<string, unknown>
 ): callData is SmartTradeSwapHandlerCallDataType => {
   return 'boughtPrice' in callData
+}
+
+const hasAmountIn = (
+  callData: Record<string, unknown>
+): callData is SmartTradeMockHandlerCallDataType => {
+  return 'amountIn' in callData
 }
 
 export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
@@ -145,6 +154,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                       )
                     : '0'
 
+                  const tokensAmountInOut = hasAmountIn(order.callData)
+                    ? [order.callData.amountIn, order.callData.amountOut]
+                    : [0, 0]
+
                   return (
                     <div key={order.id} className={styles.tableRow}>
                       <div>
@@ -200,31 +213,36 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                         </Typography>
                       </div>
                       <div>
-                        {order.tokens.map(({ token }) => (
-                          <div
-                            className={styles.contractBalance}
-                            key={token.id}
-                          >
-                            {token.alias?.logoUrl ? (
-                              <img
-                                src={token.alias?.logoUrl}
-                                className={styles.contractBalanceIcon}
-                                alt=""
-                              />
-                            ) : (
-                              <Paper className={styles.contractBalanceIcon}>
-                                <Icon
-                                  icon="unknownNetwork"
-                                  width="16"
-                                  height="16"
+                        {order.tokens.map(({ token }, index) => {
+                          return (
+                            <div
+                              className={styles.contractBalance}
+                              key={token.id}
+                            >
+                              {token.alias?.logoUrl ? (
+                                <img
+                                  src={token.alias?.logoUrl}
+                                  className={styles.contractBalanceIcon}
+                                  alt=""
                                 />
-                              </Paper>
-                            )}
-                            <Typography className={styles.fs12} as="div">
-                              {bignumberUtils.format('0')} {token.symbol}
-                            </Typography>
-                          </div>
-                        ))}
+                              ) : (
+                                <Paper className={styles.contractBalanceIcon}>
+                                  <Icon
+                                    icon="unknownNetwork"
+                                    width="16"
+                                    height="16"
+                                  />
+                                </Paper>
+                              )}
+                              <Typography className={styles.fs12} as="div">
+                                {bignumberUtils.format(
+                                  tokensAmountInOut[index]
+                                )}{' '}
+                                {token.symbol}
+                              </Typography>
+                            </div>
+                          )
+                        })}
                       </div>
                       <div>
                         <div className={styles.contractBalance}>

@@ -13,7 +13,8 @@ export const TRADE_CREATE_ORDER = gql`
       handler
       callData {
         ... on SmartTradeMockHandlerCallDataType {
-          tokenIn
+          amountIn
+          amountOut
         }
         ... on SmartTradeSwapHandlerCallDataType {
           exchange
