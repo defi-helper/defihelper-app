@@ -141,6 +141,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           const dialogs = {
             stake: () =>
               openStakeDialog({
+                contractId: props.contractId,
                 methods: contract.actions?.stake.methods,
                 hasBuyLp: Boolean(props.buyLiquidity?.pair),
                 onSubmit: () => {

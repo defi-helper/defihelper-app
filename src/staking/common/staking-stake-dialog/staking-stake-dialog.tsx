@@ -27,6 +27,7 @@ export type StakingStakeDialogProps = {
   methods?: AdapterActions['stake']['methods']
   onSubmit: () => void
   hasBuyLp: boolean
+  contractId: string
 }
 
 export const StakingStakeDialog: React.VFC<StakingStakeDialogProps> = (
@@ -120,7 +121,7 @@ export const StakingStakeDialog: React.VFC<StakingStakeDialogProps> = (
     event.preventDefault()
 
     props.onCancel()
-    history.push(paths.LPTokens)
+    history.push(`${paths.LPTokens}?contractId=${props.contractId}`)
   }
 
   useEffect(() => {
