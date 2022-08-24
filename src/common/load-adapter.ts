@@ -312,6 +312,10 @@ export type BuyLiquidity = {
       amount: string,
       slippage: string
     ): Promise<{ tx?: { wait: () => Promise<{ transactionHash?: string }> } }>
+    fee(): Promise<{
+      native: string
+      usd: string
+    }>
   }
 }
 
@@ -329,6 +333,10 @@ export type SellLiquidity = {
       amount: string,
       slippage: number | string
     ): Promise<{ tx?: { wait: () => Promise<{ transactionHash?: string }> } }>
+    fee(): Promise<{
+      native: string
+      usd: string
+    }>
   }
 }
 

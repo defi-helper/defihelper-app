@@ -20,6 +20,7 @@ export type LPTokensBuySellDialogProps = {
     symbol: string
     address: string
   }[]
+  tokenSymbol: string
 }
 
 const Tabs = ['BUY', 'SELL'] as const
@@ -41,6 +42,7 @@ export const LPTokensBuySellDialog: React.VFC<LPTokensBuySellDialogProps> = (
         onConfirm={props.onConfirm}
         onSubmit={props.onSubmit}
         onCancel={props.onCancel}
+        tokenSymbol={props.tokenSymbol}
       />
     ),
     [Tabs[1]]: (
@@ -50,6 +52,7 @@ export const LPTokensBuySellDialog: React.VFC<LPTokensBuySellDialogProps> = (
         onConfirm={props.onConfirm}
         onSubmit={props.onSubmit}
         onCancel={props.onCancel}
+        tokenSymbol={props.tokenSymbol}
       />
     ),
   }
