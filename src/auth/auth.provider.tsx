@@ -8,6 +8,7 @@ import {
   AuthVideoDialog,
   AuthMergeWallets,
   AuthSignMessageDialog,
+  AuthChangeNetworkDialog,
 } from './common'
 import * as model from './auth.model'
 
@@ -23,6 +24,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
   const [openAuthSignMessageDialog, closeAuthSignMessageDialog] = useDialog(
     AuthSignMessageDialog
   )
+  const [openChangeNetworkDialog] = useDialog(AuthChangeNetworkDialog)
 
   const ability = useMemo(() => buildAbilityFor(user?.role), [user])
 
@@ -46,6 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = (props) => {
       openMergeWalletsDialog,
       openAuthSignMessageDialog,
       closeAuthSignMessageDialog,
+      openChangeNetworkDialog,
     })
 
     return () => model.close()
