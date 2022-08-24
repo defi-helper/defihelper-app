@@ -89,3 +89,7 @@ export const serviceFeeDropdown = style({
   zIndex: 1001,
   padding: 16,
 })
+
+export const amountOut = style({
+  marginRight: 'auto',
+})

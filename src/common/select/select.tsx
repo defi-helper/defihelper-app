@@ -167,11 +167,13 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                 className={styles.input}
                 data-placeholder={props.placeholder}
               >
+                {props.leftSide}
                 <div className={styles.inputInner}>
                   {!isEmpty(renderValueArr)
                     ? renderValueArr
                     : props.placeholder}{' '}
                 </div>
+                {props.rightSide}
                 {props.clearable && !isEmpty(localValue) ? (
                   <ButtonBase
                     onClick={handleClearValue}
