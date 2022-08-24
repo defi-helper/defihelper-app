@@ -337,6 +337,7 @@ export type SellLiquidity = {
       native: string
       usd: string
     }>
+    amountOut(tokenAddress: string, amount: string): Promise<string>
   }
 }
 

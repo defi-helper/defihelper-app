@@ -185,6 +185,10 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
     setError(true)
   }, [approveState.error, sellState.error])
 
+  const amountOut = useAsync(async () => {
+    return props.sellLiquidityAdapter.methods.amountOut(tokenAddress, amount)
+  }, [props.sellLiquidityAdapter.methods.amountOut, tokenAddress, amount])
+
   return (
     <>
       {!tokens.value ? (
@@ -241,7 +245,12 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
               render={({ field }) => (
                 <Select
                   {...field}
-                  label="You will get"
+                  label="You will get (approximately)"
+                  leftSide={
+                    <span className={styles.amountOut}>
+                      ≈ {bignumberUtils.format(amountOut.value)}
+                    </span>
+                  }
                   value={field.value}
                   className={styles.input}
                   disabled={formState.isSubmitting}
