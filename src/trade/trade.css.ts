@@ -1,4 +1,4 @@
-import { style } from '@vanilla-extract/css'
+import { globalStyle, style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
@@ -143,10 +143,11 @@ export const tradeSellSelect = style({
 })
 
 export const tradeSelectHeader = style({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
   marginBottom: 26,
   padding: '0 10px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
 })
 
 export const tabs = style({
@@ -162,47 +163,35 @@ export const tabs = style({
 export const tabItem = style({
   borderRadius: 6,
   padding: 6,
+  overflow: 'hidden',
+  position: 'relative',
+  zIndex: 1,
+
+  ':before': {
+    content: '""',
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    top: 0,
+    left: 0,
+    opacity: 0,
+    zIndex: -1,
+  },
 })
 
-export const tabBuy = style({
+globalStyle(`${tabItem}:first-child:before`, {
   background: theme.colors.common.green2,
 })
 
-export const tabSell = style({
+globalStyle(`${tabItem}:last-child:before`, {
   background: theme.colors.common.red1,
 })
 
-export const currentBalance = style({
-  fontSize: 12,
-  lineHeight: '14px',
-})
-
-export const currentBalanceValue = style({
-  color: theme.colors.common.blue1,
-})
-
-export const buttons = style({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  padding: '12px 10px 0 10px',
-  gap: 8,
-  marginTop: 'auto',
-})
-
-export const fullWidth = style({
-  gridColumnStart: 1,
-  gridColumnEnd: 3,
-})
-
-export const approveTransactions = style([
-  fullWidth,
-  {
-    display: 'flex',
-    gap: 8,
-    alignItems: 'center',
-    color: theme.colors.textColorGrey,
+export const tabItemActive = style({
+  ':before': {
+    opacity: 1,
   },
-])
+})
 
 export const pairIcon = style({
   width: 24,
@@ -277,4 +266,37 @@ export const tickerIcons = style({
   display: 'flex',
   width: 44,
   alignItems: 'center',
+})
+
+export const transactionSettings = style({
+  width: 208,
+})
+
+export const transactionSettingsTitle = style({
+  marginBottom: 16,
+})
+
+export const transactionSettingsRowTitle = style({
+  marginBottom: 9,
+  color: theme.colors.textColorGrey,
+})
+
+export const transactionSettingsRow = style({
+  display: 'grid',
+  gridTemplateColumns: '100px 1fr',
+  alignItems: 'flex-end',
+  gap: 8,
+
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 8,
+    },
+  },
+})
+
+export const transactionSettingsButton = style({
+  borderRadius: 6,
+  height: 32,
+  border: `1px solid ${theme.colors.border}`,
+  justifyContent: 'center',
 })

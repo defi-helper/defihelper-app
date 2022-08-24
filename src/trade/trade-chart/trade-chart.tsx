@@ -9,7 +9,7 @@ import * as styles from './trade-chart.css'
 
 export type TradeChartProps = {
   className?: string
-  address: string
+  address?: string
   loading?: boolean
 }
 
@@ -17,6 +17,8 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
   const [themeMode = 'light'] = useTheme()
 
   useEffect(() => {
+    if (props.loading) return
+
     localStorage.setItem(
       'tradingview.IntervalWidget.quicks',
       JSON.stringify(['1', '5', '15', '60', '240', 'D'])
@@ -64,7 +66,7 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
     return () => {
       tradingView.remove()
     }
-  }, [props.address, themeMode])
+  }, [props.address, themeMode, props.loading])
 
   return props.loading ? (
     <div className={styles.loader}>

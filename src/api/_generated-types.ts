@@ -15,11 +15,11 @@ export type Scalars = {
   Int: number
   Float: number
   /** Big number */
-  BigNumberType: any
+  BigNumberType: string
   /** Date and time */
   DateTimeType: string
   /** Address of ethereum blockchain */
-  EthereumAddressType: any
+  EthereumAddressType: string
   /** Address of ethereum transaction hash */
   EthereumTransactionHashType: any
   /** Metric column */
@@ -2316,6 +2316,19 @@ export type SmartTradeOrderCallDataType =
   | SmartTradeMockHandlerCallDataType
   | SmartTradeSwapHandlerCallDataType
 
+export enum SmartTradeOrderCallHistoryStatusEnum {
+  Pending = 'pending',
+  Succeeded = 'succeeded',
+  Error = 'error',
+}
+
+export type SmartTradeOrderCallHistoryType = {
+  __typename?: 'SmartTradeOrderCallHistoryType'
+  transaction?: Maybe<Scalars['EthereumTransactionHashType']>
+  status: SmartTradeOrderCallHistoryStatusEnum
+  errorReason: Scalars['String']
+}
+
 export enum SmartTradeOrderHandlerTypeEnum {
   SmartTradeMockHandler = 'SmartTradeMockHandler',
   SmartTradeSwapHandler = 'SmartTradeSwapHandler',
@@ -2361,16 +2374,25 @@ export enum SmartTradeOrderStatusEnum {
   Canceled = 'canceled',
 }
 
+export type SmartTradeOrderTokenLinkType = {
+  __typename?: 'SmartTradeOrderTokenLinkType'
+  token: TokenType
+  type: SmartTradeOrderTokenLinkTypeEnum
+}
+
+export enum SmartTradeOrderTokenLinkTypeEnum {
+  In = 'in',
+  Out = 'out',
+}
+
 export type SmartTradeOrderType = {
   __typename?: 'SmartTradeOrderType'
   /** Identificator */
   id: Scalars['UuidType']
-  /** Blockchain network id */
-  network: Scalars['String']
   /** Order number */
   number: Scalars['String']
-  /** Owner address */
-  owner: Scalars['EthereumAddressType']
+  /** Owner wallet */
+  owner: WalletBlockchainType
   /** Handler contract address */
   handler: Scalars['EthereumAddressType']
   /** Handler call data */
@@ -2379,6 +2401,8 @@ export type SmartTradeOrderType = {
   status: SmartTradeOrderStatusEnum
   /** Transaction hash */
   tx: Scalars['EthereumTransactionHashType']
+  lastCall?: Maybe<SmartTradeOrderCallHistoryType>
+  tokens: Array<SmartTradeOrderTokenLinkType>
   /** Is order confirmed on blockchain */
   confirmed: Scalars['Boolean']
   /** Date of created */
@@ -2389,11 +2413,11 @@ export type SmartTradeSwapHandlerCallDataType = {
   __typename?: 'SmartTradeSwapHandlerCallDataType'
   exchange: Scalars['EthereumAddressType']
   path: Array<Scalars['EthereumAddressType']>
-  direction: SwapHandlerCallDataDirectionEnum
   amountIn: Scalars['BigNumberType']
-  amountOut: Scalars['BigNumberType']
-  amountOutMin: Scalars['BigNumberType']
-  slippage?: Maybe<Scalars['Float']>
+  boughtPrice: Scalars['BigNumberType']
+  stopLoss?: Maybe<SwapHandlerCallDataRouteType>
+  takeProfit?: Maybe<SwapHandlerCallDataRouteType>
+  deadline: Scalars['Int']
 }
 
 export type SmartTradeSwapOrderCreateCallDataInputType = {
@@ -2401,20 +2425,20 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   pair: Scalars['EthereumAddressType']
   path: Array<Scalars['EthereumAddressType']>
   tokenInDecimals: Scalars['Int']
-  amountIn: Scalars['BigNumberType']
   tokenOutDecimals: Scalars['Int']
-  amountOut: Scalars['BigNumberType']
-  amountOutMin: Scalars['BigNumberType']
-  slippage: Scalars['Float']
-  direction: SwapHandlerCallDataDirectionEnum
+  amountIn: Scalars['BigNumberType']
+  boughtPrice: Scalars['BigNumberType']
+  stopLoss?: Maybe<SwapOrderCallDataRouteInputType>
+  takeProfit?: Maybe<SwapOrderCallDataRouteInputType>
+  /** Deadline seconds */
+  deadline: Scalars['Int']
 }
 
 export type SmartTradeSwapOrderCreateInputType = {
-  network: Scalars['String']
   /** Order identificator */
   number: Scalars['String']
-  /** Owner wallet address */
-  owner: Scalars['EthereumAddressType']
+  /** Owner wallet */
+  owner: Scalars['UuidType']
   /** Handler contract address */
   handler: Scalars['EthereumAddressType']
   /** Handler raw call data */
@@ -2607,11 +2631,17 @@ export type SubscriptionOnBillingTransferUpdatedArgs = {
   filter?: Maybe<OnTransferUpdatedFilterInputType>
 }
 
-export enum SwapHandlerCallDataDirectionEnum {
-  /** Take profit */
-  Gt = 'gt',
-  /** Stop loss */
-  Lt = 'lt',
+export type SwapHandlerCallDataRouteType = {
+  __typename?: 'SwapHandlerCallDataRouteType'
+  amountOut: Scalars['BigNumberType']
+  amountOutMin: Scalars['BigNumberType']
+  slippage: Scalars['Float']
+}
+
+export type SwapOrderCallDataRouteInputType = {
+  amountOut: Scalars['BigNumberType']
+  amountOutMin: Scalars['BigNumberType']
+  slippage: Scalars['Float']
 }
 
 export type TokenAlias = {
@@ -6696,6 +6726,161 @@ export type TradeAuthMutation = { __typename?: 'Mutation' } & {
       'accessToken' | 'tokenExpired'
     >
   >
+}
+
+export type TradeCreateOrderMutationVariables = Exact<{
+  input: SmartTradeSwapOrderCreateInputType
+}>
+
+export type TradeCreateOrderMutation = { __typename?: 'Mutation' } & {
+  smartTradeSwapOrderCreate: { __typename?: 'SmartTradeOrderType' } & Pick<
+    SmartTradeOrderType,
+    'id' | 'number' | 'handler' | 'status' | 'tx' | 'confirmed' | 'createdAt'
+  > & {
+      owner: { __typename?: 'WalletBlockchainType' } & Pick<
+        WalletBlockchainType,
+        'id' | 'network' | 'address'
+      >
+      callData:
+        | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
+            SmartTradeMockHandlerCallDataType,
+            'amountIn' | 'amountOut'
+          >)
+        | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
+            SmartTradeSwapHandlerCallDataType,
+            'exchange' | 'boughtPrice'
+          >)
+      lastCall?: Maybe<
+        { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
+          SmartTradeOrderCallHistoryType,
+          'status' | 'transaction' | 'errorReason'
+        >
+      >
+      tokens: Array<
+        { __typename?: 'SmartTradeOrderTokenLinkType' } & Pick<
+          SmartTradeOrderTokenLinkType,
+          'type'
+        > & {
+            token: { __typename?: 'TokenType' } & Pick<
+              TokenType,
+              | 'id'
+              | 'blockchain'
+              | 'network'
+              | 'address'
+              | 'name'
+              | 'symbol'
+              | 'decimals'
+              | 'priceFeedNeeded'
+            > & {
+                alias?: Maybe<
+                  { __typename?: 'TokenAlias' } & Pick<
+                    TokenAlias,
+                    'id' | 'name' | 'logoUrl' | 'symbol'
+                  >
+                >
+                priceFeed?: Maybe<
+                  | ({ __typename?: 'TokenPriceFeedCoingeckoIdType' } & Pick<
+                      TokenPriceFeedCoingeckoIdType,
+                      'id' | 'type'
+                    >)
+                  | ({
+                      __typename?: 'TokenPriceFeedCoingeckoAddressType'
+                    } & Pick<
+                      TokenPriceFeedCoingeckoAddressType,
+                      'type' | 'platform' | 'address'
+                    >)
+                >
+              }
+          }
+      >
+    }
+}
+
+export type TradeOrderListQueryVariables = Exact<{
+  filter?: Maybe<SmartTradeOrderListFilterInputType>
+  sort?: Maybe<
+    Array<SmartTradeOrderListSortInputType> | SmartTradeOrderListSortInputType
+  >
+  pagination?: Maybe<SmartTradeOrderListPaginationInputType>
+}>
+
+export type TradeOrderListQuery = { __typename?: 'Query' } & {
+  smartTradeOrders: { __typename?: 'SmartTradeOrderListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'SmartTradeOrderType' } & Pick<
+          SmartTradeOrderType,
+          | 'id'
+          | 'number'
+          | 'handler'
+          | 'status'
+          | 'tx'
+          | 'confirmed'
+          | 'createdAt'
+        > & {
+            owner: { __typename?: 'WalletBlockchainType' } & Pick<
+              WalletBlockchainType,
+              'id' | 'network' | 'address'
+            >
+            callData:
+              | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
+                  SmartTradeMockHandlerCallDataType,
+                  'amountIn' | 'amountOut'
+                >)
+              | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
+                  SmartTradeSwapHandlerCallDataType,
+                  'exchange' | 'boughtPrice'
+                >)
+            lastCall?: Maybe<
+              { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
+                SmartTradeOrderCallHistoryType,
+                'status' | 'transaction' | 'errorReason'
+              >
+            >
+            tokens: Array<
+              { __typename?: 'SmartTradeOrderTokenLinkType' } & Pick<
+                SmartTradeOrderTokenLinkType,
+                'type'
+              > & {
+                  token: { __typename?: 'TokenType' } & Pick<
+                    TokenType,
+                    | 'id'
+                    | 'blockchain'
+                    | 'network'
+                    | 'address'
+                    | 'name'
+                    | 'symbol'
+                    | 'decimals'
+                    | 'priceFeedNeeded'
+                  > & {
+                      alias?: Maybe<
+                        { __typename?: 'TokenAlias' } & Pick<
+                          TokenAlias,
+                          'id' | 'name' | 'logoUrl' | 'symbol'
+                        >
+                      >
+                      priceFeed?: Maybe<
+                        | ({
+                            __typename?: 'TokenPriceFeedCoingeckoIdType'
+                          } & Pick<
+                            TokenPriceFeedCoingeckoIdType,
+                            'id' | 'type'
+                          >)
+                        | ({
+                            __typename?: 'TokenPriceFeedCoingeckoAddressType'
+                          } & Pick<
+                            TokenPriceFeedCoingeckoAddressType,
+                            'type' | 'platform' | 'address'
+                          >)
+                      >
+                    }
+                }
+            >
+          }
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
 }
 
 export type UsersQueryVariables = Exact<{
