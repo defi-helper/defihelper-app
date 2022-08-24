@@ -5,6 +5,7 @@ import { loadAdapter } from '~/common/load-adapter'
 import { buildAdaptersUrl } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { tradeApi } from './common/trade.api'
+import { config } from '~/config'
 
 export const reset = createEvent()
 
@@ -17,6 +18,7 @@ export const networks: Record<string, string> = {
   25: 'cronos',
   43114: 'avalanch',
   106: 'velas',
+  ...(config.IS_DEV ? { 5: 'eth' } : {}),
 }
 
 export const fetchPairsFx = createEffect(
