@@ -64,7 +64,7 @@ export const paths = {
 
   bridges: '/bridges',
 
-  autostaking: '/autostaking',
+  autostaking: '/invest',
 
   admin: '/admin',
 
