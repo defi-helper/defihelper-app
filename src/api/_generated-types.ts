@@ -21,7 +21,7 @@ export type Scalars = {
   /** Address of ethereum blockchain */
   EthereumAddressType: string
   /** Address of ethereum transaction hash */
-  EthereumTransactionHashType: any
+  EthereumTransactionHashType: string
   /** Metric column */
   MetricColumnType: string
   /** Identificator */

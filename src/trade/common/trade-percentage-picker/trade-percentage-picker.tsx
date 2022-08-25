@@ -6,18 +6,23 @@ import * as styles from './trade-percentage-picker.css'
 
 export type TradePercentagePickerProps = {
   className?: string
-  onChange?: (value: number) => void
+  onChange?: (value: string) => void
+  value?: string
 }
 
-const PERCENTAGES = [5, 10, 25, 50, 100]
+const PERCENTAGES = [5, 10, 25, 50, 100].map(String)
 
 export const TradePercentagePicker: React.VFC<TradePercentagePickerProps> = (
   props
 ) => {
-  const [currentValue, setCurrentValue] = useState(PERCENTAGES[0])
+  const [currentValue, setCurrentValue] = useState('')
 
-  const handleChange = (percent: number) => () => {
-    setCurrentValue(percent)
+  const handleChange = (percent: string) => () => {
+    if (currentValue === percent) {
+      setCurrentValue('')
+    } else {
+      setCurrentValue(percent)
+    }
   }
 
   useEffect(() => {

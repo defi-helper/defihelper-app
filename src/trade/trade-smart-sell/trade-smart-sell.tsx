@@ -16,7 +16,9 @@ import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
 import { Icon } from '~/common/icon'
 import { Button } from '~/common/button'
 import { config } from '~/config'
-import { authModel } from '~/auth'
+import { WalletConnect } from '~/wallets/wallet-connect'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { settingsWalletModel } from '~/settings/settings-wallets'
 import * as styles from './trade-smart-sell.css'
 import * as model from './trade-smart-sell.model'
 
@@ -48,7 +50,8 @@ type FormValues = {
 }
 
 export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
-  const user = useStore(authModel.$user)
+  const currentWallet = useStore(walletNetworkModel.$wallet)
+  const wallets = useStore(settingsWalletModel.$wallets)
 
   const { handleSubmit, control, watch, setValue, formState } =
     useForm<FormValues>({
@@ -76,12 +79,15 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const total = watch('total')
 
   useEffect(() => {
-    setValue('total', bignumberUtils.mul(unit, price))
+    setValue(
+      'total',
+      bignumberUtils.toFixed(bignumberUtils.mul(unit, price), 6)
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unit, price])
 
   useEffect(() => {
-    setValue('price', String(props.price ?? '0'))
+    setValue('price', bignumberUtils.toFixed(String(props.price ?? '0'), 6))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.price])
 
@@ -110,9 +116,29 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   }
 
   const handleOnSubmit = handleSubmit(async (formValues) => {
-    if (!props.tokens || !props.exchangeAddress || !user) return
+    if (!props.tokens || !props.exchangeAddress || !currentWallet) return
+
+    const findedWallet = wallets.find((wallet) => {
+      const sameAddreses =
+        String(currentWallet.chainId) === 'main'
+          ? currentWallet.account === wallet.address
+          : currentWallet.account?.toLowerCase() === wallet.address
+
+      return sameAddreses && String(currentWallet.chainId) === wallet.network
+    })
+
+    if (!findedWallet) return
 
     const path = props.tokens.map(({ address }) => address)
+
+    const getAmountOut = (percent: number) =>
+      bignumberUtils.toFixed(
+        bignumberUtils.plus(
+          bignumberUtils.mul(bignumberUtils.div(percent, 100), total),
+          total
+        ),
+        6
+      )
 
     try {
       const result = await props.swap?.createOrder(
@@ -120,19 +146,29 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         path,
         formValues.unit,
         formValues.stopLoss
-          ? { amountOut: formValues.stopLossValue, slippage: props.slippage }
+          ? {
+              amountOut: getAmountOut(stopLossPercent),
+              slippage: props.slippage,
+            }
           : null,
         formValues.takeProfit
-          ? { amountOut: formValues.takeProfitValue, slippage: props.slippage }
+          ? {
+              amountOut: getAmountOut(takeProfitPercent),
+              slippage: props.slippage,
+            }
           : null,
         { token: formValues.unit }
       )
 
       if (!result) throw new Error('something went wrong')
 
+      const tx = (await result.tx?.wait())?.transactionHash
+
+      if (!tx) throw new Error('something went wrong')
+
       await model.createOrderFx({
         number: await result.getOrderNumber(),
-        owner: user.id,
+        owner: findedWallet.id,
         handler: result.handler,
         callDataRaw: result.callDataRaw,
         callData: {
@@ -145,10 +181,10 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           boughtPrice: formValues.price,
           deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
         },
-        tx: result.tx,
+        tx,
       })
-    } catch {
-      console.error('error')
+    } catch (e) {
+      console.error(e)
     }
   })
 
@@ -158,23 +194,29 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   useEffect(() => {
     setValue(
       'takeProfitValue',
-      bignumberUtils.plus(
-        bignumberUtils.mul(bignumberUtils.div(takeProfitPercent, 100), total),
-        total
+      bignumberUtils.toFixed(
+        bignumberUtils.plus(
+          bignumberUtils.mul(bignumberUtils.div(takeProfitPercent, 100), price),
+          price
+        ),
+        6
       )
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [total, takeProfitPercent])
+  }, [price, takeProfitPercent])
   useEffect(() => {
     setValue(
       'stopLossValue',
-      bignumberUtils.plus(
-        bignumberUtils.mul(bignumberUtils.div(stopLossPercent, 100), total),
-        total
+      bignumberUtils.toFixed(
+        bignumberUtils.plus(
+          bignumberUtils.mul(bignumberUtils.div(stopLossPercent, 100), price),
+          price
+        ),
+        6
       )
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [total, stopLossPercent])
+  }, [price, stopLossPercent])
 
   const handleChangeTakeProfitValue = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -182,7 +224,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     setValue(
       'takeProfitPercent',
       Number(
-        bignumberUtils.floor(
+        bignumberUtils.toFixed(
           bignumberUtils.div(
             event.currentTarget.value,
             bignumberUtils.mul(total, 99)
@@ -198,7 +240,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     setValue(
       'stopLossPercent',
       Number(
-        bignumberUtils.floor(
+        bignumberUtils.toFixed(
           bignumberUtils.div(
             event.currentTarget.value,
             bignumberUtils.mul(total, 100)
@@ -208,6 +250,13 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       )
     )
   }
+
+  useEffect(() => {
+    if (!balanceOf.value) return
+
+    setValue('unit', balanceOf.value)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balanceOf.value])
 
   return (
     <form className={styles.form} onSubmit={handleOnSubmit}>
@@ -242,10 +291,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             onChange={(value) =>
               setValue(
                 'unit',
-                bignumberUtils.mul(
-                  balanceOf.value,
-                  bignumberUtils.div(value, 100)
-                )
+                bignumberUtils.mul(unit, bignumberUtils.div(value, 100))
               )
             }
           />
@@ -364,31 +410,49 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         </div>
       </div>
       <div className={styles.buttons}>
-        <Typography
-          className={styles.approveTransactions}
-          variant="body3"
-          as="div"
+        {!isApproved.value && bignumberUtils.gt(unit, 0) && (
+          <>
+            <Typography
+              className={styles.approveTransactions}
+              variant="body3"
+              as="div"
+            >
+              Approve transactions <Icon icon="info" width="1em" height="1em" />
+            </Typography>
+            <WalletConnect
+              fallback={
+                <Button color="green" className={styles.fullWidth}>
+                  Approve {props.tokens?.[0]?.symbol}
+                </Button>
+              }
+            >
+              <Button
+                color="green"
+                className={styles.fullWidth}
+                onClick={handleApprove}
+                loading={approve.loading}
+              >
+                Approve {props.tokens?.[0]?.symbol}
+              </Button>
+            </WalletConnect>
+          </>
+        )}
+        <WalletConnect
+          fallback={
+            <Button color="green" className={styles.fullWidth}>
+              Create Order
+            </Button>
+          }
         >
-          Approve transactions <Icon icon="info" width="1em" height="1em" />
-        </Typography>
-        {!isApproved.value && (
           <Button
             color="green"
             className={styles.fullWidth}
-            onClick={handleApprove}
-            loading={approve.loading}
+            type="submit"
+            loading={formState.isSubmitting}
           >
-            Approve {props.tokens?.[0]?.symbol}
+            Create Order
           </Button>
-        )}
-        <Button
-          color="green"
-          className={styles.fullWidth}
-          type="submit"
-          loading={formState.isSubmitting}
-        >
-          Create Order
-        </Button>
+        </WalletConnect>
       </div>
     </form>
   )
