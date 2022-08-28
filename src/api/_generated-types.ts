@@ -21,7 +21,7 @@ export type Scalars = {
   /** Address of ethereum blockchain */
   EthereumAddressType: string
   /** Address of ethereum transaction hash */
-  EthereumTransactionHashType: any
+  EthereumTransactionHashType: string
   /** Metric column */
   MetricColumnType: string
   /** Identificator */
@@ -842,6 +842,7 @@ export type ContractListFilterInputType = {
   hidden?: Maybe<Scalars['Boolean']>
   deprecated?: Maybe<Scalars['Boolean']>
   userLink?: Maybe<ContractUserLinkTypeEnum>
+  risk?: Maybe<ContractRiskFactorEnum>
   automate?: Maybe<ContractListAutomateFilterInputType>
   search?: Maybe<Scalars['String']>
 }
@@ -868,6 +869,7 @@ export enum ContractListSortInputTypeColumnEnum {
   AprWeekReal = 'aprWeekReal',
   AprBoosted = 'aprBoosted',
   MyStaked = 'myStaked',
+  RiskFactor = 'riskFactor',
 }
 
 export type ContractListType = {
@@ -912,6 +914,7 @@ export type ContractMetricType = {
   aprWeek: Scalars['String']
   aprMonth: Scalars['String']
   aprYear: Scalars['String']
+  risk: ContractRiskFactorEnum
   aprWeekReal?: Maybe<Scalars['String']>
   myStaked: Scalars['String']
   myStakedChange: MetricChangeType
@@ -922,6 +925,13 @@ export type ContractMetricType = {
 
 export type ContractMetricWalletFilterInputType = {
   type?: Maybe<Array<WalletBlockchainTypeEnum>>
+}
+
+export enum ContractRiskFactorEnum {
+  NotCalculated = 'notCalculated',
+  Low = 'low',
+  Moderate = 'moderate',
+  High = 'high',
 }
 
 export type ContractTokenLinkType = {
@@ -4592,6 +4602,7 @@ export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
               | 'myStaked'
               | 'aprWeekReal'
               | 'myAPYBoost'
+              | 'risk'
             >
             tokens: { __typename?: 'ContractTokenLinkType' } & {
               stake: Array<

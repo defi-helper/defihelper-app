@@ -48,15 +48,6 @@ export const grid = style({
   },
 })
 
-export const mainChart = style({
-  '@media': {
-    [theme.mediaQueries.md()]: {
-      gridColumnStart: 1,
-      gridColumnEnd: 3,
-    },
-  },
-})
-
 export const section = style({
   selectors: {
     '&:not(:last-child)': {

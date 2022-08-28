@@ -36,7 +36,6 @@ import { StakingAutomates } from '~/staking/staking-automates'
 import { Loader } from '~/common/loader'
 import { ButtonBase } from '~/common/button-base'
 import { paths } from '~/paths'
-import { ProtocolEstimatedChart } from '~/protocols/protocol-estimated-chart'
 import { ProtocolTvlChart } from '~/protocols/protocol-tvl-chart'
 import { ProtocolUniqueWalletsChart } from '~/protocols/protocol-unique-wallets-chart'
 import { ProtocolMediaActivity } from '../protocol-media-activity'
@@ -276,9 +275,6 @@ export const ProtocolDetail: React.FC = () => {
                             <ProtocolCoinBalanceChart
                               contracts={protocol.contracts}
                             />
-                          </LazyLoad>
-                          <LazyLoad height={HEIGHT}>
-                            <ProtocolEstimatedChart metric={protocol.metric} />
                           </LazyLoad>
                         </ProtocolCharts>
                         <LazyLoad height={HEIGHT}>

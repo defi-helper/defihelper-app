@@ -39,6 +39,7 @@ export const AUTOSTAKING_STAKING_CONTRACTS = gql`
           myStaked
           aprWeekReal
           myAPYBoost
+          risk
         }
         tokens {
           stake {
