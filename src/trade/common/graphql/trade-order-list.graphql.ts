@@ -19,6 +19,7 @@ export const TRADE_ORDER_LIST = gql`
           id
           network
           address
+          name
         }
         handler
         callData {
