@@ -128,7 +128,7 @@ export const tradeApi = {
         data: config.IS_DEV
           ? [
               {
-                Icon: 'Uniswap dev',
+                Icon: 'https://whattofarm.io/assets/dex/0x800b052609c355cA8103E06F022aA30647eAd60a',
                 Name: 'Uniswap dev',
                 Address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
               },

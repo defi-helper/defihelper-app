@@ -73,9 +73,7 @@ export const Input = createComponent<HTMLInputElement, InputProps>(
           <Typography
             as="label"
             id={restOfProps.id}
-            variant="body2"
-            family="mono"
-            transform="uppercase"
+            variant="body3"
             className={clsx(styles.fs14, styles.label)}
           >
             {label}

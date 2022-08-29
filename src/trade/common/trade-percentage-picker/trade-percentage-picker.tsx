@@ -15,14 +15,10 @@ const PERCENTAGES = [5, 10, 25, 50, 100].map(String)
 export const TradePercentagePicker: React.VFC<TradePercentagePickerProps> = (
   props
 ) => {
-  const [currentValue, setCurrentValue] = useState('')
+  const [currentValue, setCurrentValue] = useState(PERCENTAGES[1])
 
   const handleChange = (percent: string) => () => {
-    if (currentValue === percent) {
-      setCurrentValue('')
-    } else {
-      setCurrentValue(percent)
-    }
+    setCurrentValue(percent)
   }
 
   useEffect(() => {

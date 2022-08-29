@@ -39,6 +39,7 @@ export const Button = createComponent(function Button<
     styles.sizes[size],
     {
       [styles.loading]: loading,
+      [styles.disabled]: restOfProps.disabled,
     }
   )
 

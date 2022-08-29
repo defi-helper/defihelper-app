@@ -34,6 +34,7 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import * as styles from './trade.css'
 import * as model from './trade.model'
 import * as tradeOrdersModel from './trade-orders/trade-orders.model'
+import { pairMock } from './common/trade-dev.mock'
 
 export type TradeProps = unknown
 
@@ -127,14 +128,28 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [])
 
   useEffect(() => {
-    const [firstWallet] = wallets.filter(({ network }) =>
+    if (!currentWallet) return
+
+    const correctWallets = wallets.filter(({ network }) =>
       Boolean(model.networks[network])
     )
 
-    if (!firstWallet) return
+    const findedWallet = correctWallets.find(({ network, address }) => {
+      return (
+        (network === 'main'
+          ? address === currentWallet.account
+          : address === currentWallet.account?.toLowerCase()) &&
+        network === currentWallet.chainId
+      )
+    })
 
-    setCurrentWalletAddress(firstWallet.id)
-  }, [wallets])
+    const walletId = findedWallet?.id ?? correctWallets[0]?.id
+
+    if (!walletId) return
+
+    setCurrentWalletAddress(walletId)
+  }, [wallets, currentWallet])
+
   useEffect(() => {
     const [firstExchange] = exchanges
 
@@ -228,6 +243,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           exchangeAddress={currentExchangeObj?.Address}
           transactionDeadline={transactionDeadline}
           slippage={currentSlippage}
+          key={String(currentPair || currentWalletAddress || currentExchange)}
         />
       </>
     ),
@@ -238,6 +254,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           router={adapter?.router}
           swap={adapter?.swap}
           tokens={tokens}
+          key={String(currentPair || currentWalletAddress || currentExchange)}
         />
       </>
     ),
@@ -435,7 +452,12 @@ export const Trade: React.VFC<TradeProps> = () => {
           </div>
           <TradeChart
             className={styles.chartInner}
-            address={currentPairObj?.pairInfo?.address}
+            address={
+              config.IS_DEV &&
+              currentPairObj?.pairInfo?.address === pairMock.pairInfo.address
+                ? '0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852'
+                : currentPairObj?.pairInfo?.address
+            }
             loading={loadingExchanges || loadingPairs}
           />
         </Paper>
