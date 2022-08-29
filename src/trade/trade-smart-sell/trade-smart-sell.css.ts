@@ -17,7 +17,7 @@ export const root = style([
   flex,
   {
     gap: 24,
-    maxHeight: 420,
+    maxHeight: 469,
     height: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
@@ -78,7 +78,9 @@ export const takeProfitLabel = style([
 ])
 
 export const slider = style({
-  maxWidth: 'calc(100% - 108px)',
+  maxWidth: 'calc(100% - 124px)',
+  marginLeft: 'auto',
+  marginRight: 8,
 })
 
 export const buttons = style({
@@ -93,16 +95,6 @@ export const fullWidth = style({
   gridColumnStart: 1,
   gridColumnEnd: 3,
 })
-
-export const approveTransactions = style([
-  fullWidth,
-  {
-    display: 'flex',
-    gap: 8,
-    alignItems: 'center',
-    color: theme.colors.textColorGrey,
-  },
-])
 
 export const balance = style({
   marginLeft: 'auto',
