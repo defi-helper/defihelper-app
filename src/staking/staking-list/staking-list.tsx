@@ -48,10 +48,10 @@ import { AutostakingVideoDialog } from '~/autostaking/common/autostaking-video-d
 import { AutostakingDeployDialog } from '~/autostaking/common/autostaking-deploy-dialog'
 import { AutostakingTabsDialog } from '~/autostaking/common/autostaking-tabs-dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import * as model from './staking-list.model'
-import * as styles from './staking-list.css'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { SettingsWalletBalanceDialog } from '~/settings/common'
+import * as model from './staking-list.model'
+import * as styles from './staking-list.css'
 
 export type StakingListProps = {
   protocolId: string

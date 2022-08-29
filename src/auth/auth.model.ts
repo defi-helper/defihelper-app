@@ -14,7 +14,6 @@ import Cookies from 'js-cookie'
 
 import { MeQuery, AuthEthMutation } from '~/api/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { sidUtils, authApi } from './common'
 import { history } from '~/common/history'
 import { paths } from '~/paths'
@@ -22,6 +21,8 @@ import { toastsService } from '~/toasts'
 import { dateUtils } from '~/common/date-utils'
 import { WavesKeeperConnector } from '~/wallets/common/waves-keeper-connector'
 import { analytics } from '~/analytics'
+import { UnsupportedChainError } from '~/wallets/common/unsupported-chain'
+import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 
 type AuthData = Exclude<AuthEthMutation['authEth'], null | undefined>
 
@@ -145,6 +146,7 @@ type Payload = {
   openVideoDialog: () => Promise<unknown>
   openMergeWalletsDialog: () => Promise<unknown>
   openAuthSignMessageDialog: () => Promise<unknown>
+  openChangeNetworkDialog: () => Promise<unknown>
   closeAuthSignMessageDialog: () => void
 }
 
@@ -349,8 +351,27 @@ guard({
 settingsWalletModel.$wallets.reset(logoutFx)
 walletNetworkModel.$wallet.reset(logoutFx)
 
-authEthereumFx.failData.watch((error) => toastsService.error(error.message))
-authWavesFx.failData.watch((error) => toastsService.error(error.message))
+const openChangeNetworkDialogFx = createEffect((fn: () => unknown) => fn())
+
+guard({
+  source: sample({
+    source: $auth,
+    fn: (auth) => auth?.openChangeNetworkDialog ?? null,
+  }),
+  clock: [authEthereumFx.failData, authWavesFx.failData],
+  filter: (auth, failData): auth is () => Promise<unknown> =>
+    Boolean(auth) && failData instanceof UnsupportedChainError,
+  target: openChangeNetworkDialogFx,
+})
+
+sample({
+  clock: guard({
+    clock: [authEthereumFx.failData, authWavesFx.failData],
+    filter: (failData) => !(failData instanceof UnsupportedChainError),
+  }),
+  fn: ({ message }) => message,
+  target: toastsService.error,
+})
 
 fetchUserFx.doneData.watch((data) => {
   if (data === null) {

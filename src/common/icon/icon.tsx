@@ -103,6 +103,8 @@ import { ReactComponent as InfoIcon } from '~/assets/icons/info.svg'
 import { ReactComponent as LightIcon } from '~/assets/icons/light.svg'
 import { ReactComponent as OrderIcon } from '~/assets/icons/order.svg'
 import { ReactComponent as NoResultsIcon } from '~/assets/icons/no-results.svg'
+import { ReactComponent as BrownRiskIcon } from '~/assets/icons/brown-risk.svg'
+import { ReactComponent as GreenRiskIcon } from '~/assets/icons/green-risk.svg'
 
 const ICONS = {
   BAG: BAGicon,
@@ -217,6 +219,8 @@ const ICONS = {
   order: OrderIcon,
   noResults: NoResultsIcon,
   edit: EditIcon,
+  brownRisk: BrownRiskIcon,
+  greenRisk: GreenRiskIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

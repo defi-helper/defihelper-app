@@ -13,4 +13,5 @@ export const button = style({
   width: 32,
   height: 32,
   border: `1px solid ${theme.colors.border}`,
+  justifyContent: 'center',
 })
