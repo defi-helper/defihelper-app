@@ -123,10 +123,34 @@ export const tableHeadingsButton = style([
   {
     justifyContent: 'flex-start',
     textAlign: 'left',
+    pointerEvents: 'none',
   },
 ])
 
-export const tableRow = style([
+export const tableRow = style({
+  position: 'relative',
+
+  ':before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: theme.colors.common.white3,
+    zIndex: 1,
+    backdropFilter: 'blur(10px)',
+    display: 'none',
+  },
+})
+
+export const tableRowLoader = style({
+  ':before': {
+    display: 'block',
+  },
+})
+
+export const tableRowInner = style([
   row,
   {
     padding: 16,
@@ -138,6 +162,18 @@ export const tableRow = style([
     },
   },
 ])
+
+export const tableRowInnerLoader = style({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 2,
+})
 
 export const contractName = style({
   display: 'flex',
@@ -214,4 +250,20 @@ export const contractActions = style({
 
 export const dots = style({
   transform: 'rotate(90deg)',
+})
+
+export const loader = style({
+  padding: 10,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  margin: 'auto',
+})
+
+export const updatePrice = style({
+  transition: 'transform 300ms ease-in-out',
+
+  ':active': {
+    transform: 'rotate(360deg)',
+  },
 })

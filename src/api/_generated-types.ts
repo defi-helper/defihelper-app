@@ -6750,7 +6750,7 @@ export type TradeCreateOrderMutation = { __typename?: 'Mutation' } & {
   > & {
       owner: { __typename?: 'WalletBlockchainType' } & Pick<
         WalletBlockchainType,
-        'id' | 'network' | 'address'
+        'id' | 'network' | 'address' | 'name'
       >
       callData:
         | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
@@ -6831,7 +6831,7 @@ export type TradeOrderListQuery = { __typename?: 'Query' } & {
         > & {
             owner: { __typename?: 'WalletBlockchainType' } & Pick<
               WalletBlockchainType,
-              'id' | 'network' | 'address'
+              'id' | 'network' | 'address' | 'name'
             >
             callData:
               | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
