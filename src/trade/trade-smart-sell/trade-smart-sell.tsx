@@ -174,12 +174,26 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         callDataRaw: result.callDataRaw,
         callData: {
           exchange: result.callData.exchange,
+          pair: result.callData.pair,
           path: result.callData.path,
           tokenInDecimals: result.callData.tokenInDecimals,
           tokenOutDecimals: result.callData.tokenOutDecimals,
-          pair: result.callData.pair,
           amountIn: result.callData.amountIn,
           boughtPrice: formValues.price,
+          stopLoss: result.callData.stopLoss
+            ? {
+                amountOut: result.callData.stopLoss.amountOut,
+                amountOutMin: result.callData.stopLoss.amountOutMin,
+                slippage: Number(result.callData.stopLoss.slippage),
+              }
+            : null,
+          takeProfit: result.callData.takeProfit
+            ? {
+                amountOut: result.callData.takeProfit.amountOut,
+                amountOutMin: result.callData.takeProfit.amountOutMin,
+                slippage: Number(result.callData.takeProfit.slippage),
+              }
+            : null,
           deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
         },
         tx,
