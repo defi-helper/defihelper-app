@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
+import { useAsyncFn, useInterval } from 'react-use'
 import { useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
@@ -31,6 +32,7 @@ import { TradeInput } from './common/trade-input'
 import { TradePlusMinus } from './common/trade-plus-minus'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
+import { pairMock } from './common/trade-dev.mock'
 import * as styles from './trade.css'
 import * as model from './trade.model'
 import * as tradeOrdersModel from './trade-orders/trade-orders.model'
@@ -87,6 +89,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const adapter = useStore(model.$adapter)
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const history = useStore(model.$history)
+  const updating = useStore(model.fetchHistoryFx.pending)
 
   const wallets = useMemo(
     () =>
@@ -127,14 +130,28 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [])
 
   useEffect(() => {
-    const [firstWallet] = wallets.filter(({ network }) =>
+    if (!currentWallet) return
+
+    const correctWallets = wallets.filter(({ network }) =>
       Boolean(model.networks[network])
     )
 
-    if (!firstWallet) return
+    const findedWallet = correctWallets.find(({ network, address }) => {
+      return (
+        (network === 'main'
+          ? address === currentWallet.account
+          : address === currentWallet.account?.toLowerCase()) &&
+        network === currentWallet.chainId
+      )
+    })
 
-    setCurrentWalletAddress(firstWallet.id)
-  }, [wallets])
+    const walletId = findedWallet?.id ?? correctWallets[0]?.id
+
+    if (!walletId) return
+
+    setCurrentWalletAddress(walletId)
+  }, [wallets, currentWallet])
+
   useEffect(() => {
     const [firstExchange] = exchanges
 
@@ -228,6 +245,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           exchangeAddress={currentExchangeObj?.Address}
           transactionDeadline={transactionDeadline}
           slippage={currentSlippage}
+          key={String(currentPair || currentWalletAddress || currentExchange)}
         />
       </>
     ),
@@ -238,6 +256,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           router={adapter?.router}
           swap={adapter?.swap}
           tokens={tokens}
+          key={String(currentPair || currentWalletAddress || currentExchange)}
         />
       </>
     ),
@@ -264,27 +283,34 @@ export const Trade: React.VFC<TradeProps> = () => {
     })
   }, [currentWallet])
 
-  useEffect(() => {
+  const handleUpdatePrice = () => {
     model.fetchHistoryFx({
       address: '0x7EFaEf62fDdCCa950418312c6C91Aef321375A00',
     })
-  }, [])
-
-  const handleCancelOrder = async (id: number | string) => {
-    try {
-      await openConfirmDialog()
-
-      const can = await adapter?.router.canCancelOrder(id)
-
-      if (can instanceof Error) throw can
-
-      await adapter?.router.cancelOrder(id)
-
-      tradeOrdersModel.cancelOrder(String(id))
-    } catch {
-      console.error('error')
-    }
   }
+
+  useInterval(handleUpdatePrice, 15000)
+
+  const [cancelOrder, handleCancelOrder] = useAsyncFn(
+    async (id: number | string) => {
+      try {
+        await openConfirmDialog()
+
+        const can = await adapter?.router.canCancelOrder(id)
+
+        if (can instanceof Error) throw can
+
+        const res = await adapter?.router.cancelOrder(id)
+
+        await res?.tx?.wait()
+
+        tradeOrdersModel.cancelOrder(String(id))
+      } catch (error) {
+        console.error(error)
+      }
+    },
+    [adapter]
+  )
 
   return (
     <AppLayout title="Trade">
@@ -435,7 +461,12 @@ export const Trade: React.VFC<TradeProps> = () => {
           </div>
           <TradeChart
             className={styles.chartInner}
-            address={currentPairObj?.pairInfo?.address}
+            address={
+              config.IS_DEV &&
+              currentPairObj?.pairInfo?.address === pairMock.pairInfo.address
+                ? '0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852'
+                : currentPairObj?.pairInfo?.address
+            }
             loading={loadingExchanges || loadingPairs}
           />
         </Paper>
@@ -577,7 +608,12 @@ export const Trade: React.VFC<TradeProps> = () => {
           )}
         </Paper>
       </div>
-      <TradeOrders price={price} onCancelOrder={handleCancelOrder} />
+      <TradeOrders
+        price={price}
+        onCancelOrder={handleCancelOrder}
+        onUpdatePrice={handleUpdatePrice}
+        updating={updating || cancelOrder.loading}
+      />
     </AppLayout>
   )
 }
