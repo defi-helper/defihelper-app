@@ -2,7 +2,7 @@ import { useStore } from 'effector-react'
 import { Controller, useForm } from 'react-hook-form'
 import clsx from 'clsx'
 import { useAsyncFn, useAsyncRetry } from 'react-use'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
@@ -51,8 +51,6 @@ type FormValues = {
 export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const currentWallet = useStore(walletNetworkModel.$wallet)
   const wallets = useStore(settingsWalletModel.$wallets)
-
-  const [balanceLoaded, setBalanceLoaded] = useState(false)
 
   const { handleSubmit, control, watch, setValue, formState } =
     useForm<FormValues>({
@@ -252,18 +250,14 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     )
   }
 
-  useEffect(() => {
-    if (!balanceOf.value) return
-
-    setValue('unit', balanceOf.value)
-
-    setBalanceLoaded(true)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balanceOf.value])
-
   return (
     <form className={styles.form} onSubmit={handleOnSubmit}>
-      <div className={clsx(styles.root, !config.IS_DEV && styles.overflow)}>
+      <div
+        className={clsx(
+          styles.root,
+          (!config.IS_DEV || balanceOf.loading) && styles.overflow
+        )}
+      >
         <div className={styles.inputGroup}>
           <Controller
             name="unit"
@@ -290,17 +284,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               />
             )}
           />
-          {balanceLoaded && (
-            <TradePercentagePicker
-              value={unit}
-              onChange={(value) =>
-                setValue(
-                  'unit',
-                  bignumberUtils.mul(unit, bignumberUtils.div(value, 100))
-                )
-              }
-            />
-          )}
+          <TradePercentagePicker
+            value={unit}
+            available={balanceOf.value}
+            onChange={(value) => setValue('unit', value)}
+          />
           <div>
             <Controller
               control={control}
@@ -309,7 +297,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 <NumericalInput
                   label="Bought price"
                   rightSide={props.tokens?.[1]?.symbol}
-                  readOnly
                   {...field}
                 />
               )}
@@ -333,7 +320,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               <NumericalInput
                 label="Total"
                 rightSide={props.tokens?.[1]?.symbol}
-                readOnly
                 {...field}
               />
             )}
@@ -448,7 +434,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             className={styles.fullWidth}
             type="submit"
             loading={formState.isSubmitting}
-            disabled={!isApproved.value || !takeProfit || !stopLoss}
+            disabled={!isApproved.value || (!takeProfit && !stopLoss)}
           >
             Create Order
           </Button>

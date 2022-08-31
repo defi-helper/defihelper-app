@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useAsyncFn, useInterval } from 'react-use'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import { useForm } from 'react-hook-form'
@@ -285,7 +285,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     })
   }, [currentWallet])
 
-  const handleUpdatePrice = () => {
+  const handleUpdatePrice = useCallback(() => {
     model.fetchHistoryFx({
       address: String(
         config.IS_DEV &&
@@ -294,7 +294,11 @@ export const Trade: React.VFC<TradeProps> = () => {
           : currentPairObj?.pairInfo?.address
       ),
     })
-  }
+  }, [currentPairObj])
+
+  useEffect(() => {
+    handleUpdatePrice()
+  }, [handleUpdatePrice])
 
   useInterval(handleUpdatePrice, 15000)
 
@@ -481,7 +485,8 @@ export const Trade: React.VFC<TradeProps> = () => {
           <div
             className={clsx(
               styles.selectsBody,
-              !config.IS_DEV && styles.selectsBodyBlur
+              (!(updating && !history) || !config.IS_DEV) &&
+                styles.selectsBodyBlur
             )}
           >
             <div className={styles.tradeSelectHeader}>
