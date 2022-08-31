@@ -91,10 +91,10 @@ const riskStatuses = {
   [ContractRiskFactorEnum.NotCalculated]: '-',
 }
 
-const riskIcons: Record<string, 'redRisk' | 'greenRisk' | 'brownRisk'> = {
+const riskIcons: Record<string, 'redRisk' | 'greenRisk' | 'yellowRisk'> = {
   [ContractRiskFactorEnum.High]: 'redRisk',
   [ContractRiskFactorEnum.Low]: 'greenRisk',
-  [ContractRiskFactorEnum.Moderate]: 'brownRisk',
+  [ContractRiskFactorEnum.Moderate]: 'yellowRisk',
 }
 
 export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
@@ -849,7 +849,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                         className={styles.riskLevelRow}
                       >
                         <Typography variant="inherit">Profitability</Typography>
-                        <Icon icon="brownRisk" width={19} height={20} />
+                        <Icon icon="yellowRisk" width={19} height={20} />
                       </Typography>
                       <Typography
                         family="mono"

@@ -1,4 +1,3 @@
-import { ReactComponent as BAGicon } from '~/assets/icons/coins/bag.svg'
 import { ReactComponent as USDCicon } from '~/assets/icons/coins/usdc.svg'
 import { ReactComponent as USDapicon } from '~/assets/icons/coins/usdap.svg'
 import { ReactComponent as DaiIcon } from '~/assets/icons/coins/dai.svg'
@@ -103,13 +102,11 @@ import { ReactComponent as InfoIcon } from '~/assets/icons/info.svg'
 import { ReactComponent as LightIcon } from '~/assets/icons/light.svg'
 import { ReactComponent as OrderIcon } from '~/assets/icons/order.svg'
 import { ReactComponent as NoResultsIcon } from '~/assets/icons/no-results.svg'
-import { ReactComponent as BrownRiskIcon } from '~/assets/icons/brown-risk.svg'
+import { ReactComponent as YellowRiskIcon } from '~/assets/icons/yellow-risk.svg'
 import { ReactComponent as GreenRiskIcon } from '~/assets/icons/green-risk.svg'
 import { ReactComponent as RedRiskIcon } from '~/assets/icons/red-risk.svg'
 
 const ICONS = {
-  BAG: BAGicon,
-  bBAG: BAGicon,
   BNB: BNBIcon,
   BUSD: BNBIcon,
   USDap: USDapicon,
@@ -220,7 +217,7 @@ const ICONS = {
   order: OrderIcon,
   noResults: NoResultsIcon,
   edit: EditIcon,
-  brownRisk: BrownRiskIcon,
+  yellowRisk: YellowRiskIcon,
   greenRisk: GreenRiskIcon,
   redRisk: RedRiskIcon,
 } as const
