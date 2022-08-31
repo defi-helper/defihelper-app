@@ -45,7 +45,7 @@ deploy:
   stage: deploy
   rules:
     - if: '$CI_COMMIT_REF_NAME == "master"'
-      when: always
+      when: manual
     - if: '$CI_COMMIT_REF_NAME == "release"'
       when: on_success
       variables:
