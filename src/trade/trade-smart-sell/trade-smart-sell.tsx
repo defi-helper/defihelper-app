@@ -209,9 +209,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     setValue(
       'stopLossValue',
       bignumberUtils.toFixed(
-        bignumberUtils.plus(
-          bignumberUtils.mul(bignumberUtils.div(stopLossPercent, 100), price),
-          price
+        bignumberUtils.minus(
+          price,
+          bignumberUtils.mul(bignumberUtils.div(stopLossPercent, 100), price)
         ),
         6
       )
@@ -448,7 +448,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             className={styles.fullWidth}
             type="submit"
             loading={formState.isSubmitting}
-            disabled={!isApproved.value}
+            disabled={!isApproved.value || !takeProfit || !stopLoss}
           >
             Create Order
           </Button>

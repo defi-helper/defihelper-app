@@ -46,6 +46,8 @@ enum Selects {
   SmartSell = 'smart sell',
 }
 
+const USDC_ETH = '0xEa26B78255Df2bBC31C1eBf60010D78670185bD0'
+
 export const Trade: React.VFC<TradeProps> = () => {
   const { register, handleSubmit, formState, reset } =
     useForm<{ email: string }>()
@@ -285,7 +287,12 @@ export const Trade: React.VFC<TradeProps> = () => {
 
   const handleUpdatePrice = () => {
     model.fetchHistoryFx({
-      address: '0x7EFaEf62fDdCCa950418312c6C91Aef321375A00',
+      address: String(
+        config.IS_DEV &&
+          currentPairObj?.pairInfo?.address === pairMock.pairInfo.address
+          ? USDC_ETH
+          : currentPairObj?.pairInfo?.address
+      ),
     })
   }
 
