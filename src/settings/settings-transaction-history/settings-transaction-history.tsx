@@ -18,14 +18,16 @@ import { Loader } from '~/common/loader'
 import * as styles from './settings-transaction-history.css'
 import * as model from './settings-transaction-history.model'
 import { TablePagination } from '~/common/table-pagination'
+import { BillingTransferStatusEnum } from '~/api'
 
 export type SettingsTransactionHistoryProps = {
   className?: string
 }
 
 const STATUSES = {
-  confirmed: 'Confirmed',
-  pending: 'Pending',
+  [BillingTransferStatusEnum.Confirmed]: 'Confirmed',
+  [BillingTransferStatusEnum.Pending]: 'Pending',
+  [BillingTransferStatusEnum.Rejected]: 'Rejected',
 }
 
 const ROWS_PER_PAGE = 10
@@ -177,13 +179,9 @@ export const SettingsTransactionHistory: React.VFC<SettingsTransactionHistoryPro
                     <Typography
                       variant="body2"
                       as="div"
-                      className={clsx(
-                        historyItem.confirmed && styles.statuses.confirmed,
-                        !historyItem.confirmed && styles.statuses.pending
-                      )}
+                      className={clsx(styles.statuses[historyItem.status])}
                     >
-                      {historyItem.confirmed && STATUSES.confirmed}
-                      {!historyItem.confirmed && STATUSES.pending}
+                      {STATUSES[historyItem.status]}
                     </Typography>
                   </div>
                 ))}
