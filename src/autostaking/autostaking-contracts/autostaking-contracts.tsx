@@ -68,7 +68,12 @@ const sortIcon = (
   return <Icon icon={icon} width="18" />
 }
 
-const text = <>Actual 7-day annualized percentage rate</>
+const text = (
+  <>
+    Based on last 7 days&apos; pool performance. Does not account for
+    impermanent loss
+  </>
+)
 
 const dropdown = (
   <Dropdown
@@ -627,7 +632,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                 })}
                 className="real_apy"
               >
-                Real APR (7d){' '}
+                7D Performance{' '}
                 {sortBy.column ===
                   ContractListSortInputTypeColumnEnum.AprWeekReal &&
                   sortIcon(
