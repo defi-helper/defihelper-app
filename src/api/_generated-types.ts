@@ -575,6 +575,12 @@ export type BillingTransferCreateInputType = {
   tx: Scalars['String']
 }
 
+export enum BillingTransferStatusEnum {
+  Pending = 'pending',
+  Confirmed = 'confirmed',
+  Rejected = 'rejected',
+}
+
 export type BillingTransferType = {
   __typename?: 'BillingTransferType'
   /** Identificator */
@@ -591,8 +597,8 @@ export type BillingTransferType = {
   tx: Scalars['String']
   /** Bill */
   bill?: Maybe<BillingBillType>
-  /** Is transfer confirmed */
-  confirmed: Scalars['Boolean']
+  status: BillingTransferStatusEnum
+  rejectReason: Scalars['String']
   /** Date of created */
   createdAt: Scalars['DateTimeType']
 }
@@ -3006,7 +3012,7 @@ export type UserBillingTransferListFilterInputType = {
   deposit?: Maybe<Scalars['Boolean']>
   claim?: Maybe<Scalars['Boolean']>
   wallet?: Maybe<Array<Scalars['UuidType']>>
-  confirmed?: Maybe<Scalars['Boolean']>
+  status?: Maybe<Array<BillingTransferStatusEnum>>
 }
 
 export type UserBillingTransferListPaginationInputType = {
@@ -3678,7 +3684,7 @@ export type WalletBillingBillListType = {
 export type WalletBillingTransferListFilterInputType = {
   deposit?: Maybe<Scalars['Boolean']>
   claim?: Maybe<Scalars['Boolean']>
-  confirmed?: Maybe<Scalars['Boolean']>
+  status?: Maybe<Array<BillingTransferStatusEnum>>
 }
 
 export type WalletBillingTransferListPaginationInputType = {
@@ -5891,7 +5897,7 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
                 | 'account'
                 | 'amount'
                 | 'tx'
-                | 'confirmed'
+                | 'status'
                 | 'createdAt'
               > & {
                   bill?: Maybe<

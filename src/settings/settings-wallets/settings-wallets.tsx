@@ -159,6 +159,7 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
           walletAddress: currentWallet.account,
           chainId: String(currentWallet.chainId),
           provider: currentWallet.provider,
+          transactionHash: result.transactionHash,
         })
 
         await openSuccess({

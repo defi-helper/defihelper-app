@@ -52,6 +52,10 @@ export const statuses = styleVariants({
   pending: {
     color: theme.colors.textColorGrey,
   },
+
+  rejected: {
+    color: theme.colors.common.red1,
+  },
 })
 
 export const select = style({
