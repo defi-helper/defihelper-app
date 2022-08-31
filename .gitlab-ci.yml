@@ -29,14 +29,14 @@ build:app:
     KUBERNETES_MEMORY_REQUEST: 7168M
     KUBERNETES_MEMORY_LIMIT: 7168M
     APP_NAME: "app"
+    BUILD_ARGS: "--build-arg NODE_ENV=development --build-arg REACT_APP_PORTIS_ID=${REACT_APP_PORTIS_ID} --build-arg REACT_APP_API_URL=https://backend-dev.defihelper.info/api --build-arg REACT_APP_SENTRY=${REACT_APP_SENTRY} --build-arg REACT_APP_TREZOR_URL=https://app-dev.defihelper.info --build-arg REACT_APP_TREZOR_EMAIL=admin@defihelper.io --build-arg REACT_APP_FORTMATIC_KEY=${REACT_APP_FORTMATIC_KEY} --build-arg REACT_APP_WAVES_NODE_URL=https://nodes.wavesnodes.com --build-arg REACT_APP_SID_LIFE_TIME=31536000 --build-arg REACT_APP_ADAPTERS_HOST=https://adapters-dev.defihelper.info --build-arg REACT_APP_TELEGRAM_BOT_USERNAME=defi_dev_notifications_bot --build-arg REACT_APP_AMCHARTS_LICENCE=${REACT_APP_AMCHARTS_LICENCE} --build-arg REACT_APP_UNISENDER_API=${REACT_APP_UNISENDER_API} --build-arg REACT_APP_WS_API_URL=wss://backend-dev.defihelper.info/api --build-arg REACT_APP_ENV=development"
   rules:
-    - if: $CI_COMMIT_REF_NAME == "master"
-      variables:
-        BUILD_ARGS: "--build-arg NODE_ENV=development --build-arg REACT_APP_PORTIS_ID=${REACT_APP_PORTIS_ID} --build-arg REACT_APP_API_URL=https://backend-dev.defihelper.info/api --build-arg REACT_APP_SENTRY=${REACT_APP_SENTRY} --build-arg REACT_APP_TREZOR_URL=https://app-dev.defihelper.info --build-arg REACT_APP_TREZOR_EMAIL=admin@defihelper.io --build-arg REACT_APP_FORTMATIC_KEY=${REACT_APP_FORTMATIC_KEY} --build-arg REACT_APP_WAVES_NODE_URL=https://nodes.wavesnodes.com --build-arg REACT_APP_SID_LIFE_TIME=31536000 --build-arg REACT_APP_ADAPTERS_HOST=https://adapters-dev.defihelper.info --build-arg REACT_APP_TELEGRAM_BOT_USERNAME=defi_dev_notifications_bot --build-arg REACT_APP_AMCHARTS_LICENCE=${REACT_APP_AMCHARTS_LICENCE} --build-arg REACT_APP_UNISENDER_API=${REACT_APP_UNISENDER_API} --build-arg REACT_APP_WS_API_URL=wss://backend-dev.defihelper.info/api --build-arg REACT_APP_ENV=development"
     - if: $CI_COMMIT_REF_NAME == "release"
       variables:
         BUILD_ARGS: "--build-arg NODE_ENV=production --build-arg REACT_APP_PORTIS_ID=${REACT_APP_PORTIS_ID} --build-arg REACT_APP_API_URL=https://backend.defihelper.io/api --build-arg REACT_APP_SENTRY=${REACT_APP_SENTRY} --build-arg REACT_APP_TREZOR_URL=https://app.defihelper.io --build-arg REACT_APP_TREZOR_EMAIL=admin@defihelper.io --build-arg REACT_APP_FORTMATIC_KEY=${REACT_APP_FORTMATIC_KEY} --build-arg REACT_APP_WAVES_NODE_URL=https://nodes.wavesnodes.com --build-arg REACT_APP_SID_LIFE_TIME=31536000 --build-arg REACT_APP_ADAPTERS_HOST=https://adapters.defihelper.io --build-arg REACT_APP_TELEGRAM_BOT_USERNAME=defi_notifications_bot --build-arg REACT_APP_AMCHARTS_LICENCE=${REACT_APP_AMCHARTS_LICENCE} --build-arg REACT_APP_AMPLITUDE=${REACT_APP_AMPLITUDE} --build-arg REACT_APP_UNISENDER_API=${REACT_APP_UNISENDER_API} --build-arg REACT_APP_WS_API_URL=wss://backend.defihelper.io/api --build-arg REACT_APP_ENV=production"
         ENVIRONMENT: prod
+    - if: $CI_COMMIT_REF_NAME == "master"
+      when: always
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $CI_COMMIT_BRANCH'
       when: manual
 
