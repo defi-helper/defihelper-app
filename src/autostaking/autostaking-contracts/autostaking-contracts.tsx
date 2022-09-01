@@ -96,6 +96,12 @@ const riskStatuses = {
   [ContractRiskFactorEnum.NotCalculated]: '-',
 }
 
+const riskIcons: Record<string, 'redRisk' | 'greenRisk' | 'yellowRisk'> = {
+  [ContractRiskFactorEnum.High]: 'redRisk',
+  [ContractRiskFactorEnum.Low]: 'greenRisk',
+  [ContractRiskFactorEnum.Moderate]: 'yellowRisk',
+}
+
 export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   props
 ) => {
@@ -131,9 +137,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(walletsModel.$wallets)
   const [blockchain, setBlockChain] = useState<string | null>(null)
-  const [riskLevel, setRiskLevel] = useState(
-    ContractRiskFactorEnum.NotCalculated
-  )
+  const [riskLevel, setRiskLevel] = useState(ContractRiskFactorEnum.Low)
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.AprBoosted,
     order: SortOrderEnum.Desc,
@@ -151,10 +155,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
             protocol: networksConfig[blockchain].blockchain,
           }
         : undefined,
-      risk:
-        riskLevel === ContractRiskFactorEnum.NotCalculated || isEmpty(riskLevel)
-          ? null
-          : riskLevel,
+      risk: isEmpty(riskLevel) ? null : riskLevel,
     }
 
     model.fetchContractsFx({
@@ -509,19 +510,6 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
             ))}
           </Select>
           <Select
-            placeholder="Risk level"
-            className={styles.select}
-            onChange={handleChooseRiskLevel}
-          >
-            {Object.entries(ContractRiskFactorEnum).map(([key, value]) => (
-              <SelectOption value={value} key={key}>
-                {value === ContractRiskFactorEnum.NotCalculated
-                  ? 'Not calculated'
-                  : riskStatuses[value]}
-              </SelectOption>
-            ))}
-          </Select>
-          <Select
             placeholder="Choose protocol"
             clearable
             multiple
@@ -569,6 +557,21 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                 {protocol.name}
               </SelectOption>
             ))}
+          </Select>
+          <Select
+            placeholder="Risk level"
+            className={styles.select}
+            onChange={handleChooseRiskLevel}
+          >
+            {Object.entries(ContractRiskFactorEnum)
+              .filter(
+                ([, value]) => ContractRiskFactorEnum.NotCalculated !== value
+              )
+              .map(([key, value]) => (
+                <SelectOption value={value} key={key}>
+                  {riskStatuses[value]}
+                </SelectOption>
+              ))}
           </Select>
           <Input
             placeholder="Search"
@@ -796,59 +799,74 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                   </Typography>
                 </div>
                 <Typography variant="inherit">
-                  <Dropdown
-                    className={styles.riskLevel}
-                    control={
-                      <ButtonBase>
-                        <Icon icon="greenRisk" width={22} height={24} />
-                      </ButtonBase>
-                    }
-                    offset={[0, 4]}
-                    placement="left-start"
-                  >
-                    <Typography
-                      family="mono"
-                      as="div"
-                      className={styles.riskLevelRow}
+                  {riskIcons[contract.metric.risk] && (
+                    <Icon
+                      icon={riskIcons[contract.metric.risk]}
+                      width={22}
+                      height={24}
+                    />
+                  )}
+                  {false && (
+                    <Dropdown
+                      className={styles.riskLevel}
+                      control={
+                        <ButtonBase>
+                          {riskIcons[contract.metric.risk] && (
+                            <Icon
+                              icon={riskIcons[contract.metric.risk]}
+                              width={22}
+                              height={24}
+                            />
+                          )}
+                        </ButtonBase>
+                      }
+                      offset={[0, 4]}
+                      placement="left-start"
                     >
-                      <Typography variant="inherit">Risk</Typography>
                       <Typography
+                        family="mono"
+                        as="div"
+                        className={styles.riskLevelRow}
+                      >
+                        <Typography variant="inherit">Risk</Typography>
+                        <Typography
+                          as="div"
+                          variant="body2"
+                          className={styles.riskLevelStatus}
+                        >
+                          {riskStatuses[contract.metric.risk]}
+                        </Typography>
+                      </Typography>
+                      <span className={styles.riskLevelSpacing} />
+                      <Typography
+                        family="mono"
                         as="div"
                         variant="body2"
-                        className={styles.riskLevelStatus}
+                        className={styles.riskLevelRow}
                       >
-                        {riskStatuses[contract.metric.risk]}
+                        <Typography variant="inherit">Reliability</Typography>
+                        <Icon icon="greenRisk" width={19} height={20} />
                       </Typography>
-                    </Typography>
-                    <span className={styles.riskLevelSpacing} />
-                    <Typography
-                      family="mono"
-                      as="div"
-                      variant="body2"
-                      className={styles.riskLevelRow}
-                    >
-                      <Typography variant="inherit">Reliability</Typography>
-                      <Icon icon="greenRisk" width={19} height={20} />
-                    </Typography>
-                    <Typography
-                      family="mono"
-                      as="div"
-                      variant="body2"
-                      className={styles.riskLevelRow}
-                    >
-                      <Typography variant="inherit">Profitability</Typography>
-                      <Icon icon="brownRisk" width={19} height={20} />
-                    </Typography>
-                    <Typography
-                      family="mono"
-                      as="div"
-                      variant="body2"
-                      className={styles.riskLevelRow}
-                    >
-                      <Typography variant="inherit">Volatility</Typography>
-                      <Icon icon="greenRisk" width={19} height={20} />
-                    </Typography>
-                  </Dropdown>
+                      <Typography
+                        family="mono"
+                        as="div"
+                        variant="body2"
+                        className={styles.riskLevelRow}
+                      >
+                        <Typography variant="inherit">Profitability</Typography>
+                        <Icon icon="yellowRisk" width={19} height={20} />
+                      </Typography>
+                      <Typography
+                        family="mono"
+                        as="div"
+                        variant="body2"
+                        className={styles.riskLevelRow}
+                      >
+                        <Typography variant="inherit">Volatility</Typography>
+                        <Icon icon="greenRisk" width={19} height={20} />
+                      </Typography>
+                    </Dropdown>
+                  )}
                 </Typography>
                 <WalletConnect
                   network={contract.network}
