@@ -159,3 +159,10 @@ export const content = style({
 export const contentLoading = style({
   opacity: 0,
 })
+
+export const disabled = style({
+  background: theme.colors.common.grey6,
+  color: theme.colors.common.grey7,
+  borderColor: 'transparent',
+  opacity: 1,
+})

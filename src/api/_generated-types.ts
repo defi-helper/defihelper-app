@@ -524,6 +524,7 @@ export type BillingBalanceType = {
   balance: Scalars['Float']
   claim: Scalars['Float']
   netBalance: Scalars['Float']
+  netBalanceUSD: Scalars['Float']
 }
 
 export enum BillingBillStatusEnum {
@@ -575,6 +576,12 @@ export type BillingTransferCreateInputType = {
   tx: Scalars['String']
 }
 
+export enum BillingTransferStatusEnum {
+  Pending = 'pending',
+  Confirmed = 'confirmed',
+  Rejected = 'rejected',
+}
+
 export type BillingTransferType = {
   __typename?: 'BillingTransferType'
   /** Identificator */
@@ -591,8 +598,8 @@ export type BillingTransferType = {
   tx: Scalars['String']
   /** Bill */
   bill?: Maybe<BillingBillType>
-  /** Is transfer confirmed */
-  confirmed: Scalars['Boolean']
+  status: BillingTransferStatusEnum
+  rejectReason: Scalars['String']
   /** Date of created */
   createdAt: Scalars['DateTimeType']
 }
@@ -3006,7 +3013,7 @@ export type UserBillingTransferListFilterInputType = {
   deposit?: Maybe<Scalars['Boolean']>
   claim?: Maybe<Scalars['Boolean']>
   wallet?: Maybe<Array<Scalars['UuidType']>>
-  confirmed?: Maybe<Scalars['Boolean']>
+  status?: Maybe<Array<BillingTransferStatusEnum>>
 }
 
 export type UserBillingTransferListPaginationInputType = {
@@ -3678,7 +3685,7 @@ export type WalletBillingBillListType = {
 export type WalletBillingTransferListFilterInputType = {
   deposit?: Maybe<Scalars['Boolean']>
   claim?: Maybe<Scalars['Boolean']>
-  confirmed?: Maybe<Scalars['Boolean']>
+  status?: Maybe<Array<BillingTransferStatusEnum>>
 }
 
 export type WalletBillingTransferListPaginationInputType = {
@@ -5891,7 +5898,7 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
                 | 'account'
                 | 'amount'
                 | 'tx'
-                | 'confirmed'
+                | 'status'
                 | 'createdAt'
               > & {
                   bill?: Maybe<
@@ -6134,7 +6141,11 @@ export type WalletListMetricsQuery = { __typename?: 'Query' } & {
                 billing: { __typename?: 'WalletBillingType' } & {
                   balance: { __typename?: 'BillingBalanceType' } & Pick<
                     BillingBalanceType,
-                    'lowFeeFunds' | 'balance' | 'netBalance' | 'claim'
+                    | 'lowFeeFunds'
+                    | 'balance'
+                    | 'netBalance'
+                    | 'claim'
+                    | 'netBalanceUSD'
                   >
                 }
               }
@@ -6305,7 +6316,14 @@ export type StakingAutomatesContractFragmentFragment = {
     wallet: { __typename?: 'WalletBlockchainType' } & Pick<
       WalletBlockchainType,
       'id' | 'network' | 'address' | 'blockchain'
-    >
+    > & {
+        billing: { __typename?: 'WalletBillingType' } & {
+          balance: { __typename?: 'BillingBalanceType' } & Pick<
+            BillingBalanceType,
+            'netBalanceUSD'
+          >
+        }
+      }
   }
 
 export type StakingAutomatesContractsQueryVariables = Exact<{
@@ -6750,7 +6768,7 @@ export type TradeCreateOrderMutation = { __typename?: 'Mutation' } & {
   > & {
       owner: { __typename?: 'WalletBlockchainType' } & Pick<
         WalletBlockchainType,
-        'id' | 'network' | 'address'
+        'id' | 'network' | 'address' | 'name'
       >
       callData:
         | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
@@ -6831,7 +6849,7 @@ export type TradeOrderListQuery = { __typename?: 'Query' } & {
         > & {
             owner: { __typename?: 'WalletBlockchainType' } & Pick<
               WalletBlockchainType,
-              'id' | 'network' | 'address'
+              'id' | 'network' | 'address' | 'name'
             >
             callData:
               | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<

@@ -13,7 +13,6 @@ import { TradeInput } from '~/trade/common/trade-input'
 import { TradeSlider } from '~/trade/common/trade-slider'
 import { TradePercentagePicker } from '~/trade/common/trade-percentage-picker'
 import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
-import { Icon } from '~/common/icon'
 import { Button } from '~/common/button'
 import { config } from '~/config'
 import { WalletConnect } from '~/wallets/wallet-connect'
@@ -58,8 +57,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       defaultValues: {
         takeProfit: false,
         stopLoss: false,
-        takeProfitPercent: 1,
-        stopLossPercent: 1,
+        takeProfitPercent: 10,
+        stopLossPercent: 4,
       },
     })
 
@@ -173,12 +172,26 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         callDataRaw: result.callDataRaw,
         callData: {
           exchange: result.callData.exchange,
+          pair: result.callData.pair,
           path: result.callData.path,
           tokenInDecimals: result.callData.tokenInDecimals,
           tokenOutDecimals: result.callData.tokenOutDecimals,
-          pair: result.callData.pair,
           amountIn: result.callData.amountIn,
           boughtPrice: formValues.price,
+          stopLoss: result.callData.stopLoss
+            ? {
+                amountOut: result.callData.stopLoss.amountOut,
+                amountOutMin: result.callData.stopLoss.amountOutMin,
+                slippage: Number(result.callData.stopLoss.slippage),
+              }
+            : null,
+          takeProfit: result.callData.takeProfit
+            ? {
+                amountOut: result.callData.takeProfit.amountOut,
+                amountOutMin: result.callData.takeProfit.amountOutMin,
+                slippage: Number(result.callData.takeProfit.slippage),
+              }
+            : null,
           deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
         },
         tx,
@@ -208,9 +221,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     setValue(
       'stopLossValue',
       bignumberUtils.toFixed(
-        bignumberUtils.plus(
-          bignumberUtils.mul(bignumberUtils.div(stopLossPercent, 100), price),
-          price
+        bignumberUtils.minus(
+          price,
+          bignumberUtils.mul(bignumberUtils.div(stopLossPercent, 100), price)
         ),
         6
       )
@@ -251,16 +264,14 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     )
   }
 
-  useEffect(() => {
-    if (!balanceOf.value) return
-
-    setValue('unit', balanceOf.value)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balanceOf.value])
-
   return (
     <form className={styles.form} onSubmit={handleOnSubmit}>
-      <div className={clsx(styles.root, !config.IS_DEV && styles.overflow)}>
+      <div
+        className={clsx(
+          styles.root,
+          (!config.IS_DEV || balanceOf.loading) && styles.overflow
+        )}
+      >
         <div className={styles.inputGroup}>
           <Controller
             name="unit"
@@ -288,12 +299,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             )}
           />
           <TradePercentagePicker
-            onChange={(value) =>
-              setValue(
-                'unit',
-                bignumberUtils.mul(unit, bignumberUtils.div(value, 100))
-              )
-            }
+            value={unit}
+            available={balanceOf.value}
+            onChange={(value) => setValue('unit', value)}
           />
           <div>
             <Controller
@@ -303,7 +311,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 <NumericalInput
                   label="Bought price"
                   rightSide={props.tokens?.[1]?.symbol}
-                  readOnly
                   {...field}
                 />
               )}
@@ -327,7 +334,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               <NumericalInput
                 label="Total"
                 rightSide={props.tokens?.[1]?.symbol}
-                readOnly
                 {...field}
               />
             )}
@@ -412,13 +418,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       <div className={styles.buttons}>
         {!isApproved.value && bignumberUtils.gt(unit, 0) && (
           <>
-            <Typography
-              className={styles.approveTransactions}
-              variant="body3"
-              as="div"
-            >
-              Approve transactions <Icon icon="info" width="1em" height="1em" />
-            </Typography>
             <WalletConnect
               fallback={
                 <Button color="green" className={styles.fullWidth}>
@@ -449,6 +448,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             className={styles.fullWidth}
             type="submit"
             loading={formState.isSubmitting}
+            disabled={!isApproved.value || (!takeProfit && !stopLoss)}
           >
             Create Order
           </Button>

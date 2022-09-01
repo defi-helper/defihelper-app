@@ -126,7 +126,7 @@ export const depositFx = walletListDomain.createEffect(
 )
 
 export const refundFx = walletListDomain.createEffect(
-  async (params: Params) => {
+  async (params: Params & { transactionHash: string }) => {
     analytics.log(
       'settings_wallet_defihelper_balance_refund_send_transaction',
       {
@@ -141,6 +141,15 @@ export const refundFx = walletListDomain.createEffect(
       amount: params.amount,
       walletAddress: params.walletAddress,
       chainId: params.chainId,
+    })
+    await settingsApi.billingTransferCreate({
+      input: {
+        blockchain: params.blockchain,
+        network: params.chainId,
+        account: params.walletAddress,
+        amount: `-${params.amount}`,
+        tx: params.transactionHash,
+      },
     })
   }
 )

@@ -80,10 +80,10 @@ export const Autostaking: React.VFC<AutostakingProps> = () => {
       >
         <AutostakingTabs.Header>
           <Typography as={ButtonBase} variant="h3">
-            Your deployed contracts
+            Your investments
           </Typography>
           <Typography as={ButtonBase} variant="h3">
-            Contracts to migrate
+            Investments to migrate
           </Typography>
           <AutostakingTabs.HeaderRight>
             <Input

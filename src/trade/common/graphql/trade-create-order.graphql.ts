@@ -9,6 +9,7 @@ export const TRADE_CREATE_ORDER = gql`
         id
         network
         address
+        name
       }
       handler
       callData {

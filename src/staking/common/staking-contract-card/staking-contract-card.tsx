@@ -210,12 +210,11 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             ) : (
               <>
                 {validDiff
-                  ? bignumberUtils.formatMax(
+                  ? `${bignumberUtils.formatMax(
                       bignumberUtils.mul(props.metric.myAPYBoost, 100),
                       10000
-                    )
-                  : 0}
-                %
+                    )}%`
+                  : '-'}
               </>
             )}
           </Typography>
