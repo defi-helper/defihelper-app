@@ -524,6 +524,7 @@ export type BillingBalanceType = {
   balance: Scalars['Float']
   claim: Scalars['Float']
   netBalance: Scalars['Float']
+  netBalanceUSD: Scalars['Float']
 }
 
 export enum BillingBillStatusEnum {
@@ -6140,7 +6141,11 @@ export type WalletListMetricsQuery = { __typename?: 'Query' } & {
                 billing: { __typename?: 'WalletBillingType' } & {
                   balance: { __typename?: 'BillingBalanceType' } & Pick<
                     BillingBalanceType,
-                    'lowFeeFunds' | 'balance' | 'netBalance' | 'claim'
+                    | 'lowFeeFunds'
+                    | 'balance'
+                    | 'netBalance'
+                    | 'claim'
+                    | 'netBalanceUSD'
                   >
                 }
               }
@@ -6311,7 +6316,14 @@ export type StakingAutomatesContractFragmentFragment = {
     wallet: { __typename?: 'WalletBlockchainType' } & Pick<
       WalletBlockchainType,
       'id' | 'network' | 'address' | 'blockchain'
-    >
+    > & {
+        billing: { __typename?: 'WalletBillingType' } & {
+          balance: { __typename?: 'BillingBalanceType' } & Pick<
+            BillingBalanceType,
+            'netBalanceUSD'
+          >
+        }
+      }
   }
 
 export type StakingAutomatesContractsQueryVariables = Exact<{

@@ -26,6 +26,7 @@ export const WALLET_LIST_METRICS = gql`
               balance
               netBalance
               claim
+              netBalanceUSD
             }
           }
         }
