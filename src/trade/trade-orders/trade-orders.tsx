@@ -50,11 +50,6 @@ const hasAmountIn = (
   return 'amountIn' in callData
 }
 
-// pending
-// processed
-// succeeded
-// canceled
-
 const statuses = {
   [Tabs.Active]: [
     SmartTradeOrderStatusEnum.Pending,

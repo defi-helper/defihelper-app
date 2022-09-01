@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useAsyncFn, useInterval } from 'react-use'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import { useForm } from 'react-hook-form'
@@ -45,6 +45,8 @@ enum Selects {
   BuySell = 'trade',
   SmartSell = 'smart sell',
 }
+
+const USDC_ETH = '0xEa26B78255Df2bBC31C1eBf60010D78670185bD0'
 
 export const Trade: React.VFC<TradeProps> = () => {
   const { register, handleSubmit, formState, reset } =
@@ -283,11 +285,20 @@ export const Trade: React.VFC<TradeProps> = () => {
     })
   }, [currentWallet])
 
-  const handleUpdatePrice = () => {
+  const handleUpdatePrice = useCallback(() => {
     model.fetchHistoryFx({
-      address: '0x7EFaEf62fDdCCa950418312c6C91Aef321375A00',
+      address: String(
+        config.IS_DEV &&
+          currentPairObj?.pairInfo?.address === pairMock.pairInfo.address
+          ? USDC_ETH
+          : currentPairObj?.pairInfo?.address
+      ),
     })
-  }
+  }, [currentPairObj])
+
+  useEffect(() => {
+    handleUpdatePrice()
+  }, [handleUpdatePrice])
 
   useInterval(handleUpdatePrice, 15000)
 
@@ -474,7 +485,8 @@ export const Trade: React.VFC<TradeProps> = () => {
           <div
             className={clsx(
               styles.selectsBody,
-              !config.IS_DEV && styles.selectsBodyBlur
+              (!(updating && !history) || !config.IS_DEV) &&
+                styles.selectsBodyBlur
             )}
           >
             <div className={styles.tradeSelectHeader}>
