@@ -38,7 +38,6 @@ export type TradeSmartSellProps = {
 
 type FormValues = {
   unit: string
-  price: string
   total: string
   takeProfit: boolean
   stopLoss: boolean
@@ -75,23 +74,25 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   }, [props.router, props.tokens])
 
   const unit = watch('unit')
-  const price = watch('price')
   const takeProfitPercent = watch('takeProfitPercent')
   const stopLossPercent = watch('stopLossPercent')
   const total = watch('total')
 
+  const price = useAsyncRetry(async () => {
+    const path = props.tokens?.map(({ address }) => address)
+
+    if (!props.exchangeAddress || !path) return
+
+    return props.swap?.amountOut(props.exchangeAddress, path, unit)
+  }, [props.exchangeAddress, props.tokens, unit])
+
   useEffect(() => {
     setValue(
       'total',
-      bignumberUtils.toFixed(bignumberUtils.mul(unit, price), 6)
+      bignumberUtils.toFixed(bignumberUtils.mul(unit, price.value), 6)
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unit, price])
-
-  useEffect(() => {
-    setValue('price', bignumberUtils.toFixed(String(props.price ?? '0'), 6))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.price])
+  }, [unit, price.value])
 
   const isApproved = useAsyncRetry(async () => {
     if (!props.tokens?.[0]?.address || bignumberUtils.eq(unit, 0)) return false
@@ -116,8 +117,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       'stopLossValue',
       bignumberUtils.toFixed(
         bignumberUtils.minus(
-          price,
-          bignumberUtils.mul(bignumberUtils.div(Number(event), 99), price)
+          price.value,
+          bignumberUtils.mul(bignumberUtils.div(Number(event), 99), price.value)
         ),
         6
       )
@@ -131,8 +132,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       'takeProfitValue',
       bignumberUtils.toFixed(
         bignumberUtils.plus(
-          bignumberUtils.mul(bignumberUtils.div(Number(event), 300), price),
-          price
+          bignumberUtils.mul(
+            bignumberUtils.div(Number(event), 300),
+            price.value
+          ),
+          price.value
         ),
         6
       )
@@ -140,7 +144,13 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   }
 
   const handleOnSubmit = handleSubmit(async (formValues) => {
-    if (!props.tokens || !props.exchangeAddress || !currentWallet) return
+    if (
+      !props.tokens ||
+      !props.exchangeAddress ||
+      !currentWallet ||
+      !price.value
+    )
+      return
 
     const findedWallet = wallets.find((wallet) => {
       const sameAddreses =
@@ -202,7 +212,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           tokenInDecimals: result.callData.tokenInDecimals,
           tokenOutDecimals: result.callData.tokenOutDecimals,
           amountIn: result.callData.amountIn,
-          boughtPrice: formValues.price,
+          boughtPrice: price.value,
           stopLoss: result.callData.stopLoss
             ? {
                 amountOut: result.callData.stopLoss.amountOut,
@@ -314,7 +324,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             >
               Current Price:{' '}
               <ButtonBase className={styles.currentPriceButton}>
-                {bignumberUtils.format(props.price)} USDT
+                {bignumberUtils.format(price.value, 6)}{' '}
+                {props.tokens?.[1]?.symbol}
               </ButtonBase>
             </Typography>
           </div>
