@@ -59,6 +59,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         stopLoss: false,
         takeProfitPercent: 10,
         stopLossPercent: 4,
+        stopLossValue: '0',
+        takeProfitValue: '0',
+        unit: '0',
       },
     })
 
@@ -108,10 +111,32 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
   const handleChangeStopLoss = (event: number | number[]) => {
     setValue('stopLossPercent', Number(event))
+
+    setValue(
+      'stopLossValue',
+      bignumberUtils.toFixed(
+        bignumberUtils.minus(
+          price,
+          bignumberUtils.mul(bignumberUtils.div(Number(event), 99), price)
+        ),
+        6
+      )
+    )
   }
 
   const handleChangeTakeProfit = (event: number | number[]) => {
     setValue('takeProfitPercent', Number(event))
+
+    setValue(
+      'takeProfitValue',
+      bignumberUtils.toFixed(
+        bignumberUtils.plus(
+          bignumberUtils.mul(bignumberUtils.div(Number(event), 300), price),
+          price
+        ),
+        6
+      )
+    )
   }
 
   const handleOnSubmit = handleSubmit(async (formValues) => {
@@ -204,33 +229,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const takeProfitValue = watch('takeProfitValue')
   const stopLossValue = watch('stopLossValue')
 
-  useEffect(() => {
-    setValue(
-      'takeProfitValue',
-      bignumberUtils.toFixed(
-        bignumberUtils.plus(
-          bignumberUtils.mul(bignumberUtils.div(takeProfitPercent, 100), price),
-          price
-        ),
-        6
-      )
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [price, takeProfitPercent])
-  useEffect(() => {
-    setValue(
-      'stopLossValue',
-      bignumberUtils.toFixed(
-        bignumberUtils.minus(
-          price,
-          bignumberUtils.mul(bignumberUtils.div(stopLossPercent, 100), price)
-        ),
-        6
-      )
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [price, stopLossPercent])
-
   const handleChangeTakeProfitValue = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -239,13 +237,15 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       Number(
         bignumberUtils.toFixed(
           bignumberUtils.div(
-            event.currentTarget.value,
-            bignumberUtils.mul(total, 99)
+            bignumberUtils.mul(event.currentTarget.value, 300),
+            total
           ),
           2
         )
       )
     )
+
+    setValue('takeProfitValue', event.currentTarget.value)
   }
   const handleChangeStopLossValue = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -255,13 +255,15 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       Number(
         bignumberUtils.toFixed(
           bignumberUtils.div(
-            event.currentTarget.value,
-            bignumberUtils.mul(total, 100)
+            bignumberUtils.mul(event.currentTarget.value, 99),
+            total
           ),
           2
         )
       )
     )
+
+    setValue('stopLossValue', event.currentTarget.value)
   }
 
   return (
@@ -304,17 +306,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             onChange={(value) => setValue('unit', value)}
           />
           <div>
-            <Controller
-              control={control}
-              name="price"
-              render={({ field }) => (
-                <NumericalInput
-                  label="Bought price"
-                  rightSide={props.tokens?.[1]?.symbol}
-                  {...field}
-                />
-              )}
-            />
             <Typography
               variant="body3"
               as="div"
@@ -327,17 +318,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               </ButtonBase>
             </Typography>
           </div>
-          <Controller
-            control={control}
-            name="total"
-            render={({ field }) => (
-              <NumericalInput
-                label="Total"
-                rightSide={props.tokens?.[1]?.symbol}
-                {...field}
-              />
-            )}
-          />
         </div>
         <div className={styles.inputGroup}>
           <div className={styles.trailingBuyTitle}>
