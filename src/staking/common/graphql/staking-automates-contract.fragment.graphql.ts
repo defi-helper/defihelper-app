@@ -68,6 +68,11 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       network
       address
       blockchain
+      billing {
+        balance {
+          netBalanceUSD
+        }
+      }
     }
     adapter
     initParams
