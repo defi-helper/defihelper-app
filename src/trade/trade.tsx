@@ -485,7 +485,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           <div
             className={clsx(
               styles.selectsBody,
-              (!(updating && !history) || !config.IS_DEV) &&
+              ((updating && !history) || !config.IS_DEV) &&
                 styles.selectsBodyBlur
             )}
           >
