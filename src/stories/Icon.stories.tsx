@@ -12,7 +12,7 @@ const Template: ComponentStory<typeof Icon> = (args) => <Icon {...args} />
 
 export const Example = Template.bind({})
 Example.args = {
-  icon: 'BAG',
+  icon: 'BNB',
   width: 30,
   height: 30,
 }
