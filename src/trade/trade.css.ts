@@ -60,7 +60,7 @@ export const chartHeader = style({
 
   '@media': {
     [theme.mediaQueries.md()]: {
-      gap: 70,
+      gap: 30,
     },
   },
 })
