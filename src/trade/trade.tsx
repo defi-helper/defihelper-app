@@ -142,7 +142,7 @@ export const Trade: React.VFC<TradeProps> = () => {
       return (
         (network === 'main'
           ? address === currentWallet.account
-          : address === currentWallet.account?.toLowerCase()) &&
+          : address.toLowerCase() === currentWallet.account?.toLowerCase()) &&
         network === currentWallet.chainId
       )
     })
@@ -323,6 +323,13 @@ export const Trade: React.VFC<TradeProps> = () => {
     [adapter]
   )
 
+  const currentWalletCorrect =
+    currentWallet?.chainId === 'main'
+      ? currentWallet.account === wallet?.address
+      : currentWallet?.account?.toLocaleLowerCase() ===
+          wallet?.address.toLocaleLowerCase() &&
+        currentWallet?.chainId === wallet?.network
+
   return (
     <AppLayout title="Trade">
       <Head title="Trade" />
@@ -441,8 +448,17 @@ export const Trade: React.VFC<TradeProps> = () => {
                 24h change
               </Typography>
               <Typography variant="inherit" as="div">
-                {bignumberUtils.format(currentPairObj?.pricePercentCount?.h24)}%
-                | ${bignumberUtils.format(currentPairObj?.liquidityCount?.h24)}
+                {bignumberUtils.format(
+                  currentPairObj?.pricePercentCount?.h24,
+                  undefined,
+                  false
+                )}
+                % | $
+                {bignumberUtils.format(
+                  currentPairObj?.liquidityCount?.h24,
+                  undefined,
+                  false
+                )}
               </Typography>
             </Typography>
             <Typography variant="body3" className={styles.chartMetric} as="div">
@@ -454,7 +470,12 @@ export const Trade: React.VFC<TradeProps> = () => {
                 24h volume (USD)
               </Typography>
               <Typography variant="inherit" as="div">
-                ${bignumberUtils.format(currentPairObj?.volumeCount?.h24)}
+                $
+                {bignumberUtils.format(
+                  currentPairObj?.volumeCount?.h24,
+                  undefined,
+                  false
+                )}
               </Typography>
             </Typography>
             <Typography variant="body3" className={styles.chartMetric} as="div">
@@ -463,10 +484,31 @@ export const Trade: React.VFC<TradeProps> = () => {
                 className={styles.chartTitle}
                 as="div"
               >
-                24h liquidity (USD)
+                Liquidity
               </Typography>
               <Typography variant="inherit" as="div">
-                ${bignumberUtils.format(currentPairObj?.liquidityCount?.h24)}
+                $
+                {bignumberUtils.format(
+                  currentPairObj?.liquidity,
+                  undefined,
+                  false
+                )}
+              </Typography>
+            </Typography>
+            <Typography variant="body3" className={styles.chartMetric} as="div">
+              <Typography
+                variant="inherit"
+                className={styles.chartTitle}
+                as="div"
+              >
+                TXNS
+              </Typography>
+              <Typography variant="inherit" as="div">
+                {bignumberUtils.format(
+                  currentPairObj?.txsSellsCount.h24,
+                  undefined,
+                  false
+                )}
               </Typography>
             </Typography>
           </div>
@@ -485,7 +527,9 @@ export const Trade: React.VFC<TradeProps> = () => {
           <div
             className={clsx(
               styles.selectsBody,
-              ((updating && !history) || !config.IS_DEV) &&
+              ((updating && !history) ||
+                !currentWalletCorrect ||
+                !config.IS_DEV) &&
                 styles.selectsBodyBlur
             )}
           >
@@ -586,6 +630,18 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
             {SelectComponents[currentSelect]}
           </div>
+          {!currentWalletCorrect && (
+            <div className={styles.beta}>
+              <Typography
+                variant="body2"
+                align="center"
+                family="mono"
+                className={styles.betaTitle}
+              >
+                incorrect wallet
+              </Typography>
+            </div>
+          )}
           {!config.IS_DEV && (
             <div className={styles.beta}>
               <Typography
