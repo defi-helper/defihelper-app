@@ -249,9 +249,12 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       'takeProfitPercent',
       Number(
         bignumberUtils.toFixed(
-          bignumberUtils.div(
-            bignumberUtils.mul(event.currentTarget.value, 300),
-            total
+          bignumberUtils.mul(
+            bignumberUtils.div(
+              bignumberUtils.minus(event.currentTarget.value, price.value),
+              price.value
+            ),
+            300
           ),
           2
         )
@@ -265,11 +268,14 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   ) => {
     setValue(
       'stopLossPercent',
-      Number(
+      -Number(
         bignumberUtils.toFixed(
-          bignumberUtils.div(
-            bignumberUtils.mul(event.currentTarget.value, 99),
-            total
+          bignumberUtils.mul(
+            bignumberUtils.div(
+              bignumberUtils.minus(event.currentTarget.value, price.value),
+              price.value
+            ),
+            99
           ),
           2
         )
