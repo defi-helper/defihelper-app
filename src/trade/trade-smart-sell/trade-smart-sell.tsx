@@ -2,7 +2,7 @@ import { useStore } from 'effector-react'
 import { Controller, useForm } from 'react-hook-form'
 import clsx from 'clsx'
 import { useAsyncFn, useAsyncRetry, useToggle } from 'react-use'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
@@ -209,30 +209,44 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const takeProfitValue = watch('takeProfitValue')
   const stopLossValue = watch('stopLossValue')
 
-  const handleChangeStopLoss = (event: number | number[]) => {
-    setValue('stopLossPercent', Number(event))
+  const handleChangeStopLoss = (
+    event: number | number[] | React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value =
+      Array.isArray(event) || typeof event === 'number'
+        ? event
+        : event.currentTarget.value
+
+    setValue('stopLossPercent', Number(value))
 
     setValue(
       'stopLossValue',
       bignumberUtils.toFixed(
         bignumberUtils.minus(
           price.value,
-          bignumberUtils.mul(bignumberUtils.div(Number(event), 99), price.value)
+          bignumberUtils.mul(bignumberUtils.div(Number(value), 99), price.value)
         ),
         6
       )
     )
   }
 
-  const handleChangeTakeProfit = (event: number | number[]) => {
-    setValue('takeProfitPercent', Number(event))
+  const handleChangeTakeProfit = (
+    event: number | number[] | React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value =
+      Array.isArray(event) || typeof event === 'number'
+        ? event
+        : event.currentTarget.value
+
+    setValue('takeProfitPercent', Number(value))
 
     setValue(
       'takeProfitValue',
       bignumberUtils.toFixed(
         bignumberUtils.plus(
           bignumberUtils.mul(
-            bignumberUtils.div(Number(event), 300),
+            bignumberUtils.div(Number(value), 300),
             price.value
           ),
           price.value
@@ -399,10 +413,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               <div className={styles.trailingBuy}>
                 <TradeInput
                   className={styles.trailingBuyInput}
-                  negativeOrPositive
-                  rightSide={<>%</>}
+                  rightSide="%"
+                  min={0}
+                  max={300}
                   value={takeProfitPercent}
-                  readOnly
+                  onChange={handleChangeTakeProfit}
                 />
                 <TradeSlider
                   className={styles.slider}
@@ -438,10 +453,12 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               <div className={styles.trailingBuy}>
                 <TradeInput
                   className={styles.trailingBuyInput}
-                  negativeOrPositive
+                  negative
                   value={-stopLossPercent}
-                  readOnly
-                  rightSide={<>%</>}
+                  rightSide="%"
+                  min={0}
+                  max={99}
+                  onChange={handleChangeStopLoss}
                 />
                 <TradeSlider
                   className={styles.slider}
