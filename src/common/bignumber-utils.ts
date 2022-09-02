@@ -73,9 +73,9 @@ export const bignumberUtils = {
     const newNum =
       bignum.isFinite() && !bignum.isNaN() ? bignum.toFixed(decimal) : '0'
 
-    const [, decNum] = newNum.split('.')
+    const [intNum, decNum] = newNum.split('.')
 
-    return bignumberUtils.eq(decNum, 0) ? '0' : newNum
+    return bignumberUtils.eq(decNum, 0) ? intNum : newNum
   },
 
   gte: (num1?: string | number | null, num2?: string | number | null) =>

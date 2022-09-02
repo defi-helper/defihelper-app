@@ -319,7 +319,8 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
                 refunding={wallet.refunding}
                 error={
                   wallet.billing?.balance?.lowFeeFunds ||
-                  wallet.billing.balance.netBalanceUSD < 20
+                  (wallet.billing?.balance?.netBalanceUSD > 0.1 &&
+                    wallet.billing?.balance?.netBalanceUSD < 20)
                 }
               />
             )

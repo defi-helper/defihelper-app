@@ -137,7 +137,9 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(walletsModel.$wallets)
   const [blockchain, setBlockChain] = useState<string | null>(null)
-  const [riskLevel, setRiskLevel] = useState(ContractRiskFactorEnum.Low)
+  const [riskLevel, setRiskLevel] = useState(
+    ContractRiskFactorEnum.NotCalculated
+  )
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.AprBoosted,
     order: SortOrderEnum.Desc,
@@ -764,17 +766,10 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                     variant="inherit"
                     className={clsx({
                       [styles.positive]: bignumberUtils.gt(realApy, '0'),
-                      [styles.negative]:
-                        !bignumberUtils.eq(
-                          bignumberUtils.format(realApy),
-                          '0'
-                        ) && bignumberUtils.lt(realApy, '0'),
+                      [styles.negative]: bignumberUtils.lt(realApy, '0'),
                     })}
                   >
-                    {!bignumberUtils.eq(bignumberUtils.format(realApy), '0') &&
-                      bignumberUtils.lt(realApy, '0') &&
-                      '- '}
-                    {bignumberUtils.formatMax(realApy, 10000, true)}%
+                    {bignumberUtils.formatMax(realApy, 10000, false)}%
                   </Typography>
                 </Typography>
                 <div className={styles.apyBoost}>
