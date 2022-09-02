@@ -1,7 +1,7 @@
 import { useStore } from 'effector-react'
 import { Controller, useForm } from 'react-hook-form'
 import clsx from 'clsx'
-import { useAsyncFn, useAsyncRetry } from 'react-use'
+import { useAsyncFn, useAsyncRetry, useToggle } from 'react-use'
 import { useEffect } from 'react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -51,6 +51,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const currentWallet = useStore(walletNetworkModel.$wallet)
   const wallets = useStore(settingsWalletModel.$wallets)
 
+  const [takeProfitFocus, toggleTakeProfitFocus] = useToggle(false)
+  const [stopLossFocus, toggleStopLossFocus] = useToggle(false)
+
   const { handleSubmit, control, watch, setValue, formState } =
     useForm<FormValues>({
       defaultValues: {
@@ -83,7 +86,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     if (!props.exchangeAddress || !path) return
 
-    return props.swap?.amountOut(props.exchangeAddress, path, unit)
+    return props.swap?.amountOut(props.exchangeAddress, path, '1')
   }, [props.exchangeAddress, props.tokens, unit])
 
   useEffect(() => {
@@ -109,39 +112,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     return true
   }, [props.tokens, unit])
-
-  const handleChangeStopLoss = (event: number | number[]) => {
-    setValue('stopLossPercent', Number(event))
-
-    setValue(
-      'stopLossValue',
-      bignumberUtils.toFixed(
-        bignumberUtils.minus(
-          price.value,
-          bignumberUtils.mul(bignumberUtils.div(Number(event), 99), price.value)
-        ),
-        6
-      )
-    )
-  }
-
-  const handleChangeTakeProfit = (event: number | number[]) => {
-    setValue('takeProfitPercent', Number(event))
-
-    setValue(
-      'takeProfitValue',
-      bignumberUtils.toFixed(
-        bignumberUtils.plus(
-          bignumberUtils.mul(
-            bignumberUtils.div(Number(event), 300),
-            price.value
-          ),
-          price.value
-        ),
-        6
-      )
-    )
-  }
 
   const handleOnSubmit = handleSubmit(async (formValues) => {
     if (
@@ -239,6 +209,39 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const takeProfitValue = watch('takeProfitValue')
   const stopLossValue = watch('stopLossValue')
 
+  const handleChangeStopLoss = (event: number | number[]) => {
+    setValue('stopLossPercent', Number(event))
+
+    setValue(
+      'stopLossValue',
+      bignumberUtils.toFixed(
+        bignumberUtils.minus(
+          price.value,
+          bignumberUtils.mul(bignumberUtils.div(Number(event), 99), price.value)
+        ),
+        6
+      )
+    )
+  }
+
+  const handleChangeTakeProfit = (event: number | number[]) => {
+    setValue('takeProfitPercent', Number(event))
+
+    setValue(
+      'takeProfitValue',
+      bignumberUtils.toFixed(
+        bignumberUtils.plus(
+          bignumberUtils.mul(
+            bignumberUtils.div(Number(event), 300),
+            price.value
+          ),
+          price.value
+        ),
+        6
+      )
+    )
+  }
+
   const handleChangeTakeProfitValue = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -246,9 +249,12 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       'takeProfitPercent',
       Number(
         bignumberUtils.toFixed(
-          bignumberUtils.div(
-            bignumberUtils.mul(event.currentTarget.value, 300),
-            total
+          bignumberUtils.mul(
+            bignumberUtils.div(
+              bignumberUtils.minus(event.currentTarget.value, price.value),
+              price.value
+            ),
+            300
           ),
           2
         )
@@ -262,11 +268,14 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   ) => {
     setValue(
       'stopLossPercent',
-      Number(
+      -Number(
         bignumberUtils.toFixed(
-          bignumberUtils.div(
-            bignumberUtils.mul(event.currentTarget.value, 99),
-            total
+          bignumberUtils.mul(
+            bignumberUtils.div(
+              bignumberUtils.minus(event.currentTarget.value, price.value),
+              price.value
+            ),
+            99
           ),
           2
         )
@@ -275,6 +284,43 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     setValue('stopLossValue', event.currentTarget.value)
   }
+
+  useEffect(() => {
+    if (stopLossFocus) return
+
+    setValue(
+      'stopLossValue',
+      bignumberUtils.toFixed(
+        bignumberUtils.minus(
+          price.value,
+          bignumberUtils.mul(
+            bignumberUtils.div(stopLossPercent, 99),
+            price.value
+          )
+        ),
+        6
+      )
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [price.value, stopLossPercent, stopLossFocus])
+  useEffect(() => {
+    if (takeProfitFocus) return
+
+    setValue(
+      'takeProfitValue',
+      bignumberUtils.toFixed(
+        bignumberUtils.plus(
+          bignumberUtils.mul(
+            bignumberUtils.div(takeProfitPercent, 300),
+            price.value
+          ),
+          price.value
+        ),
+        6
+      )
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [price.value, takeProfitPercent, takeProfitFocus])
 
   return (
     <form className={styles.form} onSubmit={handleOnSubmit}>
@@ -347,6 +393,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 rightSide={props.tokens?.[1]?.symbol}
                 value={takeProfitValue}
                 onChange={handleChangeTakeProfitValue}
+                onFocus={toggleTakeProfitFocus}
+                onBlur={toggleTakeProfitFocus}
               />
               <div className={styles.trailingBuy}>
                 <TradeInput
@@ -384,6 +432,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 rightSide={props.tokens?.[1]?.symbol}
                 value={stopLossValue}
                 onChange={handleChangeStopLossValue}
+                onFocus={toggleStopLossFocus}
+                onBlur={toggleStopLossFocus}
               />
               <div className={styles.trailingBuy}>
                 <TradeInput
