@@ -101,7 +101,7 @@ export const TradeBuySell: React.VFC<TradeBuySellProps> = (props) => {
               <div className={styles.trailingBuy}>
                 <TradeInput
                   className={styles.trailingBuyInput}
-                  negativeOrPositive
+                  negative
                   rightSide={<>%</>}
                 />
                 <TradeSlider className={styles.slider} />
@@ -126,7 +126,7 @@ export const TradeBuySell: React.VFC<TradeBuySellProps> = (props) => {
               <div className={styles.trailingBuy}>
                 <TradeInput
                   className={styles.trailingBuyInput}
-                  negativeOrPositive
+                  negative
                   rightSide={<>%</>}
                 />
                 <TradeSlider className={styles.slider} reverse />
