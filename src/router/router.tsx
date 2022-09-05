@@ -40,7 +40,7 @@ import { Monitoring } from '~/monitoring'
 import { LPTokens } from '~/lp-tokens'
 import { DemoForward } from '~/demo-forward'
 import { Bridges } from '~/bridges'
-import { Autostaking } from '~/autostaking'
+import { InvestList } from '~/invest/invest-list'
 import { Tokens } from '~/tokens'
 import { Admin } from '~/admin'
 import { TokensAlias } from '~/tokens-alias'
@@ -163,8 +163,8 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.bridges}>
           <Bridges />
         </Route>
-        <Route path={paths.autostaking}>
-          <Autostaking />
+        <Route path={paths.invest.list}>
+          <InvestList />
         </Route>
         <PrivateRoute path={paths.admin}>
           <Admin />

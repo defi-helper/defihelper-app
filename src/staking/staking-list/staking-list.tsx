@@ -44,9 +44,9 @@ import { OnboardTooltip } from '~/common/onboard-tooltip'
 import { theme } from '~/common/theme'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { analytics } from '~/analytics'
-import { AutostakingVideoDialog } from '~/autostaking/common/autostaking-video-dialog'
-import { AutostakingDeployDialog } from '~/autostaking/common/autostaking-deploy-dialog'
-import { AutostakingTabsDialog } from '~/autostaking/common/autostaking-tabs-dialog'
+import { InvestVideoDialog } from '~/invest/common/invest-video-dialog'
+import { InvestDeployDialog } from '~/invest/common/invest-deploy-dialog'
+import { InvestTabsDialog } from '~/invest/common/invest-tabs-dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { SettingsWalletBalanceDialog } from '~/settings/common'
@@ -141,10 +141,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
   const [openConfirmDialog] = useDialog(ConfirmDialog)
   const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openApyDialog] = useDialog(StakingApyDialog)
-  const [openAutostakingVideoDialog] = useDialog(AutostakingVideoDialog)
+  const [openInvestVideoDialog] = useDialog(InvestVideoDialog)
   const [openAutostakingBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
-  const [openAutostakingDeployDialog] = useDialog(AutostakingDeployDialog)
-  const [openAutostakingTabsDialog] = useDialog(AutostakingTabsDialog)
+  const [openInvestDeployDialog] = useDialog(InvestDeployDialog)
+  const [openInvestTabsDialog] = useDialog(InvestTabsDialog)
 
   const searchDebounced = useDebounce(search, 1000)
 
@@ -214,7 +214,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           return
 
         if (!dontShow) {
-          await openAutostakingVideoDialog({
+          await openInvestVideoDialog({
             dontShowAgain: dontShow,
             onDontShowAgain: setDontShow,
           }).catch(console.error)
@@ -286,7 +286,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
           contractAddress: contract.address,
         })
 
-        const stepsResult = await openAutostakingDeployDialog({
+        const stepsResult = await openInvestDeployDialog({
           steps: deployAdapter.deploy,
         })
 
@@ -350,7 +350,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
         }
 
         if ('methods' in stakingAutomatesAdapter.migrate) {
-          await openAutostakingTabsDialog({
+          await openInvestTabsDialog({
             methods: stakingAutomatesAdapter.migrate.methods,
             onLastStep: cb,
           })
