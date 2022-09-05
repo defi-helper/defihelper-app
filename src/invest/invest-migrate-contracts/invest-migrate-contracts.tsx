@@ -31,12 +31,11 @@ import { InvestVideoDialog } from '../common/invest-video-dialog'
 import { InvestDeployDialog } from '../common/invest-deploy-dialog'
 import { InvestTabsDialog } from '../common/invest-tabs-dialog'
 import { Loader } from '~/common/loader'
-import * as autostakingContractsModel from '~/invest/invest-contracts/invest-contracts.model'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
-import * as styles from './invest-migrate-contracts.css'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { SettingsWalletBalanceDialog } from '~/settings/common'
+import * as styles from './invest-migrate-contracts.css'
 
 export type InvestMigrateContractsProps = {
   className?: string
@@ -218,11 +217,10 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
       model.migratingStart(contract.id)
 
       try {
-        const addresses =
-          await autostakingContractsModel.fetchContractAddressesFx({
-            contracts: [contract],
-            protocolAdapter: contract.protocol.adapter,
-          })
+        const addresses = await model.fetchContractAddressesFx({
+          contracts: [contract],
+          protocolAdapter: contract.protocol.adapter,
+        })
         const { prototypeAddress = undefined } = addresses[contract.id]
 
         if (

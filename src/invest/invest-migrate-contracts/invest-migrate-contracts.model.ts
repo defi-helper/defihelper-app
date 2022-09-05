@@ -12,6 +12,7 @@ import {
 } from '~/api'
 import { investApi } from '~/invest/common/invest.api'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { automationApi } from '~/automations/common/automation.api'
 
 export const fetchContractsFx = createEffect(
   async ({
@@ -181,4 +182,22 @@ export const $hiddenContractsWithLoading = combine(
       showing: linkLoading[contract.id],
       migrating: migratingContract === contract.id,
     }))
+)
+
+export const fetchContractAddressesFx = createEffect(
+  async (params: {
+    contracts: UnitValue<typeof fetchContractsFx.doneData>['list']
+    protocolAdapter?: string
+  }) => {
+    const contracts = params.contracts.map(({ id, network, automate }) => ({
+      id,
+      network,
+      autorestake: automate.autorestake,
+    }))
+
+    return automationApi.getContractsAddresses(
+      contracts,
+      params.protocolAdapter
+    )
+  }
 )

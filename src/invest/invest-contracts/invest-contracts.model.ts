@@ -15,7 +15,6 @@ import {
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
 } from '~/api'
-import { automationApi } from '~/automations/common/automation.api'
 import { investApi } from '~/invest/common/invest.api'
 import { lpTokensApi } from '~/lp-tokens/common/lp-tokens.api'
 import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
@@ -115,21 +114,3 @@ sample({
   fn: (clock) => clock.count,
   target: useInfiniteScrollContracts.totalElements,
 })
-
-export const fetchContractAddressesFx = createEffect(
-  async (params: {
-    contracts: UnitValue<typeof fetchContractsFx.doneData>['list']
-    protocolAdapter?: string
-  }) => {
-    const contracts = params.contracts.map(({ id, network, automate }) => ({
-      id,
-      network,
-      autorestake: automate.autorestake,
-    }))
-
-    return automationApi.getContractsAddresses(
-      contracts,
-      params.protocolAdapter
-    )
-  }
-)

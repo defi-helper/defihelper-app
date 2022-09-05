@@ -2,13 +2,10 @@ import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
 import { useEffect, useRef, useState } from 'react'
-import { useThrottle, useLocalStorage } from 'react-use'
+import { useThrottle } from 'react-use'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
 import {
-  AutomateActionTypeEnum,
-  AutomateConditionTypeEnum,
-  AutomateTriggerTypeEnum,
   ContractListSortInputTypeColumnEnum,
   ContractRiskFactorEnum,
   SortOrderEnum,
@@ -16,7 +13,7 @@ import {
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
-import { useDialog, UserRejectionError } from '~/common/dialog'
+import { useDialog } from '~/common/dialog'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
@@ -25,26 +22,10 @@ import { Paper } from '~/common/paper'
 import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
-import { StakingAdapterDialog, StakingApyDialog } from '~/staking/common'
-import { InvestVideoDialog } from '~/invest/common/invest-video-dialog'
-import { InvestDeployDialog } from '~/invest/common/invest-deploy-dialog'
-import { InvestTabsDialog } from '../common/invest-tabs-dialog'
-import { toastsService } from '~/toasts'
-import { analytics } from '~/analytics'
-import { switchNetwork } from '~/wallets/common'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { WalletConnect } from '~/wallets/wallet-connect'
+import { StakingApyDialog } from '~/staking/common'
 import { paths } from '~/paths'
 import { StakeRewardTokens } from '~/common/stake-reward-tokens'
-import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
-import { settingsWalletModel } from '~/settings/settings-wallets'
-import { SettingsWalletBalanceDialog } from '~/settings/common'
-import { useQueryParams } from '~/common/hooks'
-import { investApi } from '../common/invest.api'
 import * as model from './invest-contracts.model'
-import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
-import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
-import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as styles from './invest-contracts.css'
 
 export type InvestContractsProps = {
@@ -103,19 +84,7 @@ const riskIcons: Record<string, 'redRisk' | 'greenRisk' | 'yellowRisk'> = {
 }
 
 export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
-  const initialContractId = useQueryParams().get('contractId')
-
   const [openApyDialog] = useDialog(StakingApyDialog)
-  const [openInvestVideoDialog] = useDialog(InvestVideoDialog)
-  const [openAutostakingBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
-  const [openInvestDeployDialog] = useDialog(InvestDeployDialog)
-  const [openInvestTabsDialog] = useDialog(InvestTabsDialog)
-  const [openAdapter] = useDialog(StakingAdapterDialog)
-
-  const [enableAutostakingVideo, setEnableAutostakingVideo] = useLocalStorage(
-    'enableAutostakingVideo',
-    false
-  )
 
   const contractsLoading = useStore(model.fetchContractsFx.pending)
   const contracts = useStore(model.$contractsWithAutostakingLoading)
@@ -132,8 +101,6 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
   const searchThrottled = useThrottle(search, 500)
 
   const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
-  const currentWallet = walletNetworkModel.useWalletNetwork()
-  const wallets = useStore(walletsModel.$wallets)
   const [blockchain, setBlockChain] = useState<string | null>(null)
   const [riskLevel, setRiskLevel] = useState(
     ContractRiskFactorEnum.NotCalculated
@@ -271,224 +238,9 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
     }
   }, [])
 
-  const handleSwitchNetwork = (contract: typeof contracts[number]) => () =>
-    switchNetwork(contract.network).catch(console.error)
-
-  const handleAutostake = (contract: typeof contracts[number]) => async () => {
-    analytics.log('auto_staking_auto_stake')
-    model.autostakingStart(contract.id)
-
-    try {
-      const addresses = await model.fetchContractAddressesFx({
-        contracts: [contract],
-        protocolAdapter: contract.protocol.adapter,
-      })
-      const { prototypeAddress = undefined } = addresses[contract.id]
-
-      if (
-        !contract.automate.autorestake ||
-        !prototypeAddress ||
-        !currentWallet ||
-        !currentWallet.chainId
-      )
-        return
-
-      if (!enableAutostakingVideo) {
-        await openInvestVideoDialog({
-          dontShowAgain: enableAutostakingVideo,
-          onDontShowAgain: setEnableAutostakingVideo,
-        }).catch(console.error)
-      }
-
-      const findedWallet = wallets.find((wallet) => {
-        const sameAddreses =
-          String(currentWallet.chainId) === 'main'
-            ? currentWallet.account === wallet.address
-            : currentWallet.account?.toLowerCase() === wallet.address
-
-        return sameAddreses && String(currentWallet.chainId) === wallet.network
-      })
-
-      if (!findedWallet) throw new Error('wallet is not connected')
-
-      const metrics = await walletsModel.fetchWalletListMetricsFx()
-
-      const metric = metrics[findedWallet.id]
-
-      if (!metric || typeof metric?.billing.balance.netBalance === 'undefined')
-        throw Error('wallet is not connected')
-
-      const billingBalance = await settingsWalletModel.fetchBillingBalanceFx({
-        blockchain: contract.blockchain,
-        network: contract.network,
-      })
-
-      if (
-        bignumberUtils.lte(
-          metric.billing.balance.netBalance,
-          billingBalance.recomendedIncome
-        )
-      ) {
-        const adapter = await settingsWalletModel.loadAdapterFx({
-          provider: currentWallet.provider,
-          chainId: currentWallet.chainId,
-        })
-
-        const result = await openAutostakingBalanceDialog({
-          network: findedWallet.network,
-          wallet: findedWallet.address,
-          adapter,
-          priceUSD: billingBalance.priceUSD,
-          token: billingBalance.token,
-          recomendedIncome: billingBalance.recomendedIncome,
-          variant: 'deposit',
-        })
-
-        await walletsModel.depositFx({
-          blockchain: findedWallet.blockchain,
-          amount: result.amount,
-          walletAddress: findedWallet.address,
-          chainId: String(currentWallet.chainId),
-          provider: currentWallet.provider,
-          transactionHash: result.transactionHash,
-        })
-      }
-
-      const deployAdapter = await deployModel.fetchDeployAdapterFx({
-        address: prototypeAddress,
-        protocol: contract.protocol.adapter,
-        contract: contract.automate.autorestake,
-        chainId: String(currentWallet.chainId),
-        provider: currentWallet.provider,
-        contractAddress: contract.address,
-      })
-
-      const stepsResult = await openInvestDeployDialog({
-        steps: deployAdapter.deploy,
-      })
-
-      props.onChangeTab()
-
-      const deployedContract = await deployModel.deployFx({
-        proxyAddress: stepsResult.address,
-        inputs: stepsResult.inputs,
-        protocol: contract.protocol.id,
-        adapter: contract.automate.autorestake,
-        contract: contract.id,
-        account: findedWallet.address,
-        chainId: String(currentWallet.chainId),
-        provider: currentWallet.provider,
-      })
-
-      const createdTrigger = await automationUpdateModel.createTriggerFx({
-        wallet: findedWallet.id,
-        params: JSON.stringify({}),
-        type: AutomateTriggerTypeEnum.EveryHour,
-        name: `Autostaking ${contract.name}`,
-        active: true,
-      })
-
-      const action = await automationUpdateModel.createActionFx({
-        trigger: createdTrigger.id,
-        type: AutomateActionTypeEnum.EthereumAutomateRun,
-        params: JSON.stringify({
-          id: deployedContract.id,
-        }),
-        priority: 0,
-      })
-
-      await automationUpdateModel.createConditionFx({
-        trigger: createdTrigger.id,
-        type: AutomateConditionTypeEnum.EthereumOptimalAutomateRun,
-        params: JSON.stringify({
-          id: action.id,
-        }),
-        priority: 0,
-      })
-
-      const stakingAutomatesAdapter =
-        await stakingAutomatesModel.fetchAdapterFx({
-          protocolAdapter: contract.protocol.adapter,
-          contractAdapter: contract.automate.autorestake,
-          contractId: contract.id,
-          contractAddress: deployedContract.address,
-          provider: currentWallet.provider,
-          chainId: String(currentWallet.chainId),
-          action: 'migrate',
-        })
-
-      if (!stakingAutomatesAdapter) throw new Error('something went wrong')
-
-      const cb = () => {
-        stakingAutomatesModel
-          .scanWalletMetricFx({
-            wallet: createdTrigger.wallet.id,
-            contract: contract.id,
-          })
-          .catch(console.error)
-      }
-
-      if ('methods' in stakingAutomatesAdapter.migrate) {
-        await openInvestTabsDialog({
-          methods: stakingAutomatesAdapter.migrate.methods,
-          onLastStep: cb,
-        })
-      } else {
-        await openAdapter({
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          steps: stakingAutomatesAdapter.migrate,
-        })
-          .catch(cb)
-          .then(cb)
-      }
-
-      analytics.onAutoStakingEnabled()
-      toastsService.success('success!')
-    } catch (error) {
-      if (error instanceof Error && !(error instanceof UserRejectionError)) {
-        toastsService.error(error.message)
-      }
-    } finally {
-      model.autostakingEnd(contract.id)
-    }
-  }
-
   const handleSort = (sort: typeof sortBy) => () => {
     setSort(sort)
   }
-
-  useEffect(() => {
-    if (!initialContractId) return
-
-    const abortController = new AbortController()
-
-    const handle = async () => {
-      const contractList = await investApi.contracts(
-        {
-          filter: {
-            id: initialContractId,
-          },
-        },
-        abortController.signal
-      )
-
-      const [contract] = contractList.list
-
-      if (!contract) return
-
-      handleAutostake({ ...contract, autostakingLoading: false })().catch(
-        console.error
-      )
-    }
-
-    handle().catch(console.error)
-
-    return () => {
-      abortController.abort()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialContractId])
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -861,32 +613,15 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
                     </Dropdown>
                   )}
                 </Typography>
-                <WalletConnect
-                  network={contract.network}
-                  fallback={
-                    <Button
-                      color="green"
-                      size="small"
-                      className={styles.autostakeButton}
-                    >
-                      invest
-                    </Button>
-                  }
+                <Button
+                  color="green"
+                  size="small"
+                  className={styles.autostakeButton}
+                  as={ReactRouterLink}
+                  to={paths.invest.detail(contract.id)}
                 >
-                  <Button
-                    color="green"
-                    size="small"
-                    className={styles.autostakeButton}
-                    onClick={
-                      contract.network !== currentWallet?.chainId
-                        ? handleSwitchNetwork(contract)
-                        : handleAutostake(contract)
-                    }
-                    loading={contract.autostakingLoading}
-                  >
-                    invest
-                  </Button>
-                </WalletConnect>
+                  invest
+                </Button>
               </div>
             )
           })}

@@ -41,6 +41,7 @@ import { LPTokens } from '~/lp-tokens'
 import { DemoForward } from '~/demo-forward'
 import { Bridges } from '~/bridges'
 import { InvestList } from '~/invest/invest-list'
+import { InvestDetail } from '~/invest/invest-detail'
 import { Tokens } from '~/tokens'
 import { Admin } from '~/admin'
 import { TokensAlias } from '~/tokens-alias'
@@ -162,6 +163,9 @@ export const Router: React.VFC<RouterProps> = () => {
         </PrivateRoute>
         <Route path={paths.bridges}>
           <Bridges />
+        </Route>
+        <Route path={paths.invest.detail()}>
+          <InvestDetail />
         </Route>
         <Route path={paths.invest.list}>
           <InvestList />
