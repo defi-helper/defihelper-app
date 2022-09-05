@@ -30,11 +30,11 @@ export const TradePercentagePicker: React.VFC<TradePercentagePickerProps> = (
   )
 
   useEffect(() => {
-    if (bignumberUtils.eq(value, newValue)) return
+    if (bignumberUtils.eq(value, newValue) || !currentPercent) return
 
     props.onChange?.(newValue)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, newValue])
+  }, [value, newValue, currentPercent])
 
   useEffect(() => {
     setValue(newValue)

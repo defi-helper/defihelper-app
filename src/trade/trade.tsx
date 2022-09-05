@@ -286,6 +286,8 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [currentWallet])
 
   const handleUpdatePrice = useCallback(() => {
+    if (!currentPairObj) return
+
     model.fetchHistoryFx({
       address: String(
         config.IS_DEV &&
@@ -325,10 +327,8 @@ export const Trade: React.VFC<TradeProps> = () => {
 
   const currentWalletCorrect =
     currentWallet?.chainId === 'main'
-      ? currentWallet.account === wallet?.address
-      : currentWallet?.account?.toLocaleLowerCase() ===
-          wallet?.address.toLocaleLowerCase() &&
-        currentWallet?.chainId === wallet?.network
+      ? currentWallet?.chainId === wallet?.network
+      : currentWallet?.chainId === wallet?.network
 
   return (
     <AppLayout title="Trade">
