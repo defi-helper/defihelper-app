@@ -141,7 +141,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
     ContractRiskFactorEnum.NotCalculated
   )
   const [sortBy, setSort] = useState({
-    column: ContractListSortInputTypeColumnEnum.AprBoosted,
+    column: ContractListSortInputTypeColumnEnum.Tvl,
     order: SortOrderEnum.Desc,
   })
 
