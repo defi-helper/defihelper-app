@@ -72,7 +72,7 @@ export const row = style([
     alignItems: 'center',
     gap: 30,
     display: 'grid',
-    gridTemplateColumns: '13% 12% 9% 8% 12% 12% 7% 7%',
+    gridTemplateColumns: '13% 12% 9% 8% 15% 12% 5% 7%',
 
     selectors: {
       '&:not(:last-child)': {
