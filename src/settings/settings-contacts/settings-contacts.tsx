@@ -142,7 +142,6 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
     }
   }
 
-  console.warn(contactList)
   const contactsMap = contactList.reduce((acc, contact) => {
     acc.set(contact.broker, contact)
 
