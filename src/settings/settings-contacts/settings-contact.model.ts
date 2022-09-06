@@ -131,10 +131,9 @@ export const $userNotificationsList = settingsContactsDomain
           ...state,
           { type: params.type, time: params.hour, contact: params.contact },
         ]
-      : state.filter(
-          ({ type, contact }) =>
-            type !== params.type && params.contact === contact
-        )
+      : state.filter(({ type, contact }) => {
+          return type === params.type && contact !== params.contact
+        })
   })
   .reset(authModel.logoutFx)
 
