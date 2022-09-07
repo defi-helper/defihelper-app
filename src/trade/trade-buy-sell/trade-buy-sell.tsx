@@ -1,171 +1,155 @@
-import { useToggle } from 'react-use'
 import clsx from 'clsx'
+import { Controller, useForm } from 'react-hook-form'
 
-import { Icon } from '~/common/icon'
 import { NumericalInput } from '~/common/numerical-input'
 import { Switch } from '~/common/switch'
 import { Typography } from '~/common/typography'
 import { TradeInput } from '~/trade/common/trade-input'
-import { TradePlusMinus } from '~/trade/common/trade-plus-minus'
 import { TradeSlider } from '~/trade/common/trade-slider'
 import { TradePercentagePicker } from '~/trade/common/trade-percentage-picker'
-import * as styles from './trade-buy-sell.css'
 import { config } from '~/config'
+import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
+import { Icon } from '~/common/icon'
+import { Button } from '~/common/button'
+import * as styles from './trade-buy-sell.css'
 
 export type TradeBuySellProps = {
   className?: string
+  router?: SmartTradeRouter['methods']
+  swap?: SmartTradeSwapHandler['methods']
+  tokens?: {
+    address: string
+    name: string
+    symbol: string
+  }[]
 }
 
-export const TradeBuySell: React.VFC<TradeBuySellProps> = () => {
-  const [takeProfit, toggleTakeProfit] = useToggle(false)
-  const [stopLoss, toggleStopLoss] = useToggle(false)
+type FormValues = {
+  amount: string
+  price: string
+  total: string
+  takeProfit: boolean
+  stopLoss: boolean
+}
+
+export const TradeBuySell: React.VFC<TradeBuySellProps> = (props) => {
+  const { handleSubmit, control, watch, setValue } = useForm<FormValues>({
+    defaultValues: {
+      takeProfit: false,
+      stopLoss: false,
+    },
+  })
+
+  const handleOnSubmit = handleSubmit(() => {})
+
+  const takeProfit = watch('takeProfit')
+  const stopLoss = watch('stopLoss')
 
   return (
-    <div className={clsx(styles.root, !config.IS_DEV && styles.overflow)}>
-      <div className={styles.inputGroup}>
-        <NumericalInput label="Amount" rightSide={<>BTC</>} />
-        <NumericalInput label="Market price" rightSide={<>USDT</>} />
-        <div className={styles.trailingBuy}>
+    <form className={styles.form} onSubmit={handleOnSubmit}>
+      <div className={clsx(styles.root, !config.IS_DEV && styles.overflow)}>
+        <div className={styles.inputGroup}>
+          <Controller
+            control={control}
+            name="amount"
+            render={({ field }) => (
+              <NumericalInput
+                label="Amount"
+                rightSide={props.tokens?.[0]?.symbol}
+                {...field}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="price"
+            render={({ field }) => (
+              <NumericalInput
+                label="Market price"
+                rightSide={props.tokens?.[1]?.symbol}
+                {...field}
+              />
+            )}
+          />
+          <Controller
+            control={control}
+            name="total"
+            render={({ field }) => (
+              <NumericalInput
+                label="Total"
+                rightSide={props.tokens?.[1]?.symbol}
+                {...field}
+              />
+            )}
+          />
+          <TradePercentagePicker />
+        </div>
+        <div className={styles.inputGroup}>
           <div className={styles.trailingBuyTitle}>
-            <Typography
-              variant="body3"
-              as="label"
-              transform="uppercase"
-              family="mono"
-              className={styles.trailingBuyLabel}
-            >
-              Trailing buy
-              <Icon icon="info" width="1em" height="1em" />
+            <Typography as="div" className={styles.takeProfitLabel}>
+              Take profit
             </Typography>
-            <Switch size="small" />
+            <Switch
+              size="small"
+              onChange={({ target }) => setValue('takeProfit', target.checked)}
+              checked={takeProfit}
+            />
           </div>
-          <TradeInput
-            className={styles.trailingBuyInput}
-            negativeOrPositive
-            rightSide={<>%</>}
-          />
-          <TradePlusMinus />
-        </div>
-        <NumericalInput label="Total" rightSide="USDT" />
-        <TradePercentagePicker />
-      </div>
-      <div className={styles.inputGroup}>
-        <div className={styles.trailingBuyTitle}>
-          <Typography as="div" className={styles.takeProfitLabel}>
-            Take profit
-          </Typography>
-          <Switch
-            size="small"
-            onChange={toggleTakeProfit}
-            checked={takeProfit}
-          />
-        </div>
-        {takeProfit && (
-          <>
-            <NumericalInput rightSide="USDT" />
-            <div className={styles.trailingBuy}>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide={<>%</>}
-              />
-              <TradeSlider className={styles.slider} />
-            </div>
-            <div className={styles.trailingBuyTitle}>
-              <Typography
-                variant="body3"
-                as="label"
-                transform="uppercase"
-                family="mono"
-                className={styles.trailingBuyLabel}
-              >
-                Trailing take profit
-                <Icon icon="info" width="1em" height="1em" />
-              </Typography>
-              <Switch size="small" />
-            </div>
-            <div className={styles.trailingBuy}>
-              <Typography
-                variant="body3"
-                as="label"
-                className={styles.trailingBuyLabel}
-              >
-                Follow max price with deviation [%]
-                <Icon icon="info" width="1em" height="1em" />
-              </Typography>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide={<>%</>}
-              />
-              <TradeSlider className={styles.slider} reverse />
-            </div>
-          </>
-        )}
-      </div>
-      <div className={styles.inputGroup}>
-        <div className={styles.trailingBuyTitle}>
-          <Typography as="div" className={styles.takeProfitLabel}>
-            Stop Loss
-          </Typography>
-          <Switch size="small" onChange={toggleStopLoss} checked={stopLoss} />
-        </div>
-        {stopLoss && (
-          <>
-            <NumericalInput rightSide={<>USDT</>} />
-            <div className={styles.trailingBuy}>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide={<>%</>}
-              />
-              <TradeSlider className={styles.slider} reverse />
-            </div>
-            <div className={styles.trailingBuy}>
-              <div className={styles.trailingBuyTitle}>
-                <Typography
-                  variant="body3"
-                  as="label"
-                  transform="uppercase"
-                  family="mono"
-                  className={styles.trailingBuyLabel}
-                >
-                  Trailing Stop Loss
-                  <Icon icon="info" width="1em" height="1em" />
-                </Typography>
-                <Switch size="small" />
+          {takeProfit && (
+            <>
+              <NumericalInput rightSide={props.tokens?.[1]?.symbol} />
+              <div className={styles.trailingBuy}>
+                <TradeInput
+                  className={styles.trailingBuyInput}
+                  negative
+                  rightSide={<>%</>}
+                />
+                <TradeSlider className={styles.slider} />
               </div>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide={<>%</>}
-              />
-              <TradeSlider className={styles.slider} reverse />
-            </div>
-            <div className={styles.trailingBuy}>
-              <div className={styles.trailingBuyTitle}>
-                <Typography
-                  variant="body3"
-                  as="label"
-                  transform="uppercase"
-                  family="mono"
-                  className={styles.trailingBuyLabel}
-                >
-                  Stop Loss timeout
-                  <Icon icon="info" width="1em" height="1em" />
-                </Typography>
-                <Switch size="small" />
+            </>
+          )}
+        </div>
+        <div className={styles.inputGroup}>
+          <div className={styles.trailingBuyTitle}>
+            <Typography as="div" className={styles.takeProfitLabel}>
+              Stop Loss
+            </Typography>
+            <Switch
+              size="small"
+              onChange={({ target }) => setValue('stopLoss', target.checked)}
+              checked={stopLoss}
+            />
+          </div>
+          {stopLoss && (
+            <>
+              <NumericalInput rightSide={props.tokens?.[1]?.symbol} />
+              <div className={styles.trailingBuy}>
+                <TradeInput
+                  className={styles.trailingBuyInput}
+                  negative
+                  rightSide={<>%</>}
+                />
+                <TradeSlider className={styles.slider} reverse />
               </div>
-              <TradeInput
-                className={styles.trailingBuyInput}
-                negativeOrPositive
-                rightSide="Sec"
-              />
-              <TradePlusMinus />
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+      <div className={styles.buttons}>
+        <Typography
+          className={styles.approveTransactions}
+          variant="body3"
+          as="div"
+        >
+          Approve transactions <Icon icon="info" width="1em" height="1em" />
+        </Typography>
+        <Button color="green" className={styles.fullWidth}>
+          Approve {props.tokens?.map(({ symbol }) => symbol).join('-')}
+        </Button>
+        <Button color="green" className={styles.fullWidth} type="submit">
+          Create Order
+        </Button>
+      </div>
+    </form>
   )
 }

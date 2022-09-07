@@ -10,6 +10,7 @@ import {
   AutomateConditionTypeEnum,
   AutomateTriggerTypeEnum,
   ContractListSortInputTypeColumnEnum,
+  ContractRiskFactorEnum,
   SortOrderEnum,
 } from '~/api'
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -36,13 +37,15 @@ import { WalletConnect } from '~/wallets/wallet-connect'
 import { paths } from '~/paths'
 import { StakeRewardTokens } from '~/common/stake-reward-tokens'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
-import * as styles from './autostaking-contracts.css'
+import { settingsWalletModel } from '~/settings/settings-wallets'
+import { SettingsWalletBalanceDialog } from '~/settings/common'
+import { useQueryParams } from '~/common/hooks'
+import { autostakingApi } from '../common/autostaking.api'
 import * as model from './autostaking-contracts.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
-import { settingsWalletModel } from '~/settings/settings-wallets'
-import { SettingsWalletBalanceDialog } from '~/settings/common'
+import * as styles from './autostaking-contracts.css'
 
 export type AutostakingContractsProps = {
   className?: string
@@ -67,11 +70,8 @@ const sortIcon = (
 
 const text = (
   <>
-    If there are no funds on the contract, we calculate an Boosted APY of
-    $10,000.
-    <br />
-    <br />
-    You&apos;ll see the real data after you transfer money to this contract.
+    Based on last 7 days&apos; pool performance. Does not account for
+    impermanent loss
   </>
 )
 
@@ -89,9 +89,24 @@ const dropdown = (
   </Dropdown>
 )
 
+const riskStatuses = {
+  [ContractRiskFactorEnum.High]: 'High',
+  [ContractRiskFactorEnum.Low]: 'Low',
+  [ContractRiskFactorEnum.Moderate]: 'Moderate',
+  [ContractRiskFactorEnum.NotCalculated]: '-',
+}
+
+const riskIcons: Record<string, 'redRisk' | 'greenRisk' | 'yellowRisk'> = {
+  [ContractRiskFactorEnum.High]: 'redRisk',
+  [ContractRiskFactorEnum.Low]: 'greenRisk',
+  [ContractRiskFactorEnum.Moderate]: 'yellowRisk',
+}
+
 export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   props
 ) => {
+  const initialContractId = useQueryParams().get('contractId')
+
   const [openApyDialog] = useDialog(StakingApyDialog)
   const [openAutostakingVideoDialog] = useDialog(AutostakingVideoDialog)
   const [openAutostakingBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
@@ -122,8 +137,11 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(walletsModel.$wallets)
   const [blockchain, setBlockChain] = useState<string | null>(null)
+  const [riskLevel, setRiskLevel] = useState(
+    ContractRiskFactorEnum.NotCalculated
+  )
   const [sortBy, setSort] = useState({
-    column: ContractListSortInputTypeColumnEnum.AprBoosted,
+    column: ContractListSortInputTypeColumnEnum.Tvl,
     order: SortOrderEnum.Desc,
   })
 
@@ -139,6 +157,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
             protocol: networksConfig[blockchain].blockchain,
           }
         : undefined,
+      risk: isEmpty(riskLevel) ? null : riskLevel,
     }
 
     model.fetchContractsFx({
@@ -156,12 +175,19 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
     return () => {
       abortController.abort()
     }
-  }, [protocolIds, sortBy, searchThrottled, contractsOffset, blockchain])
+  }, [
+    protocolIds,
+    sortBy,
+    searchThrottled,
+    riskLevel,
+    contractsOffset,
+    blockchain,
+  ])
 
   useEffect(() => {
     model.resetContracts()
     model.useInfiniteScrollContracts.reset()
-  }, [searchThrottled, blockchain, protocolIds, sortBy])
+  }, [searchThrottled, blockchain, protocolIds, riskLevel, sortBy])
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -207,6 +233,12 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setBlockChain(event.target.value)
+  }
+
+  const handleChooseRiskLevel = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRiskLevel(event.target.value as ContractRiskFactorEnum)
   }
 
   const handleOpenApy =
@@ -428,6 +460,38 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
     setSort(sort)
   }
 
+  useEffect(() => {
+    if (!initialContractId) return
+
+    const abortController = new AbortController()
+
+    const handle = async () => {
+      const contractList = await autostakingApi.contracts(
+        {
+          filter: {
+            id: initialContractId,
+          },
+        },
+        abortController.signal
+      )
+
+      const [contract] = contractList.list
+
+      if (!contract) return
+
+      handleAutostake({ ...contract, autostakingLoading: false })().catch(
+        console.error
+      )
+    }
+
+    handle().catch(console.error)
+
+    return () => {
+      abortController.abort()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialContractId])
+
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.header}>
@@ -496,6 +560,21 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
               </SelectOption>
             ))}
           </Select>
+          <Select
+            placeholder="Risk level"
+            className={styles.select}
+            onChange={handleChooseRiskLevel}
+          >
+            {Object.entries(ContractRiskFactorEnum)
+              .filter(
+                ([, value]) => ContractRiskFactorEnum.NotCalculated !== value
+              )
+              .map(([key, value]) => (
+                <SelectOption value={value} key={key}>
+                  {riskStatuses[value]}
+                </SelectOption>
+              ))}
+          </Select>
           <Input
             placeholder="Search"
             className={styles.search}
@@ -558,7 +637,7 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                 })}
                 className="real_apy"
               >
-                Real APR (7d){' '}
+                7D Performance{' '}
                 {sortBy.column ===
                   ContractListSortInputTypeColumnEnum.AprWeekReal &&
                   sortIcon(
@@ -581,12 +660,33 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                       : SortOrderEnum.Desc,
                 })}
               >
-                Boosted APY{' '}
+                APY Boost{' '}
                 {sortBy.column ===
                   ContractListSortInputTypeColumnEnum.AprBoosted &&
                   sortIcon(
                     sortBy,
                     ContractListSortInputTypeColumnEnum.AprBoosted
+                  )}
+              </ButtonBase>
+            </Typography>
+            <Typography variant="body2" as="div">
+              <ButtonBase
+                onClick={handleSort({
+                  column: ContractListSortInputTypeColumnEnum.RiskFactor,
+                  order:
+                    sortBy.column ===
+                      ContractListSortInputTypeColumnEnum.RiskFactor &&
+                    sortBy.order === SortOrderEnum.Desc
+                      ? SortOrderEnum.Asc
+                      : SortOrderEnum.Desc,
+                })}
+              >
+                Risk{' '}
+                {sortBy.column ===
+                  ContractListSortInputTypeColumnEnum.RiskFactor &&
+                  sortIcon(
+                    sortBy,
+                    ContractListSortInputTypeColumnEnum.RiskFactor
                   )}
               </ButtonBase>
             </Typography>
@@ -666,17 +766,10 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                     variant="inherit"
                     className={clsx({
                       [styles.positive]: bignumberUtils.gt(realApy, '0'),
-                      [styles.negative]:
-                        !bignumberUtils.eq(
-                          bignumberUtils.format(realApy),
-                          '0'
-                        ) && bignumberUtils.lt(realApy, '0'),
+                      [styles.negative]: bignumberUtils.lt(realApy, '0'),
                     })}
                   >
-                    {!bignumberUtils.eq(bignumberUtils.format(realApy), '0') &&
-                      bignumberUtils.lt(realApy, '0') &&
-                      '- '}
-                    {bignumberUtils.formatMax(realApy, 10000, true)}%
+                    {bignumberUtils.formatMax(realApy, 10000, false)}%
                   </Typography>
                 </Typography>
                 <div className={styles.apyBoost}>
@@ -699,33 +792,103 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                       '- '}
                     {bignumberUtils.formatMax(apyboost, 10000, true)}%
                   </Typography>
-                  <WalletConnect
-                    network={contract.network}
-                    fallback={
-                      <Button
-                        color="green"
-                        size="small"
-                        className={styles.autostakeButton}
+                </div>
+                <Typography variant="inherit">
+                  {riskIcons[contract.metric.risk] && (
+                    <Icon
+                      icon={riskIcons[contract.metric.risk]}
+                      width={22}
+                      height={24}
+                    />
+                  )}
+                  {false && (
+                    <Dropdown
+                      className={styles.riskLevel}
+                      control={
+                        <ButtonBase>
+                          {riskIcons[contract.metric.risk] && (
+                            <Icon
+                              icon={riskIcons[contract.metric.risk]}
+                              width={22}
+                              height={24}
+                            />
+                          )}
+                        </ButtonBase>
+                      }
+                      offset={[0, 4]}
+                      placement="left-start"
+                    >
+                      <Typography
+                        family="mono"
+                        as="div"
+                        className={styles.riskLevelRow}
                       >
-                        invest
-                      </Button>
-                    }
-                  >
+                        <Typography variant="inherit">Risk</Typography>
+                        <Typography
+                          as="div"
+                          variant="body2"
+                          className={styles.riskLevelStatus}
+                        >
+                          {riskStatuses[contract.metric.risk]}
+                        </Typography>
+                      </Typography>
+                      <span className={styles.riskLevelSpacing} />
+                      <Typography
+                        family="mono"
+                        as="div"
+                        variant="body2"
+                        className={styles.riskLevelRow}
+                      >
+                        <Typography variant="inherit">Reliability</Typography>
+                        <Icon icon="greenRisk" width={19} height={20} />
+                      </Typography>
+                      <Typography
+                        family="mono"
+                        as="div"
+                        variant="body2"
+                        className={styles.riskLevelRow}
+                      >
+                        <Typography variant="inherit">Profitability</Typography>
+                        <Icon icon="yellowRisk" width={19} height={20} />
+                      </Typography>
+                      <Typography
+                        family="mono"
+                        as="div"
+                        variant="body2"
+                        className={styles.riskLevelRow}
+                      >
+                        <Typography variant="inherit">Volatility</Typography>
+                        <Icon icon="greenRisk" width={19} height={20} />
+                      </Typography>
+                    </Dropdown>
+                  )}
+                </Typography>
+                <WalletConnect
+                  network={contract.network}
+                  fallback={
                     <Button
                       color="green"
                       size="small"
                       className={styles.autostakeButton}
-                      onClick={
-                        contract.network !== currentWallet?.chainId
-                          ? handleSwitchNetwork(contract)
-                          : handleAutostake(contract)
-                      }
-                      loading={contract.autostakingLoading}
                     >
                       invest
                     </Button>
-                  </WalletConnect>
-                </div>
+                  }
+                >
+                  <Button
+                    color="green"
+                    size="small"
+                    className={styles.autostakeButton}
+                    onClick={
+                      contract.network !== currentWallet?.chainId
+                        ? handleSwitchNetwork(contract)
+                        : handleAutostake(contract)
+                    }
+                    loading={contract.autostakingLoading}
+                  >
+                    invest
+                  </Button>
+                </WalletConnect>
               </div>
             )
           })}

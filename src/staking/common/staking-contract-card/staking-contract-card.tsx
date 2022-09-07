@@ -162,7 +162,7 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
           {isExcludedContract || !props.metric.aprWeekReal ? (
             '-'
           ) : (
-            <>{bignumberUtils.formatMax(realApy, 10000)}% </>
+            <>{bignumberUtils.formatMax(realApy, 10000, false)}% </>
           )}
         </Typography>
       </div>
@@ -210,12 +210,11 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             ) : (
               <>
                 {validDiff
-                  ? bignumberUtils.formatMax(
+                  ? `${bignumberUtils.formatMax(
                       bignumberUtils.mul(props.metric.myAPYBoost, 100),
                       10000
-                    )
-                  : 0}
-                %
+                    )}%`
+                  : '-'}
               </>
             )}
           </Typography>

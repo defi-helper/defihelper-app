@@ -65,16 +65,24 @@ export const bignumberUtils = {
       .multipliedBy(options?.gasSlippage || 1.2)
       .toFixed(0),
 
-  floor: (num?: string | number | null) => new BigNumber(num || 0).toFixed(0),
+  floor: (num?: string | number | null) => bignumberUtils.toFixed(num, 0),
+
+  toFixed: (num?: string | number | null, decimal = 2) => {
+    const bignum = new BigNumber(num || 0)
+
+    const newNum =
+      bignum.isFinite() && !bignum.isNaN() ? bignum.toFixed(decimal) : '0'
+
+    const [intNum, decNum] = newNum.split('.')
+
+    return bignumberUtils.eq(decNum, 0) ? intNum : newNum
+  },
 
   gte: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isGreaterThanOrEqualTo(num2 || 0),
 
   gt: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isGreaterThan(num2 || 0),
-
-  toFixed: (num1?: string | number | null, decimals = 2) =>
-    new BigNumber(num1 || 0).toFixed(decimals),
 
   lt: (num1?: string | number | null, num2?: string | number | null) =>
     new BigNumber(num1 || 0).isLessThan(num2 || 0),

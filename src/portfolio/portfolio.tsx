@@ -6,7 +6,6 @@ import LazyLoad, { LazyLoadProps } from 'react-lazyload'
 import Joyride, { CallBackProps, STATUS, Step } from '@defihelper/react-joyride'
 
 import { AppLayout } from '~/layouts'
-import { PortfolioEarnings } from '~/portfolio/portfolio-earnings'
 import { PortfolioTotalWorth } from './portfolio-total-worth'
 import { PortfolioCoinBalance } from './portfolio-coin-balance'
 import { Head } from '~/common/head'
@@ -62,11 +61,6 @@ const STEPS: (Step & { action?: () => JSX.Element; closeButton?: string })[] = [
   {
     target: `.tracked_apy`,
     content: 'Track average APY from staked tokens',
-    placement: 'bottom',
-  },
-  {
-    target: `.earnings`,
-    content: 'Extra earning you may earn with auto-staking activated',
     placement: 'bottom',
   },
   {
@@ -362,14 +356,8 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
             <PortfolioMetricCards className={styles.cards} />
           </ForceRenderOrLazyLoad>
           <div className={clsx(styles.grid, styles.section)}>
-            <ForceRenderOrLazyLoad
-              forceRender={Boolean(runLocalStorage)}
-              className={styles.mainChart}
-            >
-              <PortfolioTotalWorth />
-            </ForceRenderOrLazyLoad>
             <ForceRenderOrLazyLoad forceRender={Boolean(runLocalStorage)}>
-              <PortfolioEarnings className="earnings" />
+              <PortfolioTotalWorth />
             </ForceRenderOrLazyLoad>
             <ForceRenderOrLazyLoad forceRender={Boolean(runLocalStorage)}>
               <PortfolioCoinBalance />

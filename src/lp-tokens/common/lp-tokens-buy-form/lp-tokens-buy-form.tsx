@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useAsyncFn, useAsyncRetry } from 'react-use'
+import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 import { useForm, Controller } from 'react-hook-form'
 
 import { Button } from '~/common/button'
@@ -11,9 +11,13 @@ import { Loader } from '~/common/loader'
 import { toastsService } from '~/toasts'
 import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
 import { ButtonBase } from '~/common/button-base'
-import * as styles from './lp-tokens-buy-form.css'
+import { Icon } from '~/common/icon'
+import { Dropdown } from '~/common/dropdown'
+import { Link } from '~/common/link'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { analytics } from '~/analytics'
+import { config } from '~/config'
+import * as styles from './lp-tokens-buy-form.css'
 
 export type LPTokensBuyFormProps = {
   onConfirm: () => void
@@ -25,6 +29,7 @@ export type LPTokensBuyFormProps = {
     symbol: string
     address: string
   }[]
+  tokenSymbol: string
 }
 
 type FormValues = {
@@ -68,6 +73,10 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
 
   const tokenAddress = watch('token')
   const amount = watch('amount')
+
+  const fee = useAsync(props.buyLiquidityAdapter.methods.fee, [
+    props.buyLiquidityAdapter.methods,
+  ])
 
   useEffect(() => {
     const currentToken = tokens.value?.[tokenAddress]
@@ -284,11 +293,51 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
               )}
             />
             <div className={styles.wrap}>
-              {error && (
+              {error ? (
                 <Typography variant="body3" as="div" className={styles.error}>
                   Your transaction is failed due to current market conditions.
                   You can try to change the slippage or use another token
                 </Typography>
+              ) : (
+                <div className={styles.serviceFee}>
+                  <Typography
+                    transform="uppercase"
+                    family="mono"
+                    variant="body3"
+                    as="div"
+                    className={styles.serviceFeeTitle}
+                  >
+                    <Typography variant="inherit">service fee</Typography>
+                    <Dropdown
+                      control={
+                        <ButtonBase>
+                          <Icon icon="question" width={14} height={14} />
+                        </ButtonBase>
+                      }
+                      className={styles.serviceFeeDropdown}
+                      placement="bottom-start"
+                      offset={[0, 4]}
+                    >
+                      <Typography variant="body3">
+                        We will charge you $
+                        {bignumberUtils.format(fee.value?.usd)} fee for every
+                        operation. This revenue will be distributed to DFH
+                        Governance token holders.{' '}
+                        <Link
+                          color="blue"
+                          href={`${config.MAIN_URL}tokenomics`}
+                        >
+                          Read more about our revenue streams
+                        </Link>
+                      </Typography>
+                    </Dropdown>
+                  </Typography>
+                  <Typography variant="body2">
+                    {bignumberUtils.format(fee.value?.native, 3)}{' '}
+                    {props.tokenSymbol} ($
+                    {bignumberUtils.format(fee.value?.usd)})
+                  </Typography>
+                </div>
               )}
               <Button type="submit" loading={formState.isSubmitting}>
                 {isApproved.value === true && 'Buy'}

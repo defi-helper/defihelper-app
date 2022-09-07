@@ -395,7 +395,11 @@ export const AutostakingDeployedContracts: React.VFC<AutostakingDeployedContract
                   refunding={deployedContract.refunding}
                   error={
                     deployedContract.contractWallet?.billing?.balance
-                      ?.lowFeeFunds
+                      ?.lowFeeFunds ||
+                    (deployedContract.wallet?.billing?.balance?.netBalanceUSD >
+                      0.1 &&
+                      deployedContract.wallet?.billing?.balance?.netBalanceUSD <
+                        20)
                   }
                   freshMetrics={metrics[deployedContract.id]}
                 />

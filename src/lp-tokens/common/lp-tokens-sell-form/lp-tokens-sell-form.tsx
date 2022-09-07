@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useAsyncFn, useAsyncRetry } from 'react-use'
+import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 import { useForm, Controller } from 'react-hook-form'
 
 import { Button } from '~/common/button'
@@ -13,6 +13,10 @@ import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
 import { ButtonBase } from '~/common/button-base'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { analytics } from '~/analytics'
+import { Icon } from '~/common/icon'
+import { Dropdown } from '~/common/dropdown'
+import { Link } from '~/common/link'
+import { config } from '~/config'
 import * as styles from './lp-tokens-sell-form.css'
 
 export type LPTokensSellFormProps = {
@@ -25,6 +29,7 @@ export type LPTokensSellFormProps = {
     symbol: string
     address: string
   }[]
+  tokenSymbol: string
 }
 
 type FormValues = {
@@ -68,6 +73,10 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
 
   const tokenAddress = watch('token')
   const amount = watch('amount')
+
+  const fee = useAsync(props.sellLiquidityAdapter.methods.fee, [
+    props.sellLiquidityAdapter.methods,
+  ])
 
   useEffect(() => {
     const currentToken = tokens.value?.[tokenAddress]
@@ -176,6 +185,10 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
     setError(true)
   }, [approveState.error, sellState.error])
 
+  const amountOut = useAsync(async () => {
+    return props.sellLiquidityAdapter.methods.amountOut(tokenAddress, amount)
+  }, [props.sellLiquidityAdapter.methods.amountOut, tokenAddress, amount])
+
   return (
     <>
       {!tokens.value ? (
@@ -232,7 +245,12 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
               render={({ field }) => (
                 <Select
                   {...field}
-                  label="You will get"
+                  label="You will get (approximately)"
+                  leftSide={
+                    <span className={styles.amountOut}>
+                      ≈ {bignumberUtils.format(amountOut.value)}
+                    </span>
+                  }
                   value={field.value}
                   className={styles.input}
                   disabled={formState.isSubmitting}
@@ -285,11 +303,51 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
               )}
             />
             <div className={styles.wrap}>
-              {error && (
+              {error ? (
                 <Typography variant="body3" as="div" className={styles.error}>
                   Your transaction is failed due to current market conditions.
                   You can try to change the slippage or use another token
                 </Typography>
+              ) : (
+                <div className={styles.serviceFee}>
+                  <Typography
+                    transform="uppercase"
+                    family="mono"
+                    variant="body3"
+                    as="div"
+                    className={styles.serviceFeeTitle}
+                  >
+                    <Typography variant="inherit">service fee</Typography>
+                    <Dropdown
+                      control={
+                        <ButtonBase>
+                          <Icon icon="question" width={14} height={14} />
+                        </ButtonBase>
+                      }
+                      className={styles.serviceFeeDropdown}
+                      placement="bottom-start"
+                      offset={[0, 4]}
+                    >
+                      <Typography variant="body3">
+                        We will charge you $
+                        {bignumberUtils.format(fee.value?.usd)} fee for every
+                        operation. This revenue will be distributed to DFH
+                        Governance token holders.{' '}
+                        <Link
+                          color="blue"
+                          href={`${config.MAIN_URL}tokenomics`}
+                        >
+                          Read more about our revenue streams
+                        </Link>
+                      </Typography>
+                    </Dropdown>
+                  </Typography>
+                  <Typography variant="body2">
+                    {bignumberUtils.format(fee.value?.native, 3)}{' '}
+                    {props.tokenSymbol} ($
+                    {bignumberUtils.format(fee.value?.usd)})
+                  </Typography>
+                </div>
               )}
               <Button type="submit" loading={formState.isSubmitting}>
                 {isApproved.value === true && 'Sell'}

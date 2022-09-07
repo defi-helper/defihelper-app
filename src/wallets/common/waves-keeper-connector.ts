@@ -49,12 +49,10 @@ export class WavesKeeperConnector extends AbstractConnector {
     waves.setProvider(keeper)
 
     try {
-      if (!this.account) {
-        const { address, publicKey } = await waves.login()
+      const { address, publicKey } = await waves.login()
 
-        this.account = address
-        this.publicKey = publicKey
-      }
+      this.account = address
+      this.publicKey = publicKey
 
       if (!this.provider) {
         this.provider = waves

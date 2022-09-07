@@ -53,6 +53,7 @@ export const dropdown = style({
   gap: 8,
   top: '100%',
   left: 0,
+  opacity: 1,
 })
 
 globalStyle(`${wrap}:hover ${dropdown}`, {

@@ -180,6 +180,11 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
 
     if (!router || !pair) return
 
+    const billingBalance = await settingsWalletModel.fetchBillingBalanceFx({
+      blockchain: contract.blockchain,
+      network: contract.network,
+    })
+
     try {
       const { buyLiquidity, sellLiquidity, tokens } =
         await stakingModel.buyLPFx({
@@ -218,6 +223,7 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
         sellLiquidityAdapter: sellLiquidity,
         tokens,
         onSubmit: cb,
+        tokenSymbol: billingBalance.token ?? '',
       })
 
       await openSuccessDialog({

@@ -155,9 +155,7 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
               {props.label && (
                 <Typography
                   as="span"
-                  variant="body2"
-                  family="mono"
-                  transform="uppercase"
+                  variant="body3"
                   className={clsx(styles.fs14, styles.label)}
                 >
                   {props.label}
@@ -167,11 +165,13 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                 className={styles.input}
                 data-placeholder={props.placeholder}
               >
+                {props.leftSide}
                 <div className={styles.inputInner}>
                   {!isEmpty(renderValueArr)
                     ? renderValueArr
                     : props.placeholder}{' '}
                 </div>
+                {props.rightSide}
                 {props.clearable && !isEmpty(localValue) ? (
                   <ButtonBase
                     onClick={handleClearValue}

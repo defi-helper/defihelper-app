@@ -141,6 +141,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           const dialogs = {
             stake: () =>
               openStakeDialog({
+                contractId: props.contractId,
                 methods: contract.actions?.stake.methods,
                 hasBuyLp: Boolean(props.buyLiquidity?.pair),
                 onSubmit: () => {
@@ -224,6 +225,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         protocol: props.blockchain,
       })
 
+      const billingBalance = await settingsWalletModel.fetchBillingBalanceFx({
+        blockchain: props.blockchain,
+        network: props.network,
+      })
+
       const findedWallet = wallets.find((wallet) => {
         const sameAddreses =
           String(currentWallet.chainId) === 'main'
@@ -250,6 +256,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         sellLiquidityAdapter: sellLiquidity,
         tokens,
         onSubmit: cb,
+        tokenSymbol: billingBalance.token ?? '',
       })
 
       await openSuccessDialog({

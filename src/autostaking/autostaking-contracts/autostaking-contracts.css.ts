@@ -21,7 +21,7 @@ export const selects = style({
     [theme.mediaQueries.lg()]: {
       marginBottom: 32,
       gap: 16,
-      gridTemplateColumns: '296px 296px 1fr',
+      gridTemplateColumns: '236px 236px 236px 1fr',
     },
   },
 })
@@ -72,7 +72,7 @@ export const row = style([
     alignItems: 'center',
     gap: 30,
     display: 'grid',
-    gridTemplateColumns: '1fr 13% 10% 10% 12% 1fr',
+    gridTemplateColumns: '13% 12% 9% 8% 15% 12% 5% 7%',
 
     selectors: {
       '&:not(:last-child)': {
@@ -191,4 +191,31 @@ export const apyboostQuestion = style({
 
 export const dropdown = style({
   width: 252,
+})
+
+export const riskLevel = style({
+  minWidth: 206,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+})
+
+export const riskLevelRow = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 10,
+})
+
+export const riskLevelSpacing = style({
+  background: theme.colors.border,
+  height: 1,
+  width: '100%',
+})
+
+export const riskLevelStatus = style({
+  background: theme.colors.common.green2,
+  padding: '0 31px',
+  borderRadius: 22,
+  color: theme.colors.secondary,
 })

@@ -4,6 +4,7 @@ import { createStore, createEffect, guard, sample, createEvent } from 'effector'
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 import { debounce } from 'patronum/debounce'
+import { shallowEqual } from 'fast-equals'
 
 import {
   augmentConnectorUpdate,
@@ -15,7 +16,6 @@ import {
   Wallet,
   SignMessagePayload,
 } from '~/wallets/common'
-import { toastsService } from '~/toasts'
 import { BlockchainEnum } from '~/api/_generated-types'
 import { networksConfig } from '~/networks-config'
 import type { WavesKeeperConnector } from '~/wallets/common/waves-keeper-connector'
@@ -100,7 +100,21 @@ export const $wallet = createStore<Wallet | null>(null)
   .on(activated, (_, payload) => payload)
   .on(updated, (_, payload) => payload)
   .on(signMessage, (state, payload) =>
-    state === null || state.account !== payload.account ? payload : undefined
+    state === null ||
+    !shallowEqual(
+      {
+        chainId: state.chainId,
+        account: state.account,
+        blockchain: state.blockchain,
+      },
+      {
+        chainId: payload.chainId,
+        account: payload.account,
+        blockchain: payload.blockchain,
+      }
+    )
+      ? payload
+      : undefined
   )
   .reset(diactivateWalletFx)
 
@@ -181,11 +195,3 @@ sample({
   clock: [signMessageEthereumFx.fail, signMessageWavesFx.fail],
   target: diactivateWalletFx,
 })
-
-toastsService.forwardErrors(
-  signMessageEthereumFx.failData,
-  signMessageWavesFx.failData,
-  diactivateWalletFx.failData,
-  updateWalletFx.failData,
-  activateWalletFx.failData
-)

@@ -7,11 +7,11 @@ export const useWalletConnect = () => {
   const [openWalletList] = useWalletList()
 
   return useCallback(
-    async (params: { blockchain?: string; network?: string }) => {
+    async (params?: { blockchain?: string; network?: string }) => {
       try {
         const wallet = await openWalletList({
-          blockchain: params.blockchain,
-          network: params.network,
+          blockchain: params?.blockchain,
+          network: params?.network,
         })
 
         if (!wallet.account) return

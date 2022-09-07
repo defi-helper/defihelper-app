@@ -4,18 +4,114 @@ import {
   getAPIClient,
   TradeAuthMutation,
   TradeAuthMutationVariables,
+  TradeCreateOrderMutation,
+  TradeCreateOrderMutationVariables,
+  TradeOrderListQuery,
+  TradeOrderListQueryVariables,
 } from '~/api'
 import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
 import { TRADE_AUTH } from './graphql/trade-auth.graphql'
+import { TRADE_CREATE_ORDER } from './graphql/trade-create-order.graphql'
+import { TRADE_ORDER_LIST } from './graphql/trade-order-list.graphql'
+import { pairMock } from './trade-dev.mock'
 
 const apiV1 = axios.create({
   baseURL: 'https://whattofarm.io/ext-api/v1',
 })
 
-type Exchange = {
+export type Exchange = {
   Icon: string
   Name: string
+  Address?: string
+}
+
+export type Token = {
+  address: string
+  name: string
+  network: {
+    currencySymbol: string
+    name: string
+  }
+  slug: string
+  symbol: string
+  totalSupply: number
+  usdPrice: number
+}
+
+export type Pair = {
+  aprDay: number
+  aprYear: number
+  hidden: boolean
+  hiddenCause: string
+  links: string[]
+  liquidity: number
+  liquidityCount: {
+    h1: number
+    h24: number
+    h4: number
+    m5: number
+  }
+  marketCap: number
+  pairInfo: {
+    address: string
+    createdAt: string
+    defiType: string
+    description: string
+    icon: string
+    inv: boolean
+    lpToken: {
+      address: string
+      name: string
+      network: {
+        currencySymbol: string
+        name: string
+      }
+      slug: string
+      symbol: string
+      totalSupply: number
+      usdPrice: number
+    }
+    poolAddress: string
+    poolName: string
+    reserves: number[]
+    ticker: string
+    tokens: Token[]
+  }
+  price: number
+  pricePercentCount: {
+    h1: number
+    h24: number
+    h4: number
+    m5: number
+  }
+  tags: null
+  ts: string
+  txsBuysCount: {
+    h1: number
+    h24: number
+    h4: number
+    m5: number
+  }
+  txsCount: {
+    h1: number
+    h24: number
+    h4: number
+    m5: number
+  }
+  txsSellsCount: {
+    h1: number
+    h24: number
+    h4: number
+    m5: number
+  }
+  usdPrice: number
+  volumeCount: {
+    h1: number
+    h24: number
+    h4: number
+    m5: number
+  }
 }
 
 type Response<T> = { code: 200 | 500 | 405; data: T; message?: string }
@@ -29,14 +125,16 @@ export const tradeApi = {
         },
       })
       .then(({ data }) => ({
-        data: data.data.map(({ Name, ...rest }) => {
-          const [firstChar, ...restChars] = Array.from(Name)
-
-          return {
-            Name: [firstChar.toLocaleUpperCase(), ...restChars].join(''),
-            ...rest,
-          }
-        }),
+        data: config.IS_DEV
+          ? [
+              {
+                Icon: 'https://whattofarm.io/assets/dex/0x800b052609c355cA8103E06F022aA30647eAd60a',
+                Name: 'Uniswap dev',
+                Address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+              },
+              ...data.data,
+            ]
+          : data.data,
         message: data.message,
       })),
 
@@ -53,7 +151,7 @@ export const tradeApi = {
   ) =>
     apiV1
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .post<Response<{ list: any[] }>>(
+      .post<Response<{ list: Pair[] }>>(
         'pair-stat?page=1&size=100&minLiquidity=10000&sortField=vol&sortDirection=desc',
         payload,
         {
@@ -63,7 +161,13 @@ export const tradeApi = {
           },
         }
       )
-      .then(({ data }) => data),
+      .then(({ data }) => ({
+        ...data,
+        data: {
+          ...data.data,
+          list: config.IS_DEV ? [pairMock, ...data.data.list] : data.data.list,
+        },
+      })),
 
   history: (
     address: string,
@@ -112,6 +216,31 @@ export const tradeApi = {
         query: TRADE_AUTH.loc?.source.body ?? '',
       })
       .then(({ data }) => data?.tradingAuth),
+
+  createOrder: (input: TradeCreateOrderMutationVariables['input']) =>
+    getAPIClient()
+      .request<
+        TradeCreateOrderMutation,
+        unknown,
+        TradeCreateOrderMutationVariables
+      >({
+        query: TRADE_CREATE_ORDER.loc?.source.body ?? '',
+        variables: {
+          input,
+        },
+      })
+      .then(({ data }) => data?.smartTradeSwapOrderCreate),
+
+  fetchOrders: (variables: TradeOrderListQueryVariables) =>
+    getAPIClient()
+      .request<TradeOrderListQuery, unknown, TradeOrderListQueryVariables>({
+        query: TRADE_ORDER_LIST.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => ({
+        list: data?.smartTradeOrders.list ?? [],
+        pagination: data?.smartTradeOrders.pagination.count ?? 0,
+      })),
 }
 
 const authRequestInterceptor = async (axiosConfig: AxiosRequestConfig) => {

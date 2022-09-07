@@ -48,10 +48,10 @@ import { AutostakingVideoDialog } from '~/autostaking/common/autostaking-video-d
 import { AutostakingDeployDialog } from '~/autostaking/common/autostaking-deploy-dialog'
 import { AutostakingTabsDialog } from '~/autostaking/common/autostaking-tabs-dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import * as model from './staking-list.model'
-import * as styles from './staking-list.css'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { SettingsWalletBalanceDialog } from '~/settings/common'
+import * as model from './staking-list.model'
+import * as styles from './staking-list.css'
 
 export type StakingListProps = {
   protocolId: string
@@ -78,7 +78,8 @@ const sortIcon = (
 const STEPS: (Step & { action?: () => JSX.Element; closeButton?: string })[] = [
   {
     target: '.real_apy',
-    content: 'Here you can see your actual 7-day annualized percentage rate',
+    content:
+      'Based on last 7 days&apos; pool performance. Does not account for impermanent loss',
     placement: 'top',
     disableBeacon: true,
   },
@@ -605,7 +606,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           })}
                           className="real_apy"
                         >
-                          Real APR (7d){' '}
+                          7D Performance{' '}
                           {sortBy.column ===
                             ContractListSortInputTypeColumnEnum.AprWeekReal &&
                             sortIcon(
@@ -624,7 +625,8 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           offset={[0, 8]}
                         >
                           <Typography variant="body3">
-                            Actual 7-day annualized percentage rate
+                            Based on last 7 days&apos; pool performance. Does
+                            not account for impermanent loss
                           </Typography>
                         </Dropdown>
                       </Typography>

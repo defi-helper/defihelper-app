@@ -37,6 +37,102 @@ export type AdapterInfo = {
   }[]
 }
 
+export type SmartTradeRouter = {
+  name: 'DFHSmartTradeRouter'
+  methods: {
+    fee(): Promise<string>
+    order(id: number | string): Promise<{
+      id: string
+      owner: string
+      status: '0' | '1' | '2'
+      handler: string
+      callData: string
+    }>
+    balanceOf(tokenAddress: string): Promise<string>
+    depositBalanceOf(tokenAddress: string): Promise<string>
+    isApproved(tokenAddress: string, amount: string): Promise<true | Error>
+    approve(
+      tokenAddress: string,
+      amount: string
+    ): Promise<{ tx: Transaction | undefined }>
+    canDeposit(tokenAddress: string, amount: string): Promise<true | Error>
+    deposit(
+      tokenAddress: string,
+      amount: string
+    ): Promise<{ tx: Transaction | undefined }>
+    canRefund(tokenAddress: string, amount: string): Promise<true | Error>
+    refund(
+      tokenAddress: string,
+      amount: string
+    ): Promise<{ tx: Transaction | undefined }>
+    canCancelOrder(id: string | number): Promise<true | Error>
+    cancelOrder(id: string | number): Promise<{ tx: Transaction | undefined }>
+  }
+}
+
+export type SmartTradeSwapHandler = {
+  name: 'DFHSmartTradeSwapHandler'
+  methods: {
+    amountOut(
+      exchangeAddress: string,
+      path: string[],
+      amountIn: string
+    ): Promise<string>
+    isApproved(tokenAddress: string, amount: string): Promise<true | Error>
+    approve(
+      tokenAddress: string,
+      amount: string
+    ): Promise<{ tx: Transaction | undefined | undefined }>
+    createOrder(
+      exchangeAddress: string,
+      path: string[],
+      amountIn: string,
+      stopLoss: { amountOut: string; slippage: string | number } | null,
+      takeProfit: { amountOut: string; slippage: string | number } | null,
+      deposit: {
+        token?: string
+        native?: string
+      }
+    ): Promise<{
+      tx: Transaction | undefined
+      handler: string
+      callDataRaw: string
+      callData: {
+        exchange: string
+        pair: string
+        path: [string, string]
+        tokenInDecimals: number
+        tokenOutDecimals: number
+        amountIn: string
+        stopLoss: {
+          amountOut: string
+          amountOutMin: string
+          slippage: number
+          direction: 'lt'
+        } | null
+        takeProfit: {
+          amountOut: string
+          amountOutMin: string
+          slippage: number
+          direction: 'gt'
+        } | null
+      }
+      getOrderNumber: () => Promise<string>
+    }>
+  }
+}
+
+export interface SmartTrade {
+  router: (
+    signer: unknown,
+    contractAddress: string
+  ) => Promise<SmartTradeRouter>
+  swapHandler: (
+    signer: unknown,
+    contractAddress: string
+  ) => Promise<SmartTradeSwapHandler>
+}
+
 export interface AutomationAdapterActions {
   deposit: {
     name: 'automateRestake-deposit'
@@ -216,6 +312,10 @@ export type BuyLiquidity = {
       amount: string,
       slippage: string
     ): Promise<{ tx?: { wait: () => Promise<{ transactionHash?: string }> } }>
+    fee(): Promise<{
+      native: string
+      usd: string
+    }>
   }
 }
 
@@ -233,6 +333,11 @@ export type SellLiquidity = {
       amount: string,
       slippage: number | string
     ): Promise<{ tx?: { wait: () => Promise<{ transactionHash?: string }> } }>
+    fee(): Promise<{
+      native: string
+      usd: string
+    }>
+    amountOut(tokenAddress: string, amount: string): Promise<string>
   }
 }
 
@@ -284,6 +389,7 @@ export type Adapters = {
       contractAddress: string,
       payload: unknown
     ) => Promise<SellLiquidity>
+    smartTrade: SmartTrade
   }
 }
 

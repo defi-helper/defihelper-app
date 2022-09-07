@@ -159,6 +159,7 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
           walletAddress: currentWallet.account,
           chainId: String(currentWallet.chainId),
           provider: currentWallet.provider,
+          transactionHash: result.transactionHash,
         })
 
         await openSuccess({
@@ -316,7 +317,11 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
                 deleting={wallet.deleting}
                 depositing={wallet.depositing}
                 refunding={wallet.refunding}
-                error={wallet.billing?.balance?.lowFeeFunds}
+                error={
+                  wallet.billing?.balance?.lowFeeFunds ||
+                  (wallet.billing?.balance?.netBalanceUSD > 0.1 &&
+                    wallet.billing?.balance?.netBalanceUSD < 20)
+                }
               />
             )
           })}

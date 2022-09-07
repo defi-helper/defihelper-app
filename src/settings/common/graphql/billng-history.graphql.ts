@@ -18,7 +18,7 @@ export const BILLING_HISTORY = gql`
             account
             amount
             tx
-            confirmed
+            status
             bill {
               id
               blockchain
