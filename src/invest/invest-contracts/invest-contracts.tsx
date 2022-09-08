@@ -25,6 +25,7 @@ import { networksConfig } from '~/networks-config'
 import { StakingApyDialog } from '~/staking/common'
 import { paths } from '~/paths'
 import { StakeRewardTokens } from '~/common/stake-reward-tokens'
+import { riskStatuses, riskIcons } from '~/invest/common/constants'
 import * as model from './invest-contracts.model'
 import * as styles from './invest-contracts.css'
 
@@ -70,19 +71,6 @@ const dropdown = (
   </Dropdown>
 )
 
-const riskStatuses = {
-  [ContractRiskFactorEnum.High]: 'High',
-  [ContractRiskFactorEnum.Low]: 'Low',
-  [ContractRiskFactorEnum.Moderate]: 'Moderate',
-  [ContractRiskFactorEnum.NotCalculated]: '-',
-}
-
-const riskIcons: Record<string, 'redRisk' | 'greenRisk' | 'yellowRisk'> = {
-  [ContractRiskFactorEnum.High]: 'redRisk',
-  [ContractRiskFactorEnum.Low]: 'greenRisk',
-  [ContractRiskFactorEnum.Moderate]: 'yellowRisk',
-}
-
 export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
   const [openApyDialog] = useDialog(StakingApyDialog)
 
@@ -123,6 +111,10 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
           }
         : undefined,
       risk: isEmpty(riskLevel) ? null : riskLevel,
+      automate: {
+        lpTokensManager: true,
+        autorestake: true,
+      },
     }
 
     model.fetchContractsFx({

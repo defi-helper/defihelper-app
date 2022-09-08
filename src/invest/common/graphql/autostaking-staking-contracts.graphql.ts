@@ -29,6 +29,10 @@ export const AUTOSTAKING_STAKING_CONTRACTS = gql`
         watcherId
         automate {
           autorestake
+          lpTokensManager {
+            router
+            pair
+          }
         }
         metric(filter: { wallet: { type: [wallet] } }) {
           tvl
@@ -49,6 +53,7 @@ export const AUTOSTAKING_STAKING_CONTRACTS = gql`
             network
             address
             name
+            symbol
           }
           reward {
             alias {
@@ -57,6 +62,7 @@ export const AUTOSTAKING_STAKING_CONTRACTS = gql`
             network
             address
             name
+            symbol
           }
         }
       }
