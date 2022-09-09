@@ -79,10 +79,10 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
             )}
             <ButtonBase
               as={ReactRouterLink}
-              to={paths.main}
+              to={paths.invest.list}
               className={styles.backToMain}
             >
-              Back to main
+              Back to invest
             </ButtonBase>
           </div>
         </div>

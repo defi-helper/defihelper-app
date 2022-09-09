@@ -1,7 +1,8 @@
-import { useAsyncFn } from 'react-use'
-import { useStore } from 'effector-react'
+import { useAsync, useAsyncFn } from 'react-use'
+import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
+import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
@@ -18,15 +19,22 @@ import {
   AutomateActionTypeEnum,
   AutomateConditionTypeEnum,
   AutomateTriggerTypeEnum,
+  UserContactBrokerEnum,
 } from '~/api'
 import { useDialog } from '~/common/dialog'
 import { InvestDeployDialog } from '~/invest/common/invest-deploy-dialog'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { analytics } from '~/analytics'
+import { toastsService } from '~/toasts'
+import { paths } from '~/paths'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as model from '~/invest/invest-detail/invest-detail.model'
 import * as styles from './invest-staking-steps.css'
+import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
+import * as telegramModel from '~/settings/settings-telegram/settings-telegram.model'
+import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 
 export type InvestStakingStepsProps = {
   className?: string
@@ -161,9 +169,56 @@ const DeployContractStep = (props: {
 }
 
 const StakeTokensStep = (props: {
-  onSubmit: () => void
+  onSubmit?: (transactionHash?: string) => void
   contract: InvestStakingStepsProps['contract']
 }) => {
+  const currentWallet = walletNetworkModel.useWalletNetwork()
+
+  const adapter = useAsync(async () => {
+    if (!currentWallet) return
+
+    return stakingAutomatesModel.fetchAdapterFx({
+      protocolAdapter: props.contract.protocol.adapter,
+      contractAdapter: props.contract.adapter,
+      contractId: props.contract.id,
+      contractAddress: props.contract.address,
+      provider: currentWallet.provider,
+      chainId: String(currentWallet.chainId),
+      action: 'migrate',
+    })
+  }, [currentWallet])
+
+  const [depositState, onDeposit] = useAsyncFn(async () => {
+    if (!adapter.value) return false
+    analytics.log('auto_staking_migrate_dialog_deposit_click')
+
+    const { deposit, canDeposit: canDepositMethod } =
+      adapter.value.deposit.methods
+
+    try {
+      const can = await canDepositMethod()
+
+      if (can instanceof Error) throw can
+      if (!can) throw new Error("can't deposit")
+
+      const { tx } = await deposit()
+
+      const result = await tx?.wait()
+
+      props.onSubmit?.(result.transactionHash)
+      analytics.log('auto_staking_migrate_dialog_deposit_success')
+
+      return true
+    } catch (error) {
+      if (error instanceof Error) {
+        toastsService.error(error.message)
+        analytics.log('auto_staking_migrate_dialog_deposit_failure')
+      }
+
+      return false
+    }
+  }, [adapter.value])
+
   return (
     <React.Fragment key={3}>
       <InvestStepsProgress success={1} current={2} />
@@ -187,11 +242,17 @@ const StakeTokensStep = (props: {
         {props.contract.protocol.name} protocol.
       </Typography>
       <div className={clsx(styles.stakeActions, styles.mt)}>
-        <Button onClick={props.onSubmit} color="green">
-          Approve{' '}
-          {props.contract.tokens.stake.map(({ symbol }) => symbol).join('-')}
-        </Button>
-        <Button onClick={props.onSubmit} color="green">
+        {false && (
+          <Button color="green">
+            Approve{' '}
+            {props.contract.tokens.stake.map(({ symbol }) => symbol).join('-')}
+          </Button>
+        )}
+        <Button
+          onClick={onDeposit}
+          color="green"
+          loading={depositState.loading}
+        >
           STAKE TOKENS
         </Button>
       </div>
@@ -202,10 +263,28 @@ const StakeTokensStep = (props: {
 export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   props
 ) => {
+  const userContact = useStore(telegramModel.$userContact)
+  const userContacts = useStore(settingsContacts.$userContactList)
+
+  const contacts = useMemo(
+    () => (userContact ? [...userContacts, userContact] : userContacts),
+    [userContact, userContacts]
+  )
+
+  useGate(settingsContacts.SettingsContactsGate)
+
+  const telegram = contacts.find(
+    ({ broker }) => broker === UserContactBrokerEnum.Telegram
+  )
+
   const [currentStep, setCurrentStep] = useState(0)
 
   const handleNextStep = () => {
     setCurrentStep(currentStep + 1)
+  }
+
+  const handleOpenTelegram = () => {
+    telegramModel.openTelegram(undefined)
   }
 
   const initialSteps = {
@@ -343,10 +422,26 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         about your portfolio
       </Typography>
       <div className={clsx(styles.connectTelegramActions, styles.mt)}>
-        <Button onClick={handleNextStep} color="green">
-          CONNECT TELEGRAM
-        </Button>
-        <ButtonBase onClick={handleNextStep}>SKIP</ButtonBase>
+        {!telegram ? (
+          <>
+            <Button
+              onClick={() => {
+                handleOpenTelegram()
+                handleNextStep()
+              }}
+              color="green"
+            >
+              CONNECT TELEGRAM
+            </Button>
+            <ButtonBase as={ReactRouterLink} to={paths.invest.list}>
+              SKIP
+            </ButtonBase>
+          </>
+        ) : (
+          <Button color="green" as={ReactRouterLink} to={paths.invest.list}>
+            ALL DONE
+          </Button>
+        )}
       </div>
     </React.Fragment>,
     <React.Fragment key={5}>
@@ -366,7 +461,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       >
         Don&apos;t forget to press START in the chat to confirm your username
       </Typography>
-      <Button onClick={handleNextStep} color="green" className={styles.mt}>
+      <Button onClick={handleOpenTelegram} color="green" className={styles.mt}>
         OPEN TELEGRAM
       </Button>
     </React.Fragment>,

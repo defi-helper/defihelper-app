@@ -103,7 +103,7 @@ export const InvestContractInfo: React.VFC<InvestContractInfoProps> = (
       </div>
       <div className={styles.row}>
         <Typography variant="body2" family="mono" as="div">
-          Real APR (7d) {dropdown}
+          7D Performance {dropdown}
         </Typography>
         <Typography variant="body2" as="div">
           <Typography
