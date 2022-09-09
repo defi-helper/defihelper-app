@@ -11,23 +11,25 @@ export const Bridges: React.VFC<BridgesProps> = () => {
   useEffect(() => {
     if (!ref) return
 
-    window.rubik?.init({
-      from: '',
-      to: '',
-      fromChain: '',
-      toChain: '',
-      amount: 1,
-      iframe: 'flex',
-      hideSelectionFrom: false,
-      hideSelectionTo: false,
-      theme: 'dark',
-      background: '#28372e',
-      injectTokens: {},
-      slippagePercent: {
-        instantTrades: 2,
-        crossChain: 5,
-      },
-    })
+    setTimeout(() => {
+      window.rubik?.init({
+        from: '',
+        to: '',
+        fromChain: '',
+        toChain: '',
+        amount: 1,
+        iframe: 'flex',
+        hideSelectionFrom: false,
+        hideSelectionTo: false,
+        theme: 'dark',
+        background: '#28372e',
+        injectTokens: {},
+        slippagePercent: {
+          instantTrades: 2,
+          crossChain: 5,
+        },
+      })
+    }, 1000)
   }, [ref])
 
   return (
