@@ -107,9 +107,7 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
               </Button>
             </WalletConnect>
           )}
-          {contract && next && (
-            <InvestStakingSteps initialStep="buy" contract={contract} />
-          )}
+          {contract && next && <InvestStakingSteps contract={contract} />}
         </div>
       </div>
     </div>

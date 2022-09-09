@@ -1,4 +1,4 @@
-import { useAsync, useAsyncFn } from 'react-use'
+import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 import { useGate, useStore } from 'effector-react'
 import clsx from 'clsx'
 import React, { useMemo, useState } from 'react'
@@ -14,7 +14,6 @@ import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
 import { InvestContract } from '~/invest/common/invest.types'
 import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
 import { InvestBuy } from '~/invest/invest-buy'
-import { InvestMigrate } from '../invest-migrate'
 import {
   AutomateActionTypeEnum,
   AutomateConditionTypeEnum,
@@ -35,10 +34,10 @@ import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as telegramModel from '~/settings/settings-telegram/settings-telegram.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type InvestStakingStepsProps = {
   className?: string
-  initialStep: 'migrate' | 'buy'
   contract: InvestContract
 }
 
@@ -287,6 +286,34 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     telegramModel.openTelegram(undefined)
   }
 
+  const currentWallet = walletNetworkModel.useWalletNetwork()
+
+  const adapter = useAsync(async () => {
+    if (!currentWallet) return
+
+    return stakingAutomatesModel.fetchAdapterFx({
+      protocolAdapter: props.contract.protocol.adapter,
+      contractAdapter: props.contract.adapter,
+      contractId: props.contract.id,
+      contractAddress: props.contract.address,
+      provider: currentWallet.provider,
+      chainId: String(currentWallet.chainId),
+      action: 'migrate',
+    })
+  }, [currentWallet])
+
+  const balanceOf = useAsyncRetry(async () => {
+    return adapter.value?.migrate.methods?.balanceOf()
+  }, [adapter.value])
+
+  const canWithdraw = useAsyncRetry(async () => {
+    return adapter.value?.migrate.methods.canWithdraw()
+  }, [adapter.value])
+
+  const [withDraw, handleWithDraw] = useAsyncFn(async () => {
+    return adapter.value?.migrate.methods.withdraw().then(handleNextStep)
+  }, [adapter.value])
+
   const initialSteps = {
     buy: [
       <InvestBuy key={0} contract={props.contract} onSubmit={handleNextStep} />,
@@ -329,11 +356,6 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       </React.Fragment>,
     ],
     migrate: [
-      <InvestMigrate
-        key={0}
-        onSubmit={handleNextStep}
-        contract={props.contract}
-      />,
       <React.Fragment key={1}>
         <InvestStepsProgress success={0} />
         <Typography
@@ -368,7 +390,12 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
             own contract to control investments.
           </Typography>
         </div>
-        <Button onClick={handleNextStep} color="green" className={styles.mt}>
+        <Button
+          onClick={handleWithDraw}
+          loading={withDraw.loading}
+          color="green"
+          className={styles.mt}
+        >
           UNSTAKE TOKENS
         </Button>
       </React.Fragment>,
@@ -376,7 +403,11 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   }
 
   const steps = [
-    ...initialSteps[props.initialStep],
+    ...initialSteps[
+      bignumberUtils.eq(balanceOf.value, 0) && canWithdraw.value === true
+        ? 'buy'
+        : 'migrate'
+    ],
     <DeployContractStep
       key={2}
       onSubmit={handleNextStep}
