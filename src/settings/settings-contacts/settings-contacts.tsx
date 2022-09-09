@@ -160,7 +160,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
       )}
       <SettingsGrid>
         <SettingsContactCard
-          isConnected={Boolean(telegram)}
+          isConnected={Boolean(telegram?.address)}
           address={telegram?.address}
           currentTimezone={user?.timezone ?? 'UTC'}
           title="Telegram notifications settings"
