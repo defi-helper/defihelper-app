@@ -1,87 +1,51 @@
-import { Icon } from '~/common/icon'
-import { Link } from '~/common/link'
-import { Paper } from '~/common/paper'
+import { useEffect, useState } from 'react'
 import { Typography } from '~/common/typography'
 import { AppLayout } from '~/layouts'
-import bnbBridge from '~/assets/images/bnb-bridge.png'
-import polygonBridge from '~/assets/images/polygon-bridge.png'
-import optimismBridge from '~/assets/images/optimism-bridge.png'
-import arbitrumBridge from '~/assets/images/arbitrum-bridge.png'
-import gnosisBridge from '~/assets/images/gnosis-bridge.png'
-import avalancheBridge from '~/assets/images/avalanche-bridge.png'
-import fantomBridge from '~/assets/images/fantom-bridge.png'
 import { Head } from '~/common/head'
 import * as styles from './bridges.css'
 
 export type BridgesProps = unknown
 
-const BRIDGES = [
-  {
-    title: 'BNB Chain bridge',
-    link: 'https://cbridge.celer.network/',
-    icon: bnbBridge,
-  },
-  {
-    title: 'Polygon bridge',
-    link: 'https://wallet.polygon.technology/',
-    icon: polygonBridge,
-  },
-  {
-    title: 'Optimism bridge',
-    link: 'https://app.optimism.io/bridge',
-    icon: optimismBridge,
-  },
-  {
-    title: 'Arbitrum bridge',
-    link: 'https://bridge.arbitrum.io/',
-    icon: arbitrumBridge,
-  },
-  {
-    title: 'Gnosis Chain bridge',
-    link: 'https://bridge.xdaichain.com/',
-    icon: gnosisBridge,
-  },
-  {
-    title: 'Avalanche bridge',
-    link: 'https://bridge.avax.network/',
-    icon: avalancheBridge,
-  },
-  {
-    title: 'Fantom bridge',
-    link: 'https://app.multichain.org/',
-    icon: fantomBridge,
-  },
-]
-
 export const Bridges: React.VFC<BridgesProps> = () => {
+  const [ref, setRef] = useState<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (!ref) return
+
+    setTimeout(() => {
+      window.rubik?.init({
+        from: '',
+        to: '',
+        fromChain: '',
+        toChain: '',
+        amount: 1,
+        iframe: 'flex',
+        hideSelectionFrom: false,
+        hideSelectionTo: false,
+        theme: 'dark',
+        background: '#28372e',
+        injectTokens: {},
+        slippagePercent: {
+          instantTrades: 2,
+          crossChain: 5,
+        },
+      })
+    }, 2000)
+  }, [ref])
+
   return (
     <AppLayout title="Bridges">
       <Head title="Bridges" />
       <div className={styles.header}>
-        <Typography variant="h3">Bridges</Typography>
+        <Typography variant="h3">Bridge</Typography>
       </div>
-      <ul className={styles.list}>
-        {BRIDGES.map((bridge) => (
-          <li key={bridge.title}>
-            <Paper
-              radius={8}
-              as={Link}
-              href={bridge.link}
-              target="_blank"
-              className={styles.card}
-            >
-              <img src={bridge.icon} alt="" className={styles.cardIcon} />
-              <Typography variant="body2">{bridge.title}</Typography>
-              <Icon
-                icon="linkBridge"
-                width="24"
-                height="24"
-                className={styles.cardLinkIcon}
-              />
-            </Paper>
-          </li>
-        ))}
-      </ul>
+
+      {!window.rubik && (
+        <p>
+          Please, try to disable adblock, we can&apos;t load the Rubik widget :(
+        </p>
+      )}
+
+      <div id="rubic-widget-root" ref={setRef} />
     </AppLayout>
   )
 }

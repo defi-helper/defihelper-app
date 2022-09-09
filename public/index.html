@@ -17,12 +17,16 @@
   <meta http-equiv="cache-Control" content="no-cache, no-store, must-revalidate">
   <script src="tradingview/charting_library/charting_library.js"></script>
   <script src="tradingview/datafeeds/udf/dist/bundle.js"></script>
+  <script type="text/javascript" src="https://widgets.rubic.exchange/iframe/bundle.min.js"></script>
 </head>
 
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root"></div>
 </body>
-<script>window.dataLayer = window.dataLayer || [];</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  window.rubik = rubicWidget || {};
+</script>
 
 </html>
