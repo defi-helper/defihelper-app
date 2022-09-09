@@ -2,6 +2,8 @@ import { useAsyncFn, useAsyncRetry, useInterval } from 'react-use'
 import { ethers } from 'ethers'
 import { useMemo } from 'react'
 import contracts from '@defihelper/networks/contracts.json'
+import optionAbi from '@defihelper/networks/abi/Option.json'
+import { abi as vestingAbi } from '@defihelper/networks/abi/Vesting.json'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
@@ -11,14 +13,16 @@ import { AppLayout } from '~/layouts'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { dateUtils } from '~/common/date-utils'
-import vestingAbi from './vesting.abi.json'
 import { config } from '~/config'
 import { abi } from '~/abi'
 import * as styles from './vesting.css'
 
 export type VestingProps = unknown
 
-const WALLET_MAP = new Map([
+const WALLET_MAP = new Map<
+  string,
+  { address: string; abi?: typeof optionAbi.abi }
+>([
   [
     '0x9C3c6cF9D29Ab9E9e14503dbfC9aD8bB2A0E37EF'.toLowerCase(),
     {
@@ -98,9 +102,10 @@ const WALLET_MAP = new Map([
     },
   ],
   [
-    '0x19E8BC4a5537B26DA43438c8B11B3fE85FF5378A'.toLowerCase(), // DEMO
+    '0x8d22dbDD383Eff153025108f803AB3F2CFf6c795'.toLowerCase(), // OptionOne DEMO
     {
-      address: '0x58a1D9a847fd7104a14aE3D12095369Ad8e8E722',
+      address: '0xeFAE88b210fE47538A23856bD5b319B01890f9fD',
+      abi: optionAbi.abi,
     },
   ],
 ])
@@ -149,7 +154,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
     return new ethers.Contract(
       contractInterface.address,
-      vestingAbi,
+      contractInterface.abi ?? vestingAbi,
       networkProvider.getSigner()
     )
   }, [wallet, account])
@@ -192,6 +197,17 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
     return period.toString()
   }, [vestingContract, wallet])
+
+  const periodStart = useAsyncRetry(async () => {
+    const contractInterface = WALLET_MAP.get(account)
+
+    if (!vestingContract || !contractInterface?.abi) return null
+
+    const period = await vestingContract.periodStart()
+
+    return period.toString()
+  }, [vestingContract, wallet, account])
+
   const earned = useAsyncRetry(async () => {
     if (!vestingContract) return null
 
@@ -236,6 +252,10 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
   const dropEnd = bignumberUtils.mul(
     bignumberUtils.minus(periodFinish.value, currentBlockNumber.value),
+    BLOCK
+  )
+  const dropStart = bignumberUtils.mul(
+    bignumberUtils.minus(periodStart.value, currentBlockNumber.value),
     BLOCK
   )
 
@@ -299,6 +319,23 @@ export const Vesting: React.VFC<VestingProps> = () => {
                         ~{bignumberUtils.format(dropRate)} dfh per day
                       </Typography>
                     </div>
+                    {periodStart.value && (
+                      <div className={styles.row}>
+                        <Typography variant="body3" className={styles.label}>
+                          Vesting start
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          transform="uppercase"
+                          family="mono"
+                        >
+                          {dateUtils.format(
+                            dateUtils.addDate(Number(dropStart), 'seconds')
+                          )}{' '}
+                          (at block: {String(periodStart.value ?? 0)})
+                        </Typography>
+                      </div>
+                    )}
                     <div className={styles.row}>
                       <Typography variant="body3" className={styles.label}>
                         Vesting end
@@ -314,9 +351,18 @@ export const Vesting: React.VFC<VestingProps> = () => {
                         (at block: {String(periodFinish.value ?? 0)})
                       </Typography>
                     </div>
-                    <Button onClick={handleClaim} loading={claimState.loading}>
-                      Claim
-                    </Button>
+                    {periodStart.value &&
+                    bignumberUtils.gt(
+                      periodStart.value,
+                      currentBlockNumber.value
+                    ) ? null : (
+                      <Button
+                        onClick={handleClaim}
+                        loading={claimState.loading}
+                      >
+                        Claim
+                      </Button>
+                    )}
                   </>
                 )}
                 {!isOwner.value && !isOwner.loading && (
