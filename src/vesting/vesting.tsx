@@ -2,6 +2,8 @@ import { useAsyncFn, useAsyncRetry, useInterval } from 'react-use'
 import { ethers } from 'ethers'
 import { useMemo } from 'react'
 import contracts from '@defihelper/networks/contracts.json'
+import optionAbi from '@defihelper/networks/abi/Option.json'
+import { abi as vestingAbi } from '@defihelper/networks/abi/Vesting.json'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
@@ -11,14 +13,16 @@ import { AppLayout } from '~/layouts'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { dateUtils } from '~/common/date-utils'
-import vestingAbi from './vesting.abi.json'
 import { config } from '~/config'
 import { abi } from '~/abi'
 import * as styles from './vesting.css'
 
 export type VestingProps = unknown
 
-const WALLET_MAP = new Map([
+const WALLET_MAP = new Map<
+  string,
+  { address: string; abi?: typeof optionAbi.abi }
+>([
   [
     '0x9C3c6cF9D29Ab9E9e14503dbfC9aD8bB2A0E37EF'.toLowerCase(),
     {
@@ -101,12 +105,14 @@ const WALLET_MAP = new Map([
     '0x90079B15eAf30388D71E5e194ABcdD5b39C3B404'.toLowerCase(), // OptionOne DEMO
     {
       address: '0xeFAE88b210fE47538A23856bD5b319B01890f9fD',
+      abi: optionAbi.abi,
     },
   ],
   [
     '0x8d22dbDD383Eff153025108f803AB3F2CFf6c795'.toLowerCase(), // OptionOne DEMO
     {
       address: '0x40925E0Be6A984878E163fFb8B9a42e615269f2C',
+      abi: optionAbi.abi,
     },
   ],
 ])
@@ -155,7 +161,7 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
     return new ethers.Contract(
       contractInterface.address,
-      vestingAbi,
+      contractInterface.abi ?? vestingAbi,
       networkProvider.getSigner()
     )
   }, [wallet, account])
