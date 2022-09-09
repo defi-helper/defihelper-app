@@ -11,6 +11,7 @@ import { riskStatuses, riskIcons } from '~/invest/common/constants'
 import { Dropdown } from '~/common/dropdown'
 import { ButtonBase } from '~/common/button-base'
 import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
+import { Link } from '~/common/link'
 import * as styles from './invest-contract-info.css'
 
 export type InvestContractInfoProps = {
@@ -39,6 +40,38 @@ const dropdown = (
     offset={[0, 8]}
   >
     {text}
+  </Dropdown>
+)
+
+const apyBoostDropdown = (
+  <Dropdown
+    control={
+      <ButtonBase className={styles.apyboostQuestion}>
+        <Icon icon="question" width={16} height={16} />
+      </ButtonBase>
+    }
+    className={styles.dropdown}
+    offset={[0, 8]}
+  >
+    <Typography
+      variant="body2"
+      weight="semibold"
+      className={styles.autostakingTooltipTitle}
+    >
+      Auto-staking
+    </Typography>
+    <Typography variant="body2" className={styles.autostakingTooltipText}>
+      Auto-staking is a built-in automation. It helps you earn more by
+      automatically adding your profits to the deposit, effectively auto-
+      compounding your interest.
+    </Typography>
+    <Link
+      href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
+      target="_blank"
+      color="blue"
+    >
+      How auto-staking works?
+    </Link>
   </Dropdown>
 )
 
@@ -119,7 +152,7 @@ export const InvestContractInfo: React.VFC<InvestContractInfoProps> = (
       </div>
       <div className={styles.row}>
         <Typography variant="body2" family="mono" as="div">
-          Boosted APY {dropdown}
+          Boosted APY {apyBoostDropdown}
         </Typography>
         <Typography variant="body2">
           <Typography

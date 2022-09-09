@@ -52,3 +52,12 @@ export const apyboostQuestion = style({
 export const dropdown = style({
   width: 252,
 })
+
+export const autostakingTooltipTitle = style({
+  color: theme.colors.textColorGreen,
+  marginBottom: 8,
+})
+
+export const autostakingTooltipText = style({
+  marginBottom: 16,
+})

@@ -219,3 +219,16 @@ export const riskLevelStatus = style({
   borderRadius: 22,
   color: theme.colors.secondary,
 })
+
+export const networkDropdown = style({
+  maxWidth: 276,
+})
+
+export const autostakingTooltipTitle = style({
+  color: theme.colors.textColorGreen,
+  marginBottom: 8,
+})
+
+export const autostakingTooltipText = style({
+  marginBottom: 16,
+})

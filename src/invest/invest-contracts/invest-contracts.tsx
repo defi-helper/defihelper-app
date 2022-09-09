@@ -26,6 +26,7 @@ import { StakingApyDialog } from '~/staking/common'
 import { paths } from '~/paths'
 import { StakeRewardTokens } from '~/common/stake-reward-tokens'
 import { riskStatuses, riskIcons } from '~/invest/common/constants'
+import { Link } from '~/common/link'
 import * as model from './invest-contracts.model'
 import * as styles from './invest-contracts.css'
 
@@ -68,6 +69,38 @@ const dropdown = (
     offset={[0, 8]}
   >
     {text}
+  </Dropdown>
+)
+
+const apyBoostDropdown = (
+  <Dropdown
+    control={
+      <ButtonBase className={styles.apyboostQuestion}>
+        <Icon icon="question" width={16} height={16} />
+      </ButtonBase>
+    }
+    className={styles.dropdown}
+    offset={[0, 8]}
+  >
+    <Typography
+      variant="body2"
+      weight="semibold"
+      className={styles.autostakingTooltipTitle}
+    >
+      Auto-staking
+    </Typography>
+    <Typography variant="body2" className={styles.autostakingTooltipText}>
+      Auto-staking is a built-in automation. It helps you earn more by
+      automatically adding your profits to the deposit, effectively auto-
+      compounding your interest.
+    </Typography>
+    <Link
+      href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
+      target="_blank"
+      color="blue"
+    >
+      How auto-staking works?
+    </Link>
   </Dropdown>
 )
 
@@ -390,7 +423,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
               {dropdown}
             </Typography>
             <Typography variant="body2" as="div">
-              {dropdown}{' '}
+              {apyBoostDropdown}{' '}
               <ButtonBase
                 onClick={handleSort({
                   column: ContractListSortInputTypeColumnEnum.AprBoosted,
@@ -450,12 +483,25 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
                   <Typography variant="inherit">{contract.name}</Typography>
                   <span className={styles.contractCardIcons}>
                     {networksConfig[contract.network]?.icon ? (
-                      <Icon
-                        icon={networksConfig[contract.network].icon}
-                        width="20"
-                        height="20"
-                        className={styles.contractNetworkIcon}
-                      />
+                      <Dropdown
+                        control={
+                          <Icon
+                            icon={networksConfig[contract.network].icon}
+                            width="20"
+                            height="20"
+                            className={styles.contractNetworkIcon}
+                          />
+                        }
+                        offset={[0, 4]}
+                        placement="bottom-start"
+                        trigger="hover"
+                        className={styles.networkDropdown}
+                      >
+                        <Typography variant="body2" family="mono">
+                          This pool is located on{' '}
+                          {networksConfig[contract.network].title} network
+                        </Typography>
+                      </Dropdown>
                     ) : (
                       <Paper className={styles.contractUnknownNetworkIcon}>
                         <Icon icon="unknownNetwork" width="16" height="16" />
@@ -515,7 +561,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
                   </Typography>
                 </Typography>
                 <div className={styles.apyBoost}>
-                  {dropdown}
+                  {apyBoostDropdown}
                   <Typography
                     variant="body2"
                     align="right"
