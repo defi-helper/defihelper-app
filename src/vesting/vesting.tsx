@@ -98,9 +98,15 @@ const WALLET_MAP = new Map([
     },
   ],
   [
-    '0x19E8BC4a5537B26DA43438c8B11B3fE85FF5378A'.toLowerCase(), // DEMO
+    '0x90079B15eAf30388D71E5e194ABcdD5b39C3B404'.toLowerCase(), // OptionOne DEMO
     {
-      address: '0x58a1D9a847fd7104a14aE3D12095369Ad8e8E722',
+      address: '0xeFAE88b210fE47538A23856bD5b319B01890f9fD',
+    },
+  ],
+  [
+    '0x8d22dbDD383Eff153025108f803AB3F2CFf6c795'.toLowerCase(), // OptionOne DEMO
+    {
+      address: '0x40925E0Be6A984878E163fFb8B9a42e615269f2C',
     },
   ],
 ])
