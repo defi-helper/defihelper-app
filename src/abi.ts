@@ -8,11 +8,11 @@ import GovernorBravoEvents from '@defihelper/networks/abi/GovernorBravoEvents.js
 import GovernorBravo from '@defihelper/networks/abi/GovernorBravo.json'
 import Timelock from '@defihelper/networks/abi/Timelock.json'
 import TimelockInterface from '@defihelper/networks/abi/TimelockInterface.json'
-import Treasury from '@defihelper/networks/abi/Treasury.json'
 import Storage from '@defihelper/networks/abi/Storage.json'
 import TreasuryUpgradable from '@defihelper/networks/abi/TreasuryV2.json'
 import StoreUpgradable from '@defihelper/networks/abi/StoreV1.json'
 import Delegator from '@defihelper/networks/abi/Delegator.json'
+import Option from '@defihelper/networks/abi/Option.json'
 import ProxyAdmin from '@defihelper/networks/abi/ProxyAdmin.json'
 
 export const abi = {
@@ -26,7 +26,6 @@ export const abi = {
   GovernorBravo,
   Timelock,
   TimelockInterface,
-  Treasury,
   Storage,
   TreasuryUpgradable,
   StoreUpgradable,
@@ -37,6 +36,8 @@ export const abi = {
   DelegatorLiquidity: Delegator,
   DelegatorMarketing: Delegator,
   DelegatorTeam: Delegator,
+  OptionOne: Option,
+  OptionTwo: Option,
 } as const
 
 export type AbiKeys = keyof typeof abi
