@@ -204,6 +204,17 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
     return period.toString()
   }, [vestingContract, wallet])
+
+  const periodStart = useAsyncRetry(async () => {
+    const contractInterface = WALLET_MAP.get(account)
+
+    if (!vestingContract || !contractInterface?.abi) return null
+
+    const period = await vestingContract.periodStart()
+
+    return period.toString()
+  }, [vestingContract, wallet, account])
+
   const earned = useAsyncRetry(async () => {
     if (!vestingContract) return null
 
@@ -248,6 +259,10 @@ export const Vesting: React.VFC<VestingProps> = () => {
 
   const dropEnd = bignumberUtils.mul(
     bignumberUtils.minus(periodFinish.value, currentBlockNumber.value),
+    BLOCK
+  )
+  const dropStart = bignumberUtils.mul(
+    bignumberUtils.minus(periodStart.value, currentBlockNumber.value),
     BLOCK
   )
 
@@ -311,6 +326,23 @@ export const Vesting: React.VFC<VestingProps> = () => {
                         ~{bignumberUtils.format(dropRate)} dfh per day
                       </Typography>
                     </div>
+                    {periodStart.value && (
+                      <div className={styles.row}>
+                        <Typography variant="body3" className={styles.label}>
+                          Vesting start
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          transform="uppercase"
+                          family="mono"
+                        >
+                          {dateUtils.format(
+                            dateUtils.addDate(Number(dropStart), 'seconds')
+                          )}{' '}
+                          (at block: {String(periodStart.value ?? 0)})
+                        </Typography>
+                      </div>
+                    )}
                     <div className={styles.row}>
                       <Typography variant="body3" className={styles.label}>
                         Vesting end
@@ -326,9 +358,18 @@ export const Vesting: React.VFC<VestingProps> = () => {
                         (at block: {String(periodFinish.value ?? 0)})
                       </Typography>
                     </div>
-                    <Button onClick={handleClaim} loading={claimState.loading}>
-                      Claim
-                    </Button>
+                    {periodStart.value &&
+                    bignumberUtils.gt(
+                      periodStart.value,
+                      currentBlockNumber.value
+                    ) ? null : (
+                      <Button
+                        onClick={handleClaim}
+                        loading={claimState.loading}
+                      >
+                        Claim
+                      </Button>
+                    )}
                   </>
                 )}
                 {!isOwner.value && !isOwner.loading && (
