@@ -36,8 +36,7 @@ export const abi = {
   DelegatorLiquidity: Delegator,
   DelegatorMarketing: Delegator,
   DelegatorTeam: Delegator,
-  OptionOne: Option,
-  OptionTwo: Option,
+  OptionBusinessDevelopment: Option,
 } as const
 
 export type AbiKeys = keyof typeof abi
