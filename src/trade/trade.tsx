@@ -188,6 +188,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     () =>
       exchanges.reduce((acc, exchange) => {
         acc.set(exchange.Name, exchange)
+        if (exchange.Address) acc.set(exchange.Address, exchange)
 
         return acc
       }, new Map<string, typeof exchanges[number]>()),
@@ -714,6 +715,8 @@ export const Trade: React.VFC<TradeProps> = () => {
         onCancelOrder={handleCancelOrder}
         onUpdatePrice={handleUpdatePrice}
         updating={updating || cancelOrder.loading}
+        router={adapter?.router}
+        exchangesMap={exchangesMap}
       />
     </AppLayout>
   )

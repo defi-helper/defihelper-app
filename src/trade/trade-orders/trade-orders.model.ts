@@ -28,3 +28,11 @@ export const $orders = createStore<Orders | null>(null)
     pagination: state?.pagination ?? 0,
   }))
   .reset(reset)
+
+export const claimStarted = createEvent<string>()
+
+export const claimEnded = createEvent()
+
+export const $claimingOrder = createStore<string>('')
+  .on(claimStarted, (_, payload) => payload)
+  .reset(claimEnded)
