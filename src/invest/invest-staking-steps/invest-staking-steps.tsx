@@ -174,11 +174,11 @@ const StakeTokensStep = (props: {
   const currentWallet = walletNetworkModel.useWalletNetwork()
 
   const adapter = useAsync(async () => {
-    if (!currentWallet) return
+    if (!currentWallet || !props.contract.automate.autorestake) return
 
     return stakingAutomatesModel.fetchAdapterFx({
       protocolAdapter: props.contract.protocol.adapter,
-      contractAdapter: props.contract.adapter,
+      contractAdapter: props.contract.automate.autorestake,
       contractId: props.contract.id,
       contractAddress: props.contract.address,
       provider: currentWallet.provider,
@@ -289,11 +289,11 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const currentWallet = walletNetworkModel.useWalletNetwork()
 
   const adapter = useAsync(async () => {
-    if (!currentWallet) return
+    if (!currentWallet || !props.contract.automate.autorestake) return
 
     return stakingAutomatesModel.fetchAdapterFx({
       protocolAdapter: props.contract.protocol.adapter,
-      contractAdapter: props.contract.adapter,
+      contractAdapter: props.contract.automate.autorestake,
       contractId: props.contract.id,
       contractAddress: props.contract.address,
       provider: currentWallet.provider,
@@ -404,9 +404,9 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
 
   const steps = [
     ...initialSteps[
-      bignumberUtils.eq(balanceOf.value, 0) && canWithdraw.value === true
-        ? 'buy'
-        : 'migrate'
+      bignumberUtils.gt(balanceOf.value, 0) && canWithdraw.value === true
+        ? 'migrate'
+        : 'buy'
     ],
     <DeployContractStep
       key={2}
