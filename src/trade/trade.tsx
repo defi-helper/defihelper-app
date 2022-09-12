@@ -36,6 +36,7 @@ import { pairMock } from './common/trade-dev.mock'
 import * as styles from './trade.css'
 import * as model from './trade.model'
 import * as tradeOrdersModel from './trade-orders/trade-orders.model'
+import { switchNetwork } from '~/wallets/common'
 
 export type TradeProps = unknown
 
@@ -325,7 +326,19 @@ export const Trade: React.VFC<TradeProps> = () => {
     [adapter]
   )
 
+  const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
+    if (!wallet) return
+
+    await switchNetwork(wallet.network).catch(console.error)
+  }, [wallet])
+
   const currentWalletCorrect =
+    currentWallet?.chainId === 'main'
+      ? currentWallet.account === wallet?.address
+      : currentWallet?.account?.toLocaleUpperCase() ===
+        wallet?.address.toLocaleUpperCase()
+
+  const currentNetworkCorrect =
     currentWallet?.chainId === 'main'
       ? currentWallet?.chainId === wallet?.network
       : currentWallet?.chainId === wallet?.network
@@ -630,6 +643,26 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
             {SelectComponents[currentSelect]}
           </div>
+          {!currentNetworkCorrect && (
+            <div className={styles.beta}>
+              <Typography
+                variant="body2"
+                align="center"
+                family="mono"
+                className={styles.betaTitle}
+              >
+                Please switch your network to continue
+              </Typography>
+              <Button
+                color="green"
+                className={styles.switchNetwork}
+                onClick={handleSwitchNetwork}
+                loading={switchNetworkState.loading}
+              >
+                switch network
+              </Button>
+            </div>
+          )}
           {!currentWalletCorrect && (
             <div className={styles.beta}>
               <Typography
@@ -638,7 +671,7 @@ export const Trade: React.VFC<TradeProps> = () => {
                 family="mono"
                 className={styles.betaTitle}
               >
-                incorrect wallet
+                Incorrect wallet
               </Typography>
             </div>
           )}

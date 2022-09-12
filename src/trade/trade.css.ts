@@ -121,6 +121,10 @@ export const beta = style({
   gap: 24,
 })
 
+export const switchNetwork = style({
+  width: 'calc(100% - 32px)',
+})
+
 export const betaTitle = style({
   maxWidth: 275,
 })
