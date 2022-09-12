@@ -35,6 +35,7 @@ import * as stakingAutomatesModel from '~/staking/staking-automates/staking-auto
 import * as telegramModel from '~/settings/settings-telegram/settings-telegram.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { authModel } from '~/auth'
 
 export type InvestStakingStepsProps = {
   className?: string
@@ -171,16 +172,34 @@ const StakeTokensStep = (props: {
   onSubmit?: (transactionHash?: string) => void
   contract: InvestStakingStepsProps['contract']
 }) => {
+  const user = useStore(authModel.$user)
   const currentWallet = walletNetworkModel.useWalletNetwork()
 
   const adapter = useAsync(async () => {
-    if (!currentWallet || !props.contract.automate.autorestake) return
+    if (!user) return
+
+    const deployedContracts =
+      await stakingAutomatesModel.fetchAutomatesContractsFx({
+        userId: user.id,
+      })
+
+    const deployedContract = deployedContracts.list.find(
+      ({ contract: deployedStakingContract }) =>
+        deployedStakingContract?.id === props.contract.id
+    )
+
+    if (
+      !currentWallet ||
+      !props.contract.automate.autorestake ||
+      !deployedContract
+    )
+      return
 
     return stakingAutomatesModel.fetchAdapterFx({
       protocolAdapter: props.contract.protocol.adapter,
       contractAdapter: props.contract.automate.autorestake,
       contractId: props.contract.id,
-      contractAddress: props.contract.address,
+      contractAddress: deployedContract.address,
       provider: currentWallet.provider,
       chainId: String(currentWallet.chainId),
       action: 'migrate',
@@ -262,6 +281,7 @@ const StakeTokensStep = (props: {
 export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   props
 ) => {
+  const user = useStore(authModel.$user)
   const userContact = useStore(telegramModel.$userContact)
   const userContacts = useStore(settingsContacts.$userContactList)
 
@@ -289,13 +309,30 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const currentWallet = walletNetworkModel.useWalletNetwork()
 
   const adapter = useAsync(async () => {
-    if (!currentWallet || !props.contract.automate.autorestake) return
+    if (!user) return
+
+    const deployedContracts =
+      await stakingAutomatesModel.fetchAutomatesContractsFx({
+        userId: user.id,
+      })
+
+    const deployedContract = deployedContracts.list.find(
+      ({ contract: deployedStakingContract }) =>
+        deployedStakingContract?.id === props.contract.id
+    )
+
+    if (
+      !currentWallet ||
+      !props.contract.automate.autorestake ||
+      !deployedContract
+    )
+      return
 
     return stakingAutomatesModel.fetchAdapterFx({
       protocolAdapter: props.contract.protocol.adapter,
       contractAdapter: props.contract.automate.autorestake,
       contractId: props.contract.id,
-      contractAddress: props.contract.address,
+      contractAddress: deployedContract.address,
       provider: currentWallet.provider,
       chainId: String(currentWallet.chainId),
       action: 'migrate',
