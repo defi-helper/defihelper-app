@@ -6777,7 +6777,7 @@ export type TradeCreateOrderMutation = { __typename?: 'Mutation' } & {
           >)
         | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
             SmartTradeSwapHandlerCallDataType,
-            'exchange' | 'boughtPrice'
+            'exchange' | 'boughtPrice' | 'path'
           >)
       lastCall?: Maybe<
         { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
@@ -6858,7 +6858,7 @@ export type TradeOrderListQuery = { __typename?: 'Query' } & {
                 >)
               | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
                   SmartTradeSwapHandlerCallDataType,
-                  'exchange' | 'boughtPrice'
+                  'exchange' | 'boughtPrice' | 'path'
                 >)
             lastCall?: Maybe<
               { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
