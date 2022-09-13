@@ -11,8 +11,10 @@ import {
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
+import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { dateUtils } from '~/common/date-utils'
+import { useDialog } from '~/common/dialog'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Input } from '~/common/input'
@@ -22,8 +24,12 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { TradeStatusChart } from '~/trade/common/trade-status-chart'
+import { Order } from '~/trade/common/trade.types'
+import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
+import { SmartTradeRouter } from '~/common/load-adapter'
 import * as styles from './trade-orders.css'
 import * as model from './trade-orders.model'
+import { Exchange } from '../common/trade.api'
 
 export type TradeOrdersProps = {
   className?: string
@@ -31,6 +37,8 @@ export type TradeOrdersProps = {
   onCancelOrder: (id: number | string) => Promise<void>
   onUpdatePrice?: () => void
   updating?: boolean
+  router?: SmartTradeRouter['methods']
+  exchangesMap: Map<string, Exchange>
 }
 
 enum Tabs {
@@ -65,13 +73,46 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   const orders = useStore(model.$orders)
 
   const loading = useStore(model.fetchOrdersFx.pending)
+  const claimingOrder = useStore(model.$claimingOrder)
 
   const [currentTab, setCurrentTab] = useState(Tabs.Active)
 
   const [updatingOrderId, setUpdatingOrderId] = useState('')
 
+  const [openTradeConfirmDialog] = useDialog(TradeConfirmClaimDialog)
+
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
+  }
+
+  const handleClaim = (order: Order) => async () => {
+    if (!hasBoughtPrice(order.callData)) return
+
+    const exchange = props.exchangesMap.get(order.callData.exchange)
+
+    if (!exchange || !props.router) return
+
+    const [tokenAddress] = order.callData.path.slice(-1)
+
+    const balance = await props.router.balanceOf(tokenAddress)
+
+    try {
+      model.claimStarted(order.id)
+
+      await openTradeConfirmDialog({
+        order,
+        exchange,
+        totalRecieve: balance,
+      })
+
+      const res = await props.router?.refund(tokenAddress, '')
+
+      await res?.tx?.wait()
+    } catch {
+      console.error('error')
+    } finally {
+      model.claimEnded()
+    }
   }
 
   useEffect(() => {
@@ -325,7 +366,28 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             className={styles.contractStatus}
                           />
                         )}
-                        <div>{order.status}</div>
+                        <div>
+                          {order.status ===
+                          SmartTradeOrderStatusEnum.Succeeded ? (
+                            <>
+                              {hasBoughtPrice(order.callData) && (
+                                <Button
+                                  color="green"
+                                  onClick={handleClaim(order)}
+                                  loading={claimingOrder === order.id}
+                                  disabled={Boolean(
+                                    claimingOrder.length &&
+                                      claimingOrder !== order.id
+                                  )}
+                                >
+                                  Claim
+                                </Button>
+                              )}
+                            </>
+                          ) : (
+                            order.status
+                          )}
+                        </div>
                         <div>
                           <div className={styles.contractBalance}>
                             <Icon
