@@ -1,16 +1,16 @@
 import clsx from 'clsx'
-import Slider from 'rc-slider'
+import RcSlider from 'rc-slider'
 import 'rc-slider/assets/index.css'
 
-import * as styles from './trade-slider.css'
+import * as styles from './slider.css'
 
-export type TradeSliderProps = React.ComponentProps<typeof Slider>
+export type SliderProps = React.ComponentProps<typeof RcSlider>
 
-export const TradeSlider = (props: TradeSliderProps) => {
+export const Slider = (props: SliderProps) => {
   const { className, ...restProps } = props
 
   return (
-    <Slider
+    <RcSlider
       {...restProps}
       className={clsx(
         styles.root,

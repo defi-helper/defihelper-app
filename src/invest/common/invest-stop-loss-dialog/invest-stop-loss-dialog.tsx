@@ -1,0 +1,177 @@
+import clsx from 'clsx'
+import { useEffect, useState } from 'react'
+import { useAsyncFn, useAsyncRetry, useToggle } from 'react-use'
+
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { Button } from '~/common/button'
+import { Dialog } from '~/common/dialog'
+import { StopLossComponent } from '~/common/load-adapter'
+import { NumericalInput } from '~/common/numerical-input'
+import { Select, SelectOption } from '~/common/select'
+import { Slider } from '~/common/slider'
+import { Switch } from '~/common/switch'
+import { Typography } from '~/common/typography'
+import * as styles from './invest-stop-loss-dialog.css'
+
+export type InvestStopLossDialogProps = {
+  onConfirm: () => void
+  adapter?: StopLossComponent
+}
+
+export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
+  props
+) => {
+  const [stopLoss, toggleStopLoss] = useToggle(false)
+  const [mainToken, setMainToken] = useState('')
+  const [withdrawToken, setWithdrawToken] = useState('')
+  const [stopLossPrice, setStopLossPrice] = useState('')
+  const [percent, setPercent] = useState(0)
+
+  const path = useAsyncRetry(async () => {
+    return props.adapter?.methods.autoPath(mainToken, withdrawToken)
+  }, [props.adapter, mainToken, withdrawToken])
+
+  const price = useAsyncRetry(async () => {
+    if (!path.value) return
+
+    return props.adapter?.methods.amountOut(path.value)
+  }, [props.adapter, path.value])
+
+  useEffect(() => {
+    setStopLossPrice(bignumberUtils.mul(price.value, percent))
+  }, [price.value, percent])
+
+  useEffect(() => {
+    setPercent(
+      Number(
+        bignumberUtils.toFixed(
+          bignumberUtils.mul(
+            bignumberUtils.div(stopLossPrice, price.value),
+            100
+          )
+        )
+      )
+    )
+  }, [price.value, stopLossPrice])
+
+  const [confirm, handleConfirm] = useAsyncFn(async () => {
+    if (!props.adapter || !path.value) return
+
+    const can = await props.adapter.methods.canSetStopLoss(
+      path.value,
+      stopLossPrice,
+      '0'
+    )
+
+    if (can instanceof Error) throw can
+
+    const result = await props.adapter.methods.setStopLoss(
+      path.value,
+      stopLossPrice,
+      '0'
+    )
+
+    return result.tx.wait()
+  }, [props.adapter, path.value, stopLossPrice])
+
+  return (
+    <Dialog className={styles.root}>
+      <div>
+        <Typography
+          variant="body2"
+          transform="uppercase"
+          family="mono"
+          className={styles.title}
+        >
+          Settings
+        </Typography>
+      </div>
+      <Typography variant="body2" className={styles.subtitle}>
+        Set up a stop-loss to protect your funds from a sudden drop in liquidity
+      </Typography>
+      <div className={styles.row}>
+        <div
+          className={clsx(styles.rowHeading, stopLoss && styles.rowHeadingOpen)}
+        >
+          <Typography>Stop Loss</Typography>
+          <Switch
+            size="small"
+            onChange={toggleStopLoss}
+            disabled={confirm.loading}
+          />
+        </div>
+        {stopLoss && (
+          <>
+            <Select
+              label="Main token"
+              className={styles.input}
+              value={mainToken}
+              onChange={(event) => setMainToken(event.currentTarget.value)}
+              disabled={confirm.loading}
+            >
+              <SelectOption>usdap</SelectOption>
+            </Select>
+            <Select
+              label="Withdraw to"
+              className={styles.input}
+              value={withdrawToken}
+              onChange={(event) => setWithdrawToken(event.currentTarget.value)}
+              disabled={confirm.loading}
+            >
+              <SelectOption>usdap</SelectOption>
+            </Select>
+            <div className={styles.input}>
+              <Typography variant="body3" className={styles.label}>
+                Current price
+              </Typography>
+              <Typography variant="body2">
+                {bignumberUtils.format(price.value)} USDT
+              </Typography>
+            </div>
+            <div className={styles.input}>
+              <NumericalInput
+                label="Stop-loss price"
+                value={stopLossPrice}
+                onChange={(event) =>
+                  setStopLossPrice(event.currentTarget.value)
+                }
+                className={styles.price}
+                rightSide="USDT"
+                disabled={confirm.loading}
+              />
+              <div className={styles.inputRow}>
+                <NumericalInput
+                  size="small"
+                  className={styles.numberInput}
+                  value={-percent}
+                  min={0}
+                  max={100}
+                  onChange={(event) =>
+                    setPercent(Number(event.currentTarget.value))
+                  }
+                  disabled={confirm.loading}
+                />
+                <Slider
+                  reverse
+                  className={styles.slider}
+                  value={percent}
+                  min={0}
+                  max={100}
+                  onChange={(event) => setPercent(Number(event))}
+                  disabled={confirm.loading}
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+      <Button
+        className={styles.confirm}
+        loading={confirm.loading}
+        onClick={handleConfirm}
+      >
+        confirm
+      </Button>
+    </Dialog>
+  )
+}

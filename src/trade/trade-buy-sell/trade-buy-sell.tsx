@@ -4,8 +4,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { NumericalInput } from '~/common/numerical-input'
 import { Switch } from '~/common/switch'
 import { Typography } from '~/common/typography'
-import { TradeInput } from '~/trade/common/trade-input'
-import { TradeSlider } from '~/trade/common/trade-slider'
+import { Slider } from '~/common/slider'
 import { TradePercentagePicker } from '~/trade/common/trade-percentage-picker'
 import { config } from '~/config'
 import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
@@ -99,12 +98,13 @@ export const TradeBuySell: React.VFC<TradeBuySellProps> = (props) => {
             <>
               <NumericalInput rightSide={props.tokens?.[1]?.symbol} />
               <div className={styles.trailingBuy}>
-                <TradeInput
+                <NumericalInput
                   className={styles.trailingBuyInput}
                   negative
                   rightSide={<>%</>}
+                  size="small"
                 />
-                <TradeSlider className={styles.slider} />
+                <Slider className={styles.slider} />
               </div>
             </>
           )}
@@ -124,12 +124,13 @@ export const TradeBuySell: React.VFC<TradeBuySellProps> = (props) => {
             <>
               <NumericalInput rightSide={props.tokens?.[1]?.symbol} />
               <div className={styles.trailingBuy}>
-                <TradeInput
+                <NumericalInput
                   className={styles.trailingBuyInput}
                   negative
                   rightSide={<>%</>}
+                  size="small"
                 />
-                <TradeSlider className={styles.slider} reverse />
+                <Slider className={styles.slider} reverse />
               </div>
             </>
           )}

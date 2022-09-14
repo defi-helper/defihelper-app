@@ -18,7 +18,7 @@ import { Wallet, walletApi } from '~/wallets/common'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 
-export type ActionType = 'deposit' | 'migrate' | 'refund' | 'run'
+export type ActionType = 'deposit' | 'migrate' | 'refund' | 'run' | 'stopLoss'
 
 type FetchAdapterParams = {
   protocolAdapter: string
@@ -38,12 +38,13 @@ type FetchAutomatesParams = {
 
 const LOAD_TYPES: Record<
   ActionType,
-  'migrating' | 'depositing' | 'refunding' | 'running'
+  'migrating' | 'depositing' | 'refunding' | 'running' | 'stopLoss'
 > = {
   migrate: 'migrating',
   deposit: 'depositing',
   refund: 'refunding',
   run: 'running',
+  stopLoss: 'stopLoss',
 }
 
 export const stakingAutomatesDomain = createDomain()
@@ -99,7 +100,13 @@ export const $automatesContracts = stakingAutomatesDomain
   )
   .on(reset, (state) =>
     state.map((contract) =>
-      omit(contract, ['migrating', 'depositing', 'refunding', 'running'])
+      omit(contract, [
+        'migrating',
+        'depositing',
+        'refunding',
+        'running',
+        'stopLoss',
+      ])
     )
   )
   .on(automationsListModel.deleteContractFx, (state, payload) =>

@@ -34,6 +34,7 @@ export type StakingAutomatesContractCardProps = {
   onMigrate?: () => void
   onDelete: () => void
   onRun: () => void
+  onStopLoss?: () => void
   error?: boolean
   apy?: string
   apyBoost?: string
@@ -43,6 +44,7 @@ export type StakingAutomatesContractCardProps = {
   refunding?: boolean
   migrating?: boolean
   running?: boolean
+  stopLoss?: boolean
   tokensIcons: Array<string | null>
   freshMetrics?: FreshMetrics
 }
@@ -94,14 +96,14 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     pending && styles.manageLoading
                   )}
                 >
-                  {(props.deleting || props.running) && (
+                  {(props.deleting || props.running || props.stopLoss) && (
                     <CircularProgress className={styles.circularProgress} />
                   )}
                   <Icon
                     icon="dots"
                     className={clsx(
                       styles.manageIcon,
-                      (props.deleting || props.running) &&
+                      (props.deleting || props.running || props.stopLoss) &&
                         styles.manageIconloading
                     )}
                   />
@@ -119,6 +121,17 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                   Run manually
                 </ButtonBase>
               </CanDemo>
+
+              {props.onStopLoss && (
+                <CanDemo>
+                  <ButtonBase
+                    className={styles.dropdownItem}
+                    onClick={props.onStopLoss}
+                  >
+                    Stop loss
+                  </ButtonBase>
+                </CanDemo>
+              )}
 
               <CanDemo>
                 <ButtonBase

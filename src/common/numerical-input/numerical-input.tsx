@@ -1,21 +1,28 @@
+import clsx from 'clsx'
+
 import { escapeRegex } from '~/common/escape-regex'
 import { createComponent } from '~/common/create-component'
 import { Input } from '~/common/input'
-import { bignumberUtils } from '../bignumber-utils'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import * as styles from './numerical-input.css'
 
 const INPUT_REGEX = RegExp(`^\\d*(?:\\\\[.])?\\d*$`)
 
-export type NumericalInputProps = React.ComponentProps<typeof Input> & {
+export type NumericalInputProps = Omit<
+  React.ComponentProps<typeof Input>,
+  'size'
+> & {
   negative?: boolean
   min?: number
   max?: number
+  size?: 'small'
 }
 
 export const NumericalInput = createComponent<
   HTMLInputElement,
   NumericalInputProps
 >(function NumericalInput(props, ref) {
-  const { negative, onChange, value, ...restProps } = props
+  const { negative, onChange, value, size, className, ...restProps } = props
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const eventValue = event.target.value.replace(/,/g, '.').replace(/-/g, '')
@@ -43,6 +50,7 @@ export const NumericalInput = createComponent<
   return (
     <Input
       {...restProps}
+      className={clsx(size === 'small' && styles.small, className)}
       value={value}
       ref={ref}
       onChange={handleChange}

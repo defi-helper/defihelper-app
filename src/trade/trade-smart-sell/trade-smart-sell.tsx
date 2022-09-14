@@ -9,8 +9,7 @@ import { ButtonBase } from '~/common/button-base'
 import { NumericalInput } from '~/common/numerical-input'
 import { Typography } from '~/common/typography'
 import { Switch } from '~/common/switch'
-import { TradeInput } from '~/trade/common/trade-input'
-import { TradeSlider } from '~/trade/common/trade-slider'
+import { Slider } from '~/common/slider'
 import { TradePercentagePicker } from '~/trade/common/trade-percentage-picker'
 import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
 import { Button } from '~/common/button'
@@ -411,15 +410,16 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 onBlur={toggleTakeProfitFocus}
               />
               <div className={styles.trailingBuy}>
-                <TradeInput
+                <NumericalInput
                   className={styles.trailingBuyInput}
                   rightSide="%"
                   min={0}
                   max={300}
                   value={takeProfitPercent}
                   onChange={handleChangeTakeProfit}
+                  size="small"
                 />
-                <TradeSlider
+                <Slider
                   className={styles.slider}
                   value={takeProfitPercent}
                   min={0}
@@ -451,7 +451,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 onBlur={toggleStopLossFocus}
               />
               <div className={styles.trailingBuy}>
-                <TradeInput
+                <NumericalInput
                   className={styles.trailingBuyInput}
                   negative
                   value={-stopLossPercent}
@@ -459,8 +459,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   min={0}
                   max={99}
                   onChange={handleChangeStopLoss}
+                  size="small"
                 />
-                <TradeSlider
+                <Slider
                   className={styles.slider}
                   reverse
                   value={stopLossPercent}
