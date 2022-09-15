@@ -261,8 +261,6 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     }
   }, variables)
 
-  useGate(settingsContacts.SettingsContactsGate)
-
   const handleOpenContactForm = (broker: UserContactBrokerEnum) => async () => {
     try {
       if (!user) return
@@ -355,6 +353,21 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           <ForceRenderOrLazyLoad forceRender={Boolean(runLocalStorage)}>
             <PortfolioMetricCards className={styles.cards} />
           </ForceRenderOrLazyLoad>
+          {!telegram && (
+            <Paper radius={8} className={styles.connectTelegram}>
+              <Typography variant="body2" family="mono">
+                Connect telegram to receive up-to-date information about your
+                portfolio
+              </Typography>
+              <Button
+                size="small"
+                className={styles.connectTelegramButton}
+                onClick={handleOpenContactForm(UserContactBrokerEnum.Telegram)}
+              >
+                CONNECT TELEGRAM
+              </Button>
+            </Paper>
+          )}
           <div className={clsx(styles.grid, styles.section)}>
             <ForceRenderOrLazyLoad forceRender={Boolean(runLocalStorage)}>
               <PortfolioTotalWorth />
