@@ -69,4 +69,6 @@ export const paths = {
   admin: '/admin',
 
   trade: '/trade',
+
+  welcome: '/welcome',
 } as const
