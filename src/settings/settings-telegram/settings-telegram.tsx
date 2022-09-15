@@ -12,12 +12,15 @@ import * as settingsContacts from '~/settings/settings-contacts/settings-contact
 import { SettingsConversationDialog } from '~/settings/common'
 import * as styles from './settings-telegram.css'
 import * as model from './settings-telegram.model'
+import { dateUtils } from '~/common/date-utils'
+import { pluralize } from '~/common/pluralize'
 
 export type SettingsTelegramProps = unknown
 
 export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   const userContact = useStore(model.$userContact)
   const userContacts = useStore(settingsContacts.$userContactList)
+  const user = useStore(authModel.$user)
   const loading = useStore(settingsContacts.fetchUserContactListFx.pending)
   const userReady = useStore(authModel.$userReady)
   const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
@@ -38,12 +41,24 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
     model.openTelegram(undefined)
   }
 
+  const leftDays = dateUtils.leftDays(user?.portfolioCollectingFreezedAt)
+
   return (
     <Paper radius={4} className={styles.root}>
       <img alt="" src={notification} className={styles.notification} />
       <Typography variant="body3" as="div" className={styles.text}>
-        We will stop to track your portfolio in 30 days if you will not connect
-        your telegram account.
+        {leftDays > 0 ? (
+          <>
+            We will stop to track your portfolio in {leftDays}{' '}
+            {pluralize(leftDays, 'day')} if you will not connect your telegram
+            account.
+          </>
+        ) : (
+          <>
+            Tracking of your portfolio has been stopped because you have not
+            connected telegram.
+          </>
+        )}
       </Typography>
       <div className={styles.buttons}>
         <Button
