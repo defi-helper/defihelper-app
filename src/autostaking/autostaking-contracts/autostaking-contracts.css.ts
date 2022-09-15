@@ -147,6 +147,33 @@ export const contractProtocol = style({
   display: 'flex',
   alignItems: 'center',
   gap: 8,
+  transition: 'color .2s ease-in-out',
+
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      ':hover': {
+        color: theme.colors.common.blue1,
+      },
+    },
+  },
+})
+
+export const contractProtocolInner = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4,
+})
+
+export const contractProtocolLinkIcon = style({
+  display: 'none',
+})
+
+globalStyle(`${contractProtocol}:hover ${contractProtocolLinkIcon}`, {
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      display: 'block',
+    },
+  },
 })
 
 export const contractProtocolIcon = style({

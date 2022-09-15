@@ -743,7 +743,15 @@ export const AutostakingContracts: React.VFC<AutostakingContractsProps> = (
                       <Icon icon="unknownNetwork" width="16" height="16" />
                     </Paper>
                   )}{' '}
-                  {contract.protocol.name}
+                  <div className={styles.contractProtocolInner}>
+                    {contract.protocol.name}
+                    <Icon
+                      icon="link"
+                      width="16"
+                      height="16"
+                      className={styles.contractProtocolLinkIcon}
+                    />
+                  </div>
                 </Typography>
                 <Typography variant="body2" align="right" as="div">
                   ${bignumberUtils.format(contract.metric.tvl)}
