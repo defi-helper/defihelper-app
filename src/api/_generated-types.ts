@@ -3552,6 +3552,10 @@ export type UserType = {
   timezone: Scalars['String']
   /** Is portfolio collected */
   isPorfolioCollected: Scalars['Boolean']
+  /** Is portfolio metrics tracking freezed */
+  isPortfolioCollectingFreezed: Scalars['Boolean']
+  /** Whan portfolio collecting (will be/was) freezed */
+  portfolioCollectingFreezedAt: Scalars['DateTimeType']
   tokenAliasesStakedMetrics: UserTokenAliasesStakedMetricsListType
   tokenAliases: UserTokenAliasListType
   wallets: WalletListType
@@ -4131,7 +4135,13 @@ export type MeQuery = { __typename?: 'Query' } & {
 
 export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
   UserType,
-  'id' | 'role' | 'name' | 'createdAt' | 'timezone'
+  | 'id'
+  | 'role'
+  | 'name'
+  | 'createdAt'
+  | 'timezone'
+  | 'portfolioCollectingFreezedAt'
+  | 'isPortfolioCollectingFreezed'
 >
 
 export type AutomationActionCreateMutationVariables = Exact<{

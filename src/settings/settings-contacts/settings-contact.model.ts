@@ -1,5 +1,4 @@
 import { createDomain, guard, sample, UnitValue } from 'effector'
-import { createGate } from 'effector-react'
 
 import { settingsApi } from '~/settings/common'
 import {
@@ -186,11 +185,6 @@ export const $userContactList = settingsContactsDomain
   )
   .reset(authModel.logoutFx)
 
-export const SettingsContactsGate = createGate({
-  domain: settingsContactsDomain,
-  name: 'SettingsContactsGate',
-})
-
 sample({
   clock: createUserContactFx.done,
   target: fetchUserNotificationsListFx,
@@ -198,7 +192,7 @@ sample({
 
 guard({
   source: [authModel.$userReady, authModel.$user],
-  clock: [SettingsContactsGate.open, authModel.$userReady.updates],
+  clock: [authModel.$userReady.updates, authModel.$user.updates],
   filter: ([userReady, user]) => userReady && Boolean(user),
   target: [fetchUserContactListFx, fetchUserNotificationsListFx],
 })
