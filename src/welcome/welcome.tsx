@@ -1,5 +1,6 @@
-import { cloneElement } from 'react'
+import { cloneElement, useEffect } from 'react'
 import { Link as ReactRouterLink } from 'react-router-dom'
+import { useStore } from 'effector-react'
 
 import { Button } from '~/common/button'
 import { Head } from '~/common/head'
@@ -9,6 +10,8 @@ import { AppLayout } from '~/layouts'
 import { paths } from '~/paths'
 import welcomeInvest from '~/assets/images/welcome-invest.png'
 import welcomeTrade from '~/assets/images/welcome-trade.png'
+import { authModel } from '~/auth'
+import { history } from '~/common/history'
 import * as styles from './welcome.css'
 
 export type WelcomeProps = unknown
@@ -37,6 +40,17 @@ const DATA = [
 ]
 
 export const Welcome: React.VFC<WelcomeProps> = () => {
+  const userReady = useStore(authModel.$userReady)
+  const user = useStore(authModel.$user)
+
+  useEffect(() => {
+    if (userReady && user) {
+      history.replace(paths.portfolio)
+    }
+  }, [user, userReady])
+
+  if (!userReady) return <></>
+
   return (
     <AppLayout title="Welcome to DeFiHelper">
       <Head title="Welcome" />
