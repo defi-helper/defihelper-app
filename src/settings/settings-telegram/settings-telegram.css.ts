@@ -3,7 +3,7 @@ import { style } from '@vanilla-extract/css'
 import { theme } from '~/common/theme'
 
 export const root = style({
-  padding: '15px 7px',
+  padding: 8,
   background: theme.colors.common.green1,
   marginLeft: -8,
   marginRight: -8,
@@ -13,11 +13,9 @@ export const root = style({
   color: theme.colors.common.black1,
 })
 
-export const close = style({})
-
 export const text = style({
-  marginBottom: 14,
-  fontSize: 13,
+  marginBottom: 16,
+  fontSize: 12,
 })
 
 export const buttons = style({
@@ -34,49 +32,12 @@ export const button = style({
   padding: '6px 12px',
   color: theme.colors.common.white1,
   background: theme.colors.common.black1,
+  maxWidth: 182,
+  width: '100%',
 })
 
-export const alert = style({
-  filter: `drop-shadow(0px 4px 4px ${theme.colors.common.black5})`,
-  background: theme.colors.common.grey4,
-  borderRadius: 9,
-  padding: '9px 10px 12px 8.5px',
-  marginBottom: 14,
-})
-
-export const alertHeader = style({
-  display: 'flex',
-  gap: 5,
-  alignItems: 'center',
-  marginBottom: 6,
-})
-
-export const alertIcon = style({
-  background: theme.colors.common.black1,
-  color: theme.colors.common.white1,
-  width: 15,
-  height: 15,
-  borderRadius: 3,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-})
-
-export const alertTitle = style({
-  fontSize: 10,
-})
-
-export const alertTime = style({
-  marginLeft: 'auto',
-  fontSize: 11,
-  color: theme.colors.common.black9,
-})
-
-export const alertSubtitle = style({
-  marginBottom: 4,
-  fontSize: 11,
-})
-
-export const alertText = style({
-  fontSize: 9,
+export const notification = style({
+  filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
+  maxWidth: '100%',
+  marginBottom: 16,
 })

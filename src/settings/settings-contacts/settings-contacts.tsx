@@ -1,4 +1,4 @@
-import { useGate, useStore } from 'effector-react'
+import { useStore } from 'effector-react'
 
 import { Typography } from '~/common/typography'
 import {
@@ -37,8 +37,6 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const contactCreating = useStore(model.createUserContactFx.pending)
   const creatingParams = useStore(model.$creatingUserParams)
   const notificationsList = useStore(model.$userNotificationsList)
-
-  useGate(model.SettingsContactsGate)
 
   const { withHeader = true } = props
 

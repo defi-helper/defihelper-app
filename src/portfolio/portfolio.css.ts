@@ -204,3 +204,28 @@ export const generatingMobileTitle = style({
   marginBottom: 16,
   color: theme.colors.textColorGrey,
 })
+
+export const connectTelegram = style({
+  background: theme.colors.common.green1,
+  marginBottom: 24,
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
+  justifyContent: 'space-between',
+  color: theme.colors.common.black1,
+  flexDirection: 'column',
+  padding: '32px 8px',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      padding: '8px 32px',
+      flexDirection: 'row',
+    },
+  },
+})
+
+export const connectTelegramButton = style({
+  background: theme.colors.common.black1,
+  border: `1px solid ${theme.colors.common.black1}`,
+  color: theme.colors.common.white1,
+})
