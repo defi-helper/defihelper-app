@@ -9,11 +9,7 @@ import { Typography } from '~/common/typography'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import {
   StakingAutomatesContractCard,
-  StakingAdapterDialog,
   StakingErrorDialog,
-  StakingDepositDialog,
-  StakingMigrateDialog,
-  StakingRefundDialog,
 } from '~/staking/common'
 import { switchNetwork } from '~/wallets/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -42,11 +38,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const wallets = useStore(settingsWalletModel.$wallets)
   const user = useStore(authModel.$user)
   const handleConnect = useWalletConnect()
-  const [openAdapter] = useDialog(StakingAdapterDialog)
   const [openConfirmDialog] = useDialog(ConfirmDialog)
-  const [openDepositDialog] = useDialog(StakingDepositDialog)
-  const [openMigrateDialog] = useDialog(StakingMigrateDialog)
-  const [openRefundDialog] = useDialog(StakingRefundDialog)
 
   const automatesContracts = useStore(model.$automatesContracts)
   const { metrics } = useStore(model.$freshMetrics)
@@ -125,38 +117,14 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             .catch(console.error)
         }
 
-        const dialogs = {
-          deposit: () =>
-            openDepositDialog({
-              methods: adapter.deposit.methods,
-              onLastStep,
-            }),
-          migrate: () =>
-            openMigrateDialog({
-              methods: adapter.migrate.methods,
-              onLastStep,
-            }),
-          refund: () =>
-            openRefundDialog({
-              methods: adapter.refund.methods,
-              onLastStep,
-            }),
-        }
+        const can = await adapter.refund.methods.can()
+        if (can instanceof Error) throw can
 
-        if ('methods' in adapter[action]) {
-          await dialogs[action]()
-            .then(() => model.reset())
-            .catch(() => model.reset())
-        } else {
-          await openAdapter({
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            steps: adapter[action],
-            onLastStep,
-          })
-            .then(() => model.reset())
-            .catch(() => model.reset())
-        }
+        const refund = await adapter.refund.methods.refund()
+
+        const tx = await refund.tx.wait()
+
+        onLastStep(tx.transactionHash)
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
@@ -288,16 +256,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               ? handleSwitchNetwork(automatesContract)
               : null
 
-          const migrate =
-            wrongNetwork ??
-            isNotSameAddresses ??
-            handleAction(automatesContract, 'migrate')
-
-          const deposit =
-            wrongNetwork ??
-            isNotSameAddresses ??
-            handleAction(automatesContract, 'deposit')
-
           const refund =
             wrongNetwork ??
             isNotSameAddresses ??
@@ -324,16 +282,13 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               balance={automatesContract.contractWallet?.metric.stakedUSD ?? ''}
               apy={automatesContract.contract?.metric.aprYear}
               apyBoost={automatesContract.contract?.metric.myAPYBoost}
-              onMigrate={currentWallet ? migrate : connect}
-              onDeposit={currentWallet ? deposit : connect}
               onRefund={currentWallet ? refund : connect}
               onRun={currentWallet ? run : connect}
               onDelete={handleDelete(automatesContract.id)}
               refunding={automatesContract.refunding}
-              migrating={automatesContract.migrating}
-              depositing={automatesContract.depositing}
               deleting={automatesContract.deleting}
               running={automatesContract.running}
+              contractId={automatesContract.id}
               error={
                 automatesContract.contractWallet?.billing.balance.lowFeeFunds ||
                 (automatesContract.wallet?.billing?.balance?.netBalanceUSD >
