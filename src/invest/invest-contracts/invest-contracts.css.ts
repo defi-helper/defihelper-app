@@ -58,8 +58,14 @@ export const tableWrap = style({
 })
 
 export const table = style({
-  background: theme.colors.paper,
-  minWidth: 1000,
+  background: 'transparent',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      background: theme.colors.paper,
+      minWidth: 1000,
+    },
+  },
 })
 
 export const padding = style({
@@ -87,106 +93,18 @@ export const tableHeader = style([
   {
     padding: 16,
     color: theme.colors.textColorGrey,
+    display: 'none',
+
+    '@media': {
+      [theme.mediaQueries.md()]: {
+        display: 'grid',
+      },
+    },
   },
 ])
 
 export const tableName = style({
   paddingLeft: 28,
-})
-
-export const apyBoost = style({
-  display: 'flex',
-  gap: 16,
-  alignItems: 'center',
-})
-
-export const contractCardName = style({
-  display: 'flex',
-  gap: 8,
-  marginBottom: 8,
-  flexDirection: 'column',
-
-  '@media': {
-    [theme.mediaQueries.down(959)]: {
-      fontSize: 16,
-      lineHeight: '24px',
-    },
-
-    [theme.mediaQueries.md()]: {
-      marginBottom: 0,
-    },
-  },
-})
-
-export const contractCardIcons = style({
-  display: 'flex',
-  alignItems: 'center',
-})
-
-export const contractNetworkIcon = style({
-  marginRight: 16,
-})
-
-export const contractIconBg = style({
-  background: theme.colors.background,
-})
-
-export const contractUnknownNetworkIcon = style([
-  contractNetworkIcon,
-  contractIconBg,
-  {
-    width: 20,
-    height: 20,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-])
-
-export const contractProtocol = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 8,
-  transition: 'color .2s ease-in-out',
-
-  '@media': {
-    [theme.mediaQueries.hover()]: {
-      ':hover': {
-        color: theme.colors.common.blue1,
-      },
-    },
-  },
-})
-
-export const contractProtocolInner = style({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 4,
-})
-
-export const contractProtocolLinkIcon = style({
-  display: 'none',
-})
-
-globalStyle(`${contractProtocol}:hover ${contractProtocolLinkIcon}`, {
-  '@media': {
-    [theme.mediaQueries.hover()]: {
-      display: 'block',
-    },
-  },
-})
-
-export const contractProtocolIcon = style({
-  width: 24,
-  height: 24,
-  borderRadius: '50%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-})
-
-export const autostakeButton = style({
-  marginLeft: 'auto',
 })
 
 export const loader = style({
@@ -198,19 +116,6 @@ export const loader = style({
   width: '100%',
 })
 
-export const apyButton = style({
-  verticalAlign: 'middle',
-  marginLeft: 10,
-})
-
-export const positive = style({
-  color: theme.colors.textColorGreen,
-})
-
-export const negative = style({
-  color: theme.colors.common.red1,
-})
-
 export const apyboostQuestion = style({
   color: theme.colors.textColorGrey,
   verticalAlign: 'middle',
@@ -218,37 +123,6 @@ export const apyboostQuestion = style({
 
 export const dropdown = style({
   width: 252,
-})
-
-export const riskLevel = style({
-  minWidth: 206,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 16,
-})
-
-export const riskLevelRow = style({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: 10,
-})
-
-export const riskLevelSpacing = style({
-  background: theme.colors.border,
-  height: 1,
-  width: '100%',
-})
-
-export const riskLevelStatus = style({
-  background: theme.colors.common.green2,
-  padding: '0 31px',
-  borderRadius: 22,
-  color: theme.colors.secondary,
-})
-
-export const networkDropdown = style({
-  maxWidth: 276,
 })
 
 export const autostakingTooltipTitle = style({
