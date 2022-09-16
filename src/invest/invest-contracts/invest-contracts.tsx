@@ -3,14 +3,12 @@ import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
 import { useEffect, useRef, useState } from 'react'
 import { useThrottle } from 'react-use'
-import { Link as ReactRouterLink } from 'react-router-dom'
 
 import {
   ContractListSortInputTypeColumnEnum,
   ContractRiskFactorEnum,
   SortOrderEnum,
 } from '~/api'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { useDialog } from '~/common/dialog'
@@ -23,10 +21,9 @@ import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { StakingApyDialog } from '~/staking/common'
-import { paths } from '~/paths'
-import { StakeRewardTokens } from '~/common/stake-reward-tokens'
-import { riskStatuses, riskIcons } from '~/invest/common/constants'
+import { riskStatuses } from '~/invest/common/constants'
 import { Link } from '~/common/link'
+import { InvestContractCard } from '~/invest/common/invest-contract-card'
 import * as model from './invest-contracts.model'
 import * as styles from './invest-contracts.css'
 
@@ -470,205 +467,14 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
             <div className={styles.padding}>No data</div>
           )}
           {contracts.map((contract, ind) => {
-            const apyboost = bignumberUtils.mul(contract.metric.myAPYBoost, 100)
-            const realApy = bignumberUtils.mul(contract.metric.aprWeekReal, 100)
-
             return (
-              <div className={styles.row} key={String(contract.id + ind)}>
-                <Typography
-                  as="div"
-                  variant="body2"
-                  className={styles.contractCardName}
-                >
-                  <Typography variant="inherit">{contract.name}</Typography>
-                  <span className={styles.contractCardIcons}>
-                    {networksConfig[contract.network]?.icon ? (
-                      <Dropdown
-                        control={
-                          <Icon
-                            icon={networksConfig[contract.network].icon}
-                            width="20"
-                            height="20"
-                            className={styles.contractNetworkIcon}
-                          />
-                        }
-                        offset={[0, 4]}
-                        placement="bottom-start"
-                        trigger="hover"
-                        className={styles.networkDropdown}
-                      >
-                        <Typography variant="body2" family="mono">
-                          This pool is located on{' '}
-                          {networksConfig[contract.network].title} network
-                        </Typography>
-                      </Dropdown>
-                    ) : (
-                      <Paper className={styles.contractUnknownNetworkIcon}>
-                        <Icon icon="unknownNetwork" width="16" height="16" />
-                      </Paper>
-                    )}
-                    <StakeRewardTokens
-                      stakeTokens={contract.tokens.stake}
-                      rewardTokens={contract.tokens.reward}
-                      tokenClassName={styles.contractIconBg}
-                    />
-                  </span>
-                </Typography>
-                <Typography
-                  variant="body2"
-                  className={styles.contractProtocol}
-                  as={ReactRouterLink}
-                  to={paths.protocols.detail(contract.protocol.id)}
-                >
-                  {contract.protocol.icon ? (
-                    <img
-                      alt=""
-                      src={contract.protocol.icon}
-                      className={styles.contractProtocolIcon}
-                    />
-                  ) : (
-                    <Paper className={styles.contractProtocolIcon}>
-                      <Icon icon="unknownNetwork" width="16" height="16" />
-                    </Paper>
-                  )}{' '}
-                  <div className={styles.contractProtocolInner}>
-                    {contract.protocol.name}
-                    <Icon
-                      icon="link"
-                      width="16"
-                      height="16"
-                      className={styles.contractProtocolLinkIcon}
-                    />
-                  </div>
-                </Typography>
-                <Typography variant="body2" align="right" as="div">
-                  ${bignumberUtils.format(contract.metric.tvl)}
-                </Typography>
-                <Typography variant="body2" align="right" as="div">
-                  {bignumberUtils.formatMax(
-                    bignumberUtils.mul(contract.metric.aprYear, 100),
-                    10000
-                  )}
-                  %
-                  <ButtonBase
-                    onClick={handleOpenApy(contract.metric)}
-                    className={styles.apyButton}
-                  >
-                    <Icon icon="calculator" width="20" height="20" />
-                  </ButtonBase>
-                </Typography>
-                <Typography variant="body2" align="right" as="div">
-                  <Typography
-                    variant="inherit"
-                    className={clsx({
-                      [styles.positive]: bignumberUtils.gt(realApy, '0'),
-                      [styles.negative]: bignumberUtils.lt(realApy, '0'),
-                    })}
-                  >
-                    {bignumberUtils.formatMax(realApy, 10000, false)}%
-                  </Typography>
-                </Typography>
-                <div className={styles.apyBoost}>
-                  {apyBoostDropdown}
-                  <Typography
-                    variant="body2"
-                    align="right"
-                    as="span"
-                    className={clsx({
-                      [styles.positive]: bignumberUtils.gt(apyboost, '0'),
-                      [styles.negative]:
-                        !bignumberUtils.eq(
-                          bignumberUtils.format(apyboost),
-                          '0'
-                        ) && bignumberUtils.lt(apyboost, '0'),
-                    })}
-                  >
-                    {!bignumberUtils.eq(bignumberUtils.format(apyboost), '0') &&
-                      bignumberUtils.lt(apyboost, '0') &&
-                      '- '}
-                    {bignumberUtils.formatMax(apyboost, 10000, true)}%
-                  </Typography>
-                </div>
-                <Typography variant="inherit">
-                  {riskIcons[contract.metric.risk] && (
-                    <Icon
-                      icon={riskIcons[contract.metric.risk]}
-                      width={22}
-                      height={24}
-                    />
-                  )}
-                  {false && (
-                    <Dropdown
-                      className={styles.riskLevel}
-                      control={
-                        <ButtonBase>
-                          {riskIcons[contract.metric.risk] && (
-                            <Icon
-                              icon={riskIcons[contract.metric.risk]}
-                              width={22}
-                              height={24}
-                            />
-                          )}
-                        </ButtonBase>
-                      }
-                      offset={[0, 4]}
-                      placement="left-start"
-                    >
-                      <Typography
-                        family="mono"
-                        as="div"
-                        className={styles.riskLevelRow}
-                      >
-                        <Typography variant="inherit">Risk</Typography>
-                        <Typography
-                          as="div"
-                          variant="body2"
-                          className={styles.riskLevelStatus}
-                        >
-                          {riskStatuses[contract.metric.risk]}
-                        </Typography>
-                      </Typography>
-                      <span className={styles.riskLevelSpacing} />
-                      <Typography
-                        family="mono"
-                        as="div"
-                        variant="body2"
-                        className={styles.riskLevelRow}
-                      >
-                        <Typography variant="inherit">Reliability</Typography>
-                        <Icon icon="greenRisk" width={19} height={20} />
-                      </Typography>
-                      <Typography
-                        family="mono"
-                        as="div"
-                        variant="body2"
-                        className={styles.riskLevelRow}
-                      >
-                        <Typography variant="inherit">Profitability</Typography>
-                        <Icon icon="yellowRisk" width={19} height={20} />
-                      </Typography>
-                      <Typography
-                        family="mono"
-                        as="div"
-                        variant="body2"
-                        className={styles.riskLevelRow}
-                      >
-                        <Typography variant="inherit">Volatility</Typography>
-                        <Icon icon="greenRisk" width={19} height={20} />
-                      </Typography>
-                    </Dropdown>
-                  )}
-                </Typography>
-                <Button
-                  color="green"
-                  size="small"
-                  className={styles.autostakeButton}
-                  as={ReactRouterLink}
-                  to={paths.invest.detail(contract.id)}
-                >
-                  invest
-                </Button>
-              </div>
+              <InvestContractCard
+                contract={contract}
+                onOpenApy={handleOpenApy(contract.metric)}
+                key={String(contract.id + ind)}
+              >
+                {apyBoostDropdown}
+              </InvestContractCard>
             )
           })}
           {contractsHasNextPage && (
