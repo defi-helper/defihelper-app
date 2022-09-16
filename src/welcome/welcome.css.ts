@@ -31,6 +31,7 @@ export const dataItem = style({
   alignItems: 'center',
   transition: 'transform .2s ease-in-out',
   padding: 24,
+  color: 'inherit',
 
   '@media': {
     [theme.mediaQueries.hover()]: {
@@ -87,17 +88,8 @@ export const dataItemButton = style({
   '@media': {
     [theme.mediaQueries.down(959)]: {
       background: theme.colors.common.green1,
-      color: theme.colors.common.black1,
+      color: `${theme.colors.common.black1} !important`,
       border: `1px solid ${theme.colors.common.green1}`,
-    },
-
-    [theme.mediaQueries.hover()]: {
-      ':hover': {
-        background: theme.colors.common.green1,
-        color: theme.colors.common.black1,
-        border: `1px solid ${theme.colors.common.green1}`,
-        opacity: 1,
-      },
     },
   },
 })
@@ -105,7 +97,18 @@ export const dataItemButton = style({
 globalStyle(`${dataItem}:hover ${dataItemTitle}`, {
   '@media': {
     [theme.mediaQueries.hover()]: {
-      color: theme.colors.common.green1,
+      color: theme.colors.textColorGreen,
+    },
+  },
+})
+
+globalStyle(`${dataItem}:hover ${dataItemButton}`, {
+  '@media': {
+    [theme.mediaQueries.hover()]: {
+      background: theme.colors.common.green1,
+      color: theme.colors.common.black1,
+      border: `1px solid ${theme.colors.common.green1}`,
+      opacity: 1,
     },
   },
 })

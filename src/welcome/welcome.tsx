@@ -1,4 +1,4 @@
-import { cloneElement, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 import { useStore } from 'effector-react'
 
@@ -8,8 +8,8 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { AppLayout } from '~/layouts'
 import { paths } from '~/paths'
-import welcomeInvest from '~/assets/images/welcome-invest.png'
-import welcomeTrade from '~/assets/images/welcome-trade.png'
+import { ReactComponent as WelcomeInvest } from '~/assets/images/welcome-invest.svg'
+import { ReactComponent as WelcomeTrade } from '~/assets/images/welcome-trade.svg'
 import { authModel } from '~/auth'
 import { history } from '~/common/history'
 import * as styles from './welcome.css'
@@ -19,23 +19,17 @@ export type WelcomeProps = unknown
 const DATA = [
   {
     title: 'INVEST',
-    img: welcomeInvest,
+    img: WelcomeInvest,
     text: "Find a pool to invest in, use auto compounding to boost your APY, protect your investment with 'stop-loss'",
-    button: (
-      <Button variant="outlined" as={ReactRouterLink} to={paths.invest.list}>
-        start investing
-      </Button>
-    ),
+    link: paths.invest.list,
+    button: 'start investing',
   },
   {
     title: 'TRADE',
-    img: welcomeTrade,
+    img: WelcomeTrade,
     text: "Use our 'Trailing Buy', or 'Stop-loss/Take-profit' features to trade like a pro on DEXs",
-    button: (
-      <Button variant="outlined" as={ReactRouterLink} to={paths.trade}>
-        start trading
-      </Button>
-    ),
+    link: paths.trade,
+    button: 'start trading',
   },
 ]
 
@@ -59,7 +53,13 @@ export const Welcome: React.VFC<WelcomeProps> = () => {
       </Typography>
       <div className={styles.grid}>
         {DATA.map((dataItem) => (
-          <Paper key={dataItem.title} radius={8} className={styles.dataItem}>
+          <Paper
+            key={dataItem.title}
+            radius={8}
+            className={styles.dataItem}
+            as={ReactRouterLink}
+            to={dataItem.link}
+          >
             <Typography
               className={styles.dataItemTitle}
               transform="uppercase"
@@ -67,7 +67,7 @@ export const Welcome: React.VFC<WelcomeProps> = () => {
             >
               {dataItem.title}
             </Typography>
-            <img alt="" src={dataItem.img} className={styles.dataItemImg} />
+            <dataItem.img className={styles.dataItemImg} />
             <Typography
               className={styles.dataItemText}
               align="center"
@@ -75,10 +75,9 @@ export const Welcome: React.VFC<WelcomeProps> = () => {
             >
               {dataItem.text}
             </Typography>
-            {cloneElement(dataItem.button, {
-              ...dataItem.button.props,
-              className: styles.dataItemButton,
-            })}
+            <Button variant="outlined" className={styles.dataItemButton}>
+              {dataItem.button}
+            </Button>
           </Paper>
         ))}
       </div>
