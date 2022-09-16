@@ -1,6 +1,7 @@
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 
+import clsx from 'clsx'
 import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
@@ -25,6 +26,10 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   const userReady = useStore(authModel.$userReady)
   const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
 
+  const leftDays = user?.portfolioCollectingFreezedAt
+    ? Math.round(dateUtils.leftDays(user.portfolioCollectingFreezedAt))
+    : null
+
   const contacts = useMemo(
     () => (userContact ? [...userContacts, userContact] : userContacts),
     [userContact, userContacts]
@@ -34,17 +39,23 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
     ({ broker }) => broker === UserContactBrokerEnum.Telegram
   )
 
-  if (telegram?.address || loading || !userReady) return <></>
+  if (telegram?.address || loading || !userReady || !leftDays) return <></>
 
   const handleOpenTelegram = () => {
     openSettingsConversationDialog().catch(console.error)
     model.openTelegram(undefined)
   }
 
-  const leftDays = dateUtils.leftDays(user?.portfolioCollectingFreezedAt)
-
   return (
-    <Paper radius={4} className={styles.root}>
+    <Paper
+      radius={4}
+      className={clsx(
+        styles.root,
+        leftDays > 10 && styles.green,
+        leftDays < 1 && styles.red,
+        leftDays > 1 && leftDays < 10 && styles.yellow
+      )}
+    >
       <img alt="" src={notification} className={styles.notification} />
       <Typography variant="body3" as="div" className={styles.text}>
         {leftDays > 0 ? (

@@ -4,7 +4,6 @@ import { theme } from '~/common/theme'
 
 export const root = style({
   padding: 8,
-  background: theme.colors.common.green1,
   marginLeft: -8,
   marginRight: -8,
   display: 'flex',
@@ -13,9 +12,22 @@ export const root = style({
   color: theme.colors.common.black1,
 })
 
+export const green = style({
+  background: theme.colors.common.green2,
+})
+
+export const red = style({
+  background: theme.colors.common.red1,
+})
+
+export const yellow = style({
+  background: theme.colors.common.yellow,
+})
+
 export const text = style({
   marginBottom: 16,
   fontSize: 12,
+  lineHeight: '15px',
 })
 
 export const buttons = style({
