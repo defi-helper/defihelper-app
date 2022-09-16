@@ -52,6 +52,8 @@ export type AuthEthereumInputType = {
   timezone: Scalars['String']
   /** Merged target account to current account */
   merge?: Maybe<Scalars['Boolean']>
+  /** Locale */
+  locale: Scalars['String']
 }
 
 export type AuthType = {
@@ -77,6 +79,8 @@ export type AuthWavesInputType = {
   code?: Maybe<Scalars['String']>
   /** Timezone */
   timezone: Scalars['String']
+  /** Locale */
+  locale: Scalars['String']
   /** Merged target account to current account */
   merge?: Maybe<Scalars['Boolean']>
 }

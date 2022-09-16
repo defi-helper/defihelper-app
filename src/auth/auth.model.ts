@@ -76,6 +76,7 @@ export const authWavesFx = createEffect(
       timezone: dateUtils.timezone(),
       code: Cookies.get('dfh-parent-code'),
       merge: input.merge,
+      locale: navigator.language || 'en_fallback',
     })
 
     if (error?.fetchError) throw error.fetchError
@@ -111,6 +112,7 @@ export const authEthereumFx = createEffect(
       timezone: dateUtils.timezone(),
       code: Cookies.get('dfh-parent-code'),
       merge: input.merge,
+      locale: navigator.language || 'en_fallback',
     })
 
     if (error?.fetchError) throw error.fetchError
