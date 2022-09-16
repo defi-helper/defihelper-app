@@ -22,7 +22,7 @@ const DATA = [
     img: welcomeInvest,
     text: "Find a pool to invest in, use auto compounding to boost your APY, protect your investment with 'stop-loss'",
     button: (
-      <Button variant="outlined" as={ReactRouterLink} to={paths.autostaking}>
+      <Button variant="outlined" as={ReactRouterLink} to={paths.invest.list}>
         start investing
       </Button>
     ),
