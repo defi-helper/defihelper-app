@@ -8,6 +8,5 @@ export const USER_FRAGMENT = gql`
     createdAt
     timezone
     portfolioCollectingFreezedAt
-    isPortfolioCollectingFreezed
   }
 `

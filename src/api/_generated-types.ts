@@ -3556,10 +3556,8 @@ export type UserType = {
   timezone: Scalars['String']
   /** Is portfolio collected */
   isPorfolioCollected: Scalars['Boolean']
-  /** Is portfolio metrics tracking freezed */
-  isPortfolioCollectingFreezed: Scalars['Boolean']
   /** Whan portfolio collecting (will be/was) freezed */
-  portfolioCollectingFreezedAt: Scalars['DateTimeType']
+  portfolioCollectingFreezedAt?: Maybe<Scalars['DateTimeType']>
   tokenAliasesStakedMetrics: UserTokenAliasesStakedMetricsListType
   tokenAliases: UserTokenAliasListType
   wallets: WalletListType
@@ -4145,7 +4143,6 @@ export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
   | 'createdAt'
   | 'timezone'
   | 'portfolioCollectingFreezedAt'
-  | 'isPortfolioCollectingFreezed'
 >
 
 export type AutomationActionCreateMutationVariables = Exact<{

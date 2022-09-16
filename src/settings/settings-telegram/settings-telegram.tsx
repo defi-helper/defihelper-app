@@ -1,6 +1,7 @@
 import { useStore } from 'effector-react'
 import { useMemo } from 'react'
 
+import clsx from 'clsx'
 import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
@@ -41,10 +42,25 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
     model.openTelegram(undefined)
   }
 
-  const leftDays = dateUtils.leftDays(user?.portfolioCollectingFreezedAt)
+  const leftDays = user?.portfolioCollectingFreezedAt
+    ? Math.round(dateUtils.leftDays(user.portfolioCollectingFreezedAt))
+    : null
+
+  if (!leftDays) {
+    return null
+  }
+
+  let colorClass
+  if (leftDays > 10) {
+    colorClass = styles.green
+  } else if (leftDays < 1) {
+    colorClass = styles.red
+  } else if (leftDays < 10) {
+    colorClass = styles.yellow
+  }
 
   return (
-    <Paper radius={4} className={styles.root}>
+    <Paper radius={4} className={clsx(styles.root, colorClass)}>
       <img alt="" src={notification} className={styles.notification} />
       <Typography variant="body3" as="div" className={styles.text}>
         {leftDays > 0 ? (
