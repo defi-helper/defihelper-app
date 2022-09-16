@@ -19,11 +19,8 @@ import { toastsService } from '~/toasts'
 import { parseError } from '~/common/parse-error'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import {
-  StakingAdapterDialog,
   StakingAutomatesContractCard,
-  StakingDepositDialog,
   StakingErrorDialog,
-  StakingRefundDialog,
 } from '~/staking/common'
 import { useDialog } from '~/common/dialog'
 import { switchNetwork } from '~/wallets/common'
@@ -49,9 +46,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
 
     const [openConfirmDialog] = useDialog(ConfirmDialog)
     const [openErrorDialog] = useDialog(StakingErrorDialog)
-    const [openAdapter] = useDialog(StakingAdapterDialog)
-    const [openDepositDialog] = useDialog(StakingDepositDialog)
-    const [openRefundDialog] = useDialog(StakingRefundDialog)
 
     const currentWallet = walletNetworkModel.useWalletNetwork()
     const handleConnect = useWalletConnect()
@@ -149,33 +143,14 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               .catch(console.error)
           }
 
-          const dialogs = {
-            deposit: () =>
-              openDepositDialog({
-                methods: adapter.deposit.methods,
-                onLastStep,
-              }),
-            refund: () =>
-              openRefundDialog({
-                methods: adapter.refund.methods,
-                onLastStep,
-              }),
-          }
+          const can = await adapter.refund.methods.can()
+          if (can instanceof Error) throw can
 
-          if ('methods' in adapter[action]) {
-            await dialogs[action]()
-              .then(() => model.reset())
-              .catch(() => model.reset())
-          } else {
-            await openAdapter({
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              steps: adapter[action],
-              onLastStep,
-            })
-              .then(() => model.reset())
-              .catch(() => model.reset())
-          }
+          const refund = await adapter.refund.methods.refund()
+
+          const tx = await refund.tx.wait()
+
+          onLastStep(tx.transactionHash)
 
           analytics.log(
             `settings_${action}_network_${currentWallet?.chainId}_success`,
@@ -348,11 +323,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   ? handleSwitchNetwork(deployedContract)
                   : null
 
-              const deposit =
-                wrongNetwork ??
-                isNotSameAddresses ??
-                handleAction(deployedContract, 'deposit')
-
               const refund =
                 wrongNetwork ??
                 isNotSameAddresses ??
@@ -384,12 +354,11 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   apyBoost={deployedContract.contract?.metric.myAPYBoost}
                   onDelete={handleOnDelete(deployedContract.id)}
                   onRefund={currentWallet ? refund : connect}
-                  onDeposit={currentWallet ? deposit : connect}
                   onRun={currentWallet ? run : connect}
                   deleting={deployedContract.deleting}
-                  depositing={deployedContract.depositing}
                   running={deployedContract.running}
                   refunding={deployedContract.refunding}
+                  contractId={deployedContract.id}
                   error={
                     deployedContract.contractWallet?.billing?.balance
                       ?.lowFeeFunds ||
