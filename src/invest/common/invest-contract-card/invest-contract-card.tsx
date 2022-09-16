@@ -37,7 +37,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
 
   return (
     <Paper className={styles.row} radius={8}>
-      {networksConfig[contract.network]?.icon && (
+      {networksConfig[contract.network]?.icon && !isDesktop && (
         <Icon
           icon={networksConfig[contract.network].icon}
           width="32"
