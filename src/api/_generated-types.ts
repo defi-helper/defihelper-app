@@ -4579,109 +4579,6 @@ export type AutomationTriggersQuery = { __typename?: 'Query' } & {
   }
 }
 
-export type AutostakingStakingContractsQueryVariables = Exact<{
-  filter?: Maybe<ContractListFilterInputType>
-  sort?: Maybe<Array<ContractListSortInputType> | ContractListSortInputType>
-  pagination?: Maybe<ContractListPaginationInputType>
-}>
-
-export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
-  contracts: { __typename?: 'ContractListType' } & {
-    list?: Maybe<
-      Array<
-        { __typename?: 'ContractType' } & Pick<
-          ContractType,
-          | 'id'
-          | 'adapter'
-          | 'layout'
-          | 'blockchain'
-          | 'network'
-          | 'address'
-          | 'deployBlockNumber'
-          | 'name'
-          | 'description'
-          | 'link'
-          | 'hidden'
-          | 'deprecated'
-          | 'watcherId'
-        > & {
-            protocol: { __typename?: 'ProtocolType' } & Pick<
-              ProtocolType,
-              'id' | 'name' | 'icon' | 'adapter'
-            >
-            automate: { __typename?: 'ContractAutomatesType' } & Pick<
-              ContractAutomatesType,
-              'autorestake'
-            >
-            metric: { __typename?: 'ContractMetricType' } & Pick<
-              ContractMetricType,
-              | 'tvl'
-              | 'aprDay'
-              | 'aprWeek'
-              | 'aprMonth'
-              | 'aprYear'
-              | 'myStaked'
-              | 'aprWeekReal'
-              | 'myAPYBoost'
-              | 'risk'
-            >
-            tokens: { __typename?: 'ContractTokenLinkType' } & {
-              stake: Array<
-                { __typename?: 'TokenType' } & Pick<
-                  TokenType,
-                  'network' | 'address' | 'name'
-                > & {
-                    alias?: Maybe<
-                      { __typename?: 'TokenAlias' } & Pick<
-                        TokenAlias,
-                        'logoUrl'
-                      >
-                    >
-                  }
-              >
-              reward: Array<
-                { __typename?: 'TokenType' } & Pick<
-                  TokenType,
-                  'network' | 'address' | 'name'
-                > & {
-                    alias?: Maybe<
-                      { __typename?: 'TokenAlias' } & Pick<
-                        TokenAlias,
-                        'logoUrl'
-                      >
-                    >
-                  }
-              >
-            }
-          }
-      >
-    >
-    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
-  }
-}
-
-export type AutostakingUserLinkMutationVariables = Exact<{
-  contract: Scalars['UuidType']
-  user: Scalars['UuidType']
-  type?: Maybe<ContractUserLinkTypeEnum>
-}>
-
-export type AutostakingUserLinkMutation = { __typename?: 'Mutation' } & Pick<
-  Mutation,
-  'contractUserLink'
->
-
-export type AutostakingUserUnlinkMutationVariables = Exact<{
-  contract: Scalars['UuidType']
-  user: Scalars['UuidType']
-  type?: Maybe<ContractUserLinkTypeEnum>
-}>
-
-export type AutostakingUserUnlinkMutation = { __typename?: 'Mutation' } & Pick<
-  Mutation,
-  'contractUserUnlink'
->
-
 export type GovernanceProposalFragmentFragment = {
   __typename?: 'GovProposalType'
 } & Pick<
@@ -4757,6 +4654,116 @@ export type GovernanceVotesQuery = { __typename?: 'Query' } & {
     'votes' | 'delegates' | 'balance'
   >
 }
+
+export type AutostakingStakingContractsQueryVariables = Exact<{
+  filter?: Maybe<ContractListFilterInputType>
+  sort?: Maybe<Array<ContractListSortInputType> | ContractListSortInputType>
+  pagination?: Maybe<ContractListPaginationInputType>
+}>
+
+export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
+  contracts: { __typename?: 'ContractListType' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'ContractType' } & Pick<
+          ContractType,
+          | 'id'
+          | 'adapter'
+          | 'layout'
+          | 'blockchain'
+          | 'network'
+          | 'address'
+          | 'deployBlockNumber'
+          | 'name'
+          | 'description'
+          | 'link'
+          | 'hidden'
+          | 'deprecated'
+          | 'watcherId'
+        > & {
+            protocol: { __typename?: 'ProtocolType' } & Pick<
+              ProtocolType,
+              'id' | 'name' | 'icon' | 'adapter'
+            >
+            automate: { __typename?: 'ContractAutomatesType' } & Pick<
+              ContractAutomatesType,
+              'autorestake'
+            > & {
+                lpTokensManager?: Maybe<
+                  { __typename?: 'ContractAutomateBuyLiquidityType' } & Pick<
+                    ContractAutomateBuyLiquidityType,
+                    'router' | 'pair'
+                  >
+                >
+              }
+            metric: { __typename?: 'ContractMetricType' } & Pick<
+              ContractMetricType,
+              | 'tvl'
+              | 'aprDay'
+              | 'aprWeek'
+              | 'aprMonth'
+              | 'aprYear'
+              | 'myStaked'
+              | 'aprWeekReal'
+              | 'myAPYBoost'
+              | 'risk'
+            >
+            tokens: { __typename?: 'ContractTokenLinkType' } & {
+              stake: Array<
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'network' | 'address' | 'name' | 'symbol'
+                > & {
+                    alias?: Maybe<
+                      { __typename?: 'TokenAlias' } & Pick<
+                        TokenAlias,
+                        'logoUrl'
+                      >
+                    >
+                  }
+              >
+              reward: Array<
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'network' | 'address' | 'name' | 'symbol'
+                > & {
+                    alias?: Maybe<
+                      { __typename?: 'TokenAlias' } & Pick<
+                        TokenAlias,
+                        'logoUrl'
+                      >
+                    >
+                  }
+              >
+            }
+          }
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
+export type AutostakingUserLinkMutationVariables = Exact<{
+  contract: Scalars['UuidType']
+  user: Scalars['UuidType']
+  type?: Maybe<ContractUserLinkTypeEnum>
+}>
+
+export type AutostakingUserLinkMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'contractUserLink'
+>
+
+export type AutostakingUserUnlinkMutationVariables = Exact<{
+  contract: Scalars['UuidType']
+  user: Scalars['UuidType']
+  type?: Maybe<ContractUserLinkTypeEnum>
+}>
+
+export type AutostakingUserUnlinkMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'contractUserUnlink'
+>
 
 export type BuyLiquidityContractsQueryVariables = Exact<{
   filter?: Maybe<ContractListFilterInputType>

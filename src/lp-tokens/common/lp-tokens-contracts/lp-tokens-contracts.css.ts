@@ -183,3 +183,7 @@ export const listItemLoader = style([
     width: '100%',
   },
 ])
+
+export const networkDropdown = style({
+  maxWidth: 276,
+})

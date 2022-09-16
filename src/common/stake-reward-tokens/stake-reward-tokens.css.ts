@@ -31,11 +31,6 @@ export const tokenName = style({
   width: '215px',
 })
 
-export const link = style({
-  alignItems: 'center',
-  verticalAlign: 'middle',
-})
-
 export const tokenIconArrow = style({
   margin: '0 6px',
 })
@@ -49,7 +44,6 @@ export const dropdown = style({
   boxShadow: '0px 8px 24px rgba(10, 18, 19, 0.4)',
   zIndex: 100,
   width: 276,
-  gridTemplateColumns: '24px 1fr',
   gap: 8,
   top: '100%',
   left: 0,
@@ -57,9 +51,15 @@ export const dropdown = style({
 })
 
 globalStyle(`${wrap}:hover ${dropdown}`, {
-  display: 'grid',
+  display: 'flex',
 })
 
 globalStyle(`${dropdown} div${icon}`, {
   background: theme.colors.background,
+})
+
+export const tokenTitle = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
 })

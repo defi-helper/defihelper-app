@@ -38,7 +38,7 @@ const MENU: MenuItem[] = [
   },
   {
     title: 'Invest',
-    path: paths.autostaking,
+    path: paths.invest.list,
     icon: 'autostaking',
   },
   {
