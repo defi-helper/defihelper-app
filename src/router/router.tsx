@@ -47,6 +47,7 @@ import { Admin } from '~/admin'
 import { TokensAlias } from '~/tokens-alias'
 import { Trade } from '~/trade'
 import { analytics } from '~/analytics'
+import { Welcome } from '~/welcome'
 
 export type RouterProps = unknown
 
@@ -175,6 +176,9 @@ export const Router: React.VFC<RouterProps> = () => {
         </PrivateRoute>
         <Route path={paths.trade}>
           <Trade />
+        </Route>
+        <Route path={paths.welcome}>
+          <Welcome />
         </Route>
         <Route>
           <NotFound />

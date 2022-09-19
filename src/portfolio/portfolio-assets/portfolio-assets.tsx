@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import { useGate, useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
+import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
@@ -11,18 +12,20 @@ import { Typography } from '~/common/typography'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { PortfolioAssetCard, PortfolioAssetsHeader } from '../common'
 import { PortfolioPlatformCard } from '~/portfolio/common/portfolio-platform-card'
-import * as styles from './portfolio-assets.css'
-import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
 import { Loader } from '~/common/loader'
 import { Link } from '~/common/link'
 import { useDialog } from '~/common/dialog'
-import { PortfolioDebugInfoDialog } from '../common/portfolio-debug-info-dialog/portfolio-debug-info-dialog'
+import { PortfolioDebugInfoDialog } from '~/portfolio/common/portfolio-debug-info-dialog'
+import * as styles from './portfolio-assets.css'
+import * as portfolioAssetsModel from '~/portfolio/portfolio-assets/portfolio-assets.model'
+import { paths } from '~/paths'
 
 export type PortfolioAssetsProps = {
   className?: string
 }
 
 export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
+  const [showAll, setShowAll] = useState(false)
   const assets = useStore(portfolioAssetsModel.$assets)
   const assetsDebug = useStore(portfolioAssetsModel.$assetsDebug)
   const assetsByWallet = useStore(portfolioAssetsModel.$assetsByWallet)
@@ -136,9 +139,21 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
 
               {!assetsLoading &&
                 !isEmpty(currentAssets) &&
-                currentAssets.map((row, rowIndex) => (
-                  <PortfolioAssetCard key={String(rowIndex)} row={row} />
-                ))}
+                (showAll ? currentAssets : currentAssets.slice(0, 10)).map(
+                  (row, rowIndex) => (
+                    <PortfolioAssetCard key={String(rowIndex)} row={row} />
+                  )
+                )}
+              {!showAll && currentAssets.length > 10 && (
+                <div className={styles.showAll}>
+                  <ButtonBase
+                    onClick={() => setShowAll(true)}
+                    className={styles.showAllButton}
+                  >
+                    Show all <Icon icon="arrowDown" width="16" height="16" />
+                  </ButtonBase>
+                </div>
+              )}
             </div>
           </Paper>
         )}
@@ -214,6 +229,17 @@ export const PortfolioAssets: React.VFC<PortfolioAssetsProps> = (props) => {
           />
           DeBank
         </Link>
+      </Typography>
+      <Typography
+        variant="body2"
+        align="center"
+        className={styles.createProposal}
+      >
+        Don&apos;t see your token?{' '}
+        <Link color="blue" as={ReactRouterLink} to={paths.roadmap.list}>
+          Create a proposal
+        </Link>{' '}
+        to whitelist your token
       </Typography>
     </div>
   )

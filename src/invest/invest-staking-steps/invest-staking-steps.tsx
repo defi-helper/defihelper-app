@@ -1,5 +1,5 @@
 import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
-import { useGate, useStore } from 'effector-react'
+import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import React, { useMemo, useState } from 'react'
 import { Link as ReactRouterLink } from 'react-router-dom'
@@ -289,8 +289,6 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     () => (userContact ? [...userContacts, userContact] : userContacts),
     [userContact, userContacts]
   )
-
-  useGate(settingsContacts.SettingsContactsGate)
 
   const telegram = contacts.find(
     ({ broker }) => broker === UserContactBrokerEnum.Telegram

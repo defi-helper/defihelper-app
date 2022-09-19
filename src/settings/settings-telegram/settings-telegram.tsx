@@ -1,29 +1,34 @@
-import { useGate, useStore } from 'effector-react'
+import { useStore } from 'effector-react'
 import { useMemo } from 'react'
-import { useLocalStorage } from 'react-use'
 
+import clsx from 'clsx'
 import { Button } from '~/common/button'
-import { ButtonBase } from '~/common/button-base'
-import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { UserContactBrokerEnum } from '~/api/_generated-types'
 import { useDialog } from '~/common/dialog'
+import notification from '~/assets/images/notification.png'
 import * as authModel from '~/auth/auth.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import { SettingsConversationDialog } from '~/settings/common'
 import * as styles from './settings-telegram.css'
 import * as model from './settings-telegram.model'
+import { dateUtils } from '~/common/date-utils'
+import { pluralize } from '~/common/pluralize'
 
 export type SettingsTelegramProps = unknown
 
 export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   const userContact = useStore(model.$userContact)
   const userContacts = useStore(settingsContacts.$userContactList)
-  const [noThanks, setNoThanks] = useLocalStorage('telegram', false)
+  const user = useStore(authModel.$user)
   const loading = useStore(settingsContacts.fetchUserContactListFx.pending)
   const userReady = useStore(authModel.$userReady)
   const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
+
+  const leftDays = user?.portfolioCollectingFreezedAt
+    ? Math.round(dateUtils.leftDays(user.portfolioCollectingFreezedAt))
+    : null
 
   const contacts = useMemo(
     () => (userContact ? [...userContacts, userContact] : userContacts),
@@ -34,11 +39,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
     ({ broker }) => broker === UserContactBrokerEnum.Telegram
   )
 
-  useGate(settingsContacts.SettingsContactsGate)
-
-  const handleHandleNoThanks = () => setNoThanks(true)
-
-  if (telegram?.address || noThanks || loading || !userReady) return <></>
+  if (telegram?.address || loading || !userReady || !leftDays) return <></>
 
   const handleOpenTelegram = () => {
     openSettingsConversationDialog().catch(console.error)
@@ -46,43 +47,29 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   }
 
   return (
-    <Paper radius={4} className={styles.root}>
-      <div className={styles.alert}>
-        <div className={styles.alertHeader}>
-          <div className={styles.alertIcon}>
-            <Icon icon="logoMini" width={6} height={5} />
-          </div>
-          <Typography
-            variant="inherit"
-            transform="uppercase"
-            className={styles.alertTitle}
-          >
-            DEFIHELPER.IO
-          </Typography>
-          <Typography variant="inherit" className={styles.alertTime}>
-            now
-          </Typography>
-        </div>
-        <Typography
-          variant="body2"
-          as="div"
-          weight="bold"
-          className={styles.alertSubtitle}
-        >
-          Daily portfolio notifications
-        </Typography>
-        <div className={styles.alertText}>
-          <Typography variant="inherit" as="div">
-            Tracked Balance $3000.41 (+1.25%),
-          </Typography>
-          <Typography variant="inherit" as="div">
-            Total unclaimed $652.05 (+0.12%)
-          </Typography>
-        </div>
-      </div>
+    <Paper
+      radius={4}
+      className={clsx(
+        styles.root,
+        leftDays > 10 && styles.green,
+        leftDays < 1 && styles.red,
+        leftDays > 1 && leftDays < 10 && styles.yellow
+      )}
+    >
+      <img alt="" src={notification} className={styles.notification} />
       <Typography variant="body3" as="div" className={styles.text}>
-        Do you want to receive daily updates on your portfolio&apos;s balance on
-        telegram?
+        {leftDays > 0 ? (
+          <>
+            We will stop to track your portfolio in {leftDays}{' '}
+            {pluralize(leftDays, 'day')} if you will not connect your telegram
+            account.
+          </>
+        ) : (
+          <>
+            Tracking of your portfolio has been stopped because you have not
+            connected telegram.
+          </>
+        )}
       </Typography>
       <div className={styles.buttons}>
         <Button
@@ -92,11 +79,8 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
           className={styles.button}
           onClick={handleOpenTelegram}
         >
-          Notify me on Telegram
+          Connect telegram
         </Button>
-        <ButtonBase onClick={handleHandleNoThanks} className={styles.close}>
-          No, thanks
-        </ButtonBase>
       </div>
     </Paper>
   )

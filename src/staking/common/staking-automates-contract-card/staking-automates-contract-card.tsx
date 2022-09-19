@@ -1,7 +1,7 @@
 import isEmpty from 'lodash.isempty'
 import clsx from 'clsx'
-
 import { Link as ReactRouterLink } from 'react-router-dom'
+
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { ButtonBase } from '~/common/button-base'
@@ -29,9 +29,7 @@ export type StakingAutomatesContractCardProps = {
   blockchain: string
   balance: string
   protocol?: { id: string; name: string; adapter: string }
-  onDeposit: () => void
   onRefund: () => void
-  onMigrate?: () => void
   onDelete: () => void
   onRun: () => void
   onStopLoss?: () => void
@@ -40,19 +38,17 @@ export type StakingAutomatesContractCardProps = {
   apyBoost?: string
   restakeAt: string | null
   deleting?: boolean
-  depositing?: boolean
   refunding?: boolean
-  migrating?: boolean
   running?: boolean
   stopLoss?: boolean
   tokensIcons: Array<string | null>
   freshMetrics?: FreshMetrics
+  contractId: string
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
   (props) => {
-    const pending =
-      props.deleting || props.depositing || props.refunding || props.migrating
+    const pending = props.deleting || props.refunding
 
     const apyboostDifference = bignumberUtils.minus(props.apyBoost, props.apy)
 
@@ -310,30 +306,13 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               <Button
                 size="small"
                 className={styles.deposit}
-                onClick={props.onDeposit}
-                loading={props.depositing}
-                disabled={props.deleting || props.refunding || props.migrating}
+                disabled={props.deleting || props.refunding}
+                as={ReactRouterLink}
+                to={paths.invest.detail(props.contractId)}
               >
-                Deposit
+                Invest
               </Button>
             </CanDemo>
-
-            {props.onMigrate && (
-              <CanDemo>
-                <Button
-                  size="small"
-                  variant="light"
-                  className={styles.refund}
-                  onClick={props.onMigrate}
-                  loading={props.migrating}
-                  disabled={
-                    props.deleting || props.depositing || props.refunding
-                  }
-                >
-                  Migrate
-                </Button>
-              </CanDemo>
-            )}
 
             <CanDemo>
               <Button
@@ -342,7 +321,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 className={styles.refund}
                 onClick={props.onRefund}
                 loading={props.refunding}
-                disabled={props.deleting || props.depositing || props.migrating}
+                disabled={props.deleting}
               >
                 Unstake
               </Button>

@@ -52,6 +52,8 @@ export type AuthEthereumInputType = {
   timezone: Scalars['String']
   /** Merged target account to current account */
   merge?: Maybe<Scalars['Boolean']>
+  /** Locale */
+  locale: Scalars['String']
 }
 
 export type AuthType = {
@@ -77,6 +79,8 @@ export type AuthWavesInputType = {
   code?: Maybe<Scalars['String']>
   /** Timezone */
   timezone: Scalars['String']
+  /** Locale */
+  locale: Scalars['String']
   /** Merged target account to current account */
   merge?: Maybe<Scalars['Boolean']>
 }
@@ -3552,6 +3556,8 @@ export type UserType = {
   timezone: Scalars['String']
   /** Is portfolio collected */
   isPorfolioCollected: Scalars['Boolean']
+  /** Whan portfolio collecting (will be/was) freezed */
+  portfolioCollectingFreezedAt?: Maybe<Scalars['DateTimeType']>
   tokenAliasesStakedMetrics: UserTokenAliasesStakedMetricsListType
   tokenAliases: UserTokenAliasListType
   wallets: WalletListType
@@ -4131,7 +4137,12 @@ export type MeQuery = { __typename?: 'Query' } & {
 
 export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
   UserType,
-  'id' | 'role' | 'name' | 'createdAt' | 'timezone'
+  | 'id'
+  | 'role'
+  | 'name'
+  | 'createdAt'
+  | 'timezone'
+  | 'portfolioCollectingFreezedAt'
 >
 
 export type AutomationActionCreateMutationVariables = Exact<{

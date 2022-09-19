@@ -6,7 +6,7 @@ import {
 } from '~/api/_generated-types'
 
 export const portfolioSortAssets = (list: PortfolioAssetFragment[]) => {
-  const l = list.filter((v) => v.metric.myUSD !== '0')
+  const l = list.filter((v) => bignumberUtils.gte(v.metric.myUSD, '0.01'))
   const totalValue = l.reduce(
     (prev, v) => bignumberUtils.plus(prev, v.metric.myUSD),
     '0'
@@ -32,7 +32,7 @@ export const portfolioSortAssets = (list: PortfolioAssetFragment[]) => {
 export const portfolioSortAssetsByWallet = (
   list: PortfolioAssetByWalletFragment[]
 ) => {
-  const l = list.filter((v) => v.metric.usd !== '0')
+  const l = list.filter((v) => bignumberUtils.gte(v.metric.usd, '0.01'))
   const totalValue = l.reduce(
     (prev, v) => bignumberUtils.plus(prev, v.metric.usd),
     '0'
@@ -56,7 +56,7 @@ export const portfolioSortAssetsByWallet = (
 export const portfolioSortAssetsByPlatform = (
   list: PortfolioAssetByProtocolFragment[]
 ) => {
-  const l = list.filter((v) => v.metric.myUSD !== '0')
+  const l = list.filter((v) => bignumberUtils.gte(v.metric.myUSD, '0.01'))
   const totalValue = l.reduce(
     (prev, v) => bignumberUtils.plus(prev, v.metric.myUSD),
     '0'

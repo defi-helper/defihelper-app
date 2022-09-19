@@ -74,7 +74,6 @@ export const AutomationUpdate: React.VFC<AutomationUpdateProps> = (props) => {
   const trigger = updatedTrigger ?? props.updatingTrigger ?? createdTrigger
 
   useGate(model.AutomationUpdateGate, trigger)
-  useGate(contactModel.SettingsContactsGate)
 
   const handleSetType = (type: Types | null) => () => {
     setType(type)
