@@ -107,7 +107,7 @@ export const InvestBuy = (props: InvestBuyProps) => {
 
       return false
     }
-  }, [lp.value])
+  }, [lp.value, tokenAddress, amount])
 
   const [approveState, handleApprove] = useAsyncFn(async () => {
     if (!lp.value) return
@@ -126,7 +126,7 @@ export const InvestBuy = (props: InvestBuyProps) => {
     } catch {
       return false
     }
-  }, [lp.value])
+  }, [lp.value, tokenAddress, amount])
 
   useEffect(() => {
     approved.retry()
