@@ -516,16 +516,18 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
           staked your tokens
         </Typography>
       </div>
-      <Typography
-        as="div"
-        align="center"
-        variant="body2"
-        className={styles.connnectTelegramHint1}
-      >
-        Connect your telegram and get daily updates
-        <br />
-        about your portfolio
-      </Typography>
+      {!telegram && (
+        <Typography
+          as="div"
+          align="center"
+          variant="body2"
+          className={styles.connnectTelegramHint1}
+        >
+          Connect your telegram and get daily updates
+          <br />
+          about your portfolio
+        </Typography>
+      )}
       <div className={clsx(styles.connectTelegramActions, styles.mt)}>
         {!telegram ? (
           <>

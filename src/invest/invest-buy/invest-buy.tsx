@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
-import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
+import { useAsync, useAsyncFn, useAsyncRetry, useThrottle } from 'react-use'
 
 import { Button } from '~/common/button'
 import { Select, SelectOption } from '~/common/select'
@@ -52,11 +52,16 @@ export const InvestBuy = (props: InvestBuyProps) => {
     })
   }, [props.contract, currentWallet])
 
-  const approved = useAsyncRetry(async () => {
-    if (bignumberUtils.eq(amount, 0) || !lp.value) return true
+  const amountThrottled = useThrottle(amount, 1000)
 
-    return lp.value.buyLiquidity.methods.isApproved(tokenAddress, amount)
-  }, [lp.value, tokenAddress, amount])
+  const approved = useAsyncRetry(async () => {
+    if (bignumberUtils.eq(amountThrottled, 0) || !lp.value) return true
+
+    return lp.value.buyLiquidity.methods.isApproved(
+      tokenAddress,
+      amountThrottled
+    )
+  }, [lp.value, tokenAddress, amountThrottled])
 
   const tokens = useAsyncRetry(async () => {
     if (!lp.value) return
@@ -131,7 +136,8 @@ export const InvestBuy = (props: InvestBuyProps) => {
   useEffect(() => {
     approved.retry()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approved.value, approveState.value, amount])
+  }, [approved.value, approveState.value, amountThrottled])
+
   useEffect(() => {
     if (!lp.value) return
 

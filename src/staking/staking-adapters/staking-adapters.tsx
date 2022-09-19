@@ -424,7 +424,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
                   to={paths.invest.detail(props.contractId)}
                   disabled={props.deprecated}
                 >
-                  Auto-Stake
+                  Invest
                 </Button>
               )}
             </>

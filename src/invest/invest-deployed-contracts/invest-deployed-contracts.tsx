@@ -430,7 +430,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   deleting={deployedContract.deleting}
                   running={deployedContract.running}
                   refunding={deployedContract.refunding}
-                  contractId={deployedContract.id}
+                  contractId={deployedContract.contract?.id}
                   error={
                     deployedContract.contractWallet?.billing?.balance
                       ?.lowFeeFunds ||

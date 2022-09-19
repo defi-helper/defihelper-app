@@ -29,10 +29,10 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
 ) => {
   const [stopLoss, toggleStopLoss] = useToggle(false)
   const [mainToken, setMainToken] = useState(
-    props.mainTokens?.[0].address ?? ''
+    props.mainTokens?.[0]?.address ?? ''
   )
   const [withdrawToken, setWithdrawToken] = useState(
-    props.withdrawTokens?.[0].address ?? ''
+    props.withdrawTokens?.[0]?.address ?? ''
   )
   const [stopLossPrice, setStopLossPrice] = useState('')
   const [percent, setPercent] = useState(0)
