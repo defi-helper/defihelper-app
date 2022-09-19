@@ -333,6 +333,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
           <Select
             placeholder="Risk level"
             className={styles.select}
+            value={riskLevel}
             onChange={handleChooseRiskLevel}
           >
             {Object.entries(ContractRiskFactorEnum)

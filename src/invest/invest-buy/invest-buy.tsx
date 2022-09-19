@@ -132,6 +132,12 @@ export const InvestBuy = (props: InvestBuyProps) => {
     approved.retry()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [approved.value, approveState.value, amount])
+  useEffect(() => {
+    if (!lp.value) return
+
+    setTokenAddress(lp.value.tokens?.[0].address ?? '')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lp.value])
 
   const fee = useAsync(
     async () => lp.value?.buyLiquidity.methods.fee(),
