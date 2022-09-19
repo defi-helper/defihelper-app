@@ -40,12 +40,13 @@ import { Progress } from '~/common/progress'
 import { analytics } from '~/analytics'
 import { UserContactBrokerEnum } from '~/api'
 import { useDialog } from '~/common/dialog'
-import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
-import * as styles from './portfolio.css'
-import * as model from './portfolio.model'
 import { Input } from '~/common/input'
 import { CanDemo } from '~/auth/can-demo'
 import { ButtonBase } from '~/common/button-base'
+import { dateUtils } from '~/common/date-utils'
+import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
+import * as styles from './portfolio.css'
+import * as model from './portfolio.model'
 
 export type PortfolioProps = unknown
 
@@ -198,11 +199,15 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
   const [openSuccess] = useDialog(SettingsSuccessDialog)
   const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
 
+  const userReady = useStore(authModel.$userReady)
   const user = useStore(authModel.$user)
 
   const isDesktop = useMedia('(min-width: 960px)')
 
   const contactList = useStore(settingsContacts.$userContactList)
+  const contactListLoading = useStore(
+    settingsContacts.fetchUserContactListFx.pending
+  )
 
   const [runLocalStorage, setLocalStorage] = useLocalStorage(
     'portfolioOnBoarding',
@@ -314,6 +319,9 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
 
   const telegram = contactsMap.get(UserContactBrokerEnum.Telegram)
   const email = contactsMap.get(UserContactBrokerEnum.Email)
+  const leftDays = user?.portfolioCollectingFreezedAt
+    ? Math.round(dateUtils.leftDays(user.portfolioCollectingFreezedAt))
+    : null
 
   return (
     <AppLayout title="Portfolio">
@@ -353,7 +361,12 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           <ForceRenderOrLazyLoad forceRender={Boolean(runLocalStorage)}>
             <PortfolioMetricCards className={styles.cards} />
           </ForceRenderOrLazyLoad>
-          {!telegram && (
+          {!(
+            telegram?.address ||
+            contactListLoading ||
+            !userReady ||
+            !leftDays
+          ) && (
             <Paper radius={8} className={styles.connectTelegram}>
               <Typography variant="body2" family="mono">
                 Connect telegram to receive up-to-date information about your
