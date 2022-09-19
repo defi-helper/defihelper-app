@@ -36,11 +36,11 @@ export const InvestFee = (props: InvestFeeProps) => (
         offset={[0, 4]}
       >
         <Typography variant="body3">
-          We will charge you ${bignumberUtils.format(props.fee?.usd)} fee for
-          every operation. This revenue will be distributed to DFH Governance
-          token holders.{' '}
+          We will charge you ${bignumberUtils.format(props.fee?.usd)} for this
+          operation. This revenue will be distributed to DFH Governance token
+          holders.{' '}
           <Link color="blue" href={`${config.MAIN_URL}tokenomics`}>
-            Read more about our revenue streams
+            Read more about DFH token
           </Link>
         </Typography>
       </Dropdown>

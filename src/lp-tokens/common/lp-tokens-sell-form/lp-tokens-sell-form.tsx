@@ -330,14 +330,14 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
                     >
                       <Typography variant="body3">
                         We will charge you $
-                        {bignumberUtils.format(fee.value?.usd)} fee for every
+                        {bignumberUtils.format(fee.value?.usd)} fee for this
                         operation. This revenue will be distributed to DFH
                         Governance token holders.{' '}
                         <Link
                           color="blue"
                           href={`${config.MAIN_URL}tokenomics`}
                         >
-                          Read more about our revenue streams
+                          Read more about DFH token
                         </Link>
                       </Typography>
                     </Dropdown>
