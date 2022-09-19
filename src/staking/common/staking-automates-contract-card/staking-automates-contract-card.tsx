@@ -43,7 +43,7 @@ export type StakingAutomatesContractCardProps = {
   stopLoss?: boolean
   tokensIcons: Array<string | null>
   freshMetrics?: FreshMetrics
-  contractId: string
+  contractId?: string
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -302,17 +302,19 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
           </div>
           <div className={styles.buttons}>
-            <CanDemo>
-              <Button
-                size="small"
-                className={styles.deposit}
-                disabled={props.deleting || props.refunding}
-                as={ReactRouterLink}
-                to={paths.invest.detail(props.contractId)}
-              >
-                Invest
-              </Button>
-            </CanDemo>
+            {props.contractId && (
+              <CanDemo>
+                <Button
+                  size="small"
+                  className={styles.deposit}
+                  disabled={props.deleting || props.refunding}
+                  as={ReactRouterLink}
+                  to={paths.invest.detail(props.contractId)}
+                >
+                  Invest
+                </Button>
+              </CanDemo>
+            )}
 
             <CanDemo>
               <Button
