@@ -206,20 +206,26 @@ const StakeTokensStep = (props: {
     })
   }, [currentWallet])
 
+  const balanceOf = useAsync(async () => {
+    if (!adapter.value) return
+
+    return adapter.value.deposit.methods.balanceOf()
+  }, [adapter.value])
+
   const [depositState, onDeposit] = useAsyncFn(async () => {
-    if (!adapter.value) return false
+    if (!adapter.value || !balanceOf.value) return false
     analytics.log('auto_staking_migrate_dialog_deposit_click')
 
     const { deposit, canDeposit: canDepositMethod } =
       adapter.value.deposit.methods
 
     try {
-      const can = await canDepositMethod()
+      const can = await canDepositMethod(balanceOf.value)
 
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't deposit")
 
-      const { tx } = await deposit()
+      const { tx } = await deposit(balanceOf.value)
 
       const result = await tx?.wait()
 
@@ -235,7 +241,38 @@ const StakeTokensStep = (props: {
 
       return false
     }
-  }, [adapter.value])
+  }, [adapter.value, balanceOf.value])
+
+  const isApproved = useAsyncRetry(async () => {
+    if (!balanceOf.value) return
+
+    return adapter.value?.deposit.methods.isApproved(balanceOf.value)
+  }, [balanceOf.value, adapter.value])
+
+  const [approve, handleApprove] = useAsyncFn(async () => {
+    if (!adapter.value || !balanceOf.value) return false
+
+    try {
+      const can = await adapter.value.deposit.methods.approve(balanceOf.value)
+
+      if (can instanceof Error) throw can
+      if (!can) throw new Error("can't transfer")
+
+      const { tx } = can
+
+      await tx?.wait()
+
+      isApproved.retry()
+
+      return true
+    } catch (error) {
+      if (error instanceof Error) {
+        toastsService.error(error.message)
+      }
+
+      return false
+    }
+  }, [adapter.value, balanceOf.value])
 
   return (
     <React.Fragment key={3}>
@@ -260,8 +297,12 @@ const StakeTokensStep = (props: {
         {props.contract.protocol.name} protocol.
       </Typography>
       <div className={clsx(styles.stakeActions, styles.mt)}>
-        {false && (
-          <Button color="green">
+        {!isApproved.value && (
+          <Button
+            color="green"
+            onClick={handleApprove}
+            loading={approve.loading}
+          >
             Approve{' '}
             {props.contract.tokens.stake.map(({ symbol }) => symbol).join('-')}
           </Button>
@@ -270,6 +311,7 @@ const StakeTokensStep = (props: {
           onClick={onDeposit}
           color="green"
           loading={depositState.loading}
+          disabled={approve.loading || !isApproved.value}
         >
           STAKE TOKENS
         </Button>

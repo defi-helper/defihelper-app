@@ -10,10 +10,9 @@ import { AutomatesType } from '~/common/load-adapter'
 import { Typography } from '~/common/typography'
 import { ButtonBase } from '~/common/button-base'
 import { toastsService } from '~/toasts'
-import { bignumberUtils } from '~/common/bignumber-utils'
-import * as styles from './staking-migrate-dialog.css'
 import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import { analytics } from '~/analytics'
+import * as styles from './staking-migrate-dialog.css'
 
 type FormValues = {
   amount: string
@@ -65,12 +64,6 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
     setCurrentTab(tab)
   }
 
-  const canTransfer = useAsyncRetry(async () => {
-    if (bignumberUtils.eq(amount, 0)) return true
-
-    return props.methods?.canTransfer(amount)
-  }, [props.methods, amount])
-
   const [openStopTransaction] = useDialog(StopTransactionDialog)
 
   const handleStopTransaction = () => {
@@ -84,18 +77,20 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
       if (!props.methods) return false
       analytics.log('auto_staking_migrate_dialog_transfer_click')
 
-      const { canTransfer: canTransferMethod, transfer } = props.methods
+      const { approve } = props.methods
 
       try {
-        const can = await canTransferMethod(formValues.amount)
+        const can = await approve(formValues.amount)
 
         if (can instanceof Error) throw can
         if (!can) throw new Error("can't transfer")
 
-        const { tx } = await transfer(formValues.amount)
+        const { tx } = can
 
         const result = await tx?.wait()
         analytics.log('auto_staking_migrate_dialog_transfer_success')
+
+        if (!result) return
 
         props.onLastStep(result.transactionHash)
 
@@ -119,12 +114,12 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
     const { deposit, canDeposit: canDepositMethod } = props.methods
 
     try {
-      const can = await canDepositMethod()
+      const can = await canDepositMethod(amount)
 
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't deposit")
 
-      const { tx } = await deposit()
+      const { tx } = await deposit(amount)
 
       const result = await tx?.wait()
 
@@ -142,7 +137,7 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
       return false
     }
-  }, [])
+  }, [amount])
 
   const [withdrawState, onWithdraw] = useAsyncFn(async () => {
     if (!props.methods) return false
@@ -175,8 +170,8 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
   }, [])
 
   const transferred = useAsyncRetry(async () => {
-    return props.methods?.transferred()
-  }, [props.methods])
+    return props.methods?.isApproved(amount)
+  }, [props.methods, amount])
 
   const handleOnSubmit = handleSubmit(onTransfer)
 
@@ -283,10 +278,10 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
                 className={styles.input}
                 {...field}
                 value={field.value || '0'}
-                error={canTransfer.value instanceof Error}
+                error={transferState.error instanceof Error}
                 helperText={
-                  canTransfer.value instanceof Error
-                    ? canTransfer.value.message
+                  transferState.error instanceof Error
+                    ? transferState.error.message
                     : undefined
                 }
               />

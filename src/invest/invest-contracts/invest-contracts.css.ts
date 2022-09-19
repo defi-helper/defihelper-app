@@ -133,3 +133,8 @@ export const autostakingTooltipTitle = style({
 export const autostakingTooltipText = style({
   marginBottom: 16,
 })
+
+export const apyBoost = style({
+  justifyContent: 'flex-end',
+  textAlign: 'right',
+})

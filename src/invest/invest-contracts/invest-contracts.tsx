@@ -120,9 +120,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
 
   const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
   const [blockchain, setBlockChain] = useState<string | null>(null)
-  const [riskLevel, setRiskLevel] = useState(
-    ContractRiskFactorEnum.NotCalculated
-  )
+  const [riskLevel, setRiskLevel] = useState(ContractRiskFactorEnum.Low)
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.Tvl,
     order: SortOrderEnum.Desc,
@@ -419,7 +417,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
               </ButtonBase>{' '}
               {dropdown}
             </Typography>
-            <Typography variant="body2" as="div">
+            <Typography variant="body2" as="div" align="right">
               {apyBoostDropdown}{' '}
               <ButtonBase
                 onClick={handleSort({
@@ -431,6 +429,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
                       ? SortOrderEnum.Asc
                       : SortOrderEnum.Desc,
                 })}
+                className={styles.apyBoost}
               >
                 APY Boost{' '}
                 {sortBy.column ===
@@ -472,9 +471,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
                 contract={contract}
                 onOpenApy={handleOpenApy(contract.metric)}
                 key={String(contract.id + ind)}
-              >
-                {apyBoostDropdown}
-              </InvestContractCard>
+              />
             )
           })}
           {contractsHasNextPage && (
