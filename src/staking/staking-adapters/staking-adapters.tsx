@@ -1,4 +1,5 @@
 import { useStore } from 'effector-react'
+import { Link as ReactRouterLink } from 'react-router-dom'
 
 import {
   Contract,
@@ -25,6 +26,7 @@ import * as stakingAutomatesModel from '~/staking/staking-automates/staking-auto
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
 import { LPTokensBuySellDialog } from '~/lp-tokens/common/lp-tokens-buy-sell-dialog'
+import { paths } from '~/paths'
 
 export type StakingAdaptersProps = {
   className?: string
@@ -35,8 +37,6 @@ export type StakingAdaptersProps = {
   contractId: string
   blockchain: BlockchainEnum
   network: string
-  onTurnOn: () => void
-  autostakingLoading?: boolean
   deprecated: boolean
   autorestake?: string
   prototypeAddress?: string
@@ -417,29 +417,15 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
               {!(props.autorestake && props.prototypeAddress) && user ? (
                 <>-</>
               ) : (
-                <WalletConnect
-                  fallback={
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      disabled={props.deprecated}
-                    >
-                      Auto-Stake
-                    </Button>
-                  }
-                  blockchain={props.blockchain}
-                  network={props.network}
+                <Button
+                  size="small"
+                  variant="outlined"
+                  as={ReactRouterLink}
+                  to={paths.invest.detail(props.contractId)}
+                  disabled={props.deprecated}
                 >
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={props.onTurnOn}
-                    loading={props.autostakingLoading}
-                    disabled={props.deprecated}
-                  >
-                    Auto-Stake
-                  </Button>
-                </WalletConnect>
+                  Auto-Stake
+                </Button>
               )}
             </>
           )}
