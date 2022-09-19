@@ -336,7 +336,12 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   }, [price.value, takeProfitPercent, takeProfitFocus])
 
   return (
-    <form className={styles.form} onSubmit={handleOnSubmit}>
+    <form
+      className={styles.form}
+      onSubmit={handleOnSubmit}
+      autoComplete="off"
+      noValidate
+    >
       <div
         className={clsx(
           styles.root,
