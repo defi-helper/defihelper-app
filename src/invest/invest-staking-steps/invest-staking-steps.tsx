@@ -379,10 +379,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
               <InvestPoolTokens tokens={props.contract.tokens.stake} />
               {props.contract.name}
             </div>{' '}
-            contract
-          </Typography>
-          <Typography as="div" align="center">
-            and stake tokens.
+            contract and stake tokens.
           </Typography>
         </div>
         <Button onClick={handleNextStep} color="green" className={styles.mt}>
