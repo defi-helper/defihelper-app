@@ -68,3 +68,18 @@ export const slider = style({
 export const price = style({
   marginBottom: 8,
 })
+
+export const img = style({
+  width: 24,
+  height: 24,
+  marginRight: 5,
+  verticalAlign: 'middle',
+})
+
+export const imgPlaceHolder = style([
+  img,
+  {
+    background: theme.colors.border,
+    borderRadius: '50%',
+  },
+])

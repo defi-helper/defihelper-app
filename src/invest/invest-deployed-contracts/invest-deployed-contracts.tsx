@@ -19,6 +19,7 @@ import { toastsService } from '~/toasts'
 import { parseError } from '~/common/parse-error'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import {
+  stakingApi,
   StakingAutomatesContractCard,
   StakingErrorDialog,
 } from '~/staking/common'
@@ -325,8 +326,22 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
           if (!stakingAutomatesAdapter)
             return toastsService.error('adapter not found')
 
+          const tokens = await stakingApi.tokens({
+            network: contract.network,
+            protocol: contract.blockchain,
+          })
+
           await openStopLossDialog({
             adapter: stakingAutomatesAdapter.stopLoss,
+            mainTokens: [
+              ...contract.tokens.reward,
+              ...contract.tokens.stake,
+            ].map((token) => ({
+              logoUrl: token.alias?.logoUrl ?? '',
+              symbol: token.symbol,
+              address: token.address,
+            })),
+            withdrawTokens: tokens,
           })
         } catch (error) {
           console.error(error)

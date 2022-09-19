@@ -16,14 +16,24 @@ import * as styles from './invest-stop-loss-dialog.css'
 export type InvestStopLossDialogProps = {
   onConfirm: () => void
   adapter?: StopLossComponent
+  mainTokens?: { logoUrl: string; symbol: string; address: string }[]
+  withdrawTokens: {
+    logoUrl: string
+    symbol: string
+    address: string
+  }[]
 }
 
 export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   props
 ) => {
   const [stopLoss, toggleStopLoss] = useToggle(false)
-  const [mainToken, setMainToken] = useState('')
-  const [withdrawToken, setWithdrawToken] = useState('')
+  const [mainToken, setMainToken] = useState(
+    props.mainTokens?.[0].address ?? ''
+  )
+  const [withdrawToken, setWithdrawToken] = useState(
+    props.withdrawTokens?.[0].address ?? ''
+  )
   const [stopLossPrice, setStopLossPrice] = useState('')
   const [percent, setPercent] = useState(0)
 
@@ -74,6 +84,12 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     return result.tx.wait()
   }, [props.adapter, path.value, stopLossPrice])
 
+  const withDrawTokensMap = props.withdrawTokens.reduce((acc, token) => {
+    acc.set(token.address, token.symbol)
+
+    return acc
+  }, new Map<string, string>())
+
   return (
     <Dialog className={styles.root}>
       <div>
@@ -109,7 +125,16 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
               onChange={(event) => setMainToken(event.currentTarget.value)}
               disabled={confirm.loading}
             >
-              <SelectOption>usdap</SelectOption>
+              {props.mainTokens?.map((token) => (
+                <SelectOption value={token.address} key={token.address}>
+                  {token.logoUrl ? (
+                    <img src={token.logoUrl} className={styles.img} alt="" />
+                  ) : (
+                    <span className={styles.imgPlaceHolder} />
+                  )}
+                  {token.symbol}
+                </SelectOption>
+              ))}
             </Select>
             <Select
               label="Withdraw to"
@@ -118,14 +143,24 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
               onChange={(event) => setWithdrawToken(event.currentTarget.value)}
               disabled={confirm.loading}
             >
-              <SelectOption>usdap</SelectOption>
+              {props.withdrawTokens?.map((token) => (
+                <SelectOption value={token.address} key={token.address}>
+                  {token.logoUrl ? (
+                    <img src={token.logoUrl} className={styles.img} alt="" />
+                  ) : (
+                    <span className={styles.imgPlaceHolder} />
+                  )}
+                  {token.symbol}
+                </SelectOption>
+              ))}
             </Select>
             <div className={styles.input}>
               <Typography variant="body3" className={styles.label}>
                 Current price
               </Typography>
               <Typography variant="body2">
-                {bignumberUtils.format(price.value)} USDT
+                {bignumberUtils.format(price.value)}{' '}
+                {withDrawTokensMap.get(withdrawToken)}
               </Typography>
             </div>
             <div className={styles.input}>
@@ -136,7 +171,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                   setStopLossPrice(event.currentTarget.value)
                 }
                 className={styles.price}
-                rightSide="USDT"
+                rightSide={withDrawTokensMap.get(withdrawToken)}
                 disabled={confirm.loading}
               />
               <div className={styles.inputRow}>
