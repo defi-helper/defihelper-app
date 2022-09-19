@@ -1,17 +1,17 @@
 import { style, globalStyle } from '@vanilla-extract/css'
 
-export const root = style({})
+export const small = style({})
 
-globalStyle(`${root} > div`, {
+globalStyle(`${small} > div`, {
   borderRadius: 6,
 })
 
-globalStyle(`${root} input`, {
+globalStyle(`${small} input`, {
   fontSize: 14,
   lineHeight: '20px',
   padding: '6px 12px',
 })
 
-globalStyle(`${root} input + div`, {
+globalStyle(`${small} input + div`, {
   paddingRight: 12,
 })

@@ -161,6 +161,7 @@ export interface AutomationAdapterActions {
       withdraw: () => Promise<{ tx: Transaction }>
     } & AutomationAdapterActions['deposit']['methods']
   }
+  stopLoss: StopLossComponent
 }
 
 type Transaction = { wait: () => Promise<{ transactionHash: string }> }
@@ -291,6 +292,26 @@ export type DeployStep = {
     tx: { wait: () => Promise<{ transactionHash?: string }> }
     getAddress: () => Promise<string>
   }>
+}
+
+export interface StopLossComponent {
+  name: 'automateRestake-stopLoss'
+  methods: {
+    startTokens: () => Promise<string[]>
+    autoPath: (from: string, to: string) => Promise<string[]>
+    amountOut: (path: string[]) => Promise<string>
+    canSetStopLoss: (
+      path: string[],
+      amountOut: string,
+      amountOutMin: string
+    ) => Promise<true | Error>
+    setStopLoss: (
+      path: string[],
+      amountOut: string,
+      amountOutMin: string
+    ) => Promise<{ tx: Transaction }>
+    removeStopLoss: () => Promise<{ tx: Transaction }>
+  }
 }
 
 export type DeployType = {

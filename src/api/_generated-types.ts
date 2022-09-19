@@ -301,6 +301,46 @@ export type AutomateContractMetricType = {
   apyBoost: Scalars['String']
 }
 
+export type AutomateContractStopLossDisableInputType = {
+  /** Automate contract */
+  contract: Scalars['UuidType']
+}
+
+export type AutomateContractStopLossEnableInputType = {
+  /** Automate contract */
+  contract: Scalars['UuidType']
+  /** Swap path */
+  path: Array<Scalars['EthereumAddressType']>
+  /** Target amount */
+  amountOut: Scalars['BigNumberType']
+  /** Amount out min */
+  amountOutMin: Scalars['BigNumberType']
+}
+
+export type AutomateContractStopLossParamsType = {
+  __typename?: 'AutomateContractStopLossParamsType'
+  path: Array<Scalars['String']>
+  amountOut: Scalars['BigNumberType']
+  amountOutMin: Scalars['BigNumberType']
+  slippage: Scalars['Float']
+}
+
+export enum AutomateContractStopLossStatusEnum {
+  Pending = 'pending',
+  Sended = 'sended',
+  Completed = 'completed',
+  Error = 'error',
+}
+
+export type AutomateContractStopLossType = {
+  __typename?: 'AutomateContractStopLossType'
+  status: AutomateContractStopLossStatusEnum
+  tx: Scalars['EthereumTransactionHashType']
+  amountOut?: Maybe<Scalars['BigNumberType']>
+  outToken?: Maybe<TokenType>
+  params: AutomateContractStopLossParamsType
+}
+
 export type AutomateContractType = {
   __typename?: 'AutomateContractType'
   /** Identificator */
@@ -329,6 +369,7 @@ export type AutomateContractType = {
   metric: AutomateContractMetricType
   /** Date at archived contract */
   archivedAt?: Maybe<Scalars['DateTimeType']>
+  stopLoss?: Maybe<AutomateContractStopLossType>
 }
 
 export enum AutomateContractTypeEnum {
@@ -1329,6 +1370,8 @@ export type Mutation = {
   automateContractCreate: AutomateContractType
   automateContractUpdate: AutomateContractType
   automateContractDelete: Scalars['Boolean']
+  automateContractStopLossEnable: Scalars['Boolean']
+  automateContractStopLossDisable: Scalars['Boolean']
   tradingAuth?: Maybe<TradingAuthType>
   smartTradeSwapOrderCreate: SmartTradeOrderType
 }
@@ -1584,6 +1627,14 @@ export type MutationAutomateContractUpdateArgs = {
 
 export type MutationAutomateContractDeleteArgs = {
   id: Scalars['UuidType']
+}
+
+export type MutationAutomateContractStopLossEnableArgs = {
+  input: AutomateContractStopLossEnableInputType
+}
+
+export type MutationAutomateContractStopLossDisableArgs = {
+  input: AutomateContractStopLossDisableInputType
 }
 
 export type MutationSmartTradeSwapOrderCreateArgs = {
@@ -6304,7 +6355,17 @@ export type StakingAutomatesContractFragmentFragment = {
             stake: Array<
               { __typename?: 'TokenType' } & Pick<
                 TokenType,
-                'network' | 'address' | 'name'
+                'network' | 'address' | 'name' | 'symbol'
+              > & {
+                  alias?: Maybe<
+                    { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
+                  >
+                }
+            >
+            reward: Array<
+              { __typename?: 'TokenType' } & Pick<
+                TokenType,
+                'network' | 'address' | 'name' | 'symbol'
               > & {
                   alias?: Maybe<
                     { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>

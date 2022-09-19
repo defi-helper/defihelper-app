@@ -95,7 +95,13 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           )
         })
 
-        if (!adapter || action === 'run' || !findedWallet) return
+        if (
+          !adapter ||
+          action === 'run' ||
+          action === 'stopLoss' ||
+          !findedWallet
+        )
+          return
 
         const onLastStep = (txId?: string) => {
           if (!contract.contract || !contract.contractWallet) return

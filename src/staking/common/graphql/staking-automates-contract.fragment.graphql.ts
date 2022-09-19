@@ -46,6 +46,16 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
           network
           address
           name
+          symbol
+        }
+        reward {
+          alias {
+            logoUrl
+          }
+          network
+          address
+          name
+          symbol
         }
       }
     }

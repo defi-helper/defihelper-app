@@ -19,6 +19,7 @@ import { toastsService } from '~/toasts'
 import { parseError } from '~/common/parse-error'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import {
+  stakingApi,
   StakingAutomatesContractCard,
   StakingErrorDialog,
 } from '~/staking/common'
@@ -27,6 +28,7 @@ import { switchNetwork } from '~/wallets/common'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { analytics } from '~/analytics'
 import { settingsWalletModel } from '~/settings/settings-wallets'
+import { InvestStopLossDialog } from '~/invest/common/invest-stop-loss-dialog'
 import * as model from '~/staking/staking-automates/staking-automates.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './invest-deployed-contracts.css'
@@ -46,6 +48,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
 
     const [openConfirmDialog] = useDialog(ConfirmDialog)
     const [openErrorDialog] = useDialog(StakingErrorDialog)
+    const [openStopLossDialog] = useDialog(InvestStopLossDialog)
 
     const currentWallet = walletNetworkModel.useWalletNetwork()
     const handleConnect = useWalletConnect()
@@ -121,7 +124,13 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             )
           })
 
-          if (!adapter || action === 'run' || !findedWallet) return
+          if (
+            !adapter ||
+            action === 'run' ||
+            action === 'stopLoss' ||
+            !findedWallet
+          )
+            return
 
           const onLastStep = (txId?: string) => {
             if (!contract.contract || !contract.contractWallet) return
@@ -282,6 +291,63 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     const handleSwitchNetwork = (contract: typeof contracts[number]) => () =>
       switchNetwork(contract.wallet.network).catch(console.error)
 
+    const handleStopLoss =
+      ({ contract }: typeof contracts[number]) =>
+      async () => {
+        try {
+          if (!contract) return
+          if (!currentWallet?.account || !user)
+            return toastsService.error('wallet is not connected')
+          if (!contract.automate.autorestake)
+            return toastsService.error('adapter not found')
+
+          const deployedContracts = await model.fetchAutomatesContractsFx({
+            userId: user.id,
+          })
+
+          const deployedContract = deployedContracts.list.find(
+            ({ contract: deployedStakingContract }) =>
+              deployedStakingContract?.id === contract.id
+          )
+
+          if (!deployedContract)
+            return toastsService.error('contract not found')
+
+          const stakingAutomatesAdapter = await model.fetchAdapterFx({
+            protocolAdapter: contract.protocol.adapter,
+            contractAdapter: contract.automate.autorestake,
+            contractId: contract.id,
+            contractAddress: deployedContract.address,
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
+            action: 'stopLoss',
+          })
+
+          if (!stakingAutomatesAdapter)
+            return toastsService.error('adapter not found')
+
+          const tokens = await stakingApi.tokens({
+            network: contract.network,
+            protocol: contract.blockchain,
+          })
+
+          await openStopLossDialog({
+            adapter: stakingAutomatesAdapter.stopLoss,
+            mainTokens: [
+              ...contract.tokens.reward,
+              ...contract.tokens.stake,
+            ].map((token) => ({
+              logoUrl: token.alias?.logoUrl ?? '',
+              symbol: token.symbol,
+              address: token.address,
+            })),
+            withdrawTokens: tokens,
+          })
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
     return (
       <Component
         className={clsx(props.className, {
@@ -328,6 +394,11 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                 isNotSameAddresses ??
                 handleAction(deployedContract, 'refund')
 
+              const stopLoss =
+                wrongNetwork ??
+                isNotSameAddresses ??
+                handleStopLoss(deployedContract)
+
               const run =
                 wrongNetwork ??
                 isNotSameAddresses ??
@@ -355,6 +426,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   onDelete={handleOnDelete(deployedContract.id)}
                   onRefund={currentWallet ? refund : connect}
                   onRun={currentWallet ? run : connect}
+                  onStopLoss={currentWallet ? stopLoss : connect}
                   deleting={deployedContract.deleting}
                   running={deployedContract.running}
                   refunding={deployedContract.refunding}

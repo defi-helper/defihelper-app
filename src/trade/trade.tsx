@@ -28,7 +28,6 @@ import { config } from '~/config'
 import { toastsService } from '~/toasts'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { TradeInput } from './common/trade-input'
 import { TradePlusMinus } from './common/trade-plus-minus'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
@@ -37,6 +36,7 @@ import * as styles from './trade.css'
 import * as model from './trade.model'
 import * as tradeOrdersModel from './trade-orders/trade-orders.model'
 import { switchNetwork } from '~/wallets/common'
+import { NumericalInput } from '~/common/numerical-input'
 
 export type TradeProps = unknown
 
@@ -604,7 +604,8 @@ export const Trade: React.VFC<TradeProps> = () => {
                   Slippage
                 </Typography>
                 <div className={styles.transactionSettingsRow}>
-                  <TradeInput
+                  <NumericalInput
+                    size="small"
                     rightSide="%"
                     value={currentSlippage}
                     onChange={({ currentTarget }) =>
@@ -625,7 +626,8 @@ export const Trade: React.VFC<TradeProps> = () => {
                   Transaction deadline
                 </Typography>
                 <div className={styles.transactionSettingsRow}>
-                  <TradeInput
+                  <NumericalInput
+                    size="small"
                     rightSide="min"
                     value={transactionDeadline}
                     onChange={({ currentTarget }) =>

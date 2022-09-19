@@ -20,6 +20,7 @@ export type StakingAutomatesContract = Exclude<
   deleting?: boolean
   editing?: boolean
   running?: boolean
+  stopLoss?: boolean
 }
 
 export type StakingListPayload = {
