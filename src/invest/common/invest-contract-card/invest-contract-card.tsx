@@ -140,7 +140,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
           align="center"
           className={styles.mobileRisk}
         >
-          {riskStatuses[contract.metric.risk]}
+          {riskStatuses[contract.metric.risk]} risk
         </Typography>
       )}
       <Typography
@@ -191,7 +191,6 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
       </Typography>
       <div className={styles.apyBoost}>
         {!isDesktop && <Typography variant="inherit">APY Boost</Typography>}
-        {isDesktop && props.children}
         <Typography
           variant="body2"
           align={isDesktop ? 'right' : undefined}

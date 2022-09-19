@@ -137,12 +137,13 @@ export interface AutomationAdapterActions {
   deposit: {
     name: 'automateRestake-deposit'
     methods: {
+      tokenAddress: () => string
+      symbol: () => string
       balanceOf: () => Promise<string>
-      canTransfer: (amount: string) => Promise<true | Error>
-      transfer: (amount: string) => Promise<{ tx: Transaction }>
-      transferred: () => Promise<string>
-      canDeposit: () => Promise<true | Error>
-      deposit: () => Promise<{ tx: Transaction }>
+      isApproved: (amount: string) => Promise<boolean | Error>
+      approve: (amount: string) => Promise<{ tx?: Transaction } | Error>
+      canDeposit: (amount: string) => Promise<true | Error>
+      deposit: (amount: string) => Promise<{ tx: Transaction }>
     }
   }
   refund: {

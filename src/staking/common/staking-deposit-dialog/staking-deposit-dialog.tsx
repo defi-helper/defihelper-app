@@ -9,7 +9,6 @@ import { NumericalInput } from '~/common/numerical-input'
 import { AutomatesType } from '~/common/load-adapter'
 import { Typography } from '~/common/typography'
 import { ButtonBase } from '~/common/button-base'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { toastsService } from '~/toasts'
 import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import * as styles from './staking-deposit-dialog.css'
@@ -56,14 +55,8 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
   const amount = watch('amount')
 
   const transferred = useAsyncRetry(async () => {
-    return props.methods?.transferred()
-  }, [props.methods, currentTab])
-
-  const canTransfer = useAsyncRetry(async () => {
-    if (bignumberUtils.eq(amount, 0)) return true
-
-    return props.methods?.canTransfer(amount)
-  }, [props.methods, amount])
+    return props.methods?.isApproved(amount)
+  }, [props.methods, currentTab, amount])
 
   const [openStopTransaction] = useDialog(StopTransactionDialog)
 
@@ -73,19 +66,19 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
       .catch((error) => console.error(error.message))
   }
 
-  const [transferState, onTransfer] = useAsyncFn(
+  const [approveState, handleApprove] = useAsyncFn(
     async (formValues: FormValues) => {
       if (!props.methods) return false
 
-      const { canTransfer: canTransferMethod, transfer } = props.methods
+      const { approve } = props.methods
 
       try {
-        const can = await canTransferMethod(formValues.amount)
+        const can = await approve(formValues.amount)
 
         if (can instanceof Error) throw can
         if (!can) throw new Error("can't transfer")
 
-        const { tx } = await transfer(formValues.amount)
+        const { tx } = can
 
         await tx?.wait()
 
@@ -107,12 +100,12 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
     const { deposit, canDeposit } = props.methods
 
     try {
-      const can = await canDeposit()
+      const can = await canDeposit(amount)
 
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't deposit")
 
-      const { tx } = await deposit()
+      const { tx } = await deposit(amount)
 
       const result = await tx?.wait()
 
@@ -128,17 +121,17 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
 
       return false
     }
-  }, [])
+  }, [amount])
 
-  const handleOnSubmit = handleSubmit(onTransfer)
+  const handleOnSubmit = handleSubmit(handleApprove)
 
   useEffect(() => {
-    if (transferState.value) {
+    if (approveState.value) {
       setCurrentTab(Tabs.deposit)
     }
 
     const timeout = setTimeout(() => {
-      if (transferState.value) {
+      if (approveState.value) {
         balanceOf.retry()
         transferred.retry()
       }
@@ -146,7 +139,7 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
 
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transferState.value])
+  }, [approveState.value])
 
   useEffect(() => {
     if (depositState.value) {
@@ -179,7 +172,7 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
     <Dialog
       className={styles.root}
       onClose={
-        depositState.loading || transferState.loading
+        depositState.loading || approveState.loading
           ? handleStopTransaction
           : undefined
       }
@@ -230,10 +223,10 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
                 className={styles.input}
                 {...field}
                 value={field.value || '0'}
-                error={canTransfer.value instanceof Error}
+                error={approveState.error instanceof Error}
                 helperText={
-                  canTransfer.value instanceof Error
-                    ? canTransfer.value.message
+                  approveState.error instanceof Error
+                    ? approveState.error.message
                     : undefined
                 }
               />
