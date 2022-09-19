@@ -6,11 +6,9 @@ import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { UserContactBrokerEnum } from '~/api/_generated-types'
-import { useDialog } from '~/common/dialog'
 import notification from '~/assets/images/notification.png'
 import * as authModel from '~/auth/auth.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
-import { SettingsConversationDialog } from '~/settings/common'
 import * as styles from './settings-telegram.css'
 import * as model from './settings-telegram.model'
 import { dateUtils } from '~/common/date-utils'
@@ -24,7 +22,6 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   const user = useStore(authModel.$user)
   const loading = useStore(settingsContacts.fetchUserContactListFx.pending)
   const userReady = useStore(authModel.$userReady)
-  const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
 
   const leftDays = user?.portfolioCollectingFreezedAt
     ? Math.round(dateUtils.leftDays(user.portfolioCollectingFreezedAt))
@@ -42,7 +39,6 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   if (telegram?.address || loading || !userReady || !leftDays) return <></>
 
   const handleOpenTelegram = () => {
-    openSettingsConversationDialog().catch(console.error)
     model.openTelegram(undefined)
   }
 

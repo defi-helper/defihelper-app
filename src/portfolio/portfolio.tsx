@@ -24,7 +24,6 @@ import { authModel } from '~/auth'
 import { PortfolioExchanges } from '~/portfolio/portfolio-exchanges'
 import {
   SettingsContactFormDialog,
-  SettingsConversationDialog,
   SettingsSuccessDialog,
   useOnWalletCreatedSubscription,
 } from '~/settings/common'
@@ -196,7 +195,6 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
   const loading = useStore(model.fetchPortfolioCollectedFx.pending)
   const [openContactForm] = useDialog(SettingsContactFormDialog)
   const [openSuccess] = useDialog(SettingsSuccessDialog)
-  const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
 
   const user = useStore(authModel.$user)
 
@@ -271,8 +269,6 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           broker,
           name: 'telegram',
         })
-
-        await openSettingsConversationDialog().catch(console.error)
 
         await openSuccess({
           type: broker,
