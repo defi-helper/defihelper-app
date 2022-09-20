@@ -92,11 +92,11 @@ export const $automatesContracts = stakingAutomatesDomain
   .createStore<StakingAutomatesContract[]>([])
   .on(fetchAutomatesContractsFx.doneData, (_, { list }) => list)
   .on(fetchAdapterFx, (state, payload) =>
-    state.map((contract) =>
-      contract.id === payload.contractId
+    state.map((contract) => {
+      return contract.id === payload.contractId
         ? { ...contract, [LOAD_TYPES[payload.action]]: true }
         : contract
-    )
+    })
   )
   .on(reset, (state) =>
     state.map((contract) =>
