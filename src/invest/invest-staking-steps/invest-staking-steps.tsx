@@ -155,7 +155,7 @@ const DeployContractStep = (props: {
         />
         <Typography as="div" align="center">
           To control your investments you need to deploy your personal contract.
-          Later you can set up stop-loss and take-profit.
+          Later you can set up stop-loss.
         </Typography>
         <Typography
           variant="body2"
