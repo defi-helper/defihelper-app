@@ -294,7 +294,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
       switchNetwork(contract.wallet.network).catch(console.error)
 
     const handleStopLoss =
-      ({ contract }: typeof contracts[number]) =>
+      ({ contract, id }: typeof contracts[number]) =>
       async () => {
         try {
           if (!contract) return
@@ -318,7 +318,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
           const stakingAutomatesAdapter = await model.fetchAdapterFx({
             protocolAdapter: contract.protocol.adapter,
             contractAdapter: contract.automate.autorestake,
-            contractId: contract.id,
+            contractId: id,
             contractAddress: deployedContract.address,
             provider: currentWallet.provider,
             chainId: String(currentWallet.chainId),
@@ -335,10 +335,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
 
           await openStopLossDialog({
             adapter: stakingAutomatesAdapter.stopLoss,
-            mainTokens: [
-              ...contract.tokens.reward,
-              ...contract.tokens.stake,
-            ].map((token) => ({
+            mainTokens: contract.tokens.stake.map((token) => ({
               logoUrl: token.alias?.logoUrl ?? '',
               symbol: token.symbol,
               address: token.address,
@@ -433,6 +430,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   running={deployedContract.running}
                   refunding={deployedContract.refunding}
                   contractId={deployedContract.contract?.id}
+                  stopLoss={deployedContract.stopLoss}
                   error={
                     deployedContract.contractWallet?.billing?.balance
                       ?.lowFeeFunds ||

@@ -37,6 +37,7 @@ export const Button = createComponent(function Button<
     styles.varinats[variant],
     styles.colors[color],
     styles.sizes[size],
+    restOfProps.as && restOfProps.disabled && 'disabled',
     {
       [styles.loading]: loading,
       [styles.disabled]: restOfProps.disabled,

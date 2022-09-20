@@ -123,15 +123,23 @@ export const buttons = style({
 })
 
 export const deposit = style({
-  background: theme.colors.common.white1,
-  border: theme.colors.common.white1,
-  color: theme.colors.common.black1,
+  selectors: {
+    '&:not(.disabled)': {
+      background: theme.colors.common.white1,
+      border: `1px solid ${theme.colors.common.white1}`,
+      color: theme.colors.common.black1,
+    },
+  },
 })
 
 export const refund = style({
-  background: theme.colors.common.white3,
-  border: theme.colors.common.white3,
-  color: theme.colors.common.white1,
+  selectors: {
+    '&:not(:disabled)': {
+      background: theme.colors.common.white3,
+      border: `1px solid ${theme.colors.common.white3}`,
+      color: theme.colors.common.white1,
+    },
+  },
 })
 
 export const question = style({
