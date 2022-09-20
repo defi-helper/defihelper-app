@@ -6,10 +6,13 @@ import {
   AutostakingUserUnlinkMutation,
   AutostakingUserLinkMutation,
   AutostakingUserLinkMutationVariables,
+  InvestStopLossEnableMutation,
+  InvestStopLossEnableMutationVariables,
 } from '~/api'
 import { AUTOSTAKING_STAKING_CONTRACTS } from './graphql/autostaking-staking-contracts.graphql'
 import { AUTOSTAKING_USER_LINK } from './graphql/autostaking-user-link.graphql'
 import { AUTOSTAKING_USER_UNLINK } from './graphql/autostaking-user-unlink.graphql'
+import { INVEST_STOP_LOSS_ENABLE } from './graphql/invest-stop-loss-enable.graphql'
 
 export const investApi = {
   contracts: (
@@ -66,4 +69,16 @@ export const investApi = {
         variables,
       })
       .then(({ data }) => data?.contractUserUnlink),
+
+  enableStopLoss: (variables: InvestStopLossEnableMutationVariables) =>
+    getAPIClient()
+      .request<
+        InvestStopLossEnableMutation,
+        unknown,
+        InvestStopLossEnableMutationVariables
+      >({
+        query: INVEST_STOP_LOSS_ENABLE.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.automateContractStopLossEnable),
 }

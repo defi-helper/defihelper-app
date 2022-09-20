@@ -30,6 +30,7 @@ import { analytics } from '~/analytics'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { InvestStopLossDialog } from '~/invest/common/invest-stop-loss-dialog'
 import * as model from '~/staking/staking-automates/staking-automates.model'
+import * as deployedContractModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './invest-deployed-contracts.css'
 
@@ -333,7 +334,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             protocol: contract.blockchain,
           })
 
-          await openStopLossDialog({
+          const res = await openStopLossDialog({
             adapter: stakingAutomatesAdapter.stopLoss,
             mainTokens: contract.tokens.stake.map((token) => ({
               logoUrl: token.alias?.logoUrl ?? '',
@@ -341,6 +342,13 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               address: token.address,
             })),
             withdrawTokens: tokens,
+          })
+
+          await deployedContractModel.enableStopLossFx({
+            contract: id,
+            path: res.path,
+            amountOut: res.amountOut,
+            amountOutMin: res.amountOutMin,
           })
         } catch (error) {
           console.error(error)

@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import { useAsyncFn, useAsyncRetry, useToggle } from 'react-use'
+import { useAsyncFn, useAsyncRetry, useToggle, useThrottle } from 'react-use'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
@@ -14,7 +14,11 @@ import { Typography } from '~/common/typography'
 import * as styles from './invest-stop-loss-dialog.css'
 
 export type InvestStopLossDialogProps = {
-  onConfirm: () => void
+  onConfirm: (value: {
+    path: string[]
+    amountOut: string
+    amountOutMin: string
+  }) => void
   adapter?: StopLossComponent
   mainTokens?: { logoUrl: string; symbol: string; address: string }[]
   withdrawTokens: {
@@ -47,30 +51,38 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     return props.adapter?.methods.amountOut(path.value)
   }, [props.adapter, path.value])
 
-  useEffect(() => {
-    try {
-      setStopLossPrice(bignumberUtils.mul(price.value, percent))
-    } catch (error) {
-      console.error('setStopLossPrice', error)
-    }
-  }, [price.value, percent])
+  const percentThrottled = useThrottle(percent, 1000)
+  const stopLossPriceThrottled = useThrottle(stopLossPrice, 1000)
 
   useEffect(() => {
-    try {
-      setPercent(
-        Number(
-          bignumberUtils.toFixed(
-            bignumberUtils.mul(
-              bignumberUtils.div(stopLossPrice, price.value),
-              100
-            )
+    setStopLossPrice(
+      bignumberUtils.toFixed(
+        bignumberUtils.plus(
+          bignumberUtils.mul(
+            bignumberUtils.div(percentThrottled, 100),
+            price.value
+          ),
+          price.value
+        )
+      )
+    )
+  }, [price.value, percentThrottled])
+
+  useEffect(() => {
+    setPercent(
+      Number(
+        bignumberUtils.toFixed(
+          bignumberUtils.mul(
+            bignumberUtils.div(
+              bignumberUtils.minus(stopLossPriceThrottled, price.value),
+              price.value
+            ),
+            100
           )
         )
       )
-    } catch (error) {
-      console.error('setPercent', error)
-    }
-  }, [price.value, stopLossPrice])
+    )
+  }, [price.value, stopLossPriceThrottled])
 
   const [confirm, handleConfirm] = useAsyncFn(async () => {
     if (!props.adapter || !path.value) return
@@ -89,7 +101,13 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
       '0'
     )
 
-    return result.tx.wait()
+    await result.tx.wait()
+
+    props.onConfirm({
+      path: path.value,
+      amountOut: stopLossPrice,
+      amountOutMin: '0',
+    })
   }, [props.adapter, path.value, stopLossPrice])
 
   const withDrawTokensMap = props.withdrawTokens?.reduce((acc, token) => {
