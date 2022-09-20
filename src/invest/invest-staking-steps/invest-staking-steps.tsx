@@ -153,7 +153,7 @@ const DeployContractStep = (props: {
         />
         <Typography as="div" align="center">
           To control your investments you need to deploy your personal contract.
-          Later you can set up stop-loss and take profit.
+          Later you can set up stop-loss and take-profit.
         </Typography>
         <Typography
           variant="body2"
@@ -302,7 +302,7 @@ const StakeTokensStep = (props: {
       <Typography align="center" className={styles.stakeHint}>
         To earn{' '}
         {props.contract.tokens.reward.map(({ symbol }) => symbol).join('-')}{' '}
-        tokens as a reward - your need to stake your investment in
+        tokens as a reward - your need to stake your investment in{' '}
         {props.contract.protocol.name} protocol.
       </Typography>
       <div className={clsx(styles.stakeActions, styles.mt)}>
