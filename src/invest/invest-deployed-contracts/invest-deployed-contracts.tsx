@@ -344,6 +344,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
           })
         } catch (error) {
           console.error(error)
+        } finally {
+          model.reset()
         }
       }
 
