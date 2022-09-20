@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAsyncFn, useAsyncRetry, useToggle } from 'react-use'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -47,9 +47,9 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     return props.adapter?.methods.amountOut(path.value)
   }, [props.adapter, path.value])
 
-  // useEffect(() => {
-  //   setStopLossPrice(bignumberUtils.mul(price.value, percent))
-  // }, [price.value, percent])
+  useEffect(() => {
+    setStopLossPrice(bignumberUtils.mul(price.value, percent))
+  }, [price.value, percent])
 
   // useEffect(() => {
   //   setPercent(
