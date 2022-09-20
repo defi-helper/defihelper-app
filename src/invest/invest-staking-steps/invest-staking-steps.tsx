@@ -337,9 +337,6 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const user = useStore(authModel.$user)
   const userContact = useStore(telegramModel.$userContact)
   const userContacts = useStore(settingsContacts.$userContactList)
-  const loading = useStore(
-    stakingAutomatesModel.fetchAutomatesContractsFx.pending
-  )
 
   const deploy = useQueryParams().get('deploy')
 
@@ -599,7 +596,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.content}>
-        {canWithdraw.loading || balanceOf.loading || loading ? (
+        {canWithdraw.loading || balanceOf.loading || adapter.loading ? (
           <div className={styles.loader}>
             <Loader height="36" />
           </div>
