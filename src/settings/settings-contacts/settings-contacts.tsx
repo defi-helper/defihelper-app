@@ -14,6 +14,7 @@ import {
 import { useDialog } from '~/common/dialog'
 import { authModel } from '~/auth'
 import * as model from './settings-contact.model'
+import * as telegramModel from '~/settings/settings-telegram/settings-telegram.model'
 import * as styles from './settings-contacts.css'
 import {
   UserContactBrokerEnum,
@@ -149,6 +150,14 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const telegram = contactsMap.get(UserContactBrokerEnum.Telegram)
   const email = contactsMap.get(UserContactBrokerEnum.Email)
 
+  const handleContinueConnect = () => {
+    if (!telegram) return
+
+    telegramModel.openTelegramFx({
+      confirmationCode: telegram.confirmationCode,
+    })
+  }
+
   return (
     <div className={props.className}>
       {withHeader && (
@@ -170,6 +179,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
               creatingParams?.broker === UserContactBrokerEnum.Telegram)
           }
           status={telegram?.status}
+          onContinueConnect={handleContinueConnect}
           onConnect={handleOpenContactForm(UserContactBrokerEnum.Telegram)}
           onDisconnect={telegram ? handleDeleteContact(telegram) : undefined}
           notification={notificationsList.find(
