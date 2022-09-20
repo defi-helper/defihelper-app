@@ -599,7 +599,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.content}>
-        {canWithdraw.loading || balanceOf.loading || loading ? (
+        {loading ? (
           <div className={styles.loader}>
             <Loader height="36" />
           </div>
