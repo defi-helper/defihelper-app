@@ -4813,6 +4813,15 @@ export type AutostakingUserUnlinkMutation = { __typename?: 'Mutation' } & Pick<
   'contractUserUnlink'
 >
 
+export type InvestStopLossEnableMutationVariables = Exact<{
+  input: AutomateContractStopLossEnableInputType
+}>
+
+export type InvestStopLossEnableMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'automateContractStopLossEnable'
+>
+
 export type BuyLiquidityContractsQueryVariables = Exact<{
   filter?: Maybe<ContractListFilterInputType>
   sort?: Maybe<Array<ContractListSortInputType> | ContractListSortInputType>

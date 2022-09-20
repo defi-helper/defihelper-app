@@ -14,7 +14,11 @@ import { Typography } from '~/common/typography'
 import * as styles from './invest-stop-loss-dialog.css'
 
 export type InvestStopLossDialogProps = {
-  onConfirm: () => void
+  onConfirm: (value: {
+    path: string[]
+    amountOut: string
+    amountOutMin: string
+  }) => void
   adapter?: StopLossComponent
   mainTokens?: { logoUrl: string; symbol: string; address: string }[]
   withdrawTokens: {
@@ -97,7 +101,13 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
       '0'
     )
 
-    return result.tx.wait()
+    await result.tx.wait()
+
+    props.onConfirm({
+      path: path.value,
+      amountOut: stopLossPrice,
+      amountOutMin: '0',
+    })
   }, [props.adapter, path.value, stopLossPrice])
 
   const withDrawTokensMap = props.withdrawTokens?.reduce((acc, token) => {
