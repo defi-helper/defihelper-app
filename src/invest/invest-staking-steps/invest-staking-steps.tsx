@@ -20,8 +20,6 @@ import {
   AutomateTriggerTypeEnum,
   UserContactBrokerEnum,
 } from '~/api'
-import { useDialog } from '~/common/dialog'
-import { InvestDeployDialog } from '~/invest/common/invest-deploy-dialog'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { analytics } from '~/analytics'
 import { toastsService } from '~/toasts'
@@ -46,7 +44,6 @@ const DeployContractStep = (props: {
   onSubmit: () => void
   contract: InvestContract
 }) => {
-  const [openInvestDeployDialog] = useDialog(InvestDeployDialog)
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(walletsModel.$wallets)
 
@@ -70,7 +67,7 @@ const DeployContractStep = (props: {
 
     if (!findedWallet || !prototypeAddress) return
 
-    const deployAdapter = await deployModel.fetchDeployAdapterFx({
+    const adapter = await deployModel.fetchDeployAdapterFx({
       address: prototypeAddress,
       protocol: props.contract.protocol.adapter,
       contract: props.contract.automate.autorestake,
@@ -79,13 +76,25 @@ const DeployContractStep = (props: {
       contractAddress: props.contract.address,
     })
 
-    const stepsResult = await openInvestDeployDialog({
-      steps: deployAdapter.deploy,
-    })
+    const [deployAdapter] = adapter.deploy
+
+    const info = await deployAdapter.info()
+
+    const values = info.inputs?.map(({ value }) => value)
+
+    if (!values) return
+
+    const can = await deployAdapter.can(...values)
+
+    if (can instanceof Error) return
+
+    const { tx, getAddress } = await deployAdapter.send(...values)
+
+    await tx.wait()
 
     const deployedContract = await deployModel.deployFx({
-      proxyAddress: stepsResult.address,
-      inputs: stepsResult.inputs,
+      proxyAddress: await getAddress(),
+      inputs: values,
       protocol: props.contract.protocol.id,
       adapter: props.contract.automate.autorestake,
       contract: props.contract.id,
@@ -388,7 +397,9 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   }, [adapter.value])
 
   const [withDraw, handleWithDraw] = useAsyncFn(async () => {
-    return adapter.value?.migrate.methods.withdraw().then(handleNextStep)
+    const res = await adapter.value?.migrate.methods.withdraw()
+
+    return res?.tx.wait().then(handleNextStep)
   }, [adapter.value])
 
   const initialSteps = {
