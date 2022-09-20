@@ -48,21 +48,29 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   }, [props.adapter, path.value])
 
   useEffect(() => {
-    setStopLossPrice(bignumberUtils.mul(price.value, percent))
+    try {
+      setStopLossPrice(bignumberUtils.mul(price.value, percent))
+    } catch (error) {
+      console.error('setStopLossPrice', error)
+    }
   }, [price.value, percent])
 
-  // useEffect(() => {
-  //   setPercent(
-  //     Number(
-  //       bignumberUtils.toFixed(
-  //         bignumberUtils.mul(
-  //           bignumberUtils.div(stopLossPrice, price.value),
-  //           100
-  //         )
-  //       )
-  //     )
-  //   )
-  // }, [price.value, stopLossPrice])
+  useEffect(() => {
+    try {
+      setPercent(
+        Number(
+          bignumberUtils.toFixed(
+            bignumberUtils.mul(
+              bignumberUtils.div(stopLossPrice, price.value),
+              100
+            )
+          )
+        )
+      )
+    } catch (error) {
+      console.error('setPercent', error)
+    }
+  }, [price.value, stopLossPrice])
 
   const [confirm, handleConfirm] = useAsyncFn(async () => {
     if (!props.adapter || !path.value) return
