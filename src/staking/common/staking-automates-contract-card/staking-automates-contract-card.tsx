@@ -309,7 +309,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                   className={styles.deposit}
                   disabled={props.deleting || props.refunding}
                   as={ReactRouterLink}
-                  to={paths.invest.detail(props.contractId)}
+                  to={`${paths.invest.detail(props.contractId)}?deploy=1`}
                 >
                   Invest
                 </Button>

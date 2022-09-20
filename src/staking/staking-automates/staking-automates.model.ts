@@ -98,6 +98,13 @@ export const $automatesContracts = stakingAutomatesDomain
         : contract
     )
   )
+  .on(fetchAdapterFx.fail, (state, { params }) =>
+    state.map((contract) =>
+      contract.id === params.contractId
+        ? { ...contract, [LOAD_TYPES[params.action]]: false }
+        : contract
+    )
+  )
   .on(reset, (state) =>
     state.map((contract) =>
       omit(contract, [
