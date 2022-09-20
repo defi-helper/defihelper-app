@@ -335,10 +335,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
 
           await openStopLossDialog({
             adapter: stakingAutomatesAdapter.stopLoss,
-            mainTokens: [
-              ...contract.tokens.reward,
-              ...contract.tokens.stake,
-            ].map((token) => ({
+            mainTokens: contract.tokens.stake.map((token) => ({
               logoUrl: token.alias?.logoUrl ?? '',
               symbol: token.symbol,
               address: token.address,
