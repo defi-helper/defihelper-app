@@ -183,6 +183,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               }
             )
           }
+        } finally {
+          model.reset()
         }
       }
     const handleRunManually =
