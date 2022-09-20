@@ -15,11 +15,9 @@ export const title = style({
 export const selects = style({
   display: 'grid',
   gap: 8,
-  marginBottom: 64,
 
   '@media': {
     [theme.mediaQueries.lg()]: {
-      marginBottom: 32,
       gap: 16,
       gridTemplateColumns: '236px 236px 236px 1fr',
     },
@@ -137,4 +135,9 @@ export const autostakingTooltipText = style({
 export const apyBoost = style({
   justifyContent: 'flex-end',
   textAlign: 'right',
+})
+
+export const banner = style({
+  padding: 16,
+  marginBottom: 16,
 })
