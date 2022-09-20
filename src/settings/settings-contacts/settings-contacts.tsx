@@ -9,7 +9,6 @@ import {
   SettingsConfirmDialog,
   SettingsSuccessDialog,
   SettingsGrid,
-  SettingsConversationDialog,
 } from '~/settings/common'
 import { useDialog } from '~/common/dialog'
 import { authModel } from '~/auth'
@@ -31,7 +30,6 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const [openContactForm] = useDialog(SettingsContactFormDialog)
   const [openConfirm] = useDialog(SettingsConfirmDialog)
   const [openSuccess] = useDialog(SettingsSuccessDialog)
-  const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
 
   const user = useStore(authModel.$user)
   const contactList = useStore(model.$userContactList)
@@ -51,8 +49,6 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           broker,
           name: 'telegram',
         })
-
-        await openSettingsConversationDialog().catch(console.error)
 
         await openSuccess({
           type: broker,
