@@ -24,6 +24,10 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { analytics } from '~/analytics'
 import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { authModel } from '~/auth'
+import { useQueryParams } from '~/common/hooks'
+import { Loader } from '~/common/loader'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
@@ -32,8 +36,6 @@ import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as telegramModel from '~/settings/settings-telegram/settings-telegram.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
-import { bignumberUtils } from '~/common/bignumber-utils'
-import { authModel } from '~/auth'
 
 export type InvestStakingStepsProps = {
   className?: string
@@ -336,6 +338,8 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const userContact = useStore(telegramModel.$userContact)
   const userContacts = useStore(settingsContacts.$userContactList)
 
+  const deploy = useQueryParams().get('deploy')
+
   const contacts = useMemo(
     () => (userContact ? [...userContacts, userContact] : userContacts),
     [userContact, userContacts]
@@ -493,11 +497,13 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         ? 'migrate'
         : 'buy'
     ],
-    <DeployContractStep
-      key={2}
-      onSubmit={handleNextStep}
-      contract={props.contract}
-    />,
+    !deploy ? (
+      <DeployContractStep
+        key={2}
+        onSubmit={handleNextStep}
+        contract={props.contract}
+      />
+    ) : null,
     <StakeTokensStep
       key={3}
       onSubmit={handleNextStep}
@@ -583,13 +589,21 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         OPEN TELEGRAM
       </Button>
     </React.Fragment>,
-  ]
+  ].filter(Boolean)
 
   const currentStepObj = steps[currentStep % steps.length]
 
   return (
     <div className={clsx(styles.root, props.className)}>
-      <div className={styles.content}>{currentStepObj}</div>
+      <div className={styles.content}>
+        {!canWithdraw.value || !balanceOf.value ? (
+          <div className={styles.loader}>
+            <Loader height="36" />
+          </div>
+        ) : (
+          currentStepObj
+        )}
+      </div>
     </div>
   )
 }
