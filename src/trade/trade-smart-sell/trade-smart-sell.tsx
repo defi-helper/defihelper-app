@@ -343,8 +343,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       <div
         className={clsx(
           styles.root,
-          (!config.IS_DEV || balanceOf.loading) &&
-            user?.role !== UserRoleEnum.Admin &&
+          ((!config.IS_DEV && user?.role !== UserRoleEnum.Admin) ||
+            balanceOf.loading) &&
             styles.overflow
         )}
       >
