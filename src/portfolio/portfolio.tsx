@@ -365,7 +365,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           ) && (
             <Paper radius={8} className={styles.connectTelegram}>
               <Typography variant="body2" family="mono">
-                Connect telegram to receive up-to-date information about your
+                Connect Telegram to receive up-to-date information about your
                 portfolio
               </Typography>
               <Button

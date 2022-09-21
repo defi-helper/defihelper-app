@@ -304,7 +304,7 @@ const StakeTokensStep = (props: {
       <Typography align="center" className={styles.stakeHint}>
         To earn{' '}
         {props.contract.tokens.reward.map(({ symbol }) => symbol).join('-')}{' '}
-        tokens as a reward - your need to stake your investment in{' '}
+        tokens as a reward - you need to stake your investment in{' '}
         {props.contract.protocol.name} protocol.
       </Typography>
       <div className={clsx(styles.stakeActions, styles.mt)}>
@@ -428,7 +428,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
             className={styles.checked}
           />
           <Typography as="div" align="center">
-            You have successfully invested in pool. To earn rewards you need to
+            You have successfully invested in the pool. To earn rewards you need to
             deploy your
           </Typography>
           <Typography as="div" align="center">
@@ -528,9 +528,9 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
           className={styles.checked}
         />
         <Typography as="div" align="center">
-          GREAT! You succefully
+          SUCCESS! You staked
           <br />
-          staked your tokens
+          your tokens
         </Typography>
       </div>
       {!telegram && (
@@ -540,9 +540,9 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
           variant="body2"
           className={styles.connnectTelegramHint1}
         >
-          Connect your telegram and get daily updates
+          Connect your Telegram account and get daily
           <br />
-          about your portfolio
+          updates about your portfolio
         </Typography>
       )}
       <div className={clsx(styles.connectTelegramActions, styles.mt)}>

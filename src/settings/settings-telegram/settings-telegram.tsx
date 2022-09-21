@@ -56,14 +56,14 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
       <Typography variant="body3" as="div" className={styles.text}>
         {leftDays > 0 ? (
           <>
-            We will stop to track your portfolio in {leftDays}{' '}
-            {pluralize(leftDays, 'day')} if you will not connect your telegram
+            We will stop tracking your portfolio in {leftDays}{' '}
+            {pluralize(leftDays, 'day')} if you do not connect your Telegram
             account.
           </>
         ) : (
           <>
-            Tracking of your portfolio has been stopped because you have not
-            connected telegram.
+            We are no longer tracking your portfolio because you have not
+            connected your Telegram account
           </>
         )}
       </Typography>

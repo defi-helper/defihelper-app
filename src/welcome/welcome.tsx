@@ -20,7 +20,7 @@ const DATA = [
   {
     title: 'INVEST',
     img: WelcomeInvest,
-    text: "Find a pool to invest in, use auto compounding to boost your APY, protect your investment with 'stop-loss'",
+    text: "Find a pool to invest in, use our auto-compounder to maximize your APY, protect your invest with 'Stop-Loss'",
     link: paths.invest.list,
     button: 'start investing',
   },
@@ -49,7 +49,7 @@ export const Welcome: React.VFC<WelcomeProps> = () => {
     <AppLayout title="Welcome to DeFiHelper">
       <Head title="Welcome" />
       <Typography variant="h3" className={styles.title}>
-        Welcome to DeFiHelper — your powerfull investment tool
+        Welcome to DeFiHelper — your powerful investment tool
       </Typography>
       <div className={styles.grid}>
         {DATA.map((dataItem) => (
