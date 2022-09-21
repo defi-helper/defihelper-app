@@ -25,6 +25,7 @@ export type InvestTabsDialogProps = {
   onCancel: () => void
   methods?: AutomatesType['migrate']['methods']
   onLastStep: (txHash?: string) => void
+  contractId: string
 }
 
 enum Tabs {
@@ -165,7 +166,7 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
     event.preventDefault()
 
     props.onCancel()
-    history.push(paths.LPTokens)
+    history.push(`${paths.LPTokens}?contractId=${props.contractId}`)
   }
 
   useEffect(() => {
