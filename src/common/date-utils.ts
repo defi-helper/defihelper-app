@@ -31,6 +31,15 @@ export const dateUtils = {
 
   yesterday: () => dayjs().subtract(1, 'day').toISOString(),
 
+  leftDays: (date?: string | number | Date | dayjs.Dayjs) => {
+    const now = dateUtils.now()
+    const then = dayjs(date)
+    const diff = then.diff(now)
+    const dur = dayjs.duration(diff)
+
+    return dur.asDays()
+  },
+
   formatUnix: (timestamp: number | string, format = 'hh:mm:ss') => {
     const date = dayjs.unix(Number(timestamp))
 

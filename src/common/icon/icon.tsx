@@ -105,6 +105,7 @@ import { ReactComponent as NoResultsIcon } from '~/assets/icons/no-results.svg'
 import { ReactComponent as YellowRiskIcon } from '~/assets/icons/yellow-risk.svg'
 import { ReactComponent as GreenRiskIcon } from '~/assets/icons/green-risk.svg'
 import { ReactComponent as RedRiskIcon } from '~/assets/icons/red-risk.svg'
+import { ReactComponent as DeployIcon } from '~/assets/icons/deploy.svg'
 
 const ICONS = {
   BNB: BNBIcon,
@@ -220,6 +221,7 @@ const ICONS = {
   yellowRisk: YellowRiskIcon,
   greenRisk: GreenRiskIcon,
   redRisk: RedRiskIcon,
+  deploy: DeployIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {

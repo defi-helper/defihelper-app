@@ -1,7 +1,7 @@
 import isEmpty from 'lodash.isempty'
 import clsx from 'clsx'
-
 import { Link as ReactRouterLink } from 'react-router-dom'
+
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { ButtonBase } from '~/common/button-base'
@@ -29,28 +29,26 @@ export type StakingAutomatesContractCardProps = {
   blockchain: string
   balance: string
   protocol?: { id: string; name: string; adapter: string }
-  onDeposit: () => void
   onRefund: () => void
-  onMigrate?: () => void
   onDelete: () => void
   onRun: () => void
+  onStopLoss?: () => void
   error?: boolean
   apy?: string
   apyBoost?: string
   restakeAt: string | null
   deleting?: boolean
-  depositing?: boolean
   refunding?: boolean
-  migrating?: boolean
   running?: boolean
+  stopLoss?: boolean
   tokensIcons: Array<string | null>
   freshMetrics?: FreshMetrics
+  contractId?: string
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
   (props) => {
-    const pending =
-      props.deleting || props.depositing || props.refunding || props.migrating
+    const pending = props.deleting || props.refunding
 
     const apyboostDifference = bignumberUtils.minus(props.apyBoost, props.apy)
 
@@ -94,14 +92,14 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     pending && styles.manageLoading
                   )}
                 >
-                  {(props.deleting || props.running) && (
+                  {(props.deleting || props.running || props.stopLoss) && (
                     <CircularProgress className={styles.circularProgress} />
                   )}
                   <Icon
                     icon="dots"
                     className={clsx(
                       styles.manageIcon,
-                      (props.deleting || props.running) &&
+                      (props.deleting || props.running || props.stopLoss) &&
                         styles.manageIconloading
                     )}
                   />
@@ -111,23 +109,47 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               placement="left-start"
               offset={[0, 4]}
             >
-              <CanDemo>
-                <ButtonBase
-                  className={styles.dropdownItem}
-                  onClick={props.onRun}
-                >
-                  Run manually
-                </ButtonBase>
-              </CanDemo>
+              {(close) => (
+                <>
+                  <CanDemo>
+                    <ButtonBase
+                      className={styles.dropdownItem}
+                      onClick={() => {
+                        props.onRun?.()
+                        close()
+                      }}
+                    >
+                      Run manually
+                    </ButtonBase>
+                  </CanDemo>
 
-              <CanDemo>
-                <ButtonBase
-                  className={clsx(styles.deleteButton, styles.dropdownItem)}
-                  onClick={props.onDelete}
-                >
-                  Delete
-                </ButtonBase>
-              </CanDemo>
+                  {props.onStopLoss && (
+                    <CanDemo>
+                      <ButtonBase
+                        className={styles.dropdownItem}
+                        onClick={() => {
+                          props.onStopLoss?.()
+                          close()
+                        }}
+                      >
+                        Stop loss
+                      </ButtonBase>
+                    </CanDemo>
+                  )}
+
+                  <CanDemo>
+                    <ButtonBase
+                      className={clsx(styles.deleteButton, styles.dropdownItem)}
+                      onClick={() => {
+                        props.onDelete?.()
+                        close()
+                      }}
+                    >
+                      Delete
+                    </ButtonBase>
+                  </CanDemo>
+                </>
+              )}
             </Dropdown>
           </div>
           <div className={styles.row}>
@@ -293,31 +315,21 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
           </div>
           <div className={styles.buttons}>
-            <CanDemo>
-              <Button
-                size="small"
-                className={styles.deposit}
-                onClick={props.onDeposit}
-                loading={props.depositing}
-                disabled={props.deleting || props.refunding || props.migrating}
-              >
-                Deposit
-              </Button>
-            </CanDemo>
-
-            {props.onMigrate && (
+            {props.contractId && (
               <CanDemo>
                 <Button
                   size="small"
-                  variant="light"
-                  className={styles.refund}
-                  onClick={props.onMigrate}
-                  loading={props.migrating}
+                  className={styles.deposit}
                   disabled={
-                    props.deleting || props.depositing || props.refunding
+                    props.deleting ||
+                    props.refunding ||
+                    props.running ||
+                    props.stopLoss
                   }
+                  as={ReactRouterLink}
+                  to={`${paths.invest.detail(props.contractId)}?deploy=1`}
                 >
-                  Migrate
+                  Invest
                 </Button>
               </CanDemo>
             )}
@@ -329,7 +341,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 className={styles.refund}
                 onClick={props.onRefund}
                 loading={props.refunding}
-                disabled={props.deleting || props.depositing || props.migrating}
+                disabled={props.deleting || props.running || props.stopLoss}
               >
                 Unstake
               </Button>

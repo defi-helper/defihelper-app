@@ -18,7 +18,7 @@ import { Wallet, walletApi } from '~/wallets/common'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 
-export type ActionType = 'deposit' | 'migrate' | 'refund' | 'run'
+export type ActionType = 'deposit' | 'migrate' | 'refund' | 'run' | 'stopLoss'
 
 type FetchAdapterParams = {
   protocolAdapter: string
@@ -38,12 +38,13 @@ type FetchAutomatesParams = {
 
 const LOAD_TYPES: Record<
   ActionType,
-  'migrating' | 'depositing' | 'refunding' | 'running'
+  'migrating' | 'depositing' | 'refunding' | 'running' | 'stopLoss'
 > = {
   migrate: 'migrating',
   deposit: 'depositing',
   refund: 'refunding',
   run: 'running',
+  stopLoss: 'stopLoss',
 }
 
 export const stakingAutomatesDomain = createDomain()
@@ -91,15 +92,28 @@ export const $automatesContracts = stakingAutomatesDomain
   .createStore<StakingAutomatesContract[]>([])
   .on(fetchAutomatesContractsFx.doneData, (_, { list }) => list)
   .on(fetchAdapterFx, (state, payload) =>
-    state.map((contract) =>
-      contract.id === payload.contractId
+    state.map((contract) => {
+      return contract.id === payload.contractId
         ? { ...contract, [LOAD_TYPES[payload.action]]: true }
+        : contract
+    })
+  )
+  .on(fetchAdapterFx.fail, (state, { params }) =>
+    state.map((contract) =>
+      contract.id === params.contractId
+        ? { ...contract, [LOAD_TYPES[params.action]]: false }
         : contract
     )
   )
   .on(reset, (state) =>
     state.map((contract) =>
-      omit(contract, ['migrating', 'depositing', 'refunding', 'running'])
+      omit(contract, [
+        'migrating',
+        'depositing',
+        'refunding',
+        'running',
+        'stopLoss',
+      ])
     )
   )
   .on(automationsListModel.deleteContractFx, (state, payload) =>

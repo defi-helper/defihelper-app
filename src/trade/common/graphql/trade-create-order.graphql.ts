@@ -20,6 +20,7 @@ export const TRADE_CREATE_ORDER = gql`
         ... on SmartTradeSwapHandlerCallDataType {
           exchange
           boughtPrice
+          path
         }
       }
       status

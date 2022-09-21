@@ -5,6 +5,7 @@ import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { cutAccount } from '~/common/cut-account'
+import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { Link } from '~/common/link'
 import { Loader } from '~/common/loader'
@@ -67,12 +68,25 @@ export const LPTokensContracts: React.VFC<LPTokensContractsProps> = (props) => {
                   <Typography variant="inherit">{contract.name}</Typography>
                   <span className={styles.contractCardIcons}>
                     {networksConfig[contract.network]?.icon ? (
-                      <Icon
-                        icon={networksConfig[contract.network].icon}
-                        width="20"
-                        height="20"
-                        className={styles.contractNetworkIcon}
-                      />
+                      <Dropdown
+                        control={
+                          <Icon
+                            icon={networksConfig[contract.network].icon}
+                            width="20"
+                            height="20"
+                            className={styles.contractNetworkIcon}
+                          />
+                        }
+                        offset={[0, 4]}
+                        placement="bottom-start"
+                        trigger="hover"
+                        className={styles.networkDropdown}
+                      >
+                        <Typography variant="body2" family="mono">
+                          This pool is located on{' '}
+                          {networksConfig[contract.network].title} network
+                        </Typography>
+                      </Dropdown>
                     ) : (
                       <Paper className={styles.contractUnknownNetworkIcon}>
                         <Icon icon="unknownNetwork" width="16" height="16" />

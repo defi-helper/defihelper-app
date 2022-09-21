@@ -2,10 +2,8 @@ import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { cloneElement } from 'react'
 
-import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
-import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as styles from './stake-reward-tokens.css'
@@ -26,12 +24,15 @@ export type StakeRewardTokensProps = {
   tokenClassName?: string
 }
 
-const TokenInfo = (props: {
+type TokenInfoProps = {
   icon: JSX.Element
   token: Token
   tokenClassName?: string
   height: number
-}) => (
+  type: 'stake' | 'reward'
+}
+
+const TokenInfo = (props: TokenInfoProps) => (
   <div
     className={styles.wrap}
     style={{
@@ -45,23 +46,13 @@ const TokenInfo = (props: {
       })}
     </ButtonBase>
     <Paper radius={8} className={styles.dropdown}>
-      {props.icon}
-      <div>
+      <Typography variant="body2">
+        {props.type === 'stake' ? 'LP Token part' : 'Reward Token'}
+      </Typography>
+      <div className={styles.tokenTitle}>
+        {props.icon}
         <Typography variant="body2" family="mono" className={styles.tokenName}>
           {props.token.name}
-        </Typography>
-        <Typography variant="body2" family="mono">
-          <Link
-            target="_blank"
-            color="blue"
-            className={styles.link}
-            href={buildExplorerUrl({
-              address: props.token.address,
-              network: props.token.network,
-            })}
-          >
-            Explorer <Icon icon="link" width="1em" height="1em" />
-          </Link>
         </Typography>
       </div>
     </Paper>
@@ -106,6 +97,7 @@ export const StakeRewardTokens: React.VFC<StakeRewardTokensProps> = (props) => {
               icon={<TokenIcon size={size} token={token} />}
               token={token}
               tokenClassName={props.tokenClassName}
+              type="stake"
             />
           )
         })}
@@ -125,6 +117,7 @@ export const StakeRewardTokens: React.VFC<StakeRewardTokensProps> = (props) => {
               icon={<TokenIcon size={size} token={token} />}
               token={token}
               tokenClassName={props.tokenClassName}
+              type="reward"
             />
           )
         })}

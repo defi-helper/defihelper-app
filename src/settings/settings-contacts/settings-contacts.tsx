@@ -1,4 +1,4 @@
-import { useGate, useStore } from 'effector-react'
+import { useStore } from 'effector-react'
 
 import { Typography } from '~/common/typography'
 import {
@@ -9,11 +9,11 @@ import {
   SettingsConfirmDialog,
   SettingsSuccessDialog,
   SettingsGrid,
-  SettingsConversationDialog,
 } from '~/settings/common'
 import { useDialog } from '~/common/dialog'
 import { authModel } from '~/auth'
 import * as model from './settings-contact.model'
+import * as telegramModel from '~/settings/settings-telegram/settings-telegram.model'
 import * as styles from './settings-contacts.css'
 import {
   UserContactBrokerEnum,
@@ -30,15 +30,12 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const [openContactForm] = useDialog(SettingsContactFormDialog)
   const [openConfirm] = useDialog(SettingsConfirmDialog)
   const [openSuccess] = useDialog(SettingsSuccessDialog)
-  const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
 
   const user = useStore(authModel.$user)
   const contactList = useStore(model.$userContactList)
   const contactCreating = useStore(model.createUserContactFx.pending)
   const creatingParams = useStore(model.$creatingUserParams)
   const notificationsList = useStore(model.$userNotificationsList)
-
-  useGate(model.SettingsContactsGate)
 
   const { withHeader = true } = props
 
@@ -52,8 +49,6 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           broker,
           name: 'telegram',
         })
-
-        await openSettingsConversationDialog().catch(console.error)
 
         await openSuccess({
           type: broker,
@@ -151,6 +146,14 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const telegram = contactsMap.get(UserContactBrokerEnum.Telegram)
   const email = contactsMap.get(UserContactBrokerEnum.Email)
 
+  const handleContinueConnect = () => {
+    if (!telegram) return
+
+    telegramModel.openTelegramFx({
+      confirmationCode: telegram.confirmationCode,
+    })
+  }
+
   return (
     <div className={props.className}>
       {withHeader && (
@@ -160,7 +163,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
       )}
       <SettingsGrid>
         <SettingsContactCard
-          isConnected={Boolean(telegram)}
+          isConnected={Boolean(telegram?.address)}
           address={telegram?.address}
           currentTimezone={user?.timezone ?? 'UTC'}
           title="Telegram notifications settings"
@@ -172,6 +175,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
               creatingParams?.broker === UserContactBrokerEnum.Telegram)
           }
           status={telegram?.status}
+          onContinueConnect={handleContinueConnect}
           onConnect={handleOpenContactForm(UserContactBrokerEnum.Telegram)}
           onDisconnect={telegram ? handleDeleteContact(telegram) : undefined}
           notification={notificationsList.find(

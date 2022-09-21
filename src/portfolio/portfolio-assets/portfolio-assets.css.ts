@@ -142,3 +142,21 @@ export const copyrightLink = style({
 export const copyrightIcon = style({
   marginRight: 4,
 })
+
+export const showAll = style({
+  borderTop: `1px solid ${theme.colors.border}`,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 16,
+  margin: '0 -24px -16px',
+})
+
+export const showAllButton = style({
+  color: theme.colors.common.blue1,
+  gap: 4,
+})
+
+export const createProposal = style({
+  marginTop: 32,
+})

@@ -40,12 +40,14 @@ import { Monitoring } from '~/monitoring'
 import { LPTokens } from '~/lp-tokens'
 import { DemoForward } from '~/demo-forward'
 import { Bridges } from '~/bridges'
-import { Autostaking } from '~/autostaking'
+import { InvestList } from '~/invest/invest-list'
+import { InvestDetail } from '~/invest/invest-detail'
 import { Tokens } from '~/tokens'
 import { Admin } from '~/admin'
 import { TokensAlias } from '~/tokens-alias'
 import { Trade } from '~/trade'
 import { analytics } from '~/analytics'
+import { Welcome } from '~/welcome'
 
 export type RouterProps = unknown
 
@@ -163,14 +165,20 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.bridges}>
           <Bridges />
         </Route>
-        <Route path={paths.autostaking}>
-          <Autostaking />
+        <Route path={paths.invest.detail()}>
+          <InvestDetail />
+        </Route>
+        <Route path={paths.invest.list}>
+          <InvestList />
         </Route>
         <PrivateRoute path={paths.admin}>
           <Admin />
         </PrivateRoute>
         <Route path={paths.trade}>
           <Trade />
+        </Route>
+        <Route path={paths.welcome}>
+          <Welcome />
         </Route>
         <Route>
           <NotFound />

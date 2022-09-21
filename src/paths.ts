@@ -64,9 +64,14 @@ export const paths = {
 
   bridges: '/bridges',
 
-  autostaking: '/invest',
+  invest: {
+    list: '/invest',
+    detail: (contractId = ':contractId') => `/invest/${contractId}` as const,
+  },
 
   admin: '/admin',
 
   trade: '/trade',
+
+  welcome: '/welcome',
 } as const

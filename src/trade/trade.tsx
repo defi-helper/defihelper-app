@@ -28,7 +28,6 @@ import { config } from '~/config'
 import { toastsService } from '~/toasts'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { TradeInput } from './common/trade-input'
 import { TradePlusMinus } from './common/trade-plus-minus'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
@@ -36,6 +35,8 @@ import { pairMock } from './common/trade-dev.mock'
 import * as styles from './trade.css'
 import * as model from './trade.model'
 import * as tradeOrdersModel from './trade-orders/trade-orders.model'
+import { switchNetwork } from '~/wallets/common'
+import { NumericalInput } from '~/common/numerical-input'
 
 export type TradeProps = unknown
 
@@ -187,6 +188,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     () =>
       exchanges.reduce((acc, exchange) => {
         acc.set(exchange.Name, exchange)
+        if (exchange.Address) acc.set(exchange.Address, exchange)
 
         return acc
       }, new Map<string, typeof exchanges[number]>()),
@@ -325,7 +327,19 @@ export const Trade: React.VFC<TradeProps> = () => {
     [adapter]
   )
 
+  const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
+    if (!wallet) return
+
+    await switchNetwork(wallet.network).catch(console.error)
+  }, [wallet])
+
   const currentWalletCorrect =
+    currentWallet?.chainId === 'main'
+      ? currentWallet.account === wallet?.address
+      : currentWallet?.account?.toLocaleUpperCase() ===
+        wallet?.address.toLocaleUpperCase()
+
+  const currentNetworkCorrect =
     currentWallet?.chainId === 'main'
       ? currentWallet?.chainId === wallet?.network
       : currentWallet?.chainId === wallet?.network
@@ -590,7 +604,8 @@ export const Trade: React.VFC<TradeProps> = () => {
                   Slippage
                 </Typography>
                 <div className={styles.transactionSettingsRow}>
-                  <TradeInput
+                  <NumericalInput
+                    size="small"
                     rightSide="%"
                     value={currentSlippage}
                     onChange={({ currentTarget }) =>
@@ -611,7 +626,8 @@ export const Trade: React.VFC<TradeProps> = () => {
                   Transaction deadline
                 </Typography>
                 <div className={styles.transactionSettingsRow}>
-                  <TradeInput
+                  <NumericalInput
+                    size="small"
                     rightSide="min"
                     value={transactionDeadline}
                     onChange={({ currentTarget }) =>
@@ -630,6 +646,26 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
             {SelectComponents[currentSelect]}
           </div>
+          {!currentNetworkCorrect && (
+            <div className={styles.beta}>
+              <Typography
+                variant="body2"
+                align="center"
+                family="mono"
+                className={styles.betaTitle}
+              >
+                Please switch your network to continue
+              </Typography>
+              <Button
+                color="green"
+                className={styles.switchNetwork}
+                onClick={handleSwitchNetwork}
+                loading={switchNetworkState.loading}
+              >
+                switch network
+              </Button>
+            </div>
+          )}
           {!currentWalletCorrect && (
             <div className={styles.beta}>
               <Typography
@@ -638,7 +674,7 @@ export const Trade: React.VFC<TradeProps> = () => {
                 family="mono"
                 className={styles.betaTitle}
               >
-                incorrect wallet
+                Incorrect wallet
               </Typography>
             </div>
           )}
@@ -681,6 +717,8 @@ export const Trade: React.VFC<TradeProps> = () => {
         onCancelOrder={handleCancelOrder}
         onUpdatePrice={handleUpdatePrice}
         updating={updating || cancelOrder.loading}
+        router={adapter?.router}
+        exchangesMap={exchangesMap}
       />
     </AppLayout>
   )
