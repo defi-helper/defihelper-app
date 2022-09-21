@@ -27,7 +27,7 @@ import * as styles from './lp-tokens.css'
 import * as model from './lp-tokens.model'
 import { LPContracts } from './common/lp-tokens.types'
 import { LPTokensContracts } from './common/lp-tokens-contracts'
-import { useDebounce } from '~/common/hooks'
+import { useDebounce, useQueryParams } from '~/common/hooks'
 
 export type LPTokensProps = unknown
 
@@ -50,6 +50,7 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
   const protocols = useStore(model.$protocols)
   const protocolsSelect = useStore(model.$protocolsSelect)
   const contracts = useStore(model.$contracts)
+  const contractId = useQueryParams().get('contractId')
 
   const [protocolIds, setProtocolIds] = useState<string[]>([])
   const protocolIdsRef = useRef<string[]>([])
@@ -260,6 +261,34 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
   const contractsHasNextPage =
     useStore(model.useInfiniteScrollContracts.hasNextPage) ||
     contractListLoading
+
+  useEffect(() => {
+    if (!contractId) return
+
+    const abortController = new AbortController()
+
+    const handler = async () => {
+      const newContracts = await model.fetchContractsFx({
+        signal: abortController.signal,
+        filter: {
+          id: contractId,
+        },
+      })
+
+      const [contract] = newContracts.list
+
+      if (!contract) return
+
+      handleBuyLiquidity(contract).catch(console.error)
+    }
+
+    handler()
+
+    return () => {
+      abortController.abort()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [contractId])
 
   return (
     <AppLayout title="ZAP">
