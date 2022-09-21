@@ -78,3 +78,10 @@ export const balance = style({
   color: theme.colors.common.blue1,
   marginLeft: 'auto',
 })
+
+export const error = style({
+  background: theme.colors.common.red1,
+  color: theme.colors.common.white1,
+  borderRadius: 8,
+  padding: 8,
+})

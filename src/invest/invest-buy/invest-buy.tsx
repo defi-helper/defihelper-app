@@ -105,12 +105,12 @@ export const InvestBuy = (props: InvestBuyProps) => {
       props.onSubmit?.(result?.transactionHash)
 
       return true
-    } catch {
+    } catch (error) {
       analytics.log('lp_tokens_purchase_unsuccess', {
         amount: bignumberUtils.floor(amount),
       })
 
-      return false
+      throw error
     }
   }, [lp.value, tokenAddress, amount])
 
@@ -119,18 +119,12 @@ export const InvestBuy = (props: InvestBuyProps) => {
 
     const { approve } = lp.value.buyLiquidity.methods
 
-    try {
-      const { tx } = await approve(tokenAddress, amount)
+    const { tx } = await approve(tokenAddress, amount)
 
-      await tx?.wait()
+    await tx?.wait()
 
-      tokens.retry()
-      toastsService.info('tokens approved!')
-
-      return true
-    } catch {
-      return false
-    }
+    tokens.retry()
+    toastsService.info('tokens approved!')
   }, [lp.value, tokenAddress, amount])
 
   useEffect(() => {
@@ -210,10 +204,17 @@ export const InvestBuy = (props: InvestBuyProps) => {
           onChange={(event) => setAmount(event.target.value)}
         />
       </div>
-      <InvestFee
-        tokenSymbol={billingBalance.value?.token ?? ''}
-        fee={fee.value}
-      />
+      {buyState.error || approveState.error ? (
+        <Typography variant="body3" as="div" className={styles.error}>
+          Your transaction is failed due to current market conditions. You can
+          try to change the slippage or use another token
+        </Typography>
+      ) : (
+        <InvestFee
+          tokenSymbol={billingBalance.value?.token ?? ''}
+          fee={fee.value}
+        />
+      )}
       <div className={clsx(styles.stakeActions, styles.mt)}>
         {!approved.value && (
           <Button
@@ -221,8 +222,7 @@ export const InvestBuy = (props: InvestBuyProps) => {
             color="green"
             loading={approveState.loading}
           >
-            Approve{' '}
-            {props.contract.tokens.stake.map(({ symbol }) => symbol).join('-')}
+            Approve {tokens.value?.[tokenAddress]?.symbol}
           </Button>
         )}
         <Button
