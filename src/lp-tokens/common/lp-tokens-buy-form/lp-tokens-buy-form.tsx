@@ -326,6 +326,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
                         <Link
                           color="blue"
                           href={`${config.MAIN_URL}tokenomics`}
+                          target="_blank"
                         >
                           Read more about DFH token
                         </Link>

@@ -431,7 +431,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
             You have successfully invested in pool. To earn rewards you need to
             deploy your
           </Typography>
-          <Typography as="div" align="center" className={styles.pool}>
+          <Typography as="div" align="center">
             <div className={styles.pool}>
               <InvestPoolTokens tokens={props.contract.tokens.stake} />
               {props.contract.name}

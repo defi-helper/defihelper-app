@@ -46,6 +46,7 @@ export const pool = style({
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
+  verticalAlign: 'middle',
 })
 
 export const poolRight = style([
