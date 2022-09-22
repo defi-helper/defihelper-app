@@ -38,7 +38,7 @@ export const StakingListRowSyncIndicator: React.VFC<StakingListRowSyncIndicatorP
         row.pools[0].sync.currentBlock,
         row.pools[0].sync.syncHeight
       ),
-      100
+      500
     )
 
     return (
