@@ -43,7 +43,7 @@ export type StakingAutomatesContractCardProps = {
   stopLoss?: boolean
   tokensIcons: Array<string | null>
   freshMetrics?: FreshMetrics
-  contractId: string
+  contractId?: string
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -109,34 +109,47 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               placement="left-start"
               offset={[0, 4]}
             >
-              <CanDemo>
-                <ButtonBase
-                  className={styles.dropdownItem}
-                  onClick={props.onRun}
-                >
-                  Run manually
-                </ButtonBase>
-              </CanDemo>
+              {(close) => (
+                <>
+                  <CanDemo>
+                    <ButtonBase
+                      className={styles.dropdownItem}
+                      onClick={() => {
+                        props.onRun?.()
+                        close()
+                      }}
+                    >
+                      Run manually
+                    </ButtonBase>
+                  </CanDemo>
 
-              {props.onStopLoss && (
-                <CanDemo>
-                  <ButtonBase
-                    className={styles.dropdownItem}
-                    onClick={props.onStopLoss}
-                  >
-                    Stop loss
-                  </ButtonBase>
-                </CanDemo>
+                  {props.onStopLoss && (
+                    <CanDemo>
+                      <ButtonBase
+                        className={styles.dropdownItem}
+                        onClick={() => {
+                          props.onStopLoss?.()
+                          close()
+                        }}
+                      >
+                        Stop loss
+                      </ButtonBase>
+                    </CanDemo>
+                  )}
+
+                  <CanDemo>
+                    <ButtonBase
+                      className={clsx(styles.deleteButton, styles.dropdownItem)}
+                      onClick={() => {
+                        props.onDelete?.()
+                        close()
+                      }}
+                    >
+                      Delete
+                    </ButtonBase>
+                  </CanDemo>
+                </>
               )}
-
-              <CanDemo>
-                <ButtonBase
-                  className={clsx(styles.deleteButton, styles.dropdownItem)}
-                  onClick={props.onDelete}
-                >
-                  Delete
-                </ButtonBase>
-              </CanDemo>
             </Dropdown>
           </div>
           <div className={styles.row}>
@@ -302,17 +315,24 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
           </div>
           <div className={styles.buttons}>
-            <CanDemo>
-              <Button
-                size="small"
-                className={styles.deposit}
-                disabled={props.deleting || props.refunding}
-                as={ReactRouterLink}
-                to={paths.invest.detail(props.contractId)}
-              >
-                Invest
-              </Button>
-            </CanDemo>
+            {props.contractId && (
+              <CanDemo>
+                <Button
+                  size="small"
+                  className={styles.deposit}
+                  disabled={
+                    props.deleting ||
+                    props.refunding ||
+                    props.running ||
+                    props.stopLoss
+                  }
+                  as={ReactRouterLink}
+                  to={`${paths.invest.detail(props.contractId)}?deploy=1`}
+                >
+                  Invest
+                </Button>
+              </CanDemo>
+            )}
 
             <CanDemo>
               <Button
@@ -321,7 +341,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 className={styles.refund}
                 onClick={props.onRefund}
                 loading={props.refunding}
-                disabled={props.deleting}
+                disabled={props.deleting || props.running || props.stopLoss}
               >
                 Unstake
               </Button>

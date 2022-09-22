@@ -39,7 +39,11 @@ export const InvestFee = (props: InvestFeeProps) => (
           We will charge you ${bignumberUtils.format(props.fee?.usd)} for this
           operation. This revenue will be distributed to DFH Governance token
           holders.{' '}
-          <Link color="blue" href={`${config.MAIN_URL}tokenomics`}>
+          <Link
+            color="blue"
+            href={`${config.MAIN_URL}tokenomics`}
+            target="_blank"
+          >
             Read more about DFH token
           </Link>
         </Typography>

@@ -17,8 +17,10 @@ import { config } from '~/config'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { settingsWalletModel } from '~/settings/settings-wallets'
-import * as styles from './trade-smart-sell.css'
+import { authModel } from '~/auth'
+import { UserRoleEnum } from '~/api'
 import * as model from './trade-smart-sell.model'
+import * as styles from './trade-smart-sell.css'
 
 export type TradeSmartSellProps = {
   className?: string
@@ -49,6 +51,7 @@ type FormValues = {
 export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const currentWallet = useStore(walletNetworkModel.$wallet)
   const wallets = useStore(settingsWalletModel.$wallets)
+  const user = useStore(authModel.$user)
 
   const [takeProfitFocus, toggleTakeProfitFocus] = useToggle(false)
   const [stopLossFocus, toggleStopLossFocus] = useToggle(false)
@@ -345,7 +348,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       <div
         className={clsx(
           styles.root,
-          (!config.IS_DEV || balanceOf.loading) && styles.overflow
+          ((!config.IS_DEV && user?.role !== UserRoleEnum.Admin) ||
+            balanceOf.loading) &&
+            styles.overflow
         )}
       >
         <div className={styles.inputGroup}>

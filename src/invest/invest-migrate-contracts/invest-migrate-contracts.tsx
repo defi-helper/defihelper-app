@@ -384,6 +384,7 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
           await openInvestTabsDialog({
             methods: stakingAutomatesAdapter.migrate.methods,
             onLastStep: cb,
+            contractId: contract.id,
           })
         } else {
           await openAdapter({

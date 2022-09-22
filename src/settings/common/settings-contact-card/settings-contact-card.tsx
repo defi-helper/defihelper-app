@@ -23,6 +23,7 @@ export type SettingsContactCardProps = {
   status?: UserContactStatusEnum
   notification?: UserNotificationTypeFragment
   onConnect?: () => void
+  onContinueConnect?: () => void
   onDisconnect?: () => void
   onToggleNotification?: (state: boolean, hour: number) => void
   onUpdateNotification?: (state: boolean, hour: number) => void
@@ -46,7 +47,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
     props.onUpdateNotification(state, hour)
   }
 
-  if (!props.isConnected) {
+  if (!props.isConnected && props.status !== UserContactStatusEnum.Inactive) {
     return (
       <Paper radius={8} className={clsx(styles.root, props.className)}>
         <Typography className={styles.title} as="div" variant="body3">
@@ -90,50 +91,66 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
         </Typography>
         <Typography variant="body3" as="div" className={styles.buttons}>
           <CanDemo>
-            <ButtonBase
-              onClick={!props.status ? props.onConnect : props.onDisconnect}
-              className={clsx({
-                [styles.connect]: !props.status,
-                [styles.disconnect]: props.status,
-              })}
-            >
-              {!props.status ? 'connect' : 'disconnect'}
-            </ButtonBase>
+            {props.status === UserContactStatusEnum.Inactive ? (
+              <ButtonBase onClick={props.onContinueConnect}>
+                continue connect
+              </ButtonBase>
+            ) : (
+              <ButtonBase
+                onClick={!props.status ? props.onConnect : props.onDisconnect}
+                className={clsx({
+                  [styles.connect]: !props.status,
+                  [styles.disconnect]: props.status,
+                })}
+              >
+                {!props.isConnected ? 'connect' : 'disconnect'}
+              </ButtonBase>
+            )}
           </CanDemo>
         </Typography>
       </div>
-      <div className={styles.switcher}>
-        <Typography variant="body2" as="div">
-          Portfolio Status
-        </Typography>
-        <Switch
-          disabled={!props?.onToggleNotification}
-          checked={!!props.notification}
-          onChange={handleToggleNotification}
-        />
-        <Dropdown
-          control={
-            <ButtonBase className={styles.date}>
-              {props.notification?.time
-                ? formatHour(props.notification?.time)
-                : '12:00'}{' '}
-              <Icon icon="arrowDown" width="1em" height="1em" />
-            </ButtonBase>
-          }
-          className={styles.dropdown}
-          offset={[0, 8]}
-        >
-          {Array.from(Array(24).keys()).map((v) => (
-            <ButtonBase
-              className={clsx(styles.dropdownItem)}
-              onClick={() => handleUpdateNotification(!!props.notification, v)}
-              key={v}
-            >
-              {formatHour(v)}
-            </ButtonBase>
-          ))}
-        </Dropdown>
-      </div>
+      {props.status === UserContactStatusEnum.Inactive ? (
+        <div className={styles.switcher}>
+          <Typography variant="body2" as="div">
+            Inactive
+          </Typography>
+        </div>
+      ) : (
+        <div className={styles.switcher}>
+          <Typography variant="body2" as="div">
+            Portfolio Status
+          </Typography>
+          <Switch
+            disabled={!props?.onToggleNotification}
+            checked={!!props.notification}
+            onChange={handleToggleNotification}
+          />
+          <Dropdown
+            control={
+              <ButtonBase className={styles.date}>
+                {props.notification?.time
+                  ? formatHour(props.notification?.time)
+                  : '12:00'}{' '}
+                <Icon icon="arrowDown" width="1em" height="1em" />
+              </ButtonBase>
+            }
+            className={styles.dropdown}
+            offset={[0, 8]}
+          >
+            {Array.from(Array(24).keys()).map((v) => (
+              <ButtonBase
+                className={clsx(styles.dropdownItem)}
+                onClick={() =>
+                  handleUpdateNotification(!!props.notification, v)
+                }
+                key={v}
+              >
+                {formatHour(v)}
+              </ButtonBase>
+            ))}
+          </Dropdown>
+        </div>
+      )}
 
       <div className={styles.timezone}>
         <Typography variant="body2" as="div">

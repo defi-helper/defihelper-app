@@ -120,9 +120,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
 
   const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
   const [blockchain, setBlockChain] = useState<string | null>(null)
-  const [riskLevel, setRiskLevel] = useState(
-    ContractRiskFactorEnum.NotCalculated
-  )
+  const [riskLevel, setRiskLevel] = useState(ContractRiskFactorEnum.Low)
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.Tvl,
     order: SortOrderEnum.Desc,
@@ -335,6 +333,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
           <Select
             placeholder="Risk level"
             className={styles.select}
+            value={riskLevel}
             onChange={handleChooseRiskLevel}
           >
             {Object.entries(ContractRiskFactorEnum)
@@ -355,6 +354,14 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
           />
         </div>
       </div>
+      <Paper radius={8} className={styles.banner}>
+        <Typography variant="body2" align="center" family="mono">
+          We are updating our investment contracts to a new version to provide a
+          Stop-Loss to our users.
+          <br />
+          More protocols will be available soon.
+        </Typography>
+      </Paper>
       <div className={styles.tableWrap}>
         <Paper radius={8} className={styles.table}>
           <div className={styles.tableHeader}>
@@ -419,7 +426,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
               </ButtonBase>{' '}
               {dropdown}
             </Typography>
-            <Typography variant="body2" as="div">
+            <Typography variant="body2" as="div" align="right">
               {apyBoostDropdown}{' '}
               <ButtonBase
                 onClick={handleSort({
@@ -431,6 +438,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
                       ? SortOrderEnum.Asc
                       : SortOrderEnum.Desc,
                 })}
+                className={styles.apyBoost}
               >
                 APY Boost{' '}
                 {sortBy.column ===
@@ -472,9 +480,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
                 contract={contract}
                 onOpenApy={handleOpenApy(contract.metric)}
                 key={String(contract.id + ind)}
-              >
-                {apyBoostDropdown}
-              </InvestContractCard>
+              />
             )
           })}
           {contractsHasNextPage && (

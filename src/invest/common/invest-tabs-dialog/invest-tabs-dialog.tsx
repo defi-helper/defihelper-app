@@ -25,6 +25,7 @@ export type InvestTabsDialogProps = {
   onCancel: () => void
   methods?: AutomatesType['migrate']['methods']
   onLastStep: (txHash?: string) => void
+  contractId: string
 }
 
 enum Tabs {
@@ -55,27 +56,26 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
     return props.methods?.balanceOf()
   }, [props.methods])
 
-  const canTransfer = useAsyncRetry(async () => {
+  const isApproved = useAsyncRetry(async () => {
     if (bignumberUtils.eq(amount, 0)) return true
 
-    return props.methods?.canTransfer(amount)
+    return props.methods?.isApproved(amount)
   }, [props.methods, amount])
 
-  const [transferState, onTransfer] = useAsyncFn(
+  const [approveState, handleApprove] = useAsyncFn(
     async (formValues: FormValues) => {
       if (!props.methods) return false
 
-      const { canTransfer: canTransferMethod, transfer } = props.methods
+      const { approve } = props.methods
 
       try {
-        const can = await canTransferMethod(formValues.amount)
+        const approved = await approve(formValues.amount)
 
-        if (can instanceof Error) throw can
-        if (!can) throw new Error("can't transfer")
+        if (approved instanceof Error) return approved
 
-        const { tx } = await transfer(formValues.amount)
+        if (!approved.tx) return new Error('something went wrong')
 
-        const result = await tx?.wait()
+        const result = await approved.tx.wait()
 
         props.onLastStep(result.transactionHash)
 
@@ -97,12 +97,12 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
     const { deposit, canDeposit: canDepositMethod } = props.methods
 
     try {
-      const can = await canDepositMethod()
+      const can = await canDepositMethod(amount)
 
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't deposit")
 
-      const { tx } = await deposit()
+      const { tx } = await deposit(amount)
 
       const result = await tx?.wait()
 
@@ -120,17 +120,17 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
 
       return false
     }
-  }, [])
+  }, [amount])
 
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
   }
 
   const transferred = useAsyncRetry(async () => {
-    return props.methods?.transferred()
+    return props.methods?.balanceOf()
   }, [props.methods])
 
-  const handleOnSubmit = handleSubmit(onTransfer)
+  const handleOnSubmit = handleSubmit(handleApprove)
 
   useEffect(() => {
     if (!balanceOf.value) return
@@ -139,11 +139,11 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
   }, [balanceOf.value, setValue])
 
   useEffect(() => {
-    if (transferState.value) {
+    if (approveState.value) {
       setCurrentTab(Tabs.deposit)
     }
     const timeout = setTimeout(() => {
-      if (transferState.value) {
+      if (approveState.value) {
         balanceOf.retry()
         transferred.retry()
       }
@@ -151,7 +151,7 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
 
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transferState.value])
+  }, [approveState.value])
 
   const handleConfirm = () => {
     props.onConfirm()
@@ -166,14 +166,20 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
     event.preventDefault()
 
     props.onCancel()
-    history.push(paths.LPTokens)
+    history.push(`${paths.LPTokens}?contractId=${props.contractId}`)
   }
+
+  useEffect(() => {
+    if (!isApproved.value || isApproved.value instanceof Error) return
+
+    setCurrentTab(Tabs.deposit)
+  }, [isApproved.value])
 
   return (
     <Dialog
       className={styles.root}
       onClose={
-        depositState.loading || transferState.loading || formState.isSubmitting
+        depositState.loading || approveState.loading || formState.isSubmitting
           ? handleStopTransaction
           : undefined
       }
@@ -218,7 +224,7 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
                 )}
                 tokens to your personal contract to enable automation.
               </Typography>
-              {!transferState.loading && (
+              {!approveState.loading && (
                 <>
                   <Controller
                     control={control}
@@ -242,10 +248,10 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
                         className={styles.input}
                         {...field}
                         value={field.value || '0'}
-                        error={canTransfer.value instanceof Error}
+                        error={approveState.value instanceof Error}
                         helperText={
-                          canTransfer.value instanceof Error
-                            ? canTransfer.value.message
+                          approveState.value instanceof Error
+                            ? approveState.value.message
                             : undefined
                         }
                       />
@@ -260,7 +266,7 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
                   </Typography>
                 </>
               )}
-              <Progress loading={transferState.loading} />
+              <Progress loading={approveState.loading} />
             </>
           )}
           {currentTab === Tabs.deposit && (

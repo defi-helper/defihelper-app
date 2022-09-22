@@ -46,6 +46,7 @@ export const pool = style({
   display: 'inline-flex',
   alignItems: 'center',
   gap: 4,
+  verticalAlign: 'middle',
 })
 
 export const poolRight = style([
@@ -140,3 +141,13 @@ export const input = style({})
 globalStyle(`${input} * input, ${input} > div > div, ${input} svg`, {
   background: theme.colors.background,
 })
+
+export const loader = style([
+  contractInfo,
+  {
+    padding: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+])

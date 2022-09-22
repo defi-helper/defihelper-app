@@ -30,6 +30,7 @@ import { analytics } from '~/analytics'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { InvestStopLossDialog } from '~/invest/common/invest-stop-loss-dialog'
 import * as model from '~/staking/staking-automates/staking-automates.model'
+import * as deployedContractModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './invest-deployed-contracts.css'
 
@@ -183,6 +184,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               }
             )
           }
+        } finally {
+          model.reset()
         }
       }
     const handleRunManually =
@@ -292,7 +295,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
       switchNetwork(contract.wallet.network).catch(console.error)
 
     const handleStopLoss =
-      ({ contract }: typeof contracts[number]) =>
+      ({ contract, id }: typeof contracts[number]) =>
       async () => {
         try {
           if (!contract) return
@@ -316,7 +319,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
           const stakingAutomatesAdapter = await model.fetchAdapterFx({
             protocolAdapter: contract.protocol.adapter,
             contractAdapter: contract.automate.autorestake,
-            contractId: contract.id,
+            contractId: id,
             contractAddress: deployedContract.address,
             provider: currentWallet.provider,
             chainId: String(currentWallet.chainId),
@@ -331,20 +334,26 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             protocol: contract.blockchain,
           })
 
-          await openStopLossDialog({
+          const res = await openStopLossDialog({
             adapter: stakingAutomatesAdapter.stopLoss,
-            mainTokens: [
-              ...contract.tokens.reward,
-              ...contract.tokens.stake,
-            ].map((token) => ({
+            mainTokens: contract.tokens.stake.map((token) => ({
               logoUrl: token.alias?.logoUrl ?? '',
               symbol: token.symbol,
               address: token.address,
             })),
             withdrawTokens: tokens,
           })
+
+          await deployedContractModel.enableStopLossFx({
+            contract: id,
+            path: res.path,
+            amountOut: res.amountOut,
+            amountOutMin: res.amountOutMin,
+          })
         } catch (error) {
           console.error(error)
+        } finally {
+          model.reset()
         }
       }
 
@@ -430,7 +439,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   deleting={deployedContract.deleting}
                   running={deployedContract.running}
                   refunding={deployedContract.refunding}
-                  contractId={deployedContract.id}
+                  contractId={deployedContract.contract?.id}
+                  stopLoss={deployedContract.stopLoss}
                   error={
                     deployedContract.contractWallet?.billing?.balance
                       ?.lowFeeFunds ||

@@ -50,6 +50,8 @@ const MENU: MenuItem[] = [
     title: 'Automations',
     path: paths.automations.list,
     icon: 'energy',
+    subject: 'User',
+    can: 'read',
   },
   {
     title: 'ZAP',

@@ -48,6 +48,7 @@ export const apyBoost = style([
     display: 'flex',
     gap: 16,
     alignItems: 'center',
+    justifyContent: 'flex-end',
   },
 ])
 

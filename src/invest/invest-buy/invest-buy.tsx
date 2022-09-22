@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
-import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
+import { useAsync, useAsyncFn, useAsyncRetry, useThrottle } from 'react-use'
 
 import { Button } from '~/common/button'
 import { Select, SelectOption } from '~/common/select'
@@ -52,11 +52,16 @@ export const InvestBuy = (props: InvestBuyProps) => {
     })
   }, [props.contract, currentWallet])
 
-  const approved = useAsyncRetry(async () => {
-    if (bignumberUtils.eq(amount, 0) || !lp.value) return true
+  const amountThrottled = useThrottle(amount, 1000)
 
-    return lp.value.buyLiquidity.methods.isApproved(tokenAddress, amount)
-  }, [lp.value, tokenAddress, amount])
+  const approved = useAsyncRetry(async () => {
+    if (bignumberUtils.eq(amountThrottled, 0) || !lp.value) return true
+
+    return lp.value.buyLiquidity.methods.isApproved(
+      tokenAddress,
+      amountThrottled
+    )
+  }, [lp.value, tokenAddress, amountThrottled])
 
   const tokens = useAsyncRetry(async () => {
     if (!lp.value) return
@@ -100,12 +105,12 @@ export const InvestBuy = (props: InvestBuyProps) => {
       props.onSubmit?.(result?.transactionHash)
 
       return true
-    } catch {
+    } catch (error) {
       analytics.log('lp_tokens_purchase_unsuccess', {
         amount: bignumberUtils.floor(amount),
       })
 
-      return false
+      throw error
     }
   }, [lp.value, tokenAddress, amount])
 
@@ -114,24 +119,21 @@ export const InvestBuy = (props: InvestBuyProps) => {
 
     const { approve } = lp.value.buyLiquidity.methods
 
-    try {
-      const { tx } = await approve(tokenAddress, amount)
+    const { tx } = await approve(tokenAddress, amount)
 
-      await tx?.wait()
+    await tx?.wait()
 
-      tokens.retry()
-      toastsService.info('tokens approved!')
-
-      return true
-    } catch {
-      return false
-    }
+    tokens.retry()
+    approved.retry()
+    toastsService.info('tokens approved!')
   }, [lp.value, tokenAddress, amount])
 
   useEffect(() => {
-    approved.retry()
+    if (!lp.value) return
+
+    setTokenAddress(lp.value.tokens?.[0].address ?? '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approved.value, approveState.value, amount])
+  }, [lp.value])
 
   const fee = useAsync(
     async () => lp.value?.buyLiquidity.methods.fee(),
@@ -198,10 +200,17 @@ export const InvestBuy = (props: InvestBuyProps) => {
           onChange={(event) => setAmount(event.target.value)}
         />
       </div>
-      <InvestFee
-        tokenSymbol={billingBalance.value?.token ?? ''}
-        fee={fee.value}
-      />
+      {buyState.error || approveState.error ? (
+        <Typography variant="body3" as="div" className={styles.error}>
+          Your transaction is failed due to current market conditions. You can
+          try to change the slippage or use another token
+        </Typography>
+      ) : (
+        <InvestFee
+          tokenSymbol={billingBalance.value?.token ?? ''}
+          fee={fee.value}
+        />
+      )}
       <div className={clsx(styles.stakeActions, styles.mt)}>
         {!approved.value && (
           <Button
@@ -209,8 +218,7 @@ export const InvestBuy = (props: InvestBuyProps) => {
             color="green"
             loading={approveState.loading}
           >
-            Approve{' '}
-            {props.contract.tokens.stake.map(({ symbol }) => symbol).join('-')}
+            Approve {tokens.value?.[tokenAddress]?.symbol}
           </Button>
         )}
         <Button

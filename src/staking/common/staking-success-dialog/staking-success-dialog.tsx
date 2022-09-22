@@ -7,7 +7,7 @@ const MESSAGES = {
   stake: 'Staked',
   unstake: 'Unstaked',
   claim: 'Claimed',
-  buyLiquidity: 'Bought',
+  buyLiquidity: 'Sold',
 }
 
 export type StakingSuccessDialogProps = {

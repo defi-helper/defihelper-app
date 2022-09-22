@@ -20,12 +20,14 @@ import {
   AutomateTriggerTypeEnum,
   UserContactBrokerEnum,
 } from '~/api'
-import { useDialog } from '~/common/dialog'
-import { InvestDeployDialog } from '~/invest/common/invest-deploy-dialog'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { analytics } from '~/analytics'
 import { toastsService } from '~/toasts'
 import { paths } from '~/paths'
+import { bignumberUtils } from '~/common/bignumber-utils'
+import { authModel } from '~/auth'
+import { useQueryParams } from '~/common/hooks'
+import { Loader } from '~/common/loader'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as walletsModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
@@ -34,8 +36,6 @@ import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as telegramModel from '~/settings/settings-telegram/settings-telegram.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
-import { bignumberUtils } from '~/common/bignumber-utils'
-import { authModel } from '~/auth'
 
 export type InvestStakingStepsProps = {
   className?: string
@@ -46,7 +46,6 @@ const DeployContractStep = (props: {
   onSubmit: () => void
   contract: InvestContract
 }) => {
-  const [openInvestDeployDialog] = useDialog(InvestDeployDialog)
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(walletsModel.$wallets)
 
@@ -70,7 +69,7 @@ const DeployContractStep = (props: {
 
     if (!findedWallet || !prototypeAddress) return
 
-    const deployAdapter = await deployModel.fetchDeployAdapterFx({
+    const adapter = await deployModel.fetchDeployAdapterFx({
       address: prototypeAddress,
       protocol: props.contract.protocol.adapter,
       contract: props.contract.automate.autorestake,
@@ -79,13 +78,25 @@ const DeployContractStep = (props: {
       contractAddress: props.contract.address,
     })
 
-    const stepsResult = await openInvestDeployDialog({
-      steps: deployAdapter.deploy,
-    })
+    const [deployAdapter] = adapter.deploy
+
+    const info = await deployAdapter.info()
+
+    const values = info.inputs?.map(({ value }) => value)
+
+    if (!values) return
+
+    const can = await deployAdapter.can(...values)
+
+    if (can instanceof Error) return
+
+    const { tx, getAddress } = await deployAdapter.send(...values)
+
+    await tx.wait()
 
     const deployedContract = await deployModel.deployFx({
-      proxyAddress: stepsResult.address,
-      inputs: stepsResult.inputs,
+      proxyAddress: await getAddress(),
+      inputs: values,
       protocol: props.contract.protocol.id,
       adapter: props.contract.automate.autorestake,
       contract: props.contract.id,
@@ -144,7 +155,7 @@ const DeployContractStep = (props: {
         />
         <Typography as="div" align="center">
           To control your investments you need to deploy your personal contract.
-          Later you can set up stop-loss and take profit.
+          Later you can set up stop-loss.
         </Typography>
         <Typography
           variant="body2"
@@ -206,20 +217,26 @@ const StakeTokensStep = (props: {
     })
   }, [currentWallet])
 
+  const balanceOf = useAsync(async () => {
+    if (!adapter.value) return
+
+    return adapter.value.deposit.methods.balanceOf()
+  }, [adapter.value])
+
   const [depositState, onDeposit] = useAsyncFn(async () => {
-    if (!adapter.value) return false
+    if (!adapter.value || !balanceOf.value) return false
     analytics.log('auto_staking_migrate_dialog_deposit_click')
 
     const { deposit, canDeposit: canDepositMethod } =
       adapter.value.deposit.methods
 
     try {
-      const can = await canDepositMethod()
+      const can = await canDepositMethod(balanceOf.value)
 
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't deposit")
 
-      const { tx } = await deposit()
+      const { tx } = await deposit(balanceOf.value)
 
       const result = await tx?.wait()
 
@@ -235,7 +252,38 @@ const StakeTokensStep = (props: {
 
       return false
     }
-  }, [adapter.value])
+  }, [adapter.value, balanceOf.value])
+
+  const isApproved = useAsyncRetry(async () => {
+    if (!balanceOf.value) return
+
+    return adapter.value?.deposit.methods.isApproved(balanceOf.value)
+  }, [balanceOf.value, adapter.value])
+
+  const [approve, handleApprove] = useAsyncFn(async () => {
+    if (!adapter.value || !balanceOf.value) return false
+
+    try {
+      const can = await adapter.value.deposit.methods.approve(balanceOf.value)
+
+      if (can instanceof Error) throw can
+      if (!can) throw new Error("can't transfer")
+
+      const { tx } = can
+
+      await tx?.wait()
+
+      isApproved.retry()
+
+      return true
+    } catch (error) {
+      if (error instanceof Error) {
+        toastsService.error(error.message)
+      }
+
+      return false
+    }
+  }, [adapter.value, balanceOf.value])
 
   return (
     <React.Fragment key={3}>
@@ -256,12 +304,16 @@ const StakeTokensStep = (props: {
       <Typography align="center" className={styles.stakeHint}>
         To earn{' '}
         {props.contract.tokens.reward.map(({ symbol }) => symbol).join('-')}{' '}
-        tokens as a reward - your need to stake your investment in
+        tokens as a reward - you need to stake your investment in{' '}
         {props.contract.protocol.name} protocol.
       </Typography>
       <div className={clsx(styles.stakeActions, styles.mt)}>
-        {false && (
-          <Button color="green">
+        {!isApproved.value && (
+          <Button
+            color="green"
+            onClick={handleApprove}
+            loading={approve.loading}
+          >
             Approve{' '}
             {props.contract.tokens.stake.map(({ symbol }) => symbol).join('-')}
           </Button>
@@ -270,6 +322,7 @@ const StakeTokensStep = (props: {
           onClick={onDeposit}
           color="green"
           loading={depositState.loading}
+          disabled={approve.loading || !isApproved.value}
         >
           STAKE TOKENS
         </Button>
@@ -284,6 +337,8 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const user = useStore(authModel.$user)
   const userContact = useStore(telegramModel.$userContact)
   const userContacts = useStore(settingsContacts.$userContactList)
+
+  const deploy = useQueryParams().get('deploy')
 
   const contacts = useMemo(
     () => (userContact ? [...userContacts, userContact] : userContacts),
@@ -346,7 +401,9 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   }, [adapter.value])
 
   const [withDraw, handleWithDraw] = useAsyncFn(async () => {
-    return adapter.value?.migrate.methods.withdraw().then(handleNextStep)
+    const res = await adapter.value?.migrate.methods.withdraw()
+
+    return res?.tx.wait().then(handleNextStep)
   }, [adapter.value])
 
   const initialSteps = {
@@ -371,18 +428,15 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
             className={styles.checked}
           />
           <Typography as="div" align="center">
-            You have successfully invested in pool. To earn rewards you need to
-            deploy your
+            You have successfully invested in the pool. To earn rewards you need
+            to deploy your
           </Typography>
-          <Typography as="div" align="center" className={styles.pool}>
+          <Typography as="div" align="center">
             <div className={styles.pool}>
               <InvestPoolTokens tokens={props.contract.tokens.stake} />
               {props.contract.name}
             </div>{' '}
-            contract
-          </Typography>
-          <Typography as="div" align="center">
-            and stake tokens.
+            contract and stake tokens.
           </Typography>
         </div>
         <Button onClick={handleNextStep} color="green" className={styles.mt}>
@@ -443,11 +497,13 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         ? 'migrate'
         : 'buy'
     ],
-    <DeployContractStep
-      key={2}
-      onSubmit={handleNextStep}
-      contract={props.contract}
-    />,
+    !deploy ? (
+      <DeployContractStep
+        key={2}
+        onSubmit={handleNextStep}
+        contract={props.contract}
+      />
+    ) : null,
     <StakeTokensStep
       key={3}
       onSubmit={handleNextStep}
@@ -472,21 +528,23 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
           className={styles.checked}
         />
         <Typography as="div" align="center">
-          GREAT! You succefully
+          SUCCESS! You staked
           <br />
-          staked your tokens
+          your tokens
         </Typography>
       </div>
-      <Typography
-        as="div"
-        align="center"
-        variant="body2"
-        className={styles.connnectTelegramHint1}
-      >
-        Connect your telegram and get daily updates
-        <br />
-        about your portfolio
-      </Typography>
+      {!telegram && (
+        <Typography
+          as="div"
+          align="center"
+          variant="body2"
+          className={styles.connnectTelegramHint1}
+        >
+          Connect your Telegram account and get daily
+          <br />
+          updates about your portfolio
+        </Typography>
+      )}
       <div className={clsx(styles.connectTelegramActions, styles.mt)}>
         {!telegram ? (
           <>
@@ -531,13 +589,21 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         OPEN TELEGRAM
       </Button>
     </React.Fragment>,
-  ]
+  ].filter(Boolean)
 
   const currentStepObj = steps[currentStep % steps.length]
 
   return (
     <div className={clsx(styles.root, props.className)}>
-      <div className={styles.content}>{currentStepObj}</div>
+      <div className={styles.content}>
+        {canWithdraw.loading || balanceOf.loading || adapter.loading ? (
+          <div className={styles.loader}>
+            <Loader height="36" />
+          </div>
+        ) : (
+          currentStepObj
+        )}
+      </div>
     </div>
   )
 }

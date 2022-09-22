@@ -6,11 +6,9 @@ import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { UserContactBrokerEnum } from '~/api/_generated-types'
-import { useDialog } from '~/common/dialog'
 import notification from '~/assets/images/notification.png'
 import * as authModel from '~/auth/auth.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
-import { SettingsConversationDialog } from '~/settings/common'
 import * as styles from './settings-telegram.css'
 import * as model from './settings-telegram.model'
 import { dateUtils } from '~/common/date-utils'
@@ -24,7 +22,6 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   const user = useStore(authModel.$user)
   const loading = useStore(settingsContacts.fetchUserContactListFx.pending)
   const userReady = useStore(authModel.$userReady)
-  const [openSettingsConversationDialog] = useDialog(SettingsConversationDialog)
 
   const leftDays = user?.portfolioCollectingFreezedAt
     ? Math.round(dateUtils.leftDays(user.portfolioCollectingFreezedAt))
@@ -42,7 +39,6 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   if (telegram?.address || loading || !userReady || !leftDays) return <></>
 
   const handleOpenTelegram = () => {
-    openSettingsConversationDialog().catch(console.error)
     model.openTelegram(undefined)
   }
 
@@ -51,23 +47,23 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
       radius={4}
       className={clsx(
         styles.root,
-        leftDays > 10 && styles.green,
+        leftDays > 4 && styles.green,
         leftDays < 1 && styles.red,
-        leftDays > 1 && leftDays < 10 && styles.yellow
+        leftDays > 1 && leftDays < 4 && styles.yellow
       )}
     >
       <img alt="" src={notification} className={styles.notification} />
       <Typography variant="body3" as="div" className={styles.text}>
         {leftDays > 0 ? (
           <>
-            We will stop to track your portfolio in {leftDays}{' '}
-            {pluralize(leftDays, 'day')} if you will not connect your telegram
+            We will stop tracking your portfolio in {leftDays}{' '}
+            {pluralize(leftDays, 'day')} if you do not connect your Telegram
             account.
           </>
         ) : (
           <>
-            Tracking of your portfolio has been stopped because you have not
-            connected telegram.
+            We are no longer tracking your portfolio because you have not
+            connected your Telegram account
           </>
         )}
       </Typography>

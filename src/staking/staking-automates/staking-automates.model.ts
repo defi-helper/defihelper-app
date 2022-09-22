@@ -92,9 +92,16 @@ export const $automatesContracts = stakingAutomatesDomain
   .createStore<StakingAutomatesContract[]>([])
   .on(fetchAutomatesContractsFx.doneData, (_, { list }) => list)
   .on(fetchAdapterFx, (state, payload) =>
-    state.map((contract) =>
-      contract.id === payload.contractId
+    state.map((contract) => {
+      return contract.id === payload.contractId
         ? { ...contract, [LOAD_TYPES[payload.action]]: true }
+        : contract
+    })
+  )
+  .on(fetchAdapterFx.fail, (state, { params }) =>
+    state.map((contract) =>
+      contract.id === params.contractId
+        ? { ...contract, [LOAD_TYPES[params.action]]: false }
         : contract
     )
   )
@@ -194,7 +201,7 @@ export const fetchMetricsFx = stakingAutomatesDomain.createEffect(
         const previousAcc = await acc
 
         try {
-          if (!contract.contract) return previousAcc
+          if (!contract.contractWallet || !contract.contract) return previousAcc
 
           const adapter = await loadAdapter(
             buildAdaptersUrl(contract.protocol.adapter)
@@ -212,7 +219,7 @@ export const fetchMetricsFx = stakingAutomatesDomain.createEffect(
 
           const adapterObj = await adapterFn(
             networkProvider,
-            contract.contract.address,
+            contract.contractWallet.address,
             {
               blockNumber: 'latest',
               signer: networkProvider?.getSigner(),

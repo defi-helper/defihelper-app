@@ -32,11 +32,13 @@ import { TradePlusMinus } from './common/trade-plus-minus'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { pairMock } from './common/trade-dev.mock'
-import * as styles from './trade.css'
-import * as model from './trade.model'
-import * as tradeOrdersModel from './trade-orders/trade-orders.model'
 import { switchNetwork } from '~/wallets/common'
 import { NumericalInput } from '~/common/numerical-input'
+import { authModel } from '~/auth'
+import { UserRoleEnum } from '~/api'
+import * as model from './trade.model'
+import * as tradeOrdersModel from './trade-orders/trade-orders.model'
+import * as styles from './trade.css'
 
 export type TradeProps = unknown
 
@@ -93,6 +95,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const history = useStore(model.$history)
   const updating = useStore(model.fetchHistoryFx.pending)
+  const user = useStore(authModel.$user)
 
   const wallets = useMemo(
     () =>
@@ -333,12 +336,6 @@ export const Trade: React.VFC<TradeProps> = () => {
     await switchNetwork(wallet.network).catch(console.error)
   }, [wallet])
 
-  const currentWalletCorrect =
-    currentWallet?.chainId === 'main'
-      ? currentWallet.account === wallet?.address
-      : currentWallet?.account?.toLocaleUpperCase() ===
-        wallet?.address.toLocaleUpperCase()
-
   const currentNetworkCorrect =
     currentWallet?.chainId === 'main'
       ? currentWallet?.chainId === wallet?.network
@@ -541,9 +538,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           <div
             className={clsx(
               styles.selectsBody,
-              ((updating && !history) ||
-                !currentWalletCorrect ||
-                !config.IS_DEV) &&
+              ((updating && !history) || !config.IS_DEV) &&
                 styles.selectsBodyBlur
             )}
           >
@@ -666,19 +661,7 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Button>
             </div>
           )}
-          {!currentWalletCorrect && (
-            <div className={styles.beta}>
-              <Typography
-                variant="body2"
-                align="center"
-                family="mono"
-                className={styles.betaTitle}
-              >
-                Incorrect wallet
-              </Typography>
-            </div>
-          )}
-          {!config.IS_DEV && (
+          {!config.IS_DEV && user?.role !== UserRoleEnum.Admin && (
             <div className={styles.beta}>
               <Typography
                 variant="body2"
