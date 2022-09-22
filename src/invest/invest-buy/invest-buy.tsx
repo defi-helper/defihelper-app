@@ -124,13 +124,9 @@ export const InvestBuy = (props: InvestBuyProps) => {
     await tx?.wait()
 
     tokens.retry()
+    approved.retry()
     toastsService.info('tokens approved!')
   }, [lp.value, tokenAddress, amount])
-
-  useEffect(() => {
-    approved.retry()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approved.value, approveState.value, amountThrottled])
 
   useEffect(() => {
     if (!lp.value) return
