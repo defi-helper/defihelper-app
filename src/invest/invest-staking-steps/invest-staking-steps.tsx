@@ -428,8 +428,8 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
             className={styles.checked}
           />
           <Typography as="div" align="center">
-            You have successfully invested in the pool. To earn rewards you need to
-            deploy your
+            You have successfully invested in the pool. To earn rewards you need
+            to deploy your
           </Typography>
           <Typography as="div" align="center">
             <div className={styles.pool}>
