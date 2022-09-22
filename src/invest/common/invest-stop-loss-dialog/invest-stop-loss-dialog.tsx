@@ -46,9 +46,9 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   }, [props.adapter, mainToken, withdrawToken])
 
   const price = useAsyncRetry(async () => {
-    if (!path.value) return 20
+    if (!path.value) return
 
-    return 20
+    return props.adapter?.methods.amountOut(path.value)
   }, [props.adapter, path.value])
 
   const percentThrottled = useThrottle(percent, 1000)
