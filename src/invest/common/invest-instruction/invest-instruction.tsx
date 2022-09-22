@@ -39,7 +39,7 @@ const INSTRUCTION = [
         size="medium"
         onClick={() => analytics.log('auto_staking_read_watch_video_click')}
       >
-        Watch video
+        Watch video how to invest
       </Button>
     ),
   },
