@@ -124,6 +124,7 @@ export const InvestBuy = (props: InvestBuyProps) => {
     await tx?.wait()
 
     tokens.retry()
+    approved.retry()
     toastsService.info('tokens approved!')
   }, [lp.value, tokenAddress, amount])
 
