@@ -1,7 +1,7 @@
 import { useStore } from 'effector-react'
 import { useEffect, useState } from 'react'
 import { Link as ReactRouterLink, useParams } from 'react-router-dom'
-import { useMedia } from 'react-use'
+import { useAsyncFn, useMedia } from 'react-use'
 
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
@@ -16,6 +16,7 @@ import { WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { InvestContractInfo } from '~/invest/common/invest-contract-info'
 import { InvestStakingSteps } from '~/invest/invest-staking-steps'
+import { switchNetwork } from '~/wallets/common'
 import * as styles from './invest-detail.css'
 import * as model from './invest-detail.model'
 
@@ -32,6 +33,12 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
   const isDesktop = useMedia('(min-width: 960px)')
 
   const currentWallet = walletNetworkModel.useWalletNetwork()
+
+  const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
+    if (!contract) return
+
+    return switchNetwork(contract.network)
+  }, [contract])
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -102,7 +109,15 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
             <WalletConnect
               fallback={<Button color="green">Connect wallet</Button>}
             >
-              <Button color="green" onClick={() => setNext(true)}>
+              <Button
+                color="green"
+                onClick={
+                  contract.network !== currentWallet?.chainId
+                    ? handleSwitchNetwork
+                    : () => setNext(true)
+                }
+                loading={switchNetworkState.loading}
+              >
                 Invest
               </Button>
             </WalletConnect>
