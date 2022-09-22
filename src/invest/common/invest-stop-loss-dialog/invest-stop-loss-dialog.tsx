@@ -46,9 +46,9 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   }, [props.adapter, mainToken, withdrawToken])
 
   const price = useAsyncRetry(async () => {
-    if (!path.value) return
+    if (!path.value) return 20
 
-    return props.adapter?.methods.amountOut(path.value)
+    return 20
   }, [props.adapter, path.value])
 
   const percentThrottled = useThrottle(percent, 1000)
@@ -57,31 +57,33 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   useEffect(() => {
     setStopLossPrice(
       bignumberUtils.toFixed(
-        bignumberUtils.plus(
+        bignumberUtils.minus(
+          price.value,
           bignumberUtils.mul(
             bignumberUtils.div(percentThrottled, 100),
             price.value
-          ),
-          price.value
+          )
         )
       )
     )
   }, [price.value, percentThrottled])
 
   useEffect(() => {
-    setPercent(
-      Number(
-        bignumberUtils.toFixed(
-          bignumberUtils.mul(
-            bignumberUtils.div(
-              bignumberUtils.minus(stopLossPriceThrottled, price.value),
-              price.value
-            ),
-            100
-          )
+    const newPercent = Number(
+      bignumberUtils.toFixed(
+        bignumberUtils.mul(
+          bignumberUtils.div(
+            bignumberUtils.minus(stopLossPriceThrottled, price.value),
+            price.value
+          ),
+          100
         )
       )
     )
+
+    if (newPercent < 0) return
+
+    setPercent(newPercent)
   }, [price.value, stopLossPriceThrottled])
 
   const [confirm, handleConfirm] = useAsyncFn(async () => {
