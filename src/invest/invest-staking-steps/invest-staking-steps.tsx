@@ -36,6 +36,7 @@ import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as telegramModel from '~/settings/settings-telegram/settings-telegram.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
+import { settingsWalletModel } from '~/settings/settings-wallets'
 
 export type InvestStakingStepsProps = {
   className?: string
@@ -337,6 +338,8 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const user = useStore(authModel.$user)
   const userContact = useStore(telegramModel.$userContact)
   const userContacts = useStore(settingsContacts.$userContactList)
+  const currentWallet = walletNetworkModel.useWalletNetwork()
+  const wallets = useStore(settingsWalletModel.$wallets)
 
   const deploy = useQueryParams().get('deploy')
 
@@ -351,15 +354,34 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
 
   const [currentStep, setCurrentStep] = useState(0)
 
-  const handleNextStep = () => {
+  const handleNextStep = (txId?: string) => {
     setCurrentStep(currentStep + 1)
+
+    if (!txId) return
+
+    const findedWallet = wallets.find((wallet) => {
+      const sameAddreses =
+        String(currentWallet?.chainId) === 'main'
+          ? currentWallet?.account === wallet.address
+          : currentWallet?.account?.toLowerCase() === wallet.address
+
+      return sameAddreses && String(currentWallet?.chainId) === wallet.network
+    })
+
+    if (!findedWallet) return
+
+    stakingAutomatesModel
+      .scanWalletMetricFx({
+        wallet: findedWallet.id,
+        contract: props.contract.id,
+        txId,
+      })
+      .catch(console.error)
   }
 
   const handleOpenTelegram = () => {
     telegramModel.openTelegram(undefined)
   }
-
-  const currentWallet = walletNetworkModel.useWalletNetwork()
 
   const adapter = useAsync(async () => {
     if (!user) return
@@ -403,7 +425,9 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const [withDraw, handleWithDraw] = useAsyncFn(async () => {
     const res = await adapter.value?.migrate.methods.withdraw()
 
-    return res?.tx.wait().then(handleNextStep)
+    return res?.tx
+      .wait()
+      .then(({ transactionHash }) => handleNextStep(transactionHash))
   }, [adapter.value])
 
   const initialSteps = {
@@ -439,7 +463,11 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
             contract and stake tokens.
           </Typography>
         </div>
-        <Button onClick={handleNextStep} color="green" className={styles.mt}>
+        <Button
+          onClick={() => handleNextStep()}
+          color="green"
+          className={styles.mt}
+        >
           NEXT STEP
         </Button>
       </React.Fragment>,

@@ -103,26 +103,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
         )
           return
 
-        const onLastStep = (txId?: string) => {
-          if (!contract.contract || !contract.contractWallet) return
-
-          model
-            .scanWalletMetricFx({
-              wallet: contract.contractWallet.id,
-              contract: contract.contract.id,
-              txId,
-            })
-            .catch(console.error)
-
-          model
-            .scanWalletMetricFx({
-              wallet: findedWallet.id,
-              contract: contract.id,
-              txId,
-            })
-            .catch(console.error)
-        }
-
         const can = await adapter.refund.methods.can()
         if (can instanceof Error) throw can
 
@@ -130,7 +110,23 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
         const tx = await refund.tx.wait()
 
-        onLastStep(tx.transactionHash)
+        if (contract.contract && contract.contractWallet) {
+          model
+            .scanWalletMetricFx({
+              wallet: contract.contractWallet.id,
+              contract: contract.contract.id,
+              txId: tx.transactionHash,
+            })
+            .catch(console.error)
+
+          model
+            .scanWalletMetricFx({
+              wallet: findedWallet.id,
+              contract: contract.id,
+              txId: tx.transactionHash,
+            })
+            .catch(console.error)
+        }
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
