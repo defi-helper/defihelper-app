@@ -61,10 +61,6 @@ export const PortfolioAssetsHeader: React.VFC<PortfolioAssetsHeaderProps> = (
       <Typography variant="body3" align="right">
         Value 24h
       </Typography>
-
-      <Typography variant="body3" align="right">
-        Value 7d
-      </Typography>
     </div>
   )
 }

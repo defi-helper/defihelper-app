@@ -108,9 +108,6 @@ export const PortfolioAssetCard: React.VFC<PortfolioAssetCardProps> = (
       <Typography variant="body2" align="right">
         <PercentChangeRender value={asset.metric.myUSDChange.day} />
       </Typography>
-      <Typography variant="body2" align="right">
-        <PercentChangeRender value={asset.metric.myUSDChange.week} />
-      </Typography>
     </div>
   )
 }

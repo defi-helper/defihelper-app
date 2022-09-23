@@ -16,7 +16,6 @@ export const WALLET_LIST_METRICS = gql`
             usd
             worth
             worthChange {
-              week
               day
             }
           }

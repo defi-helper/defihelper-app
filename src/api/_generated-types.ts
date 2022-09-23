@@ -1265,8 +1265,6 @@ export type MeInputType = {
 export type MetricChangeType = {
   __typename?: 'MetricChangeType'
   day: Scalars['String']
-  week: Scalars['String']
-  month: Scalars['String']
 }
 
 export type MetricChartType = {
@@ -5111,19 +5109,19 @@ export type MyMetricQuery = { __typename?: 'Query' } & {
       > & {
           balanceUSDChange: { __typename?: 'MetricChangeType' } & Pick<
             MetricChangeType,
-            'week' | 'day'
+            'day'
           >
           stakedUSDChange: { __typename?: 'MetricChangeType' } & Pick<
             MetricChangeType,
-            'week' | 'day'
+            'day'
           >
           earnedUSDChange: { __typename?: 'MetricChangeType' } & Pick<
             MetricChangeType,
-            'week' | 'day'
+            'day'
           >
           worthChange: { __typename?: 'MetricChangeType' } & Pick<
             MetricChangeType,
-            'week' | 'day'
+            'day'
           >
         }
     }
@@ -5165,7 +5163,7 @@ export type PortfolioAssetByProtocolFragment = {
     > & {
         myUSDChange: { __typename?: 'MetricChangeType' } & Pick<
           MetricChangeType,
-          'day' | 'week'
+          'day'
         >
       }
   }
@@ -5183,7 +5181,7 @@ export type PortfolioAssetByWalletFragment = {
   > & {
       usdChange: { __typename?: 'MetricChangeType' } & Pick<
         MetricChangeType,
-        'day' | 'week'
+        'day'
       >
     }
 }
@@ -5198,7 +5196,7 @@ export type PortfolioAssetFragment = { __typename?: 'TokenAlias' } & Pick<
     > & {
         myUSDChange: { __typename?: 'MetricChangeType' } & Pick<
           MetricChangeType,
-          'day' | 'week'
+          'day'
         >
       }
   }
@@ -6213,7 +6211,7 @@ export type WalletListMetricsQuery = { __typename?: 'Query' } & {
                 > & {
                     worthChange: { __typename?: 'MetricChangeType' } & Pick<
                       MetricChangeType,
-                      'week' | 'day'
+                      'day'
                     >
                   }
                 billing: { __typename?: 'WalletBillingType' } & {

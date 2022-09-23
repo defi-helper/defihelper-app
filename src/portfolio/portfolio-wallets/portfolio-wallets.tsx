@@ -176,10 +176,6 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
             <Typography variant="body3" align="right">
               Value 24h
             </Typography>
-
-            <Typography variant="body3" align="right">
-              Value 7d
-            </Typography>
           </div>
           <div className={styles.tableBody}>
             {[...wallets.nonEmpty, ...wallets.empty].map((wallet) => (
@@ -220,12 +216,6 @@ export const PortfolioWallets: React.VFC<PortfolioWalletsProps> = (props) => {
                   <Typography variant="body2" as="div" align="right">
                     <WalletWorthChanges
                       value={wallet.metric?.worthChange.day}
-                    />
-                  </Typography>
-
-                  <Typography variant="body2" as="div" align="right">
-                    <WalletWorthChanges
-                      value={wallet.metric?.worthChange.week}
                     />
                   </Typography>
                   <ButtonBase

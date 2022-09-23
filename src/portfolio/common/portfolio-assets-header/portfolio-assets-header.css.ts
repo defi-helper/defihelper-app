@@ -4,7 +4,7 @@ import { theme } from '~/common/theme'
 
 export const root = style({
   display: 'grid',
-  gridTemplateColumns: '10% 26% 20% 12% 12% 10% 10%',
+  gridTemplateColumns: '10% 26% 20% 12% 17% 15%',
 
   selectors: {
     '&:not(:last-child)': {
