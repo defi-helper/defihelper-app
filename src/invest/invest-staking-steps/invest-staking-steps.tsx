@@ -1,7 +1,7 @@
 import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { Button } from '~/common/button'
@@ -36,6 +36,7 @@ import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as telegramModel from '~/settings/settings-telegram/settings-telegram.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
+import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 
 export type InvestStakingStepsProps = {
@@ -354,6 +355,29 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
 
   const [currentStep, setCurrentStep] = useState(0)
 
+  const lp = useAsync(async () => {
+    if (!currentWallet?.account || !props.contract.automate.lpTokensManager)
+      return
+
+    return stakingAdaptersModel.buyLPFx({
+      account: currentWallet.account,
+      provider: currentWallet.provider,
+      chainId: props.contract.network,
+      router: props.contract.automate.lpTokensManager.router,
+      pair: props.contract.automate.lpTokensManager.pair,
+      network: props.contract.network,
+      protocol: props.contract.blockchain,
+    })
+  }, [props.contract, currentWallet])
+
+  const hasLpTokens = useAsync(async () => {
+    if (!props.contract.tokens.stakeBase) return
+
+    return lp.value?.buyLiquidity.methods.balanceOf(
+      props.contract.tokens.stakeBase.address
+    )
+  }, [lp.value, props.contract])
+
   const handleNextStep = (txId?: string) => {
     setCurrentStep(currentStep + 1)
 
@@ -430,9 +454,21 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       .then(({ transactionHash }) => handleNextStep(transactionHash))
   }, [adapter.value])
 
+  useEffect(() => {
+    if (!hasLpTokens.value) return
+
+    setCurrentStep(1)
+  }, [hasLpTokens.value])
+
   const initialSteps = {
     buy: [
-      <InvestBuy key={0} contract={props.contract} onSubmit={handleNextStep} />,
+      <InvestBuy
+        key={0}
+        contract={props.contract}
+        onSubmit={handleNextStep}
+        adapter={lp.value?.buyLiquidity}
+        tokens={lp.value?.tokens}
+      />,
       <React.Fragment key={1}>
         <InvestStepsProgress success={0} />
         <Typography
@@ -624,7 +660,11 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.content}>
-        {canWithdraw.loading || balanceOf.loading || adapter.loading ? (
+        {canWithdraw.loading ||
+        balanceOf.loading ||
+        adapter.loading ||
+        lp.loading ||
+        hasLpTokens.loading ? (
           <div className={styles.loader}>
             <Loader height="36" />
           </div>

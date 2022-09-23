@@ -6,22 +6,28 @@ import { Button } from '~/common/button'
 import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
 import { settingsWalletModel } from '~/settings/settings-wallets'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
 import { InvestContract } from '~/invest/common/invest.types'
 import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
 import { NumericalInput } from '~/common/numerical-input'
 import { InvestFee } from '~/invest/common/invest-fee'
-import * as model from '~/staking/staking-adapters/staking-adapters.model'
-import * as styles from './invest-buy.css'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
 import { toastsService } from '~/toasts'
 import { analytics } from '~/analytics'
+import * as styles from './invest-buy.css'
+import { BuyLiquidity } from '~/common/load-adapter'
 
 export type InvestBuyProps = {
   onSubmit?: (transactionHash?: string) => void
   contract: InvestContract
+  adapter?: BuyLiquidity
+  tokens?: {
+    id: string
+    logoUrl: string
+    symbol: string
+    address: string
+  }[]
 }
 
 export const InvestBuy = (props: InvestBuyProps) => {
@@ -35,41 +41,21 @@ export const InvestBuy = (props: InvestBuyProps) => {
     })
   }, [props.contract])
 
-  const currentWallet = walletNetworkModel.useWalletNetwork()
-
-  const lp = useAsync(async () => {
-    if (!currentWallet?.account || !props.contract.automate.lpTokensManager)
-      return
-
-    return model.buyLPFx({
-      account: currentWallet.account,
-      provider: currentWallet.provider,
-      chainId: props.contract.network,
-      router: props.contract.automate.lpTokensManager.router,
-      pair: props.contract.automate.lpTokensManager.pair,
-      network: props.contract.network,
-      protocol: props.contract.blockchain,
-    })
-  }, [props.contract, currentWallet])
-
   const amountThrottled = useThrottle(amount, 1000)
 
   const approved = useAsyncRetry(async () => {
-    if (bignumberUtils.eq(amountThrottled, 0) || !lp.value) return true
+    if (bignumberUtils.eq(amountThrottled, 0) || !props.adapter) return true
 
-    return lp.value.buyLiquidity.methods.isApproved(
-      tokenAddress,
-      amountThrottled
-    )
-  }, [lp.value, tokenAddress, amountThrottled])
+    return props.adapter.methods.isApproved(tokenAddress, amountThrottled)
+  }, [props.adapter, tokenAddress, amountThrottled])
 
   const tokens = useAsyncRetry(async () => {
-    if (!lp.value) return
+    if (!props.adapter || !props.tokens) return
 
-    const { balanceOf } = lp.value.buyLiquidity.methods
+    const { balanceOf } = props.adapter.methods
 
     const tokensWithBalances = await Promise.all(
-      lp.value.tokens.map(async (token) => ({
+      props.tokens.map(async (token) => ({
         ...token,
         balance: await balanceOf(token.address),
       }))
@@ -82,12 +68,12 @@ export const InvestBuy = (props: InvestBuyProps) => {
 
       return acc
     }, {})
-  }, [lp.value])
+  }, [props.tokens, props.adapter])
 
   const [buyState, handleBuy] = useAsyncFn(async () => {
-    if (!lp.value) return
+    if (!props.adapter) return
 
-    const { buy, canBuy } = lp.value.buyLiquidity.methods
+    const { buy, canBuy } = props.adapter.methods
 
     try {
       const can = await canBuy(tokenAddress, amount)
@@ -112,12 +98,12 @@ export const InvestBuy = (props: InvestBuyProps) => {
 
       throw error
     }
-  }, [lp.value, tokenAddress, amount])
+  }, [props.adapter, tokenAddress, amount])
 
   const [approveState, handleApprove] = useAsyncFn(async () => {
-    if (!lp.value) return
+    if (!props.adapter) return
 
-    const { approve } = lp.value.buyLiquidity.methods
+    const { approve } = props.adapter.methods
 
     const { tx } = await approve(tokenAddress, amount)
 
@@ -126,18 +112,18 @@ export const InvestBuy = (props: InvestBuyProps) => {
     tokens.retry()
     approved.retry()
     toastsService.info('tokens approved!')
-  }, [lp.value, tokenAddress, amount])
+  }, [props.adapter, tokenAddress, amount])
 
   useEffect(() => {
-    if (!lp.value) return
+    if (!props.tokens) return
 
-    setTokenAddress(lp.value.tokens?.[0].address ?? '')
+    setTokenAddress(props.tokens?.[0].address ?? '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lp.value])
+  }, [props.tokens])
 
   const fee = useAsync(
-    async () => lp.value?.buyLiquidity.methods.fee(),
-    [lp.value]
+    async () => props.adapter?.methods.fee(),
+    [props.adapter]
   )
 
   return (

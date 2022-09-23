@@ -46,6 +46,9 @@ export const AUTOSTAKING_STAKING_CONTRACTS = gql`
           risk
         }
         tokens {
+          stakeBase {
+            address
+          }
           stake {
             alias {
               logoUrl
