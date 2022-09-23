@@ -988,6 +988,7 @@ export enum ContractRiskFactorEnum {
 
 export type ContractTokenLinkType = {
   __typename?: 'ContractTokenLinkType'
+  stakeBase?: Maybe<TokenType>
   stake: Array<TokenType>
   reward: Array<TokenType>
 }
@@ -3607,7 +3608,7 @@ export type UserType = {
   timezone: Scalars['String']
   /** Is portfolio collected */
   isPorfolioCollected: Scalars['Boolean']
-  /** Whan portfolio collecting (will be/was) freezed */
+  /** When portfolio collecting (will be/was) freezed */
   portfolioCollectingFreezedAt?: Maybe<Scalars['DateTimeType']>
   tokenAliasesStakedMetrics: UserTokenAliasesStakedMetricsListType
   tokenAliases: UserTokenAliasListType
@@ -4757,6 +4758,9 @@ export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
               | 'risk'
             >
             tokens: { __typename?: 'ContractTokenLinkType' } & {
+              stakeBase?: Maybe<
+                { __typename?: 'TokenType' } & Pick<TokenType, 'address'>
+              >
               stake: Array<
                 { __typename?: 'TokenType' } & Pick<
                   TokenType,
