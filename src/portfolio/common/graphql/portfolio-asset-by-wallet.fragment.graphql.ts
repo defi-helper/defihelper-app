@@ -15,7 +15,6 @@ export const PORTFOLIO_ASSET_BY_WALLET_FRAGMENT = gql`
       balance
       usdChange {
         day
-        week
       }
     }
   }

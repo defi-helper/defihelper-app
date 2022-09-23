@@ -11,7 +11,6 @@ export const PORTFOLIO_ASSET_BY_PROTOCOL_FRAGMENT = gql`
       myBalance
       myUSDChange {
         day
-        week
       }
     }
   }
