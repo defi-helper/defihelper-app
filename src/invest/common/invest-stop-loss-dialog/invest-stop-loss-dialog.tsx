@@ -55,6 +55,8 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   const stopLossPriceThrottled = useThrottle(stopLossPrice, 1000)
 
   useEffect(() => {
+    if (!price.value) return
+
     setStopLossPrice(
       bignumberUtils.toFixed(
         bignumberUtils.minus(
@@ -69,6 +71,8 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   }, [price.value, percentThrottled])
 
   useEffect(() => {
+    if (!price.value) return
+
     const newPercent = Number(
       bignumberUtils.toFixed(
         bignumberUtils.mul(

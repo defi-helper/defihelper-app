@@ -65,7 +65,8 @@ export const bignumberUtils = {
       .multipliedBy(options?.gasSlippage || 1.2)
       .toFixed(0),
 
-  floor: (num?: string | number | null) => bignumberUtils.toFixed(num, 0),
+  floor: (num?: string | number | null) =>
+    new BigNumber(num || 0).integerValue().toString(),
 
   toFixed: (num?: string | number | null, decimal = 2) => {
     const bignum = new BigNumber(num || 0)
