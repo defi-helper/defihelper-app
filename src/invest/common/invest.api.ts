@@ -41,9 +41,10 @@ export const investApi = {
           },
         }
       )
-      .then(({ data }) => ({
+      .then(({ data, error }) => ({
         list: data?.contracts.list ?? [],
         count: data?.contracts.pagination.count ?? 0,
+        error,
       })),
 
   contractUserLink: (variables: AutostakingUserLinkMutationVariables) =>

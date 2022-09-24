@@ -32,7 +32,7 @@ export const fetchContractsFx = createEffect(
       Boolean(sortItem)
     )
 
-    return investApi.contracts(
+    const { list, count, error } = await investApi.contracts(
       {
         ...variables,
         filter: {
@@ -57,6 +57,15 @@ export const fetchContractsFx = createEffect(
       },
       signal
     )
+
+    if (error?.graphQLErrors?.[0].message) {
+      throw new Error(error.graphQLErrors?.[0].message)
+    }
+
+    return {
+      list,
+      count,
+    }
   }
 )
 
