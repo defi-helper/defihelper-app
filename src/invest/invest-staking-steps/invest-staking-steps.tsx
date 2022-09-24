@@ -455,10 +455,16 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   }, [adapter.value])
 
   useEffect(() => {
-    if (bignumberUtils.eq(balanceOfLp.value, 0)) return
+    if (!balanceOf.value || canWithdraw.value === undefined) return
+
+    if (
+      bignumberUtils.eq(balanceOfLp.value, 0) ||
+      (bignumberUtils.gt(balanceOf.value, 0) && canWithdraw.value === true)
+    )
+      return
 
     setCurrentStep(1)
-  }, [balanceOfLp.value])
+  }, [balanceOfLp.value, balanceOf.value, canWithdraw.value])
 
   const initialSteps = {
     buy: [
