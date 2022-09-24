@@ -47,7 +47,7 @@ export const PortfolioDeployedContracts: React.VFC<PortfolioDeployedContractsPro
       <div className={clsx(styles.root, props.className)}>
         <div className={styles.header}>
           <Typography variant="h3" className={styles.title}>
-            Deployed contracts
+            Your investments
           </Typography>
         </div>
         <div className={styles.tableWrap}>

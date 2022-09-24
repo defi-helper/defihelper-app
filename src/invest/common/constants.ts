@@ -1,9 +1,9 @@
 import { ContractRiskFactorEnum } from '~/api'
 
 export const riskStatuses = {
-  [ContractRiskFactorEnum.High]: 'High',
-  [ContractRiskFactorEnum.Low]: 'Low',
-  [ContractRiskFactorEnum.Moderate]: 'Moderate',
+  [ContractRiskFactorEnum.High]: 'High risk',
+  [ContractRiskFactorEnum.Low]: 'Low risk',
+  [ContractRiskFactorEnum.Moderate]: 'Moderate risk',
   [ContractRiskFactorEnum.NotCalculated]: '-',
 }
 
