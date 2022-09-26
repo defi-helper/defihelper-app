@@ -68,7 +68,18 @@ export const settingsApi = {
       >({
         query: USER_NOTIFICATION_LIST.loc?.source.body ?? '',
       })
-      .then(({ data }) => data?.userNotifications ?? []),
+      .then(({ data }) =>
+        (data?.userNotifications ?? []).reduce<
+          Record<
+            string,
+            UserNotificationsListQuery['userNotifications'][number]
+          >
+        >((acc, notification) => {
+          acc[notification.contact] = notification
+
+          return acc
+        }, {})
+      ),
 
   billingTransferCreate: (variables: BillingTransferCreateMutationVariables) =>
     getAPIClient()

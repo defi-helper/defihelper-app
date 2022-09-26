@@ -48,7 +48,9 @@ const sortIcon = (
 ) => {
   let icon: 'arrowDown' | 'arrowUp' = 'arrowUp'
 
-  if (sort.column === column && column && sort.order === SortOrderEnum.Desc) {
+  if (sort.column !== column) return <></>
+
+  if (sort.column === column && sort.order === SortOrderEnum.Desc) {
     icon = 'arrowDown'
   }
 
@@ -91,7 +93,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
 
   const [search, setSearch] = useState('')
   const [sortBy, setSort] = useState({
-    column: ContractListSortInputTypeColumnEnum.MyStaked,
+    column: ContractListSortInputTypeColumnEnum.AprYear,
     order: SortOrderEnum.Desc,
   })
 
@@ -349,12 +351,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           })}
                         >
                           TVL{' '}
-                          {sortBy.column ===
-                            ContractListSortInputTypeColumnEnum.Tvl &&
-                            sortIcon(
-                              sortBy,
-                              ContractListSortInputTypeColumnEnum.Tvl
-                            )}
+                          {sortIcon(
+                            sortBy,
+                            ContractListSortInputTypeColumnEnum.Tvl
+                          )}
                         </ButtonBase>
                       </Typography>
                       <Typography variant="body2" align="right">
@@ -370,12 +370,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           })}
                         >
                           APY{' '}
-                          {sortBy.column ===
-                            ContractListSortInputTypeColumnEnum.AprYear &&
-                            sortIcon(
-                              sortBy,
-                              ContractListSortInputTypeColumnEnum.AprYear
-                            )}
+                          {sortIcon(
+                            sortBy,
+                            ContractListSortInputTypeColumnEnum.AprYear
+                          )}
                         </ButtonBase>
                       </Typography>
                       <Typography
@@ -397,12 +395,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           className="real_apy"
                         >
                           7D Performance{' '}
-                          {sortBy.column ===
-                            ContractListSortInputTypeColumnEnum.AprWeekReal &&
-                            sortIcon(
-                              sortBy,
-                              ContractListSortInputTypeColumnEnum.AprWeekReal
-                            )}
+                          {sortIcon(
+                            sortBy,
+                            ContractListSortInputTypeColumnEnum.AprWeekReal
+                          )}
                         </ButtonBase>
                         <Dropdown
                           control={
@@ -434,12 +430,10 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                           })}
                         >
                           Position{' '}
-                          {sortBy.column ===
-                            ContractListSortInputTypeColumnEnum.MyStaked &&
-                            sortIcon(
-                              sortBy,
-                              ContractListSortInputTypeColumnEnum.MyStaked
-                            )}
+                          {sortIcon(
+                            sortBy,
+                            ContractListSortInputTypeColumnEnum.MyStaked
+                          )}
                         </ButtonBase>
                       </Typography>
                       <Typography variant="body2" align="right">

@@ -209,7 +209,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
         </Typography>
       </div>
       <Typography variant="inherit">
-        {riskIcons[contract.metric.risk] && (
+        {riskIcons[contract.metric.risk] && isDesktop && (
           <Icon icon={riskIcons[contract.metric.risk]} width={22} height={24} />
         )}
         {false && (

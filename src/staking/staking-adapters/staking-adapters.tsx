@@ -185,11 +185,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           })
         }
 
-        if (!action || action === 'exit') return
-
-        openSuccessDialog({
-          type: action,
-        }).catch((error) => console.error(error.message))
+        openSuccessDialog().catch((error) => console.error(error.message))
       } catch (error) {
         if (error instanceof Error && !(error instanceof UserRejectionError)) {
           console.error(error.message)

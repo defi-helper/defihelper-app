@@ -22,8 +22,8 @@ export const InvestPoolTokens: React.VFC<InvestPoolTokensProps> = (props) => {
             className={styles.tokenIcon}
           />
         ) : (
-          <Paper className={styles.tokenIcon}>
-            <Icon icon="unknownNetwork" width="16" height="16" key={name} />
+          <Paper className={styles.tokenIcon} key={name}>
+            <Icon icon="unknownNetwork" width="16" height="16" />
           </Paper>
         )
       )}

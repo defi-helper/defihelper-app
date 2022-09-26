@@ -91,7 +91,8 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
         </Typography>
         <Typography variant="body3" as="div" className={styles.buttons}>
           <CanDemo>
-            {props.status === UserContactStatusEnum.Inactive ? (
+            {props.status === UserContactStatusEnum.Inactive &&
+            props.type === 'telegram' ? (
               <ButtonBase onClick={props.onContinueConnect}>
                 continue connect
               </ButtonBase>
