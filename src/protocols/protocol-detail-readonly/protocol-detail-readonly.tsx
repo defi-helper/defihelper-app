@@ -39,8 +39,6 @@ export const ProtocolDetailReadonly: React.FC<ProtocolDetailReadonlyProps> =
 
     useGate(model.ProtocolDetailReadonlyGate, params.protocolId)
 
-    console.warn(4841, protocol?.contracts)
-
     return (
       <AppLayout
         title={
