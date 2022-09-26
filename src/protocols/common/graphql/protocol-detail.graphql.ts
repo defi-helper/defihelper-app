@@ -21,6 +21,14 @@ export const PROTOCOL_DETAIL = gql`
           day
         }
       }
+      contractsDebank(
+        filter: { hidden: $hidden }
+        pagination: { limit: 1000, offset: 0 }
+      ) {
+        list {
+          id
+        }
+      }
       contracts(
         filter: { hidden: $hidden }
         pagination: { limit: 1000, offset: 0 }
