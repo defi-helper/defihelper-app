@@ -15,8 +15,8 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
 import { toastsService } from '~/toasts'
 import { analytics } from '~/analytics'
-import * as styles from './invest-buy.css'
 import { BuyLiquidity } from '~/common/load-adapter'
+import * as styles from './invest-buy.css'
 
 export type InvestBuyProps = {
   onSubmit?: (transactionHash?: string) => void
@@ -84,6 +84,7 @@ export const InvestBuy = (props: InvestBuyProps) => {
       const { tx } = await buy(tokenAddress, amount, '1')
 
       const result = await tx?.wait()
+
       analytics.log('lp_tokens_purchase_success', {
         amount: bignumberUtils.floor(amount),
       })

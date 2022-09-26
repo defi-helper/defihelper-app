@@ -23,7 +23,13 @@ interface Window {
     request?: (arg: Record<string, unknown>) => Promise<void>
   }
   dataLayer: { [key: string]: string | boolean | number | undefined | null }[]
-  rubik: { init: (input: Record<string, unknown>) => void } | undefined
+  rubicWidget:
+    | {
+        init: (input: Record<string, unknown>) => void
+        disable: () => void
+        tryGetRoot: () => void
+      }
+    | undefined
   ym?: (id: number, type: string, event: string) => void
   axios: unknown
   ethers: unknown
