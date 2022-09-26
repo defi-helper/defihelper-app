@@ -370,7 +370,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     })
   }, [props.contract, currentWallet])
 
-  const hasLpTokens = useAsync(async () => {
+  const balanceOfLp = useAsync(async () => {
     if (!props.contract.tokens.stakeBase) return
 
     return lp.value?.buyLiquidity.methods.balanceOf(
@@ -455,10 +455,19 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   }, [adapter.value])
 
   useEffect(() => {
-    if (!hasLpTokens.value) return
+    if (
+      !balanceOfLp.value ||
+      !balanceOf.value ||
+      canWithdraw.value === undefined
+    )
+      return
 
-    setCurrentStep(1)
-  }, [hasLpTokens.value])
+    if (bignumberUtils.gt(balanceOf.value, 0) && canWithdraw.value === true) {
+      setCurrentStep(0)
+    } else if (bignumberUtils.gt(balanceOfLp.value, 0)) {
+      setCurrentStep(1)
+    }
+  }, [balanceOfLp.value, balanceOf.value, canWithdraw.value])
 
   const initialSteps = {
     buy: [
@@ -664,7 +673,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         balanceOf.loading ||
         adapter.loading ||
         lp.loading ||
-        hasLpTokens.loading ? (
+        balanceOfLp.loading ? (
           <div className={styles.loader}>
             <Loader height="36" />
           </div>

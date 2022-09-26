@@ -1,11 +1,11 @@
 import { createDomain, guard, sample, UnitValue } from 'effector'
+import omit from 'lodash.omit'
 
 import { settingsApi } from '~/settings/common'
 import {
   UserContactCreateMutationVariables,
   UserContactFragmentFragment,
   UserNotificationTypeEnum,
-  UserNotificationTypeFragment,
 } from '~/api/_generated-types'
 import * as authModel from '~/auth/auth.model'
 
@@ -114,26 +114,30 @@ export const deleteUserContactFx = settingsContactsDomain.createEffect(
 )
 
 export const $userNotificationsList = settingsContactsDomain
-  .createStore<UserNotificationTypeFragment[]>([])
+  .createStore<UnitValue<typeof fetchUserNotificationsListFx.doneData>>({})
   .on(fetchUserNotificationsListFx.doneData, (_, payload) => payload)
   .on(updateUserNotificationFx.done, (state, { params }) => {
-    return state.map((existingNotification) =>
-      existingNotification.type === params.type &&
-      params.contact === existingNotification.contact
-        ? { ...existingNotification, time: params.hour }
-        : existingNotification
-    )
+    return {
+      ...state,
+      [params.contact]: {
+        ...state[params.contact],
+        time: params.hour,
+      },
+    }
   })
   .on(toggleUserNotificationFx.done, (state, { params }) => {
-    return params.state
-      ? [
-          ...state,
-          { type: params.type, time: params.hour, contact: params.contact },
-        ]
-      : state.filter(
-          ({ type, contact }) =>
-            type !== params.type && params.contact === contact
-        )
+    const hasContact = Boolean(state[params.contact])
+
+    if (hasContact) return omit(state, params.contact)
+
+    return {
+      ...state,
+      [params.contact]: {
+        type: params.type,
+        time: params.hour,
+        contact: params.contact,
+      },
+    }
   })
   .reset(authModel.logoutFx)
 

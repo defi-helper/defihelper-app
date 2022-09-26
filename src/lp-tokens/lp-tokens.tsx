@@ -227,9 +227,7 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
         tokenSymbol: billingBalance.token ?? '',
       })
 
-      await openSuccessDialog({
-        type: 'buyLiquidity',
-      })
+      await openSuccessDialog()
     } catch (error) {
       if (error instanceof Error && !(error instanceof UserRejectionError)) {
         console.error(error.message)

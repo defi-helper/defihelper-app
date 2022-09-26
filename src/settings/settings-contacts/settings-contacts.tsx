@@ -178,11 +178,9 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           onContinueConnect={handleContinueConnect}
           onConnect={handleOpenContactForm(UserContactBrokerEnum.Telegram)}
           onDisconnect={telegram ? handleDeleteContact(telegram) : undefined}
-          notification={notificationsList.find(
-            (notification) =>
-              notification.type === UserNotificationTypeEnum.PortfolioMetrics &&
-              notification.contact === telegram?.id
-          )}
+          notification={
+            telegram?.id ? notificationsList[telegram.id] : undefined
+          }
           onUpdateNotification={(state: boolean, hour: number) =>
             telegram
               ? handleUpdateNotification(
@@ -217,11 +215,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
               creatingParams?.broker === UserContactBrokerEnum.Email)
           }
           status={email?.status}
-          notification={notificationsList.find(
-            (notification) =>
-              notification.type === UserNotificationTypeEnum.PortfolioMetrics &&
-              notification.contact === email?.id
-          )}
+          notification={email ? notificationsList[email.id] : undefined}
           onUpdateNotification={(state: boolean, hour: number) =>
             email
               ? handleUpdateNotification(
