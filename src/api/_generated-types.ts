@@ -5448,6 +5448,16 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
               'day'
             >
           }
+        contractsDebank: { __typename?: 'ContractDebankListType' } & {
+          list?: Maybe<
+            Array<
+              { __typename?: 'ContractDebankType' } & Pick<
+                ContractDebankType,
+                'id'
+              >
+            >
+          >
+        }
         contracts: { __typename?: 'ContractListType' } & {
           list?: Maybe<
             Array<{ __typename?: 'ContractType' } & Pick<ContractType, 'id'>>

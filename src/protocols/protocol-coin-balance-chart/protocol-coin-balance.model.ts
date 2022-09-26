@@ -30,6 +30,8 @@ export const fetchStakedMetricFx = protocolCoinBalanceDomain.createEffect(
       },
     })
 
+    console.info(331, data)
+
     return mergeChartData(data).map((item) => ({
       altCoin: bignumberUtils.floor(item.altCoin),
       date: dateUtils.toDate(item.date),

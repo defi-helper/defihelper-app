@@ -39,6 +39,8 @@ export const ProtocolDetailReadonly: React.FC<ProtocolDetailReadonlyProps> =
 
     useGate(model.ProtocolDetailReadonlyGate, params.protocolId)
 
+    console.warn(4841, protocol?.contracts)
+
     return (
       <AppLayout
         title={
@@ -125,7 +127,9 @@ export const ProtocolDetailReadonly: React.FC<ProtocolDetailReadonlyProps> =
                   )}
                 </ProtocolCharts.Header>
                 <LazyLoad height={HEIGHT}>
-                  <ProtocolCoinBalanceChart contracts={protocol.contracts} />
+                  <ProtocolCoinBalanceChart
+                    contracts={protocol.contractsDebank}
+                  />
                 </LazyLoad>
                 <LazyLoad height={HEIGHT}>
                   <ProtocolTvlChart />
