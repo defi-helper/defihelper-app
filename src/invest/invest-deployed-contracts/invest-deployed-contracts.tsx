@@ -295,7 +295,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
       switchNetwork(contract.wallet.network).catch(console.error)
 
     const handleStopLoss =
-      ({ contract, id }: typeof contracts[number]) =>
+      ({ contract, id, stopLoss }: typeof contracts[number]) =>
       async () => {
         try {
           if (!contract) return
@@ -342,6 +342,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               address: token.address,
             })),
             withdrawTokens: tokens,
+            initialStopLoss: stopLoss,
           })
 
           await deployedContractModel.enableStopLossFx({
@@ -440,7 +441,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   running={deployedContract.running}
                   refunding={deployedContract.refunding}
                   contractId={deployedContract.contract?.id}
-                  stopLoss={deployedContract.stopLoss}
+                  stopLossing={deployedContract.stopLossing}
                   error={
                     deployedContract.contractWallet?.billing?.balance
                       ?.lowFeeFunds ||
