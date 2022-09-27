@@ -6,7 +6,6 @@ import { AppLayout } from '~/layouts'
 import { Head } from '~/common/head'
 import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
-import { InvestInstruction } from '~/invest/common/invest-instruction'
 import { InvestTabs } from '~/invest/common/invest-tabs'
 import { ButtonBase } from '~/common/button-base'
 import { Input } from '~/common/input'
@@ -70,7 +69,6 @@ export const InvestList: React.VFC<unknown> = () => {
         <Icon icon="settings" className={styles.headerIcon} />
         <Typography variant="h3">Invest</Typography>
       </div>
-      <InvestInstruction />
       <InvestTabs
         className={styles.tabs}
         onChange={setCurrentTab}
