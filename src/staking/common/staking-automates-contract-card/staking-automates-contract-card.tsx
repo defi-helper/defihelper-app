@@ -40,7 +40,7 @@ export type StakingAutomatesContractCardProps = {
   deleting?: boolean
   refunding?: boolean
   running?: boolean
-  stopLoss?: boolean
+  stopLossing?: boolean
   tokensIcons: Array<string | null>
   freshMetrics?: FreshMetrics
   contractId?: string
@@ -92,14 +92,14 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     pending && styles.manageLoading
                   )}
                 >
-                  {(props.deleting || props.running || props.stopLoss) && (
+                  {(props.deleting || props.running || props.stopLossing) && (
                     <CircularProgress className={styles.circularProgress} />
                   )}
                   <Icon
                     icon="dots"
                     className={clsx(
                       styles.manageIcon,
-                      (props.deleting || props.running || props.stopLoss) &&
+                      (props.deleting || props.running || props.stopLossing) &&
                         styles.manageIconloading
                     )}
                   />
@@ -324,7 +324,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     props.deleting ||
                     props.refunding ||
                     props.running ||
-                    props.stopLoss
+                    props.stopLossing
                   }
                   as={ReactRouterLink}
                   to={`${paths.invest.detail(props.contractId)}?deploy=1`}
@@ -341,7 +341,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 className={styles.refund}
                 onClick={props.onRefund}
                 loading={props.refunding}
-                disabled={props.deleting || props.running || props.stopLoss}
+                disabled={props.deleting || props.running || props.stopLossing}
               >
                 Unstake
               </Button>

@@ -11,6 +11,7 @@ import { Select, SelectOption } from '~/common/select'
 import { Slider } from '~/common/slider'
 import { Switch } from '~/common/switch'
 import { Typography } from '~/common/typography'
+import { StakingAutomatesContract } from '~/staking/common'
 import * as styles from './invest-stop-loss-dialog.css'
 
 export type InvestStopLossDialogProps = {
@@ -26,30 +27,41 @@ export type InvestStopLossDialogProps = {
     symbol: string
     address: string
   }[]
+  initialStopLoss: StakingAutomatesContract['stopLoss']
 }
 
 export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   props
 ) => {
-  const [stopLoss, toggleStopLoss] = useToggle(false)
+  const [stopLoss, toggleStopLoss] = useToggle(Boolean(props.initialStopLoss))
   const [mainToken, setMainToken] = useState(
     props.mainTokens?.[0]?.address ?? ''
   )
   const [withdrawToken, setWithdrawToken] = useState(
-    props.withdrawTokens?.[0]?.address ?? ''
+    props.initialStopLoss?.outToken?.address ??
+      props.withdrawTokens?.[0]?.address ??
+      ''
   )
-  const [stopLossPrice, setStopLossPrice] = useState('')
+  const [stopLossPrice, setStopLossPrice] = useState(
+    props.initialStopLoss?.params.amountOut ?? ''
+  )
   const [percent, setPercent] = useState(10)
 
   const path = useAsyncRetry(async () => {
-    return props.adapter?.methods.autoPath(mainToken, withdrawToken)
-  }, [props.adapter, mainToken, withdrawToken])
+    return (
+      props.initialStopLoss?.params.path ??
+      props.adapter?.methods.autoPath(mainToken, withdrawToken)
+    )
+  }, [props.adapter, mainToken, withdrawToken, props.initialStopLoss])
 
   const price = useAsyncRetry(async () => {
     if (!path.value) return
 
-    return props.adapter?.methods.amountOut(path.value)
-  }, [props.adapter, path.value])
+    return (
+      props.initialStopLoss?.amountOut ??
+      props.adapter?.methods.amountOut(path.value)
+    )
+  }, [props.adapter, props.initialStopLoss, path.value])
 
   const percentThrottled = useThrottle(percent, 1000)
   const stopLossPriceThrottled = useThrottle(stopLossPrice, 1000)
