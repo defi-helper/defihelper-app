@@ -209,7 +209,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
             </div>
             <div className={styles.input}>
               <NumericalInput
-                label="Stop-loss price"
+                label="Stop-loss activation"
                 value={stopLossPrice}
                 onChange={(event) => setStopLossPrice(event.target.value)}
                 className={styles.price}
@@ -227,6 +227,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                     setPercent(Number(event.currentTarget.value))
                   }
                   disabled={confirm.loading}
+                  rightSide="%"
                 />
                 <Slider
                   reverse
