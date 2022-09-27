@@ -3,13 +3,13 @@ import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
 import React, { useEffect, useState } from 'react'
 import { Sticky, StickyContainer } from 'react-sticky'
+
+import { bignumberUtils } from '~/common/bignumber-utils'
 import {
   SmartTradeMockHandlerCallDataType,
   SmartTradeOrderStatusEnum,
   SmartTradeSwapHandlerCallDataType,
 } from '~/api'
-
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
@@ -240,7 +240,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
                   const tokensAmountInOut = hasAmountIn(order.callData)
                     ? [order.callData.amountIn, order.callData.amountOut]
-                    : [0, 0]
+                    : null
 
                   const updating =
                     props.updating && updatingOrderId === order.id
@@ -334,9 +334,11 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                   </Paper>
                                 )}
                                 <Typography className={styles.fs12} as="div">
-                                  {bignumberUtils.format(
-                                    tokensAmountInOut[index]
-                                  )}{' '}
+                                  {tokensAmountInOut
+                                    ? bignumberUtils.format(
+                                        tokensAmountInOut[index]
+                                      )
+                                    : '-'}{' '}
                                   {token.symbol}
                                 </Typography>
                               </div>
@@ -367,8 +369,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                           />
                         )}
                         <div>
-                          {order.status ===
-                          SmartTradeOrderStatusEnum.Succeeded ? (
+                          {[
+                            SmartTradeOrderStatusEnum.Succeeded,
+                            SmartTradeOrderStatusEnum.Canceled,
+                          ].includes(order.status) ? (
                             <>
                               {hasBoughtPrice(order.callData) && (
                                 <Button
