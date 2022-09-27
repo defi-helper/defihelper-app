@@ -1,7 +1,7 @@
 import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { Button } from '~/common/button'
@@ -337,17 +337,11 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   props
 ) => {
   const user = useStore(authModel.$user)
-  const userContact = useStore(telegramModel.$userContact)
-  const userContacts = useStore(settingsContacts.$userContactList)
+  const contacts = useStore(settingsContacts.$userContactList)
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
 
   const deploy = useQueryParams().get('deploy')
-
-  const contacts = useMemo(
-    () => (userContact ? [...userContacts, userContact] : userContacts),
-    [userContact, userContacts]
-  )
 
   const telegram = contacts.find(
     ({ broker }) => broker === UserContactBrokerEnum.Telegram

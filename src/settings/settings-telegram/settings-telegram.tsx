@@ -1,5 +1,4 @@
 import { useStore } from 'effector-react'
-import { useMemo } from 'react'
 
 import clsx from 'clsx'
 import { Button } from '~/common/button'
@@ -17,8 +16,7 @@ import { pluralize } from '~/common/pluralize'
 export type SettingsTelegramProps = unknown
 
 export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
-  const userContact = useStore(model.$userContact)
-  const userContacts = useStore(settingsContacts.$userContactList)
+  const contacts = useStore(settingsContacts.$userContactList)
   const user = useStore(authModel.$user)
   const loading = useStore(settingsContacts.fetchUserContactListFx.pending)
   const userReady = useStore(authModel.$userReady)
@@ -27,16 +25,11 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
     ? Math.round(dateUtils.leftDays(user.portfolioCollectingFreezedAt))
     : null
 
-  const contacts = useMemo(
-    () => (userContact ? [...userContacts, userContact] : userContacts),
-    [userContact, userContacts]
-  )
-
   const telegram = contacts.find(
     ({ broker }) => broker === UserContactBrokerEnum.Telegram
   )
 
-  if (telegram?.address || loading || !userReady || !leftDays) return <></>
+  if (telegram || loading || !userReady || !leftDays) return <></>
 
   const handleOpenTelegram = () => {
     model.openTelegram(undefined)
