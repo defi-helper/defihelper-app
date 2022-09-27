@@ -1892,6 +1892,7 @@ export enum ProtocolListSortInputTypeColumnEnum {
   Id = 'id',
   Name = 'name',
   CreatedAt = 'createdAt',
+  Tvl = 'tvl',
 }
 
 export type ProtocolMetricChartContractsFilterInputType = {
@@ -6424,6 +6425,29 @@ export type StakingAutomatesContractFragmentFragment = {
           >
         }
       }
+    stopLoss?: Maybe<
+      { __typename?: 'AutomateContractStopLossType' } & Pick<
+        AutomateContractStopLossType,
+        'status' | 'tx' | 'amountOut'
+      > & {
+          outToken?: Maybe<
+            { __typename?: 'TokenType' } & Pick<
+              TokenType,
+              | 'id'
+              | 'blockchain'
+              | 'network'
+              | 'address'
+              | 'name'
+              | 'symbol'
+              | 'decimals'
+            >
+          >
+          params: { __typename?: 'AutomateContractStopLossParamsType' } & Pick<
+            AutomateContractStopLossParamsType,
+            'path' | 'amountOut' | 'amountOutMin' | 'slippage'
+          >
+        }
+    >
   }
 
 export type StakingAutomatesContractsQueryVariables = Exact<{
