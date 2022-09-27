@@ -1,7 +1,7 @@
 import { useStore } from 'effector-react'
 import { Controller, useForm } from 'react-hook-form'
 import clsx from 'clsx'
-import { useAsyncFn, useAsyncRetry, useToggle } from 'react-use'
+import { useAsyncFn, useAsyncRetry, useInterval, useToggle } from 'react-use'
 import React, { useEffect } from 'react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -108,7 +108,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const [approve, handleApprove] = useAsyncFn(async () => {
     if (!props.tokens?.[0]?.address || bignumberUtils.eq(unit, 0)) return false
 
-    await props.router?.approve(props.tokens?.[0]?.address, unit)
+    const res = await props.router?.approve(props.tokens?.[0]?.address, unit)
+
+    await res?.tx?.wait()
 
     isApproved.retry()
 
@@ -337,6 +339,13 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [price.value, takeProfitPercent, takeProfitFocus])
+
+  useInterval(
+    () => {
+      balanceOf.retry()
+    },
+    currentWallet ? 15000 : null
+  )
 
   return (
     <form
