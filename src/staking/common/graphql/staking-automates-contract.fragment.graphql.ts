@@ -102,6 +102,15 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
         symbol
         decimals
       }
+      inToken {
+        id
+        blockchain
+        network
+        address
+        name
+        symbol
+        decimals
+      }
       params {
         path
         amountOut

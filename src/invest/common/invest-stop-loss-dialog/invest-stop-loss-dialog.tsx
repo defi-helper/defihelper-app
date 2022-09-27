@@ -35,7 +35,9 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
 ) => {
   const [stopLoss, toggleStopLoss] = useToggle(Boolean(props.initialStopLoss))
   const [mainToken, setMainToken] = useState(
-    props.mainTokens?.[0]?.address ?? ''
+    props.initialStopLoss?.inToken.address ??
+      props.mainTokens?.[0]?.address ??
+      ''
   )
   const [withdrawToken, setWithdrawToken] = useState(
     props.initialStopLoss?.outToken?.address ??
