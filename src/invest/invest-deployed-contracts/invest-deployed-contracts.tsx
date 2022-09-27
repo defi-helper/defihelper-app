@@ -372,8 +372,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         )}
         {isEmptyContracts && !loading && (
           <Typography variant="h4">
-            You don&apos;t have any deployed auto-staking contracts in
-            DeFiHelper. Please try to deploy one.
+            You don&apos;t have any investments in DeFiHelper. You can try to
+            invest some.
           </Typography>
         )}
         {!isEmptyContracts && (
