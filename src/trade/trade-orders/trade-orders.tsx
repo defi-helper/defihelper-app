@@ -240,7 +240,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
                   const tokensAmountInOut = hasAmountIn(order.callData)
                     ? [order.callData.amountIn, order.callData.amountOut]
-                    : [0, 0]
+                    : null
 
                   const updating =
                     props.updating && updatingOrderId === order.id
@@ -334,9 +334,11 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                   </Paper>
                                 )}
                                 <Typography className={styles.fs12} as="div">
-                                  {bignumberUtils.format(
-                                    tokensAmountInOut[index]
-                                  )}{' '}
+                                  {tokensAmountInOut
+                                    ? bignumberUtils.format(
+                                        tokensAmountInOut[index]
+                                      )
+                                    : '-'}{' '}
                                   {token.symbol}
                                 </Typography>
                               </div>

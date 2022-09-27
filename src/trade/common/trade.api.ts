@@ -191,7 +191,10 @@ export const tradeApi = {
       )
       .then(({ data }) => data),
 
-  sendForm: <T>(listId: string, formValues: T) => {
+  sendForm: <T extends Record<string, unknown>>(
+    listId: string,
+    formValues: T
+  ) => {
     const query = Object.entries(formValues)
       .flatMap(([key, value]) => {
         return `fields[${key}]=${value}`
