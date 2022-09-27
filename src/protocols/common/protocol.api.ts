@@ -130,6 +130,8 @@ export const protocolsApi = {
               ...data.protocol,
               contracts:
                 data.protocol.contracts.list?.map(({ id }) => id) ?? [],
+              contractsDebank:
+                data.protocol.contractsDebank.list?.map(({ id }) => id) ?? [],
             }
           : undefined
       ),
