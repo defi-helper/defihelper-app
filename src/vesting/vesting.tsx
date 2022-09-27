@@ -102,6 +102,18 @@ const WALLET_MAP = new Map<
     },
   ],
   [
+    '0x04c1bb6701D8b2f6e8aEf6fd1FAc45cC443bF1B7'.toLowerCase(),
+    {
+      address: '0x96983ec318fDF40b3F4DacEC367060088A741F22',
+    },
+  ],
+  [
+    '0x2c6612D626F7a30dA5F08cc8D8B78650cDB48707'.toLowerCase(),
+    {
+      address: '0x895c9cf8A360567c1469b811e61a61b232F23464',
+    },
+  ],
+  [
     '0x5ed8729679bA0c0a734CCe22fc88742b54f5CE49'.toLowerCase(), // OptionBusinessDevelopment Main
     {
       address: '0x2d2f65875804b39008bEDC3Ab617e5e776f063Cb',
