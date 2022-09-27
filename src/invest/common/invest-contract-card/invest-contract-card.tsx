@@ -140,7 +140,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
           align="center"
           className={styles.mobileRisk}
         >
-          {riskStatuses[contract.metric.risk]} risk
+          {riskStatuses[contract.metric.risk]}
         </Typography>
       )}
       <Typography
