@@ -337,6 +337,7 @@ export type AutomateContractStopLossType = {
   status: AutomateContractStopLossStatusEnum
   tx: Scalars['EthereumTransactionHashType']
   amountOut?: Maybe<Scalars['BigNumberType']>
+  inToken?: Maybe<TokenType>
   outToken?: Maybe<TokenType>
   params: AutomateContractStopLossParamsType
 }
@@ -6431,6 +6432,18 @@ export type StakingAutomatesContractFragmentFragment = {
         'status' | 'tx' | 'amountOut'
       > & {
           outToken?: Maybe<
+            { __typename?: 'TokenType' } & Pick<
+              TokenType,
+              | 'id'
+              | 'blockchain'
+              | 'network'
+              | 'address'
+              | 'name'
+              | 'symbol'
+              | 'decimals'
+            >
+          >
+          inToken?: Maybe<
             { __typename?: 'TokenType' } & Pick<
               TokenType,
               | 'id'
