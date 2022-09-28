@@ -256,10 +256,11 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                   In order to execute every automation action in blockchain,
                   such as auto-restaking, provide fee balance we can use.{' '}
                   <Link
-                    href="https://defihelper.io/no-code"
+                    target="_blank"
+                    href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
                     className={styles.howItWorks}
                   >
-                    Learn more on How It Work
+                    Learn more on How It Works
                   </Link>
                 </Typography>
               </Dropdown>
@@ -292,10 +293,11 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                   In order to execute every automation action in blockchain,
                   such as auto-restaking, provide fee balance we can use.{' '}
                   <Link
-                    href="https://defihelper.io/no-code"
+                    target="_blank"
+                    href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
                     className={styles.howItWorks}
                   >
-                    Learn more on How It Work
+                    Learn more on How It Works
                   </Link>
                 </Typography>
               </Dropdown>
