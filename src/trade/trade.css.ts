@@ -19,7 +19,7 @@ export const header = style({
   marginBottom: 24,
 
   '@media': {
-    [theme.mediaQueries.lg()]: {
+    [theme.mediaQueries.md()]: {
       gridTemplateColumns: '1fr 1fr 1fr',
       columnGap: 24,
     },
