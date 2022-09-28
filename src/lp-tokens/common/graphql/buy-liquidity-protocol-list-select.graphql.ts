@@ -3,6 +3,7 @@ import { gql } from 'urql'
 export const BUY_LIQUIDITY_PROTOCOL_LIST_SELECT = gql`
   query BuyLiquidityProtocolsSelect(
     $search: String
+    $automate: ProtocolListFilterAutomateInputType
     $sort: [ProtocolListSortInputType!]
     $pagination: ProtocolListPaginationInputType
   ) {
@@ -11,7 +12,7 @@ export const BUY_LIQUIDITY_PROTOCOL_LIST_SELECT = gql`
         isDebank: false
         hidden: false
         search: $search
-        automate: { lpTokensManager: true }
+        automate: $automate
       }
       sort: $sort
       pagination: $pagination
