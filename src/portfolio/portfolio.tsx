@@ -199,6 +199,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
 
   const userReady = useStore(authModel.$userReady)
   const user = useStore(authModel.$user)
+  const portfolioName = useStore(model.$portfolioName)
 
   const isDesktop = useMedia('(min-width: 960px)')
 
@@ -350,7 +351,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           />
 
           <PortfolioNameEditor
-            name={user?.name ?? ''}
+            name={portfolioName}
             onChange={(name) => handleUpdatePortfolioName(name)}
           />
 

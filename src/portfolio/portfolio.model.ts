@@ -8,6 +8,7 @@ import * as portfolioAssetsModel from './portfolio-assets/portfolio-assets.model
 import * as portfolioCoinModel from './portfolio-coin-balance/portfolio-coin-balance.model'
 import * as portfolioMetricCardsModel from './portfolio-metric-cards/portfolio-metric-cards.model'
 import { UserUpdateMutationVariables } from '~/api'
+import { fetchUserFx } from '~/auth/auth.model'
 
 export const portfolio = createDomain()
 
@@ -25,6 +26,11 @@ export const $portfolioCollected = portfolio
   .createStore(false)
   .on(fetchPortfolioCollectedFx.doneData, (_, payload) => payload)
 
+export const $portfolioName = portfolio
+  .createStore('')
+  .on(updatePortfolioNameFx.doneData, (_, payload) => payload?.name ?? '')
+  .on(fetchUserFx.doneData, (_, payload) => payload?.name ?? '')
+
 export const PortfolioGate = createGate({
   domain: portfolio,
   name: 'PortfolioGate',
@@ -34,13 +40,14 @@ guard({
   source: PortfolioGate.status,
   clock: [PortfolioGate.open, authModel.$user.updates],
   filter: (isOpened) => isOpened,
-  target: fetchPortfolioCollectedFx,
+  target: [fetchPortfolioCollectedFx, fetchUserFx],
 })
 
 sample({
   clock: portfolioUpdated,
   target: [
     fetchPortfolioCollectedFx,
+    fetchUserFx,
     portfolioAssetsModel.fetchAssetsListFx,
     portfolioCoinModel.fetchChartDataFx.prepend(() =>
       portfolioCoinModel.$currentGroup.getState()
