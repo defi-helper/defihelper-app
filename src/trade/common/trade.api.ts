@@ -26,6 +26,21 @@ export type Exchange = {
   Address?: string
 }
 
+export type Pool = {
+  Address: string
+  Name: string
+  DexName: string
+  Icon: string
+  NetworkName: string
+  CurrencySymbol: string
+  PairCount: number
+  Liquidity: number
+  Routers: {
+    Address: string
+    Count: number
+  }[]
+}
+
 export type Token = {
   address: string
   name: string
@@ -137,6 +152,15 @@ export const tradeApi = {
           : data.data,
         message: data.message,
       })),
+
+  poolInfo: (networks: string[]) =>
+    apiV1
+      .get<Response<Pool[]>>('pool-info', {
+        params: {
+          networks: networks.join(','),
+        },
+      })
+      .then(({ data }) => data),
 
   pairs: (
     network: string[],
