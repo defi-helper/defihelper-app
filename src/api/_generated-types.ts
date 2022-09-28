@@ -1856,6 +1856,8 @@ export type ProtocolLinkType = {
 
 export type ProtocolListFilterAutomateInputType = {
   lpTokensManager?: Maybe<Scalars['Boolean']>
+  /** Has autorestake automate */
+  autorestake?: Maybe<Scalars['Boolean']>
 }
 
 export type ProtocolListFilterInputType = {
@@ -4893,6 +4895,7 @@ export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
 
 export type BuyLiquidityProtocolsSelectQueryVariables = Exact<{
   search?: Maybe<Scalars['String']>
+  automate?: Maybe<ProtocolListFilterAutomateInputType>
   sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
   pagination?: Maybe<ProtocolListPaginationInputType>
 }>
