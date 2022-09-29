@@ -1373,6 +1373,7 @@ export type Mutation = {
   automateContractStopLossEnable: Scalars['Boolean']
   automateContractStopLossDisable: Scalars['Boolean']
   tradingAuth?: Maybe<TradingAuthType>
+  smartTradeCancel: SmartTradeOrderType
   smartTradeSwapOrderCreate: SmartTradeOrderType
 }
 
@@ -1635,6 +1636,10 @@ export type MutationAutomateContractStopLossEnableArgs = {
 
 export type MutationAutomateContractStopLossDisableArgs = {
   input: AutomateContractStopLossDisableInputType
+}
+
+export type MutationSmartTradeCancelArgs = {
+  id: Scalars['UuidType']
 }
 
 export type MutationSmartTradeSwapOrderCreateArgs = {
@@ -2502,9 +2507,10 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   tokenInDecimals: Scalars['Int']
   tokenOutDecimals: Scalars['Int']
   amountIn: Scalars['BigNumberType']
+  amountOut: Scalars['BigNumberType']
   boughtPrice: Scalars['BigNumberType']
-  stopLoss?: Maybe<SwapOrderCallDataRouteInputType>
-  takeProfit?: Maybe<SwapOrderCallDataRouteInputType>
+  stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
+  takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
   /** Deadline seconds */
   deadline: Scalars['Int']
 }
@@ -2713,7 +2719,14 @@ export type SwapHandlerCallDataRouteType = {
   slippage: Scalars['Float']
 }
 
-export type SwapOrderCallDataRouteInputType = {
+export type SwapOrderCallDataStopLossInputType = {
+  amountOut: Scalars['BigNumberType']
+  amountOutMin: Scalars['BigNumberType']
+  moving: Scalars['Boolean']
+  slippage: Scalars['Float']
+}
+
+export type SwapOrderCallDataTakeProfitInputType = {
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
@@ -6895,6 +6908,74 @@ export type TradeAuthMutation = { __typename?: 'Mutation' } & {
       'accessToken' | 'tokenExpired'
     >
   >
+}
+
+export type TradeCancelOrderMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type TradeCancelOrderMutation = { __typename?: 'Mutation' } & {
+  smartTradeCancel: { __typename?: 'SmartTradeOrderType' } & Pick<
+    SmartTradeOrderType,
+    'id' | 'number' | 'handler' | 'status' | 'tx' | 'confirmed' | 'createdAt'
+  > & {
+      owner: { __typename?: 'WalletBlockchainType' } & Pick<
+        WalletBlockchainType,
+        'id' | 'network' | 'address' | 'name'
+      >
+      callData:
+        | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
+            SmartTradeMockHandlerCallDataType,
+            'amountIn' | 'amountOut'
+          >)
+        | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
+            SmartTradeSwapHandlerCallDataType,
+            'exchange' | 'boughtPrice' | 'path'
+          >)
+      lastCall?: Maybe<
+        { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
+          SmartTradeOrderCallHistoryType,
+          'status' | 'transaction' | 'errorReason'
+        >
+      >
+      tokens: Array<
+        { __typename?: 'SmartTradeOrderTokenLinkType' } & Pick<
+          SmartTradeOrderTokenLinkType,
+          'type'
+        > & {
+            token: { __typename?: 'TokenType' } & Pick<
+              TokenType,
+              | 'id'
+              | 'blockchain'
+              | 'network'
+              | 'address'
+              | 'name'
+              | 'symbol'
+              | 'decimals'
+              | 'priceFeedNeeded'
+            > & {
+                alias?: Maybe<
+                  { __typename?: 'TokenAlias' } & Pick<
+                    TokenAlias,
+                    'id' | 'name' | 'logoUrl' | 'symbol'
+                  >
+                >
+                priceFeed?: Maybe<
+                  | ({ __typename?: 'TokenPriceFeedCoingeckoIdType' } & Pick<
+                      TokenPriceFeedCoingeckoIdType,
+                      'id' | 'type'
+                    >)
+                  | ({
+                      __typename?: 'TokenPriceFeedCoingeckoAddressType'
+                    } & Pick<
+                      TokenPriceFeedCoingeckoAddressType,
+                      'type' | 'platform' | 'address'
+                    >)
+                >
+              }
+          }
+      >
+    }
 }
 
 export type TradeCreateOrderMutationVariables = Exact<{

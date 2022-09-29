@@ -47,7 +47,6 @@ export const fetchExchangesFx = createEffect(async (network: string) => {
 
   const poolInfoMap = poolInfo.data.reduce<Record<string, Pool>>(
     (acc, item) => {
-      acc[item.Name.toLowerCase()] = item
       acc[item.DexName.toLowerCase()] = item
 
       return acc
