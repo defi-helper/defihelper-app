@@ -21,6 +21,8 @@ import { authModel } from '~/auth'
 import { UserRoleEnum } from '~/api'
 import * as model from './trade-smart-sell.model'
 import * as styles from './trade-smart-sell.css'
+import { Dropdown } from '~/common/dropdown'
+import { Icon } from '~/common/icon'
 
 export type TradeSmartSellProps = {
   className?: string
@@ -72,6 +74,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     })
 
   const takeProfit = watch('takeProfit')
+  const moving = watch('moving')
   const stopLoss = watch('stopLoss')
 
   const balanceOf = useAsyncRetry(async () => {
@@ -496,6 +499,34 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               </div>
             </>
           )}
+        </div>
+        <div>
+          <div className={styles.trailingBuyTitle}>
+            <Typography
+              as="div"
+              variant="body3"
+              className={styles.takeProfitLabel}
+            >
+              Trailing Stop Loss
+            </Typography>
+            <Dropdown
+              control={
+                <ButtonBase>
+                  <Icon icon="info" width="16" height="16" />
+                </ButtonBase>
+              }
+              offset={[0, 8]}
+              className={styles.dropdown}
+              placement="bottom-start"
+            >
+              <Typography variant="body2">text</Typography>
+            </Dropdown>
+            <Switch
+              size="small"
+              onChange={({ target }) => setValue('moving', target.checked)}
+              checked={moving}
+            />
+          </div>
         </div>
       </div>
       <div className={styles.buttons}>
