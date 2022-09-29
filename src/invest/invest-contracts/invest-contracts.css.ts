@@ -140,8 +140,3 @@ export const apyBoost = style({
   justifyContent: 'flex-end',
   textAlign: 'right',
 })
-
-export const banner = style({
-  padding: 16,
-  marginBottom: 16,
-})

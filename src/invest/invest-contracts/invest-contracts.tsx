@@ -354,14 +354,6 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
           />
         </div>
       </div>
-      <Paper radius={8} className={styles.banner}>
-        <Typography variant="body2" align="center" family="mono">
-          We are currently updating our investment contracts to integrate a
-          Stop-Loss solution for our users.
-          <br />
-          More protocols will be available soon.
-        </Typography>
-      </Paper>
       <div className={styles.tableWrap}>
         <Paper radius={8} className={styles.table}>
           <div className={styles.tableHeader}>
