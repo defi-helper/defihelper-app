@@ -296,7 +296,7 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
         <Typography variant="h3">ZAP</Typography>
       </div>
       <Typography variant="h4" className={styles.subtitle}>
-        Manage liquidity pool tokens is as easy as 1-2-3
+        Managing liquidity pool tokens is as easy as 1-2-3
       </Typography>
       <div className={styles.instruction}>
         {INSTRUCTION.map((instructionItem) => (

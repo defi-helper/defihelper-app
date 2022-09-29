@@ -156,8 +156,8 @@ const DeployContractStep = (props: {
           className={styles.checked}
         />
         <Typography as="div" align="center">
-          To control your investments you need to deploy your personal contract.
-          Later you can set up stop-loss.
+          To control your investments, you need to deploy your own personal
+          contract. Later, you can set up a Stop-Loss.
         </Typography>
         <Typography
           variant="body2"
@@ -165,8 +165,8 @@ const DeployContractStep = (props: {
           radius={6}
           className={styles.deployHint}
         >
-          DeFiHelper don&apos;t have any access to your funds. If you will loose
-          your wallet - funds will be lost.
+          DeFiHelper doesn&apos;t have any access to your funds. If you lose
+          access to your wallet, funds will be lost.
         </Typography>
       </div>
       <Button
