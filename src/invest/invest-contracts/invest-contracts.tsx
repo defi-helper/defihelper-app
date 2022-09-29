@@ -29,7 +29,6 @@ import * as styles from './invest-contracts.css'
 
 export type InvestContractsProps = {
   className?: string
-  onChangeTab: () => void
 }
 
 const sortIcon = (

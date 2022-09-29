@@ -1,8 +1,7 @@
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useMedia } from 'react-use'
-import { useStore } from 'effector-react'
 
 import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
@@ -10,29 +9,34 @@ import { Typography } from '~/common/typography'
 import { InvestCarousel } from '~/invest/common/invest-carousel'
 import { InvestMigrateCard } from '~/invest/common/invest-migrate-card'
 import { Button } from '~/common/button'
-import * as model from './invest-migrate-contracts.model'
-import { authModel } from '~/auth'
 import { Loader } from '~/common/loader'
 import * as styles from './invest-migrate-contracts.css'
+import { AutostakingStakingContractsQuery } from '~/api'
+
+type Contract = Exclude<
+  AutostakingStakingContractsQuery['contracts']['list'],
+  null | undefined
+>[number] & { showing?: boolean; hidding?: boolean }
+
+type MigrateContract = Contract & { hidding: boolean }
+type MigrateHiddenContract = Contract & { showing: boolean }
 
 export type InvestMigrateContractsProps = {
   className?: string
   search: string
-  onChangeTab: () => void
+  contracts: MigrateContract[]
+  hiddenContracts: MigrateHiddenContract[]
+  loading: boolean
+  onShow: (contract: MigrateHiddenContract) => void
+  onHide: (contract: MigrateContract) => void
 }
 
 export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
   props
 ) => {
-  const contracts = useStore(model.$contractsWithLoading)
-  const hiddenContracts = useStore(model.$hiddenContractsWithLoading)
-  const loading = useStore(model.fetchContractsFx.pending)
-
-  const user = useStore(authModel.$user)
-
   const [hidden, setHidden] = useState(true)
 
-  const isEmptyContracts = isEmpty(contracts)
+  const isEmptyContracts = isEmpty(props.contracts)
 
   const Component = isEmptyContracts ? Paper : 'div'
 
@@ -56,65 +60,9 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
     return 1
   }, [isDesktop, isTablet, isPhone])
 
-  useEffect(() => {
-    if (!user) return
-
-    const abortController = new AbortController()
-
-    model.fetchContractsFx({
-      signal: abortController.signal,
-      filter: props.search ? { search: props.search } : undefined,
-    })
-    return () => {
-      model.resetContracts()
-      model.resetHiddenContracts()
-
-      abortController.abort()
-    }
-  }, [props.search, user])
-
-  useEffect(() => {
-    if (!user) return
-
-    const abortController = new AbortController()
-
-    model.fetchHiddenContractsFx({ signal: abortController.signal })
-
-    return () => abortController.abort()
-  }, [user])
-
-  useEffect(() => {
-    return () => {
-      model.resetContracts()
-      model.resetHiddenContracts()
-    }
-  }, [])
-
   const handleToggleHidden = () => {
     setHidden(!hidden)
   }
-
-  const handleHide =
-    (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
-    () => {
-      if (!user?.id) return
-
-      model.contractUserUnlinkFx({
-        contract,
-        userId: user.id,
-      })
-    }
-
-  const handleShow =
-    (contract: typeof contracts[number] | typeof hiddenContracts[number]) =>
-    () => {
-      if (!user?.id) return
-
-      model.contractUserLinkFx({
-        contract,
-        userId: user.id,
-      })
-    }
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -124,13 +72,14 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
         })}
         radius={isEmptyContracts ? 8 : undefined}
       >
-        {isEmptyContracts && !loading && (
+        {isEmptyContracts && !props.loading && (
           <Typography variant="h4">
-            You don&apos;t have any contracts to migrate to our service right
-            now. We will notify you as soon as we will find the suitable one.
+            You don&apos;t have any migrateContracts to migrate to our service
+            right now. We will notify you as soon as we will find the suitable
+            one.
           </Typography>
         )}
-        {loading && isEmptyContracts && (
+        {props.loading && isEmptyContracts && (
           <div className={styles.loader}>
             <Loader height="36" />
           </div>
@@ -138,7 +87,7 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
         {!isEmptyContracts && (
           <>
             <Typography variant="h4" className={styles.description}>
-              We found some of your contracts. You can migrate them to
+              We found some of your migrateContracts. You can migrate them to
               DeFiHelper to get more income from each of them.{' '}
               <Link
                 href="https://youtu.be/5tUnwK77y8c"
@@ -149,10 +98,10 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
               </Link>
             </Typography>
             <InvestCarousel
-              count={contracts.length}
+              count={props.contracts.length}
               slidesToShow={slidesToShow}
             >
-              {contracts.map((contract) => {
+              {props.contracts.map((contract) => {
                 return (
                   <InvestMigrateCard
                     key={contract.id}
@@ -167,7 +116,7 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
                     apy={contract.metric.aprYear}
                     apyBoost={contract.metric.myAPYBoost}
                     contractId={contract.id}
-                    onHide={handleHide(contract)}
+                    onHide={() => props.onHide(contract)}
                     hidding={contract.hidding}
                   />
                 )
@@ -176,11 +125,12 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
           </>
         )}
       </Component>
-      {!isEmpty(hiddenContracts) && (
+      {!isEmpty(props.hiddenContracts) && (
         <>
           <Paper radius={8} className={styles.hiddenPaper}>
             <Typography variant="body2">
-              You have {hiddenContracts.length} more hidden contracts
+              You have {props.hiddenContracts.length} more hidden
+              migrateContracts
             </Typography>
             <Button
               variant="outlined"
@@ -193,10 +143,10 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
           <div>
             {!hidden && (
               <InvestCarousel
-                count={hiddenContracts.length}
+                count={props.hiddenContracts.length}
                 slidesToShow={slidesToShow}
               >
-                {hiddenContracts.map((contract) => {
+                {props.hiddenContracts.map((contract) => {
                   return (
                     <InvestMigrateCard
                       key={contract.id}
@@ -212,7 +162,7 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
                       apyBoost={contract.metric.myAPYBoost}
                       contractId={contract.id}
                       icon="eye"
-                      onShow={handleShow(contract)}
+                      onShow={() => props.onShow(contract)}
                       showing={contract.showing}
                     />
                   )

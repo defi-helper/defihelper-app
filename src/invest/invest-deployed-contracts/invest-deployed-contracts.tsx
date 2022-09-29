@@ -41,7 +41,7 @@ export type InvestDeployedContractsProps = {
 
 export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
   (props) => {
-    const contracts = useStore(model.$automatesContracts)
+    const automatesContracts = useStore(model.$automatesContracts)
     const loading = useStore(model.fetchAutomatesContractsFx.pending)
     const user = useStore(authModel.$user)
     const wallets = useStore(settingsWalletModel.$wallets)
@@ -54,7 +54,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     const currentWallet = walletNetworkModel.useWalletNetwork()
     const handleConnect = useWalletConnect()
 
-    const isEmptyContracts = isEmpty(contracts)
+    const isEmptyContracts = isEmpty(automatesContracts)
 
     const Component = isEmptyContracts ? Paper : 'div'
 
@@ -87,7 +87,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
 
     const handleAction =
       (
-        contract: typeof contracts[number],
+        contract: typeof automatesContracts[number],
         action: Exclude<model.ActionType, 'migrate'>
       ) =>
       async () => {
@@ -189,7 +189,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         }
       }
     const handleRunManually =
-      (contract: typeof contracts[number]) => async () => {
+      (contract: typeof automatesContracts[number]) => async () => {
         try {
           if (
             bignumberUtils.eq(
@@ -283,7 +283,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     }, variables)
 
     const handleWrongAddress =
-      (contract: typeof contracts[number]) => async () => {
+      (contract: typeof automatesContracts[number]) => async () => {
         openErrorDialog({
           contractName: contract.contract?.name ?? '',
           address: contract.wallet.address,
@@ -291,11 +291,12 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         }).catch(console.error)
       }
 
-    const handleSwitchNetwork = (contract: typeof contracts[number]) => () =>
-      switchNetwork(contract.wallet.network).catch(console.error)
+    const handleSwitchNetwork =
+      (contract: typeof automatesContracts[number]) => () =>
+        switchNetwork(contract.wallet.network).catch(console.error)
 
     const handleStopLoss =
-      ({ contract, id, stopLoss }: typeof contracts[number]) =>
+      ({ contract, id, stopLoss }: typeof automatesContracts[number]) =>
       async () => {
         try {
           if (!contract) return
@@ -377,8 +378,11 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
           </Typography>
         )}
         {!isEmptyContracts && (
-          <InvestCarousel count={contracts.length} slidesToShow={slidesToShow}>
-            {contracts.map((deployedContract) => {
+          <InvestCarousel
+            count={automatesContracts.length}
+            slidesToShow={slidesToShow}
+          >
+            {automatesContracts.map((deployedContract) => {
               const connect = handleConnect.bind(null, {
                 blockchain: deployedContract.contract?.blockchain,
                 network: deployedContract.contract?.network,
