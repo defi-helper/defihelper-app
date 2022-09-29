@@ -139,7 +139,7 @@ export const InvestList: React.VFC<unknown> = () => {
         <Icon icon="settings" className={styles.headerIcon} />
         <Typography variant="h3">Invest</Typography>
       </div>
-      {Boolean(contracts.length && migrateContractsWithHidden.length) && (
+      {Boolean(contracts.length || migrateContractsWithHidden.length) && (
         <InvestTabs
           className={styles.tabs}
           onChange={setCurrentTab}
