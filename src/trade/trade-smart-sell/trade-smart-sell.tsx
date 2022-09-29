@@ -46,6 +46,7 @@ type FormValues = {
   takeProfitPercent: number
   takeProfitValue: string
   stopLossValue: string
+  moving: boolean
 }
 
 export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
@@ -66,6 +67,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         stopLossValue: '0',
         takeProfitValue: '0',
         unit: '0',
+        moving: false,
       },
     })
 
@@ -157,6 +159,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           ? {
               amountOut: getAmountOut(stopLossPercent),
               slippage: props.slippage,
+              moving: formValues.moving,
             }
           : null,
         formValues.takeProfit
@@ -186,12 +189,14 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           tokenInDecimals: result.callData.tokenInDecimals,
           tokenOutDecimals: result.callData.tokenOutDecimals,
           amountIn: result.callData.amountIn,
+          amountOut: result.callData.amountOut,
           boughtPrice: price.value,
           stopLoss: result.callData.stopLoss
             ? {
                 amountOut: result.callData.stopLoss.amountOut,
                 amountOutMin: result.callData.stopLoss.amountOutMin,
                 slippage: Number(result.callData.stopLoss.slippage),
+                moving: result.callData.stopLoss.moving,
               }
             : null,
           takeProfit: result.callData.takeProfit

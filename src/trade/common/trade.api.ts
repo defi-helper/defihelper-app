@@ -4,6 +4,8 @@ import {
   getAPIClient,
   TradeAuthMutation,
   TradeAuthMutationVariables,
+  TradeCancelOrderMutation,
+  TradeCancelOrderMutationVariables,
   TradeCreateOrderMutation,
   TradeCreateOrderMutationVariables,
   TradeOrderListQuery,
@@ -12,6 +14,7 @@ import {
 import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
 import { TRADE_AUTH } from './graphql/trade-auth.graphql'
+import { TRADE_CANCEL_ORDER } from './graphql/trade-cancel-order.graphql'
 import { TRADE_CREATE_ORDER } from './graphql/trade-create-order.graphql'
 import { TRADE_ORDER_LIST } from './graphql/trade-order-list.graphql'
 import { pairMock } from './trade-dev.mock'
@@ -257,6 +260,20 @@ export const tradeApi = {
         },
       })
       .then(({ data }) => data?.smartTradeSwapOrderCreate),
+
+  cancelOrder: (id: TradeCancelOrderMutationVariables['id']) =>
+    getAPIClient()
+      .request<
+        TradeCancelOrderMutation,
+        unknown,
+        TradeCancelOrderMutationVariables
+      >({
+        query: TRADE_CANCEL_ORDER.loc?.source.body ?? '',
+        variables: {
+          id,
+        },
+      })
+      .then(({ data }) => data?.smartTradeCancel),
 
   fetchOrders: (variables: TradeOrderListQueryVariables) =>
     getAPIClient()

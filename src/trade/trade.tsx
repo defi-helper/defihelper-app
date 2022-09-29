@@ -322,7 +322,7 @@ export const Trade: React.VFC<TradeProps> = () => {
 
         await res?.tx?.wait()
 
-        tradeOrdersModel.cancelOrder(String(id))
+        await tradeOrdersModel.cancelOrderFx(String(id))
       } catch (error) {
         console.error(error)
       }
