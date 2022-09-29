@@ -74,9 +74,8 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
       >
         {isEmptyContracts && !props.loading && (
           <Typography variant="h4">
-            You don&apos;t have any migrateContracts to migrate to our service
-            right now. We will notify you as soon as we will find the suitable
-            one.
+            You don&apos;t have any contracts to migrate to our service right
+            now. We will notify you as soon as we will find the suitable one.
           </Typography>
         )}
         {props.loading && isEmptyContracts && (
@@ -87,7 +86,7 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
         {!isEmptyContracts && (
           <>
             <Typography variant="h4" className={styles.description}>
-              We found some of your migrateContracts. You can migrate them to
+              We found some of your contracts. You can migrate them to
               DeFiHelper to get more income from each of them.{' '}
               <Link
                 href="https://youtu.be/5tUnwK77y8c"
