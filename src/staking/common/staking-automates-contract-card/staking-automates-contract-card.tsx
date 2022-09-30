@@ -19,6 +19,7 @@ import { paths } from '~/paths'
 import { networksConfig } from '~/networks-config'
 import { FreshMetrics } from '~/staking/common/staking.types'
 import { StakingFreshMetrics } from '~/staking/common/staking-fresh-metrics'
+import { AutomateContractStopLossStatusEnum } from '~/api'
 import * as styles from './staking-automates-contract-card.css'
 
 export type StakingAutomatesContractCardProps = {
@@ -44,6 +45,9 @@ export type StakingAutomatesContractCardProps = {
   tokensIcons: Array<string | null>
   freshMetrics?: FreshMetrics
   contractId?: string
+  stopLossAmountOut?: string
+  stopLossToken?: string
+  status?: AutomateContractStopLossStatusEnum
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -55,6 +59,11 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
     const validDiff =
       !bignumberUtils.isNaN(apyboostDifference) &&
       bignumberUtils.gt(apyboostDifference, '0.001')
+
+    const status =
+      props.status === AutomateContractStopLossStatusEnum.Completed
+        ? 'Completed'
+        : undefined
 
     return (
       <Paper className={clsx(styles.root, props.className)} radius={8}>
@@ -236,7 +245,40 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
           </div>
         </div>
-        <div className={clsx(styles.footer, props.error && styles.error)}>
+        <div
+          className={clsx(
+            styles.footer,
+            props.error ||
+              (props.status === AutomateContractStopLossStatusEnum.Completed &&
+                styles.error)
+          )}
+        >
+          <div className={styles.row}>
+            <Typography variant="body2" as="span" className={styles.infoTitle}>
+              <Typography variant="inherit" className={styles.opacity}>
+                Stop Loss
+              </Typography>
+              <Dropdown
+                control={
+                  <ButtonBase className={clsx(styles.opacity)}>
+                    <Icon className={styles.question} icon="question" />
+                  </ButtonBase>
+                }
+                placement="top"
+                className={styles.questionDropdown}
+                offset={[0, 8]}
+              >
+                <Typography variant="inherit">text</Typography>
+              </Dropdown>
+            </Typography>
+            <Typography variant="body2" as="span">
+              {status ?? (props.stopLossAmountOut && props.stopLossToken)
+                ? `${bignumberUtils.format(props.stopLossAmountOut)} ${
+                    props.stopLossToken
+                  }`
+                : 'Inactive'}
+            </Typography>
+          </div>
           <div className={styles.row}>
             <Typography variant="body2" as="span" className={styles.infoTitle}>
               <Typography variant="inherit" className={styles.opacity}>

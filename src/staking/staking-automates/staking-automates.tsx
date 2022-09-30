@@ -291,6 +291,9 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               deleting={automatesContract.deleting}
               running={automatesContract.running}
               contractId={automatesContract.id}
+              status={automatesContract.stopLoss?.status}
+              stopLossAmountOut={automatesContract.stopLoss?.params?.amountOut}
+              stopLossToken={automatesContract.stopLoss?.outToken?.symbol}
               error={
                 automatesContract.contractWallet?.billing.balance.lowFeeFunds ||
                 (automatesContract.wallet?.billing?.balance?.netBalanceUSD >

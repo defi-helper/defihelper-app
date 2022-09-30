@@ -446,6 +446,11 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   refunding={deployedContract.refunding}
                   contractId={deployedContract.contract?.id}
                   stopLossing={deployedContract.stopLossing}
+                  status={deployedContract.stopLoss?.status}
+                  stopLossAmountOut={
+                    deployedContract.stopLoss?.params?.amountOut
+                  }
+                  stopLossToken={deployedContract.stopLoss?.outToken?.symbol}
                   error={
                     deployedContract.contractWallet?.billing?.balance
                       ?.lowFeeFunds ||
