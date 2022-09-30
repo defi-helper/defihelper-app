@@ -45,13 +45,13 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
       ''
   )
   const [stopLossPrice, setStopLossPrice] = useState(
-    props.initialStopLoss?.params.amountOut ?? ''
+    props.initialStopLoss?.params?.amountOut ?? ''
   )
   const [percent, setPercent] = useState(10)
 
   const path = useAsyncRetry(async () => {
     return (
-      props.initialStopLoss?.params.path ??
+      props.initialStopLoss?.params?.path ??
       props.adapter?.methods.autoPath(mainToken, withdrawToken)
     )
   }, [props.adapter, mainToken, withdrawToken, props.initialStopLoss])
