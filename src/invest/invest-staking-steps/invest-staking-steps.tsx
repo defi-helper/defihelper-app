@@ -38,6 +38,7 @@ import * as telegramModel from '~/settings/settings-telegram/settings-telegram.m
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import { settingsWalletModel } from '~/settings/settings-wallets'
+import { InvestSell } from '../invest-sell'
 
 export type InvestStakingStepsProps = {
   className?: string
@@ -558,24 +559,33 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     ],
   }
 
+  const canMigrate =
+    bignumberUtils.gt(balanceOf.value, 0) && canWithdraw.value === true
+
   const steps = [
-    ...initialSteps[
-      bignumberUtils.gt(balanceOf.value, 0) && canWithdraw.value === true
-        ? 'migrate'
-        : 'buy'
-    ],
-    !deploy ? (
+    ...initialSteps[canMigrate ? 'migrate' : 'buy'],
+    !deploy && !canMigrate ? (
       <DeployContractStep
         key={2}
         onSubmit={handleNextStep}
         contract={props.contract}
       />
     ) : null,
-    <StakeTokensStep
-      key={3}
-      onSubmit={handleNextStep}
-      contract={props.contract}
-    />,
+    canMigrate ? (
+      <InvestSell
+        key={3}
+        contract={props.contract}
+        onSubmit={handleNextStep}
+        adapter={lp.value?.sellLiquidity}
+        tokens={lp.value?.tokens}
+      />
+    ) : (
+      <StakeTokensStep
+        key={3}
+        onSubmit={handleNextStep}
+        contract={props.contract}
+      />
+    ),
     <React.Fragment key={4}>
       <InvestStepsProgress success={2} />
       <Typography
@@ -594,11 +604,33 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
           height={100}
           className={styles.checked}
         />
-        <Typography as="div" align="center">
-          SUCCESS! You staked
-          <br />
-          your tokens
-        </Typography>
+        {canMigrate ? (
+          <>
+            <Typography as="div" align="center">
+              You have successfully withdrawn
+              <br />
+              funds from the pool
+            </Typography>
+            <Typography as="div" align="center">
+              <div className={styles.pool}>
+                <InvestPoolTokens tokens={props.contract.tokens.stake} />
+                {props.contract.name}
+              </div>
+            </Typography>
+            <Typography align="center" as="div">
+              total withdrawal
+            </Typography>
+            <Typography variant="h4" align="center" as="div">
+              {balanceOf.value ?? '0'} USDT
+            </Typography>
+          </>
+        ) : (
+          <Typography as="div" align="center">
+            SUCCESS! You staked
+            <br />
+            your tokens
+          </Typography>
+        )}
       </div>
       {!telegram && (
         <Typography
@@ -630,7 +662,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
           </>
         ) : (
           <Button color="green" as={ReactRouterLink} to={paths.invest.list}>
-            ALL DONE
+            {canMigrate ? 'done' : 'ALL DONE'}
           </Button>
         )}
       </div>
