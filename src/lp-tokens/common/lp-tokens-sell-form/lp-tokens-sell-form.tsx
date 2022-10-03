@@ -257,20 +257,38 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
                   error={Boolean(tokens.error)}
                   helperText={tokens.error?.message}
                 >
-                  {Object.values(tokens.value ?? {}).map((option) => (
-                    <SelectOption key={option.address} value={option.address}>
-                      {option.logoUrl ? (
-                        <img
-                          src={option.logoUrl}
-                          className={styles.img}
-                          alt=""
-                        />
-                      ) : (
-                        <span className={styles.imgPlaceHolder} />
-                      )}
-                      {option.symbol}
-                    </SelectOption>
-                  ))}
+                  {Object.values(tokens.value ?? {}).map((option) => {
+                    const renderValue = (
+                      <>
+                        {option.logoUrl ? (
+                          <img
+                            src={option.logoUrl}
+                            className={styles.img}
+                            alt=""
+                          />
+                        ) : (
+                          <span className={styles.imgPlaceHolder} />
+                        )}
+                        {option.symbol}
+                      </>
+                    )
+
+                    return (
+                      <SelectOption
+                        key={option.address}
+                        value={option.address}
+                        renderValue={renderValue}
+                      >
+                        {renderValue}
+                        <Typography
+                          variant="inherit"
+                          className={styles.balance}
+                        >
+                          {option.balance}
+                        </Typography>
+                      </SelectOption>
+                    )
+                  })}
                 </Select>
               )}
             />
