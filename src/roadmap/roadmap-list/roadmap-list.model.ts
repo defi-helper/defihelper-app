@@ -47,11 +47,9 @@ export const fetchProposalListFx = proposalListDomain.createEffect(
 )
 
 export const fetchProposalGroupedListByStatusFx =
-  proposalListDomain.createEffect(() =>
+  proposalListDomain.createEffect((params: { pagination: PaginationState }) =>
     roadmapApi.proposalListByStatus({
-      pagination: {
-        limit: 10,
-      },
+      pagination: params.pagination,
     })
   )
 
@@ -244,6 +242,7 @@ export const $groupedProposals = proposalListDomain
     in_process: undefined,
     executed: undefined,
     defeated: undefined,
+    pagination: 0,
   })
   .on(fetchProposalGroupedListByStatusFx.doneData, (_, payload) => payload)
   .on(createProposalFx.doneData, (state, payload) => ({
@@ -447,13 +446,29 @@ guard({
 })
 
 guard({
-  clock: [ProposalListGate.open, ProposalListGate.state.updates],
+  clock: sample({
+    source: [ProposalListGate.state, ProposalListPagination.state],
+    clock: [
+      ProposalListGate.open,
+      ProposalListGate.state.updates,
+      ProposalListPagination.updates,
+    ],
+    fn: ([{ status, search, tag }, pagination]) => ({
+      status,
+      search,
+      tag,
+      pagination,
+    }),
+  }),
   filter: (gate) => !gate.status && !gate.search && !gate.tag,
   target: fetchProposalGroupedListByStatusFx,
 })
 
 sample({
-  source: fetchProposalListFx.doneData,
+  clock: [
+    fetchProposalListFx.doneData,
+    fetchProposalGroupedListByStatusFx.doneData,
+  ],
   fn: (source) => source.pagination,
   target: ProposalListPagination.totalElements,
 })

@@ -41,6 +41,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
   const proposals = useStore(model.$proposalList)
   const groupedProposals = useStore(model.$groupedProposals)
   const loading = useStore(model.fetchProposalListFx.pending)
+  const loadingGrid = useStore(model.fetchProposalGroupedListByStatusFx.pending)
   const createLoading = useStore(model.createProposalFx.pending)
   const searchParams = useQueryParams()
 
@@ -145,9 +146,9 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
     }
   }
 
-  const hasGroupedProposals = Object.values(groupedProposals).some((group) =>
-    Boolean(group?.list?.length)
-  )
+  const hasGroupedProposals = Object.values(
+    omit(groupedProposals, 'pagination')
+  ).some((group) => Boolean(group?.list?.length))
 
   const handleAddTag = async (proposal: Proposal) => {
     try {
@@ -191,6 +192,10 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
     handleAdd()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tag, user])
+
+  useEffect(() => {
+    model.ProposalListPagination.reset()
+  }, [status])
 
   return (
     <AppLayout
@@ -284,12 +289,12 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           onChange={handleSearch}
         />
       </div>
-      {loading && (
+      {(loading || loadingGrid) && (
         <Paper radius={8} className={styles.loader}>
           <Loader height="36" />
         </Paper>
       )}
-      {!loading &&
+      {!(loading || loadingGrid) &&
         hasGroupedProposals &&
         !(status || search || currentOption) && (
           <RoadmapGroupedByStatus
@@ -303,7 +308,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
             user={user}
           />
         )}
-      {!loading && (status || search || currentOption) && (
+      {!(loading || loadingGrid) && (status || search || currentOption) && (
         <RoadmapGrid
           proposals={proposals}
           onEdit={handleEdit}
@@ -316,7 +321,7 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           onRemoveTag={handleRemoveTag}
         />
       )}
-      {(status || search) && <model.ProposalListPagination />}
+      <model.ProposalListPagination className={styles.pagination} />
     </AppLayout>
   )
 }

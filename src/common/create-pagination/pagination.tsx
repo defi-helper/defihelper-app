@@ -30,7 +30,13 @@ export const Pagination: React.VFC<PaginationProps> = (props) => {
   }, [currentPage])
 
   useEffect(() => {
+    const unsub = props.reset.watch(() => {
+      setCurrentPage(DEFAULT_PAGE)
+    })
+
     return () => {
+      unsub()
+
       props.reset()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
