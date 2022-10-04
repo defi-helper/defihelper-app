@@ -104,3 +104,7 @@ export const inacitveTab = style({
     },
   },
 })
+
+export const pagination = style({
+  marginTop: 10,
+})

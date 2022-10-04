@@ -61,6 +61,12 @@ export const roadmapApi = {
         in_process: data?.in_process,
         executed: data?.executed,
         defeated: data?.defeated,
+        pagination: Math.max(
+          data?.open.pagination.count ?? 0,
+          data?.in_process.pagination.count ?? 0,
+          data?.executed.pagination.count ?? 0,
+          data?.defeated.pagination.count ?? 0
+        ),
       })),
 
   proposalDetail: (variables: ProposalQueryVariables) =>
