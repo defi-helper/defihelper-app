@@ -17,6 +17,7 @@ import { toastsService } from '~/toasts'
 import { analytics } from '~/analytics'
 import { BuyLiquidity } from '~/common/load-adapter'
 import * as styles from './invest-buy.css'
+import { NULL_ADDRESS } from '~/common/constants'
 
 export type InvestBuyProps = {
   onSubmit?: (transactionHash?: string) => void
@@ -52,12 +53,15 @@ export const InvestBuy = (props: InvestBuyProps) => {
   const tokens = useAsyncRetry(async () => {
     if (!props.adapter || !props.tokens) return
 
-    const { balanceOf } = props.adapter.methods
+    const { balanceOf, balanceETHOf } = props.adapter.methods
 
     const tokensWithBalances = await Promise.all(
       props.tokens.map(async (token) => ({
         ...token,
-        balance: await balanceOf(token.address),
+        balance:
+          NULL_ADDRESS === token.address
+            ? await balanceETHOf()
+            : await balanceOf(token.address),
       }))
     )
 
@@ -73,15 +77,21 @@ export const InvestBuy = (props: InvestBuyProps) => {
   const [buyState, handleBuy] = useAsyncFn(async () => {
     if (!props.adapter) return
 
-    const { buy, canBuy } = props.adapter.methods
+    const { buy, canBuy, buyETH, canBuyETH } = props.adapter.methods
+
+    const isNativeToken = tokenAddress === NULL_ADDRESS
 
     try {
-      const can = await canBuy(tokenAddress, amount)
+      const can = isNativeToken
+        ? await canBuyETH(amount)
+        : await canBuy(tokenAddress, amount)
 
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't buy")
 
-      const { tx } = await buy(tokenAddress, amount, '1')
+      const { tx } = isNativeToken
+        ? await buyETH(amount, '1')
+        : await buy(tokenAddress, amount, '1')
 
       const result = await tx?.wait()
 
@@ -90,6 +100,8 @@ export const InvestBuy = (props: InvestBuyProps) => {
       })
 
       props.onSubmit?.(result?.transactionHash)
+
+      tokens.retry()
 
       return true
     } catch (error) {
@@ -214,7 +226,7 @@ export const InvestBuy = (props: InvestBuyProps) => {
         />
       )}
       <div className={clsx(styles.stakeActions, styles.mt)}>
-        {!approved.value && (
+        {!approved.value && tokenAddress !== NULL_ADDRESS && (
           <Button
             onClick={handleApprove}
             color="green"
@@ -226,7 +238,10 @@ export const InvestBuy = (props: InvestBuyProps) => {
         <Button
           onClick={handleBuy}
           loading={buyState.loading}
-          disabled={approveState.loading || !approved.value}
+          disabled={
+            approveState.loading ||
+            (!approved.value && tokenAddress !== NULL_ADDRESS)
+          }
           color="green"
         >
           BUY TOKENS

@@ -18,6 +18,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { analytics } from '~/analytics'
 import { config } from '~/config'
 import * as styles from './lp-tokens-buy-form.css'
+import { NULL_ADDRESS } from '~/common/constants'
 
 export type LPTokensBuyFormProps = {
   onConfirm: () => void
@@ -93,21 +94,23 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
   }, [props.buyLiquidityAdapter.methods.isApproved, tokenAddress, amount])
 
   const [buyState, onBuy] = useAsyncFn(async (formValues: FormValues) => {
-    const { buy, canBuy } = props.buyLiquidityAdapter.methods
+    const { buy, canBuy, buyETH, canBuyETH } = props.buyLiquidityAdapter.methods
 
     setError(false)
 
+    const isNativeToken = formValues.token === NULL_ADDRESS
+
     try {
-      const can = await canBuy(formValues.token, formValues.amount)
+      const can = isNativeToken
+        ? await canBuyETH(formValues.amount)
+        : await canBuy(formValues.token, formValues.amount)
 
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't buy")
 
-      const { tx } = await buy(
-        formValues.token,
-        formValues.amount,
-        formValues.slippage
-      )
+      const { tx } = isNativeToken
+        ? await buyETH(formValues.amount, formValues.slippage)
+        : await buy(formValues.token, formValues.amount, formValues.slippage)
 
       const result = await tx?.wait()
       analytics.log('lp_tokens_purchase_success', {
@@ -162,8 +165,10 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
     analytics.log('lp_tokens_pop_up_buy_click', {
       amount: bignumberUtils.floor(formValues.amount),
     })
-    if (isApproved.value === true) {
+    if (isApproved.value === true || formValues.token === NULL_ADDRESS) {
       await onBuy(formValues)
+
+      return
     }
 
     if (isApproved.value === false || isApproved.error instanceof Error) {
@@ -359,9 +364,14 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
                 </div>
               )}
               <Button type="submit" loading={formState.isSubmitting}>
-                {isApproved.value === true && 'Buy'}
-                {isApproved.value === false && 'Approve'}
-                {isApproved.value instanceof Error && 'Approve'}
+                {(isApproved.value === true || tokenAddress === NULL_ADDRESS) &&
+                  'Buy'}
+                {isApproved.value === false &&
+                  tokenAddress !== NULL_ADDRESS &&
+                  'Approve'}
+                {isApproved.value instanceof Error &&
+                  tokenAddress !== NULL_ADDRESS &&
+                  'Approve'}
               </Button>
               <Button variant="outlined" onClick={props.onCancel}>
                 Cancel
