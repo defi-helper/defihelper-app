@@ -173,17 +173,19 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             }
           )
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(error.message)
-            analytics.log(
-              `settings_${action}_network_${currentWallet?.chainId}_failure`,
-              {
-                address: contract.contractWallet?.address,
-                network: contract.contractWallet?.network,
-                blockchain: 'ethereum',
-              }
-            )
-          }
+          const { message } = parseError(error)
+
+          toastsService.error(message)
+
+          console.error(message)
+          analytics.log(
+            `settings_${action}_network_${currentWallet?.chainId}_failure`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+            }
+          )
         } finally {
           model.reset()
         }

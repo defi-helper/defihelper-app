@@ -128,9 +128,9 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             .catch(console.error)
         }
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message)
-        }
+        const { message } = parseError(error)
+
+        toastsService.error(message)
       }
     }
 
