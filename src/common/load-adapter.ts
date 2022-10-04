@@ -348,6 +348,13 @@ export type BuyLiquidity = {
       native: string
       usd: string
     }>
+    balanceETHOf: () => Promise<string>
+    canBuyETH: (amount: string) => Promise<true | Error>
+    buyETH: (
+      amount: string,
+      slippage: number | string,
+      deadlineSeconds?: number
+    ) => Promise<{ tx?: Transaction }>
   }
 }
 
@@ -370,6 +377,11 @@ export type SellLiquidity = {
       usd: string
     }>
     amountOut(tokenAddress: string, amount: string): Promise<string>
+    sellETH: (
+      amount: string,
+      slippage: number | string,
+      deadlineSeconds?: number
+    ) => Promise<{ tx?: Transaction }>
   }
 }
 

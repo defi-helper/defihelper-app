@@ -21,18 +21,17 @@ import { config } from '~/config'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { Loader } from '~/common/loader'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import * as model from './governance-list.model'
-import * as styles from './governance-list.css'
 import { CanDemo } from '~/auth/can-demo'
 import { GovernanceTokensRequired } from '../common/governance-tokens-required'
+import { NULL_ADDRESS } from '~/common/constants'
+import * as model from './governance-list.model'
+import * as styles from './governance-list.css'
 
 export type GovernanceListProps = unknown
 
-const DELEGATE_TO_DEFAULT = '0x0000000000000000000000000000000000000000'
-
 const getDelegateButtonText = (votes?: string | null, delegateTo?: string) => {
   if (bignumberUtils.gt(votes, 0)) {
-    if (DELEGATE_TO_DEFAULT === delegateTo) {
+    if (NULL_ADDRESS === delegateTo) {
       return 'Delegate'
     }
 

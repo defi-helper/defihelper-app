@@ -17,6 +17,7 @@ import { toastsService } from '~/toasts'
 import { analytics } from '~/analytics'
 import { SellLiquidity } from '~/common/load-adapter'
 import * as styles from './invest-sell.css'
+import { NULL_ADDRESS } from '~/common/constants'
 
 export type InvestSellProps = {
   onSubmit?: (transactionHash?: string) => void
@@ -73,7 +74,7 @@ export const InvestSell = (props: InvestSellProps) => {
   const [buyState, handleBuy] = useAsyncFn(async () => {
     if (!props.adapter) return
 
-    const { sell, canSell } = props.adapter.methods
+    const { sell, canSell, sellETH } = props.adapter.methods
 
     try {
       const can = await canSell(amount)
@@ -81,7 +82,10 @@ export const InvestSell = (props: InvestSellProps) => {
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't sell")
 
-      const { tx } = await sell(tokenAddress, amount, '1')
+      const { tx } =
+        tokenAddress === NULL_ADDRESS
+          ? await sellETH(amount, '1')
+          : await sell(tokenAddress, amount, '1')
 
       const result = await tx?.wait()
 
@@ -90,6 +94,8 @@ export const InvestSell = (props: InvestSellProps) => {
       })
 
       props.onSubmit?.(result?.transactionHash)
+
+      tokens.retry()
 
       return true
     } catch (error) {
@@ -223,7 +229,7 @@ export const InvestSell = (props: InvestSellProps) => {
         />
       )}
       <div className={clsx(styles.stakeActions, styles.mt)}>
-        {!approved.value && (
+        {!approved.value && tokenAddress !== NULL_ADDRESS && (
           <Button
             onClick={handleApprove}
             color="green"
@@ -235,7 +241,10 @@ export const InvestSell = (props: InvestSellProps) => {
         <Button
           onClick={handleBuy}
           loading={buyState.loading}
-          disabled={approveState.loading || !approved.value}
+          disabled={
+            approveState.loading ||
+            (!approved.value && tokenAddress !== NULL_ADDRESS)
+          }
           color="green"
         >
           SELL TOKENS
