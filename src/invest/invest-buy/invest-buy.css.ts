@@ -79,6 +79,13 @@ export const balance = style({
   marginLeft: 'auto',
 })
 
+export const tokenBalance = style([
+  balance,
+  {
+    color: theme.colors.textColorGrey,
+  },
+])
+
 export const error = style({
   background: theme.colors.common.red1,
   color: theme.colors.common.white1,

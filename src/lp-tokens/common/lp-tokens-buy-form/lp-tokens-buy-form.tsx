@@ -236,7 +236,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
                         {renderValue}
                         <Typography
                           variant="inherit"
-                          className={styles.balance}
+                          className={styles.tokenBalance}
                         >
                           {option.balance}
                         </Typography>
