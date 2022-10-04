@@ -149,7 +149,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
         as="div"
         className={styles.mobileRow}
       >
-        {!isDesktop && <Typography variant="inherit">APY</Typography>}
+        {!isDesktop && <Typography variant="inherit">TVL</Typography>}
         <Typography variant="inherit">
           ${bignumberUtils.format(contract.metric.tvl)}
         </Typography>
