@@ -203,7 +203,7 @@ export const InvestSell = (props: InvestSellProps) => {
                 renderValue={renderValue}
               >
                 {renderValue}
-                <Typography variant="inherit" className={styles.balance}>
+                <Typography variant="inherit" className={styles.tokenBalance}>
                   {option.balance}
                 </Typography>
               </SelectOption>
