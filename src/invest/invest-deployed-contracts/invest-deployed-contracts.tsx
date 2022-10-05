@@ -1,3 +1,4 @@
+import { useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { useMemo } from 'react'
@@ -26,12 +27,14 @@ import {
 import { useDialog } from '~/common/dialog'
 import { switchNetwork } from '~/wallets/common'
 import { ConfirmDialog } from '~/common/confirm-dialog'
+import { analytics } from '~/analytics'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { InvestStopLossDialog } from '~/invest/common/invest-stop-loss-dialog'
 import * as model from '~/staking/staking-automates/staking-automates.model'
 import * as deployedContractModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './invest-deployed-contracts.css'
+import { paths } from '~/paths'
 
 export type InvestDeployedContractsProps = {
   className?: string
@@ -40,6 +43,7 @@ export type InvestDeployedContractsProps = {
 
 export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
   (props) => {
+    const history = useHistory()
     const automatesContracts = useStore(model.$automatesContracts)
     const loading = useStore(model.fetchAutomatesContractsFx.pending)
     const user = useStore(authModel.$user)
@@ -84,6 +88,87 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
       }
     }
 
+    const handleAction =
+      (
+        contract: typeof automatesContracts[number],
+        action: Exclude<model.ActionType, 'migrate'>
+      ) =>
+      async () => {
+        try {
+          if (!currentWallet?.account) return
+          analytics.log(
+            `settings_${action}_network_${currentWallet?.chainId}_click`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+              provider: currentWallet.provider,
+              chainId: String(currentWallet.chainId),
+            }
+          )
+
+          const adapter = await model.fetchAdapterFx({
+            protocolAdapter: contract.protocol.adapter,
+            contractAdapter: contract.adapter,
+            contractId: contract.id,
+            contractAddress: contract.address,
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
+            action,
+          })
+
+          const findedWallet = wallets.find((wallet) => {
+            const sameAddreses =
+              String(currentWallet.chainId) === 'main'
+                ? currentWallet.account === wallet.address
+                : currentWallet.account?.toLowerCase() === wallet.address
+
+            return (
+              sameAddreses && String(currentWallet.chainId) === wallet.network
+            )
+          })
+
+          if (
+            !adapter ||
+            action === 'run' ||
+            action === 'stopLoss' ||
+            !findedWallet
+          )
+            return
+
+          const can = await adapter.refund.methods.can()
+          if (can instanceof Error) throw can
+
+          analytics.log(
+            `settings_${action}_network_${currentWallet?.chainId}_success`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+              provider: currentWallet.provider,
+              chainId: String(currentWallet.chainId),
+            }
+          )
+
+          history.push(`${paths.invest.detail(contract.contract?.id)}?deploy=1`)
+        } catch (error) {
+          const { message } = parseError(error)
+
+          toastsService.error(message)
+
+          console.error(message)
+          analytics.log(
+            `settings_${action}_network_${currentWallet?.chainId}_failure`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+            }
+          )
+        } finally {
+          model.reset()
+        }
+      }
     const handleRunManually =
       (contract: typeof automatesContracts[number]) => async () => {
         try {
@@ -299,6 +384,11 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   ? handleSwitchNetwork(deployedContract)
                   : null
 
+              const refund =
+                wrongNetwork ??
+                isNotSameAddresses ??
+                handleAction(deployedContract, 'refund')
+
               const stopLoss =
                 wrongNetwork ??
                 isNotSameAddresses ??
@@ -329,10 +419,12 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   apy={deployedContract.contract?.metric.aprYear}
                   apyBoost={deployedContract.contract?.metric.myAPYBoost}
                   onDelete={handleOnDelete(deployedContract.id)}
+                  onRefund={currentWallet ? refund : connect}
                   onRun={currentWallet ? run : connect}
                   onStopLoss={currentWallet ? stopLoss : connect}
                   deleting={deployedContract.deleting}
                   running={deployedContract.running}
+                  refunding={deployedContract.refunding}
                   contractId={deployedContract.contract?.id}
                   stopLossing={deployedContract.stopLossing}
                   status={deployedContract.stopLoss?.status}
