@@ -1,4 +1,5 @@
 import { useForm, Controller } from 'react-hook-form'
+import { ethers } from 'ethers'
 
 import { Button } from '~/common/button'
 import { Typography } from '~/common/typography'
@@ -6,6 +7,7 @@ import { Input } from '~/common/input'
 import { isEthAddress } from '~/common/is-eth-address'
 import { GovernanceActionArguments } from '../governance.types'
 import { GovernancePowOptions } from '../governance-pow-options'
+import { ButtonBase } from '~/common/button-base'
 import * as styles from './governance-actions-manually-params.css'
 
 export type GovernanceActionsManuallyParamsProps = {
@@ -32,6 +34,16 @@ export const GovernanceActionsManuallyParams: React.FC<GovernanceActionsManually
         value: (values.value || 1) + pow,
       })
     }
+    const handleChangeKessakValue = (name: string) => async () => {
+      await trigger(name, { shouldFocus: true })
+
+      const values = getValues(name)
+
+      setValue(name, {
+        ...values,
+        value: ethers.utils.keccak256(ethers.utils.toUtf8Bytes(values.value)),
+      })
+    }
 
     return (
       <>
@@ -50,14 +62,26 @@ export const GovernanceActionsManuallyParams: React.FC<GovernanceActionsManually
           className={styles.form}
         >
           {Object.entries(props.inputs).map(([name, input]) => {
+            const options: Record<string, JSX.Element> = {
+              uint256: (
+                <GovernancePowOptions
+                  onClick={handleChangeUintValue(name)}
+                  className={styles.pow}
+                />
+              ),
+              string: (
+                <ButtonBase
+                  className={styles.kessak}
+                  onClick={handleChangeKessakValue(name)}
+                >
+                  kessak256
+                </ButtonBase>
+              ),
+            }
+
             return (
               <div key={name} className={styles.input}>
-                {input.type === 'uint256' && (
-                  <GovernancePowOptions
-                    onClick={handleChangeUintValue(name)}
-                    className={styles.pow}
-                  />
-                )}
+                {options[input.type]}
                 <Controller
                   render={({ field }) => (
                     <Input
