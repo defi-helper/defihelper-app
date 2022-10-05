@@ -151,6 +151,14 @@ export const InvestBuy = (props: InvestBuyProps) => {
       >
         BUY TOKENS
       </Typography>
+      <Typography
+        variant="body2"
+        as="div"
+        align="center"
+        className={styles.subtitle}
+      >
+        1-click convert tokens to LP tokens
+      </Typography>
       <div className={styles.row}>
         <Typography variant="body2" family="mono">
           Pool

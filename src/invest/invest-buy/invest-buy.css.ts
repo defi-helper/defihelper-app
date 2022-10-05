@@ -3,6 +3,10 @@ import { globalStyle, style } from '@vanilla-extract/css'
 import { theme } from '~/common/theme'
 
 export const title = style({
+  marginBottom: 4,
+})
+
+export const subtitle = style({
   marginBottom: 32,
 })
 
