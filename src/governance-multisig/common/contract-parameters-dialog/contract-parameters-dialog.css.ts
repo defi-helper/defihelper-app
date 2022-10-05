@@ -21,3 +21,14 @@ export const input = style({
 export const pow = style({
   marginLeft: 'auto',
 })
+
+export const kessak = style([
+  pow,
+  {
+    border: `1px solid currentColor`,
+    minWidth: 20,
+    height: 20,
+    padding: '0 3px',
+    fontSize: 12,
+  },
+])
