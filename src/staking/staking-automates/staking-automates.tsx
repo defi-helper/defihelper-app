@@ -18,14 +18,14 @@ import { authModel } from '~/auth'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import { parseError } from '~/common/parse-error'
 import { toastsService } from '~/toasts'
-import * as styles from './staking-automates.css'
-import * as model from './staking-automates.model'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import {
   useOnTokenMetricUpdatedSubscription,
   useOnWalletMetricUpdatedSubscription,
 } from '~/portfolio/common'
 import { settingsWalletModel } from '~/settings/settings-wallets'
+import * as model from './staking-automates.model'
+import * as styles from './staking-automates.css'
 
 export type StakingAutomatesProps = {
   className?: string
@@ -66,72 +66,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
         address: contract.wallet.address,
         network: contract.wallet.network,
       }).catch(console.error)
-    }
-
-  const handleAction =
-    (contract: typeof automatesContracts[number], action: model.ActionType) =>
-    async () => {
-      try {
-        if (!currentWallet?.account) return
-
-        const adapter = await model.fetchAdapterFx({
-          protocolAdapter: contract.protocol.adapter,
-          contractAdapter: contract.adapter,
-          contractId: contract.id,
-          contractAddress: contract.address,
-          provider: currentWallet.provider,
-          chainId: String(currentWallet.chainId),
-          action,
-        })
-
-        const findedWallet = wallets.find((wallet) => {
-          const sameAddreses =
-            String(currentWallet?.chainId) === 'main'
-              ? currentWallet?.account === wallet.address
-              : currentWallet?.account?.toLowerCase() === wallet.address
-
-          return (
-            sameAddreses && String(currentWallet?.chainId) === wallet.network
-          )
-        })
-
-        if (
-          !adapter ||
-          action === 'run' ||
-          action === 'stopLoss' ||
-          !findedWallet
-        )
-          return
-
-        const can = await adapter.refund.methods.can()
-        if (can instanceof Error) throw can
-
-        const refund = await adapter.refund.methods.refund()
-
-        const tx = await refund.tx.wait()
-
-        if (contract.contract && contract.contractWallet) {
-          model
-            .scanWalletMetricFx({
-              wallet: contract.contractWallet.id,
-              contract: contract.contract.id,
-              txId: tx.transactionHash,
-            })
-            .catch(console.error)
-
-          model
-            .scanWalletMetricFx({
-              wallet: findedWallet.id,
-              contract: contract.id,
-              txId: tx.transactionHash,
-            })
-            .catch(console.error)
-        }
-      } catch (error) {
-        const { message } = parseError(error)
-
-        toastsService.error(message)
-      }
     }
 
   const handleRunManually =
@@ -258,11 +192,6 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               ? handleSwitchNetwork(automatesContract)
               : null
 
-          const refund =
-            wrongNetwork ??
-            isNotSameAddresses ??
-            handleAction(automatesContract, 'refund')
-
           const run =
             wrongNetwork ??
             isNotSameAddresses ??
@@ -284,10 +213,8 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               balance={automatesContract.contractWallet?.metric.stakedUSD ?? ''}
               apy={automatesContract.contract?.metric.aprYear}
               apyBoost={automatesContract.contract?.metric.myAPYBoost}
-              onRefund={currentWallet ? refund : connect}
               onRun={currentWallet ? run : connect}
               onDelete={handleDelete(automatesContract.id)}
-              refunding={automatesContract.refunding}
               deleting={automatesContract.deleting}
               running={automatesContract.running}
               contractId={automatesContract.id}

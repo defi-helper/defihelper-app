@@ -26,7 +26,6 @@ import {
 import { useDialog } from '~/common/dialog'
 import { switchNetwork } from '~/wallets/common'
 import { ConfirmDialog } from '~/common/confirm-dialog'
-import { analytics } from '~/analytics'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { InvestStopLossDialog } from '~/invest/common/invest-stop-loss-dialog'
 import * as model from '~/staking/staking-automates/staking-automates.model'
@@ -85,111 +84,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
       }
     }
 
-    const handleAction =
-      (
-        contract: typeof automatesContracts[number],
-        action: Exclude<model.ActionType, 'migrate'>
-      ) =>
-      async () => {
-        try {
-          if (!currentWallet?.account) return
-          analytics.log(
-            `settings_${action}_network_${currentWallet?.chainId}_click`,
-            {
-              address: contract.contractWallet?.address,
-              network: contract.contractWallet?.network,
-              blockchain: 'ethereum',
-              provider: currentWallet.provider,
-              chainId: String(currentWallet.chainId),
-            }
-          )
-
-          const adapter = await model.fetchAdapterFx({
-            protocolAdapter: contract.protocol.adapter,
-            contractAdapter: contract.adapter,
-            contractId: contract.id,
-            contractAddress: contract.address,
-            provider: currentWallet.provider,
-            chainId: String(currentWallet.chainId),
-            action,
-          })
-
-          const findedWallet = wallets.find((wallet) => {
-            const sameAddreses =
-              String(currentWallet.chainId) === 'main'
-                ? currentWallet.account === wallet.address
-                : currentWallet.account?.toLowerCase() === wallet.address
-
-            return (
-              sameAddreses && String(currentWallet.chainId) === wallet.network
-            )
-          })
-
-          if (
-            !adapter ||
-            action === 'run' ||
-            action === 'stopLoss' ||
-            !findedWallet
-          )
-            return
-
-          const onLastStep = (txId?: string) => {
-            if (!contract.contract || !contract.contractWallet) return
-
-            model
-              .scanWalletMetricFx({
-                wallet: contract.contractWallet.id,
-                contract: contract.contract.id,
-                txId,
-              })
-              .catch(console.error)
-
-            model
-              .scanWalletMetricFx({
-                wallet: findedWallet.id,
-                contract: contract.id,
-                txId,
-              })
-              .catch(console.error)
-          }
-
-          const can = await adapter.refund.methods.can()
-          if (can instanceof Error) throw can
-
-          const refund = await adapter.refund.methods.refund()
-
-          const tx = await refund.tx.wait()
-
-          onLastStep(tx.transactionHash)
-
-          analytics.log(
-            `settings_${action}_network_${currentWallet?.chainId}_success`,
-            {
-              address: contract.contractWallet?.address,
-              network: contract.contractWallet?.network,
-              blockchain: 'ethereum',
-              provider: currentWallet.provider,
-              chainId: String(currentWallet.chainId),
-            }
-          )
-        } catch (error) {
-          const { message } = parseError(error)
-
-          toastsService.error(message)
-
-          console.error(message)
-          analytics.log(
-            `settings_${action}_network_${currentWallet?.chainId}_failure`,
-            {
-              address: contract.contractWallet?.address,
-              network: contract.contractWallet?.network,
-              blockchain: 'ethereum',
-            }
-          )
-        } finally {
-          model.reset()
-        }
-      }
     const handleRunManually =
       (contract: typeof automatesContracts[number]) => async () => {
         try {
@@ -405,11 +299,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   ? handleSwitchNetwork(deployedContract)
                   : null
 
-              const refund =
-                wrongNetwork ??
-                isNotSameAddresses ??
-                handleAction(deployedContract, 'refund')
-
               const stopLoss =
                 wrongNetwork ??
                 isNotSameAddresses ??
@@ -440,12 +329,10 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   apy={deployedContract.contract?.metric.aprYear}
                   apyBoost={deployedContract.contract?.metric.myAPYBoost}
                   onDelete={handleOnDelete(deployedContract.id)}
-                  onRefund={currentWallet ? refund : connect}
                   onRun={currentWallet ? run : connect}
                   onStopLoss={currentWallet ? stopLoss : connect}
                   deleting={deployedContract.deleting}
                   running={deployedContract.running}
-                  refunding={deployedContract.refunding}
                   contractId={deployedContract.contract?.id}
                   stopLossing={deployedContract.stopLossing}
                   status={deployedContract.stopLoss?.status}

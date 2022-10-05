@@ -30,7 +30,6 @@ export type StakingAutomatesContractCardProps = {
   blockchain: string
   balance: string
   protocol?: { id: string; name: string; adapter: string }
-  onRefund: () => void
   onDelete: () => void
   onRun: () => void
   onStopLoss?: () => void
@@ -39,7 +38,6 @@ export type StakingAutomatesContractCardProps = {
   apyBoost?: string
   restakeAt: string | null
   deleting?: boolean
-  refunding?: boolean
   running?: boolean
   stopLossing?: boolean
   tokensIcons: Array<string | null>
@@ -52,7 +50,7 @@ export type StakingAutomatesContractCardProps = {
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
   (props) => {
-    const pending = props.deleting || props.refunding
+    const pending = props.deleting
 
     const apyboostDifference = bignumberUtils.minus(props.apyBoost, props.apy)
 
@@ -365,10 +363,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                   size="small"
                   className={styles.deposit}
                   disabled={
-                    props.deleting ||
-                    props.refunding ||
-                    props.running ||
-                    props.stopLossing
+                    props.deleting || props.running || props.stopLossing
                   }
                   as={ReactRouterLink}
                   to={`${paths.invest.detail(props.contractId)}?deploy=1`}
@@ -383,9 +378,9 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 size="small"
                 variant="light"
                 className={styles.refund}
-                onClick={props.onRefund}
-                loading={props.refunding}
                 disabled={props.deleting || props.running || props.stopLossing}
+                as={ReactRouterLink}
+                to={`${paths.invest.detail(props.contractId)}?deploy=1`}
               >
                 Unstake
               </Button>
