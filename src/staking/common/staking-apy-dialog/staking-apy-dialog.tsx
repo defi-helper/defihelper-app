@@ -4,10 +4,11 @@ import { useState } from 'react'
 // import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
+import { Checkbox } from '~/common/checkbox'
 import { Dialog } from '~/common/dialog'
-import { Icon } from '~/common/icon'
 import { Link } from '~/common/link'
 import { NumericalInput } from '~/common/numerical-input'
+import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import * as styles from './staking-apy-dialog.css'
 
@@ -92,6 +93,71 @@ export const StakingApyDialog: React.FC<StakingApyDialogProps> = (props) => {
   //   }
   // })
 
+  const withoutAuto = (
+    <>
+      <Paper radius={8} className={styles.paper}>
+        <div>
+          <Typography variant="body3" className={clsx(styles.fs12, styles.mb4)}>
+            Yield on the selected staking period
+          </Typography>
+          <Typography variant="body2" weight="bold">
+            199943000000 MOONLIGHT
+          </Typography>
+        </div>
+        <div>
+          <Typography variant="body3" className={clsx(styles.fs12, styles.mb4)}>
+            Yield in USD*
+          </Typography>
+          <Typography variant="body2" weight="bold">
+            $345,20
+          </Typography>
+        </div>
+      </Paper>
+      <Typography variant="body3" className={styles.attention}>
+        *the amount of yield is calculated based on the average price of token
+        for the last 30 days
+      </Typography>
+      <Paper radius={8} className={styles.versus}>
+        <div>
+          <Typography
+            className={clsx(styles.fs18, styles.mb8)}
+            weight="bold"
+            align="center"
+          >
+            $35,20
+          </Typography>
+          <Typography className={styles.fs12} weight="bold" align="center">
+            Manual restake yield
+          </Typography>
+        </div>
+        <Typography className={styles.fs12} as="span">
+          vs
+        </Typography>
+        <div>
+          <Typography
+            className={clsx(styles.fs18, styles.mb8)}
+            weight="bold"
+            align="center"
+          >
+            $345,20
+          </Typography>
+          <Typography className={styles.fs12} weight="bold" align="center">
+            Auto-staking yield
+          </Typography>
+        </div>
+      </Paper>
+      <Typography as="div" align="center" className={styles.howItWorks}>
+        <Link
+          href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
+          target="_blank"
+          color="blue"
+        >
+          How auto-staking works?
+        </Link>
+      </Typography>
+    </>
+  )
+
   const CompundingEveryComponents = {
     [CompoundingEvery.AUTO]: (
       <>
@@ -103,32 +169,48 @@ export const StakingApyDialog: React.FC<StakingApyDialogProps> = (props) => {
         >
           How auto-staking works?
         </Link>
-        <Button color="green" onClick={props.onConfirm}>
+        <Paper radius={8} className={styles.paper}>
+          <div>
+            <Typography variant="body3" className={styles.fs12}>
+              Yield on the selected staking period
+            </Typography>
+            <Typography variant="body2" weight="bold">
+              199943000000 MOONLIGHT
+            </Typography>
+          </div>
+          <div>
+            <Typography variant="body3" className={styles.fs12}>
+              Yield in USD*
+            </Typography>
+            <Typography variant="body2" weight="bold">
+              $345,20
+            </Typography>
+          </div>
+          <div>
+            <Typography variant="body3" className={styles.fs12}>
+              Next restake at
+            </Typography>
+            <Typography variant="body2" weight="bold">
+              13/08 04:40
+            </Typography>
+          </div>
+        </Paper>
+        <Typography variant="body3" className={styles.attention}>
+          *the amount of yield is calculated based on the average price of token
+          for the last 30 days
+        </Typography>
+        <Button
+          color="green"
+          onClick={props.onConfirm}
+          className={styles.button}
+        >
           Auto-stake
         </Button>
       </>
     ),
-    [CompoundingEvery['1D']]: (
-      <>
-        <Button color="green" onClick={props.onConfirm}>
-          Auto-stake
-        </Button>
-      </>
-    ),
-    [CompoundingEvery['7D']]: (
-      <>
-        <Button color="green" onClick={props.onConfirm}>
-          Auto-stake
-        </Button>
-      </>
-    ),
-    [CompoundingEvery['14D']]: (
-      <>
-        <Button color="green" onClick={props.onConfirm}>
-          Auto-stake
-        </Button>
-      </>
-    ),
+    [CompoundingEvery['1D']]: withoutAuto,
+    [CompoundingEvery['7D']]: withoutAuto,
+    [CompoundingEvery['14D']]: withoutAuto,
   }
 
   return (
@@ -159,8 +241,7 @@ export const StakingApyDialog: React.FC<StakingApyDialogProps> = (props) => {
       <Tabs
         title={
           <>
-            Compounding every{' '}
-            <Icon icon="checkboxChecked" width="1em" height="1em" />
+            Compounding every <Checkbox />
           </>
         }
         onChange={setCompoundingEvery}
