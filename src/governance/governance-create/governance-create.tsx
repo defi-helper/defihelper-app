@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import isEmpty from 'lodash.isempty'
 import { useForm } from 'react-hook-form'
@@ -29,6 +29,7 @@ import { Link } from '~/common/link'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import * as styles from './governance-create.css'
 import * as model from './governance-create.model'
+import { useQueryParams } from '~/common/hooks'
 
 const MarkdownEditor = lazy(() =>
   import('~/common/markdown-editor').then((c) => ({
@@ -80,19 +81,34 @@ const contracts = networks[config.DEFAULT_CHAIN_ID] as unknown as Record<
   }
 >
 
+const safeJsonParse = (value: string): Partial<Record<string, string>> => {
+  try {
+    return JSON.parse(value)
+  } catch {
+    return {}
+  }
+}
+
 export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
   const [openGovernanceActionsDialog] = useDialog(GovernanceActionsDialog)
 
+  const clone = useQueryParams().get('clone')
+  const queryObj = useMemo(
+    () => (clone ? safeJsonParse(atob(clone)) : {}),
+    [clone]
+  )
+
   const loading = useStore(model.proposeFx.pending)
 
-  const { register, handleSubmit, formState, setValue } = useForm<FormValues>({
-    resolver: yupResolver(
-      yup.object().shape({
-        name: yup.string().required('required'),
-        description: yup.string().required('required'),
-      })
-    ),
-  })
+  const { register, handleSubmit, formState, setValue, watch } =
+    useForm<FormValues>({
+      resolver: yupResolver(
+        yup.object().shape({
+          name: yup.string().required('required'),
+          description: yup.string().required('required'),
+        })
+      ),
+    })
 
   const [actions, setActions] = useState<GovernanceAction[]>([])
 
@@ -194,6 +210,23 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
     }
   }
 
+  useEffect(() => {
+    if (!queryObj.title) return
+
+    setValue('name', queryObj.title)
+  }, [queryObj, setValue])
+  useEffect(() => {
+    if (!queryObj.description) return
+
+    setValue('description', queryObj.description)
+  }, [queryObj, setValue])
+
+  const description = watch('description')
+
+  // console.log(queryObj.actions, queryObj.signatures, actions)
+
+  // console.log(ethers.utils.defaultAbiCoder.decode())
+
   return (
     <AppLayout>
       <Head title="Create proposal" />
@@ -272,11 +305,11 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
         )}
         <Suspense fallback="loading...">
           <MarkdownEditor
-            value=""
             label="Write a description"
             disabled={loading}
             onChange={(value) => setValue('description', value)}
             className={styles.input}
+            value={description}
           />
         </Suspense>
         {Boolean(formState.errors.description) && (
