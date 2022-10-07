@@ -16,7 +16,7 @@ export const title = style({
 
 export const tabs = style({})
 
-export const tabsTitle = style({
+export const label = style({
   display: 'flex',
   alignItems: 'center',
   gap: 7,

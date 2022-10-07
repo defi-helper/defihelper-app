@@ -28,7 +28,7 @@ export type LPTokensTableProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   contractsSentryRef: any
   contractsHasNextPage: boolean
-  onOpenApy: (contract: LPContracts[number]['metric']) => void
+  onOpenApy: (contract: LPContracts[number]) => void
 }
 
 export const LPTokensTable: React.VFC<LPTokensTableProps> = (props) => {

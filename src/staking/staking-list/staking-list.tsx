@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useLocalStorage, useInterval, useMedia } from 'react-use'
 import { useGate, useStore } from 'effector-react'
-import { Link as ReactRouterLink } from 'react-router-dom'
+import { Link as ReactRouterLink, useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import { StickyContainer, Sticky } from 'react-sticky'
 import Joyride, { CallBackProps, STATUS, Step } from '@defihelper/react-joyride'
@@ -23,7 +23,7 @@ import {
   ContractListSortInputTypeColumnEnum,
   SortOrderEnum,
 } from '~/api/_generated-types'
-import { StakingApyDialog } from '~/staking/common'
+import { StakingApyDialog } from '~/staking/staking-apy-dialog'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Input } from '~/common/input'
 import { useDebounce } from '~/common/hooks'
@@ -90,6 +90,8 @@ const STEPS: (Step & { action?: () => JSX.Element; closeButton?: string })[] = [
 
 export const StakingList: React.VFC<StakingListProps> = (props) => {
   const ability = useAbility()
+
+  const history = useHistory()
 
   const [search, setSearch] = useState('')
   const [sortBy, setSort] = useState({
@@ -213,26 +215,22 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
       })
     }
 
-  const handleOpenApy =
-    (metric: typeof stakingList[number]['metric']) => async () => {
-      const apr = {
-        '1d': metric.aprDay,
-        '7d': metric.aprWeek,
-        '30d': metric.aprMonth,
-        '365d(APY)': metric.aprYear,
-      }
+  const handleOpenApy = (contract: typeof stakingList[number]) => async () => {
+    try {
+      await openApyDialog({
+        contractId: contract.id,
+        contractName: contract.name,
+        tokens: contract.tokens,
+        staked: contract.metric.myStaked,
+      })
 
-      try {
-        await openApyDialog({
-          apr,
-          staked: metric.myStaked,
-        })
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message)
-        }
+      history.push(paths.invest.detail(contract.id))
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
       }
     }
+  }
 
   const handleSearch = (event: React.FormEvent<HTMLInputElement>) => {
     setSearch(event.currentTarget.value)
@@ -499,7 +497,7 @@ export const StakingList: React.VFC<StakingListProps> = (props) => {
                         stakingListItem
                       )}
                       onDelete={handleOpenConfirmDialog(stakingListItem.id)}
-                      onOpenApy={handleOpenApy(stakingListItem.metric)}
+                      onOpenApy={handleOpenApy(stakingListItem)}
                       scannerData={scanner[stakingListItem.id]}
                       onUpdate={handleUpdateMetrics(stakingListItem.id)}
                       hideAutostakingBoost={

@@ -1,3 +1,4 @@
+import { useHistory } from 'react-router-dom'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
@@ -12,7 +13,8 @@ import { Input } from '~/common/input'
 import { Button } from '~/common/button'
 import { LPTokensTable } from './common/lp-tokens-table'
 import { BlockchainEnum } from '~/api'
-import { StakingApyDialog, StakingSuccessDialog } from '~/staking/common'
+import { StakingSuccessDialog } from '~/staking/common'
+import { StakingApyDialog } from '~/staking/staking-apy-dialog'
 import { useDialog, UserRejectionError } from '~/common/dialog'
 import { toastsService } from '~/toasts'
 import { switchNetwork } from '~/wallets/common'
@@ -23,11 +25,12 @@ import { LPTokensBuySellDialog } from './common/lp-tokens-buy-sell-dialog'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as stakingModel from '~/staking/staking-adapters/staking-adapters.model'
 import { settingsWalletModel } from '~/settings/settings-wallets'
-import * as styles from './lp-tokens.css'
-import * as model from './lp-tokens.model'
 import { LPContracts } from './common/lp-tokens.types'
 import { LPTokensContracts } from './common/lp-tokens-contracts'
 import { useDebounce, useQueryParams } from '~/common/hooks'
+import { paths } from '~/paths'
+import * as styles from './lp-tokens.css'
+import * as model from './lp-tokens.model'
 
 export type LPTokensProps = unknown
 
@@ -51,6 +54,8 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
   const protocolsSelect = useStore(model.$protocolsSelect)
   const contracts = useStore(model.$contracts)
   const contractId = useQueryParams().get('contractId')
+
+  const history = useHistory()
 
   const [protocolIds, setProtocolIds] = useState<string[]>([])
   const protocolIdsRef = useRef<string[]>([])
@@ -235,19 +240,16 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
     }
   }
 
-  const handleOpenApy = async (metric: LPContracts[number]['metric']) => {
-    const apr = {
-      '1d': metric.aprDay,
-      '7d': metric.aprWeek,
-      '30d': metric.aprMonth,
-      '365d(APY)': metric.aprYear,
-    }
-
+  const handleOpenApy = async (contract: LPContracts[number]) => {
     try {
       await openApyDialog({
-        apr,
-        staked: metric.myStaked,
+        contractId: contract.id,
+        contractName: contract.name,
+        tokens: contract.tokens,
+        staked: contract.metric.myStaked,
       })
+
+      history.push(paths.invest.detail(contract.id))
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)

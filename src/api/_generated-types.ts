@@ -2214,6 +2214,7 @@ export type Query = {
   automateContracts: AutomateContractListQuery
   govToken: GovTokenType
   restakeStrategy: RestakeStrategyType
+  restakeCalculator: RestakeCalculatorType
   treasury: TreasuryType
   monitoringUsersRegisteringHistory: Array<MonitoringStatisticsPointType>
   monitoringWalletsRegisteringHistory: Array<MonitoringStatisticsPointType>
@@ -2357,6 +2358,13 @@ export type QueryRestakeStrategyArgs = {
   apy: Scalars['Float']
 }
 
+export type QueryRestakeCalculatorArgs = {
+  contract: Scalars['UuidType']
+  amount: Scalars['BigNumberType']
+  period: Scalars['Int']
+  isRestake: Scalars['Boolean']
+}
+
 export type QueryMonitoringAutomateRunHistoryArgs = {
   filter: MonitoringAutomateRunHistoryFilterEnum
 }
@@ -2369,6 +2377,12 @@ export type QuerySmartTradeOrdersArgs = {
   filter?: Maybe<SmartTradeOrderListFilterInputType>
   sort?: Maybe<Array<SmartTradeOrderListSortInputType>>
   pagination?: Maybe<SmartTradeOrderListPaginationInputType>
+}
+
+export type RestakeCalculatorType = {
+  __typename?: 'RestakeCalculatorType'
+  earnedUSD: Scalars['BigNumberType']
+  nextRestakeAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export type RestakeStrategyPointType = {
@@ -6342,6 +6356,20 @@ export type AutomationContractUpdateMutation = { __typename?: 'Mutation' } & {
   automateContractUpdate: {
     __typename?: 'AutomateContractType'
   } & StakingAutomatesContractFragmentFragment
+}
+
+export type RestakeCalculatorQueryVariables = Exact<{
+  contract: Scalars['UuidType']
+  amount: Scalars['BigNumberType']
+  period: Scalars['Int']
+  isRestake: Scalars['Boolean']
+}>
+
+export type RestakeCalculatorQuery = { __typename?: 'Query' } & {
+  restakeCalculator: { __typename?: 'RestakeCalculatorType' } & Pick<
+    RestakeCalculatorType,
+    'earnedUSD' | 'nextRestakeAt'
+  >
 }
 
 export type StakingAutomatesContractFragmentFragment = {

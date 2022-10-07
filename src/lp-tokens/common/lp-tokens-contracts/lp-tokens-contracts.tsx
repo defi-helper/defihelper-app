@@ -24,14 +24,14 @@ export type LPTokensContractsProps = {
   contractsSentryRef: any
   contractsHasNextPage: boolean
   onBuyLP: (contract: LPContracts[number]) => void
-  onOpenApy: (contract: LPContracts[number]['metric']) => void
+  onOpenApy: (contract: LPContracts[number]) => void
 }
 
 export const LPTokensContracts: React.VFC<LPTokensContractsProps> = (props) => {
   const handleOnBuyLP = (contract: LPContracts[number]) => () =>
     props.onBuyLP(contract)
-  const handleOpenApy = (metric: LPContracts[number]['metric']) => () =>
-    props.onOpenApy(metric)
+  const handleOpenApy = (contract: LPContracts[number]) => () =>
+    props.onOpenApy(contract)
 
   return (
     <>
@@ -123,7 +123,7 @@ export const LPTokensContracts: React.VFC<LPTokensContractsProps> = (props) => {
                     )}
                     %
                     <ButtonBase
-                      onClick={handleOpenApy(contract.metric)}
+                      onClick={handleOpenApy(contract)}
                       className={styles.apyButton}
                     >
                       <Icon icon="calculator" width="20" height="20" />
