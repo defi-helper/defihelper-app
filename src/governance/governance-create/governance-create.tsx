@@ -1,4 +1,5 @@
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import { UnitValue } from 'effector'
+import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import isEmpty from 'lodash.isempty'
 import { useForm } from 'react-hook-form'
@@ -13,12 +14,16 @@ import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import { Input } from '~/common/input'
 import { useDialog } from '~/common/dialog'
-import { GovernanceActionsDialog } from '~/governance/common'
+import {
+  AbiItem,
+  GovernanceActionsDialog,
+  parseContract,
+} from '~/governance/common'
 import { Typography } from '~/common/typography'
 import {
   GovernanceAction,
   GovernanceActionArguments,
-} from '../common/governance.types'
+} from '~/governance/common/governance.types'
 import { cutAccount } from '~/common/cut-account'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Paper } from '~/common/paper'
@@ -26,7 +31,10 @@ import { Head } from '~/common/head'
 import { switchNetwork } from '~/wallets/common'
 import { config } from '~/config'
 import { Link } from '~/common/link'
+import { useQueryParams } from '~/common/hooks'
+import { fetchGovernanceProposalFx } from '~/governance/governance-detail/governance-detail.model'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
+import { abi, AbiKeys, isContract } from '~/abi'
 import * as styles from './governance-create.css'
 import * as model from './governance-create.model'
 
@@ -80,26 +88,53 @@ const contracts = networks[config.DEFAULT_CHAIN_ID] as unknown as Record<
   }
 >
 
+const safeJsonParse = (
+  value: string
+): Partial<UnitValue<typeof fetchGovernanceProposalFx.doneData>> => {
+  try {
+    return JSON.parse(value)
+  } catch {
+    return {}
+  }
+}
+
+const contractAddresses = Object.entries(contracts).reduce<
+  Record<string, string>
+>((acc, [contractName, { address }]) => {
+  acc[address.toLowerCase()] = contractName
+
+  return acc
+}, {})
+
 export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
   const [openGovernanceActionsDialog] = useDialog(GovernanceActionsDialog)
 
+  const clone = useQueryParams().get('clone')
+  const queryObj = useMemo(
+    () => (clone ? safeJsonParse(atob(clone)) : {}),
+    [clone]
+  )
+
   const loading = useStore(model.proposeFx.pending)
 
-  const { register, handleSubmit, formState, setValue } = useForm<FormValues>({
-    resolver: yupResolver(
-      yup.object().shape({
-        name: yup.string().required('required'),
-        description: yup.string().required('required'),
-      })
-    ),
-  })
+  const { register, handleSubmit, formState, setValue, watch } =
+    useForm<FormValues>({
+      resolver: yupResolver(
+        yup.object().shape({
+          name: yup.string().required('required'),
+          description: yup.string().required('required'),
+        })
+      ),
+    })
 
   const [actions, setActions] = useState<GovernanceAction[]>([])
 
   const wallet = walletNetworkModel.useWalletNetwork()
   useEffect(() => {
+    if (queryObj) return
+
     setActions([])
-  }, [wallet?.chainId])
+  }, [wallet?.chainId, queryObj])
 
   const handleAddAction = async () => {
     try {
@@ -194,6 +229,56 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
     }
   }
 
+  useEffect(() => {
+    if (!queryObj?.title) return
+
+    setValue('name', queryObj.title)
+  }, [queryObj, setValue])
+  useEffect(() => {
+    if (!queryObj?.description) return
+
+    setValue('description', queryObj.description)
+  }, [queryObj, setValue])
+
+  const description = watch('description')
+
+  useEffect(() => {
+    const initialActions = queryObj?.actions?.map(
+      ({ target, signature, callDatas }) => {
+        const contractName = contractAddresses[target.toLowerCase()]
+
+        const currentAbi = abi[contractName as AbiKeys]
+
+        const methods = isContract(contractName)
+          ? parseContract(currentAbi as { abi: AbiItem[] })
+          : {}
+
+        return {
+          contract: contractAddresses[target.toLowerCase()],
+          method: signature,
+          arguments: methods[signature]?.inputs
+            .map((input) => ({
+              ...input,
+              value: input.value,
+              type: input.type,
+            }))
+            .reduce<GovernanceActionArguments>((acc, { name, type }, index) => {
+              acc[name] = {
+                value: callDatas[index],
+                type,
+              }
+
+              return acc
+            }, {}),
+        }
+      }
+    )
+
+    if (!initialActions) return
+
+    setActions(initialActions)
+  }, [queryObj])
+
   return (
     <AppLayout>
       <Head title="Create proposal" />
@@ -272,11 +357,11 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
         )}
         <Suspense fallback="loading...">
           <MarkdownEditor
-            value=""
             label="Write a description"
             disabled={loading}
             onChange={(value) => setValue('description', value)}
             className={styles.input}
+            value={description}
           />
         </Suspense>
         {Boolean(formState.errors.description) && (

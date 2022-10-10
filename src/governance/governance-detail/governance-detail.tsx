@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import React from 'react'
 import { useGate, useStore } from 'effector-react'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 
 import { AppLayout } from '~/layouts'
 import { Typography } from '~/common/typography'
@@ -31,10 +31,11 @@ import { switchNetwork } from '~/wallets/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { Loader } from '~/common/loader'
+import { GovernanceAttentionDialog } from '~/governance/common/governance-attention-dialog'
+import { paths } from '~/paths'
 import * as model from './governance-detail.model'
 import * as listModel from '~/governance/governance-list/governance-list.model'
 import * as styles from './governance-detail.css'
-import { GovernanceAttentionDialog } from '../common/governance-attention-dialog'
 
 export type GovernanceDetailProps = unknown
 
@@ -42,6 +43,7 @@ const QUORUM_VOTES = '400000'
 
 export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const params = useParams<{ governanceId: string }>()
+  const history = useHistory()
 
   const [openGovernanceReasonDialog] = useDialog(GovernanceReasonDialog)
   const [openGovernanceAttentionDialog] = useDialog(GovernanceAttentionDialog)
@@ -54,6 +56,13 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
 
   const loadingQueue = useStore(model.queueFx.pending)
   const loadingExecute = useStore(model.executeFx.pending)
+
+  const governanceVotes = useStore(model.$governanceVotes)
+
+  const isEnoughGovernanceTokens = bignumberUtils.gte(
+    governanceVotes?.votes,
+    10000000
+  )
 
   const wallet = walletNetworkModel.useWalletNetwork()
 
@@ -144,6 +153,13 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   const handleVoteFor = handleCastVote(model.CastVotes.for)
   const handleVoteAbstain = handleCastVote(model.CastVotes.abstain)
   const handleVoteAgainst = handleCastVote(model.CastVotes.against)
+
+  const handleCloneProposal =
+    (proposal: Exclude<typeof governanceDetail, null>) => () => {
+      history.push(
+        `${paths.governance.create}?clone=${btoa(JSON.stringify(proposal))}`
+      )
+    }
 
   return (
     <AppLayout title={loading ? 'loading...' : governanceDetail?.title}>
@@ -281,6 +297,15 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                 </WalletConnect>
               </div>
             )}
+
+          {isEnoughGovernanceTokens && (
+            <Button
+              onClick={handleCloneProposal(governanceDetail)}
+              className={styles.mb32}
+            >
+              clone
+            </Button>
+          )}
           {governanceDetail.state === GovProposalStateEnum.Succeeded && (
             <WalletConnect
               fallback={<Button className={styles.mb32}>Connect</Button>}

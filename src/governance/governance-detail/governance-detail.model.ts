@@ -13,8 +13,13 @@ import {
   parseActions,
 } from '~/governance/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { GovReceiptFilterInputType } from '~/api/_generated-types'
+import {
+  GovReceiptFilterInputType,
+  GovVotesFilterInputType,
+} from '~/api/_generated-types'
 
+export const GOVERNOR_TOKEN =
+  contracts[config.DEFAULT_CHAIN_ID].GovernanceToken.address
 const GOVERNOR_BRAVO = contracts[config.DEFAULT_CHAIN_ID].GovernorBravo.address
 
 export enum CastVotes {
@@ -207,6 +212,29 @@ sample({
     cache: params.cache,
   }),
   target: fetchReceiptFx,
+})
+
+export const fetchGovernanceVotesFx = governanceDetailDomain.createEffect(
+  (filter: GovVotesFilterInputType) =>
+    governanceApi.votes({
+      filter,
+    })
+)
+
+export const $governanceVotes = restore(fetchGovernanceVotesFx.doneData, null)
+
+sample({
+  clock: guard({
+    source: [walletNetworkModel.$wallet, GovernanceDetailGate.status],
+    clock: [GovernanceDetailGate.open, walletNetworkModel.$wallet.updates],
+    filter: ([wallet, opened]) => opened && Boolean(wallet?.account),
+  }),
+  fn: ([wallet]) => ({
+    network: Number(config.DEFAULT_CHAIN_ID),
+    wallet: String(wallet?.account),
+    contract: GOVERNOR_TOKEN,
+  }),
+  target: fetchGovernanceVotesFx,
 })
 
 $governanceDetail.reset(GovernanceDetailGate.close)
