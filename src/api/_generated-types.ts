@@ -4788,7 +4788,10 @@ export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
             >
             tokens: { __typename?: 'ContractTokenLinkType' } & {
               stakeBase?: Maybe<
-                { __typename?: 'TokenType' } & Pick<TokenType, 'address'>
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'address' | 'symbol'
+                >
               >
               stake: Array<
                 { __typename?: 'TokenType' } & Pick<

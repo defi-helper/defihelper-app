@@ -14,6 +14,7 @@ export type InvestStakingStepsMigrateProps = {
   onSubmit: () => void
   loading: boolean
   contract: InvestContract
+  unstake: boolean
 }
 
 export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps> =
@@ -36,7 +37,7 @@ export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps>
           align="center"
           className={styles.title}
         >
-          MIGRATE TOKENS
+          {props.unstake ? 'UNSTAKE TOKENS' : 'MIGRATE TOKENS'}
         </Typography>
         <div className={styles.successContent}>
           <Icon
@@ -45,21 +46,40 @@ export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps>
             height={100}
             className={styles.checked}
           />
-          <Typography as="div" align="center">
-            You have invested in
-          </Typography>
-          <Typography as="div" align="center" className={styles.pool}>
-            <div className={styles.pool}>
-              <InvestPoolTokens tokens={props.contract.tokens.stake} />
-              {props.contract.name}
-            </div>{' '}
-            earlier.
-          </Typography>
-          <Typography as="div" align="center">
-            We can boost your investment with auto-staking and stop-loss
-            features. To continue you need unstake your tokens and deploy your
-            own contract to control investments.
-          </Typography>
+          {props.unstake ? (
+            <>
+              <Typography as="div" align="center">
+                You have invested in
+              </Typography>
+              <Typography as="div" align="center" className={styles.pool}>
+                <div className={styles.pool}>
+                  <InvestPoolTokens tokens={props.contract.tokens.stake} />
+                  {props.contract.name}
+                </div>{' '}
+              </Typography>
+              <Typography as="div" align="center">
+                We will help you to unstake and then exchange your tokens.
+              </Typography>
+            </>
+          ) : (
+            <>
+              <Typography as="div" align="center">
+                You have invested in
+              </Typography>
+              <Typography as="div" align="center" className={styles.pool}>
+                <div className={styles.pool}>
+                  <InvestPoolTokens tokens={props.contract.tokens.stake} />
+                  {props.contract.name}
+                </div>{' '}
+                earlier.
+              </Typography>
+              <Typography as="div" align="center">
+                We can boost your investment with auto-staking and stop-loss
+                features. To continue you need unstake your tokens and deploy
+                your own contract to control investments.
+              </Typography>
+            </>
+          )}
         </div>
         <WalletConnect fallback={<Button color="green">Connect wallet</Button>}>
           <Button

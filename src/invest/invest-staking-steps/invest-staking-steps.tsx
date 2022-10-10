@@ -175,6 +175,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         loading={withDraw.loading}
         onSubmit={handleWithDraw}
         contract={props.contract}
+        unstake={Boolean(deploy)}
       />,
     ],
   }

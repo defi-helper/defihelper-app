@@ -50,15 +50,19 @@ export const InvestSell = (props: InvestSellProps) => {
     return props.adapter.methods.isApproved(amountThrottled)
   }, [props.adapter, tokenAddress, amountThrottled])
 
-  const tokens = useAsyncRetry(async () => {
-    if (!props.adapter || !props.tokens) return
+  const balance = useAsync(async () => {
+    return props.adapter?.methods.balanceOf()
+  }, [props.adapter])
 
-    const { balanceOf } = props.adapter.methods
+  const tokens = useAsyncRetry(async () => {
+    if (!props.adapter || !props.tokens || !balance.value) return
+
+    const { amountOut } = props.adapter.methods
 
     const tokensWithBalances = await Promise.all(
       props.tokens.map(async (token) => ({
         ...token,
-        balance: await balanceOf(),
+        amountOut: await amountOut(token.address, balance.value ?? '0'),
       }))
     )
 
@@ -69,7 +73,7 @@ export const InvestSell = (props: InvestSellProps) => {
 
       return acc
     }, {})
-  }, [props.tokens, props.adapter])
+  }, [props.tokens, props.adapter, balance.value])
 
   const [buyState, handleBuy] = useAsyncFn(async () => {
     if (!props.adapter) return
@@ -137,6 +141,10 @@ export const InvestSell = (props: InvestSellProps) => {
     return props.adapter?.methods.amountOut(tokenAddress, amount)
   }, [props.adapter, tokenAddress, amount])
 
+  useEffect(() => {
+    setAmount(balance.value ?? '0')
+  }, [tokenAddress, balance.value])
+
   return (
     <React.Fragment>
       <InvestStepsProgress success={1} />
@@ -165,11 +173,9 @@ export const InvestSell = (props: InvestSellProps) => {
               Amount{' '}
               <ButtonBase
                 className={styles.balance}
-                onClick={() =>
-                  setAmount(tokens.value?.[tokenAddress]?.balance ?? '0')
-                }
+                onClick={() => setAmount(balance.value ?? '0')}
               >
-                {tokens.value?.[tokenAddress]?.balance ?? '0'} MAX
+                {balance.value ?? '0'} MAX
               </ButtonBase>
             </>
           }
@@ -210,7 +216,7 @@ export const InvestSell = (props: InvestSellProps) => {
               >
                 {renderValue}
                 <Typography variant="inherit" className={styles.tokenBalance}>
-                  {option.balance}
+                  {option.amountOut}
                 </Typography>
               </SelectOption>
             )
@@ -235,7 +241,7 @@ export const InvestSell = (props: InvestSellProps) => {
             color="green"
             loading={approveState.loading}
           >
-            Approve {tokens.value?.[tokenAddress]?.symbol}
+            Approve {props.contract.tokens.stakeBase?.symbol}
           </Button>
         )}
         <Button
