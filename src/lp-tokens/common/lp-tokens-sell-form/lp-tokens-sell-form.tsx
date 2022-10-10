@@ -53,13 +53,19 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
       },
     })
 
+  const balance = useAsync(async () => {
+    return props.sellLiquidityAdapter.methods.balanceOf()
+  }, [props.sellLiquidityAdapter.methods])
+
   const tokens = useAsyncRetry(async () => {
-    const { balanceOf } = props.sellLiquidityAdapter.methods
+    if (!balance.value) return
+
+    const { amountOut } = props.sellLiquidityAdapter.methods
 
     const tokensWithBalances = await Promise.all(
       props.tokens.map(async (token) => ({
         ...token,
-        balance: await balanceOf(),
+        amountOut: await amountOut(token.address, balance.value ?? '0'),
       }))
     )
 
@@ -70,7 +76,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
 
       return acc
     }, {})
-  }, [props.tokens])
+  }, [props.tokens, balance.value])
 
   const tokenAddress = watch('token')
   const amount = watch('amount')
@@ -84,7 +90,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
 
     if (!currentToken) return
 
-    setValue('amount', currentToken.balance)
+    setValue('amount', currentToken.amountOut)
   }, [tokenAddress, tokens.value, setValue])
 
   const isApproved = useAsyncRetry(async () => {
@@ -218,13 +224,10 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
                         <ButtonBase
                           className={styles.balance}
                           onClick={() =>
-                            setValue(
-                              'amount',
-                              tokens.value?.[tokenAddress]?.balance ?? '0'
-                            )
+                            setValue('amount', balance.value ?? '0')
                           }
                         >
-                          {tokens.value?.[tokenAddress]?.balance} MAX
+                          {bignumberUtils.format(balance.value)} MAX
                         </ButtonBase>
                       </>
                     }
@@ -286,7 +289,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
                           variant="inherit"
                           className={styles.tokenBalance}
                         >
-                          {option.balance}
+                          {option.amountOut}
                         </Typography>
                       </SelectOption>
                     )

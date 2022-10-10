@@ -76,9 +76,9 @@ export const InvestStakingStepsSuccess: React.FC<InvestStakingStepsSuccessProps>
             </>
           ) : (
             <Typography as="div" align="center">
-              SUCCESS! You staked
+              Success! Your transaction
               <br />
-              your tokens
+              is completed.
             </Typography>
           )}
         </div>
