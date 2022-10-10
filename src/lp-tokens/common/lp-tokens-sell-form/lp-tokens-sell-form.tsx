@@ -194,6 +194,8 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
   }, [approveState.error, sellState.error])
 
   const amountOut = useAsync(async () => {
+    if (!tokenAddress) return
+
     return props.sellLiquidityAdapter.methods.amountOut(tokenAddress, amount)
   }, [props.sellLiquidityAdapter.methods.amountOut, tokenAddress, amount])
 
