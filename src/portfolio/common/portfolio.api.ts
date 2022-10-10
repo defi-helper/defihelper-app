@@ -38,7 +38,7 @@ import {
 } from './graphql'
 import { ASSETS_LIST_BY_PROTOCOL } from '~/portfolio/common/graphql/assets-list-by-protocol.graphql'
 import { ASSETS_LIST_BY_EXCHANGE } from '~/portfolio/common/graphql/assets-list-by-exchange.graphql'
-import { ME_PORTFOLIO_NAME } from '~/auth/common/graphql/me-portfolio-name.graphql'
+import { ME_PORTFOLIO_NAME } from '~/portfolio/common/graphql/me-portfolio-name.graphql'
 
 export const portfolioApi = {
   getTokenMetricChart: (variables: TokenMetricChartQueryVariables) =>
