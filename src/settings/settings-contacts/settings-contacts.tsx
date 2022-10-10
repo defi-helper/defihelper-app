@@ -147,7 +147,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const email = contactsMap.get(UserContactBrokerEnum.Email)
 
   const handleContinueConnect = () => {
-    if (!telegram) return
+    if (!telegram?.address) return
 
     telegramModel.openTelegramFx({
       confirmationCode: telegram.confirmationCode,

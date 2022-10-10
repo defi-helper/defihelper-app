@@ -82,7 +82,7 @@ export const InvestStakingStepsSuccess: React.FC<InvestStakingStepsSuccessProps>
             </Typography>
           )}
         </div>
-        {!telegram && (
+        {!telegram?.address && (
           <Typography
             as="div"
             align="center"
@@ -95,7 +95,7 @@ export const InvestStakingStepsSuccess: React.FC<InvestStakingStepsSuccessProps>
           </Typography>
         )}
         <div className={clsx(styles.connectTelegramActions, styles.mt)}>
-          {!telegram ? (
+          {!telegram?.address ? (
             <>
               <Button onClick={handleOpenTelegram} color="green">
                 CONNECT TELEGRAM

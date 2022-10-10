@@ -467,14 +467,14 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
                 </Paper>
               ))}
             </div>
-            {(!email || !telegram) && (
+            {(!email || !telegram?.address) && (
               <Paper radius={8} className={styles.contacts}>
                 <Typography variant="body2" className={styles.contactsText}>
                   No need to wait while your portfolio is generating. We&apos;ll
                   send you daily updates of your portfolio value via telegram or
                   email. No spam, we promise.
                 </Typography>
-                {!telegram && (
+                {!telegram?.address && (
                   <Button
                     size="small"
                     className={styles.contactsButton}
