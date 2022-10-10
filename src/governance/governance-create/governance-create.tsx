@@ -1,3 +1,4 @@
+import { UnitValue } from 'effector'
 import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 import isEmpty from 'lodash.isempty'
@@ -13,12 +14,16 @@ import { ButtonBase } from '~/common/button-base'
 import { Button } from '~/common/button'
 import { Input } from '~/common/input'
 import { useDialog } from '~/common/dialog'
-import { GovernanceActionsDialog } from '~/governance/common'
+import {
+  AbiItem,
+  GovernanceActionsDialog,
+  parseContract,
+} from '~/governance/common'
 import { Typography } from '~/common/typography'
 import {
   GovernanceAction,
   GovernanceActionArguments,
-} from '../common/governance.types'
+} from '~/governance/common/governance.types'
 import { cutAccount } from '~/common/cut-account'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Paper } from '~/common/paper'
@@ -26,10 +31,12 @@ import { Head } from '~/common/head'
 import { switchNetwork } from '~/wallets/common'
 import { config } from '~/config'
 import { Link } from '~/common/link'
+import { useQueryParams } from '~/common/hooks'
+import { fetchGovernanceProposalFx } from '~/governance/governance-detail/governance-detail.model'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
+import { abi, AbiKeys, isContract } from '~/abi'
 import * as styles from './governance-create.css'
 import * as model from './governance-create.model'
-import { useQueryParams } from '~/common/hooks'
 
 const MarkdownEditor = lazy(() =>
   import('~/common/markdown-editor').then((c) => ({
@@ -81,13 +88,23 @@ const contracts = networks[config.DEFAULT_CHAIN_ID] as unknown as Record<
   }
 >
 
-const safeJsonParse = (value: string): Partial<Record<string, string>> => {
+const safeJsonParse = (
+  value: string
+): Partial<UnitValue<typeof fetchGovernanceProposalFx.doneData>> => {
   try {
     return JSON.parse(value)
   } catch {
     return {}
   }
 }
+
+const contractAddresses = Object.entries(contracts).reduce<
+  Record<string, string>
+>((acc, [contractName, { address }]) => {
+  acc[address.toLowerCase()] = contractName
+
+  return acc
+}, {})
 
 export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
   const [openGovernanceActionsDialog] = useDialog(GovernanceActionsDialog)
@@ -114,8 +131,10 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
 
   const wallet = walletNetworkModel.useWalletNetwork()
   useEffect(() => {
+    if (queryObj) return
+
     setActions([])
-  }, [wallet?.chainId])
+  }, [wallet?.chainId, queryObj])
 
   const handleAddAction = async () => {
     try {
@@ -211,21 +230,54 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
   }
 
   useEffect(() => {
-    if (!queryObj.title) return
+    if (!queryObj?.title) return
 
     setValue('name', queryObj.title)
   }, [queryObj, setValue])
   useEffect(() => {
-    if (!queryObj.description) return
+    if (!queryObj?.description) return
 
     setValue('description', queryObj.description)
   }, [queryObj, setValue])
 
   const description = watch('description')
 
-  // console.log(queryObj.actions, queryObj.signatures, actions)
+  useEffect(() => {
+    const initialActions = queryObj?.actions?.map(
+      ({ target, signature, callDatas }) => {
+        const contractName = contractAddresses[target.toLowerCase()]
 
-  // console.log(ethers.utils.defaultAbiCoder.decode())
+        const currentAbi = abi[contractName as AbiKeys]
+
+        const methods = isContract(contractName)
+          ? parseContract(currentAbi as { abi: AbiItem[] })
+          : {}
+
+        return {
+          contract: contractAddresses[target.toLowerCase()],
+          method: signature,
+          arguments: methods[signature]?.inputs
+            .map((input) => ({
+              ...input,
+              value: input.value,
+              type: input.type,
+            }))
+            .reduce<GovernanceActionArguments>((acc, { name, type }, index) => {
+              acc[name] = {
+                value: callDatas[index],
+                type,
+              }
+
+              return acc
+            }, {}),
+        }
+      }
+    )
+
+    if (!initialActions) return
+
+    setActions(initialActions)
+  }, [queryObj])
 
   return (
     <AppLayout>
