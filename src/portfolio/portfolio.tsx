@@ -197,8 +197,6 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
   const [openContactForm] = useDialog(SettingsContactFormDialog)
   const [openSuccess] = useDialog(SettingsSuccessDialog)
 
-  useGate(model.PortfolioGate)
-
   const userReady = useStore(authModel.$userReady)
   const user = useStore(authModel.$user)
   const portfolioName = useStore(model.$portfolioName)
@@ -237,6 +235,8 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useGate(model.PortfolioGate)
 
   const variables = useMemo(() => {
     if (!user) return undefined

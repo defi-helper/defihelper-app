@@ -31,7 +31,7 @@ export const $portfolioCollected = portfolio
 
 export const $portfolioName = portfolio
   .createStore('')
-  .on(updatePortfolioNameFx.doneData, (_, payload) => payload?.name ?? '123')
+  .on(updatePortfolioNameFx.doneData, (_, payload) => payload?.name ?? '')
   .on(fetchPortfolioNameFx.doneData, (_, payload) => payload ?? '')
 
 export const PortfolioGate = createGate({
