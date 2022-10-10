@@ -10,10 +10,13 @@ import {
   AuthDemoMutationVariables,
   AuthThroughAdminMutationVariables,
   AuthThroughAdminMutation,
+  MePortfolioNameQuery,
+  MePortfolioNameQueryVariables,
 } from '~/api/_generated-types'
 import { ME, AUTH_ETH, AUTH_WAVES } from './graphql'
 import { AUTH_DEMO } from './graphql/auth-demo.graphql'
 import { AUTH_THROUGH_ADMIN } from './graphql/auth-through-admin.graphql'
+import { ME_PORTFOLIO_NAME } from './graphql/me-portfolio-name.graphql'
 
 export const authApi = {
   me: (variables: MeQueryVariables) =>
@@ -23,6 +26,13 @@ export const authApi = {
         variables,
       })
       .then(({ data }) => data?.me),
+
+  mePortfolioName: () =>
+    getAPIClient()
+      .request<MePortfolioNameQuery, unknown, MePortfolioNameQueryVariables>({
+        query: ME_PORTFOLIO_NAME.loc?.source.body ?? '',
+      })
+      .then(({ data }) => data?.me?.name),
 
   authEth: (input: AuthEthMutationVariables['input']) =>
     getAPIClient()

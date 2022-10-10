@@ -337,6 +337,7 @@ export type AutomateContractStopLossType = {
   status: AutomateContractStopLossStatusEnum
   tx: Scalars['EthereumTransactionHashType']
   amountOut?: Maybe<Scalars['BigNumberType']>
+  inToken?: Maybe<TokenType>
   outToken?: Maybe<TokenType>
   params: AutomateContractStopLossParamsType
 }
@@ -1372,6 +1373,7 @@ export type Mutation = {
   automateContractStopLossEnable: Scalars['Boolean']
   automateContractStopLossDisable: Scalars['Boolean']
   tradingAuth?: Maybe<TradingAuthType>
+  smartTradeCancel: SmartTradeOrderType
   smartTradeSwapOrderCreate: SmartTradeOrderType
 }
 
@@ -1636,6 +1638,10 @@ export type MutationAutomateContractStopLossDisableArgs = {
   input: AutomateContractStopLossDisableInputType
 }
 
+export type MutationSmartTradeCancelArgs = {
+  id: Scalars['UuidType']
+}
+
 export type MutationSmartTradeSwapOrderCreateArgs = {
   input: SmartTradeSwapOrderCreateInputType
 }
@@ -1855,6 +1861,8 @@ export type ProtocolLinkType = {
 
 export type ProtocolListFilterAutomateInputType = {
   lpTokensManager?: Maybe<Scalars['Boolean']>
+  /** Has autorestake automate */
+  autorestake?: Maybe<Scalars['Boolean']>
 }
 
 export type ProtocolListFilterInputType = {
@@ -1892,6 +1900,7 @@ export enum ProtocolListSortInputTypeColumnEnum {
   Id = 'id',
   Name = 'name',
   CreatedAt = 'createdAt',
+  Tvl = 'tvl',
 }
 
 export type ProtocolMetricChartContractsFilterInputType = {
@@ -2205,6 +2214,7 @@ export type Query = {
   automateContracts: AutomateContractListQuery
   govToken: GovTokenType
   restakeStrategy: RestakeStrategyType
+  restakeCalculator: RestakeCalculatorType
   treasury: TreasuryType
   monitoringUsersRegisteringHistory: Array<MonitoringStatisticsPointType>
   monitoringWalletsRegisteringHistory: Array<MonitoringStatisticsPointType>
@@ -2348,6 +2358,13 @@ export type QueryRestakeStrategyArgs = {
   apy: Scalars['Float']
 }
 
+export type QueryRestakeCalculatorArgs = {
+  contract: Scalars['UuidType']
+  amount: Scalars['BigNumberType']
+  period: Scalars['Int']
+  isRestake: Scalars['Boolean']
+}
+
 export type QueryMonitoringAutomateRunHistoryArgs = {
   filter: MonitoringAutomateRunHistoryFilterEnum
 }
@@ -2360,6 +2377,12 @@ export type QuerySmartTradeOrdersArgs = {
   filter?: Maybe<SmartTradeOrderListFilterInputType>
   sort?: Maybe<Array<SmartTradeOrderListSortInputType>>
   pagination?: Maybe<SmartTradeOrderListPaginationInputType>
+}
+
+export type RestakeCalculatorType = {
+  __typename?: 'RestakeCalculatorType'
+  earnedUSD: Scalars['BigNumberType']
+  nextRestakeAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export type RestakeStrategyPointType = {
@@ -2498,9 +2521,10 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   tokenInDecimals: Scalars['Int']
   tokenOutDecimals: Scalars['Int']
   amountIn: Scalars['BigNumberType']
+  amountOut: Scalars['BigNumberType']
   boughtPrice: Scalars['BigNumberType']
-  stopLoss?: Maybe<SwapOrderCallDataRouteInputType>
-  takeProfit?: Maybe<SwapOrderCallDataRouteInputType>
+  stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
+  takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
   /** Deadline seconds */
   deadline: Scalars['Int']
 }
@@ -2709,7 +2733,14 @@ export type SwapHandlerCallDataRouteType = {
   slippage: Scalars['Float']
 }
 
-export type SwapOrderCallDataRouteInputType = {
+export type SwapOrderCallDataStopLossInputType = {
+  amountOut: Scalars['BigNumberType']
+  amountOutMin: Scalars['BigNumberType']
+  moving: Scalars['Boolean']
+  slippage: Scalars['Float']
+}
+
+export type SwapOrderCallDataTakeProfitInputType = {
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
@@ -4175,6 +4206,12 @@ export type AuthWavesMutation = { __typename?: 'Mutation' } & {
         user: { __typename?: 'UserType' } & UserFragmentFragment
       }
   >
+}
+
+export type MePortfolioNameQueryVariables = Exact<{ [key: string]: never }>
+
+export type MePortfolioNameQuery = { __typename?: 'Query' } & {
+  me?: Maybe<{ __typename?: 'UserType' } & Pick<UserType, 'name'>>
 }
 
 export type MeQueryVariables = Exact<{

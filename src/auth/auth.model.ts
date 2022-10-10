@@ -36,6 +36,10 @@ export const fetchUserFx = createEffect(() =>
   })
 )
 
+export const fetchPortfolioNameFx = createEffect(() =>
+  authApi.mePortfolioName()
+)
+
 export const logoutFx = createEffect(() => {
   sidUtils.remove()
 })
@@ -59,6 +63,14 @@ export const $user = createStore<Exclude<MeQuery['me'], undefined>>(null)
   .on(saveUserFx.doneData, (state, payload) =>
     shallowEqual(state, payload) ? undefined : payload
   )
+  .on(fetchPortfolioNameFx.doneData, (state, payload) => {
+    return state
+      ? {
+          ...state,
+          name: payload ?? '',
+        }
+      : state
+  })
   .reset(logoutFx.done)
 
 export const authWavesFx = createEffect(

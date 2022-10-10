@@ -8,7 +8,7 @@ import * as portfolioAssetsModel from './portfolio-assets/portfolio-assets.model
 import * as portfolioCoinModel from './portfolio-coin-balance/portfolio-coin-balance.model'
 import * as portfolioMetricCardsModel from './portfolio-metric-cards/portfolio-metric-cards.model'
 import { UserUpdateMutationVariables } from '~/api'
-import { fetchUserFx } from '~/auth/auth.model'
+import { fetchPortfolioNameFx, fetchUserFx } from '~/auth/auth.model'
 
 export const portfolio = createDomain()
 
@@ -40,7 +40,7 @@ guard({
   source: PortfolioGate.status,
   clock: [PortfolioGate.open, authModel.$user.updates],
   filter: (isOpened) => isOpened,
-  target: [fetchPortfolioCollectedFx, fetchUserFx],
+  target: [fetchPortfolioCollectedFx, fetchPortfolioNameFx],
 })
 
 sample({
