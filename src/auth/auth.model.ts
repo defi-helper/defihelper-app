@@ -36,10 +36,6 @@ export const fetchUserFx = createEffect(() =>
   })
 )
 
-export const fetchPortfolioNameFx = createEffect(() =>
-  authApi.mePortfolioName()
-)
-
 export const logoutFx = createEffect(() => {
   sidUtils.remove()
 })

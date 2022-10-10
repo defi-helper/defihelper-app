@@ -8,7 +8,6 @@ import * as portfolioAssetsModel from './portfolio-assets/portfolio-assets.model
 import * as portfolioCoinModel from './portfolio-coin-balance/portfolio-coin-balance.model'
 import * as portfolioMetricCardsModel from './portfolio-metric-cards/portfolio-metric-cards.model'
 import { UserUpdateMutationVariables } from '~/api'
-import { fetchPortfolioNameFx } from '~/auth/auth.model'
 
 export const portfolio = createDomain()
 
@@ -18,6 +17,10 @@ export const fetchPortfolioCollectedFx = portfolio.createEffect(() =>
 
 export const updatePortfolioNameFx = portfolio.createEffect(
   (input: UserUpdateMutationVariables) => usersApi.updateUser(input)
+)
+
+export const fetchPortfolioNameFx = portfolio.createEffect(() =>
+  portfolioApi.mePortfolioName()
 )
 
 export const portfolioUpdated = portfolio.createEvent()
@@ -47,7 +50,6 @@ sample({
   clock: portfolioUpdated,
   target: [
     fetchPortfolioCollectedFx,
-    fetchPortfolioNameFx,
     portfolioAssetsModel.fetchAssetsListFx,
     portfolioCoinModel.fetchChartDataFx.prepend(() =>
       portfolioCoinModel.$currentGroup.getState()
