@@ -138,6 +138,8 @@ export const InvestSell = (props: InvestSellProps) => {
   )
 
   const amountOut = useAsync(async () => {
+    if (!tokenAddress) return
+
     return props.adapter?.methods.amountOut(tokenAddress, amount)
   }, [props.adapter, tokenAddress, amount])
 
