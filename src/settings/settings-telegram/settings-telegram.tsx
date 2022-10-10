@@ -29,7 +29,7 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
     ({ broker }) => broker === UserContactBrokerEnum.Telegram
   )
 
-  if (telegram || loading || !userReady || !leftDays) return <></>
+  if (telegram?.address || loading || !userReady || !leftDays) return <></>
 
   const handleOpenTelegram = () => {
     model.openTelegram(undefined)
