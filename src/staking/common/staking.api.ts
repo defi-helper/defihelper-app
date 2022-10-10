@@ -31,6 +31,8 @@ import {
   ContractScannerRegisterMutationVariables,
   ContractScannerRegisterMutation,
   StakingContractDebankListQuery,
+  RestakeCalculatorQueryVariables,
+  RestakeCalculatorQuery,
 } from '~/api/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -47,6 +49,7 @@ import {
   AUTOMATION_CONTRACT_UPDATE,
   AUTOMATION_CONTRACT_DELETE,
   STAKING_UPDATE_METRICS,
+  STAKING_APY_RESTAKE_CALCULATOR,
 } from './graphql'
 import { config } from '~/config'
 import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-scanner-register.graphql'
@@ -282,6 +285,18 @@ export const stakingApi = {
         variables,
       })
       .then(({ data }) => data?.automateContractDelete),
+
+  restakeCalculator: (variables: RestakeCalculatorQueryVariables) =>
+    getAPIClient()
+      .request<
+        RestakeCalculatorQuery,
+        unknown,
+        RestakeCalculatorQueryVariables
+      >({
+        query: STAKING_APY_RESTAKE_CALCULATOR.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.restakeCalculator),
 
   scannerGetEventListener: (variables: {
     id: string

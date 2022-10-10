@@ -5,7 +5,7 @@ import { createComponent } from '~/common/create-component'
 export type SelectOptionProps = {
   className?: string
   value?: string
-  renderValue?: string
+  renderValue?: React.ReactNode
 } & ButtonBaseProps
 
 export const SelectOption = createComponent(function SelectOption(

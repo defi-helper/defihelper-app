@@ -140,7 +140,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
           align="center"
           className={styles.mobileRisk}
         >
-          {riskStatuses[contract.metric.risk]} risk
+          {riskStatuses[contract.metric.risk]}
         </Typography>
       )}
       <Typography
@@ -149,7 +149,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
         as="div"
         className={styles.mobileRow}
       >
-        {!isDesktop && <Typography variant="inherit">APY</Typography>}
+        {!isDesktop && <Typography variant="inherit">TVL</Typography>}
         <Typography variant="inherit">
           ${bignumberUtils.format(contract.metric.tvl)}
         </Typography>
@@ -209,7 +209,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
         </Typography>
       </div>
       <Typography variant="inherit">
-        {riskIcons[contract.metric.risk] && (
+        {riskIcons[contract.metric.risk] && isDesktop && (
           <Icon icon={riskIcons[contract.metric.risk]} width={22} height={24} />
         )}
         {false && (

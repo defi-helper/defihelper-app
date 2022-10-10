@@ -4,6 +4,8 @@ import {
   getAPIClient,
   TradeAuthMutation,
   TradeAuthMutationVariables,
+  TradeCancelOrderMutation,
+  TradeCancelOrderMutationVariables,
   TradeCreateOrderMutation,
   TradeCreateOrderMutationVariables,
   TradeOrderListQuery,
@@ -12,6 +14,7 @@ import {
 import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
 import { TRADE_AUTH } from './graphql/trade-auth.graphql'
+import { TRADE_CANCEL_ORDER } from './graphql/trade-cancel-order.graphql'
 import { TRADE_CREATE_ORDER } from './graphql/trade-create-order.graphql'
 import { TRADE_ORDER_LIST } from './graphql/trade-order-list.graphql'
 import { pairMock } from './trade-dev.mock'
@@ -24,6 +27,21 @@ export type Exchange = {
   Icon: string
   Name: string
   Address?: string
+}
+
+export type Pool = {
+  Address: string
+  Name: string
+  DexName: string
+  Icon: string
+  NetworkName: string
+  CurrencySymbol: string
+  PairCount: number
+  Liquidity: number
+  Routers: {
+    Address: string
+    Count: number
+  }[]
 }
 
 export type Token = {
@@ -138,6 +156,15 @@ export const tradeApi = {
         message: data.message,
       })),
 
+  poolInfo: (networks: string[]) =>
+    apiV1
+      .get<Response<Pool[]>>('pool-info', {
+        params: {
+          networks: networks.join(','),
+        },
+      })
+      .then(({ data }) => data),
+
   pairs: (
     network: string[],
     pool: string[],
@@ -191,7 +218,10 @@ export const tradeApi = {
       )
       .then(({ data }) => data),
 
-  sendForm: <T>(listId: string, formValues: T) => {
+  sendForm: <T extends Record<string, unknown>>(
+    listId: string,
+    formValues: T
+  ) => {
     const query = Object.entries(formValues)
       .flatMap(([key, value]) => {
         return `fields[${key}]=${value}`
@@ -230,6 +260,20 @@ export const tradeApi = {
         },
       })
       .then(({ data }) => data?.smartTradeSwapOrderCreate),
+
+  cancelOrder: (id: TradeCancelOrderMutationVariables['id']) =>
+    getAPIClient()
+      .request<
+        TradeCancelOrderMutation,
+        unknown,
+        TradeCancelOrderMutationVariables
+      >({
+        query: TRADE_CANCEL_ORDER.loc?.source.body ?? '',
+        variables: {
+          id,
+        },
+      })
+      .then(({ data }) => data?.smartTradeCancel),
 
   fetchOrders: (variables: TradeOrderListQueryVariables) =>
     getAPIClient()

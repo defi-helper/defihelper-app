@@ -36,3 +36,14 @@ export const pow = style({
   bottom: 'calc(100% + 5px)',
   right: 0,
 })
+
+export const kessak = style([
+  pow,
+  {
+    border: `1px solid currentColor`,
+    minWidth: 20,
+    height: 20,
+    padding: '0 3px',
+    fontSize: 12,
+  },
+])

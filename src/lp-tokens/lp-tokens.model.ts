@@ -23,7 +23,10 @@ export const fetchProtocolsSelectFx = createEffect(
     signal,
     ...variables
   }: BuyLiquidityProtocolsSelectQueryVariables & { signal: AbortSignal }) =>
-    lpTokensApi.protocolsSelect(variables, signal)
+    lpTokensApi.protocolsSelect(
+      { ...variables, automate: { lpTokensManager: true } },
+      signal
+    )
 )
 
 export const $protocolsSelect = createStore<

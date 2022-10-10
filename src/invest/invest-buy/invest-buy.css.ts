@@ -3,6 +3,10 @@ import { globalStyle, style } from '@vanilla-extract/css'
 import { theme } from '~/common/theme'
 
 export const title = style({
+  marginBottom: 4,
+})
+
+export const subtitle = style({
   marginBottom: 32,
 })
 
@@ -78,6 +82,13 @@ export const balance = style({
   color: theme.colors.common.blue1,
   marginLeft: 'auto',
 })
+
+export const tokenBalance = style([
+  balance,
+  {
+    color: theme.colors.textColorGrey,
+  },
+])
 
 export const error = style({
   background: theme.colors.common.red1,

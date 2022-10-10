@@ -17,7 +17,7 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
   const [themeMode = 'light'] = useTheme()
 
   useEffect(() => {
-    if (props.loading) return
+    if (props.loading || !window.TradingView || !props.address) return
 
     localStorage.setItem(
       'tradingview.IntervalWidget.quicks',
@@ -28,8 +28,6 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
       JSON.stringify([1, 2])
     )
     localStorage.setItem('tradingview.chart.lastUsedStyle', '1')
-
-    if (!props.address) return
 
     const [firstChar, ...restChars] = Array.from(themeMode)
 

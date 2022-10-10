@@ -103,3 +103,7 @@ export const balance = style({
 export const balanceButton = style({
   color: theme.colors.common.blue1,
 })
+
+export const dropdown = style({
+  maxWidth: 200,
+})

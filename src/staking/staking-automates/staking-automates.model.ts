@@ -15,7 +15,6 @@ import {
   StakingAutomatesContract,
 } from '../common'
 import { Wallet, walletApi } from '~/wallets/common'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 
 export type ActionType = 'deposit' | 'migrate' | 'refund' | 'run' | 'stopLoss'
@@ -201,7 +200,7 @@ export const fetchMetricsFx = stakingAutomatesDomain.createEffect(
         const previousAcc = await acc
 
         try {
-          if (!contract.contractWallet || !contract.contract) return previousAcc
+          if (!contract.contract || !contract.contractWallet) return previousAcc
 
           const adapter = await loadAdapter(
             buildAdaptersUrl(contract.protocol.adapter)
@@ -219,34 +218,15 @@ export const fetchMetricsFx = stakingAutomatesDomain.createEffect(
 
           const adapterObj = await adapterFn(
             networkProvider,
-            contract.contractWallet.address,
+            contract.contract.address,
             {
               blockNumber: 'latest',
               signer: networkProvider?.getSigner(),
             }
           )
 
-          const walletMetricsPromise = await Promise.all(
-            params.wallets.map((wallet) => adapterObj.wallet(wallet.address))
-          )
-
-          const walletMetrics = walletMetricsPromise.reduce(
-            (accum, wallet) => {
-              return {
-                stakingUSD: bignumberUtils.plus(
-                  accum.stakingUSD,
-                  wallet.metrics.stakingUSD
-                ),
-                earnedUSD: bignumberUtils.plus(
-                  accum.earnedUSD,
-                  wallet.metrics.earnedUSD
-                ),
-              }
-            },
-            {
-              stakingUSD: '0',
-              earnedUSD: '0',
-            }
+          const walletMetrics = await adapterObj.wallet(
+            contract.contractWallet.address
           )
 
           previousAcc.metrics = {
@@ -255,8 +235,8 @@ export const fetchMetricsFx = stakingAutomatesDomain.createEffect(
               contractId: contract.id,
               tvl: adapterObj.metrics.tvl,
               aprYear: adapterObj.metrics.aprYear,
-              myStaked: walletMetrics.stakingUSD,
-              myEarned: walletMetrics.earnedUSD,
+              myStaked: walletMetrics.metrics.stakingUSD,
+              myEarned: walletMetrics.metrics.earnedUSD,
             },
           }
         } catch (error) {

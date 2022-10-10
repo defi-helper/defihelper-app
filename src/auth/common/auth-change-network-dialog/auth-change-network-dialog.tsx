@@ -12,7 +12,7 @@ export const AuthChangeNetworkDialog: React.VFC<AuthChangeNetworkDialogProps> =
     return (
       <Dialog className={styles.root}>
         <Typography variant="h4" className={styles.title}>
-          This chain is not supported Change to Ethereum
+          This chain is not supported, please change to Ethereum
         </Typography>
         <img src={MetamaskScreen} alt="" className={styles.img} />
       </Dialog>

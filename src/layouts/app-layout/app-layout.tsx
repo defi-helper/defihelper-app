@@ -69,7 +69,7 @@ const MENU: MenuItem[] = [
     icon: 'settings',
   },
   {
-    title: 'Bridges',
+    title: 'Bridge',
     path: paths.bridges,
     icon: 'bridges',
   },

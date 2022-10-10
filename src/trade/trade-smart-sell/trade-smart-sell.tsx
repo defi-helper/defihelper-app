@@ -1,7 +1,7 @@
 import { useStore } from 'effector-react'
 import { Controller, useForm } from 'react-hook-form'
 import clsx from 'clsx'
-import { useAsyncFn, useAsyncRetry, useToggle } from 'react-use'
+import { useAsyncFn, useAsyncRetry, useInterval, useToggle } from 'react-use'
 import React, { useEffect } from 'react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -21,6 +21,8 @@ import { authModel } from '~/auth'
 import { UserRoleEnum } from '~/api'
 import * as model from './trade-smart-sell.model'
 import * as styles from './trade-smart-sell.css'
+import { Dropdown } from '~/common/dropdown'
+import { Icon } from '~/common/icon'
 
 export type TradeSmartSellProps = {
   className?: string
@@ -46,6 +48,7 @@ type FormValues = {
   takeProfitPercent: number
   takeProfitValue: string
   stopLossValue: string
+  moving: boolean
 }
 
 export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
@@ -66,10 +69,12 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         stopLossValue: '0',
         takeProfitValue: '0',
         unit: '0',
+        moving: false,
       },
     })
 
   const takeProfit = watch('takeProfit')
+  const moving = watch('moving')
   const stopLoss = watch('stopLoss')
 
   const balanceOf = useAsyncRetry(async () => {
@@ -108,7 +113,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const [approve, handleApprove] = useAsyncFn(async () => {
     if (!props.tokens?.[0]?.address || bignumberUtils.eq(unit, 0)) return false
 
-    await props.router?.approve(props.tokens?.[0]?.address, unit)
+    const res = await props.router?.approve(props.tokens?.[0]?.address, unit)
+
+    await res?.tx?.wait()
 
     isApproved.retry()
 
@@ -155,6 +162,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           ? {
               amountOut: getAmountOut(stopLossPercent),
               slippage: props.slippage,
+              moving: formValues.moving,
             }
           : null,
         formValues.takeProfit
@@ -184,12 +192,14 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           tokenInDecimals: result.callData.tokenInDecimals,
           tokenOutDecimals: result.callData.tokenOutDecimals,
           amountIn: result.callData.amountIn,
+          amountOut: result.callData.amountOut,
           boughtPrice: price.value,
           stopLoss: result.callData.stopLoss
             ? {
                 amountOut: result.callData.stopLoss.amountOut,
                 amountOutMin: result.callData.stopLoss.amountOutMin,
                 slippage: Number(result.callData.stopLoss.slippage),
+                moving: result.callData.stopLoss.moving,
               }
             : null,
           takeProfit: result.callData.takeProfit
@@ -338,6 +348,13 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [price.value, takeProfitPercent, takeProfitFocus])
 
+  useInterval(
+    () => {
+      balanceOf.retry()
+    },
+    currentWallet ? 15000 : null
+  )
+
   return (
     <form
       className={styles.form}
@@ -482,6 +499,34 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               </div>
             </>
           )}
+        </div>
+        <div>
+          <div className={styles.trailingBuyTitle}>
+            <Typography
+              as="div"
+              variant="body3"
+              className={styles.takeProfitLabel}
+            >
+              Trailing Stop Loss
+            </Typography>
+            <Dropdown
+              control={
+                <ButtonBase>
+                  <Icon icon="info" width="16" height="16" />
+                </ButtonBase>
+              }
+              offset={[0, 8]}
+              className={styles.dropdown}
+              placement="bottom-start"
+            >
+              <Typography variant="body2">text</Typography>
+            </Dropdown>
+            <Switch
+              size="small"
+              onChange={({ target }) => setValue('moving', target.checked)}
+              checked={moving}
+            />
+          </div>
         </div>
       </div>
       <div className={styles.buttons}>

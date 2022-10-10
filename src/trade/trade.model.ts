@@ -4,7 +4,7 @@ import contracts from '@defihelper/networks/contracts.json'
 import { loadAdapter } from '~/common/load-adapter'
 import { buildAdaptersUrl } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { tradeApi } from './common/trade.api'
+import { Pool, tradeApi } from './common/trade.api'
 import { config } from '~/config'
 
 export const reset = createEvent()
@@ -40,10 +40,36 @@ export const $pairs = createStore<UnitValue<typeof fetchPairsFx.doneData>>([])
 
 export const fetchExchangesFx = createEffect(async (network: string) => {
   const { data, message } = await tradeApi.exchanges([networks[network]])
+  const poolInfo = await tradeApi.poolInfo([networks[network]])
 
-  if (!data || message) throw new Error(message ?? 'something went wrong')
+  if (!data || message || !poolInfo.code || poolInfo.message)
+    throw new Error(poolInfo.message ?? message ?? 'something went wrong')
 
-  return data
+  const poolInfoMap = poolInfo.data.reduce<Record<string, Pool>>(
+    (acc, item) => {
+      acc[item.DexName.toLowerCase()] = item
+
+      return acc
+    },
+    {}
+  )
+
+  return data.map((item) => {
+    if (item.Name.toLowerCase() === 'pancakeswap') {
+      // @TODO: remove
+      return {
+        ...item,
+        Address: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
+      }
+    }
+
+    return {
+      ...item,
+      Address:
+        item.Address ??
+        poolInfoMap[item.Name.toLowerCase()]?.Routers?.[0]?.Address,
+    }
+  })
 })
 
 export const $exchanges = createStore<

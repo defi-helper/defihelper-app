@@ -1,3 +1,4 @@
+import { useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
@@ -20,16 +21,16 @@ import { Paper } from '~/common/paper'
 import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
-import { StakingApyDialog } from '~/staking/common'
+import { StakingApyDialog } from '~/staking/staking-apy-dialog'
 import { riskStatuses } from '~/invest/common/constants'
 import { Link } from '~/common/link'
 import { InvestContractCard } from '~/invest/common/invest-contract-card'
 import * as model from './invest-contracts.model'
 import * as styles from './invest-contracts.css'
+import { paths } from '~/paths'
 
 export type InvestContractsProps = {
   className?: string
-  onChangeTab: () => void
 }
 
 const sortIcon = (
@@ -103,6 +104,8 @@ const apyBoostDropdown = (
 
 export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
   const [openApyDialog] = useDialog(StakingApyDialog)
+
+  const history = useHistory()
 
   const contractsLoading = useStore(model.fetchContractsFx.pending)
   const contracts = useStore(model.$contractsWithAutostakingLoading)
@@ -226,26 +229,22 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
     setRiskLevel(event.target.value as ContractRiskFactorEnum)
   }
 
-  const handleOpenApy =
-    (metric: typeof contracts[number]['metric']) => async () => {
-      const apr = {
-        '1d': metric.aprDay,
-        '7d': metric.aprWeek,
-        '30d': metric.aprMonth,
-        '365d(APY)': metric.aprYear,
-      }
+  const handleOpenApy = (contract: typeof contracts[number]) => async () => {
+    try {
+      await openApyDialog({
+        contractId: contract.id,
+        contractName: contract.name,
+        tokens: contract.tokens,
+        staked: contract.metric.myStaked,
+      })
 
-      try {
-        await openApyDialog({
-          apr,
-          staked: metric.myStaked,
-        })
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message)
-        }
+      history.push(paths.invest.detail(contract.id))
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
       }
     }
+  }
 
   const [contractsSentryRef] = model.useInfiniteScrollContracts()
   const contractsHasNextPage =
@@ -354,14 +353,6 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
           />
         </div>
       </div>
-      <Paper radius={8} className={styles.banner}>
-        <Typography variant="body2" align="center" family="mono">
-          We are updating our investment contracts to a new version to provide a
-          Stop-Loss to our users.
-          <br />
-          More protocols will be available soon.
-        </Typography>
-      </Paper>
       <div className={styles.tableWrap}>
         <Paper radius={8} className={styles.table}>
           <div className={styles.tableHeader}>
@@ -478,7 +469,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
             return (
               <InvestContractCard
                 contract={contract}
-                onOpenApy={handleOpenApy(contract.metric)}
+                onOpenApy={handleOpenApy(contract)}
                 key={String(contract.id + ind)}
               />
             )

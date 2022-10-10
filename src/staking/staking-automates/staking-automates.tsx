@@ -1,3 +1,4 @@
+import { useHistory } from 'react-router-dom'
 import { useInterval } from 'react-use'
 import clsx from 'clsx'
 import { useGate, useStore } from 'effector-react'
@@ -18,14 +19,15 @@ import { authModel } from '~/auth'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import { parseError } from '~/common/parse-error'
 import { toastsService } from '~/toasts'
-import * as styles from './staking-automates.css'
-import * as model from './staking-automates.model'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import {
   useOnTokenMetricUpdatedSubscription,
   useOnWalletMetricUpdatedSubscription,
 } from '~/portfolio/common'
 import { settingsWalletModel } from '~/settings/settings-wallets'
+import { paths } from '~/paths'
+import * as styles from './staking-automates.css'
+import * as model from './staking-automates.model'
 
 export type StakingAutomatesProps = {
   className?: string
@@ -33,6 +35,7 @@ export type StakingAutomatesProps = {
 }
 
 export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
+  const history = useHistory()
   const [openErrorDialog] = useDialog(StakingErrorDialog)
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
@@ -106,31 +109,11 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
         const can = await adapter.refund.methods.can()
         if (can instanceof Error) throw can
 
-        const refund = await adapter.refund.methods.refund()
-
-        const tx = await refund.tx.wait()
-
-        if (contract.contract && contract.contractWallet) {
-          model
-            .scanWalletMetricFx({
-              wallet: contract.contractWallet.id,
-              contract: contract.contract.id,
-              txId: tx.transactionHash,
-            })
-            .catch(console.error)
-
-          model
-            .scanWalletMetricFx({
-              wallet: findedWallet.id,
-              contract: contract.id,
-              txId: tx.transactionHash,
-            })
-            .catch(console.error)
-        }
+        history.push(`${paths.invest.detail(contract.contract?.id)}?deploy=1`)
       } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message)
-        }
+        const { message } = parseError(error)
+
+        toastsService.error(message)
       }
     }
 
@@ -291,6 +274,9 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               deleting={automatesContract.deleting}
               running={automatesContract.running}
               contractId={automatesContract.id}
+              status={automatesContract.stopLoss?.status}
+              stopLossAmountOut={automatesContract.stopLoss?.params?.amountOut}
+              stopLossToken={automatesContract.stopLoss?.outToken?.symbol}
               error={
                 automatesContract.contractWallet?.billing.balance.lowFeeFunds ||
                 (automatesContract.wallet?.billing?.balance?.netBalanceUSD >

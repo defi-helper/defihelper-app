@@ -19,6 +19,7 @@ import { paths } from '~/paths'
 import { networksConfig } from '~/networks-config'
 import { FreshMetrics } from '~/staking/common/staking.types'
 import { StakingFreshMetrics } from '~/staking/common/staking-fresh-metrics'
+import { AutomateContractStopLossStatusEnum } from '~/api'
 import * as styles from './staking-automates-contract-card.css'
 
 export type StakingAutomatesContractCardProps = {
@@ -40,10 +41,13 @@ export type StakingAutomatesContractCardProps = {
   deleting?: boolean
   refunding?: boolean
   running?: boolean
-  stopLoss?: boolean
+  stopLossing?: boolean
   tokensIcons: Array<string | null>
   freshMetrics?: FreshMetrics
   contractId?: string
+  stopLossAmountOut?: string
+  stopLossToken?: string
+  status?: AutomateContractStopLossStatusEnum
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -55,6 +59,11 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
     const validDiff =
       !bignumberUtils.isNaN(apyboostDifference) &&
       bignumberUtils.gt(apyboostDifference, '0.001')
+
+    const status =
+      props.status === AutomateContractStopLossStatusEnum.Completed
+        ? 'Completed'
+        : undefined
 
     return (
       <Paper className={clsx(styles.root, props.className)} radius={8}>
@@ -92,14 +101,14 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     pending && styles.manageLoading
                   )}
                 >
-                  {(props.deleting || props.running || props.stopLoss) && (
+                  {(props.deleting || props.running || props.stopLossing) && (
                     <CircularProgress className={styles.circularProgress} />
                   )}
                   <Icon
                     icon="dots"
                     className={clsx(
                       styles.manageIcon,
-                      (props.deleting || props.running || props.stopLoss) &&
+                      (props.deleting || props.running || props.stopLossing) &&
                         styles.manageIconloading
                     )}
                   />
@@ -236,7 +245,40 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
           </div>
         </div>
-        <div className={clsx(styles.footer, props.error && styles.error)}>
+        <div
+          className={clsx(
+            styles.footer,
+            props.error ||
+              (props.status === AutomateContractStopLossStatusEnum.Completed &&
+                styles.error)
+          )}
+        >
+          <div className={styles.row}>
+            <Typography variant="body2" as="span" className={styles.infoTitle}>
+              <Typography variant="inherit" className={styles.opacity}>
+                Stop Loss
+              </Typography>
+              <Dropdown
+                control={
+                  <ButtonBase className={clsx(styles.opacity)}>
+                    <Icon className={styles.question} icon="question" />
+                  </ButtonBase>
+                }
+                placement="top"
+                className={styles.questionDropdown}
+                offset={[0, 8]}
+              >
+                <Typography variant="inherit">text</Typography>
+              </Dropdown>
+            </Typography>
+            <Typography variant="body2" as="span">
+              {status ?? (props.stopLossAmountOut && props.stopLossToken)
+                ? `${bignumberUtils.format(props.stopLossAmountOut)} ${
+                    props.stopLossToken
+                  }`
+                : 'Inactive'}
+            </Typography>
+          </div>
           <div className={styles.row}>
             <Typography variant="body2" as="span" className={styles.infoTitle}>
               <Typography variant="inherit" className={styles.opacity}>
@@ -256,10 +298,11 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                   In order to execute every automation action in blockchain,
                   such as auto-restaking, provide fee balance we can use.{' '}
                   <Link
-                    href="https://defihelper.io/no-code"
+                    target="_blank"
+                    href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
                     className={styles.howItWorks}
                   >
-                    Learn more on How It Work
+                    Learn more on How It Works
                   </Link>
                 </Typography>
               </Dropdown>
@@ -292,10 +335,11 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                   In order to execute every automation action in blockchain,
                   such as auto-restaking, provide fee balance we can use.{' '}
                   <Link
-                    href="https://defihelper.io/no-code"
+                    target="_blank"
+                    href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
                     className={styles.howItWorks}
                   >
-                    Learn more on How It Work
+                    Learn more on How It Works
                   </Link>
                 </Typography>
               </Dropdown>
@@ -324,7 +368,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     props.deleting ||
                     props.refunding ||
                     props.running ||
-                    props.stopLoss
+                    props.stopLossing
                   }
                   as={ReactRouterLink}
                   to={`${paths.invest.detail(props.contractId)}?deploy=1`}
@@ -341,7 +385,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 className={styles.refund}
                 onClick={props.onRefund}
                 loading={props.refunding}
-                disabled={props.deleting || props.running || props.stopLoss}
+                disabled={props.deleting || props.running || props.stopLossing}
               >
                 Unstake
               </Button>

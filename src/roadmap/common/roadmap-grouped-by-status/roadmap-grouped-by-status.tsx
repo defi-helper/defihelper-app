@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { Link as ReactRouterLink } from 'react-router-dom'
+import omit from 'lodash.omit'
 
 import {
   STATUSES,
@@ -51,7 +52,7 @@ export const RoadmapGroupedByStatus: React.VFC<RoadmapGroupedByStatusProps> = (
 
   return (
     <div className={styles.root}>
-      {Object.entries(props.proposals).map(
+      {Object.entries(omit(props.proposals, 'pagination')).map(
         ([status, proposalsByStatusesItem]) => (
           <div key={status}>
             <Typography

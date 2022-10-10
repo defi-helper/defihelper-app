@@ -4928,6 +4928,7 @@ export type BuyLiquidityContractsQuery = { __typename?: 'Query' } & {
 
 export type BuyLiquidityProtocolsSelectQueryVariables = Exact<{
   search?: Maybe<Scalars['String']>
+  automate?: Maybe<ProtocolListFilterAutomateInputType>
   sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
   pagination?: Maybe<ProtocolListPaginationInputType>
 }>
@@ -5485,6 +5486,16 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
               'day'
             >
           }
+        contractsDebank: { __typename?: 'ContractDebankListType' } & {
+          list?: Maybe<
+            Array<
+              { __typename?: 'ContractDebankType' } & Pick<
+                ContractDebankType,
+                'id'
+              >
+            >
+          >
+        }
         contracts: { __typename?: 'ContractListType' } & {
           list?: Maybe<
             Array<{ __typename?: 'ContractType' } & Pick<ContractType, 'id'>>
@@ -6353,6 +6364,20 @@ export type AutomationContractUpdateMutation = { __typename?: 'Mutation' } & {
   } & StakingAutomatesContractFragmentFragment
 }
 
+export type RestakeCalculatorQueryVariables = Exact<{
+  contract: Scalars['UuidType']
+  amount: Scalars['BigNumberType']
+  period: Scalars['Int']
+  isRestake: Scalars['Boolean']
+}>
+
+export type RestakeCalculatorQuery = { __typename?: 'Query' } & {
+  restakeCalculator: { __typename?: 'RestakeCalculatorType' } & Pick<
+    RestakeCalculatorType,
+    'earnedUSD' | 'nextRestakeAt'
+  >
+}
+
 export type StakingAutomatesContractFragmentFragment = {
   __typename?: 'AutomateContractType'
 } & Pick<
@@ -6451,6 +6476,41 @@ export type StakingAutomatesContractFragmentFragment = {
           >
         }
       }
+    stopLoss?: Maybe<
+      { __typename?: 'AutomateContractStopLossType' } & Pick<
+        AutomateContractStopLossType,
+        'status' | 'tx' | 'amountOut'
+      > & {
+          outToken?: Maybe<
+            { __typename?: 'TokenType' } & Pick<
+              TokenType,
+              | 'id'
+              | 'blockchain'
+              | 'network'
+              | 'address'
+              | 'name'
+              | 'symbol'
+              | 'decimals'
+            >
+          >
+          inToken?: Maybe<
+            { __typename?: 'TokenType' } & Pick<
+              TokenType,
+              | 'id'
+              | 'blockchain'
+              | 'network'
+              | 'address'
+              | 'name'
+              | 'symbol'
+              | 'decimals'
+            >
+          >
+          params: { __typename?: 'AutomateContractStopLossParamsType' } & Pick<
+            AutomateContractStopLossParamsType,
+            'path' | 'amountOut' | 'amountOutMin' | 'slippage'
+          >
+        }
+    >
   }
 
 export type StakingAutomatesContractsQueryVariables = Exact<{
@@ -6882,6 +6942,74 @@ export type TradeAuthMutation = { __typename?: 'Mutation' } & {
       'accessToken' | 'tokenExpired'
     >
   >
+}
+
+export type TradeCancelOrderMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type TradeCancelOrderMutation = { __typename?: 'Mutation' } & {
+  smartTradeCancel: { __typename?: 'SmartTradeOrderType' } & Pick<
+    SmartTradeOrderType,
+    'id' | 'number' | 'handler' | 'status' | 'tx' | 'confirmed' | 'createdAt'
+  > & {
+      owner: { __typename?: 'WalletBlockchainType' } & Pick<
+        WalletBlockchainType,
+        'id' | 'network' | 'address' | 'name'
+      >
+      callData:
+        | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
+            SmartTradeMockHandlerCallDataType,
+            'amountIn' | 'amountOut'
+          >)
+        | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
+            SmartTradeSwapHandlerCallDataType,
+            'exchange' | 'boughtPrice' | 'path'
+          >)
+      lastCall?: Maybe<
+        { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
+          SmartTradeOrderCallHistoryType,
+          'status' | 'transaction' | 'errorReason'
+        >
+      >
+      tokens: Array<
+        { __typename?: 'SmartTradeOrderTokenLinkType' } & Pick<
+          SmartTradeOrderTokenLinkType,
+          'type'
+        > & {
+            token: { __typename?: 'TokenType' } & Pick<
+              TokenType,
+              | 'id'
+              | 'blockchain'
+              | 'network'
+              | 'address'
+              | 'name'
+              | 'symbol'
+              | 'decimals'
+              | 'priceFeedNeeded'
+            > & {
+                alias?: Maybe<
+                  { __typename?: 'TokenAlias' } & Pick<
+                    TokenAlias,
+                    'id' | 'name' | 'logoUrl' | 'symbol'
+                  >
+                >
+                priceFeed?: Maybe<
+                  | ({ __typename?: 'TokenPriceFeedCoingeckoIdType' } & Pick<
+                      TokenPriceFeedCoingeckoIdType,
+                      'id' | 'type'
+                    >)
+                  | ({
+                      __typename?: 'TokenPriceFeedCoingeckoAddressType'
+                    } & Pick<
+                      TokenPriceFeedCoingeckoAddressType,
+                      'type' | 'platform' | 'address'
+                    >)
+                >
+              }
+          }
+      >
+    }
 }
 
 export type TradeCreateOrderMutationVariables = Exact<{

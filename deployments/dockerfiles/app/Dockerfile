@@ -31,6 +31,8 @@ ENV REACT_APP_ADAPTERS_HOST ${REACT_APP_ADAPTERS_HOST:-https://adapters.defihelp
 ARG REACT_APP_WS_API_URL
 ENV REACT_APP_WS_API_URL ${REACT_APP_WS_API_URL:-wss://backend.defihelper.io/api}
 
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 RUN apk add git
 COPY package*.json ./
 RUN npm ci --no-audit

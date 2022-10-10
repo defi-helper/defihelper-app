@@ -1,3 +1,4 @@
+import { useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import isEmpty from 'lodash.isempty'
 import { useMemo } from 'react'
@@ -33,6 +34,7 @@ import * as model from '~/staking/staking-automates/staking-automates.model'
 import * as deployedContractModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './invest-deployed-contracts.css'
+import { paths } from '~/paths'
 
 export type InvestDeployedContractsProps = {
   className?: string
@@ -41,7 +43,8 @@ export type InvestDeployedContractsProps = {
 
 export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
   (props) => {
-    const contracts = useStore(model.$automatesContracts)
+    const history = useHistory()
+    const automatesContracts = useStore(model.$automatesContracts)
     const loading = useStore(model.fetchAutomatesContractsFx.pending)
     const user = useStore(authModel.$user)
     const wallets = useStore(settingsWalletModel.$wallets)
@@ -54,7 +57,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     const currentWallet = walletNetworkModel.useWalletNetwork()
     const handleConnect = useWalletConnect()
 
-    const isEmptyContracts = isEmpty(contracts)
+    const isEmptyContracts = isEmpty(automatesContracts)
 
     const Component = isEmptyContracts ? Paper : 'div'
 
@@ -87,7 +90,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
 
     const handleAction =
       (
-        contract: typeof contracts[number],
+        contract: typeof automatesContracts[number],
         action: Exclude<model.ActionType, 'migrate'>
       ) =>
       async () => {
@@ -133,34 +136,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
           )
             return
 
-          const onLastStep = (txId?: string) => {
-            if (!contract.contract || !contract.contractWallet) return
-
-            model
-              .scanWalletMetricFx({
-                wallet: contract.contractWallet.id,
-                contract: contract.contract.id,
-                txId,
-              })
-              .catch(console.error)
-
-            model
-              .scanWalletMetricFx({
-                wallet: findedWallet.id,
-                contract: contract.id,
-                txId,
-              })
-              .catch(console.error)
-          }
-
           const can = await adapter.refund.methods.can()
           if (can instanceof Error) throw can
-
-          const refund = await adapter.refund.methods.refund()
-
-          const tx = await refund.tx.wait()
-
-          onLastStep(tx.transactionHash)
 
           analytics.log(
             `settings_${action}_network_${currentWallet?.chainId}_success`,
@@ -172,24 +149,28 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               chainId: String(currentWallet.chainId),
             }
           )
+
+          history.push(`${paths.invest.detail(contract.contract?.id)}?deploy=1`)
         } catch (error) {
-          if (error instanceof Error) {
-            console.error(error.message)
-            analytics.log(
-              `settings_${action}_network_${currentWallet?.chainId}_failure`,
-              {
-                address: contract.contractWallet?.address,
-                network: contract.contractWallet?.network,
-                blockchain: 'ethereum',
-              }
-            )
-          }
+          const { message } = parseError(error)
+
+          toastsService.error(message)
+
+          console.error(message)
+          analytics.log(
+            `settings_${action}_network_${currentWallet?.chainId}_failure`,
+            {
+              address: contract.contractWallet?.address,
+              network: contract.contractWallet?.network,
+              blockchain: 'ethereum',
+            }
+          )
         } finally {
           model.reset()
         }
       }
     const handleRunManually =
-      (contract: typeof contracts[number]) => async () => {
+      (contract: typeof automatesContracts[number]) => async () => {
         try {
           if (
             bignumberUtils.eq(
@@ -283,7 +264,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     }, variables)
 
     const handleWrongAddress =
-      (contract: typeof contracts[number]) => async () => {
+      (contract: typeof automatesContracts[number]) => async () => {
         openErrorDialog({
           contractName: contract.contract?.name ?? '',
           address: contract.wallet.address,
@@ -291,11 +272,12 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         }).catch(console.error)
       }
 
-    const handleSwitchNetwork = (contract: typeof contracts[number]) => () =>
-      switchNetwork(contract.wallet.network).catch(console.error)
+    const handleSwitchNetwork =
+      (contract: typeof automatesContracts[number]) => () =>
+        switchNetwork(contract.wallet.network).catch(console.error)
 
     const handleStopLoss =
-      ({ contract, id }: typeof contracts[number]) =>
+      ({ contract, id, stopLoss }: typeof automatesContracts[number]) =>
       async () => {
         try {
           if (!contract) return
@@ -342,6 +324,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               address: token.address,
             })),
             withdrawTokens: tokens,
+            initialStopLoss: stopLoss,
           })
 
           await deployedContractModel.enableStopLossFx({
@@ -371,13 +354,16 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         )}
         {isEmptyContracts && !loading && (
           <Typography variant="h4">
-            You don&apos;t have any deployed auto-staking contracts in
-            DeFiHelper. Please try to deploy one.
+            You don&apos;t have any investments in DeFiHelper. You can try to
+            invest some.
           </Typography>
         )}
         {!isEmptyContracts && (
-          <InvestCarousel count={contracts.length} slidesToShow={slidesToShow}>
-            {contracts.map((deployedContract) => {
+          <InvestCarousel
+            count={automatesContracts.length}
+            slidesToShow={slidesToShow}
+          >
+            {automatesContracts.map((deployedContract) => {
               const connect = handleConnect.bind(null, {
                 blockchain: deployedContract.contract?.blockchain,
                 network: deployedContract.contract?.network,
@@ -440,7 +426,12 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   running={deployedContract.running}
                   refunding={deployedContract.refunding}
                   contractId={deployedContract.contract?.id}
-                  stopLoss={deployedContract.stopLoss}
+                  stopLossing={deployedContract.stopLossing}
+                  status={deployedContract.stopLoss?.status}
+                  stopLossAmountOut={
+                    deployedContract.stopLoss?.params?.amountOut
+                  }
+                  stopLossToken={deployedContract.stopLoss?.outToken?.symbol}
                   error={
                     deployedContract.contractWallet?.billing?.balance
                       ?.lowFeeFunds ||

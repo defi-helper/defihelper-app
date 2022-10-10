@@ -17,6 +17,10 @@ export const selects = style({
   gap: 8,
 
   '@media': {
+    [theme.mediaQueries.md()]: {
+      gridTemplateColumns: '1fr 1fr 1fr 1fr',
+    },
+
     [theme.mediaQueries.lg()]: {
       gap: 16,
       gridTemplateColumns: '236px 236px 236px 1fr',
@@ -61,7 +65,7 @@ export const table = style({
   '@media': {
     [theme.mediaQueries.md()]: {
       background: theme.colors.paper,
-      minWidth: 1000,
+      minWidth: 1100,
     },
   },
 })
@@ -135,9 +139,4 @@ export const autostakingTooltipText = style({
 export const apyBoost = style({
   justifyContent: 'flex-end',
   textAlign: 'right',
-})
-
-export const banner = style({
-  padding: 16,
-  marginBottom: 16,
 })

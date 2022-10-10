@@ -83,39 +83,49 @@ export type SmartTradeSwapHandler = {
       tokenAddress: string,
       amount: string
     ): Promise<{ tx: Transaction | undefined | undefined }>
-    createOrder(
+    createOrder: (
       exchangeAddress: string,
       path: string[],
       amountIn: string,
-      stopLoss: { amountOut: string; slippage: string | number } | null,
-      takeProfit: { amountOut: string; slippage: string | number } | null,
-      deposit: {
+      stopLoss: {
+        amountOut: string
+        slippage: string | number
+        moving: boolean
+      } | null,
+      takeProfit: {
+        amountOut: string
+        slippage: string | number
+      } | null,
+      deposit?: {
         token?: string
         native?: string
       }
-    ): Promise<{
-      tx: Transaction | undefined
+    ) => Promise<{
+      tx: Transaction
       handler: string
       callDataRaw: string
       callData: {
         exchange: string
         pair: string
-        path: [string, string]
+        path: string[]
         tokenInDecimals: number
         tokenOutDecimals: number
         amountIn: string
+        amountOut: string
         stopLoss: {
           amountOut: string
+          slippage: string
           amountOutMin: string
-          slippage: number
-          direction: 'lt'
-        } | null
+          moving: boolean
+          direction: 'gt' | 'lt'
+        }
         takeProfit: {
           amountOut: string
+          slippage: string
           amountOutMin: string
-          slippage: number
-          direction: 'gt'
-        } | null
+          moving: boolean
+          direction: 'gt' | 'lt'
+        }
       }
       getOrderNumber: () => Promise<string>
     }>
@@ -338,6 +348,13 @@ export type BuyLiquidity = {
       native: string
       usd: string
     }>
+    balanceETHOf: () => Promise<string>
+    canBuyETH: (amount: string) => Promise<true | Error>
+    buyETH: (
+      amount: string,
+      slippage: number | string,
+      deadlineSeconds?: number
+    ) => Promise<{ tx?: Transaction }>
   }
 }
 
@@ -360,6 +377,11 @@ export type SellLiquidity = {
       usd: string
     }>
     amountOut(tokenAddress: string, amount: string): Promise<string>
+    sellETH: (
+      amount: string,
+      slippage: number | string,
+      deadlineSeconds?: number
+    ) => Promise<{ tx?: Transaction }>
   }
 }
 

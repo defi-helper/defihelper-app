@@ -1,15 +1,16 @@
 import clsx from 'clsx'
 import { useState } from 'react'
+import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { CircularProgress } from '~/common/circular-progress'
-import { useDialog } from '~/common/dialog'
 import { Icon } from '~/common/icon'
+import { Link } from '~/common/link'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
-import { InvestVideoDialog } from '../invest-video-dialog'
+import { paths } from '~/paths'
 import * as styles from './invest-migrate-card.css'
 
 export type InvestMigrateCardProps = {
@@ -20,27 +21,21 @@ export type InvestMigrateCardProps = {
   tokenIcons: Array<string | null>
   apy: string
   apyBoost: string
-  onMigrate?: () => void
+  contractId: string
   onHide?: () => void
   onShow?: () => void
   showing?: boolean
   hidding?: boolean
-  migrating?: boolean
   icon?: 'close' | 'eye'
 }
 
 export const InvestMigrateCard: React.VFC<InvestMigrateCardProps> = (props) => {
-  const [openVideoDialog] = useDialog(InvestVideoDialog)
   const [hide, setHide] = useState(false)
 
   const { icon = 'close' } = props
 
   const handleHideToggle = () => {
     setHide(!hide)
-  }
-
-  const handleShowVideo = () => {
-    openVideoDialog().catch(console.error)
   }
 
   const apyboostDifference = bignumberUtils.minus(props.apyBoost, props.apy)
@@ -102,7 +97,12 @@ export const InvestMigrateCard: React.VFC<InvestMigrateCardProps> = (props) => {
       <div className={styles.item}>
         <Typography variant="body2" className={styles.grey}>
           APY Boost{' '}
-          <ButtonBase className={styles.howItWorks} onClick={handleShowVideo}>
+          <ButtonBase
+            className={styles.howItWorks}
+            as={Link}
+            href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
+            target="_blank"
+          >
             how it works?
           </ButtonBase>
         </Typography>
@@ -129,8 +129,8 @@ export const InvestMigrateCard: React.VFC<InvestMigrateCardProps> = (props) => {
       <Button
         className={styles.button}
         size="small"
-        onClick={props.onMigrate}
-        loading={props.migrating}
+        as={ReactRouterLink}
+        to={paths.invest.detail(props.contractId)}
       >
         migrate tokens
       </Button>

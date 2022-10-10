@@ -1,18 +1,14 @@
-import { sample, createDomain, attach, restore } from 'effector'
+import { sample, createEvent, createEffect } from 'effector'
 
 import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
 import { UserContactBrokerEnum } from '~/api/_generated-types'
 import { config } from '~/config'
 
-const betaAccessDomain = createDomain()
+export const { createUserContactFx } = contactListModel
 
-export const createUserContactFx = attach({
-  effect: contactListModel.createUserContactFx,
-})
+export const openTelegram = createEvent<unknown>()
 
-export const openTelegram = betaAccessDomain.createEvent<unknown>()
-
-export const openTelegramFx = betaAccessDomain.createEffect(
+export const openTelegramFx = createEffect(
   async (userContact: { confirmationCode: string }) => {
     window.open(
       `https://t.me/${config.TELEGRAM_BOT_USERNAME}?start=${userContact.confirmationCode}`,
@@ -20,8 +16,6 @@ export const openTelegramFx = betaAccessDomain.createEffect(
     )
   }
 )
-
-export const $userContact = restore(createUserContactFx.doneData, null)
 
 sample({
   clock: openTelegram,

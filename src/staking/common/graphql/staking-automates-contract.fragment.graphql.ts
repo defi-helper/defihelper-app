@@ -89,5 +89,34 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
     verification
     rejectReason
     restakeAt
+    stopLoss {
+      status
+      tx
+      amountOut
+      outToken {
+        id
+        blockchain
+        network
+        address
+        name
+        symbol
+        decimals
+      }
+      inToken {
+        id
+        blockchain
+        network
+        address
+        name
+        symbol
+        decimals
+      }
+      params {
+        path
+        amountOut
+        amountOutMin
+        slippage
+      }
+    }
   }
 `

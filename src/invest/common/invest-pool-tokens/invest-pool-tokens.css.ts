@@ -8,6 +8,9 @@ export const tokenIcons = style({
 export const tokenIcon = style({
   width: 24,
   height: 24,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 
   selectors: {
     '&:not(:last-child)': {

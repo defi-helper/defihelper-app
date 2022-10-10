@@ -17,13 +17,16 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { InvestContractInfo } from '~/invest/common/invest-contract-info'
 import { InvestStakingSteps } from '~/invest/invest-staking-steps'
 import { switchNetwork } from '~/wallets/common'
+import { useQueryParams } from '~/common/hooks'
 import * as styles from './invest-detail.css'
 import * as model from './invest-detail.model'
 
 export type InvestDetailProps = unknown
 
 export const InvestDetail: React.VFC<InvestDetailProps> = () => {
-  const [next, setNext] = useState(false)
+  const deploy = useQueryParams().get('deploy')
+
+  const [next, setNext] = useState(Boolean(deploy))
 
   const contract = useStore(model.$contract)
   const contractLoading = useStore(model.fetchContractFx.pending)
