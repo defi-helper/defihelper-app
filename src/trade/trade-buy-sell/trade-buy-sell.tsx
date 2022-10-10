@@ -112,7 +112,7 @@ export const TradeBuySell: React.VFC<TradeBuySellProps> = (props) => {
         <div className={styles.inputGroup}>
           <div className={styles.trailingBuyTitle}>
             <Typography as="div" className={styles.takeProfitLabel}>
-              Stop Loss
+              Stop-loss
             </Typography>
             <Switch
               size="small"

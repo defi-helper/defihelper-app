@@ -141,7 +141,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                           close()
                         }}
                       >
-                        Stop loss
+                        Stop-loss
                       </ButtonBase>
                     </CanDemo>
                   )}
@@ -256,7 +256,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
           <div className={styles.row}>
             <Typography variant="body2" as="span" className={styles.infoTitle}>
               <Typography variant="inherit" className={styles.opacity}>
-                Stop Loss
+                Stop-loss
               </Typography>
               <Dropdown
                 control={
@@ -268,7 +268,11 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 className={styles.questionDropdown}
                 offset={[0, 8]}
               >
-                <Typography variant="inherit">text</Typography>
+                <Typography variant="inherit">
+                  We will track the value of your liquidity, and then remove and
+                  sell your LP tokens to the single token when the price is
+                  lower than the threshold that you set.
+                </Typography>
               </Dropdown>
             </Typography>
             <Typography variant="body2" as="span">

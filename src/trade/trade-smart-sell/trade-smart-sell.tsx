@@ -460,7 +460,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         <div className={styles.inputGroup}>
           <div className={styles.trailingBuyTitle}>
             <Typography as="div" className={styles.takeProfitLabel}>
-              Stop Loss
+              Stop-loss
             </Typography>
             <Switch
               size="small"
@@ -507,7 +507,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               variant="body3"
               className={styles.takeProfitLabel}
             >
-              Trailing Stop Loss
+              Trailing stop-loss
             </Typography>
             <Dropdown
               control={

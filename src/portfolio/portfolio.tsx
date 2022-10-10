@@ -94,7 +94,7 @@ const INSTRUCTION = [
       <>
         Create automated investment strategies without having to know coding:
         <Typography variant="inherit" className={styles.green}>
-          &apos;Take Profit&apos;, &apos;Stop Loss&apos;, &apos;Send a
+          &apos;Take-Profit&apos;, &apos;Stop-Loss&apos;, &apos;Send a
           Notification If
         </Typography>{' '}
         &lt;Condition&gt; and many others already available at automation wizard

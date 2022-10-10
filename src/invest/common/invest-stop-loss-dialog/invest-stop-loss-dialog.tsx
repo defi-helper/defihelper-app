@@ -155,7 +155,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
         <div
           className={clsx(styles.rowHeading, stopLoss && styles.rowHeadingOpen)}
         >
-          <Typography>Stop Loss</Typography>
+          <Typography>Stop-Loss</Typography>
           <Switch
             size="small"
             onChange={toggleStopLoss}
