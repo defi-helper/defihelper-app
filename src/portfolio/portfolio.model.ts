@@ -40,14 +40,13 @@ guard({
   source: PortfolioGate.status,
   clock: [PortfolioGate.open, authModel.$user.updates],
   filter: (isOpened) => isOpened,
-  target: [fetchPortfolioCollectedFx, fetchPortfolioNameFx],
+  target: [fetchPortfolioCollectedFx],
 })
 
 sample({
   clock: portfolioUpdated,
   target: [
     fetchPortfolioCollectedFx,
-    fetchUserFx,
     portfolioAssetsModel.fetchAssetsListFx,
     portfolioCoinModel.fetchChartDataFx.prepend(() =>
       portfolioCoinModel.$currentGroup.getState()
