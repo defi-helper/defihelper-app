@@ -519,7 +519,10 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               className={styles.dropdown}
               placement="bottom-start"
             >
-              <Typography variant="body2">text</Typography>
+              <Typography variant="body2">
+                Will follow the price movements up. It will be at the same
+                distance from the reached price
+              </Typography>
             </Dropdown>
             <Switch
               size="small"
