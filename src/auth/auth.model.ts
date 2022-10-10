@@ -63,14 +63,6 @@ export const $user = createStore<Exclude<MeQuery['me'], undefined>>(null)
   .on(saveUserFx.doneData, (state, payload) =>
     shallowEqual(state, payload) ? undefined : payload
   )
-  .on(fetchPortfolioNameFx.doneData, (state, payload) => {
-    return state
-      ? {
-          ...state,
-          name: payload ?? '',
-        }
-      : state
-  })
   .reset(logoutFx.done)
 
 export const authWavesFx = createEffect(
