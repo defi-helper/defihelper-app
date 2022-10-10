@@ -265,6 +265,10 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     }
   }, variables)
 
+  useEffect(() => {
+    model.fetchPortfolioNameFx()
+  }, [])
+
   const handleOpenContactForm = (broker: UserContactBrokerEnum) => async () => {
     try {
       if (!user) return
@@ -351,7 +355,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           />
 
           <PortfolioNameEditor
-            name={portfolioName}
+            name={portfolioName ?? 'empty store fallback'}
             onChange={(name) => handleUpdatePortfolioName(name)}
           />
 
