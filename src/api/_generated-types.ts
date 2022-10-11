@@ -5146,6 +5146,12 @@ export type IsPorfolioCollectedQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type MePortfolioNameQueryVariables = Exact<{ [key: string]: never }>
+
+export type MePortfolioNameQuery = { __typename?: 'Query' } & {
+  me?: Maybe<{ __typename?: 'UserType' } & Pick<UserType, 'name'>>
+}
+
 export type MyMetricQueryVariables = Exact<{ [key: string]: never }>
 
 export type MyMetricQuery = { __typename?: 'Query' } & {

@@ -139,11 +139,17 @@ const ForceRenderOrLazyLoad = (
 }
 
 const PortfolioNameEditor: React.FC<{
-  name: string
+  name: string | null
   onChange: (name: string) => void
 }> = (props) => {
   const [toggle, setToggle] = useState(false)
-  const [name, setName] = useState(props.name === '' ? 'Portfolio' : props.name)
+  const [name, setName] = useState(props.name ?? 'Portfolio')
+
+  useEffect(() => {
+    if (!props.name) return
+
+    setName(props.name)
+  }, [props.name])
 
   const handleSave = () => {
     props.onChange(name)
@@ -199,6 +205,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
 
   const userReady = useStore(authModel.$userReady)
   const user = useStore(authModel.$user)
+  const portfolioName = useStore(model.$portfolioName)
 
   const isDesktop = useMedia('(min-width: 960px)')
 
@@ -350,7 +357,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           />
 
           <PortfolioNameEditor
-            name={user?.name ?? ''}
+            name={portfolioName}
             onChange={(name) => handleUpdatePortfolioName(name)}
           />
 

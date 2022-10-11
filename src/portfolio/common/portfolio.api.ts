@@ -22,6 +22,8 @@ import {
   AssetListByProtocolQuery,
   AssetsListByExchangeQueryVariables,
   AssetsListByExchangeQuery,
+  MePortfolioNameQuery,
+  MePortfolioNameQueryVariables,
 } from '~/api/_generated-types'
 import {
   ADD_WALLET,
@@ -36,6 +38,7 @@ import {
 } from './graphql'
 import { ASSETS_LIST_BY_PROTOCOL } from '~/portfolio/common/graphql/assets-list-by-protocol.graphql'
 import { ASSETS_LIST_BY_EXCHANGE } from '~/portfolio/common/graphql/assets-list-by-exchange.graphql'
+import { ME_PORTFOLIO_NAME } from '~/portfolio/common/graphql/me-portfolio-name.graphql'
 
 export const portfolioApi = {
   getTokenMetricChart: (variables: TokenMetricChartQueryVariables) =>
@@ -45,6 +48,13 @@ export const portfolioApi = {
         variables,
       })
       .then(({ data }) => data?.me),
+
+  mePortfolioName: () =>
+    getAPIClient()
+      .request<MePortfolioNameQuery, unknown, MePortfolioNameQueryVariables>({
+        query: ME_PORTFOLIO_NAME.loc?.source.body ?? '',
+      })
+      .then(({ data }) => data?.me?.name),
 
   getBlockchains: (variables: BlockChainsQueryVariables) =>
     getAPIClient()
