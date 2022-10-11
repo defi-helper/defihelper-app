@@ -1,4 +1,4 @@
-import { sample, createEvent, createEffect } from 'effector'
+import { sample, createEvent, createEffect, guard } from 'effector'
 
 import * as contactListModel from '~/settings/settings-contacts/settings-contact.model'
 import { UserContactBrokerEnum } from '~/api/_generated-types'
@@ -27,7 +27,8 @@ sample({
   target: createUserContactFx,
 })
 
-sample({
+guard({
   clock: createUserContactFx.doneData,
+  filter: ({ broker }) => broker === UserContactBrokerEnum.Telegram,
   target: openTelegramFx,
 })

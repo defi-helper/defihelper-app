@@ -292,7 +292,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
         const data = await settingsContacts.createUserContactFx({
           ...result,
           broker,
-          name: result.address ?? 'telegram',
+          name: result.address ?? 'email',
         })
 
         await openSuccess({
