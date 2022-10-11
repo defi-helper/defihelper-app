@@ -53,28 +53,8 @@ export const updateUserContactFx = settingsContactsDomain.createEffect(
   }
 )
 
-export const toggleUserNotificationFx = settingsContactsDomain.createEffect(
-  async (params: {
-    contact: string
-    hour: number
-    type: UserNotificationTypeEnum
-    state: boolean
-  }) => {
-    const { type, state, contact, hour } = params
-    const isDone = await settingsApi.userNotificationToggle({
-      type,
-      state,
-      contact,
-      hour,
-    })
-
-    if (isDone) {
-      return isDone
-    }
-
-    throw new Error('Unable to toggle')
-  }
-)
+export const replaceUserContact =
+  settingsContactsDomain.createEvent<UserContactFragmentFragment>()
 
 export const updateUserNotificationFx = settingsContactsDomain.createEffect(
   async (params: {
@@ -117,15 +97,6 @@ export const $userNotificationsList = settingsContactsDomain
   .createStore<UnitValue<typeof fetchUserNotificationsListFx.doneData>>({})
   .on(fetchUserNotificationsListFx.doneData, (_, payload) => payload)
   .on(updateUserNotificationFx.done, (state, { params }) => {
-    return {
-      ...state,
-      [params.contact]: {
-        ...state[params.contact],
-        time: params.hour,
-      },
-    }
-  })
-  .on(toggleUserNotificationFx.done, (state, { params }) => {
     const hasContact = Boolean(state[params.contact])
 
     if (hasContact) return omit(state, params.contact)
@@ -143,7 +114,7 @@ export const $userNotificationsList = settingsContactsDomain
 
 export const $userContactList = settingsContactsDomain
   .createStore<
-    (UserContactFragmentFragment & { deleting: boolean; editing: boolean })[]
+    (UserContactFragmentFragment & { deleting?: boolean; editing?: boolean })[]
   >([])
   .on(fetchUserContactListFx.doneData, (_, payload) =>
     payload.map((contact) => ({
@@ -181,6 +152,9 @@ export const $userContactList = settingsContactsDomain
       contact.id === payload.id ? { ...contact, editing: true } : contact
     )
   )
+  .on(replaceUserContact, (state, payload) =>
+    state.map((contact) => (contact.id === payload.id ? payload : contact))
+  )
   .on(updateUserContactFx.doneData, (state, payload) =>
     state.map((contact) =>
       contact.id === payload.id
@@ -191,7 +165,7 @@ export const $userContactList = settingsContactsDomain
   .reset(authModel.logoutFx)
 
 sample({
-  clock: createUserContactFx.done,
+  clock: $userContactList.updates,
   target: fetchUserNotificationsListFx,
 })
 
@@ -199,5 +173,5 @@ guard({
   source: [authModel.$userReady, authModel.$user],
   clock: [authModel.$userReady.updates, authModel.$user.updates],
   filter: ([userReady, user]) => userReady && Boolean(user),
-  target: [fetchUserContactListFx, fetchUserNotificationsListFx],
+  target: fetchUserContactListFx,
 })

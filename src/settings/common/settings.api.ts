@@ -36,6 +36,7 @@ import {
   WalletUpdateStatisticsMutationVariables,
   BillingBalanceQueryVariables,
   BillingBalanceQuery,
+  UserNotificationTypeEnum,
 } from '~/api/_generated-types'
 import {
   USER_CONTACTS,
@@ -69,16 +70,20 @@ export const settingsApi = {
         query: USER_NOTIFICATION_LIST.loc?.source.body ?? '',
       })
       .then(({ data }) =>
-        (data?.userNotifications ?? []).reduce<
-          Record<
-            string,
-            UserNotificationsListQuery['userNotifications'][number]
-          >
-        >((acc, notification) => {
-          acc[notification.contact] = notification
+        (data?.userNotifications ?? [])
+          .filter(
+            ({ type }) => type === UserNotificationTypeEnum.PortfolioMetrics
+          )
+          .reduce<
+            Record<
+              string,
+              UserNotificationsListQuery['userNotifications'][number]
+            >
+          >((acc, notification) => {
+            acc[notification.contact] = notification
 
-          return acc
-        }, {})
+            return acc
+          }, {})
       ),
 
   billingTransferCreate: (variables: BillingTransferCreateMutationVariables) =>
