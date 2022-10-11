@@ -123,7 +123,9 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
 
   const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
   const [blockchain, setBlockChain] = useState<string | null>(null)
-  const [riskLevel, setRiskLevel] = useState(ContractRiskFactorEnum.Low)
+  const [riskLevel, setRiskLevel] = useState<ContractRiskFactorEnum | null>(
+    null
+  )
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.Tvl,
     order: SortOrderEnum.Desc,
@@ -330,10 +332,10 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
             ))}
           </Select>
           <Select
-            placeholder="Risk level"
+            placeholder="Choose risk"
             className={styles.select}
-            value={riskLevel}
             onChange={handleChooseRiskLevel}
+            clearable
           >
             {Object.entries(ContractRiskFactorEnum)
               .filter(
