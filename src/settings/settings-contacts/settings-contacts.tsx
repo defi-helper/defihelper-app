@@ -67,7 +67,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
         const data = await model.createUserContactFx({
           ...result,
           broker,
-          name: result.address ?? 'telegram',
+          name: result.address ?? 'email',
         })
 
         await openSuccess({
@@ -85,7 +85,9 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const handleDeleteContact =
     (contact: typeof contactList[number]) => async () => {
       try {
-        await openConfirm({ name: contact.name })
+        await openConfirm({
+          name: contact.name,
+        })
 
         model.deleteUserContactFx(contact.id)
       } catch (error) {
@@ -94,27 +96,6 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
         }
       }
     }
-
-  const handleToggleNotification = async (
-    { id: contact, broker }: typeof contactList[number],
-    type: UserNotificationTypeEnum,
-    state: boolean,
-    hour: number
-  ) => {
-    try {
-      await model.toggleUserNotificationFx({
-        type,
-        state,
-        hour,
-        contact,
-      })
-      analytics.log(`settings_${broker.toLowerCase()}_connect_click`)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
-    }
-  }
 
   const handleUpdateNotification = async (
     { id: contact }: typeof contactList[number],
@@ -147,7 +128,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
   const email = contactsMap.get(UserContactBrokerEnum.Email)
 
   const handleContinueConnect = () => {
-    if (!telegram) return
+    if (!telegram?.address) return
 
     telegramModel.openTelegramFx({
       confirmationCode: telegram.confirmationCode,
@@ -193,7 +174,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           }
           onToggleNotification={(state: boolean, hour: number) =>
             telegram
-              ? handleToggleNotification(
+              ? handleUpdateNotification(
                   telegram,
                   UserNotificationTypeEnum.PortfolioMetrics,
                   state,
@@ -228,7 +209,7 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           }
           onToggleNotification={(state: boolean, hour: number) =>
             email
-              ? handleToggleNotification(
+              ? handleUpdateNotification(
                   email,
                   UserNotificationTypeEnum.PortfolioMetrics,
                   state,

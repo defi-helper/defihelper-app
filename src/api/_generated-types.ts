@@ -1663,6 +1663,10 @@ export type OnTransferUpdatedFilterInputType = {
   user?: Maybe<Array<Scalars['UuidType']>>
 }
 
+export type OnUserContactActivatedFilterInputType = {
+  user?: Maybe<Array<Scalars['UuidType']>>
+}
+
 export type OnWalletCreatedFilterInputType = {
   user?: Maybe<Array<Scalars['UuidType']>>
 }
@@ -2704,6 +2708,7 @@ export type Subscription = {
   onTokenMetricUpdated: TokenMetricUpdatedEvent
   onBillingTransferCreated: BillingTransferType
   onBillingTransferUpdated: BillingTransferType
+  onUserContactActivated: UserContactType
 }
 
 export type SubscriptionOnWalletCreatedArgs = {
@@ -2724,6 +2729,10 @@ export type SubscriptionOnBillingTransferCreatedArgs = {
 
 export type SubscriptionOnBillingTransferUpdatedArgs = {
   filter?: Maybe<OnTransferUpdatedFilterInputType>
+}
+
+export type SubscriptionOnUserContactActivatedArgs = {
+  filter?: Maybe<OnUserContactActivatedFilterInputType>
 }
 
 export type SwapHandlerCallDataRouteType = {
@@ -4794,7 +4803,10 @@ export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
             >
             tokens: { __typename?: 'ContractTokenLinkType' } & {
               stakeBase?: Maybe<
-                { __typename?: 'TokenType' } & Pick<TokenType, 'address'>
+                { __typename?: 'TokenType' } & Pick<
+                  TokenType,
+                  'address' | 'symbol'
+                >
               >
               stake: Array<
                 { __typename?: 'TokenType' } & Pick<
@@ -6121,6 +6133,18 @@ export type OnBillingTransferUpdatedSubscription = {
     BillingTransferType,
     'id'
   >
+}
+
+export type OnUserContactActivatedSubscriptionVariables = Exact<{
+  user?: Maybe<Array<Scalars['UuidType']> | Scalars['UuidType']>
+}>
+
+export type OnUserContactActivatedSubscription = {
+  __typename?: 'Subscription'
+} & {
+  onUserContactActivated: {
+    __typename?: 'UserContactType'
+  } & UserContactFragmentFragment
 }
 
 export type OnWalletCreatedSubscriptionVariables = Exact<{

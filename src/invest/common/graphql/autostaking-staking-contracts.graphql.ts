@@ -48,6 +48,7 @@ export const AUTOSTAKING_STAKING_CONTRACTS = gql`
         tokens {
           stakeBase {
             address
+            symbol
           }
           stake {
             alias {

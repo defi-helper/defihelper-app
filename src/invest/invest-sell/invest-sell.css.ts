@@ -91,6 +91,7 @@ export const error = style({
   color: theme.colors.common.white1,
   borderRadius: 8,
   padding: 8,
+  marginBottom: 10,
 })
 
 export const amountOut = style({

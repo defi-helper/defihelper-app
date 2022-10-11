@@ -69,7 +69,7 @@ export const StakingApyDialog: React.FC<StakingApyDialogProps> = (props) => {
     bignumberUtils.eq(props.staked, 0) ? '1000' : props.staked
   )
   const [stakedFor, setStakedFor] = useState(StakedFor['1D'])
-  const [isRestake, setIsRestake] = useState(false)
+  const [isRestake, setIsRestake] = useState(true)
 
   const throttledAmount = useThrottle(amount, 500)
 
@@ -125,7 +125,7 @@ export const StakingApyDialog: React.FC<StakingApyDialogProps> = (props) => {
         {StakedFor}
       </Tabs>
       <Typography variant="body3" className={clsx(styles.label, styles.mb16)}>
-        Compounding every
+        Auto-compouding
         <Checkbox
           checked={isRestake}
           onChange={(event) => setIsRestake(event.target.checked)}
@@ -169,7 +169,7 @@ export const StakingApyDialog: React.FC<StakingApyDialogProps> = (props) => {
         for the last 30 days
       </Typography>
       <Button color="green" onClick={props.onConfirm} className={styles.button}>
-        Auto-stake
+        INVEST
       </Button>
     </Dialog>
   )

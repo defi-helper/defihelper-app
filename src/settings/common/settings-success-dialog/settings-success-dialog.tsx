@@ -23,7 +23,7 @@ const TITLES = {
   [UserContactBrokerEnum.Telegram]: 'Please confirm your Telegram username',
   [TransactionEnum.refund]: 'Refund successful',
   [TransactionEnum.deposit]:
-    'Deposit successful. Please wait 3-5 minutes until the money appears on your balance',
+    'Deposit successful. Please wait 3-5 minutes until the money will appear on your balance',
 }
 
 export const SettingsSuccessDialog: React.VFC<SettingsSuccessDialogProps> = (

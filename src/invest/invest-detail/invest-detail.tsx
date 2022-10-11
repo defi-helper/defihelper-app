@@ -1,6 +1,13 @@
 import { useStore } from 'effector-react'
 import { useEffect, useState } from 'react'
-import { Link as ReactRouterLink, useParams } from 'react-router-dom'
+import {
+  Link as ReactRouterLink,
+  Redirect,
+  Route,
+  Switch,
+  useParams,
+  useRouteMatch,
+} from 'react-router-dom'
 import { useAsyncFn, useMedia } from 'react-use'
 
 import { buildExplorerUrl } from '~/common/build-explorer-url'
@@ -17,21 +24,21 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { InvestContractInfo } from '~/invest/common/invest-contract-info'
 import { InvestStakingSteps } from '~/invest/invest-staking-steps'
 import { switchNetwork } from '~/wallets/common'
-import { useQueryParams } from '~/common/hooks'
+import { InvestUnstakingSteps } from '~/invest/invest-unstaking-steps'
 import * as styles from './invest-detail.css'
 import * as model from './invest-detail.model'
+import { useQueryParams } from '~/common/hooks'
 
 export type InvestDetailProps = unknown
 
 export const InvestDetail: React.VFC<InvestDetailProps> = () => {
-  const deploy = useQueryParams().get('deploy')
-
-  const [next, setNext] = useState(Boolean(deploy))
+  const [next, setNext] = useState(false)
 
   const contract = useStore(model.$contract)
   const contractLoading = useStore(model.fetchContractFx.pending)
 
   const params = useParams<{ contractId: string }>()
+  const depoy = useQueryParams().get('deploy')
 
   const isDesktop = useMedia('(min-width: 960px)')
 
@@ -58,6 +65,8 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
       model.resetContract()
     }
   }, [params.contractId])
+
+  const match = useRouteMatch()
 
   return (
     <div className={styles.root}>
@@ -102,30 +111,46 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
               <Loader height="36" />
             </div>
           )}
-          {!next && contract && (
-            <InvestContractInfo
-              contract={contract}
-              className={styles.contractInfo}
-            />
-          )}
-          {!next && contract && (
-            <WalletConnect
-              fallback={<Button color="green">Connect wallet</Button>}
-            >
-              <Button
-                color="green"
-                onClick={
-                  contract.network !== currentWallet?.chainId
-                    ? handleSwitchNetwork
-                    : () => setNext(true)
+          {contract && (
+            <Switch>
+              <Redirect
+                exact
+                from={match.path}
+                to={
+                  depoy ? `${match.path}/stake?deploy=1` : `${match.path}/stake`
                 }
-                loading={switchNetworkState.loading}
-              >
-                Invest
-              </Button>
-            </WalletConnect>
+              />
+              <Route path={`${match.path}/stake`}>
+                {!next && contract && (
+                  <InvestContractInfo
+                    contract={contract}
+                    className={styles.contractInfo}
+                  />
+                )}
+                {!next && contract && (
+                  <WalletConnect
+                    fallback={<Button color="green">Connect wallet</Button>}
+                  >
+                    <Button
+                      color="green"
+                      onClick={
+                        contract.network !== currentWallet?.chainId
+                          ? handleSwitchNetwork
+                          : () => setNext(true)
+                      }
+                      loading={switchNetworkState.loading}
+                    >
+                      Invest
+                    </Button>
+                  </WalletConnect>
+                )}
+                {contract && next && <InvestStakingSteps contract={contract} />}
+              </Route>
+              <Route path={`${match.path}/unstake`}>
+                <InvestUnstakingSteps contract={contract} />
+              </Route>
+            </Switch>
           )}
-          {contract && next && <InvestStakingSteps contract={contract} />}
         </div>
       </div>
     </div>

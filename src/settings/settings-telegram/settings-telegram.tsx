@@ -1,17 +1,19 @@
 import { useStore } from 'effector-react'
-
+import { useMemo } from 'react'
 import clsx from 'clsx'
+
 import { Button } from '~/common/button'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { UserContactBrokerEnum } from '~/api/_generated-types'
 import notification from '~/assets/images/notification.png'
+import { dateUtils } from '~/common/date-utils'
+import { pluralize } from '~/common/pluralize'
+import { useOnUserContactActivated } from '~/settings/common'
 import * as authModel from '~/auth/auth.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './settings-telegram.css'
 import * as model from './settings-telegram.model'
-import { dateUtils } from '~/common/date-utils'
-import { pluralize } from '~/common/pluralize'
 
 export type SettingsTelegramProps = unknown
 
@@ -29,7 +31,21 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
     ({ broker }) => broker === UserContactBrokerEnum.Telegram
   )
 
-  if (telegram || loading || !userReady || !leftDays) return <></>
+  const variables = useMemo(() => {
+    if (!user) return undefined
+
+    return {
+      user: [user.id],
+    }
+  }, [user])
+
+  useOnUserContactActivated(({ data }) => {
+    if (data?.onUserContactActivated) {
+      settingsContacts.replaceUserContact(data.onUserContactActivated)
+    }
+  }, variables)
+
+  if (telegram?.address || loading || !userReady || !leftDays) return <></>
 
   const handleOpenTelegram = () => {
     model.openTelegram(undefined)
