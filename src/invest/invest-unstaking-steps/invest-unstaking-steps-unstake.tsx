@@ -8,15 +8,15 @@ import { InvestContract } from '~/invest/common/invest.types'
 import { switchNetwork } from '~/wallets/common'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import * as styles from './invest-staking-steps.css'
+import * as styles from './invest-unstaking-steps.css'
 
-export type InvestStakingStepsMigrateProps = {
+export type InvestUnstakingStepsUnstakeProps = {
   onSubmit: () => void
   loading: boolean
   contract: InvestContract
 }
 
-export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps> =
+export const InvestUnstakingStepsUnstake: React.FC<InvestUnstakingStepsUnstakeProps> =
   (props) => {
     const currentWallet = walletNetworkModel.useWalletNetwork()
 
@@ -36,7 +36,7 @@ export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps>
           align="center"
           className={styles.title}
         >
-          MIGRATE TOKENS
+          UNSTAKE TOKENS
         </Typography>
         <div className={styles.successContent}>
           <Icon
@@ -53,12 +53,9 @@ export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps>
               <InvestPoolTokens tokens={props.contract.tokens.stake} />
               {props.contract.name}
             </div>{' '}
-            earlier.
           </Typography>
           <Typography as="div" align="center">
-            We can boost your investment with auto-staking and stop-loss
-            features. To continue you need unstake your tokens and deploy your
-            own contract to control investments.
+            We will help you to unstake and then exchange your tokens.
           </Typography>
         </div>
         <WalletConnect fallback={<Button color="green">Connect wallet</Button>}>

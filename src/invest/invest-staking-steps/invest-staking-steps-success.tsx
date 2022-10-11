@@ -6,7 +6,6 @@ import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
-import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
 import { InvestContract } from '~/invest/common/invest.types'
 import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
 import { UserContactBrokerEnum } from '~/api'
@@ -17,7 +16,6 @@ import * as styles from './invest-staking-steps.css'
 
 export type InvestStakingStepsSuccessProps = {
   balanceOf?: string
-  canMigrate?: boolean
   onSubmit: () => void
   contract: InvestContract
 }
@@ -54,33 +52,11 @@ export const InvestStakingStepsSuccess: React.FC<InvestStakingStepsSuccessProps>
             height={100}
             className={styles.checked}
           />
-          {props.canMigrate ? (
-            <>
-              <Typography as="div" align="center">
-                You have successfully withdrawn
-                <br />
-                funds from the pool
-              </Typography>
-              <Typography as="div" align="center">
-                <div className={styles.pool}>
-                  <InvestPoolTokens tokens={props.contract.tokens.stake} />
-                  {props.contract.name}
-                </div>
-              </Typography>
-              <Typography align="center" as="div">
-                total withdrawal
-              </Typography>
-              <Typography variant="h4" align="center" as="div">
-                {props.balanceOf ?? '0'} USDT
-              </Typography>
-            </>
-          ) : (
-            <Typography as="div" align="center">
-              Success! Your transaction
-              <br />
-              is completed.
-            </Typography>
-          )}
+          <Typography as="div" align="center">
+            Success! Your transaction
+            <br />
+            is completed.
+          </Typography>
         </div>
         {!telegram?.address && (
           <Typography
@@ -106,7 +82,7 @@ export const InvestStakingStepsSuccess: React.FC<InvestStakingStepsSuccessProps>
             </>
           ) : (
             <Button color="green" as={ReactRouterLink} to={paths.invest.list}>
-              {props.canMigrate ? 'done' : 'ALL DONE'}
+              ALL DONE
             </Button>
           )}
         </div>
