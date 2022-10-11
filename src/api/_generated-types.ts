@@ -4217,12 +4217,6 @@ export type AuthWavesMutation = { __typename?: 'Mutation' } & {
   >
 }
 
-export type MePortfolioNameQueryVariables = Exact<{ [key: string]: never }>
-
-export type MePortfolioNameQuery = { __typename?: 'Query' } & {
-  me?: Maybe<{ __typename?: 'UserType' } & Pick<UserType, 'name'>>
-}
-
 export type MeQueryVariables = Exact<{
   input?: Maybe<MeInputType>
 }>
@@ -5150,6 +5144,12 @@ export type IsPorfolioCollectedQuery = { __typename?: 'Query' } & {
   me?: Maybe<
     { __typename?: 'UserType' } & Pick<UserType, 'isPorfolioCollected'>
   >
+}
+
+export type MePortfolioNameQueryVariables = Exact<{ [key: string]: never }>
+
+export type MePortfolioNameQuery = { __typename?: 'Query' } & {
+  me?: Maybe<{ __typename?: 'UserType' } & Pick<UserType, 'name'>>
 }
 
 export type MyMetricQueryVariables = Exact<{ [key: string]: never }>

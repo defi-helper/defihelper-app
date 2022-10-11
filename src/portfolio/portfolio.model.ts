@@ -19,11 +19,9 @@ export const updatePortfolioNameFx = portfolio.createEffect(
   (input: UserUpdateMutationVariables) => usersApi.updateUser(input)
 )
 
-export const fetchPortfolioNameFx = portfolio.createEffect(async () => {
-  const res = await portfolioApi.mePortfolioName()
-  console.info(111, res)
-  return res
-})
+export const fetchPortfolioNameFx = portfolio.createEffect(async () =>
+  portfolioApi.mePortfolioName()
+)
 
 export const portfolioUpdated = portfolio.createEvent()
 
@@ -34,10 +32,7 @@ export const $portfolioCollected = portfolio
 export const $portfolioName = portfolio
   .createStore<null | string>(null)
   .on(updatePortfolioNameFx.doneData, (_, payload) => payload?.name)
-  .on(fetchPortfolioNameFx.doneData, (_, payload) => {
-    console.log(payload)
-    return payload
-  })
+  .on(fetchPortfolioNameFx.doneData, (_, payload) => payload)
 
 export const PortfolioGate = createGate({
   domain: portfolio,
@@ -48,7 +43,7 @@ guard({
   source: PortfolioGate.status,
   clock: [PortfolioGate.open, authModel.$user.updates],
   filter: (isOpened) => isOpened,
-  target: [fetchPortfolioCollectedFx],
+  target: [fetchPortfolioCollectedFx, fetchPortfolioNameFx],
 })
 
 sample({

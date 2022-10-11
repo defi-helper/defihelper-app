@@ -139,11 +139,17 @@ const ForceRenderOrLazyLoad = (
 }
 
 const PortfolioNameEditor: React.FC<{
-  name: string
+  name: string | null
   onChange: (name: string) => void
 }> = (props) => {
   const [toggle, setToggle] = useState(false)
-  const [name, setName] = useState(props.name === '' ? 'Portfolio' : props.name)
+  const [name, setName] = useState(props.name ?? 'Portfolio')
+
+  useEffect(() => {
+    if (!props.name) return
+
+    setName(props.name)
+  }, [props.name])
 
   const handleSave = () => {
     props.onChange(name)
@@ -265,10 +271,6 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
     }
   }, variables)
 
-  useEffect(() => {
-    model.fetchPortfolioNameFx()
-  }, [])
-
   const handleOpenContactForm = (broker: UserContactBrokerEnum) => async () => {
     try {
       if (!user) return
@@ -355,7 +357,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           />
 
           <PortfolioNameEditor
-            name={portfolioName ?? 'empty store fallback'}
+            name={portfolioName}
             onChange={(name) => handleUpdatePortfolioName(name)}
           />
 
