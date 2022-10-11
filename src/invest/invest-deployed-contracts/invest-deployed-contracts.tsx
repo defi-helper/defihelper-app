@@ -150,7 +150,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             }
           )
 
-          history.push(`${paths.invest.detail(contract.contract?.id)}?deploy=1`)
+          history.push(`${paths.invest.detail(contract.contract?.id)}/unstake`)
         } catch (error) {
           const { message } = parseError(error)
 

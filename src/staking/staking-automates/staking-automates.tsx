@@ -109,7 +109,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
         const can = await adapter.refund.methods.can()
         if (can instanceof Error) throw can
 
-        history.push(`${paths.invest.detail(contract.contract?.id)}?deploy=1`)
+        history.push(`${paths.invest.detail(contract.contract?.id)}/unstake`)
       } catch (error) {
         const { message } = parseError(error)
 
