@@ -29,6 +29,8 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
 
   const [currentStep, setCurrentStep] = useState(0)
 
+  const [sellToken, setSellToken] = useState('')
+
   const lp = useAsync(async () => {
     if (!currentWallet?.account || !props.contract.automate.lpTokensManager)
       return
@@ -129,11 +131,13 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       onSubmit={handleNextStep}
       adapter={lp.value?.sellLiquidity}
       tokens={lp.value?.tokens}
+      onChangeToken={setSellToken}
     />,
     <InvestUnstakingStepsSuccess
       key={4}
       contract={props.contract}
       onSubmit={handleNextStep}
+      token={sellToken}
     />,
   ]
 

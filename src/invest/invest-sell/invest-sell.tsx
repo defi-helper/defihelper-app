@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useAsync, useAsyncFn, useAsyncRetry, useThrottle } from 'react-use'
 
 import { Button } from '~/common/button'
@@ -29,6 +29,7 @@ export type InvestSellProps = {
     symbol: string
     address: string
   }[]
+  onChangeToken: (token: string) => void
 }
 
 export const InvestSell = (props: InvestSellProps) => {
@@ -54,26 +55,25 @@ export const InvestSell = (props: InvestSellProps) => {
     return props.adapter?.methods.balanceOf()
   }, [props.adapter])
 
-  const tokens = useAsyncRetry(async () => {
-    if (!props.adapter || !props.tokens || !balance.value) return
+  const { tokens: propsTokens = [] } = props
 
-    const { amountOut } = props.adapter.methods
+  const tokens = useMemo(() => {
+    return propsTokens.reduce<Record<string, typeof propsTokens[number]>>(
+      (acc, token) => {
+        acc[token.address] = token
 
-    const tokensWithBalances = await Promise.all(
-      props.tokens.map(async (token) => ({
-        ...token,
-        amountOut: await amountOut(token.address, balance.value ?? '0'),
-      }))
+        return acc
+      },
+      {}
     )
+  }, [propsTokens])
 
-    return tokensWithBalances.reduce<
-      Record<string, typeof tokensWithBalances[number]>
-    >((acc, token) => {
-      acc[token.address] = token
+  useEffect(() => {
+    if (!tokens[tokenAddress]) return
 
-      return acc
-    }, {})
-  }, [props.tokens, props.adapter, balance.value])
+    props.onChangeToken(tokens[tokenAddress].symbol)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tokenAddress, tokens])
 
   const [buyState, handleBuy] = useAsyncFn(async () => {
     if (!props.adapter) return
@@ -99,8 +99,6 @@ export const InvestSell = (props: InvestSellProps) => {
 
       props.onSubmit?.(result?.transactionHash)
 
-      tokens.retry()
-
       return true
     } catch (error) {
       analytics.log('lp_tokens_purchase_unsuccess', {
@@ -120,7 +118,6 @@ export const InvestSell = (props: InvestSellProps) => {
 
     await tx?.wait()
 
-    tokens.retry()
     approved.retry()
     toastsService.info('tokens approved!')
   }, [props.adapter, tokenAddress, amount])
@@ -198,28 +195,15 @@ export const InvestSell = (props: InvestSellProps) => {
             </span>
           }
         >
-          {Object.values(tokens.value ?? {}).map((option) => {
-            const renderValue = (
-              <>
+          {Object.values(tokens ?? {}).map((option) => {
+            return (
+              <SelectOption key={option.address} value={option.address}>
                 {option.logoUrl ? (
                   <img src={option.logoUrl} className={styles.img} alt="" />
                 ) : (
                   <span className={styles.imgPlaceHolder} />
                 )}
                 {option.symbol}
-              </>
-            )
-
-            return (
-              <SelectOption
-                key={option.address}
-                value={option.address}
-                renderValue={renderValue}
-              >
-                {renderValue}
-                <Typography variant="inherit" className={styles.tokenBalance}>
-                  {option.amountOut}
-                </Typography>
               </SelectOption>
             )
           })}
@@ -237,7 +221,7 @@ export const InvestSell = (props: InvestSellProps) => {
         />
       )}
       <div className={clsx(styles.stakeActions, styles.mt)}>
-        {!approved.value && tokenAddress !== NULL_ADDRESS && (
+        {!approved.value && (
           <Button
             onClick={handleApprove}
             color="green"
@@ -249,10 +233,7 @@ export const InvestSell = (props: InvestSellProps) => {
         <Button
           onClick={handleBuy}
           loading={buyState.loading}
-          disabled={
-            approveState.loading ||
-            (!approved.value && tokenAddress !== NULL_ADDRESS)
-          }
+          disabled={approveState.loading || !approved.value}
           color="green"
         >
           SELL TOKENS

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 import { useForm, Controller } from 'react-hook-form'
 
@@ -57,26 +57,20 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
     return props.sellLiquidityAdapter.methods.balanceOf()
   }, [props.sellLiquidityAdapter.methods])
 
-  const tokens = useAsyncRetry(async () => {
-    if (!balance.value) return
+  const { tokens: propsTokens } = props
 
-    const { amountOut } = props.sellLiquidityAdapter.methods
+  const tokens = useMemo(
+    () =>
+      propsTokens.reduce<Record<string, typeof propsTokens[number]>>(
+        (acc, token) => {
+          acc[token.address] = token
 
-    const tokensWithBalances = await Promise.all(
-      props.tokens.map(async (token) => ({
-        ...token,
-        amountOut: await amountOut(token.address, balance.value ?? '0'),
-      }))
-    )
-
-    return tokensWithBalances.reduce<
-      Record<string, typeof tokensWithBalances[number]>
-    >((acc, token) => {
-      acc[token.address] = token
-
-      return acc
-    }, {})
-  }, [props.tokens, balance.value])
+          return acc
+        },
+        {}
+      ),
+    [propsTokens]
+  )
 
   const tokenAddress = watch('token')
   const amount = watch('amount')
@@ -84,14 +78,6 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
   const fee = useAsync(props.sellLiquidityAdapter.methods.fee, [
     props.sellLiquidityAdapter.methods,
   ])
-
-  useEffect(() => {
-    const currentToken = tokens.value?.[tokenAddress]
-
-    if (!currentToken) return
-
-    setValue('amount', currentToken.amountOut)
-  }, [tokenAddress, tokens.value, setValue])
 
   const isApproved = useAsyncRetry(async () => {
     if (bignumberUtils.eq(amount, 0)) return true
@@ -145,7 +131,6 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
 
         await tx?.wait()
 
-        tokens.retry()
         toastsService.info('tokens approved!')
 
         return true
@@ -262,11 +247,10 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
                   className={styles.input}
                   disabled={formState.isSubmitting}
                   error={Boolean(tokens.error)}
-                  helperText={tokens.error?.message}
                 >
-                  {Object.values(tokens.value ?? {}).map((option) => {
-                    const renderValue = (
-                      <>
+                  {Object.values(tokens ?? {}).map((option) => {
+                    return (
+                      <SelectOption key={option.address} value={option.address}>
                         {option.logoUrl ? (
                           <img
                             src={option.logoUrl}
@@ -277,22 +261,6 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
                           <span className={styles.imgPlaceHolder} />
                         )}
                         {option.symbol}
-                      </>
-                    )
-
-                    return (
-                      <SelectOption
-                        key={option.address}
-                        value={option.address}
-                        renderValue={renderValue}
-                      >
-                        {renderValue}
-                        <Typography
-                          variant="inherit"
-                          className={styles.tokenBalance}
-                        >
-                          {option.amountOut}
-                        </Typography>
                       </SelectOption>
                     )
                   })}
