@@ -2,34 +2,27 @@ import { useForm } from 'react-hook-form'
 import { useAsyncRetry } from 'react-use'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
-import { cutAccount } from '~/common/cut-account'
 import { Dialog, useDialog } from '~/common/dialog'
-import { Link } from '~/common/link'
 import { BalanceAdapter } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
 import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import { Typography } from '~/common/typography'
-import * as styles from './settings-wallet-balance-dialog.css'
+import * as styles from './settings-wallet-refund-dialog.css'
 
 type FormValues = {
   amount: string
 }
 
-export type SettingsWalletBalanceDialogProps = {
+export type SettingsWalletRefundDialogProps = {
   onConfirm: (formValues: FormValues & { transactionHash: string }) => void
-  network: string
-  wallet: string
-  priceUSD: string | undefined
-  recomendedIncome: string | undefined
-  token: string | undefined
   onCancel: () => void
   adapter: BalanceAdapter
+  token?: string | null
 }
 
-export const SettingsWalletBalanceDialog: React.VFC<SettingsWalletBalanceDialogProps> =
+export const SettingsWalletRefundDialog: React.VFC<SettingsWalletRefundDialogProps> =
   (props) => {
     const { register, handleSubmit, formState, setValue } =
       useForm<FormValues>()
@@ -44,11 +37,11 @@ export const SettingsWalletBalanceDialog: React.VFC<SettingsWalletBalanceDialogP
 
     const handleOnSubmit = handleSubmit(async (formValues) => {
       try {
-        const can = props.adapter.canDeposit(formValues.amount)
+        const can = props.adapter.canRefund(formValues.amount)
 
         if (can instanceof Error) throw can
 
-        const result = await props.adapter.deposit(formValues.amount)
+        const result = await props.adapter.refund(formValues.amount)
 
         const { transactionHash } = await result.tx.wait()
 
@@ -59,10 +52,6 @@ export const SettingsWalletBalanceDialog: React.VFC<SettingsWalletBalanceDialogP
         }
       }
     })
-
-    const handleRecommendedIncome = () => {
-      setValue('amount', props.recomendedIncome ?? '0')
-    }
 
     const balance = useAsyncRetry(
       () => props.adapter.netBalance(),
@@ -81,7 +70,7 @@ export const SettingsWalletBalanceDialog: React.VFC<SettingsWalletBalanceDialogP
             className={styles.title}
             as="span"
           >
-            TOP UP YOUR DEFIHELPER BALANCE
+            REFUND YOUR DEFIHELPER BALANCE
           </Typography>
         </div>
         <Typography variant="body2" className={styles.subtitle}>
@@ -102,41 +91,16 @@ export const SettingsWalletBalanceDialog: React.VFC<SettingsWalletBalanceDialogP
             helperText={formState.errors.amount?.message}
             error={Boolean(formState.errors.amount?.message)}
             rightSide={props.token}
+            label={
+              <div className={styles.balance}>
+                <ButtonBase
+                  onClick={() => setValue('amount', balance.value ?? '0')}
+                >
+                  {bignumberUtils.format(balance.value)} MAX
+                </ButtonBase>
+              </div>
+            }
           />
-          <div className={styles.balances}>
-            <Typography variant="body2" className={styles.grey}>
-              Recommended amount to deposit
-            </Typography>
-            <ButtonBase
-              className={styles.recomendedBalance}
-              onClick={handleRecommendedIncome}
-            >
-              {bignumberUtils.format(props.recomendedIncome)} {props.token} ($
-              {bignumberUtils.format(
-                bignumberUtils.mul(props.recomendedIncome, props.priceUSD)
-              )}
-              )
-            </ButtonBase>
-            <Typography variant="body2" className={styles.grey}>
-              Your DeFiHelper balance for wallet{' '}
-              <Link
-                href={buildExplorerUrl({
-                  network: props.network,
-                  address: props.wallet,
-                })}
-                target="_blank"
-              >
-                {cutAccount(props.wallet)}
-              </Link>
-            </Typography>
-            <Typography variant="body2">
-              {bignumberUtils.format(balance.value)} {props.token} ($
-              {bignumberUtils.format(
-                bignumberUtils.mul(balance.value, props.priceUSD)
-              )}
-              )
-            </Typography>
-          </div>
           <Button
             type="submit"
             size="small"

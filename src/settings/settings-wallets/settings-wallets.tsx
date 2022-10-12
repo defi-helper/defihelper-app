@@ -33,6 +33,7 @@ import { analytics } from '~/analytics'
 import { ButtonBase } from '~/common/button-base'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
+import { SettingsWalletRefundDialog } from '../common/settings-wallet-refund-dialog'
 
 export type SettingsWalletsProps = {
   className?: string
@@ -45,7 +46,8 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
 
   const [openRenameWallet] = useDialog(SettingsRenameWalletDialog)
   const [openConfirm] = useDialog(SettingsConfirmDialog)
-  const [openBillingForm] = useDialog(SettingsWalletBalanceDialog)
+  const [openBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
+  const [openRefundDialog] = useDialog(SettingsWalletRefundDialog)
   const [openSuccess] = useDialog(SettingsSuccessDialog)
   const [showEmpty, setShowEmpty] = useState(false)
 
@@ -97,14 +99,13 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
           network: wallet.network,
         })
 
-        const result = await openBillingForm({
+        const result = await openBalanceDialog({
           adapter: balanceAdapter,
           recomendedIncome: billingBalance.recomendedIncome,
           priceUSD: billingBalance.priceUSD,
           wallet: currentWallet.account,
           network: currentWallet.chainId,
           token: billingBalance.token,
-          variant: TransactionEnum.deposit,
         })
 
         await model.depositFx({
@@ -143,14 +144,9 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
           network: wallet.network,
         })
 
-        const result = await openBillingForm({
+        const result = await openRefundDialog({
           adapter: balanceAdapter,
-          recomendedIncome: billingBalance.recomendedIncome,
-          priceUSD: billingBalance.priceUSD,
-          wallet: currentWallet.account,
-          network: currentWallet.chainId,
           token: billingBalance.token,
-          variant: TransactionEnum.refund,
         })
 
         await model.refundFx({
