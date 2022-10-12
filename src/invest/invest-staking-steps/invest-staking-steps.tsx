@@ -11,7 +11,6 @@ import { authModel } from '~/auth'
 import { useQueryParams } from '~/common/hooks'
 import { Loader } from '~/common/loader'
 import { settingsWalletModel } from '~/settings/settings-wallets'
-import { InvestSell } from '~/invest/invest-sell'
 import { InvestStakingStepsDeploy } from './invest-staking-steps-deploy'
 import { InvestStakingStepsStake } from './invest-staking-steps-stake'
 import { InvestStakingStepsSuccessBuy } from './invest-staking-steps-success-buy'
@@ -185,21 +184,11 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         contract={props.contract}
       />
     ) : null,
-    canMigrate ? (
-      <InvestSell
-        key={3}
-        contract={props.contract}
-        onSubmit={handleNextStep}
-        adapter={lp.value?.sellLiquidity}
-        tokens={lp.value?.tokens}
-      />
-    ) : (
-      <InvestStakingStepsStake
-        key={3}
-        onSubmit={handleNextStep}
-        contract={props.contract}
-      />
-    ),
+    <InvestStakingStepsStake
+      key={3}
+      onSubmit={handleNextStep}
+      contract={props.contract}
+    />,
     <InvestStakingStepsSuccess
       key={4}
       contract={props.contract}

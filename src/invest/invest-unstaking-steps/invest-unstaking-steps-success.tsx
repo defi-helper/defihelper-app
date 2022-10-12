@@ -15,6 +15,7 @@ export type InvestUnstakingStepsSuccessProps = {
   canMigrate?: boolean
   onSubmit: () => void
   contract: InvestContract
+  token?: string
 }
 
 export const InvestUnstakingStepsSuccess: React.FC<InvestUnstakingStepsSuccessProps> =
@@ -53,7 +54,7 @@ export const InvestUnstakingStepsSuccess: React.FC<InvestUnstakingStepsSuccessPr
             total withdrawal
           </Typography>
           <Typography variant="h4" align="center" as="div">
-            {props.balanceOf ?? '0'} USDT
+            {props.balanceOf ?? '0'} {props.token}
           </Typography>
         </div>
         <div className={clsx(styles.connectTelegramActions, styles.mt)}>
