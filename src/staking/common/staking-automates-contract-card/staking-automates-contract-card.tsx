@@ -29,7 +29,7 @@ export type StakingAutomatesContractCardProps = {
   network: string
   blockchain: string
   balance: string
-  protocol?: { id: string; name: string; adapter: string }
+  protocol?: { id: string; name: string; adapter: string; icon?: string | null }
   onRefund: () => void
   onDelete: () => void
   onRun: () => void
@@ -92,74 +92,80 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             <Typography as="span">
               {props.title || cutAccount(props.address)}
             </Typography>
-            <Dropdown
-              control={(active) => (
-                <ButtonBase
-                  className={clsx(
-                    styles.manage,
-                    active && styles.manageActive,
-                    pending && styles.manageLoading
-                  )}
+            {props.onStopLoss && (
+              <CanDemo>
+                <Button
+                  onClick={props.onStopLoss}
+                  loading={props.stopLossing}
+                  size="small"
+                  className={styles.settings}
+                  variant="light"
                 >
-                  {(props.deleting || props.running || props.stopLossing) && (
-                    <CircularProgress className={styles.circularProgress} />
-                  )}
-                  <Icon
-                    icon="dots"
+                  Settings
+                </Button>
+              </CanDemo>
+            )}
+            {!props.onStopLoss && (
+              <Dropdown
+                control={(active) => (
+                  <ButtonBase
                     className={clsx(
-                      styles.manageIcon,
-                      (props.deleting || props.running || props.stopLossing) &&
-                        styles.manageIconloading
+                      styles.manage,
+                      active && styles.manageActive,
+                      pending && styles.manageLoading
                     )}
-                  />
-                </ButtonBase>
-              )}
-              className={styles.dropdown}
-              placement="left-start"
-              offset={[0, 4]}
-            >
-              {(close) => (
-                <>
-                  <CanDemo>
-                    <ButtonBase
-                      className={styles.dropdownItem}
-                      onClick={() => {
-                        props.onRun?.()
-                        close()
-                      }}
-                    >
-                      Run manually
-                    </ButtonBase>
-                  </CanDemo>
-
-                  {props.onStopLoss && (
+                  >
+                    {(props.deleting || props.running || props.stopLossing) && (
+                      <CircularProgress className={styles.circularProgress} />
+                    )}
+                    <Icon
+                      icon="dots"
+                      className={clsx(
+                        styles.manageIcon,
+                        (props.deleting ||
+                          props.running ||
+                          props.stopLossing) &&
+                          styles.manageIconloading
+                      )}
+                    />
+                  </ButtonBase>
+                )}
+                className={styles.dropdown}
+                placement="left-start"
+                offset={[0, 4]}
+              >
+                {(close) => (
+                  <>
                     <CanDemo>
                       <ButtonBase
                         className={styles.dropdownItem}
                         onClick={() => {
-                          props.onStopLoss?.()
+                          props.onRun?.()
                           close()
                         }}
                       >
-                        Stop-loss
+                        Run manually
                       </ButtonBase>
                     </CanDemo>
-                  )}
 
-                  <CanDemo>
-                    <ButtonBase
-                      className={clsx(styles.deleteButton, styles.dropdownItem)}
-                      onClick={() => {
-                        props.onDelete?.()
-                        close()
-                      }}
-                    >
-                      Delete
-                    </ButtonBase>
-                  </CanDemo>
-                </>
-              )}
-            </Dropdown>
+                    <CanDemo>
+                      <ButtonBase
+                        className={clsx(
+                          styles.deleteButton,
+                          styles.dropdownItem
+                        )}
+                        onClick={() => {
+                          props.onDelete?.()
+                          close()
+                        }}
+                      >
+                        Delete
+                      </ButtonBase>
+                    </CanDemo>
+                  </>
+                )}
+              </Dropdown>
+            )}
           </div>
           <div className={styles.row}>
             <Typography
@@ -225,7 +231,16 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     ? paths.protocols.detailReadonly(props.protocol.id)
                     : paths.protocols.detail(props.protocol.id)
                 }
+                className={styles.protocol}
               >
+                {props.protocol.icon && (
+                  <img
+                    alt=""
+                    src={props.protocol.icon}
+                    width={24}
+                    height={24}
+                  />
+                )}
                 {props.protocol.name}
               </Link>
             </div>

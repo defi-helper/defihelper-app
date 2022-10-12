@@ -201,3 +201,21 @@ export const paperIcon = style([
     background: theme.colors.common.black1,
   },
 ])
+
+export const protocol = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 8,
+})
+
+export const settings = style({
+  marginLeft: 'auto',
+
+  selectors: {
+    '&:not(:disabled)': {
+      background: theme.colors.common.white3,
+      border: `1px solid ${theme.colors.common.white3}`,
+      color: 'currentColor',
+    },
+  },
+})

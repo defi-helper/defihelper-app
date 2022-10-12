@@ -33,6 +33,8 @@ import {
   StakingContractDebankListQuery,
   RestakeCalculatorQueryVariables,
   RestakeCalculatorQuery,
+  InvestStopLossEnableMutationVariables,
+  InvestStopLossEnableMutation,
 } from '~/api/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -50,6 +52,7 @@ import {
   AUTOMATION_CONTRACT_DELETE,
   STAKING_UPDATE_METRICS,
   STAKING_APY_RESTAKE_CALCULATOR,
+  INVEST_STOP_LOSS_ENABLE,
 } from './graphql'
 import { config } from '~/config'
 import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-scanner-register.graphql'
@@ -311,4 +314,16 @@ export const stakingApi = {
     fetch(`${config.SCANNER_HOST}/contract/${watcherId}`).then(async (res) =>
       res.json()
     ),
+
+  enableStopLoss: (variables: InvestStopLossEnableMutationVariables) =>
+    getAPIClient()
+      .request<
+        InvestStopLossEnableMutation,
+        unknown,
+        InvestStopLossEnableMutationVariables
+      >({
+        query: INVEST_STOP_LOSS_ENABLE.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.automateContractStopLossEnable),
 }

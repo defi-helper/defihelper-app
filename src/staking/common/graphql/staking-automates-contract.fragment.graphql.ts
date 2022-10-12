@@ -7,6 +7,7 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       id
       adapter
       name
+      icon
     }
     archivedAt
     contract {

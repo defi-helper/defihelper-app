@@ -47,7 +47,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   const [stopLossPrice, setStopLossPrice] = useState(
     props.initialStopLoss?.params?.amountOut ?? ''
   )
-  const [percent, setPercent] = useState(10)
+  const [percent, setPercent] = useState(0)
 
   const path = useAsyncRetry(async () => {
     return (
@@ -99,9 +99,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
       )
     )
 
-    if (newPercent < 0) return
-
-    setPercent(newPercent)
+    setPercent(-newPercent)
   }, [price.value, stopLossPriceThrottled])
 
   const [confirm, handleConfirm] = useAsyncFn(async () => {
@@ -136,6 +134,14 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     return acc
   }, new Map<string, string>())
 
+  useEffect(() => {
+    if (!price.value || props.initialStopLoss) return
+
+    setTimeout(() => {
+      setPercent(10)
+    }, 500)
+  }, [price.value, props.initialStopLoss])
+
   return (
     <Dialog className={styles.root}>
       <div>
@@ -160,6 +166,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
             size="small"
             onChange={toggleStopLoss}
             disabled={confirm.loading}
+            checked={stopLoss}
           />
         </div>
         {stopLoss && (
@@ -205,8 +212,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                 You will get
               </Typography>
               <Typography variant="body2">
-                {bignumberUtils.format(price.value)}{' '}
-                {withDrawTokensMap.get(withdrawToken)}
+                {price.value} {withDrawTokensMap.get(withdrawToken)}
               </Typography>
             </div>
             <div className={styles.input}>
@@ -215,6 +221,8 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                 value={stopLossPrice}
                 onChange={(event) => setStopLossPrice(event.target.value)}
                 className={styles.price}
+                min={0}
+                max={price.value}
                 rightSide={withDrawTokensMap.get(withdrawToken)}
                 disabled={confirm.loading}
               />
