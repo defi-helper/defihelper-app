@@ -13,8 +13,8 @@ export type NumericalInputProps = Omit<
   'size'
 > & {
   negative?: boolean
-  min?: number
-  max?: number
+  min?: number | string
+  max?: number | string
   size?: 'small'
 }
 

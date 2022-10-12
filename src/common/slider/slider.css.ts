@@ -36,3 +36,7 @@ globalStyle(`${root} .rc-slider-handle`, {
 globalStyle(`${root} .rc-slider-handle:active`, {
   boxShadow: 'none',
 })
+
+globalStyle(`${root}.rc-slider-disabled`, {
+  backgroundColor: 'transparent',
+})

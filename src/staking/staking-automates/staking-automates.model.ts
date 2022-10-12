@@ -4,7 +4,10 @@ import omit from 'lodash.omit'
 
 import { authModel } from '~/auth'
 import { Adapters, loadAdapter } from '~/common/load-adapter'
-import { UserType } from '~/api/_generated-types'
+import {
+  InvestStopLossEnableMutationVariables,
+  UserType,
+} from '~/api/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
@@ -37,13 +40,13 @@ type FetchAutomatesParams = {
 
 const LOAD_TYPES: Record<
   ActionType,
-  'migrating' | 'depositing' | 'refunding' | 'running' | 'stopLoss'
+  'migrating' | 'depositing' | 'refunding' | 'running' | 'stopLossing'
 > = {
   migrate: 'migrating',
   deposit: 'depositing',
   refund: 'refunding',
   run: 'running',
-  stopLoss: 'stopLoss',
+  stopLoss: 'stopLossing',
 }
 
 export const stakingAutomatesDomain = createDomain()
@@ -111,7 +114,7 @@ export const $automatesContracts = stakingAutomatesDomain
         'depositing',
         'refunding',
         'running',
-        'stopLoss',
+        'stopLossing',
       ])
     )
   )
@@ -141,6 +144,12 @@ export const StakingAutomatesGate = createGate<Gate | null>({
 
 export const updated = stakingAutomatesDomain.createEvent()
 
+export const enableStopLossFx = stakingAutomatesDomain.createEffect(
+  (params: InvestStopLossEnableMutationVariables['input']) => {
+    return stakingApi.enableStopLoss({ input: params })
+  }
+)
+
 sample({
   clock: guard({
     source: [
@@ -153,6 +162,7 @@ sample({
       StakingAutomatesGate.open,
       StakingAutomatesGate.state.updates,
       updated,
+      enableStopLossFx.done,
     ],
     filter: (source): source is [UserType, boolean, Gate] => {
       const [user, status] = source
