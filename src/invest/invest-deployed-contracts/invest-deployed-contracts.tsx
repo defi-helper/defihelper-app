@@ -35,6 +35,7 @@ import * as deployedContractModel from '~/invest/invest-deployed-contracts/inves
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './invest-deployed-contracts.css'
 import { paths } from '~/paths'
+import { NULL_ADDRESS } from '~/common/constants'
 
 export type InvestDeployedContractsProps = {
   className?: string
@@ -318,12 +319,16 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
 
           const res = await openStopLossDialog({
             adapter: stakingAutomatesAdapter.stopLoss,
-            mainTokens: contract.tokens.stake.map((token) => ({
-              logoUrl: token.alias?.logoUrl ?? '',
-              symbol: token.symbol,
-              address: token.address,
-            })),
-            withdrawTokens: tokens,
+            mainTokens: contract.tokens.stake
+              .map((token) => ({
+                logoUrl: token.alias?.logoUrl ?? '',
+                symbol: token.symbol,
+                address: token.address,
+              }))
+              .filter(({ address }) => address !== NULL_ADDRESS),
+            withdrawTokens: tokens.filter(
+              ({ address }) => address !== NULL_ADDRESS
+            ),
             initialStopLoss: stopLoss,
           })
 
