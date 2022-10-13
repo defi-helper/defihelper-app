@@ -10,3 +10,7 @@ export const walletSubtitle = style({
   width: '100%',
   color: theme.colors.textColorGrey,
 })
+
+export const addWallet = style({
+  width: '100%',
+})

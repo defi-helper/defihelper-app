@@ -1,8 +1,10 @@
 import Jazzicon, { jsNumberForAddress } from 'react-jazzicon'
+import { Button } from '~/common/button'
 
 import { cutAccount } from '~/common/cut-account'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
+import { useWalletConnect } from '~/wallets/wallet-connect'
 import { AutomationDialog } from '../automation-dialog'
 import {
   AutomationSelectList,
@@ -19,6 +21,8 @@ export type AutomationWalletsDialogProps = {
 
 export const AutomationWalletsDialog: React.VFC<AutomationWalletsDialogProps> =
   (props) => {
+    const handleConnect = useWalletConnect()
+
     const handleOnChange = (wallet: Wallet) => () => {
       props.onConfirm(wallet)
     }
@@ -51,6 +55,9 @@ export const AutomationWalletsDialog: React.VFC<AutomationWalletsDialogProps> =
             </AutomationSelectListItem>
           ))}
         </AutomationSelectList>
+        <Button onClick={() => handleConnect()} className={styles.addWallet}>
+          ADD Wallet
+        </Button>
       </AutomationDialog>
     )
   }

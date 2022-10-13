@@ -365,6 +365,9 @@ export const Trade: React.VFC<TradeProps> = () => {
                 {name}
               </SelectOption>
             ))}
+            <SelectOption onClick={() => handleConnect()}>
+              + Connect wallet
+            </SelectOption>
           </Select>
         ) : (
           <div>

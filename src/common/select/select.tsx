@@ -218,7 +218,12 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                     isValidElement(child) &&
                     cloneElement(child, {
                       ...child.props,
-                      onClick: handleClickOnOption(child, cb),
+                      onClick: child.props.value
+                        ? handleClickOnOption(child, cb)
+                        : (e: unknown) => {
+                            child.props.onClick?.(e)
+                            cb()
+                          },
                       className: clsx(
                         styles.option,
                         child.props.className,
