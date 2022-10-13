@@ -52,6 +52,7 @@ const INSTRUCTION = [
 export const LPTokens: React.VFC<LPTokensProps> = () => {
   const protocols = useStore(model.$protocols)
   const protocolsSelect = useStore(model.$protocolsSelect)
+  const blockchainsSelect = useStore(model.$blockchainsSelect)
   const contracts = useStore(model.$contracts)
   const contractId = useQueryParams().get('contractId')
 
@@ -67,6 +68,9 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
   const protocolListLoading = useStore(model.fetchProtocolsFx.pending)
   const contractListLoading = useStore(model.fetchContractsFx.pending)
   const protocolSelectLoading = useStore(model.fetchProtocolsSelectFx.pending)
+  const blockchainsSelectLoading = useStore(
+    model.fetchBlockchainsSelectFx.pending
+  )
 
   const [openSuccessDialog] = useDialog(StakingSuccessDialog)
   const [openBuySellDialog] = useDialog(LPTokensBuySellDialog)
@@ -141,9 +145,22 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
 
     return () => {
       abortController.abort()
-      model.resetProtocolsSelect()
     }
   }, [searchProtocol])
+
+  useEffect(() => {
+    const abortController = new AbortController()
+
+    model.fetchBlockchainsSelectFx(abortController.signal)
+
+    return () => {
+      abortController.abort()
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => model.resetSelects()
+  }, [])
 
   const handleFilterByProtocolId = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.split(',').filter(Boolean)
@@ -322,8 +339,14 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
           onChange={handleChooseBlockchain}
           clearable
         >
-          {Object.entries(networksConfig).map(([value, { title }]) => (
-            <SelectOption value={value} key={title}>
+          {blockchainsSelectLoading && isEmpty(blockchainsSelect) && (
+            <SelectOption disabled>Loading...</SelectOption>
+          )}
+          {!blockchainsSelectLoading && isEmpty(blockchainsSelect) && (
+            <SelectOption disabled>No blockchain found</SelectOption>
+          )}
+          {blockchainsSelect.map(({ id, title }) => (
+            <SelectOption value={id} key={title}>
               {title}
             </SelectOption>
           ))}

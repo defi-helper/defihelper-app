@@ -14,9 +14,10 @@ import {
   ContractListSortInputTypeColumnEnum,
 } from '~/api'
 import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
+import { config } from '~/config'
 import { lpTokensApi } from './common/lp-tokens.api'
 
-export const resetProtocolsSelect = createEvent()
+export const resetSelects = createEvent()
 
 export const fetchProtocolsSelectFx = createEffect(
   ({
@@ -33,7 +34,20 @@ export const $protocolsSelect = createStore<
   UnitValue<typeof fetchProtocolsSelectFx.doneData>
 >([])
   .on(fetchProtocolsSelectFx.doneData, (_, payload) => payload)
-  .reset(resetProtocolsSelect)
+  .reset(resetSelects)
+
+export const fetchBlockchainsSelectFx = createEffect((signal: AbortSignal) =>
+  lpTokensApi.blockchainsSelect(
+    { testnet: config.IS_DEV ? undefined : false, autorestake: true },
+    signal
+  )
+)
+
+export const $blockchainsSelect = createStore<
+  UnitValue<typeof fetchBlockchainsSelectFx.doneData>
+>([])
+  .on(fetchBlockchainsSelectFx.doneData, (_, payload) => payload)
+  .reset(resetSelects)
 
 export const resetProtocols = createEvent()
 
