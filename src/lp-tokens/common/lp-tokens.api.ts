@@ -6,7 +6,10 @@ import {
   BuyLiquidityContractsQueryVariables,
   BuyLiquidityProtocolsSelectQuery,
   BuyLiquidityProtocolsSelectQueryVariables,
+  BlockchainsSelectQueryVariables,
+  BlockchainsSelectQuery,
 } from '~/api/_generated-types'
+import { BLOCKCHAINS_SELECT } from './graphql/blockchains-select.graphql'
 import { BUY_LIQUIDITY_CONTRACT_LIST } from './graphql/buy-liquidity-contract-list.graphql'
 import { BUY_LIQUIDITY_PROTOCOL_LIST_SELECT } from './graphql/buy-liquidity-protocol-list-select.graphql'
 import { BUY_LIQUIDITY_PROTOCOL_LIST } from './graphql/buy-liquidity-protocol-list.graphql'
@@ -55,6 +58,31 @@ export const lpTokensApi = {
         }
       )
       .then(({ data }) => data?.protocols.list ?? []),
+
+  blockchainsSelect: (
+    variables: BlockchainsSelectQueryVariables,
+    signal: AbortSignal
+  ) =>
+    getAPIClient()
+      .request<
+        BlockchainsSelectQuery,
+        unknown,
+        BlockchainsSelectQueryVariables
+      >(
+        {
+          query: BLOCKCHAINS_SELECT.loc?.source.body ?? '',
+          variables,
+        },
+        {
+          fetchOptionsOverrides: {
+            signal,
+          },
+        }
+      )
+      .then(({ data }) => [
+        ...(data?.config.blockchain.ethereum ?? []),
+        ...(data?.config.blockchain.waves ?? []),
+      ]),
 
   contracts: (
     variables: BuyLiquidityContractsQueryVariables,

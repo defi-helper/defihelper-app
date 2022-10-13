@@ -111,7 +111,11 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
   const contracts = useStore(model.$contractsWithAutostakingLoading)
 
   const protocolSelectLoading = useStore(model.fetchProtocolsSelectFx.pending)
+  const blockchainSelectLoading = useStore(
+    model.fetchBlockchainsSelectFx.pending
+  )
   const protocolsSelect = useStore(model.$protocolsSelect)
+  const blockchainsSelect = useStore(model.$blockchainsSelect)
 
   const [protocolIds, setProtocolIds] = useState<string[]>([])
   const protocolIdsRef = useRef<string[]>([])
@@ -188,10 +192,22 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
     })
 
     return () => {
-      model.resetProtocolsSelect()
       abortController.abort()
     }
   }, [protocolSelectSearchThrottled])
+  useEffect(() => {
+    const abortController = new AbortController()
+
+    model.fetchBlockchainsSelectFx(abortController.signal)
+
+    return () => {
+      abortController.abort()
+    }
+  }, [protocolSelectSearchThrottled])
+
+  useEffect(() => {
+    return () => model.resetSelects()
+  }, [])
 
   const handleProtocolSelectSearch = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -276,8 +292,14 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
             clearable
             onChange={handleChooseBlockchain}
           >
-            {Object.entries(networksConfig).map(([value, { title }]) => (
-              <SelectOption value={value} key={title}>
+            {blockchainSelectLoading && isEmpty(blockchainsSelect) && (
+              <SelectOption disabled>Loading...</SelectOption>
+            )}
+            {!blockchainSelectLoading && isEmpty(blockchainsSelect) && (
+              <SelectOption disabled>No blockchain found</SelectOption>
+            )}
+            {blockchainsSelect.map(({ id, title }) => (
+              <SelectOption value={id} key={title}>
                 {title}
               </SelectOption>
             ))}

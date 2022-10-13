@@ -660,8 +660,14 @@ export type BlockchainFilterInputType = {
   network?: Maybe<Scalars['String']>
 }
 
+export type ConfigBlockchainAutomateFilterInputType = {
+  /** Has autorestake automate */
+  autorestake?: Maybe<Scalars['Boolean']>
+}
+
 export type ConfigBlockchainFilterInputType = {
   testnet?: Maybe<Scalars['Boolean']>
+  automate?: Maybe<ConfigBlockchainAutomateFilterInputType>
 }
 
 export type ConfigBlockchainType = {
@@ -4857,6 +4863,30 @@ export type AutostakingUserUnlinkMutation = { __typename?: 'Mutation' } & Pick<
   Mutation,
   'contractUserUnlink'
 >
+
+export type BlockchainsSelectQueryVariables = Exact<{
+  testnet?: Maybe<Scalars['Boolean']>
+  autorestake?: Maybe<Scalars['Boolean']>
+}>
+
+export type BlockchainsSelectQuery = { __typename?: 'Query' } & {
+  config: { __typename?: 'ConfigType' } & {
+    blockchain: { __typename?: 'ConfigBlockchainType' } & {
+      ethereum: Array<
+        { __typename?: 'ConfigEthereumNetworkType' } & Pick<
+          ConfigEthereumNetworkType,
+          'id' | 'title' | 'icon'
+        >
+      >
+      waves: Array<
+        { __typename?: 'ConfigWavesNetworkType' } & Pick<
+          ConfigWavesNetworkType,
+          'id' | 'title' | 'icon'
+        >
+      >
+    }
+  }
+}
 
 export type BuyLiquidityContractsQueryVariables = Exact<{
   filter?: Maybe<ContractListFilterInputType>
