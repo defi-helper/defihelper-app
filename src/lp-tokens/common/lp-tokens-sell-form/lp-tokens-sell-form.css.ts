@@ -9,14 +9,6 @@ export const form = style({
   flex: '1 0 auto',
 })
 
-export const loader = style({
-  padding: 10,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  margin: 'auto',
-})
-
 export const input = style({
   marginBottom: 16,
 })

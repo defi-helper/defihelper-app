@@ -191,7 +191,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
 
   return (
     <>
-      {!tokens.value ? (
+      {tokens.loading ? (
         <div className={styles.loader}>
           <Loader height="36" />
         </div>

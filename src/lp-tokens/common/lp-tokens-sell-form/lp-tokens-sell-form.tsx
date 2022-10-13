@@ -7,7 +7,6 @@ import { SellLiquidity } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
 import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
-import { Loader } from '~/common/loader'
 import { toastsService } from '~/toasts'
 import { StakingAdapterRadio } from '~/staking/common/staking-adapter-radio'
 import { ButtonBase } from '~/common/button-base'
@@ -185,181 +184,164 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
   }, [props.sellLiquidityAdapter.methods.amountOut, tokenAddress, amount])
 
   return (
-    <>
-      {!tokens.value ? (
-        <div className={styles.loader}>
-          <Loader height="36" />
-        </div>
-      ) : (
-        <>
-          <form
-            noValidate
-            autoComplete="off"
-            onSubmit={handleOnSubmit}
-            className={styles.form}
-          >
-            <Controller
-              control={control}
-              name="amount"
-              render={({ field }) => (
+    <form
+      noValidate
+      autoComplete="off"
+      onSubmit={handleOnSubmit}
+      className={styles.form}
+    >
+      <Controller
+        control={control}
+        name="amount"
+        render={({ field }) => (
+          <>
+            <NumericalInput
+              {...field}
+              label={
                 <>
-                  <NumericalInput
-                    {...field}
-                    label={
-                      <>
-                        Amount{' '}
-                        <ButtonBase
-                          className={styles.balance}
-                          onClick={() =>
-                            setValue('amount', balance.value ?? '0')
-                          }
-                        >
-                          {bignumberUtils.format(balance.value)} MAX
-                        </ButtonBase>
-                      </>
-                    }
-                    value={field.value}
-                    className={styles.input}
-                    disabled={formState.isSubmitting}
-                    error={isApproved.value instanceof Error}
-                    helperText={
-                      isApproved.value instanceof Error
-                        ? isApproved.value.message
-                        : undefined
-                    }
-                  />
+                  Amount{' '}
+                  <ButtonBase
+                    className={styles.balance}
+                    onClick={() => setValue('amount', balance.value ?? '0')}
+                  >
+                    {bignumberUtils.format(balance.value)} MAX
+                  </ButtonBase>
                 </>
-              )}
+              }
+              value={field.value}
+              className={styles.input}
+              disabled={formState.isSubmitting}
+              error={isApproved.value instanceof Error}
+              helperText={
+                isApproved.value instanceof Error
+                  ? isApproved.value.message
+                  : undefined
+              }
             />
-            <Controller
-              control={control}
-              name="token"
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  label="You will get (approximately)"
-                  leftSide={
-                    <span className={styles.amountOut}>
-                      ≈ {bignumberUtils.format(amountOut.value)}
-                    </span>
-                  }
-                  value={field.value}
-                  className={styles.input}
-                  disabled={formState.isSubmitting}
-                  error={Boolean(tokens.error)}
-                >
-                  {Object.values(tokens ?? {}).map((option) => {
-                    return (
-                      <SelectOption key={option.address} value={option.address}>
-                        {option.logoUrl ? (
-                          <img
-                            src={option.logoUrl}
-                            className={styles.img}
-                            alt=""
-                          />
-                        ) : (
-                          <span className={styles.imgPlaceHolder} />
-                        )}
-                        {option.symbol}
-                      </SelectOption>
-                    )
-                  })}
-                </Select>
-              )}
-            />
-            <Controller
-              control={control}
-              name="slippage"
-              render={({ field }) => (
-                <div>
-                  <Typography
-                    as="div"
-                    variant="body2"
-                    family="mono"
-                    transform="uppercase"
-                    className={styles.label}
+          </>
+        )}
+      />
+      <Controller
+        control={control}
+        name="token"
+        render={({ field }) => (
+          <Select
+            {...field}
+            label="You will get (approximately)"
+            leftSide={
+              <span className={styles.amountOut}>
+                ≈ {bignumberUtils.format(amountOut.value)}
+              </span>
+            }
+            value={field.value}
+            className={styles.input}
+            disabled={formState.isSubmitting}
+            error={Boolean(tokens.error)}
+          >
+            {Object.values(tokens ?? {}).map((option) => {
+              return (
+                <SelectOption key={option.address} value={option.address}>
+                  {option.logoUrl ? (
+                    <img src={option.logoUrl} className={styles.img} alt="" />
+                  ) : (
+                    <span className={styles.imgPlaceHolder} />
+                  )}
+                  {option.symbol}
+                </SelectOption>
+              )
+            })}
+          </Select>
+        )}
+      />
+      <Controller
+        control={control}
+        name="slippage"
+        render={({ field }) => (
+          <div>
+            <Typography
+              as="div"
+              variant="body2"
+              family="mono"
+              transform="uppercase"
+              className={styles.label}
+            >
+              Slippage
+            </Typography>
+            {SLIPPAGE.map((option) => (
+              <StakingAdapterRadio
+                key={option}
+                {...field}
+                value={option}
+                className={styles.radio}
+                disabled={formState.isSubmitting}
+              >
+                {option}%
+              </StakingAdapterRadio>
+            ))}
+          </div>
+        )}
+      />
+      <div className={styles.wrap}>
+        {error ? (
+          <Typography variant="body3" as="div" className={styles.error}>
+            Your transaction failed due to current market conditions. You can
+            try to change the amount or use another token
+          </Typography>
+        ) : (
+          <div className={styles.serviceFee}>
+            <Typography
+              transform="uppercase"
+              family="mono"
+              variant="body3"
+              as="div"
+              className={styles.serviceFeeTitle}
+            >
+              <Typography variant="inherit">service fee</Typography>
+              <Dropdown
+                control={
+                  <ButtonBase>
+                    <Icon icon="question" width={14} height={14} />
+                  </ButtonBase>
+                }
+                className={styles.serviceFeeDropdown}
+                placement="bottom-start"
+                offset={[0, 4]}
+              >
+                <Typography variant="body3">
+                  We will charge you ${bignumberUtils.format(fee.value?.usd)}{' '}
+                  fee for this operation. This revenue will be distributed to
+                  DFH Governance token holders.{' '}
+                  <Link
+                    color="blue"
+                    href={`${config.MAIN_URL}tokenomics`}
+                    target="_blank"
                   >
-                    Slippage
-                  </Typography>
-                  {SLIPPAGE.map((option) => (
-                    <StakingAdapterRadio
-                      key={option}
-                      {...field}
-                      value={option}
-                      className={styles.radio}
-                      disabled={formState.isSubmitting}
-                    >
-                      {option}%
-                    </StakingAdapterRadio>
-                  ))}
-                </div>
-              )}
-            />
-            <div className={styles.wrap}>
-              {error ? (
-                <Typography variant="body3" as="div" className={styles.error}>
-                  Your transaction failed due to current market conditions. You
-                  can try to change the amount or use another token
+                    Read more about DFH token
+                  </Link>
                 </Typography>
-              ) : (
-                <div className={styles.serviceFee}>
-                  <Typography
-                    transform="uppercase"
-                    family="mono"
-                    variant="body3"
-                    as="div"
-                    className={styles.serviceFeeTitle}
-                  >
-                    <Typography variant="inherit">service fee</Typography>
-                    <Dropdown
-                      control={
-                        <ButtonBase>
-                          <Icon icon="question" width={14} height={14} />
-                        </ButtonBase>
-                      }
-                      className={styles.serviceFeeDropdown}
-                      placement="bottom-start"
-                      offset={[0, 4]}
-                    >
-                      <Typography variant="body3">
-                        We will charge you $
-                        {bignumberUtils.format(fee.value?.usd)} fee for this
-                        operation. This revenue will be distributed to DFH
-                        Governance token holders.{' '}
-                        <Link
-                          color="blue"
-                          href={`${config.MAIN_URL}tokenomics`}
-                          target="_blank"
-                        >
-                          Read more about DFH token
-                        </Link>
-                      </Typography>
-                    </Dropdown>
-                  </Typography>
-                  <Typography variant="body2">
-                    {bignumberUtils.format(fee.value?.native, 3)}{' '}
-                    {props.tokenSymbol} ($
-                    {bignumberUtils.format(fee.value?.usd)})
-                  </Typography>
-                </div>
-              )}
-              <Button type="submit" loading={formState.isSubmitting}>
-                {(isApproved.value === true || tokenAddress === NULL_ADDRESS) &&
-                  'Sell'}
-                {isApproved.value === false &&
-                  tokenAddress !== NULL_ADDRESS &&
-                  'Approve'}
-                {isApproved.value instanceof Error &&
-                  tokenAddress !== NULL_ADDRESS &&
-                  'Approve'}
-              </Button>
-              <Button variant="outlined" onClick={props.onCancel}>
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </>
-      )}
-    </>
+              </Dropdown>
+            </Typography>
+            <Typography variant="body2">
+              {bignumberUtils.format(fee.value?.native, 3)} {props.tokenSymbol}{' '}
+              ($
+              {bignumberUtils.format(fee.value?.usd)})
+            </Typography>
+          </div>
+        )}
+        <Button type="submit" loading={formState.isSubmitting}>
+          {(isApproved.value === true || tokenAddress === NULL_ADDRESS) &&
+            'Sell'}
+          {isApproved.value === false &&
+            tokenAddress !== NULL_ADDRESS &&
+            'Approve'}
+          {isApproved.value instanceof Error &&
+            tokenAddress !== NULL_ADDRESS &&
+            'Approve'}
+        </Button>
+        <Button variant="outlined" onClick={props.onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </form>
   )
 }
