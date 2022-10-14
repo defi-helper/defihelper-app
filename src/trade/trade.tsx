@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useAsyncFn, useInterval } from 'react-use'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import { useForm } from 'react-hook-form'
@@ -60,6 +60,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentExchange, setCurrentExchange] = useState('')
   const [currentPair, setCurrentPair] = useState('')
   const [currentWalletAddress, setCurrentWalletAddress] = useState('')
+  const [searchPair, setSearchPair] = useState('')
   const [currentSlippage, setCurrentSlippage] = useState('1')
   const [transactionDeadline, setTransactionDeadline] = useState('30')
   const [openConfirmDialog] = useDialog(ConfirmDialog)
@@ -341,6 +342,14 @@ export const Trade: React.VFC<TradeProps> = () => {
       ? currentWallet?.chainId === wallet?.network
       : currentWallet?.chainId === wallet?.network
 
+  const handleSearchPair = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchPair(event.target.value)
+  }
+
+  useEffect(() => {
+    setSearchPair('')
+  }, [currentPair])
+
   return (
     <AppLayout title="Trade">
       <Head title="Trade" />
@@ -421,12 +430,30 @@ export const Trade: React.VFC<TradeProps> = () => {
           label="Trading Pair"
           value={currentPair}
           onChange={handleChangePair}
+          header={
+            <Input
+              type="text"
+              placeholder="Select a pair or paste token address"
+              value={searchPair}
+              onChange={handleSearchPair}
+            />
+          }
         >
-          {pairs.map((pair, index) => (
-            <SelectOption value={pair.pairInfo?.address} key={String(index)}>
-              {pair.pairInfo?.ticker}
-            </SelectOption>
-          ))}
+          {pairs
+            .filter(
+              (pair) =>
+                pair.pairInfo?.address
+                  ?.toLocaleLowerCase()
+                  .includes(searchPair.toLocaleLowerCase()) ||
+                pair.pairInfo?.ticker
+                  ?.toLocaleLowerCase()
+                  .includes(searchPair.toLocaleLowerCase())
+            )
+            .map((pair, index) => (
+              <SelectOption value={pair.pairInfo?.address} key={String(index)}>
+                {pair.pairInfo?.ticker}
+              </SelectOption>
+            ))}
         </Select>
       </div>
       <div className={styles.content}>
