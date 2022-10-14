@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Sticky, StickyContainer } from 'react-sticky'
 import contracts from '@defihelper/networks/contracts.json'
 
@@ -36,12 +36,15 @@ import {
   SettingsSuccessDialog,
   TransactionEnum,
   SettingsWalletBalanceDialog,
+  useOnBillingTransferCreatedSubscription,
+  useOnBillingTransferUpdatedSubscription,
 } from '~/settings/common'
 import { analytics } from '~/analytics'
 import { SmartTradeRouter } from '~/common/load-adapter'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as styles from './trade-orders.css'
 import * as model from './trade-orders.model'
+import { authModel } from '~/auth'
 
 export type TradeOrdersProps = {
   className?: string
@@ -212,6 +215,35 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         model.depositEnded()
       }
     }
+
+  const user = useStore(authModel.$user)
+
+  const variables = useMemo(() => {
+    if (!user) return undefined
+
+    return {
+      user: [user.id],
+    }
+  }, [user])
+
+  useOnBillingTransferCreatedSubscription(({ data }) => {
+    if (data?.onBillingTransferCreated.id) {
+      model.fetchOrdersFx({
+        filter: {
+          status: statuses[currentTab],
+        },
+      })
+    }
+  }, variables)
+  useOnBillingTransferUpdatedSubscription(({ data }) => {
+    if (data?.onBillingTransferUpdated.id) {
+      model.fetchOrdersFx({
+        filter: {
+          status: statuses[currentTab],
+        },
+      })
+    }
+  }, variables)
 
   return (
     <StickyContainer>
