@@ -21,6 +21,8 @@ const getContractName = (contractName: string) => {
 
   if (contractName === 'StoreUpgradable') return 'StoreV2'
 
+  if (contractName === 'BalanceUpgradable') return 'BalanceV1'
+
   return contractName
 }
 

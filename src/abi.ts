@@ -14,9 +14,11 @@ import StoreUpgradable from '@defihelper/networks/abi/StoreV1.json'
 import Delegator from '@defihelper/networks/abi/Delegator.json'
 import Option from '@defihelper/networks/abi/Option.json'
 import ProxyAdmin from '@defihelper/networks/abi/ProxyAdmin.json'
+import BalanceUpgradable from '@defihelper/networks/abi/BalanceV1.json'
 
 export const abi = {
   Balance,
+  BalanceUpgradable,
   Budget,
   GovernanceToken,
   GovernanceTokenInterface,
