@@ -2,6 +2,7 @@ import isEmpty from 'lodash.isempty'
 import { useEffect, useMemo, useState } from 'react'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
+import contracts from '@defihelper/networks/contracts.json'
 
 import { Typography } from '~/common/typography'
 import { Button } from '~/common/button'
@@ -34,6 +35,7 @@ import { ButtonBase } from '~/common/button-base'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
 import { SettingsWalletRefundDialog } from '../common/settings-wallet-refund-dialog'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type SettingsWalletsProps = {
   className?: string
@@ -92,6 +94,11 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
         const balanceAdapter = await model.loadAdapterFx({
           provider: currentWallet.provider,
           chainId: currentWallet.chainId,
+          type:
+            'BalanceUpgradable' in
+            contracts[wallet.network as keyof typeof contracts]
+              ? 'BalanceUpgradable'
+              : 'Balance',
         })
 
         const billingBalance = await model.fetchBillingBalanceFx({
@@ -134,9 +141,25 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
 
         if (!currentWallet?.account || !currentWallet.chainId) return
 
+        const hasNewContract =
+          'BalanceUpgradable' in
+          contracts[wallet.network as keyof typeof contracts]
+
+        const oldBalanceAdapter = await model.loadAdapterFx({
+          provider: currentWallet.provider,
+          chainId: currentWallet.chainId,
+          type: 'Balance',
+        })
+
+        const oldBalance = await oldBalanceAdapter.netBalance()
+
         const balanceAdapter = await model.loadAdapterFx({
           provider: currentWallet.provider,
           chainId: currentWallet.chainId,
+          type:
+            !hasNewContract || bignumberUtils.gt(oldBalance, '0')
+              ? 'Balance'
+              : 'BalanceUpgradable',
         })
 
         const billingBalance = await model.fetchBillingBalanceFx({
@@ -291,6 +314,8 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
             const deposit = currentWallet ? handleDeposit(wallet) : connect
             const refund = currentWallet ? handleRefund(wallet) : connect
 
+            const rename = currentWallet ? handleRename(wallet) : connect
+
             return (
               <SettingsWalletCard
                 key={wallet.id}
@@ -304,7 +329,7 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
                 hasContract={Boolean(networksWithBalance[wallet.network])}
                 onDeposit={deposit}
                 onRefund={refund}
-                onRename={currentWallet ? handleRename(wallet) : connect}
+                onRename={rename}
                 onUpdateStatistics={handleUpdateStatistics(wallet)}
                 onDelete={handleDelete(wallet)}
                 feeFunds={wallet.billing?.balance?.netBalance ?? 0}

@@ -31,17 +31,6 @@ export const fetchWalletListFx = walletListDomain.createEffect(async () => {
   })
 })
 
-export const fetchWalletListMetricsFx = walletListDomain.createEffect(
-  async (signal?: AbortSignal) => {
-    return settingsApi.walletListMetrics(
-      {
-        pagination,
-      },
-      signal
-    )
-  }
-)
-
 export const updateWalletFx = walletListDomain.createEffect(
   async (params: { walletId: string; name: string }) => {
     const data = await settingsApi.walletUpdate({
@@ -78,21 +67,43 @@ export const updateStatisticsWalletFx = walletListDomain.createEffect(
 )
 
 export const loadAdapterFx = walletListDomain.createEffect(
-  async (params: { provider: unknown; chainId: string }) => {
+  async (params: {
+    provider: unknown
+    chainId: string
+    type: 'BalanceUpgradable' | 'Balance'
+  }) => {
     const networkProvider = walletNetworkModel.getNetwork(
       params.provider,
       params.chainId
     )
 
-    const contract = contracts[params.chainId as keyof typeof contracts]
+    const currentNetworkContracts =
+      contracts[params.chainId as keyof typeof contracts]
+
+    if (!(params.type in currentNetworkContracts))
+      throw new Error(`current network does not have ${params.type} contract`)
+
+    const contract =
+      currentNetworkContracts[
+        params.type as keyof typeof currentNetworkContracts
+      ]
 
     if (!networkProvider) throw new Error('something went wrong')
-    if (!contract)
-      throw new Error('current network does not have Balance contract')
 
     const { balance } = await loadAdapter(buildAdaptersUrl('dfh'))
 
-    return balance(networkProvider.getSigner(), contract.Balance.address)
+    return balance(networkProvider.getSigner(), contract.address)
+  }
+)
+
+export const fetchWalletListMetricsFx = walletListDomain.createEffect(
+  async (signal?: AbortSignal) => {
+    return settingsApi.walletListMetrics(
+      {
+        pagination,
+      },
+      signal
+    )
   }
 )
 
@@ -255,7 +266,7 @@ export const fetchBillingBalanceFx = walletListDomain.createEffect(
 
 export const $networksWithBalance = walletListDomain.createStore(
   Object.entries(contracts)
-    .filter(([, obj]) => 'Balance' in obj)
+    .filter(([, obj]) => 'Balance' in obj || 'BalanceUpgradable' in obj)
     .reduce<Record<string, boolean>>((acc, [network]) => {
       return {
         [network]: true,
