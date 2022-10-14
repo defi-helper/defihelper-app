@@ -32,10 +32,10 @@ import { authModel } from '~/auth'
 import { CanDemo } from '~/auth/can-demo'
 import { analytics } from '~/analytics'
 import { ButtonBase } from '~/common/button-base'
+import { SettingsWalletRefundDialog } from '~/settings/common/settings-wallet-refund-dialog'
+import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './settings-wallets.css'
 import * as model from './settings-wallets.model'
-import { SettingsWalletRefundDialog } from '../common/settings-wallet-refund-dialog'
-import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type SettingsWalletsProps = {
   className?: string

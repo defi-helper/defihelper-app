@@ -20,6 +20,12 @@ export const TRADE_ORDER_LIST = gql`
           network
           address
           name
+          blockchain
+          billing {
+            balance {
+              lowFeeFunds
+            }
+          }
         }
         handler
         callData {

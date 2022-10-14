@@ -10,6 +10,12 @@ export const TRADE_CREATE_ORDER = gql`
         network
         address
         name
+        blockchain
+        billing {
+          balance {
+            lowFeeFunds
+          }
+        }
       }
       handler
       callData {

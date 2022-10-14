@@ -10,6 +10,12 @@ export const TRADE_CANCEL_ORDER = gql`
         network
         address
         name
+        blockchain
+        billing {
+          balance {
+            lowFeeFunds
+          }
+        }
       }
       handler
       callData {

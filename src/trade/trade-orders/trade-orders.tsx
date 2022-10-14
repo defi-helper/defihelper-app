@@ -3,6 +3,7 @@ import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
 import React, { useEffect, useState } from 'react'
 import { Sticky, StickyContainer } from 'react-sticky'
+import contracts from '@defihelper/networks/contracts.json'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import {
@@ -26,10 +27,21 @@ import { networksConfig } from '~/networks-config'
 import { TradeStatusChart } from '~/trade/common/trade-status-chart'
 import { Order } from '~/trade/common/trade.types'
 import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
+import { Exchange } from '../common/trade.api'
+import { TradeOrderDeposit } from '../common/trade-order-deposit'
+import { useWalletConnect } from '~/wallets/wallet-connect'
+import { walletNetworkModel } from '~/wallets/wallet-networks'
+import { switchNetwork } from '~/wallets/common'
+import {
+  SettingsSuccessDialog,
+  TransactionEnum,
+  SettingsWalletBalanceDialog,
+} from '~/settings/common'
+import { analytics } from '~/analytics'
 import { SmartTradeRouter } from '~/common/load-adapter'
+import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import * as styles from './trade-orders.css'
 import * as model from './trade-orders.model'
-import { Exchange } from '../common/trade.api'
 
 export type TradeOrdersProps = {
   className?: string
@@ -74,12 +86,19 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
   const loading = useStore(model.fetchOrdersFx.pending)
   const claimingOrder = useStore(model.$claimingOrder)
+  const depositingOrder = useStore(model.$depositingOrder)
 
   const [currentTab, setCurrentTab] = useState(Tabs.Active)
 
   const [updatingOrderId, setUpdatingOrderId] = useState('')
 
   const [openTradeConfirmDialog] = useDialog(TradeConfirmClaimDialog)
+
+  const handleConnect = useWalletConnect()
+  const currentWallet = walletNetworkModel.useWalletNetwork()
+
+  const [openSuccess] = useDialog(SettingsSuccessDialog)
+  const [openBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
 
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
@@ -140,6 +159,59 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
     setUpdatingOrderId('')
   }, [updatingOrderId, props.updating])
+
+  const handleDeposit =
+    (order: Exclude<typeof orders, null>['list'][number]) => async () => {
+      try {
+        model.depositStarted(order.id)
+
+        analytics.log('settings_wallet_defihelper_balance_top_up_click')
+        await switchNetwork(order.owner.network)
+
+        if (!currentWallet?.account || !currentWallet.chainId) return
+
+        const balanceAdapter = await settingsWalletModel.loadAdapterFx({
+          provider: currentWallet.provider,
+          chainId: currentWallet.chainId,
+          type:
+            'BalanceUpgradable' in
+            contracts[order.owner.network as keyof typeof contracts]
+              ? 'BalanceUpgradable'
+              : 'Balance',
+        })
+
+        const billingBalance = await settingsWalletModel.fetchBillingBalanceFx({
+          blockchain: order.owner.blockchain,
+          network: order.owner.network,
+        })
+
+        const result = await openBalanceDialog({
+          adapter: balanceAdapter,
+          recomendedIncome: billingBalance.recomendedIncome,
+          priceUSD: billingBalance.priceUSD,
+          wallet: currentWallet.account,
+          network: currentWallet.chainId,
+          token: billingBalance.token,
+        })
+
+        await settingsWalletModel.depositFx({
+          blockchain: order.owner.blockchain,
+          amount: result.amount,
+          walletAddress: currentWallet.account,
+          chainId: String(currentWallet.chainId),
+          provider: currentWallet.provider,
+          transactionHash: result.transactionHash,
+        })
+
+        await openSuccess({
+          type: TransactionEnum.deposit,
+        })
+      } catch (error) {
+        console.error(error)
+      } finally {
+        model.depositEnded()
+      }
+    }
 
   return (
     <StickyContainer>
@@ -245,35 +317,99 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                   const updating =
                     props.updating && updatingOrderId === order.id
 
+                  const deposit = currentWallet
+                    ? handleDeposit(order)
+                    : handleConnect
+
                   return (
-                    <div
+                    <TradeOrderDeposit
                       key={order.id}
-                      className={clsx(
-                        styles.tableRow,
-                        updating && styles.tableRowLoader
-                      )}
+                      lowBalance={order.owner.billing.balance.lowFeeFunds}
+                      onDeposit={deposit}
+                      depositing={depositingOrder === order.id}
                     >
-                      <div className={styles.tableRowInner}>
-                        <div>
-                          <Typography
-                            variant="body2"
-                            as="div"
-                            className={styles.contractName}
-                          >
-                            <div className={styles.contractIcons}>
-                              {order.tokens.map(({ token }) => (
-                                <React.Fragment key={token.id}>
+                      <div
+                        className={clsx(
+                          styles.tableRow,
+                          updating && styles.tableRowLoader
+                        )}
+                      >
+                        <div className={styles.tableRowInner}>
+                          <div>
+                            <Typography
+                              variant="body2"
+                              as="div"
+                              className={styles.contractName}
+                            >
+                              <div className={styles.contractIcons}>
+                                {order.tokens.map(({ token }) => (
+                                  <React.Fragment key={token.id}>
+                                    {token.alias?.logoUrl ? (
+                                      <img
+                                        src={token.alias?.logoUrl}
+                                        className={styles.contractIcon}
+                                        alt=""
+                                      />
+                                    ) : (
+                                      <Paper
+                                        className={
+                                          styles.contractUnknownTokenIcon
+                                        }
+                                      >
+                                        <Icon
+                                          icon="unknownNetwork"
+                                          width="16"
+                                          height="16"
+                                        />
+                                      </Paper>
+                                    )}
+                                  </React.Fragment>
+                                ))}
+                              </div>
+                              {order.tokens
+                                .map(({ token }) => token.symbol)
+                                .join('/')}
+                            </Typography>
+                            <Typography
+                              className={styles.contractAddress}
+                              as="div"
+                            >
+                              {networksConfig[order.owner.network] && (
+                                <Icon
+                                  icon={
+                                    networksConfig[order.owner.network].icon
+                                  }
+                                  width="22"
+                                  height="22"
+                                />
+                              )}
+                              <Link
+                                href={buildExplorerUrl({
+                                  address: order.owner.address,
+                                  network: order.owner.network,
+                                })}
+                                target="_blank"
+                              >
+                                {order.owner.name}
+                              </Link>
+                            </Typography>
+                          </div>
+                          <div>
+                            {order.tokens.map(({ token }, index) => {
+                              return (
+                                <div
+                                  className={styles.contractBalance}
+                                  key={token.id}
+                                >
                                   {token.alias?.logoUrl ? (
                                     <img
                                       src={token.alias?.logoUrl}
-                                      className={styles.contractIcon}
+                                      className={styles.contractBalanceIcon}
                                       alt=""
                                     />
                                   ) : (
                                     <Paper
-                                      className={
-                                        styles.contractUnknownTokenIcon
-                                      }
+                                      className={styles.contractBalanceIcon}
                                     >
                                       <Icon
                                         icon="unknownNetwork"
@@ -282,177 +418,127 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       />
                                     </Paper>
                                   )}
-                                </React.Fragment>
-                              ))}
-                            </div>
-                            {order.tokens
-                              .map(({ token }) => token.symbol)
-                              .join('/')}
-                          </Typography>
-                          <Typography
-                            className={styles.contractAddress}
-                            as="div"
-                          >
-                            {networksConfig[order.owner.network] && (
-                              <Icon
-                                icon={networksConfig[order.owner.network].icon}
-                                width="22"
-                                height="22"
-                              />
-                            )}
-                            <Link
-                              href={buildExplorerUrl({
-                                address: order.owner.address,
-                                network: order.owner.network,
-                              })}
-                              target="_blank"
-                            >
-                              {order.owner.name}
-                            </Link>
-                          </Typography>
-                        </div>
-                        <div>
-                          {order.tokens.map(({ token }, index) => {
-                            return (
-                              <div
-                                className={styles.contractBalance}
-                                key={token.id}
-                              >
-                                {token.alias?.logoUrl ? (
-                                  <img
-                                    src={token.alias?.logoUrl}
-                                    className={styles.contractBalanceIcon}
-                                    alt=""
-                                  />
-                                ) : (
-                                  <Paper className={styles.contractBalanceIcon}>
-                                    <Icon
-                                      icon="unknownNetwork"
-                                      width="16"
-                                      height="16"
-                                    />
-                                  </Paper>
+                                  <Typography className={styles.fs12} as="div">
+                                    {tokensAmountInOut
+                                      ? bignumberUtils.format(
+                                          tokensAmountInOut[index]
+                                        )
+                                      : '-'}{' '}
+                                    {token.symbol}
+                                  </Typography>
+                                </div>
+                              )
+                            })}
+                          </div>
+                          <div>
+                            <div className={styles.contractBalance}>
+                              <Typography className={styles.fs12} as="div">
+                                {dateUtils.format(
+                                  order.createdAt,
+                                  'DD/MM/YY  h:mma'
                                 )}
-                                <Typography className={styles.fs12} as="div">
-                                  {tokensAmountInOut
-                                    ? bignumberUtils.format(
-                                        tokensAmountInOut[index]
-                                      )
-                                    : '-'}{' '}
-                                  {token.symbol}
-                                </Typography>
-                              </div>
-                            )
-                          })}
-                        </div>
-                        <div>
-                          <div className={styles.contractBalance}>
-                            <Typography className={styles.fs12} as="div">
-                              {dateUtils.format(
-                                order.createdAt,
-                                'DD/MM/YY  h:mma'
-                              )}
-                            </Typography>
+                              </Typography>
+                            </div>
+                            <div className={styles.contractBalance}>
+                              <Typography className={styles.fs12} as="div">
+                                ID {order.number}
+                              </Typography>
+                            </div>
                           </div>
-                          <div className={styles.contractBalance}>
-                            <Typography className={styles.fs12} as="div">
-                              ID {order.number}
-                            </Typography>
-                          </div>
-                        </div>
-                        {false && (
-                          <TradeStatusChart
-                            stopLoss="100"
-                            takeProfit="200"
-                            buy="150"
-                            className={styles.contractStatus}
-                          />
-                        )}
-                        <div>
-                          {[
-                            SmartTradeOrderStatusEnum.Succeeded,
-                            SmartTradeOrderStatusEnum.Canceled,
-                          ].includes(order.status) ? (
-                            <>
-                              {hasBoughtPrice(order.callData) && (
-                                <Button
-                                  color="green"
-                                  onClick={handleClaim(order)}
-                                  loading={claimingOrder === order.id}
-                                  disabled={Boolean(
-                                    claimingOrder.length &&
-                                      claimingOrder !== order.id
-                                  )}
-                                >
-                                  Claim
-                                </Button>
-                              )}
-                            </>
-                          ) : (
-                            order.status
-                          )}
-                        </div>
-                        <div>
-                          <div className={styles.contractBalance}>
-                            <Icon
-                              className={styles.contractBalanceIcon}
-                              icon="USDT"
+                          {false && (
+                            <TradeStatusChart
+                              stopLoss="100"
+                              takeProfit="200"
+                              buy="150"
+                              className={styles.contractStatus}
                             />
-                            <Typography className={styles.fs12} as="div">
-                              {bignumberUtils.format(props.price)}
-                            </Typography>
-                          </div>
-                          <div className={styles.contractBalance}>
-                            <Typography className={styles.fs12} as="div">
-                              {bignumberUtils.format(stopLossTakeProfit)}$ /{' '}
-                              {bignumberUtils.format(
-                                bignumberUtils.div(
-                                  stopLossTakeProfit,
-                                  props.price
-                                )
-                              )}
-                              %
-                            </Typography>
-                          </div>
-                        </div>
-                        <div className={styles.contractActions}>
-                          <ButtonBase onClick={handleUpdatePrice(order.id)}>
-                            <Icon width={16} height={16} icon="swap" />
-                          </ButtonBase>
-                          <Dropdown
-                            control={
-                              <ButtonBase>
-                                <Icon
-                                  width={16}
-                                  height={16}
-                                  icon="dots"
-                                  className={styles.dots}
-                                />
-                              </ButtonBase>
-                            }
-                          >
-                            {(close) => (
-                              <ButtonBase
-                                onClick={async () => {
-                                  close()
-
-                                  setUpdatingOrderId(order.id)
-
-                                  props.onCancelOrder(order.number)
-                                }}
-                              >
-                                Cancel order
-                              </ButtonBase>
+                          )}
+                          <div>
+                            {[
+                              SmartTradeOrderStatusEnum.Succeeded,
+                              SmartTradeOrderStatusEnum.Canceled,
+                            ].includes(order.status) ? (
+                              <>
+                                {hasBoughtPrice(order.callData) && (
+                                  <Button
+                                    color="green"
+                                    onClick={handleClaim(order)}
+                                    loading={claimingOrder === order.id}
+                                    disabled={Boolean(
+                                      claimingOrder.length &&
+                                        claimingOrder !== order.id
+                                    )}
+                                  >
+                                    Claim
+                                  </Button>
+                                )}
+                              </>
+                            ) : (
+                              order.status
                             )}
-                          </Dropdown>
+                          </div>
+                          <div>
+                            <div className={styles.contractBalance}>
+                              <Icon
+                                className={styles.contractBalanceIcon}
+                                icon="USDT"
+                              />
+                              <Typography className={styles.fs12} as="div">
+                                {bignumberUtils.format(props.price)}
+                              </Typography>
+                            </div>
+                            <div className={styles.contractBalance}>
+                              <Typography className={styles.fs12} as="div">
+                                {bignumberUtils.format(stopLossTakeProfit)}$ /{' '}
+                                {bignumberUtils.format(
+                                  bignumberUtils.div(
+                                    stopLossTakeProfit,
+                                    props.price
+                                  )
+                                )}
+                                %
+                              </Typography>
+                            </div>
+                          </div>
+                          <div className={styles.contractActions}>
+                            <ButtonBase onClick={handleUpdatePrice(order.id)}>
+                              <Icon width={16} height={16} icon="swap" />
+                            </ButtonBase>
+                            <Dropdown
+                              control={
+                                <ButtonBase>
+                                  <Icon
+                                    width={16}
+                                    height={16}
+                                    icon="dots"
+                                    className={styles.dots}
+                                  />
+                                </ButtonBase>
+                              }
+                            >
+                              {(close) => (
+                                <ButtonBase
+                                  onClick={async () => {
+                                    close()
+
+                                    setUpdatingOrderId(order.id)
+
+                                    props.onCancelOrder(order.number)
+                                  }}
+                                >
+                                  Cancel order
+                                </ButtonBase>
+                              )}
+                            </Dropdown>
+                          </div>
                         </div>
+                        {updating && (
+                          <div className={styles.tableRowInnerLoader}>
+                            <Loader height="1em" />
+                          </div>
+                        )}
                       </div>
-                      {updating && (
-                        <div className={styles.tableRowInnerLoader}>
-                          <Loader height="1em" />
-                        </div>
-                      )}
-                    </div>
+                    </TradeOrderDeposit>
                   )
                 })}
               </>

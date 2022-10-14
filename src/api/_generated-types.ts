@@ -7009,8 +7009,15 @@ export type TradeCancelOrderMutation = { __typename?: 'Mutation' } & {
   > & {
       owner: { __typename?: 'WalletBlockchainType' } & Pick<
         WalletBlockchainType,
-        'id' | 'network' | 'address' | 'name'
-      >
+        'id' | 'network' | 'address' | 'name' | 'blockchain'
+      > & {
+          billing: { __typename?: 'WalletBillingType' } & {
+            balance: { __typename?: 'BillingBalanceType' } & Pick<
+              BillingBalanceType,
+              'lowFeeFunds'
+            >
+          }
+        }
       callData:
         | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
             SmartTradeMockHandlerCallDataType,
@@ -7077,8 +7084,15 @@ export type TradeCreateOrderMutation = { __typename?: 'Mutation' } & {
   > & {
       owner: { __typename?: 'WalletBlockchainType' } & Pick<
         WalletBlockchainType,
-        'id' | 'network' | 'address' | 'name'
-      >
+        'id' | 'network' | 'address' | 'name' | 'blockchain'
+      > & {
+          billing: { __typename?: 'WalletBillingType' } & {
+            balance: { __typename?: 'BillingBalanceType' } & Pick<
+              BillingBalanceType,
+              'lowFeeFunds'
+            >
+          }
+        }
       callData:
         | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
             SmartTradeMockHandlerCallDataType,
@@ -7158,8 +7172,15 @@ export type TradeOrderListQuery = { __typename?: 'Query' } & {
         > & {
             owner: { __typename?: 'WalletBlockchainType' } & Pick<
               WalletBlockchainType,
-              'id' | 'network' | 'address' | 'name'
-            >
+              'id' | 'network' | 'address' | 'name' | 'blockchain'
+            > & {
+                billing: { __typename?: 'WalletBillingType' } & {
+                  balance: { __typename?: 'BillingBalanceType' } & Pick<
+                    BillingBalanceType,
+                    'lowFeeFunds'
+                  >
+                }
+              }
             callData:
               | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
                   SmartTradeMockHandlerCallDataType,
