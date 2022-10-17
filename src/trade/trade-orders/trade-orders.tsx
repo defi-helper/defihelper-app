@@ -6,11 +6,7 @@ import { Sticky, StickyContainer } from 'react-sticky'
 import contracts from '@defihelper/networks/contracts.json'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
-import {
-  SmartTradeMockHandlerCallDataType,
-  SmartTradeOrderStatusEnum,
-  SmartTradeSwapHandlerCallDataType,
-} from '~/api'
+import { SmartTradeOrderStatusEnum } from '~/api'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
@@ -25,10 +21,10 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { TradeStatusChart } from '~/trade/common/trade-status-chart'
-import { Order } from '~/trade/common/trade.types'
+import { hasAmountIn, hasBoughtPrice, Order } from '~/trade/common/trade.types'
 import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
-import { Exchange } from '../common/trade.api'
-import { TradeOrderDeposit } from '../common/trade-order-deposit'
+import { Exchange, tradeApi } from '~/trade/common/trade.api'
+import { TradeOrderDeposit } from '~/trade/common/trade-order-deposit'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
@@ -42,13 +38,13 @@ import {
 import { analytics } from '~/analytics'
 import { SmartTradeRouter } from '~/common/load-adapter'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
+import { authModel } from '~/auth'
+import { TradeEditDialog } from '~/trade/common/trade-edit-dialog'
 import * as styles from './trade-orders.css'
 import * as model from './trade-orders.model'
-import { authModel } from '~/auth'
 
 export type TradeOrdersProps = {
   className?: string
-  price: number
   onCancelOrder: (id: number | string) => Promise<void>
   onUpdatePrice?: () => void
   updating?: boolean
@@ -59,18 +55,6 @@ export type TradeOrdersProps = {
 enum Tabs {
   Active = 'active',
   History = 'history',
-}
-
-const hasBoughtPrice = (
-  callData: Record<string, unknown>
-): callData is SmartTradeSwapHandlerCallDataType => {
-  return 'boughtPrice' in callData
-}
-
-const hasAmountIn = (
-  callData: Record<string, unknown>
-): callData is SmartTradeMockHandlerCallDataType => {
-  return 'amountIn' in callData
 }
 
 const statuses = {
@@ -90,12 +74,14 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   const loading = useStore(model.fetchOrdersFx.pending)
   const claimingOrder = useStore(model.$claimingOrder)
   const depositingOrder = useStore(model.$depositingOrder)
+  const editingOrder = useStore(model.$editingOrder)
 
   const [currentTab, setCurrentTab] = useState(Tabs.Active)
 
   const [updatingOrderId, setUpdatingOrderId] = useState('')
 
   const [openTradeConfirmDialog] = useDialog(TradeConfirmClaimDialog)
+  const [openTradeEditDialog] = useDialog(TradeEditDialog)
 
   const handleConnect = useWalletConnect()
   const currentWallet = walletNetworkModel.useWalletNetwork()
@@ -118,6 +104,18 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
     const balance = await props.router.balanceOf(tokenAddress)
 
+    const pairs = await tradeApi.pairs([], [order.callData.exchange])
+
+    const pair = pairs.data.list.find(({ pairInfo }) =>
+      pairInfo.tokens.some(
+        ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
+      )
+    )
+
+    const token = pair?.pairInfo.tokens.find(
+      ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
+    )
+
     try {
       model.claimStarted(order.id)
 
@@ -125,6 +123,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         order,
         exchange,
         totalRecieve: balance,
+        boughtToken: token,
       })
 
       const res = await props.router?.refund(tokenAddress, '')
@@ -213,6 +212,51 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         console.error(error)
       } finally {
         model.depositEnded()
+      }
+    }
+
+  const handleEnterBoughtPrice =
+    (order: Exclude<typeof orders, null>['list'][number]) => async () => {
+      if (!hasBoughtPrice(order.callData)) return
+
+      try {
+        model.editStarted(order.id)
+
+        const [tokenAddress] = order.callData.path.slice(-1)
+
+        const exchange = props.exchangesMap.get(order.callData.exchange)
+
+        const pairs = await tradeApi.pairs([], [order.callData.exchange])
+
+        const pair = pairs.data.list.find(({ pairInfo }) =>
+          pairInfo.tokens.some(
+            ({ address }) =>
+              address.toLowerCase() === tokenAddress.toLowerCase()
+          )
+        )
+
+        const token = pair?.pairInfo.tokens.find(
+          ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
+        )
+
+        const result = await openTradeEditDialog({
+          order,
+          exchange,
+          boughtToken: token,
+        })
+
+        await model.updateOrderFx({
+          id: order.id,
+          input: {
+            callData: {
+              boughtPrice: result,
+            },
+          },
+        })
+      } catch (error) {
+        console.error(error)
+      } finally {
+        model.editEnded()
       }
     }
 
@@ -335,12 +379,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                   </Typography>
                 </div>
                 {orders?.list.map((order) => {
-                  const stopLossTakeProfit = hasBoughtPrice(order.callData)
-                    ? bignumberUtils.minus(
-                        props.price,
-                        order.callData.boughtPrice
-                      )
-                    : '0'
+                  const boughtPrice = hasBoughtPrice(order.callData)
+                    ? order.callData.boughtPrice
+                    : null
 
                   const tokensAmountInOut = hasAmountIn(order.callData)
                     ? [order.callData.amountIn, order.callData.amountOut]
@@ -510,27 +551,58 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             )}
                           </div>
                           <div>
-                            <div className={styles.contractBalance}>
-                              <Icon
-                                className={styles.contractBalanceIcon}
-                                icon="USDT"
-                              />
-                              <Typography className={styles.fs12} as="div">
-                                {bignumberUtils.format(props.price)}
-                              </Typography>
-                            </div>
-                            <div className={styles.contractBalance}>
-                              <Typography className={styles.fs12} as="div">
-                                {bignumberUtils.format(stopLossTakeProfit)}$ /{' '}
-                                {bignumberUtils.format(
-                                  bignumberUtils.div(
-                                    stopLossTakeProfit,
-                                    props.price
-                                  )
-                                )}
-                                %
-                              </Typography>
-                            </div>
+                            {boughtPrice ? (
+                              <>
+                                <div className={styles.contractBalance}>
+                                  <Icon
+                                    className={styles.contractBalanceIcon}
+                                    icon="USDT"
+                                  />
+                                  <Typography className={styles.fs12} as="div">
+                                    {bignumberUtils.format(boughtPrice)}
+                                  </Typography>
+                                </div>
+                                <div className={styles.contractBalance}>
+                                  <Typography className={styles.fs12} as="div">
+                                    {bignumberUtils.format(boughtPrice)}$ /{' '}
+                                    {bignumberUtils.format(boughtPrice)}%
+                                  </Typography>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <Typography
+                                  variant="body3"
+                                  className={styles.boughtPrice}
+                                >
+                                  Bought price
+                                  <Dropdown
+                                    control={
+                                      <ButtonBase>
+                                        <Icon
+                                          icon="question"
+                                          width={16}
+                                          height={16}
+                                        />
+                                      </ButtonBase>
+                                    }
+                                    offset={[0, 8]}
+                                  >
+                                    <Typography variant="body3">
+                                      Enter the Bought price to see your profit
+                                    </Typography>
+                                  </Dropdown>
+                                </Typography>
+                                <Button
+                                  color="green"
+                                  loading={editingOrder === order.id}
+                                  onClick={handleEnterBoughtPrice(order)}
+                                  size="small"
+                                >
+                                  Enter
+                                </Button>
+                              </>
+                            )}
                           </div>
                           <div className={styles.contractActions}>
                             <ButtonBase onClick={handleUpdatePrice(order.id)}>

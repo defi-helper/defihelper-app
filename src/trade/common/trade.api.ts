@@ -10,6 +10,8 @@ import {
   TradeCreateOrderMutationVariables,
   TradeOrderListQuery,
   TradeOrderListQueryVariables,
+  TradeUpdateOrderMutation,
+  TradeUpdateOrderMutationVariables,
 } from '~/api'
 import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
@@ -17,6 +19,7 @@ import { TRADE_AUTH } from './graphql/trade-auth.graphql'
 import { TRADE_CANCEL_ORDER } from './graphql/trade-cancel-order.graphql'
 import { TRADE_CREATE_ORDER } from './graphql/trade-create-order.graphql'
 import { TRADE_ORDER_LIST } from './graphql/trade-order-list.graphql'
+import { TRADE_UPDATE_ORDER } from './graphql/trade-update-order.graphql'
 import { pairMock } from './trade-dev.mock'
 
 const apiV1 = axios.create({
@@ -274,6 +277,18 @@ export const tradeApi = {
         },
       })
       .then(({ data }) => data?.smartTradeCancel),
+
+  updateOrder: (variables: TradeUpdateOrderMutationVariables) =>
+    getAPIClient()
+      .request<
+        TradeUpdateOrderMutation,
+        unknown,
+        TradeUpdateOrderMutationVariables
+      >({
+        query: TRADE_UPDATE_ORDER.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.smartTradeSwapOrderUpdate),
 
   fetchOrders: (variables: TradeOrderListQueryVariables) =>
     getAPIClient()

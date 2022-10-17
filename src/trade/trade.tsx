@@ -239,8 +239,6 @@ export const Trade: React.VFC<TradeProps> = () => {
     </div>
   ) : null
 
-  const price = history?.h?.at(-1) ?? 0
-
   const SelectComponents = {
     [Selects.SmartSell]: (
       <>
@@ -249,7 +247,6 @@ export const Trade: React.VFC<TradeProps> = () => {
           router={adapter?.router}
           swap={adapter?.swap}
           tokens={tokens}
-          price={price}
           exchangeAddress={currentExchangeObj?.Address}
           transactionDeadline={transactionDeadline}
           slippage={currentSlippage}
@@ -728,7 +725,6 @@ export const Trade: React.VFC<TradeProps> = () => {
         </Paper>
       </div>
       <TradeOrders
-        price={price}
         onCancelOrder={handleCancelOrder}
         onUpdatePrice={handleUpdatePrice}
         updating={updating || cancelOrder.loading}

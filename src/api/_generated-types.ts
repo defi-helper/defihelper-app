@@ -1388,6 +1388,7 @@ export type Mutation = {
   tradingAuth?: Maybe<TradingAuthType>
   smartTradeCancel: SmartTradeOrderType
   smartTradeSwapOrderCreate: SmartTradeOrderType
+  smartTradeSwapOrderUpdate: SmartTradeOrderType
 }
 
 export type MutationUserUpdateArgs = {
@@ -1657,6 +1658,11 @@ export type MutationSmartTradeCancelArgs = {
 
 export type MutationSmartTradeSwapOrderCreateArgs = {
   input: SmartTradeSwapOrderCreateInputType
+}
+
+export type MutationSmartTradeSwapOrderUpdateArgs = {
+  id: Scalars['UuidType']
+  input: SmartTradeSwapOrderUpdateInputType
 }
 
 export type OnTokenMetricUpdatedFilterInputType = {
@@ -2526,7 +2532,7 @@ export type SmartTradeSwapHandlerCallDataType = {
   exchange: Scalars['EthereumAddressType']
   path: Array<Scalars['EthereumAddressType']>
   amountIn: Scalars['BigNumberType']
-  boughtPrice: Scalars['BigNumberType']
+  boughtPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapHandlerCallDataRouteType>
   takeProfit?: Maybe<SwapHandlerCallDataRouteType>
   deadline: Scalars['Int']
@@ -2540,7 +2546,7 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   tokenOutDecimals: Scalars['Int']
   amountIn: Scalars['BigNumberType']
   amountOut: Scalars['BigNumberType']
-  boughtPrice: Scalars['BigNumberType']
+  boughtPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
   takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
   /** Deadline seconds */
@@ -2559,6 +2565,14 @@ export type SmartTradeSwapOrderCreateInputType = {
   callData: SmartTradeSwapOrderCreateCallDataInputType
   /** Transaction hash */
   tx: Scalars['EthereumTransactionHashType']
+}
+
+export type SmartTradeSwapOrderUpdateCallDataInputType = {
+  boughtPrice?: Maybe<Scalars['BigNumberType']>
+}
+
+export type SmartTradeSwapOrderUpdateInputType = {
+  callData?: Maybe<SmartTradeSwapOrderUpdateCallDataInputType>
 }
 
 export enum SortOrderEnum {
@@ -7005,74 +7019,9 @@ export type TradeCancelOrderMutationVariables = Exact<{
 }>
 
 export type TradeCancelOrderMutation = { __typename?: 'Mutation' } & {
-  smartTradeCancel: { __typename?: 'SmartTradeOrderType' } & Pick<
-    SmartTradeOrderType,
-    'id' | 'number' | 'handler' | 'status' | 'tx' | 'confirmed' | 'createdAt'
-  > & {
-      owner: { __typename?: 'WalletBlockchainType' } & Pick<
-        WalletBlockchainType,
-        'id' | 'network' | 'address' | 'name' | 'blockchain'
-      > & {
-          billing: { __typename?: 'WalletBillingType' } & {
-            balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
-              BillingWalletBalanceType,
-              'lowFeeFunds'
-            >
-          }
-        }
-      callData:
-        | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
-            SmartTradeMockHandlerCallDataType,
-            'amountIn' | 'amountOut'
-          >)
-        | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
-            SmartTradeSwapHandlerCallDataType,
-            'exchange' | 'boughtPrice' | 'path'
-          >)
-      lastCall?: Maybe<
-        { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
-          SmartTradeOrderCallHistoryType,
-          'status' | 'transaction' | 'errorReason'
-        >
-      >
-      tokens: Array<
-        { __typename?: 'SmartTradeOrderTokenLinkType' } & Pick<
-          SmartTradeOrderTokenLinkType,
-          'type'
-        > & {
-            token: { __typename?: 'TokenType' } & Pick<
-              TokenType,
-              | 'id'
-              | 'blockchain'
-              | 'network'
-              | 'address'
-              | 'name'
-              | 'symbol'
-              | 'decimals'
-              | 'priceFeedNeeded'
-            > & {
-                alias?: Maybe<
-                  { __typename?: 'TokenAlias' } & Pick<
-                    TokenAlias,
-                    'id' | 'name' | 'logoUrl' | 'symbol'
-                  >
-                >
-                priceFeed?: Maybe<
-                  | ({ __typename?: 'TokenPriceFeedCoingeckoIdType' } & Pick<
-                      TokenPriceFeedCoingeckoIdType,
-                      'id' | 'type'
-                    >)
-                  | ({
-                      __typename?: 'TokenPriceFeedCoingeckoAddressType'
-                    } & Pick<
-                      TokenPriceFeedCoingeckoAddressType,
-                      'type' | 'platform' | 'address'
-                    >)
-                >
-              }
-          }
-      >
-    }
+  smartTradeCancel: {
+    __typename?: 'SmartTradeOrderType'
+  } & TradeOrderFragmentFragment
 }
 
 export type TradeCreateOrderMutationVariables = Exact<{
@@ -7080,74 +7029,9 @@ export type TradeCreateOrderMutationVariables = Exact<{
 }>
 
 export type TradeCreateOrderMutation = { __typename?: 'Mutation' } & {
-  smartTradeSwapOrderCreate: { __typename?: 'SmartTradeOrderType' } & Pick<
-    SmartTradeOrderType,
-    'id' | 'number' | 'handler' | 'status' | 'tx' | 'confirmed' | 'createdAt'
-  > & {
-      owner: { __typename?: 'WalletBlockchainType' } & Pick<
-        WalletBlockchainType,
-        'id' | 'network' | 'address' | 'name' | 'blockchain'
-      > & {
-          billing: { __typename?: 'WalletBillingType' } & {
-            balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
-              BillingWalletBalanceType,
-              'lowFeeFunds'
-            >
-          }
-        }
-      callData:
-        | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
-            SmartTradeMockHandlerCallDataType,
-            'amountIn' | 'amountOut'
-          >)
-        | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
-            SmartTradeSwapHandlerCallDataType,
-            'exchange' | 'boughtPrice' | 'path'
-          >)
-      lastCall?: Maybe<
-        { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
-          SmartTradeOrderCallHistoryType,
-          'status' | 'transaction' | 'errorReason'
-        >
-      >
-      tokens: Array<
-        { __typename?: 'SmartTradeOrderTokenLinkType' } & Pick<
-          SmartTradeOrderTokenLinkType,
-          'type'
-        > & {
-            token: { __typename?: 'TokenType' } & Pick<
-              TokenType,
-              | 'id'
-              | 'blockchain'
-              | 'network'
-              | 'address'
-              | 'name'
-              | 'symbol'
-              | 'decimals'
-              | 'priceFeedNeeded'
-            > & {
-                alias?: Maybe<
-                  { __typename?: 'TokenAlias' } & Pick<
-                    TokenAlias,
-                    'id' | 'name' | 'logoUrl' | 'symbol'
-                  >
-                >
-                priceFeed?: Maybe<
-                  | ({ __typename?: 'TokenPriceFeedCoingeckoIdType' } & Pick<
-                      TokenPriceFeedCoingeckoIdType,
-                      'id' | 'type'
-                    >)
-                  | ({
-                      __typename?: 'TokenPriceFeedCoingeckoAddressType'
-                    } & Pick<
-                      TokenPriceFeedCoingeckoAddressType,
-                      'type' | 'platform' | 'address'
-                    >)
-                >
-              }
-          }
-      >
-    }
+  smartTradeSwapOrderCreate: {
+    __typename?: 'SmartTradeOrderType'
+  } & TradeOrderFragmentFragment
 }
 
 export type TradeOrderListQueryVariables = Exact<{
@@ -7161,87 +7045,90 @@ export type TradeOrderListQueryVariables = Exact<{
 export type TradeOrderListQuery = { __typename?: 'Query' } & {
   smartTradeOrders: { __typename?: 'SmartTradeOrderListQuery' } & {
     list?: Maybe<
-      Array<
-        { __typename?: 'SmartTradeOrderType' } & Pick<
-          SmartTradeOrderType,
-          | 'id'
-          | 'number'
-          | 'handler'
-          | 'status'
-          | 'tx'
-          | 'confirmed'
-          | 'createdAt'
-        > & {
-            owner: { __typename?: 'WalletBlockchainType' } & Pick<
-              WalletBlockchainType,
-              'id' | 'network' | 'address' | 'name' | 'blockchain'
-            > & {
-                billing: { __typename?: 'WalletBillingType' } & {
-                  balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
-                    BillingWalletBalanceType,
-                    'lowFeeFunds'
-                  >
-                }
-              }
-            callData:
-              | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
-                  SmartTradeMockHandlerCallDataType,
-                  'amountIn' | 'amountOut'
-                >)
-              | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
-                  SmartTradeSwapHandlerCallDataType,
-                  'exchange' | 'boughtPrice' | 'path'
-                >)
-            lastCall?: Maybe<
-              { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
-                SmartTradeOrderCallHistoryType,
-                'status' | 'transaction' | 'errorReason'
-              >
-            >
-            tokens: Array<
-              { __typename?: 'SmartTradeOrderTokenLinkType' } & Pick<
-                SmartTradeOrderTokenLinkType,
-                'type'
-              > & {
-                  token: { __typename?: 'TokenType' } & Pick<
-                    TokenType,
-                    | 'id'
-                    | 'blockchain'
-                    | 'network'
-                    | 'address'
-                    | 'name'
-                    | 'symbol'
-                    | 'decimals'
-                    | 'priceFeedNeeded'
-                  > & {
-                      alias?: Maybe<
-                        { __typename?: 'TokenAlias' } & Pick<
-                          TokenAlias,
-                          'id' | 'name' | 'logoUrl' | 'symbol'
-                        >
-                      >
-                      priceFeed?: Maybe<
-                        | ({
-                            __typename?: 'TokenPriceFeedCoingeckoIdType'
-                          } & Pick<
-                            TokenPriceFeedCoingeckoIdType,
-                            'id' | 'type'
-                          >)
-                        | ({
-                            __typename?: 'TokenPriceFeedCoingeckoAddressType'
-                          } & Pick<
-                            TokenPriceFeedCoingeckoAddressType,
-                            'type' | 'platform' | 'address'
-                          >)
-                      >
-                    }
-                }
-            >
-          }
-      >
+      Array<{ __typename?: 'SmartTradeOrderType' } & TradeOrderFragmentFragment>
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
+}
+
+export type TradeOrderFragmentFragment = {
+  __typename?: 'SmartTradeOrderType'
+} & Pick<
+  SmartTradeOrderType,
+  'id' | 'number' | 'handler' | 'status' | 'tx' | 'confirmed' | 'createdAt'
+> & {
+    owner: { __typename?: 'WalletBlockchainType' } & Pick<
+      WalletBlockchainType,
+      'id' | 'network' | 'address' | 'name' | 'blockchain'
+    > & {
+        billing: { __typename?: 'WalletBillingType' } & {
+          balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
+            BillingWalletBalanceType,
+            'lowFeeFunds'
+          >
+        }
+      }
+    callData:
+      | ({ __typename?: 'SmartTradeMockHandlerCallDataType' } & Pick<
+          SmartTradeMockHandlerCallDataType,
+          'amountIn' | 'amountOut'
+        >)
+      | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
+          SmartTradeSwapHandlerCallDataType,
+          'exchange' | 'boughtPrice' | 'path'
+        >)
+    lastCall?: Maybe<
+      { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
+        SmartTradeOrderCallHistoryType,
+        'status' | 'transaction' | 'errorReason'
+      >
+    >
+    tokens: Array<
+      { __typename?: 'SmartTradeOrderTokenLinkType' } & Pick<
+        SmartTradeOrderTokenLinkType,
+        'type'
+      > & {
+          token: { __typename?: 'TokenType' } & Pick<
+            TokenType,
+            | 'id'
+            | 'blockchain'
+            | 'network'
+            | 'address'
+            | 'name'
+            | 'symbol'
+            | 'decimals'
+            | 'priceFeedNeeded'
+          > & {
+              alias?: Maybe<
+                { __typename?: 'TokenAlias' } & Pick<
+                  TokenAlias,
+                  'id' | 'name' | 'logoUrl' | 'symbol'
+                >
+              >
+              priceFeed?: Maybe<
+                | ({ __typename?: 'TokenPriceFeedCoingeckoIdType' } & Pick<
+                    TokenPriceFeedCoingeckoIdType,
+                    'id' | 'type'
+                  >)
+                | ({ __typename?: 'TokenPriceFeedCoingeckoAddressType' } & Pick<
+                    TokenPriceFeedCoingeckoAddressType,
+                    'type' | 'platform' | 'address'
+                  >)
+              >
+            }
+        }
+    >
+  }
+
+export type TradeUpdateOrderMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: SmartTradeSwapOrderUpdateInputType
+}>
+
+export type TradeUpdateOrderMutation = { __typename?: 'Mutation' } & {
+  smartTradeSwapOrderUpdate: {
+    __typename?: 'SmartTradeOrderType'
+  } & TradeOrderFragmentFragment
 }
 
 export type UsersQueryVariables = Exact<{

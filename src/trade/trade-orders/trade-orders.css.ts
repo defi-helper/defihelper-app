@@ -267,3 +267,11 @@ export const updatePrice = style({
     transform: 'rotate(360deg)',
   },
 })
+
+export const boughtPrice = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 4,
+  color: theme.colors.textColorGrey,
+  marginBottom: 12,
+})

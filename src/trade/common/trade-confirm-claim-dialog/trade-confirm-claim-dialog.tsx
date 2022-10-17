@@ -5,8 +5,8 @@ import { Dialog } from '~/common/dialog'
 import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
-import { Order } from '~/trade/common/trade.types'
-import { Exchange } from '~/trade/common/trade.api'
+import { hasBoughtPrice, Order } from '~/trade/common/trade.types'
+import { Exchange, Pair } from '~/trade/common/trade.api'
 import { Paper } from '~/common/paper'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './trade-confirm-claim-dialog.css'
@@ -16,6 +16,7 @@ export type TradeConfirmClaimDialogProps = {
   order: Order
   exchange: Exchange
   totalRecieve: string
+  boughtToken?: Pair['pairInfo']['tokens'][number]
 }
 
 export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
@@ -73,6 +74,15 @@ export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
           <Typography variant="body2">Mode</Typography>
           <Typography variant="body2" as="div">
             Buy
+          </Typography>
+        </div>
+        <div className={styles.row}>
+          <Typography variant="body2">Bought price</Typography>
+          <Typography variant="body2" as="div">
+            {hasBoughtPrice(props.order.callData)
+              ? bignumberUtils.format(props.order.callData.boughtPrice)
+              : '-'}{' '}
+            {props.boughtToken?.symbol}
           </Typography>
         </div>
         <div className={styles.row}>
