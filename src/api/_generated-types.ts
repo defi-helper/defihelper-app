@@ -4878,12 +4878,6 @@ export type BlockchainsSelectQuery = { __typename?: 'Query' } & {
           'id' | 'title' | 'icon'
         >
       >
-      waves: Array<
-        { __typename?: 'ConfigWavesNetworkType' } & Pick<
-          ConfigWavesNetworkType,
-          'id' | 'title' | 'icon'
-        >
-      >
     }
   }
 }
