@@ -39,3 +39,11 @@ export const claimEnded = createEvent()
 export const $claimingOrder = createStore<string>('')
   .on(claimStarted, (_, payload) => payload)
   .reset(claimEnded)
+
+export const depositStarted = createEvent<string>()
+
+export const depositEnded = createEvent()
+
+export const $depositingOrder = createStore<string>('')
+  .on(depositStarted, (_, payload) => payload)
+  .reset(depositEnded)
