@@ -33,7 +33,6 @@ export type TradeSmartSellProps = {
     name: string
     symbol: string
   }[]
-  price?: number
   exchangeAddress?: string
   transactionDeadline: string
   slippage: string

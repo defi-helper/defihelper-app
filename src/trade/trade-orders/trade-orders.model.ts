@@ -1,6 +1,7 @@
 import { createStore, createEffect, createEvent, UnitValue } from 'effector'
 
 import { tradeApi } from '../common/trade.api'
+import { TradeUpdateOrderMutationVariables } from '~/api'
 import * as tradeSmartSellModel from '~/trade/trade-smart-sell/trade-smart-sell.model'
 
 export const reset = createEvent()
@@ -15,6 +16,16 @@ export const cancelOrderFx = createEffect(async (id: string) => {
   return data
 })
 
+export const updateOrderFx = createEffect(
+  async (variables: TradeUpdateOrderMutationVariables) => {
+    const data = await tradeApi.updateOrder(variables)
+
+    if (!data) throw new Error('something went wrong')
+
+    return data
+  }
+)
+
 export type Orders = UnitValue<typeof fetchOrdersFx.doneData>
 
 export const $orders = createStore<Orders | null>(null)
@@ -28,6 +39,12 @@ export const $orders = createStore<Orders | null>(null)
       state?.list.map((order) =>
         order.number === payload.id ? payload : order
       ) ?? [],
+    pagination: state?.pagination ?? 0,
+  }))
+  .on(updateOrderFx.doneData, (state, payload) => ({
+    list:
+      state?.list.map((order) => (order.id === payload.id ? payload : order)) ??
+      [],
     pagination: state?.pagination ?? 0,
   }))
   .reset(reset)
@@ -47,3 +64,11 @@ export const depositEnded = createEvent()
 export const $depositingOrder = createStore<string>('')
   .on(depositStarted, (_, payload) => payload)
   .reset(depositEnded)
+
+export const editStarted = createEvent<string>()
+
+export const editEnded = createEvent()
+
+export const $editingOrder = createStore<string>('')
+  .on(editStarted, (_, payload) => payload)
+  .reset(editEnded)
