@@ -439,10 +439,15 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   error={
                     deployedContract.contractWallet?.billing?.balance
                       ?.lowFeeFunds ||
-                    (deployedContract.wallet?.billing?.balance?.netBalanceUSD >
-                      0.1 &&
-                      deployedContract.wallet?.billing?.balance?.netBalanceUSD <
-                        20)
+                    (bignumberUtils.gt(
+                      deployedContract.wallet?.billing?.balance?.netBalanceUSD,
+                      0.1
+                    ) &&
+                      bignumberUtils.lt(
+                        deployedContract.wallet?.billing?.balance
+                          ?.netBalanceUSD,
+                        20
+                      ))
                   }
                   freshMetrics={metrics[deployedContract.id]}
                 />

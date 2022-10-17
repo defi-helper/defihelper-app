@@ -31,8 +31,8 @@ export type SettingsWalletCardProps = {
   onDelete: () => void
   onUpdateStatistics: () => void
   error?: boolean
-  feeFunds: number
-  locked: number
+  feeFunds: string
+  locked: string
   statisticsCollectedAt: string
   deleting?: boolean
   editing?: boolean

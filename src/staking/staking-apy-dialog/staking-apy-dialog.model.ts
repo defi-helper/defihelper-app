@@ -1,4 +1,5 @@
 import { createEffect, createEvent, createStore, UnitValue } from 'effector'
+
 import { stakingApi } from '~/staking/common'
 
 export const restakeCalculatorFx = createEffect(stakingApi.restakeCalculator)

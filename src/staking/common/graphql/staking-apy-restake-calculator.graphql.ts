@@ -15,6 +15,7 @@ export const STAKING_APY_RESTAKE_CALCULATOR = gql`
     ) {
       earnedUSD
       nextRestakeAt
+      apyBoost
     }
   }
 `

@@ -332,16 +332,22 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
                 onRename={rename}
                 onUpdateStatistics={handleUpdateStatistics(wallet)}
                 onDelete={handleDelete(wallet)}
-                feeFunds={wallet.billing?.balance?.netBalance ?? 0}
-                locked={wallet.billing?.balance?.claim ?? 0}
+                feeFunds={wallet.billing?.balance?.netBalance ?? '0'}
+                locked={wallet.billing?.balance?.claim ?? '0'}
                 editing={wallet.editing}
                 deleting={wallet.deleting}
                 depositing={wallet.depositing}
                 refunding={wallet.refunding}
                 error={
                   wallet.billing?.balance?.lowFeeFunds ||
-                  (wallet.billing?.balance?.netBalanceUSD > 0.1 &&
-                    wallet.billing?.balance?.netBalanceUSD < 20)
+                  (bignumberUtils.gt(
+                    wallet.billing?.balance?.netBalanceUSD,
+                    0.1
+                  ) &&
+                    bignumberUtils.lt(
+                      wallet.billing?.balance?.netBalanceUSD,
+                      20
+                    ))
                 }
               />
             )
