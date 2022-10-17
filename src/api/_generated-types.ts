@@ -563,16 +563,6 @@ export type BalanceMetaType = {
   priceUSD: Scalars['String']
 }
 
-export type BillingBalanceType = {
-  __typename?: 'BillingBalanceType'
-  lowFeeFunds: Scalars['Boolean']
-  pending: Scalars['Float']
-  balance: Scalars['Float']
-  claim: Scalars['Float']
-  netBalance: Scalars['Float']
-  netBalanceUSD: Scalars['Float']
-}
-
 export enum BillingBillStatusEnum {
   /** Bill awaiting confirmation */
   Pending = 'pending',
@@ -595,15 +585,15 @@ export type BillingBillType = {
   /** Claimant */
   claimant: Scalars['String']
   /** Declarate gas fee */
-  claimGasFee: Scalars['Float']
+  claimGasFee: Scalars['BigNumberType']
   /** Declarate protocol fee */
-  claimProtocolFee: Scalars['Float']
+  claimProtocolFee: Scalars['BigNumberType']
   /** Confirmed gas fee */
-  gasFee?: Maybe<Scalars['Float']>
+  gasFee?: Maybe<Scalars['BigNumberType']>
   /** Confirmed protocol fee */
-  protocolFee?: Maybe<Scalars['Float']>
+  protocolFee?: Maybe<Scalars['BigNumberType']>
   /** Balance of claim after make the bill */
-  claim: Scalars['Float']
+  claim: Scalars['BigNumberType']
   /** Current status */
   status: BillingBillStatusEnum
   /** Transaction id */
@@ -618,7 +608,7 @@ export type BillingTransferCreateInputType = {
   blockchain: BlockchainEnum
   network: Scalars['String']
   account: Scalars['String']
-  amount: Scalars['String']
+  amount: Scalars['BigNumberType']
   tx: Scalars['String']
 }
 
@@ -639,7 +629,7 @@ export type BillingTransferType = {
   /** Account */
   account: Scalars['String']
   /** Transfer amount (must be negative) */
-  amount: Scalars['Float']
+  amount: Scalars['BigNumberType']
   /** Transaction id */
   tx: Scalars['String']
   /** Bill */
@@ -648,6 +638,23 @@ export type BillingTransferType = {
   rejectReason: Scalars['String']
   /** Date of created */
   createdAt: Scalars['DateTimeType']
+}
+
+export type BillingUserBalanceType = {
+  __typename?: 'BillingUserBalanceType'
+  pending: Scalars['BigNumberType']
+  balance: Scalars['BigNumberType']
+  claim: Scalars['BigNumberType']
+  netBalance: Scalars['BigNumberType']
+}
+
+export type BillingWalletBalanceType = {
+  __typename?: 'BillingWalletBalanceType'
+  lowFeeFunds: Scalars['Boolean']
+  balance: Scalars['BigNumberType']
+  claim: Scalars['BigNumberType']
+  netBalance: Scalars['BigNumberType']
+  netBalanceUSD: Scalars['BigNumberType']
 }
 
 export enum BlockchainEnum {
@@ -2393,6 +2400,7 @@ export type RestakeCalculatorType = {
   __typename?: 'RestakeCalculatorType'
   earnedUSD: Scalars['BigNumberType']
   nextRestakeAt?: Maybe<Scalars['DateTimeType']>
+  apyBoost?: Maybe<Scalars['String']>
 }
 
 export type RestakeStrategyPointType = {
@@ -3145,7 +3153,7 @@ export type UserBillingType = {
   __typename?: 'UserBillingType'
   transfers: UserBillingTransferListType
   bills: UserBillingBillListType
-  balance: BillingBalanceType
+  balance: BillingUserBalanceType
 }
 
 export type UserBillingTypeTransfersArgs = {
@@ -3819,7 +3827,7 @@ export type WalletBillingType = {
   __typename?: 'WalletBillingType'
   transfers: WalletBillingTransferListType
   bills: WalletBillingBillListType
-  balance: BillingBalanceType
+  balance: BillingWalletBalanceType
 }
 
 export type WalletBillingTypeTransfersArgs = {
@@ -6312,8 +6320,8 @@ export type WalletListMetricsQuery = { __typename?: 'Query' } & {
                     >
                   }
                 billing: { __typename?: 'WalletBillingType' } & {
-                  balance: { __typename?: 'BillingBalanceType' } & Pick<
-                    BillingBalanceType,
+                  balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
+                    BillingWalletBalanceType,
                     | 'lowFeeFunds'
                     | 'balance'
                     | 'netBalance'
@@ -6428,7 +6436,7 @@ export type RestakeCalculatorQueryVariables = Exact<{
 export type RestakeCalculatorQuery = { __typename?: 'Query' } & {
   restakeCalculator: { __typename?: 'RestakeCalculatorType' } & Pick<
     RestakeCalculatorType,
-    'earnedUSD' | 'nextRestakeAt'
+    'earnedUSD' | 'nextRestakeAt' | 'apyBoost'
   >
 }
 
@@ -6512,8 +6520,8 @@ export type StakingAutomatesContractFragmentFragment = {
             'stakedUSD'
           >
           billing: { __typename?: 'WalletBillingType' } & {
-            balance: { __typename?: 'BillingBalanceType' } & Pick<
-              BillingBalanceType,
+            balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
+              BillingWalletBalanceType,
               'lowFeeFunds'
             >
           }
@@ -6524,8 +6532,8 @@ export type StakingAutomatesContractFragmentFragment = {
       'id' | 'network' | 'address' | 'blockchain'
     > & {
         billing: { __typename?: 'WalletBillingType' } & {
-          balance: { __typename?: 'BillingBalanceType' } & Pick<
-            BillingBalanceType,
+          balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
+            BillingWalletBalanceType,
             'netBalanceUSD'
           >
         }
@@ -7012,8 +7020,8 @@ export type TradeCancelOrderMutation = { __typename?: 'Mutation' } & {
         'id' | 'network' | 'address' | 'name' | 'blockchain'
       > & {
           billing: { __typename?: 'WalletBillingType' } & {
-            balance: { __typename?: 'BillingBalanceType' } & Pick<
-              BillingBalanceType,
+            balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
+              BillingWalletBalanceType,
               'lowFeeFunds'
             >
           }
@@ -7087,8 +7095,8 @@ export type TradeCreateOrderMutation = { __typename?: 'Mutation' } & {
         'id' | 'network' | 'address' | 'name' | 'blockchain'
       > & {
           billing: { __typename?: 'WalletBillingType' } & {
-            balance: { __typename?: 'BillingBalanceType' } & Pick<
-              BillingBalanceType,
+            balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
+              BillingWalletBalanceType,
               'lowFeeFunds'
             >
           }
@@ -7175,8 +7183,8 @@ export type TradeOrderListQuery = { __typename?: 'Query' } & {
               'id' | 'network' | 'address' | 'name' | 'blockchain'
             > & {
                 billing: { __typename?: 'WalletBillingType' } & {
-                  balance: { __typename?: 'BillingBalanceType' } & Pick<
-                    BillingBalanceType,
+                  balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
+                    BillingWalletBalanceType,
                     'lowFeeFunds'
                   >
                 }

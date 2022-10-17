@@ -90,6 +90,8 @@ export const StakingApyDialog: React.FC<StakingApyDialogProps> = (props) => {
     }
   }, [])
 
+  const apyBoost = bignumberUtils.mul(restakeCalculator?.apyBoost, 100)
+
   return (
     <Dialog className={styles.root}>
       <Typography
@@ -149,19 +151,38 @@ export const StakingApyDialog: React.FC<StakingApyDialogProps> = (props) => {
           </Typography>
         </div>
         {isRestake && (
-          <div>
-            <Typography variant="body3" className={styles.fs12}>
-              Next restake at
-            </Typography>
-            <Typography variant="body2" weight="bold">
-              {restakeCalculator?.nextRestakeAt
-                ? dateUtils.format(
-                    restakeCalculator.nextRestakeAt,
-                    'DD/MM HH:mm'
-                  )
-                : '-'}
-            </Typography>
-          </div>
+          <>
+            <div>
+              <Typography variant="body3" className={styles.fs12}>
+                Next restake at
+              </Typography>
+              <Typography variant="body2" weight="bold">
+                {restakeCalculator?.nextRestakeAt
+                  ? dateUtils.format(
+                      restakeCalculator.nextRestakeAt,
+                      'DD/MM HH:mm'
+                    )
+                  : '-'}
+              </Typography>
+            </div>
+            <div>
+              <Typography variant="body3" className={styles.fs12}>
+                Boosted APY
+              </Typography>
+              <Typography variant="body2" weight="bold">
+                {bignumberUtils.gt(apyBoost, 0) ? (
+                  <>{bignumberUtils.formatMax(apyBoost)} %</>
+                ) : (
+                  <>
+                    You will earn $
+                    {bignumberUtils.format(restakeCalculator?.earnedUSD)} in
+                    next 30 days. It&apos;s not enough to use the
+                    auto-compounding effectively
+                  </>
+                )}
+              </Typography>
+            </div>
+          </>
         )}
       </Paper>
       <Typography variant="body3" className={styles.attention}>
