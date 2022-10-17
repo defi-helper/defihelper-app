@@ -11,13 +11,6 @@ export const BLOCKCHAINS_SELECT = gql`
           title
           icon
         }
-        waves(
-          filter: { testnet: $testnet, automate: { autorestake: $autorestake } }
-        ) {
-          id
-          title
-          icon
-        }
       }
     }
   }

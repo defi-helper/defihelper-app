@@ -79,10 +79,7 @@ export const lpTokensApi = {
           },
         }
       )
-      .then(({ data }) => [
-        ...(data?.config.blockchain.ethereum ?? []),
-        ...(data?.config.blockchain.waves ?? []),
-      ]),
+      .then(({ data }) => data?.config.blockchain.ethereum ?? []),
 
   contracts: (
     variables: BuyLiquidityContractsQueryVariables,
