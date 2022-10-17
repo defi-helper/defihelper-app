@@ -9,6 +9,7 @@ import { useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import {
+  stakingApi,
   StakingAutomatesContractCard,
   StakingErrorDialog,
 } from '~/staking/common'
@@ -26,6 +27,8 @@ import {
 } from '~/portfolio/common'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { paths } from '~/paths'
+import { NULL_ADDRESS } from '~/common/constants'
+import { InvestStopLossDialog } from '~/invest/common/invest-stop-loss-dialog'
 import * as styles from './staking-automates.css'
 import * as model from './staking-automates.model'
 
@@ -42,6 +45,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const user = useStore(authModel.$user)
   const handleConnect = useWalletConnect()
   const [openConfirmDialog] = useDialog(ConfirmDialog)
+  const [openStopLossDialog] = useDialog(InvestStopLossDialog)
 
   const automatesContracts = useStore(model.$automatesContracts)
   const { metrics } = useStore(model.$freshMetrics)
@@ -213,6 +217,73 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
     currentWallet ? 15000 : null
   )
 
+  const handleStopLoss =
+    ({ contract, id, stopLoss }: typeof automatesContracts[number]) =>
+    async () => {
+      try {
+        if (!contract) return
+        if (!currentWallet?.account || !user)
+          return toastsService.error('wallet is not connected')
+        if (!contract.automate.autorestake)
+          return toastsService.error('adapter not found')
+
+        const deployedContracts = await model.fetchAutomatesContractsFx({
+          userId: user.id,
+        })
+
+        const deployedContract = deployedContracts.list.find(
+          ({ contract: deployedStakingContract }) =>
+            deployedStakingContract?.id === contract.id
+        )
+
+        if (!deployedContract) return toastsService.error('contract not found')
+
+        const stakingAutomatesAdapter = await model.fetchAdapterFx({
+          protocolAdapter: contract.protocol.adapter,
+          contractAdapter: contract.automate.autorestake,
+          contractId: id,
+          contractAddress: deployedContract.address,
+          provider: currentWallet.provider,
+          chainId: String(currentWallet.chainId),
+          action: 'stopLoss',
+        })
+
+        if (!stakingAutomatesAdapter)
+          return toastsService.error('adapter not found')
+
+        const tokens = await stakingApi.tokens({
+          network: contract.network,
+          protocol: contract.blockchain,
+        })
+
+        const res = await openStopLossDialog({
+          adapter: stakingAutomatesAdapter.stopLoss,
+          mainTokens: contract.tokens.stake
+            .map((token) => ({
+              logoUrl: token.alias?.logoUrl ?? '',
+              symbol: token.symbol,
+              address: token.address,
+            }))
+            .filter(({ address }) => address !== NULL_ADDRESS),
+          withdrawTokens: tokens.filter(
+            ({ address }) => address !== NULL_ADDRESS
+          ),
+          initialStopLoss: stopLoss,
+        })
+
+        await model.enableStopLossFx({
+          contract: id,
+          path: res.path,
+          amountOut: res.amountOut,
+          amountOutMin: res.amountOutMin,
+        })
+      } catch (error) {
+        console.error(error)
+      } finally {
+        model.reset()
+      }
+    }
+
   if (isEmpty(automatesContracts)) return <></>
 
   return (
@@ -251,6 +322,11 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             isNotSameAddresses ??
             handleRunManually(automatesContract)
 
+          const stopLoss =
+            wrongNetwork ??
+            isNotSameAddresses ??
+            handleStopLoss(automatesContract)
+
           return (
             <StakingAutomatesContractCard
               key={automatesContract.id}
@@ -270,6 +346,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               onRefund={currentWallet ? refund : connect}
               onRun={currentWallet ? run : connect}
               onDelete={handleDelete(automatesContract.id)}
+              onStopLoss={currentWallet ? stopLoss : connect}
               refunding={automatesContract.refunding}
               deleting={automatesContract.deleting}
               running={automatesContract.running}

@@ -6,7 +6,6 @@ import { SettingsContacts } from './settings-contacts'
 import { SettingsWallets } from './settings-wallets'
 import { Head } from '~/common/head'
 import { SettingsTransactionHistory } from './settings-transaction-history'
-import { StakingAutomates } from '~/staking/staking-automates'
 import { SettingsIntegrations } from '~/settings/settings-integrations'
 import { Typography } from '~/common/typography'
 import { Button } from '~/common/button'
@@ -90,7 +89,6 @@ export const Settings: React.VFC<SettingsProps> = () => {
         <SettingsContacts className={styles.section} />
         <SettingsTransactionHistory className={styles.section} />
         <SettingsIntegrations className={styles.section} />
-        <StakingAutomates className={styles.section} />
       </div>
     </AppLayout>
   )
