@@ -245,20 +245,6 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Link>
             </div>
           )}
-          <div className={styles.row}>
-            <Typography
-              variant="body2"
-              as="span"
-              className={clsx(styles.infoTitle, styles.opacity)}
-            >
-              Restake at
-            </Typography>
-            <Typography variant="body2" as="span">
-              {props.restakeAt
-                ? dateUtils.format(props.restakeAt, 'DD/MM HH:mm')
-                : '-'}
-            </Typography>
-          </div>
         </div>
         <div
           className={clsx(
@@ -375,6 +361,16 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 0
               )}
               %
+            </Typography>
+          </div>
+          <div className={styles.row}>
+            <Typography variant="body2" as="span" className={styles.opacity}>
+              Restake at
+            </Typography>
+            <Typography variant="body2" as="span">
+              {props.restakeAt
+                ? dateUtils.format(props.restakeAt, 'DD/MM HH:mm')
+                : '-'}
             </Typography>
           </div>
           <div className={styles.buttons}>
