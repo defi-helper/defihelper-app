@@ -17,6 +17,14 @@ import { InvestStakingStepsSuccessBuy } from './invest-staking-steps-success-buy
 import { InvestStakingStepsMigrate } from './invest-staking-steps-migrate'
 import { InvestStakingStepsSuccess } from './invest-staking-steps-success'
 import { InvestStakingStepsTelegram } from './invest-staking-steps-telegram'
+import {
+  AutomateActionTypeEnum,
+  AutomateConditionTypeEnum,
+  AutomateTriggerTypeEnum,
+} from '~/api'
+import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
+import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
+import * as model from '~/invest/invest-detail/invest-detail.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import * as styles from './invest-staking-steps.css'
@@ -85,36 +93,108 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       .catch(console.error)
   }
 
+  const [deployState, handleDeploy] = useAsyncFn(async () => {
+    if (!currentWallet || !props.contract.automate.autorestake) return
+
+    const findedWallet = wallets.find((wallet) => {
+      const sameAddreses =
+        String(currentWallet.chainId) === 'main'
+          ? currentWallet.account === wallet.address
+          : currentWallet.account?.toLowerCase() === wallet.address
+
+      return sameAddreses && String(currentWallet.chainId) === wallet.network
+    })
+
+    const addresses = await model.fetchContractAddressesFx({
+      contracts: [props.contract],
+      protocolAdapter: props.contract.protocol.adapter,
+    })
+    const { prototypeAddress = undefined } = addresses[props.contract.id]
+
+    if (!findedWallet || !prototypeAddress) return
+
+    const adapter = await deployModel.fetchDeployAdapterFx({
+      address: prototypeAddress,
+      protocol: props.contract.protocol.adapter,
+      contract: props.contract.automate.autorestake,
+      chainId: String(currentWallet.chainId),
+      provider: currentWallet.provider,
+      contractAddress: props.contract.address,
+    })
+
+    const [deployAdapter] = adapter.deploy
+
+    const info = await deployAdapter.info()
+
+    const values = info.inputs?.map(({ value }) => value)
+
+    if (!values) return
+
+    const can = await deployAdapter.can(...values)
+
+    if (can instanceof Error) return
+
+    const { tx, getAddress } = await deployAdapter.send(...values)
+
+    await tx.wait()
+
+    const deployedContract = await deployModel.deployFx({
+      proxyAddress: await getAddress(),
+      inputs: values,
+      protocol: props.contract.protocol.id,
+      adapter: props.contract.automate.autorestake,
+      contract: props.contract.id,
+      account: findedWallet.address,
+      chainId: String(currentWallet.chainId),
+      provider: currentWallet.provider,
+    })
+
+    const createdTrigger = await automationUpdateModel.createTriggerFx({
+      wallet: findedWallet.id,
+      params: JSON.stringify({}),
+      type: AutomateTriggerTypeEnum.EveryHour,
+      name: `Autostaking ${props.contract.name}`,
+      active: true,
+    })
+
+    const action = await automationUpdateModel.createActionFx({
+      trigger: createdTrigger.id,
+      type: AutomateActionTypeEnum.EthereumAutomateRun,
+      params: JSON.stringify({
+        id: deployedContract.id,
+      }),
+      priority: 0,
+    })
+
+    await automationUpdateModel.createConditionFx({
+      trigger: createdTrigger.id,
+      type: AutomateConditionTypeEnum.EthereumOptimalAutomateRun,
+      params: JSON.stringify({
+        id: action.id,
+      }),
+      priority: 0,
+    })
+
+    handleNextStep()
+
+    return deployedContract
+  }, [currentWallet, props.contract])
+
   const adapter = useAsync(async () => {
-    if (!user) return
+    if (!user || !deployState.value) return
 
-    const deployedContracts =
-      await stakingAutomatesModel.fetchAutomatesContractsFx({
-        userId: user.id,
-      })
-
-    const deployedContract = deployedContracts.list.find(
-      ({ contract: deployedStakingContract }) =>
-        deployedStakingContract?.id === props.contract.id
-    )
-
-    if (
-      !currentWallet ||
-      !props.contract.automate.autorestake ||
-      !deployedContract
-    )
-      return
+    if (!currentWallet || !props.contract.automate.autorestake) return
 
     return stakingAutomatesModel.fetchAdapterFx({
       protocolAdapter: props.contract.protocol.adapter,
       contractAdapter: props.contract.automate.autorestake,
       contractId: props.contract.id,
-      contractAddress: deployedContract.address,
+      contractAddress: deployState.value.address,
       provider: currentWallet.provider,
       chainId: String(currentWallet.chainId),
       action: 'migrate',
     })
-  }, [currentWallet])
+  }, [currentWallet, deployState.value])
 
   const balanceOf = useAsyncRetry(async () => {
     return adapter.value?.migrate.methods?.balanceOf()
@@ -180,7 +260,8 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     !deploy && !canMigrate ? (
       <InvestStakingStepsDeploy
         key={2}
-        onSubmit={handleNextStep}
+        onDeploy={handleDeploy}
+        loading={deployState.loading}
         contract={props.contract}
       />
     ) : null,
