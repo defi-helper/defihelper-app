@@ -4,6 +4,8 @@ import { useAsyncFn, useAsyncRetry, useToggle, useThrottle } from 'react-use'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
+import { ButtonBase } from '~/common/button-base'
+import { CircularProgress } from '~/common/circular-progress'
 import { Dialog } from '~/common/dialog'
 import { StopLossComponent } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
@@ -28,6 +30,8 @@ export type InvestStopLossDialogProps = {
     address: string
   }[]
   initialStopLoss: StakingAutomatesContract['stopLoss']
+  onDelete: () => Promise<void>
+  onCancel: () => void
 }
 
 export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
@@ -127,6 +131,12 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
       amountOutMin: '0',
     })
   }, [props.adapter, path.value, stopLossPrice])
+
+  const [deleteState, handleDelete] = useAsyncFn(async () => {
+    await props.onDelete()
+
+    return props.onCancel()
+  }, [])
 
   const withDrawTokensMap = props.withdrawTokens?.reduce((acc, token) => {
     acc.set(token.address, token.symbol)
@@ -253,6 +263,18 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
           </>
         )}
       </div>
+      <ButtonBase onClick={handleDelete} className={styles.deleteButton}>
+        {deleteState.loading && (
+          <CircularProgress
+            height="1em"
+            width="1em"
+            className={styles.deleteButtonLoader}
+          />
+        )}
+        <span className={clsx(deleteState.loading && styles.deleteButtonText)}>
+          DELETE CONTRACT
+        </span>
+      </ButtonBase>
       <Button
         className={styles.confirm}
         loading={confirm.loading}

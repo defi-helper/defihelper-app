@@ -329,6 +329,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               ({ address }) => address !== NULL_ADDRESS
             ),
             initialStopLoss: stopLoss,
+            onDelete: () => automationsListModel.deleteContractFx(contract.id),
           })
 
           await model.enableStopLossFx({

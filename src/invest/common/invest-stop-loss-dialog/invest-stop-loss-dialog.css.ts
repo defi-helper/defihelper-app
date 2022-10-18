@@ -22,7 +22,7 @@ export const subtitle = style({
 })
 
 export const confirm = style({
-  marginTop: 'auto',
+  marginTop: 16,
 })
 
 export const row = style({
@@ -83,3 +83,23 @@ export const imgPlaceHolder = style([
     borderRadius: '50%',
   },
 ])
+
+export const deleteButton = style({
+  color: theme.colors.common.red1,
+  marginTop: 'auto',
+  position: 'relative',
+})
+
+export const deleteButtonLoader = style({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  margin: 'auto',
+  zIndex: -1,
+})
+
+export const deleteButtonText = style({
+  opacity: 0,
+})
