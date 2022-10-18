@@ -30,11 +30,11 @@ import { ConfirmDialog } from '~/common/confirm-dialog'
 import { analytics } from '~/analytics'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { InvestStopLossDialog } from '~/invest/common/invest-stop-loss-dialog'
+import { paths } from '~/paths'
+import { NULL_ADDRESS } from '~/common/constants'
 import * as model from '~/staking/staking-automates/staking-automates.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './invest-deployed-contracts.css'
-import { paths } from '~/paths'
-import { NULL_ADDRESS } from '~/common/constants'
 
 export type InvestDeployedContractsProps = {
   className?: string
@@ -277,32 +277,19 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         switchNetwork(contract.wallet.network).catch(console.error)
 
     const handleStopLoss =
-      ({ contract, id, stopLoss }: typeof automatesContracts[number]) =>
-      async () => {
+      (automateContract: typeof automatesContracts[number]) => async () => {
         try {
-          if (!contract) return
+          if (!automateContract.contract) return
           if (!currentWallet?.account || !user)
             return toastsService.error('wallet is not connected')
-          if (!contract.automate.autorestake)
+          if (!automateContract.contract.automate.autorestake)
             return toastsService.error('adapter not found')
 
-          const deployedContracts = await model.fetchAutomatesContractsFx({
-            userId: user.id,
-          })
-
-          const deployedContract = deployedContracts.list.find(
-            ({ contract: deployedStakingContract }) =>
-              deployedStakingContract?.id === contract.id
-          )
-
-          if (!deployedContract)
-            return toastsService.error('contract not found')
-
           const stakingAutomatesAdapter = await model.fetchAdapterFx({
-            protocolAdapter: contract.protocol.adapter,
-            contractAdapter: contract.automate.autorestake,
-            contractId: id,
-            contractAddress: deployedContract.address,
+            protocolAdapter: automateContract.contract.protocol.adapter,
+            contractAdapter: automateContract.contract.automate.autorestake,
+            contractId: automateContract.id,
+            contractAddress: automateContract.address,
             provider: currentWallet.provider,
             chainId: String(currentWallet.chainId),
             action: 'stopLoss',
@@ -312,13 +299,13 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             return toastsService.error('adapter not found')
 
           const tokens = await stakingApi.tokens({
-            network: contract.network,
-            protocol: contract.blockchain,
+            network: automateContract.contract.network,
+            protocol: automateContract.contract.blockchain,
           })
 
           const res = await openStopLossDialog({
             adapter: stakingAutomatesAdapter.stopLoss,
-            mainTokens: contract.tokens.stake
+            mainTokens: automateContract.contract.tokens.stake
               .map((token) => ({
                 logoUrl: token.alias?.logoUrl ?? '',
                 symbol: token.symbol,
@@ -328,12 +315,13 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             withdrawTokens: tokens.filter(
               ({ address }) => address !== NULL_ADDRESS
             ),
-            initialStopLoss: stopLoss,
-            onDelete: () => automationsListModel.deleteContractFx(id),
+            initialStopLoss: automateContract.stopLoss,
+            onDelete: () =>
+              automationsListModel.deleteContractFx(automateContract.id),
           })
 
           await model.enableStopLossFx({
-            contract: id,
+            contract: automateContract.id,
             path: res.path,
             amountOut: res.amountOut,
             amountOutMin: res.amountOutMin,
