@@ -269,6 +269,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
             ({ address }) => address !== NULL_ADDRESS
           ),
           initialStopLoss: stopLoss,
+          onDelete: () => automationsListModel.deleteContractFx(contract.id),
         })
 
         await model.enableStopLossFx({
