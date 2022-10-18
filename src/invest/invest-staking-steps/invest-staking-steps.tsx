@@ -285,7 +285,6 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       <div className={styles.content}>
         {canWithdraw.loading ||
         balanceOf.loading ||
-        adapter.loading ||
         lp.loading ||
         balanceOfLp.loading ? (
           <div className={styles.loader}>
