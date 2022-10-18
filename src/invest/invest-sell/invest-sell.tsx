@@ -30,6 +30,7 @@ export type InvestSellProps = {
     address: string
   }[]
   onChangeToken: (token: string) => void
+  onSell: (sellAmount: string) => void
 }
 
 export const InvestSell = (props: InvestSellProps) => {
@@ -75,7 +76,7 @@ export const InvestSell = (props: InvestSellProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenAddress, tokens])
 
-  const [buyState, handleBuy] = useAsyncFn(async () => {
+  const [sellState, handleSell] = useAsyncFn(async () => {
     if (!props.adapter) return
 
     const { sell, canSell, sellETH } = props.adapter.methods
@@ -98,6 +99,7 @@ export const InvestSell = (props: InvestSellProps) => {
       })
 
       props.onSubmit?.(result?.transactionHash)
+      props.onSell(amount)
 
       return true
     } catch (error) {
@@ -179,14 +181,14 @@ export const InvestSell = (props: InvestSellProps) => {
             </>
           }
           className={styles.input}
-          disabled={approveState.loading || buyState.loading}
+          disabled={approveState.loading || sellState.loading}
           value={amount}
           onChange={(event) => setAmount(event.target.value)}
         />
         <Select
           label="You will get (approximately)"
           className={styles.input}
-          disabled={approveState.loading || buyState.loading}
+          disabled={approveState.loading || sellState.loading}
           value={tokenAddress}
           onChange={(event) => setTokenAddress(event.target.value)}
           leftSide={
@@ -209,7 +211,7 @@ export const InvestSell = (props: InvestSellProps) => {
           })}
         </Select>
       </div>
-      {buyState.error || approveState.error ? (
+      {sellState.error || approveState.error ? (
         <Typography variant="body3" as="div" className={styles.error}>
           Your transaction failed due to current market conditions. You can try
           to change the amount or use another token
@@ -231,8 +233,8 @@ export const InvestSell = (props: InvestSellProps) => {
           </Button>
         )}
         <Button
-          onClick={handleBuy}
-          loading={buyState.loading}
+          onClick={handleSell}
+          loading={sellState.loading}
           disabled={approveState.loading || !approved.value}
           color="green"
         >
