@@ -21,6 +21,7 @@ export type InvestStopLossDialogProps = {
     path: string[]
     amountOut: string
     amountOutMin: string
+    active: boolean
   }) => void
   adapter?: StopLossComponent
   mainTokens?: { logoUrl: string; symbol: string; address: string }[]
@@ -74,8 +75,8 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     )
   }, [props.adapter, props.initialStopLoss, path.value])
 
-  const percentThrottled = useThrottle(percent, 1000)
-  const stopLossPriceThrottled = useThrottle(stopLossPrice, 1000)
+  const percentThrottled = useThrottle(percent, 300)
+  const stopLossPriceThrottled = useThrottle(stopLossPrice, 300)
 
   useEffect(() => {
     if (!price.value) return
@@ -134,6 +135,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
       path: path.value,
       amountOut: stopLossPrice,
       amountOutMin: '0',
+      active: stopLoss,
     })
   }, [props.adapter, path.value, stopLossPrice])
 

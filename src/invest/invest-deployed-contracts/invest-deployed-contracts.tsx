@@ -323,12 +323,18 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             autoCompoundActive: automateContract.trigger?.active ?? null,
           })
 
-          await model.enableStopLossFx({
-            contract: automateContract.id,
-            path: res.path,
-            amountOut: res.amountOut,
-            amountOutMin: res.amountOutMin,
-          })
+          if (res.active) {
+            await model.enableStopLossFx({
+              contract: automateContract.id,
+              path: res.path,
+              amountOut: res.amountOut,
+              amountOutMin: res.amountOutMin,
+            })
+          } else {
+            await model.disableStopLossFx({
+              contract: automateContract.id,
+            })
+          }
         } catch (error) {
           console.error(error)
         } finally {
