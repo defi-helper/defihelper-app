@@ -103,7 +103,10 @@ export const reset = stakingAutomatesDomain.createEvent()
 
 export const $automatesContracts = stakingAutomatesDomain
   .createStore<StakingAutomatesContract[]>([])
-  .on(fetchAutomatesContractsFx.doneData, (_, { list }) => list)
+  .on(
+    fetchAutomatesContractsFx.doneData,
+    (_, { list }) => list as StakingAutomatesContract[]
+  )
   .on(fetchAdapterFx, (state, payload) =>
     state.map((contract) => {
       return contract.id === payload.contractId

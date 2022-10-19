@@ -84,6 +84,12 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
           netBalanceUSD
         }
       }
+      automates {
+        id
+        metric {
+          worth
+        }
+      }
     }
     adapter
     initParams

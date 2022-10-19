@@ -6373,6 +6373,14 @@ export type WalletListMetricsQuery = { __typename?: 'Query' } & {
                     | 'netBalanceUSD'
                   >
                 }
+                automates: Array<
+                  { __typename?: 'WalletBlockchainType' } & {
+                    metric: { __typename?: 'WalletMetricType' } & Pick<
+                      WalletMetricType,
+                      'worth'
+                    >
+                  }
+                >
               }
           >
         >
@@ -6597,6 +6605,17 @@ export type StakingAutomatesContractFragmentFragment = {
             'netBalanceUSD'
           >
         }
+        automates: Array<
+          { __typename?: 'WalletBlockchainType' } & Pick<
+            WalletBlockchainType,
+            'id'
+          > & {
+              metric: { __typename?: 'WalletMetricType' } & Pick<
+                WalletMetricType,
+                'worth'
+              >
+            }
+        >
       }
     stopLoss?: Maybe<
       { __typename?: 'AutomateContractStopLossType' } & Pick<
