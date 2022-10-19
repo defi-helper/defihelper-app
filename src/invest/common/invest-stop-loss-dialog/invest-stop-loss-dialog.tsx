@@ -21,6 +21,7 @@ export type InvestStopLossDialogProps = {
     path: string[]
     amountOut: string
     amountOutMin: string
+    active: boolean
   }) => void
   adapter?: StopLossComponent
   mainTokens?: { logoUrl: string; symbol: string; address: string }[]
@@ -74,8 +75,8 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     )
   }, [props.adapter, props.initialStopLoss, path.value])
 
-  const percentThrottled = useThrottle(percent, 1000)
-  const stopLossPriceThrottled = useThrottle(stopLossPrice, 1000)
+  const percentThrottled = useThrottle(percent, 300)
+  const stopLossPriceThrottled = useThrottle(stopLossPrice, 300)
 
   useEffect(() => {
     if (!price.value) return
@@ -114,28 +115,31 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   const [confirm, handleConfirm] = useAsyncFn(async () => {
     if (!props.adapter || !path.value) return
 
-    const can = await props.adapter.methods.canSetStopLoss(
-      path.value,
-      stopLossPrice,
-      '0'
-    )
+    if (stopLoss) {
+      const can = await props.adapter.methods.canSetStopLoss(
+        path.value,
+        stopLossPrice,
+        '0'
+      )
 
-    if (can instanceof Error) throw can
+      if (can instanceof Error) throw can
 
-    const result = await props.adapter.methods.setStopLoss(
-      path.value,
-      stopLossPrice,
-      '0'
-    )
+      const result = await props.adapter.methods.setStopLoss(
+        path.value,
+        stopLossPrice,
+        '0'
+      )
 
-    await result.tx.wait()
+      await result.tx.wait()
+    }
 
     props.onConfirm({
       path: path.value,
       amountOut: stopLossPrice,
       amountOutMin: '0',
+      active: stopLoss,
     })
-  }, [props.adapter, path.value, stopLossPrice])
+  }, [props.adapter, path.value, stopLossPrice, stopLoss])
 
   const [deleteState, handleDelete] = useAsyncFn(async () => {
     await props.onDelete()

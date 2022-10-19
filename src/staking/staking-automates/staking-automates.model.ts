@@ -1,10 +1,12 @@
 import { createDomain, sample, guard, UnitValue, StoreValue } from 'effector'
 import { createGate } from 'effector-react'
+import { debounce } from 'patronum/debounce'
 import omit from 'lodash.omit'
 
 import { authModel } from '~/auth'
 import { Adapters, loadAdapter } from '~/common/load-adapter'
 import {
+  InvestStopLossDisableMutationVariables,
   InvestStopLossEnableMutationVariables,
   UserType,
 } from '~/api/_generated-types'
@@ -101,6 +103,18 @@ export const toggleAutoCompoundFx = stakingAutomatesDomain.createEffect(
 
 export const reset = stakingAutomatesDomain.createEvent()
 
+export const enableStopLossFx = stakingAutomatesDomain.createEffect(
+  (params: InvestStopLossEnableMutationVariables['input']) => {
+    return stakingApi.enableStopLoss({ input: params })
+  }
+)
+
+export const disableStopLossFx = stakingAutomatesDomain.createEffect(
+  (params: InvestStopLossDisableMutationVariables['input']) => {
+    return stakingApi.disableStopLoss({ input: params })
+  }
+)
+
 export const $automatesContracts = stakingAutomatesDomain
   .createStore<StakingAutomatesContract[]>([])
   .on(
@@ -155,6 +169,13 @@ export const $automatesContracts = stakingAutomatesDomain
         : contract
     )
   })
+  .on(disableStopLossFx.done, (state, { params }) => {
+    return state.map((contract) =>
+      contract.id === params.contract
+        ? { ...contract, stopLoss: null }
+        : contract
+    )
+  })
 
 export const $automatesContractsLoaded = stakingAutomatesDomain
   .createStore<boolean>(false)
@@ -173,11 +194,10 @@ export const StakingAutomatesGate = createGate<Gate | null>({
 
 export const updated = stakingAutomatesDomain.createEvent()
 
-export const enableStopLossFx = stakingAutomatesDomain.createEffect(
-  (params: InvestStopLossEnableMutationVariables['input']) => {
-    return stakingApi.enableStopLoss({ input: params })
-  }
-)
+const enabled = debounce({
+  source: enableStopLossFx.done,
+  timeout: 500,
+})
 
 sample({
   clock: guard({
@@ -191,7 +211,7 @@ sample({
       StakingAutomatesGate.open,
       StakingAutomatesGate.state.updates,
       updated,
-      enableStopLossFx.done,
+      enabled,
     ],
     filter: (source): source is [UserType, boolean, Gate] => {
       const [user, status] = source

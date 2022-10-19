@@ -6485,6 +6485,15 @@ export type AutomationContractUpdateMutation = { __typename?: 'Mutation' } & {
   } & StakingAutomatesContractFragmentFragment
 }
 
+export type InvestStopLossDisableMutationVariables = Exact<{
+  input: AutomateContractStopLossDisableInputType
+}>
+
+export type InvestStopLossDisableMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'automateContractStopLossDisable'
+>
+
 export type InvestStopLossEnableMutationVariables = Exact<{
   input: AutomateContractStopLossEnableInputType
 }>
