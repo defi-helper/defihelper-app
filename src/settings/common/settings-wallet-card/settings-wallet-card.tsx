@@ -24,6 +24,7 @@ export type SettingsWalletCardProps = {
   network: string
   blockchain: string
   automations: string
+  automationsWorth: string
   worth: string
   onDeposit?: () => void
   onRefund?: () => void
@@ -152,7 +153,8 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
             Automations
           </Typography>
           <Typography variant="body2" as="span">
-            {props.automations}
+            {props.automations} ($
+            {bignumberUtils.format(props.automationsWorth)})
           </Typography>
         </div>
         <div className={styles.row}>

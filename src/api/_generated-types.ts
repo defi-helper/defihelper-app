@@ -3044,11 +3044,18 @@ export enum TokenPriceFeedCoingeckoPlatformEnum {
 export type TokenPriceFeedInputType = {
   coingeckoId?: Maybe<TokenPriceFeedCoingeckoIdInputType>
   coingeckoAddress?: Maybe<TokenPriceFeedCoingeckoAddressInputType>
+  uniswapRouterV2?: Maybe<TokenPriceFeedUniswapRouterV2InputType>
 }
 
 export type TokenPriceFeedType =
   | TokenPriceFeedCoingeckoIdType
   | TokenPriceFeedCoingeckoAddressType
+
+export type TokenPriceFeedUniswapRouterV2InputType = {
+  route: Array<Scalars['String']>
+  routerAddress: Scalars['String']
+  outputDecimals: Scalars['Int']
+}
 
 export type TokenType = {
   __typename?: 'TokenType'
@@ -3875,6 +3882,7 @@ export type WalletBlockchainType = {
   /** Statistics collected */
   statisticsCollectedAt: Scalars['DateTimeType']
   contracts: WalletContractListType
+  automates: Array<WalletBlockchainType>
   triggersCount: Scalars['Int']
   tokenAliases: WalletTokenAliasListType
   metricChart: Array<MetricChartType>
@@ -6337,6 +6345,14 @@ export type WalletListMetricsQuery = { __typename?: 'Query' } & {
                     | 'netBalanceUSD'
                   >
                 }
+                automates: Array<
+                  { __typename?: 'WalletBlockchainType' } & {
+                    metric: { __typename?: 'WalletMetricType' } & Pick<
+                      WalletMetricType,
+                      'worth'
+                    >
+                  }
+                >
               }
           >
         >
@@ -6545,6 +6561,17 @@ export type StakingAutomatesContractFragmentFragment = {
             'netBalanceUSD'
           >
         }
+        automates: Array<
+          { __typename?: 'WalletBlockchainType' } & Pick<
+            WalletBlockchainType,
+            'id'
+          > & {
+              metric: { __typename?: 'WalletMetricType' } & Pick<
+                WalletMetricType,
+                'worth'
+              >
+            }
+        >
       }
     stopLoss?: Maybe<
       { __typename?: 'AutomateContractStopLossType' } & Pick<
