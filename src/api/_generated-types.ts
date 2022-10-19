@@ -342,6 +342,11 @@ export type AutomateContractStopLossType = {
   params: AutomateContractStopLossParamsType
 }
 
+export type AutomateContractTriggerUpdateInputType = {
+  /** Is active */
+  active?: Maybe<Scalars['Boolean']>
+}
+
 export type AutomateContractType = {
   __typename?: 'AutomateContractType'
   /** Identificator */
@@ -371,6 +376,7 @@ export type AutomateContractType = {
   /** Date at archived contract */
   archivedAt?: Maybe<Scalars['DateTimeType']>
   stopLoss?: Maybe<AutomateContractStopLossType>
+  trigger?: Maybe<AutomateTriggerType>
 }
 
 export enum AutomateContractTypeEnum {
@@ -1385,6 +1391,7 @@ export type Mutation = {
   automateContractDelete: Scalars['Boolean']
   automateContractStopLossEnable: Scalars['Boolean']
   automateContractStopLossDisable: Scalars['Boolean']
+  automateContractTriggerUpdate: Array<AutomateTriggerType>
   tradingAuth?: Maybe<TradingAuthType>
   smartTradeCancel: SmartTradeOrderType
   smartTradeSwapOrderCreate: SmartTradeOrderType
@@ -1650,6 +1657,11 @@ export type MutationAutomateContractStopLossEnableArgs = {
 
 export type MutationAutomateContractStopLossDisableArgs = {
   input: AutomateContractStopLossDisableInputType
+}
+
+export type MutationAutomateContractTriggerUpdateArgs = {
+  id: Scalars['UuidType']
+  input: AutomateContractTriggerUpdateInputType
 }
 
 export type MutationSmartTradeCancelArgs = {
@@ -2999,6 +3011,14 @@ export type TokenListType = {
   pagination: Pagination
 }
 
+export type TokenMetricType = {
+  __typename?: 'TokenMetricType'
+  risk: TokenRiskScoringEnum
+  reliability: Scalars['Float']
+  profitability: Scalars['Float']
+  volatility: Scalars['Float']
+}
+
 export type TokenMetricUpdatedEvent = {
   __typename?: 'TokenMetricUpdatedEvent'
   id: Scalars['UuidType']
@@ -3057,6 +3077,13 @@ export type TokenPriceFeedUniswapRouterV2InputType = {
   outputDecimals: Scalars['Int']
 }
 
+export enum TokenRiskScoringEnum {
+  NotCalculated = 'notCalculated',
+  Low = 'low',
+  Moderate = 'moderate',
+  High = 'high',
+}
+
 export type TokenType = {
   __typename?: 'TokenType'
   /** Identificator */
@@ -3077,6 +3104,7 @@ export type TokenType = {
   decimals: Scalars['Int']
   priceFeed?: Maybe<TokenPriceFeedType>
   priceFeedNeeded: Scalars['Boolean']
+  metric: TokenMetricType
 }
 
 export type TokenUpdateInputType = {
@@ -6413,6 +6441,22 @@ export type WalletFragmentFragment = {
   | 'statisticsCollectedAt'
 >
 
+export type AutomationAutoCompoundToggleMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: AutomateContractTriggerUpdateInputType
+}>
+
+export type AutomationAutoCompoundToggleMutation = {
+  __typename?: 'Mutation'
+} & {
+  automateContractTriggerUpdate: Array<
+    { __typename?: 'AutomateTriggerType' } & Pick<
+      AutomateTriggerType,
+      'id' | 'active'
+    >
+  >
+}
+
 export type AutomationContractCreateMutationVariables = Exact<{
   input: AutomateContractCreateInputType
 }>
@@ -6607,6 +6651,12 @@ export type StakingAutomatesContractFragmentFragment = {
             'path' | 'amountOut' | 'amountOutMin' | 'slippage'
           >
         }
+    >
+    trigger?: Maybe<
+      { __typename?: 'AutomateTriggerType' } & Pick<
+        AutomateTriggerType,
+        'active' | 'id'
+      >
     >
   }
 

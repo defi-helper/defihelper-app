@@ -32,12 +32,17 @@ export type InvestStopLossDialogProps = {
   initialStopLoss: StakingAutomatesContract['stopLoss']
   onDelete: () => Promise<void>
   onCancel: () => void
+  onToggleAutoCompound: (active: boolean) => void
+  autoCompoundActive: boolean | null
 }
 
 export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   props
 ) => {
   const [stopLoss, toggleStopLoss] = useToggle(Boolean(props.initialStopLoss))
+  const [autoCompound, toggleAutoCompound] = useToggle(
+    props.autoCompoundActive ?? false
+  )
   const [mainToken, setMainToken] = useState(
     props.initialStopLoss?.inToken?.address ??
       props.mainTokens?.[0]?.address ??
@@ -152,6 +157,11 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     }, 500)
   }, [price.value, props.initialStopLoss])
 
+  useEffect(() => {
+    props.onToggleAutoCompound(autoCompound)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoCompound])
+
   return (
     <Dialog className={styles.root}>
       <div>
@@ -263,6 +273,19 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
           </>
         )}
       </div>
+      {props.autoCompoundActive !== null && (
+        <div className={styles.row}>
+          <div className={styles.rowHeading}>
+            <Typography>Auto Compound</Typography>
+            <Switch
+              size="small"
+              onChange={toggleAutoCompound}
+              disabled={confirm.loading}
+              checked={autoCompound}
+            />
+          </div>
+        </div>
+      )}
       <ButtonBase onClick={handleDelete} className={styles.deleteButton}>
         {deleteState.loading && (
           <CircularProgress
