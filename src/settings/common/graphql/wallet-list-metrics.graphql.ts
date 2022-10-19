@@ -28,6 +28,11 @@ export const WALLET_LIST_METRICS = gql`
               netBalanceUSD
             }
           }
+          automates {
+            metric {
+              worth
+            }
+          }
         }
       }
     }
