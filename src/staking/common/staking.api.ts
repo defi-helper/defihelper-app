@@ -35,6 +35,8 @@ import {
   RestakeCalculatorQuery,
   InvestStopLossEnableMutationVariables,
   InvestStopLossEnableMutation,
+  AutomationAutoCompoundToggleMutation,
+  AutomationAutoCompoundToggleMutationVariables,
 } from '~/api/_generated-types'
 import {
   STAKING_CONTRACT_LIST,
@@ -53,6 +55,7 @@ import {
   STAKING_UPDATE_METRICS,
   STAKING_APY_RESTAKE_CALCULATOR,
   INVEST_STOP_LOSS_ENABLE,
+  AUTOMATION_AUTO_COMPOUND_TOGGLE,
 } from './graphql'
 import { config } from '~/config'
 import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-scanner-register.graphql'
@@ -326,4 +329,18 @@ export const stakingApi = {
         variables,
       })
       .then(({ data }) => data?.automateContractStopLossEnable),
+
+  toggleAutoCompound: (
+    variables: AutomationAutoCompoundToggleMutationVariables
+  ) =>
+    getAPIClient()
+      .request<
+        AutomationAutoCompoundToggleMutation,
+        unknown,
+        AutomationAutoCompoundToggleMutationVariables
+      >({
+        query: AUTOMATION_AUTO_COMPOUND_TOGGLE.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.automateContractTriggerUpdate?.[0].active),
 }

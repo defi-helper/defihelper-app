@@ -119,5 +119,9 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
         slippage
       }
     }
+    trigger {
+      active
+      id
+    }
   }
 `

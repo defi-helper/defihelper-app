@@ -259,6 +259,9 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           initialStopLoss: automateContract.stopLoss,
           onDelete: () =>
             automationsListModel.deleteContractFx(automateContract.id),
+          onToggleAutoCompound: (active) =>
+            model.toggleAutoCompoundFx({ id: automateContract.id, active }),
+          autoCompoundActive: automateContract.trigger?.active ?? null,
         })
 
         await model.enableStopLossFx({

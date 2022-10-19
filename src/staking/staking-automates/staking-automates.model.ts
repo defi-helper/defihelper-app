@@ -88,6 +88,17 @@ export const fetchAdapterFx = stakingAutomatesDomain.createEffect(
   }
 )
 
+export const toggleAutoCompoundFx = stakingAutomatesDomain.createEffect(
+  async (params: { id: string; active: boolean }) => {
+    return stakingApi.toggleAutoCompound({
+      id: params.id,
+      input: {
+        active: params.active,
+      },
+    })
+  }
+)
+
 export const reset = stakingAutomatesDomain.createEvent()
 
 export const $automatesContracts = stakingAutomatesDomain
@@ -126,6 +137,21 @@ export const $automatesContracts = stakingAutomatesDomain
   .on(automationsListModel.deleteContractFx.done, (state, { params }) =>
     state.filter((contract) => contract.id !== params)
   )
+  .on(toggleAutoCompoundFx.done, (state, { params }) => {
+    return state.map((contract) =>
+      contract.id === params.id
+        ? {
+            ...contract,
+            trigger: contract.trigger
+              ? {
+                  ...contract.trigger,
+                  active: params.active,
+                }
+              : undefined,
+          }
+        : contract
+    )
+  })
 
 export const $automatesContractsLoaded = stakingAutomatesDomain
   .createStore<boolean>(false)
