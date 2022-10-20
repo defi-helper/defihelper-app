@@ -1,4 +1,5 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
+import { InjectedConnector } from '@web3-react/injected-connector'
 
 import { ButtonBase } from '~/common/button-base'
 import { Dialog, useDialog } from '~/common/dialog'
@@ -27,6 +28,14 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
     (connector: AbstractConnector, blockchain: string) => async () => {
       try {
         const result = await connector.activate()
+
+        if (connector instanceof InjectedConnector) {
+          await window.ethereum
+            ?.request?.({
+              method: 'wallet_getPermissions',
+            })
+            .catch(console.error)
+        }
 
         const data = await augmentConnectorUpdate(connector, {
           ...result,
