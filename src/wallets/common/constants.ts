@@ -41,7 +41,9 @@ const IS_ANDROID = /Android/i.test(navigator.userAgent)
 const METAMASK_LINK =
   'https://chrome.google.com/webstore/detail/nkbihfbeogaeaoehlefnkodbefgpgknn'
 const TRUST_LINK = 'https://trustwallet.com/download'
-const METAMASK_MOBILE = 'https://metamask.io/download'
+const METAMASK_MOBILE = `https://metamask.app.link/dapp/${
+  config.IS_DEV ? 'app-dev.defihelper.info' : 'app.defihelper.io'
+}/`
 const BINANCE_LINK =
   'https://chrome.google.com/webstore/detail/binance-wallet/fhbohimaelbohpjbbldcngcnapndodjp'
 const WAVES_KEEPER_LINK =
