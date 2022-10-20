@@ -13,3 +13,10 @@ export const header = style({
     },
   },
 })
+
+export const subtitle = style({
+  marginBottom: 40,
+  maxWidth: 895,
+  fontSize: '20px',
+  lineHeight: '28px',
+})
