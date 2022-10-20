@@ -1,5 +1,4 @@
 import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
-import { useStore } from 'effector-react'
 import clsx from 'clsx'
 
 import { Button } from '~/common/button'
@@ -10,38 +9,26 @@ import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { analytics } from '~/analytics'
 import { toastsService } from '~/toasts'
-import { authModel } from '~/auth'
+import { AutomationContractCreateMutation } from '~/api'
 import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 
 export type InvestStakingStepsStakeProps = {
   onSubmit?: (transactionHash?: string) => void
   contract: InvestContract
+  deployedContract?: AutomationContractCreateMutation['automateContractCreate']
 }
 
 export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
   props
 ) => {
-  const user = useStore(authModel.$user)
   const currentWallet = walletNetworkModel.useWalletNetwork()
 
   const adapter = useAsync(async () => {
-    if (!user) return
-
-    const deployedContracts =
-      await stakingAutomatesModel.fetchAutomatesContractsFx({
-        userId: user.id,
-      })
-
-    const deployedContract = deployedContracts.list.find(
-      ({ contract: deployedStakingContract }) =>
-        deployedStakingContract?.id === props.contract.id
-    )
-
     if (
       !currentWallet ||
       !props.contract.automate.autorestake ||
-      !deployedContract
+      !props.deployedContract
     )
       return
 
@@ -49,12 +36,12 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
       protocolAdapter: props.contract.protocol.adapter,
       contractAdapter: props.contract.automate.autorestake,
       contractId: props.contract.id,
-      contractAddress: deployedContract.address,
+      contractAddress: props.deployedContract.address,
       provider: currentWallet.provider,
       chainId: String(currentWallet.chainId),
       action: 'migrate',
     })
-  }, [currentWallet])
+  }, [currentWallet, props.deployedContract])
 
   const balanceOf = useAsync(async () => {
     if (!adapter.value) return

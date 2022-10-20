@@ -7,7 +7,6 @@ import { InvestContract } from '~/invest/common/invest.types'
 import { InvestBuy } from '~/invest/invest-buy'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { authModel } from '~/auth'
 import { useQueryParams } from '~/common/hooks'
 import { Loader } from '~/common/loader'
 import { settingsWalletModel } from '~/settings/settings-wallets'
@@ -37,7 +36,6 @@ export type InvestStakingStepsProps = {
 export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   props
 ) => {
-  const user = useStore(authModel.$user)
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
 
@@ -181,36 +179,43 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   }, [currentWallet, props.contract])
 
   const adapter = useAsync(async () => {
-    if (!user || !deployState.value) return
+    if (!currentWallet?.account) return
 
-    if (!currentWallet || !props.contract.automate.autorestake) return
-
-    return stakingAutomatesModel.fetchAdapterFx({
+    const contract = await stakingAdaptersModel.fetchContractAdapterFx({
       protocolAdapter: props.contract.protocol.adapter,
-      contractAdapter: props.contract.automate.autorestake,
-      contractId: props.contract.id,
-      contractAddress: deployState.value.address,
-      provider: currentWallet.provider,
+      contract: {
+        address: props.contract.address,
+        adapter: props.contract.adapter,
+      },
       chainId: String(currentWallet.chainId),
-      action: 'migrate',
+      account: currentWallet.account,
+      provider: currentWallet.provider,
     })
-  }, [currentWallet, deployState.value])
+
+    return contract
+  }, [currentWallet])
 
   const balanceOf = useAsyncRetry(async () => {
-    return adapter.value?.migrate.methods?.balanceOf()
+    return adapter.value?.actions?.unstake.methods?.balanceOf()
   }, [adapter.value])
 
   const canWithdraw = useAsyncRetry(async () => {
-    return adapter.value?.migrate.methods.canWithdraw()
-  }, [adapter.value])
+    if (!balanceOf.value) return
+
+    return adapter.value?.actions?.unstake.methods.can(balanceOf.value)
+  }, [adapter.value, balanceOf.value])
 
   const [withDraw, handleWithDraw] = useAsyncFn(async () => {
-    const res = await adapter.value?.migrate.methods.withdraw()
+    if (!balanceOf.value) return
+
+    const res = await adapter.value?.actions?.unstake.methods.unstake(
+      balanceOf.value
+    )
 
     return res?.tx
       .wait()
       .then(({ transactionHash }) => handleNextStep(transactionHash))
-  }, [adapter.value])
+  }, [adapter.value, balanceOf.value])
 
   useEffect(() => {
     if (
@@ -269,6 +274,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       key={3}
       onSubmit={handleNextStep}
       contract={props.contract}
+      deployedContract={deployState.value}
     />,
     <InvestStakingStepsSuccess
       key={4}
