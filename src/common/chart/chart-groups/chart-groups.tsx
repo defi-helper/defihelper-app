@@ -12,7 +12,6 @@ export type ChartGroupsProps = {
 }
 
 export const CHART_GROUP_VALUES = {
-  day: '24h',
   week: '7d',
   twoWeeks: '14d',
   month: '30d',
@@ -20,7 +19,6 @@ export const CHART_GROUP_VALUES = {
 } as const
 
 export const CHART_DAYS_LIMITS: Record<string, number> = {
-  [CHART_GROUP_VALUES.day]: 24,
   [CHART_GROUP_VALUES.week]: 7,
   [CHART_GROUP_VALUES.twoWeeks]: 14,
   [CHART_GROUP_VALUES.month]: 30,

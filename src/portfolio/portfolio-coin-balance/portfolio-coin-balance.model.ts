@@ -28,19 +28,10 @@ const defaultVariables = {
 export const fetchChartDataFx = portfolioCoinBalance.createEffect(
   async (params: string) => {
     const result = await portfolioApi.getTokenMetricChart({
-      group:
-        params === CHART_GROUP_VALUES.day
-          ? MetricGroupEnum.Hour
-          : MetricGroupEnum.Day,
+      group: MetricGroupEnum.Day,
       ...defaultVariables,
-      dateBefore:
-        params === CHART_GROUP_VALUES.day
-          ? dateUtils.now()
-          : dateUtils.yesterday(),
-      dateAfter: dateUtils.addDate(
-        -CHART_DAYS_LIMITS[params],
-        params === CHART_GROUP_VALUES.day ? 'hours' : 'days'
-      ),
+      dateBefore: dateUtils.yesterday(),
+      dateAfter: dateUtils.addDate(-CHART_DAYS_LIMITS[params], 'days'),
       pagination: {
         limit: CHART_DAYS_LIMITS[params],
       },

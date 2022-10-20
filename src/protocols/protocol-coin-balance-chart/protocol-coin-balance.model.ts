@@ -13,18 +13,9 @@ export const fetchStakedMetricFx = protocolCoinBalanceDomain.createEffect(
   async (params: { group: string; contracts: string[] }) => {
     const data = await protocolsApi.protocolStaked({
       contract: params.contracts,
-      group:
-        params.group === CHART_GROUP_VALUES.day
-          ? MetricGroupEnum.Hour
-          : MetricGroupEnum.Day,
-      dateBefore:
-        params.group === CHART_GROUP_VALUES.day
-          ? dateUtils.now()
-          : dateUtils.yesterday(),
-      dateAfter: dateUtils.addDate(
-        -CHART_DAYS_LIMITS[params.group],
-        params.group === CHART_GROUP_VALUES.day ? 'hours' : 'days'
-      ),
+      group: MetricGroupEnum.Day,
+      dateBefore: dateUtils.yesterday(),
+      dateAfter: dateUtils.addDate(-CHART_DAYS_LIMITS[params.group], 'days'),
       pagination: {
         limit: CHART_DAYS_LIMITS[params.group],
       },
