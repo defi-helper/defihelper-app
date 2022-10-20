@@ -49,7 +49,7 @@ const BINANCE_LINK =
 const WAVES_KEEPER_LINK =
   'https://chrome.google.com/webstore/detail/waves-keeper/lpilbniiabackdjcionkobglmddfbcjo'
 
-const IS_MOBILE = IS_IOS || IS_ANDROID
+export const IS_MOBILE = IS_IOS || IS_ANDROID
 
 type ConnectorByName = {
   connector: AbstractConnector

@@ -4,7 +4,11 @@ import { InjectedConnector } from '@web3-react/injected-connector'
 import { ButtonBase } from '~/common/button-base'
 import { Dialog, useDialog } from '~/common/dialog'
 import { Typography } from '~/common/typography'
-import { augmentConnectorUpdate, connectorsByName } from '~/wallets/common'
+import {
+  augmentConnectorUpdate,
+  connectorsByName,
+  IS_MOBILE,
+} from '~/wallets/common'
 import * as styles from './wallet-list.css'
 
 export type WalletListPayload = {
@@ -89,7 +93,13 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
                 >
                   <wallet.logo className={styles.icon} />
                   <Typography as="span">
-                    {wallet.available() ? walletName : `Install ${walletName}`}
+                    {wallet.available()
+                      ? walletName
+                      : `${
+                          walletName === 'MetaMask' && IS_MOBILE
+                            ? 'Connect'
+                            : 'Install'
+                        } ${walletName}`}
                   </Typography>
                 </ButtonBase>
               </li>
