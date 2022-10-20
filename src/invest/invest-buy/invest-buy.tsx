@@ -16,8 +16,8 @@ import { ButtonBase } from '~/common/button-base'
 import { toastsService } from '~/toasts'
 import { analytics } from '~/analytics'
 import { BuyLiquidity } from '~/common/load-adapter'
-import * as styles from './invest-buy.css'
 import { NULL_ADDRESS } from '~/common/constants'
+import * as styles from './invest-buy.css'
 
 export type InvestBuyProps = {
   onSubmit?: (transactionHash?: string) => void
@@ -42,7 +42,7 @@ export const InvestBuy = (props: InvestBuyProps) => {
     })
   }, [props.contract])
 
-  const amountThrottled = useThrottle(amount, 1000)
+  const amountThrottled = useThrottle(amount, 300)
 
   const approved = useAsyncRetry(async () => {
     if (bignumberUtils.eq(amountThrottled, 0) || !props.adapter) return true
