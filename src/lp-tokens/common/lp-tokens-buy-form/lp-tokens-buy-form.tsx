@@ -17,8 +17,8 @@ import { Link } from '~/common/link'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { analytics } from '~/analytics'
 import { config } from '~/config'
-import * as styles from './lp-tokens-buy-form.css'
 import { NULL_ADDRESS } from '~/common/constants'
+import * as styles from './lp-tokens-buy-form.css'
 
 export type LPTokensBuyFormProps = {
   onConfirm: () => void
@@ -54,13 +54,32 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
     })
 
   const tokens = useAsyncRetry(async () => {
-    const { balanceOf } = props.buyLiquidityAdapter.methods
+    const { balanceOf, balanceETHOf } = props.buyLiquidityAdapter.methods
 
     const tokensWithBalances = await Promise.all(
-      props.tokens.map(async (token) => ({
-        ...token,
-        balance: await balanceOf(token.address),
-      }))
+      props.tokens.map(async (token) => {
+        try {
+          return {
+            ...token,
+            balance:
+              token.address === NULL_ADDRESS
+                ? await balanceETHOf()
+                : await balanceOf(token.address),
+          }
+        } catch (err) {
+          if (!(err instanceof Error))
+            return {
+              ...token,
+              balance: null,
+            }
+
+          return {
+            ...token,
+            error: err.message,
+            balance: null,
+          }
+        }
+      })
     )
 
     return tokensWithBalances.reduce<
@@ -82,7 +101,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
   useEffect(() => {
     const currentToken = tokens.value?.[tokenAddress]
 
-    if (!currentToken) return
+    if (!currentToken?.balance) return
 
     setValue('amount', currentToken.balance)
   }, [tokenAddress, tokens.value, setValue])
