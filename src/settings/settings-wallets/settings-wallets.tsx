@@ -324,8 +324,8 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
                 network={wallet.network}
                 blockchain={wallet.blockchain}
                 worth={wallet.metric?.worth ?? '0'}
-                automations={String(wallet.automates.length)}
-                automationsWorth={wallet.automates.reduce(
+                automations={String(wallet.automates?.length)}
+                automationsWorth={wallet.automates?.reduce(
                   (acc, automate) =>
                     bignumberUtils.plus(acc, automate.metric.worth),
                   '0'

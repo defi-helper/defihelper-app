@@ -36,13 +36,10 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
   async (params: { group: string }) => {
     const data = await portfolioApi.getTokenMetric({
       ...defaultVariables,
-      metricDateBefore:
-        params.group === CHART_GROUP_VALUES.day
-          ? dateUtils.now()
-          : dateUtils.yesterday(),
+      metricDateBefore: dateUtils.yesterday(),
       metricDateAfter: dateUtils.addDate(
         -CHART_DAYS_LIMITS[params.group],
-        params.group === CHART_GROUP_VALUES.day ? 'hours' : 'days'
+        'days'
       ),
       balancePagination: {
         limit: CHART_DAYS_LIMITS[params.group],
@@ -50,10 +47,7 @@ export const fetchChartDataFx = portfolioTotalWorth.createEffect(
       pagination: {
         limit: CHART_DAYS_LIMITS[params.group],
       },
-      group:
-        params.group === CHART_GROUP_VALUES.day
-          ? MetricGroupEnum.Hour
-          : MetricGroupEnum.Day,
+      group: MetricGroupEnum.Day,
     })
 
     if (!data) throw new Error('something went wrong')
