@@ -30,9 +30,11 @@ export const WalletList: React.VFC<WalletListProps> = (props) => {
         const result = await connector.activate()
 
         if (connector instanceof InjectedConnector) {
-          await window.ethereum?.request?.({
-            method: 'wallet_getPermissions',
-          })
+          await window.ethereum
+            ?.request?.({
+              method: 'wallet_getPermissions',
+            })
+            .catch(console.error)
         }
 
         const data = await augmentConnectorUpdate(connector, {
