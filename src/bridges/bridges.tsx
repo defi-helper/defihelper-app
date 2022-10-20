@@ -5,11 +5,13 @@ import { Typography } from '~/common/typography'
 import { AppLayout } from '~/layouts'
 import { Head } from '~/common/head'
 import * as styles from './bridges.css'
+import { useTheme } from '~/common/theme'
 
 export type BridgesProps = unknown
 
 export const Bridges: React.VFC<BridgesProps> = () => {
   const isDesktop = useMedia('(min-width: 960px)')
+  const [themeMode] = useTheme()
 
   useEffect(() => {
     if (!window.rubicWidget) return
@@ -23,8 +25,8 @@ export const Bridges: React.VFC<BridgesProps> = () => {
       iframe: isDesktop ? 'horizontal' : 'vertical',
       hideSelectionFrom: false,
       hideSelectionTo: false,
-      theme: 'dark',
-      background: '#1A2223',
+      theme: themeMode === 'dark' ? 'dark' : 'light',
+      background: themeMode === 'dark' ? '#1A2223' : '#fff',
       injectTokens: {},
       slippagePercent: {
         instantTrades: 2,
@@ -33,7 +35,7 @@ export const Bridges: React.VFC<BridgesProps> = () => {
     })
 
     window.rubicWidget.disable()
-  }, [isDesktop])
+  }, [isDesktop, themeMode])
 
   return (
     <AppLayout title="Bridges">
