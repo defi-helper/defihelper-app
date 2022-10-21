@@ -18,7 +18,7 @@ import {
   FreshMetrics,
   stakingApi,
   StakingAutomatesContract,
-} from '../common'
+} from '~/staking/common'
 import { Wallet, walletApi } from '~/wallets/common'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 

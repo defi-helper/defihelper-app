@@ -272,7 +272,9 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     ) : null,
     <InvestStakingStepsStake
       key={3}
-      onSubmit={handleNextStep}
+      onSubmit={(values) => {
+        handleNextStep(values.txHash)
+      }}
       contract={props.contract}
       deployedContract={deployState.value}
     />,

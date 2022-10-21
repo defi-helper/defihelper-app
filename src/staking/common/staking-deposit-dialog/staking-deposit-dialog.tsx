@@ -12,6 +12,7 @@ import { ButtonBase } from '~/common/button-base'
 import { toastsService } from '~/toasts'
 import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import * as styles from './staking-deposit-dialog.css'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 type FormValues = {
   amount: string
@@ -20,7 +21,12 @@ type FormValues = {
 export type StakingDepositDialogProps = {
   onConfirm: () => void
   methods?: AutomatesType['deposit']['methods']
-  onLastStep: (txHash?: string) => void
+  onLastStep: (values: {
+    txHash?: string
+    tokenPriceUSD?: string
+    amount: string
+    amountInUSD: string
+  }) => void
   onCancel: () => void
 }
 
@@ -50,6 +56,10 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
 
   const balanceOf = useAsyncRetry(async () => {
     return props.methods?.balanceOf()
+  }, [props.methods])
+
+  const tokenPriceUsd = useAsyncRetry(async () => {
+    return props.methods?.tokenPriceUSD()
   }, [props.methods])
 
   const amount = watch('amount')
@@ -111,7 +121,12 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
 
       balanceOf.retry()
 
-      props.onLastStep(result.transactionHash)
+      props.onLastStep({
+        txHash: result.transactionHash,
+        amount,
+        tokenPriceUSD: tokenPriceUsd.value,
+        amountInUSD: bignumberUtils.mul(amount, tokenPriceUsd.value),
+      })
 
       return true
     } catch (error) {
@@ -121,7 +136,7 @@ export const StakingDepositDialog: React.VFC<StakingDepositDialogProps> = (
 
       return false
     }
-  }, [amount])
+  }, [amount, tokenPriceUsd.value])
 
   const handleOnSubmit = handleSubmit(handleApprove)
 

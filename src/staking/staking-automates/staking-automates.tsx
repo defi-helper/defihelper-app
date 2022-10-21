@@ -365,6 +365,13 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
                   ))
               }
               freshMetrics={metrics[automatesContract.id]}
+              balanceInvest={bignumberUtils.minus(
+                automatesContract.metric.invest,
+                bignumberUtils.plus(
+                  automatesContract.metric.staked,
+                  automatesContract.metric.earned
+                )
+              )}
             />
           )
         })}

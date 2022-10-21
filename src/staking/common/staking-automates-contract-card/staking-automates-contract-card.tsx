@@ -48,6 +48,7 @@ export type StakingAutomatesContractCardProps = {
   stopLossAmountOut?: string
   stopLossToken?: string
   status?: AutomateContractStopLossStatusEnum
+  balanceInvest: string
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -212,6 +213,15 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               {bignumberUtils.format(
                 props.freshMetrics?.myStaked ?? props.balance
               )}{' '}
+              <Typography
+                variant="inherit"
+                className={clsx({
+                  [styles.negative]: bignumberUtils.lt(props.balanceInvest, 0),
+                  [styles.positive]: bignumberUtils.gt(props.balanceInvest, 0),
+                })}
+              >
+                ${bignumberUtils.format(props.balanceInvest)}
+              </Typography>
               {!isEmpty(props.freshMetrics) && <StakingFreshMetrics />}
             </Typography>
           </div>
