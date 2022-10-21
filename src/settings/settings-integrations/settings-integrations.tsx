@@ -91,6 +91,7 @@ export const SettingsIntegrations: React.VFC<SettingsIntegrationsProps> = (
                 }
                 platform={cexTitles[integration.exchange]}
                 account={integration?.account}
+                isExpired={false}
                 onDisconnect={handleDisconnect(integration?.id)}
                 deleting={integration?.deleting}
               />
