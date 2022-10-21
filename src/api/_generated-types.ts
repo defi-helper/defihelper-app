@@ -296,6 +296,7 @@ export enum AutomateContractListSortInputTypeColumnEnum {
 
 export type AutomateContractMetricType = {
   __typename?: 'AutomateContractMetricType'
+  invest: Scalars['String']
   staked: Scalars['String']
   earned: Scalars['String']
   apyBoost: Scalars['String']
@@ -400,6 +401,31 @@ export type AutomateDescriptionType = {
   __typename?: 'AutomateDescriptionType'
   name: Scalars['String']
   description: Scalars['String']
+}
+
+export type AutomateInvestCreateInputType = {
+  /** Automate contract */
+  contract: Scalars['UuidType']
+  /** Investor wallet */
+  wallet: Scalars['UuidType']
+  amount: Scalars['BigNumberType']
+  amountUSD: Scalars['BigNumberType']
+}
+
+export type AutomateInvestHistoryType = {
+  __typename?: 'AutomateInvestHistoryType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  amount: Scalars['BigNumberType']
+  amountUSD: Scalars['BigNumberType']
+  createdAt: Scalars['DateTimeType']
+}
+
+export type AutomateInvestRefundInputType = {
+  /** Automate contract */
+  contract: Scalars['UuidType']
+  /** Investor wallet */
+  wallet: Scalars['UuidType']
 }
 
 export type AutomateTriggerCallHistoryListFilterInputType = {
@@ -1391,6 +1417,8 @@ export type Mutation = {
   automateContractDelete: Scalars['Boolean']
   automateContractStopLossEnable: Scalars['Boolean']
   automateContractStopLossDisable: Scalars['Boolean']
+  automateInvestCreate: AutomateInvestHistoryType
+  automateInvestRefund: Scalars['Boolean']
   automateContractTriggerUpdate: Array<AutomateTriggerType>
   tradingAuth?: Maybe<TradingAuthType>
   smartTradeCancel: SmartTradeOrderType
@@ -1657,6 +1685,14 @@ export type MutationAutomateContractStopLossEnableArgs = {
 
 export type MutationAutomateContractStopLossDisableArgs = {
   input: AutomateContractStopLossDisableInputType
+}
+
+export type MutationAutomateInvestCreateArgs = {
+  input: AutomateInvestCreateInputType
+}
+
+export type MutationAutomateInvestRefundArgs = {
+  input: AutomateInvestRefundInputType
 }
 
 export type MutationAutomateContractTriggerUpdateArgs = {
@@ -4806,6 +4842,26 @@ export type GovernanceVotesQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type AutomateInvestCreateMutationVariables = Exact<{
+  input: AutomateInvestCreateInputType
+}>
+
+export type AutomateInvestCreateMutation = { __typename?: 'Mutation' } & {
+  automateInvestCreate: { __typename?: 'AutomateInvestHistoryType' } & Pick<
+    AutomateInvestHistoryType,
+    'id' | 'amount' | 'amountUSD' | 'createdAt'
+  >
+}
+
+export type AutomateInvestRefundMutationVariables = Exact<{
+  input: AutomateInvestRefundInputType
+}>
+
+export type AutomateInvestRefundMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'automateInvestRefund'
+>
+
 export type AutostakingStakingContractsQueryVariables = Exact<{
   filter?: Maybe<ContractListFilterInputType>
   sort?: Maybe<Array<ContractListSortInputType> | ContractListSortInputType>
@@ -6666,6 +6722,10 @@ export type StakingAutomatesContractFragmentFragment = {
         AutomateTriggerType,
         'active' | 'id'
       >
+    >
+    metric: { __typename?: 'AutomateContractMetricType' } & Pick<
+      AutomateContractMetricType,
+      'invest' | 'staked' | 'earned' | 'apyBoost'
     >
   }
 

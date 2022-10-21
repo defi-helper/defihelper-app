@@ -24,7 +24,12 @@ export type InvestTabsDialogProps = {
   onConfirm: () => void
   onCancel: () => void
   methods?: AutomatesType['migrate']['methods']
-  onLastStep: (txHash?: string) => void
+  onLastStep: (values: {
+    txHash?: string
+    tokenPriceUSD?: string
+    amount: string
+    amountInUSD: string
+  }) => void
   contractId: string
 }
 
@@ -56,6 +61,10 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
     return props.methods?.balanceOf()
   }, [props.methods])
 
+  const tokenPriceUSD = useAsyncRetry(async () => {
+    return props.methods?.tokenPriceUSD()
+  }, [props.methods])
+
   const isApproved = useAsyncRetry(async () => {
     if (bignumberUtils.eq(amount, 0)) return true
 
@@ -75,9 +84,7 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
 
         if (!approved.tx) return new Error('something went wrong')
 
-        const result = await approved.tx.wait()
-
-        props.onLastStep(result.transactionHash)
+        await approved.tx.wait()
 
         return true
       } catch (error) {
@@ -110,7 +117,12 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
 
       setCurrentTab(Tabs.success)
 
-      props.onLastStep(result.transactionHash)
+      props.onLastStep({
+        txHash: result.transactionHash,
+        amount,
+        tokenPriceUSD: tokenPriceUSD.value,
+        amountInUSD: bignumberUtils.mul(amount, tokenPriceUSD.value),
+      })
 
       return true
     } catch (error) {
@@ -120,7 +132,7 @@ export const InvestTabsDialog: React.VFC<InvestTabsDialogProps> = (props) => {
 
       return false
     }
-  }, [amount])
+  }, [amount, tokenPriceUSD.value])
 
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)

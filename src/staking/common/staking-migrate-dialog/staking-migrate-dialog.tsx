@@ -13,6 +13,7 @@ import { toastsService } from '~/toasts'
 import { StopTransactionDialog } from '~/common/stop-transaction-dialog'
 import { analytics } from '~/analytics'
 import * as styles from './staking-migrate-dialog.css'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 type FormValues = {
   amount: string
@@ -21,7 +22,12 @@ type FormValues = {
 export type StakingMigrateDialogProps = {
   onConfirm: () => void
   methods?: AutomatesType['migrate']['methods']
-  onLastStep: (txHash?: string) => void
+  onLastStep: (values: {
+    txHash?: string
+    tokenPriceUSD?: string
+    amount: string
+    amountInUSD: string
+  }) => void
   onCancel: () => void
 }
 
@@ -58,6 +64,10 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
     return props.methods?.balanceOf()
   }, [props.methods])
 
+  const tokenPriceUSD = useAsyncRetry(async () => {
+    return props.methods?.tokenPriceUSD()
+  }, [props.methods])
+
   const amount = watch('amount')
 
   const handleChangeTab = (tab: Tabs) => () => {
@@ -87,12 +97,8 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
         const { tx } = can
 
-        const result = await tx?.wait()
+        await tx?.wait()
         analytics.log('auto_staking_migrate_dialog_transfer_success')
-
-        if (!result) return
-
-        props.onLastStep(result.transactionHash)
 
         return true
       } catch (error) {
@@ -125,7 +131,12 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
       balanceOf.retry()
 
-      props.onLastStep(result.transactionHash)
+      props.onLastStep({
+        txHash: result.transactionHash,
+        amount,
+        tokenPriceUSD: tokenPriceUSD.value,
+        amountInUSD: bignumberUtils.mul(amount, tokenPriceUSD.value),
+      })
       analytics.log('auto_staking_migrate_dialog_deposit_success')
 
       return true
@@ -137,7 +148,7 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
       return false
     }
-  }, [amount])
+  }, [amount, tokenPriceUSD.value])
 
   const [withdrawState, onWithdraw] = useAsyncFn(async () => {
     if (!props.methods) return false
@@ -153,10 +164,15 @@ export const StakingMigrateDialog: React.VFC<StakingMigrateDialogProps> = (
 
       const { tx } = await withdraw()
 
-      await tx?.wait()
+      const result = await tx?.wait()
 
       analytics.log('auto_staking_migrate_dialog_withdraw_success')
-      props.onLastStep()
+      props.onLastStep({
+        txHash: result.transactionHash,
+        amount,
+        tokenPriceUSD: tokenPriceUSD.value,
+        amountInUSD: bignumberUtils.mul(amount, tokenPriceUSD.value),
+      })
 
       return true
     } catch (error) {

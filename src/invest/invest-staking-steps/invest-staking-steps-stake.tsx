@@ -12,9 +12,15 @@ import { toastsService } from '~/toasts'
 import { AutomationContractCreateMutation } from '~/api'
 import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type InvestStakingStepsStakeProps = {
-  onSubmit?: (transactionHash?: string) => void
+  onSubmit?: (values: {
+    txHash?: string
+    tokenPriceUSD?: string
+    amount: string
+    amountInUSD: string
+  }) => void
   contract: InvestContract
   deployedContract?: AutomationContractCreateMutation['automateContractCreate']
 }
@@ -49,6 +55,12 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
     return adapter.value.deposit.methods.balanceOf()
   }, [adapter.value])
 
+  const tokenPriceUSD = useAsync(async () => {
+    if (!adapter.value) return
+
+    return adapter.value.deposit.methods.tokenPriceUSD()
+  }, [adapter.value])
+
   const [depositState, onDeposit] = useAsyncFn(async () => {
     if (!adapter.value || !balanceOf.value) return false
     analytics.log('auto_staking_migrate_dialog_deposit_click')
@@ -66,7 +78,12 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
 
       const result = await tx?.wait()
 
-      props.onSubmit?.(result.transactionHash)
+      props.onSubmit?.({
+        txHash: result.transactionHash,
+        tokenPriceUSD: tokenPriceUSD.value,
+        amount: balanceOf.value,
+        amountInUSD: bignumberUtils.mul(balanceOf.value, tokenPriceUSD.value),
+      })
       analytics.log('auto_staking_migrate_dialog_deposit_success')
 
       return true
@@ -78,7 +95,7 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
 
       return false
     }
-  }, [adapter.value, balanceOf.value])
+  }, [adapter.value, balanceOf.value, tokenPriceUSD.value])
 
   const isApproved = useAsyncRetry(async () => {
     if (!balanceOf.value) return

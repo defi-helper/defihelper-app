@@ -154,6 +154,7 @@ export interface AutomationAdapterActions {
       approve: (amount: string) => Promise<{ tx?: Transaction } | Error>
       canDeposit: (amount: string) => Promise<true | Error>
       deposit: (amount: string) => Promise<{ tx: Transaction }>
+      tokenPriceUSD: () => Promise<string>
     }
   }
   refund: {
