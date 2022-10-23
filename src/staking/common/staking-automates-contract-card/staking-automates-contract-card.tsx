@@ -299,28 +299,6 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               <Typography variant="inherit" className={styles.opacity}>
                 APY
               </Typography>
-              <Dropdown
-                control={
-                  <ButtonBase className={clsx(styles.opacity)}>
-                    <Icon className={styles.question} icon="question" />
-                  </ButtonBase>
-                }
-                placement="top"
-                className={styles.questionDropdown}
-                offset={[0, 8]}
-              >
-                <Typography variant="inherit">
-                  In order to execute every automation action in blockchain,
-                  such as auto-restaking, provide fee balance we can use.{' '}
-                  <Link
-                    target="_blank"
-                    href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
-                    className={styles.howItWorks}
-                  >
-                    Learn more on How It Works
-                  </Link>
-                </Typography>
-              </Dropdown>
             </Typography>
             <Typography variant="body2" as="span">
               {bignumberUtils.formatMax(
@@ -347,11 +325,12 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 offset={[0, 8]}
               >
                 <Typography variant="inherit">
-                  In order to execute every automation action in blockchain,
-                  such as auto-restaking, provide fee balance we can use.{' '}
+                  Auto-staking is a built-in automation. It helps you earn more
+                  by automatically adding your profits to the deposit,
+                  effectively auto- compounding your interest.{' '}
                   <Link
                     target="_blank"
-                    href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
+                    href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
                     className={styles.howItWorks}
                   >
                     Learn more on How It Works
