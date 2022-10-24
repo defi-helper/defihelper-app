@@ -19,10 +19,10 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { authModel } from '~/auth'
 import { UserRoleEnum } from '~/api'
-import * as model from './trade-smart-sell.model'
-import * as styles from './trade-smart-sell.css'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
+import * as model from './trade-smart-sell.model'
+import * as styles from './trade-smart-sell.css'
 
 export type TradeSmartSellProps = {
   className?: string
@@ -139,7 +139,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       return sameAddreses && String(currentWallet.chainId) === wallet.network
     })
 
-    if (!findedWallet) return
+    if (!findedWallet || !props.swap) return
 
     const path = props.tokens.map(({ address }) => address)
 
@@ -180,6 +180,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       if (!tx) throw new Error('something went wrong')
 
       await model.createOrderFx({
+        swap: props.swap,
         number: await result.getOrderNumber(),
         owner: findedWallet.id,
         handler: result.handler,
