@@ -296,6 +296,7 @@ export enum AutomateContractListSortInputTypeColumnEnum {
 
 export type AutomateContractMetricType = {
   __typename?: 'AutomateContractMetricType'
+  invest: Scalars['String']
   staked: Scalars['String']
   earned: Scalars['String']
   apyBoost: Scalars['String']
@@ -400,6 +401,31 @@ export type AutomateDescriptionType = {
   __typename?: 'AutomateDescriptionType'
   name: Scalars['String']
   description: Scalars['String']
+}
+
+export type AutomateInvestCreateInputType = {
+  /** Automate contract */
+  contract: Scalars['UuidType']
+  /** Investor wallet */
+  wallet: Scalars['UuidType']
+  amount: Scalars['BigNumberType']
+  amountUSD: Scalars['BigNumberType']
+}
+
+export type AutomateInvestHistoryType = {
+  __typename?: 'AutomateInvestHistoryType'
+  /** Identificator */
+  id: Scalars['UuidType']
+  amount: Scalars['BigNumberType']
+  amountUSD: Scalars['BigNumberType']
+  createdAt: Scalars['DateTimeType']
+}
+
+export type AutomateInvestRefundInputType = {
+  /** Automate contract */
+  contract: Scalars['UuidType']
+  /** Investor wallet */
+  wallet: Scalars['UuidType']
 }
 
 export type AutomateTriggerCallHistoryListFilterInputType = {
@@ -1391,6 +1417,8 @@ export type Mutation = {
   automateContractDelete: Scalars['Boolean']
   automateContractStopLossEnable: Scalars['Boolean']
   automateContractStopLossDisable: Scalars['Boolean']
+  automateInvestCreate: AutomateInvestHistoryType
+  automateInvestRefund: Scalars['Boolean']
   automateContractTriggerUpdate: Array<AutomateTriggerType>
   tradingAuth?: Maybe<TradingAuthType>
   smartTradeCancel: SmartTradeOrderType
@@ -1657,6 +1685,14 @@ export type MutationAutomateContractStopLossEnableArgs = {
 
 export type MutationAutomateContractStopLossDisableArgs = {
   input: AutomateContractStopLossDisableInputType
+}
+
+export type MutationAutomateInvestCreateArgs = {
+  input: AutomateInvestCreateInputType
+}
+
+export type MutationAutomateInvestRefundArgs = {
+  input: AutomateInvestRefundInputType
 }
 
 export type MutationAutomateContractTriggerUpdateArgs = {
@@ -4043,6 +4079,7 @@ export type WalletExchangeType = {
   name: Scalars['String']
   /** Exchange type */
   exchange: WalletExchangeTypeEnum
+  isExpired: Scalars['Boolean']
   /** Statistics collected */
   statisticsCollectedAt: Scalars['DateTimeType']
   tokenAliases: WalletExchangeTokenAliasListType
@@ -6337,7 +6374,10 @@ export type WalletDeleteMutation = { __typename?: 'Mutation' } & Pick<
 
 export type WalletExchangeFragmentFragment = {
   __typename?: 'WalletExchangeType'
-} & Pick<WalletExchangeType, 'id' | 'exchange' | 'balance' | 'account'>
+} & Pick<
+  WalletExchangeType,
+  'id' | 'exchange' | 'balance' | 'account' | 'isExpired'
+>
 
 export type WalletListMetricsQueryVariables = Exact<{
   sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>

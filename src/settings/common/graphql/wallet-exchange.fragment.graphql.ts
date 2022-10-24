@@ -6,5 +6,6 @@ export const WALLET_EXCHANGE_FRAGMENT = gql`
     exchange
     balance
     account
+    isExpired
   }
 `
