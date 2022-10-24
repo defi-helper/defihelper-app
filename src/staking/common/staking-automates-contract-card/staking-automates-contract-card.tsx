@@ -213,15 +213,23 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               {bignumberUtils.format(
                 props.freshMetrics?.myStaked ?? props.balance
               )}{' '}
-              <Typography
-                variant="inherit"
-                className={clsx({
-                  [styles.negative]: bignumberUtils.lt(props.balanceInvest, 0),
-                  [styles.positive]: bignumberUtils.gt(props.balanceInvest, 0),
-                })}
-              >
-                ${bignumberUtils.format(props.balanceInvest)}
-              </Typography>
+              {bignumberUtils.gt(props.balanceInvest, '0.01') && (
+                <Typography
+                  variant="inherit"
+                  className={clsx({
+                    [styles.negative]: bignumberUtils.lt(
+                      props.balanceInvest,
+                      0
+                    ),
+                    [styles.positive]: bignumberUtils.gt(
+                      props.balanceInvest,
+                      0
+                    ),
+                  })}
+                >
+                  (${bignumberUtils.format(props.balanceInvest)})
+                </Typography>
+              )}
               {!isEmpty(props.freshMetrics) && <StakingFreshMetrics />}
             </Typography>
           </div>
