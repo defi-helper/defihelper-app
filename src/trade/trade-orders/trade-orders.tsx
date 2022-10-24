@@ -481,40 +481,29 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             </Typography>
                           </div>
                           <div>
-                            {order.tokens.map(({ token }, index) => {
-                              return (
-                                <div
-                                  className={styles.contractBalance}
-                                  key={token.id}
-                                >
-                                  {token.alias?.logoUrl ? (
-                                    <img
-                                      src={token.alias?.logoUrl}
-                                      className={styles.contractBalanceIcon}
-                                      alt=""
-                                    />
-                                  ) : (
-                                    <Paper
-                                      className={styles.contractBalanceIcon}
-                                    >
-                                      <Icon
-                                        icon="unknownNetwork"
-                                        width="16"
-                                        height="16"
-                                      />
-                                    </Paper>
-                                  )}
-                                  <Typography className={styles.fs12} as="div">
-                                    {tokensAmountInOut
-                                      ? bignumberUtils.format(
-                                          tokensAmountInOut[index]
-                                        )
-                                      : '-'}{' '}
-                                    {token.symbol}
-                                  </Typography>
-                                </div>
-                              )
-                            })}
+                            <div className={styles.contractBalance}>
+                              {order.tokens[0].token.alias?.logoUrl ? (
+                                <img
+                                  src={order.tokens[0].token.alias?.logoUrl}
+                                  className={styles.contractBalanceIcon}
+                                  alt=""
+                                />
+                              ) : (
+                                <Paper className={styles.contractBalanceIcon}>
+                                  <Icon
+                                    icon="unknownNetwork"
+                                    width="16"
+                                    height="16"
+                                  />
+                                </Paper>
+                              )}
+                              <Typography className={styles.fs12} as="div">
+                                {tokensAmountInOut
+                                  ? bignumberUtils.format(tokensAmountInOut[0])
+                                  : '-'}{' '}
+                                {order.tokens[0].token.symbol}
+                              </Typography>
+                            </div>
                           </div>
                           <div>
                             <div className={styles.contractBalance}>
