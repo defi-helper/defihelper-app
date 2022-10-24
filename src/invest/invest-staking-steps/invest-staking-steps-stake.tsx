@@ -9,10 +9,9 @@ import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { analytics } from '~/analytics'
 import { toastsService } from '~/toasts'
-import { AutomationContractCreateMutation } from '~/api'
+import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
-import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type InvestStakingStepsStakeProps = {
   onSubmit?: (values: {
@@ -22,7 +21,7 @@ export type InvestStakingStepsStakeProps = {
     amountInUSD: string
   }) => void
   contract: InvestContract
-  deployedContract?: AutomationContractCreateMutation['automateContractCreate']
+  deployedContract?: string
 }
 
 export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
@@ -42,7 +41,7 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
       protocolAdapter: props.contract.protocol.adapter,
       contractAdapter: props.contract.automate.autorestake,
       contractId: props.contract.id,
-      contractAddress: props.deployedContract.address,
+      contractAddress: props.deployedContract,
       provider: currentWallet.provider,
       chainId: String(currentWallet.chainId),
       action: 'migrate',
@@ -107,16 +106,15 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
     if (!adapter.value || !balanceOf.value) return false
 
     try {
-      const can = await adapter.value.deposit.methods.approve(balanceOf.value)
+      const approveMethod = await adapter.value.deposit.methods.approve(
+        balanceOf.value
+      )
 
-      if (can instanceof Error) throw can
-      if (!can) throw new Error("can't transfer")
+      if (approveMethod instanceof Error) throw approveMethod
 
-      const { tx } = can
+      const { tx } = approveMethod
 
       await tx?.wait()
-
-      isApproved.retry()
 
       return true
     } catch (error) {
@@ -125,6 +123,8 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
       }
 
       return false
+    } finally {
+      isApproved.retry()
     }
   }, [adapter.value, balanceOf.value])
 

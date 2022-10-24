@@ -117,7 +117,9 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
                 exact
                 from={match.path}
                 to={
-                  depoy ? `${match.path}/stake?deploy=1` : `${match.path}/stake`
+                  depoy
+                    ? `${match.path}/stake?deploy=${depoy}`
+                    : `${match.path}/stake`
                 }
               />
               <Route path={`${match.path}/stake`}>

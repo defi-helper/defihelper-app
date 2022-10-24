@@ -375,7 +375,9 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     props.stopLossing
                   }
                   as={ReactRouterLink}
-                  to={`${paths.invest.detail(props.contractId)}?deploy=1`}
+                  to={`${paths.invest.detail(props.contractId)}?deploy=${
+                    props.address
+                  }`}
                 >
                   Invest
                 </Button>
