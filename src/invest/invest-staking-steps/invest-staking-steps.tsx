@@ -173,7 +173,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       priority: 0,
     })
 
-    handleNextStep()
+    setCurrentStep((lastStep) => lastStep + 1)
 
     return deployedContract
   }, [currentWallet, props.contract])
@@ -276,7 +276,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         handleNextStep(values.txHash)
       }}
       contract={props.contract}
-      deployedContract={deployState.value}
+      deployedContract={deploy ?? deployState.value?.address}
     />,
     <InvestStakingStepsSuccess
       key={4}
@@ -292,6 +292,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.content}>
         {canWithdraw.loading ||
+        adapter.loading ||
         balanceOf.loading ||
         lp.loading ||
         balanceOfLp.loading ? (

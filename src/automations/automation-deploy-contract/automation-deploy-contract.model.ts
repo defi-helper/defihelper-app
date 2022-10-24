@@ -116,7 +116,7 @@ export const deployFx = automationDeployContractDomain.createEffect(
 
     if (!currentWallet) throw new Error('something went wrong')
 
-    const createdContract = await stakingApi.createAutomatesContract({
+    const { data, error } = await stakingApi.createAutomatesContract({
       input: {
         wallet: currentWallet.id,
         address: params.proxyAddress,
@@ -130,9 +130,16 @@ export const deployFx = automationDeployContractDomain.createEffect(
       },
     })
 
-    if (!createdContract) throw new Error('contract is not created')
+    if (error?.graphQLErrors)
+      throw new Error(
+        error?.graphQLErrors.map(({ message }) => message).join(', ')
+      )
+    if (error?.httpError) throw new Error(error?.httpError.statusText)
+    if (error?.fetchError) throw new Error(error.fetchError.message)
 
-    return createdContract
+    if (!data) throw new Error('contract is not created')
+
+    return data
   }
 )
 
