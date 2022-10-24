@@ -309,6 +309,8 @@ export const Trade: React.VFC<TradeProps> = () => {
 
   const [cancelOrder, handleCancelOrder] = useAsyncFn(
     async (id: number | string) => {
+      if (!adapter) return
+
       try {
         await openConfirmDialog()
 
@@ -320,7 +322,10 @@ export const Trade: React.VFC<TradeProps> = () => {
 
         await res?.tx?.wait()
 
-        await tradeOrdersModel.cancelOrderFx(String(id))
+        await tradeOrdersModel.cancelOrderFx({
+          id: String(id),
+          swap: adapter.swap,
+        })
       } catch (error) {
         console.error(error)
       }
@@ -729,6 +734,7 @@ export const Trade: React.VFC<TradeProps> = () => {
         onUpdatePrice={handleUpdatePrice}
         updating={updating || cancelOrder.loading}
         router={adapter?.router}
+        swap={adapter?.swap}
         exchangesMap={exchangesMap}
       />
     </AppLayout>

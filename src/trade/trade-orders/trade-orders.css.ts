@@ -275,3 +275,11 @@ export const boughtPrice = style({
   color: theme.colors.textColorGrey,
   marginBottom: 12,
 })
+
+export const positive = style({
+  color: theme.colors.textColorGreen,
+})
+
+export const negative = style({
+  color: theme.colors.common.red1,
+})
