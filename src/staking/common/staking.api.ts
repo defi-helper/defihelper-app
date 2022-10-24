@@ -265,7 +265,10 @@ export const stakingApi = {
         query: AUTOMATION_CONTRACT_CREATE.loc?.source.body ?? '',
         variables,
       })
-      .then(({ data }) => data?.automateContractCreate),
+      .then(({ data, error }) => ({
+        data: data?.automateContractCreate,
+        error,
+      })),
 
   updateAutomatesContract: (
     variables: AutomationContractUpdateMutationVariables
