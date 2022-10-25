@@ -436,16 +436,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   stopLossToken={deployedContract.stopLoss?.outToken?.symbol}
                   error={
                     deployedContract.contractWallet?.billing?.balance
-                      ?.lowFeeFunds ||
-                    (bignumberUtils.gt(
-                      deployedContract.wallet?.billing?.balance?.netBalanceUSD,
-                      0.1
-                    ) &&
-                      bignumberUtils.lt(
-                        deployedContract.wallet?.billing?.balance
-                          ?.netBalanceUSD,
-                        20
-                      ))
+                      ?.lowFeeFunds
                   }
                   freshMetrics={metrics[deployedContract.id]}
                   balanceInvest={bignumberUtils.minus(
