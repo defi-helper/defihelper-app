@@ -354,15 +354,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               stopLossAmountOut={automatesContract.stopLoss?.params?.amountOut}
               stopLossToken={automatesContract.stopLoss?.outToken?.symbol}
               error={
-                automatesContract.contractWallet?.billing.balance.lowFeeFunds ||
-                (bignumberUtils.gt(
-                  automatesContract.wallet?.billing?.balance?.netBalanceUSD,
-                  0.1
-                ) &&
-                  bignumberUtils.lt(
-                    automatesContract.wallet?.billing?.balance?.netBalanceUSD,
-                    20
-                  ))
+                automatesContract.contractWallet?.billing.balance.lowFeeFunds
               }
               freshMetrics={metrics[automatesContract.id]}
               balanceInvest={bignumberUtils.minus(
