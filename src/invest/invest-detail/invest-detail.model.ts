@@ -54,3 +54,11 @@ export const fetchContractAddressesFx = createEffect(
     )
   }
 )
+
+export const automateInvestCreateFx = createEffect(
+  investApi.automateInvestCreate
+)
+
+export const automateInvestRefundFx = createEffect(
+  investApi.automateInvestRefund
+)
