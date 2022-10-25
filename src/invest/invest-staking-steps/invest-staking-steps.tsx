@@ -274,6 +274,28 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       key={3}
       onSubmit={(values) => {
         handleNextStep(values.txHash)
+
+        const findedWallet = wallets.find((wallet) => {
+          const sameAddreses =
+            String(currentWallet?.chainId) === 'main'
+              ? currentWallet?.account === wallet.address
+              : currentWallet?.account?.toLowerCase() === wallet.address
+
+          return (
+            sameAddreses && String(currentWallet?.chainId) === wallet.network
+          )
+        })
+
+        if (!findedWallet) return
+
+        model.automateInvestCreateFx({
+          input: {
+            contract: props.contract.id,
+            wallet: findedWallet.id,
+            amount: values.amount,
+            amountUSD: values.amountInUSD,
+          },
+        })
       }}
       contract={props.contract}
       deployedContract={deploy ?? deployState.value?.address}
