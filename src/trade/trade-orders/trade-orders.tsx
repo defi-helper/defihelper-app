@@ -22,7 +22,6 @@ import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { TradeStatusChart } from '~/trade/common/trade-status-chart'
 import { hasAmountIn, hasBoughtPrice, Order } from '~/trade/common/trade.types'
-import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
 import { Exchange, tradeApi } from '~/trade/common/trade.api'
 import { TradeOrderDeposit } from '~/trade/common/trade-order-deposit'
 import { useWalletConnect } from '~/wallets/wallet-connect'
@@ -81,7 +80,6 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
   const [updatingOrderId, setUpdatingOrderId] = useState('')
 
-  const [openTradeConfirmDialog] = useDialog(TradeConfirmClaimDialog)
   const [openTradeEditDialog] = useDialog(TradeEditDialog)
 
   const handleConnect = useWalletConnect()
@@ -95,41 +93,16 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   }
 
   const handleClaim = (order: Order) => async () => {
-    if (!hasBoughtPrice(order.callData)) return
-
-    const exchange = props.exchangesMap.get(order.callData.exchange)
-
-    if (!exchange || !props.router) return
+    if (!hasBoughtPrice(order.callData) || !props.router) return
 
     const [tokenAddress] = order.callData.path.slice(-1)
-
-    const balance = await props.router.balanceOf(tokenAddress)
-
-    const pairs = await tradeApi.pairs([], [order.callData.exchange])
-
-    const pair = pairs.data.list.find(({ pairInfo }) =>
-      pairInfo.tokens.some(
-        ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
-      )
-    )
-
-    const token = pair?.pairInfo.tokens.find(
-      ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
-    )
 
     try {
       model.claimStarted(order.id)
 
-      await openTradeConfirmDialog({
-        order,
-        exchange,
-        totalRecieve: balance,
-        boughtToken: token,
-      })
+      const res = await props.router.refund(tokenAddress, '')
 
-      const res = await props.router?.refund(tokenAddress, '')
-
-      await res?.tx?.wait()
+      await res.tx?.wait()
     } catch {
       console.error('error')
     } finally {

@@ -21,6 +21,9 @@ import { authModel } from '~/auth'
 import { UserRoleEnum } from '~/api'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
+import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
+import { useDialog } from '~/common/dialog'
+import { Exchange, tradeApi } from '~/trade/common/trade.api'
 import * as model from './trade-smart-sell.model'
 import * as styles from './trade-smart-sell.css'
 
@@ -36,6 +39,7 @@ export type TradeSmartSellProps = {
   exchangeAddress?: string
   transactionDeadline: string
   slippage: string
+  exchangesMap: Map<string, Exchange>
 }
 
 type FormValues = {
@@ -57,6 +61,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
   const [takeProfitFocus, toggleTakeProfitFocus] = useToggle(false)
   const [stopLossFocus, toggleStopLossFocus] = useToggle(false)
+
+  const [openTradeConfirmDialog] = useDialog(TradeConfirmClaimDialog)
 
   const { handleSubmit, control, watch, setValue, formState } =
     useForm<FormValues>({
@@ -126,7 +132,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       !props.tokens ||
       !props.exchangeAddress ||
       !currentWallet ||
-      !price.value
+      !price.value ||
+      !props.router
     )
       return
 
@@ -139,9 +146,37 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       return sameAddreses && String(currentWallet.chainId) === wallet.network
     })
 
-    if (!findedWallet || !props.swap) return
+    const exchange = props.exchangesMap.get(props.exchangeAddress)
+
+    if (!findedWallet || !props.swap || !exchange) return
 
     const path = props.tokens.map(({ address }) => address)
+
+    const [tokenAddress] = path.slice(-1)
+
+    const balance = await props.router.balanceOf(tokenAddress)
+
+    const pairs = await tradeApi.pairs([], [props.exchangeAddress])
+
+    const pair = pairs.data.list.find(({ pairInfo }) =>
+      pairInfo.tokens.some(
+        ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
+      )
+    )
+
+    const token = pair?.pairInfo.tokens.find(
+      ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
+    )
+
+    await openTradeConfirmDialog({
+      network: findedWallet.network,
+      boughtPrice: price.value,
+      exchange,
+      tokens: pair?.pairInfo.tokens,
+      name: findedWallet.name,
+      totalRecieve: balance,
+      boughtToken: token,
+    })
 
     const getAmountOut = (percent: number) =>
       bignumberUtils.toFixed(
@@ -497,39 +532,37 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   onChange={handleChangeStopLoss}
                 />
               </div>
+              <div className={styles.trailingBuyTitle}>
+                <Typography
+                  as="div"
+                  variant="body3"
+                  className={styles.takeProfitLabel}
+                >
+                  Trailing stop-loss
+                </Typography>
+                <Dropdown
+                  control={
+                    <ButtonBase>
+                      <Icon icon="info" width="16" height="16" />
+                    </ButtonBase>
+                  }
+                  offset={[0, 8]}
+                  className={styles.dropdown}
+                  placement="bottom-start"
+                >
+                  <Typography variant="body2">
+                    Will follow the price movements up. It will be at the same
+                    distance from the reached price
+                  </Typography>
+                </Dropdown>
+                <Switch
+                  size="small"
+                  onChange={({ target }) => setValue('moving', target.checked)}
+                  checked={moving}
+                />
+              </div>
             </>
           )}
-        </div>
-        <div>
-          <div className={styles.trailingBuyTitle}>
-            <Typography
-              as="div"
-              variant="body3"
-              className={styles.takeProfitLabel}
-            >
-              Trailing stop-loss
-            </Typography>
-            <Dropdown
-              control={
-                <ButtonBase>
-                  <Icon icon="info" width="16" height="16" />
-                </ButtonBase>
-              }
-              offset={[0, 8]}
-              className={styles.dropdown}
-              placement="bottom-start"
-            >
-              <Typography variant="body2">
-                Will follow the price movements up. It will be at the same
-                distance from the reached price
-              </Typography>
-            </Dropdown>
-            <Switch
-              size="small"
-              onChange={({ target }) => setValue('moving', target.checked)}
-              checked={moving}
-            />
-          </div>
         </div>
       </div>
       <div className={styles.buttons}>

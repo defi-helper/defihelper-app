@@ -251,6 +251,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           transactionDeadline={transactionDeadline}
           slippage={currentSlippage}
           key={String(currentPair || currentWalletAddress || currentExchange)}
+          exchangesMap={exchangesMap}
         />
       </>
     ),
