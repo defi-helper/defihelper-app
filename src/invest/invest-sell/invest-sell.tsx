@@ -99,7 +99,6 @@ export const InvestSell = (props: InvestSellProps) => {
       })
 
       props.onSubmit?.(result?.transactionHash)
-      props.onSell(amount)
 
       return true
     } catch (error) {
@@ -145,6 +144,13 @@ export const InvestSell = (props: InvestSellProps) => {
   useEffect(() => {
     setAmount(balance.value ?? '0')
   }, [tokenAddress, balance.value])
+
+  useEffect(() => {
+    if (!amountOut.value) return
+
+    props.onSell(amountOut.value)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [amountOut.value])
 
   return (
     <React.Fragment>

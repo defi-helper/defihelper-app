@@ -4843,6 +4843,26 @@ export type GovernanceVotesQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type AutomateInvestCreateMutationVariables = Exact<{
+  input: AutomateInvestCreateInputType
+}>
+
+export type AutomateInvestCreateMutation = { __typename?: 'Mutation' } & {
+  automateInvestCreate: { __typename?: 'AutomateInvestHistoryType' } & Pick<
+    AutomateInvestHistoryType,
+    'id' | 'amount' | 'amountUSD' | 'createdAt'
+  >
+}
+
+export type AutomateInvestRefundMutationVariables = Exact<{
+  input: AutomateInvestRefundInputType
+}>
+
+export type AutomateInvestRefundMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'automateInvestRefund'
+>
+
 export type AutostakingStakingContractsQueryVariables = Exact<{
   filter?: Maybe<ContractListFilterInputType>
   sort?: Maybe<Array<ContractListSortInputType> | ContractListSortInputType>
@@ -6707,6 +6727,10 @@ export type StakingAutomatesContractFragmentFragment = {
         'active' | 'id'
       >
     >
+    metric: { __typename?: 'AutomateContractMetricType' } & Pick<
+      AutomateContractMetricType,
+      'invest' | 'staked' | 'earned' | 'apyBoost'
+    >
   }
 
 export type StakingAutomatesContractsQueryVariables = Exact<{
@@ -7201,7 +7225,7 @@ export type TradeOrderFragmentFragment = {
         >)
       | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
           SmartTradeSwapHandlerCallDataType,
-          'exchange' | 'boughtPrice' | 'path'
+          'amountIn' | 'exchange' | 'boughtPrice' | 'path'
         >)
     lastCall?: Maybe<
       { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<

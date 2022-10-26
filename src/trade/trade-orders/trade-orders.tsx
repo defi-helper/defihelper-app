@@ -21,8 +21,7 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { TradeStatusChart } from '~/trade/common/trade-status-chart'
-import { hasAmountIn, hasBoughtPrice, Order } from '~/trade/common/trade.types'
-import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
+import { hasBoughtPrice, Order } from '~/trade/common/trade.types'
 import { Exchange, tradeApi } from '~/trade/common/trade.api'
 import { TradeOrderDeposit } from '~/trade/common/trade-order-deposit'
 import { useWalletConnect } from '~/wallets/wallet-connect'
@@ -36,7 +35,7 @@ import {
   useOnBillingTransferUpdatedSubscription,
 } from '~/settings/common'
 import { analytics } from '~/analytics'
-import { SmartTradeRouter } from '~/common/load-adapter'
+import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { authModel } from '~/auth'
 import { TradeEditDialog } from '~/trade/common/trade-edit-dialog'
@@ -49,6 +48,7 @@ export type TradeOrdersProps = {
   onUpdatePrice?: () => void
   updating?: boolean
   router?: SmartTradeRouter['methods']
+  swap?: SmartTradeSwapHandler['methods']
   exchangesMap: Map<string, Exchange>
 }
 
@@ -80,7 +80,6 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
   const [updatingOrderId, setUpdatingOrderId] = useState('')
 
-  const [openTradeConfirmDialog] = useDialog(TradeConfirmClaimDialog)
   const [openTradeEditDialog] = useDialog(TradeEditDialog)
 
   const handleConnect = useWalletConnect()
@@ -94,41 +93,16 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   }
 
   const handleClaim = (order: Order) => async () => {
-    if (!hasBoughtPrice(order.callData)) return
-
-    const exchange = props.exchangesMap.get(order.callData.exchange)
-
-    if (!exchange || !props.router) return
+    if (!hasBoughtPrice(order.callData) || !props.router) return
 
     const [tokenAddress] = order.callData.path.slice(-1)
-
-    const balance = await props.router.balanceOf(tokenAddress)
-
-    const pairs = await tradeApi.pairs([], [order.callData.exchange])
-
-    const pair = pairs.data.list.find(({ pairInfo }) =>
-      pairInfo.tokens.some(
-        ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
-      )
-    )
-
-    const token = pair?.pairInfo.tokens.find(
-      ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
-    )
 
     try {
       model.claimStarted(order.id)
 
-      await openTradeConfirmDialog({
-        order,
-        exchange,
-        totalRecieve: balance,
-        boughtToken: token,
-      })
+      const res = await props.router.refund(tokenAddress, '')
 
-      const res = await props.router?.refund(tokenAddress, '')
-
-      await res?.tx?.wait()
+      await res.tx?.wait()
     } catch {
       console.error('error')
     } finally {
@@ -137,16 +111,19 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   }
 
   useEffect(() => {
+    if (!props.swap) return
+
     model.fetchOrdersFx({
       filter: {
         status: statuses[currentTab],
       },
+      swap: props.swap,
     })
 
     return () => {
       model.reset()
     }
-  }, [currentTab])
+  }, [currentTab, props.swap])
 
   const handleUpdatePrice = (orderId?: string) => () => {
     props.onUpdatePrice?.()
@@ -217,7 +194,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
   const handleEnterBoughtPrice =
     (order: Exclude<typeof orders, null>['list'][number]) => async () => {
-      if (!hasBoughtPrice(order.callData)) return
+      if (!hasBoughtPrice(order.callData) || !props.swap) return
 
       try {
         model.editStarted(order.id)
@@ -252,6 +229,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
               boughtPrice: result,
             },
           },
+          swap: props.swap,
         })
       } catch (error) {
         console.error(error)
@@ -263,28 +241,34 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   const user = useStore(authModel.$user)
 
   const variables = useMemo(() => {
-    if (!user) return undefined
+    if (!user || !props.swap) return undefined
 
     return {
       user: [user.id],
     }
-  }, [user])
+  }, [user, props.swap])
 
   useOnBillingTransferCreatedSubscription(({ data }) => {
+    if (!props.swap) return
+
     if (data?.onBillingTransferCreated.id) {
       model.fetchOrdersFx({
         filter: {
           status: statuses[currentTab],
         },
+        swap: props.swap,
       })
     }
   }, variables)
   useOnBillingTransferUpdatedSubscription(({ data }) => {
+    if (!props.swap) return
+
     if (data?.onBillingTransferUpdated.id) {
       model.fetchOrdersFx({
         filter: {
           status: statuses[currentTab],
         },
+        swap: props.swap,
       })
     }
   }, variables)
@@ -383,8 +367,8 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     ? order.callData.boughtPrice
                     : null
 
-                  const tokensAmountInOut = hasAmountIn(order.callData)
-                    ? [order.callData.amountIn, order.callData.amountOut]
+                  const tokensAmountInOut = hasBoughtPrice(order.callData)
+                    ? order.callData.amountIn
                     : null
 
                   const updating =
@@ -393,6 +377,8 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                   const deposit = currentWallet
                     ? handleDeposit(order)
                     : handleConnect
+
+                  const price = order.callData.currentPrice
 
                   return (
                     <TradeOrderDeposit
@@ -468,40 +454,29 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             </Typography>
                           </div>
                           <div>
-                            {order.tokens.map(({ token }, index) => {
-                              return (
-                                <div
-                                  className={styles.contractBalance}
-                                  key={token.id}
-                                >
-                                  {token.alias?.logoUrl ? (
-                                    <img
-                                      src={token.alias?.logoUrl}
-                                      className={styles.contractBalanceIcon}
-                                      alt=""
-                                    />
-                                  ) : (
-                                    <Paper
-                                      className={styles.contractBalanceIcon}
-                                    >
-                                      <Icon
-                                        icon="unknownNetwork"
-                                        width="16"
-                                        height="16"
-                                      />
-                                    </Paper>
-                                  )}
-                                  <Typography className={styles.fs12} as="div">
-                                    {tokensAmountInOut
-                                      ? bignumberUtils.format(
-                                          tokensAmountInOut[index]
-                                        )
-                                      : '-'}{' '}
-                                    {token.symbol}
-                                  </Typography>
-                                </div>
-                              )
-                            })}
+                            <div className={styles.contractBalance}>
+                              {order.tokens[0].token.alias?.logoUrl ? (
+                                <img
+                                  src={order.tokens[0].token.alias?.logoUrl}
+                                  className={styles.contractBalanceIcon}
+                                  alt=""
+                                />
+                              ) : (
+                                <Paper className={styles.contractBalanceIcon}>
+                                  <Icon
+                                    icon="unknownNetwork"
+                                    width="16"
+                                    height="16"
+                                  />
+                                </Paper>
+                              )}
+                              <Typography className={styles.fs12} as="div">
+                                {tokensAmountInOut
+                                  ? bignumberUtils.format(tokensAmountInOut)
+                                  : '-'}{' '}
+                                {order.tokens[0].token.symbol}
+                              </Typography>
+                            </div>
                           </div>
                           <div>
                             <div className={styles.contractBalance}>
@@ -558,12 +533,36 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     className={styles.contractBalanceIcon}
                                     icon="USDT"
                                   />
-                                  <Typography className={styles.fs12} as="div">
+                                  <Typography
+                                    className={clsx(styles.fs12, {
+                                      [styles.positive]: bignumberUtils.gt(
+                                        price,
+                                        boughtPrice
+                                      ),
+                                      [styles.negative]: bignumberUtils.lt(
+                                        price,
+                                        boughtPrice
+                                      ),
+                                    })}
+                                    as="div"
+                                  >
                                     {bignumberUtils.format(boughtPrice)}
                                   </Typography>
                                 </div>
                                 <div className={styles.contractBalance}>
-                                  <Typography className={styles.fs12} as="div">
+                                  <Typography
+                                    className={clsx(styles.fs12, {
+                                      [styles.positive]: bignumberUtils.gt(
+                                        price,
+                                        boughtPrice
+                                      ),
+                                      [styles.negative]: bignumberUtils.lt(
+                                        price,
+                                        boughtPrice
+                                      ),
+                                    })}
+                                    as="div"
+                                  >
                                     {bignumberUtils.format(boughtPrice)}$ /{' '}
                                     {bignumberUtils.format(boughtPrice)}%
                                   </Typography>

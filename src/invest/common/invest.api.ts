@@ -6,7 +6,13 @@ import {
   AutostakingUserUnlinkMutation,
   AutostakingUserLinkMutation,
   AutostakingUserLinkMutationVariables,
+  AutomateInvestCreateMutationVariables,
+  AutomateInvestCreateMutation,
+  AutomateInvestRefundMutation,
+  AutomateInvestRefundMutationVariables,
 } from '~/api'
+import { AUTOMATE_INVEST_CREATE } from './graphql/automate-invest-create.graphql'
+import { AUTOMATE_INVEST_REFUND } from './graphql/automate-invest-refund.graphql'
 import { AUTOSTAKING_STAKING_CONTRACTS } from './graphql/autostaking-staking-contracts.graphql'
 import { AUTOSTAKING_USER_LINK } from './graphql/autostaking-user-link.graphql'
 import { AUTOSTAKING_USER_UNLINK } from './graphql/autostaking-user-unlink.graphql'
@@ -67,4 +73,28 @@ export const investApi = {
         variables,
       })
       .then(({ data }) => data?.contractUserUnlink),
+
+  automateInvestCreate: (variables: AutomateInvestCreateMutationVariables) =>
+    getAPIClient()
+      .request<
+        AutomateInvestCreateMutation,
+        unknown,
+        AutomateInvestCreateMutationVariables
+      >({
+        query: AUTOMATE_INVEST_CREATE.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.automateInvestCreate),
+
+  automateInvestRefund: (variables: AutomateInvestRefundMutationVariables) =>
+    getAPIClient()
+      .request<
+        AutomateInvestRefundMutation,
+        unknown,
+        AutomateInvestRefundMutationVariables
+      >({
+        query: AUTOMATE_INVEST_REFUND.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.automateInvestRefund),
 }

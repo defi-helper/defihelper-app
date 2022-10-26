@@ -129,5 +129,11 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       active
       id
     }
+    metric {
+      invest
+      staked
+      earned
+      apyBoost
+    }
   }
 `

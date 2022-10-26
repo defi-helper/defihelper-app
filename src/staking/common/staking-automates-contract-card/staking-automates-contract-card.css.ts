@@ -219,3 +219,11 @@ export const settings = style({
     },
   },
 })
+
+export const negative = style({
+  color: theme.colors.common.red1,
+})
+
+export const positive = style({
+  color: theme.colors.common.green2,
+})

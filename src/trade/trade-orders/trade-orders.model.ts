@@ -1,28 +1,94 @@
 import { createStore, createEffect, createEvent, UnitValue } from 'effector'
 
-import { tradeApi } from '../common/trade.api'
-import { TradeUpdateOrderMutationVariables } from '~/api'
+import { tradeApi } from '~/trade/common/trade.api'
+import {
+  TradeOrderListQueryVariables,
+  TradeUpdateOrderMutationVariables,
+} from '~/api'
 import * as tradeSmartSellModel from '~/trade/trade-smart-sell/trade-smart-sell.model'
+import { SmartTradeSwapHandler } from '~/common/load-adapter'
+import { hasBoughtPrice } from '~/trade/common/trade.types'
 
 export const reset = createEvent()
 
-export const fetchOrdersFx = createEffect(tradeApi.fetchOrders)
+export const fetchOrdersFx = createEffect(
+  async ({
+    swap,
+    ...variables
+  }: TradeOrderListQueryVariables & {
+    swap: SmartTradeSwapHandler['methods']
+  }) => {
+    const { list, pagination } = await tradeApi.fetchOrders(variables)
 
-export const cancelOrderFx = createEffect(async (id: string) => {
-  const data = await tradeApi.cancelOrder(id)
+    return {
+      list: await Promise.all(
+        list.map(async ({ callData, ...order }) => ({
+          ...order,
+          callData: {
+            ...callData,
+            currentPrice: hasBoughtPrice(callData)
+              ? await swap.amountOut(callData.exchange, callData.path, '1')
+              : null,
+          },
+        }))
+      ),
+      pagination,
+    }
+  }
+)
 
-  if (!data) throw new Error('something went wrong')
+export const cancelOrderFx = createEffect(
+  async ({
+    id,
+    swap,
+  }: {
+    id: string
+    swap: SmartTradeSwapHandler['methods']
+  }) => {
+    const data = await tradeApi.cancelOrder(id)
 
-  return data
-})
+    if (!data) throw new Error('something went wrong')
+
+    return {
+      ...data,
+      callData: {
+        ...data.callData,
+        currentPrice: hasBoughtPrice(data.callData)
+          ? await swap.amountOut(
+              data.callData.exchange,
+              data.callData.path,
+              '1'
+            )
+          : null,
+      },
+    }
+  }
+)
 
 export const updateOrderFx = createEffect(
-  async (variables: TradeUpdateOrderMutationVariables) => {
+  async ({
+    swap,
+    ...variables
+  }: TradeUpdateOrderMutationVariables & {
+    swap: SmartTradeSwapHandler['methods']
+  }) => {
     const data = await tradeApi.updateOrder(variables)
 
     if (!data) throw new Error('something went wrong')
 
-    return data
+    return {
+      ...data,
+      callData: {
+        ...data.callData,
+        currentPrice: hasBoughtPrice(data.callData)
+          ? await swap.amountOut(
+              data.callData.exchange,
+              data.callData.path,
+              '1'
+            )
+          : null,
+      },
+    }
   }
 )
 

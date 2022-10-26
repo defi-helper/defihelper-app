@@ -48,6 +48,7 @@ export type StakingAutomatesContractCardProps = {
   stopLossAmountOut?: string
   stopLossToken?: string
   status?: AutomateContractStopLossStatusEnum
+  balanceInvest: string
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -212,6 +213,23 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               {bignumberUtils.format(
                 props.freshMetrics?.myStaked ?? props.balance
               )}{' '}
+              {bignumberUtils.gt(props.balanceInvest, '0.01') && (
+                <Typography
+                  variant="inherit"
+                  className={clsx({
+                    [styles.negative]: bignumberUtils.lt(
+                      props.balanceInvest,
+                      0
+                    ),
+                    [styles.positive]: bignumberUtils.gt(
+                      props.balanceInvest,
+                      0
+                    ),
+                  })}
+                >
+                  (${bignumberUtils.format(props.balanceInvest)})
+                </Typography>
+              )}
               {!isEmpty(props.freshMetrics) && <StakingFreshMetrics />}
             </Typography>
           </div>
@@ -289,28 +307,6 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               <Typography variant="inherit" className={styles.opacity}>
                 APY
               </Typography>
-              <Dropdown
-                control={
-                  <ButtonBase className={clsx(styles.opacity)}>
-                    <Icon className={styles.question} icon="question" />
-                  </ButtonBase>
-                }
-                placement="top"
-                className={styles.questionDropdown}
-                offset={[0, 8]}
-              >
-                <Typography variant="inherit">
-                  In order to execute every automation action in blockchain,
-                  such as auto-restaking, provide fee balance we can use.{' '}
-                  <Link
-                    target="_blank"
-                    href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
-                    className={styles.howItWorks}
-                  >
-                    Learn more on How It Works
-                  </Link>
-                </Typography>
-              </Dropdown>
             </Typography>
             <Typography variant="body2" as="span">
               {bignumberUtils.formatMax(
@@ -337,11 +333,12 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 offset={[0, 8]}
               >
                 <Typography variant="inherit">
-                  In order to execute every automation action in blockchain,
-                  such as auto-restaking, provide fee balance we can use.{' '}
+                  Auto-staking is a built-in automation. It helps you earn more
+                  by automatically adding your profits to the deposit,
+                  effectively auto- compounding your interest.{' '}
                   <Link
                     target="_blank"
-                    href="https://defihelper.medium.com/how-to-enable-auto-staking-in-defihelper-698064069408"
+                    href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
                     className={styles.howItWorks}
                   >
                     Learn more on How It Works
@@ -386,7 +383,9 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     props.stopLossing
                   }
                   as={ReactRouterLink}
-                  to={`${paths.invest.detail(props.contractId)}?deploy=1`}
+                  to={`${paths.invest.detail(props.contractId)}?deploy=${
+                    props.address
+                  }`}
                 >
                   Invest
                 </Button>

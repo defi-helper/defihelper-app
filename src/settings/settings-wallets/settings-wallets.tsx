@@ -343,17 +343,7 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
                 deleting={wallet.deleting}
                 depositing={wallet.depositing}
                 refunding={wallet.refunding}
-                error={
-                  wallet.billing?.balance?.lowFeeFunds ||
-                  (bignumberUtils.gt(
-                    wallet.billing?.balance?.netBalanceUSD,
-                    0.1
-                  ) &&
-                    bignumberUtils.lt(
-                      wallet.billing?.balance?.netBalanceUSD,
-                      20
-                    ))
-                }
+                error={wallet.billing?.balance?.lowFeeFunds}
               />
             )
           })}
