@@ -6,7 +6,7 @@ export const TRADE_ORDER_LIST = gql`
   query TradeOrderList(
     $filter: SmartTradeOrderListFilterInputType = {}
     $sort: [SmartTradeOrderListSortInputType!] = [
-      { column: createdAt, order: asc }
+      { column: createdAt, order: desc }
     ]
     $pagination: SmartTradeOrderListPaginationInputType = {
       limit: 10

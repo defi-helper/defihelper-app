@@ -40,30 +40,3 @@ export const contractName = style({
   alignItems: 'center',
   gap: 8,
 })
-
-export const contractIcons = style({
-  display: 'flex',
-  alignItems: 'center',
-})
-
-export const contractIcon = style({
-  width: 24,
-  height: 24,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-
-  selectors: {
-    '&:not(:first-child)': {
-      marginLeft: -4,
-    },
-  },
-})
-
-export const contractUnknownTokenIcon = style([
-  contractIcon,
-  {
-    borderRadius: '50%',
-    background: theme.colors.background,
-  },
-])
