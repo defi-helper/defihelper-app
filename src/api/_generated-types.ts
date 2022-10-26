@@ -4079,6 +4079,7 @@ export type WalletExchangeType = {
   name: Scalars['String']
   /** Exchange type */
   exchange: WalletExchangeTypeEnum
+  isExpired: Scalars['Boolean']
   /** Statistics collected */
   statisticsCollectedAt: Scalars['DateTimeType']
   tokenAliases: WalletExchangeTokenAliasListType
@@ -6393,7 +6394,10 @@ export type WalletDeleteMutation = { __typename?: 'Mutation' } & Pick<
 
 export type WalletExchangeFragmentFragment = {
   __typename?: 'WalletExchangeType'
-} & Pick<WalletExchangeType, 'id' | 'exchange' | 'balance' | 'account'>
+} & Pick<
+  WalletExchangeType,
+  'id' | 'exchange' | 'balance' | 'account' | 'isExpired'
+>
 
 export type WalletListMetricsQueryVariables = Exact<{
   sort?: Maybe<Array<WalletListSortInputType> | WalletListSortInputType>
