@@ -7221,7 +7221,7 @@ export type TradeOrderFragmentFragment = {
         >)
       | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
           SmartTradeSwapHandlerCallDataType,
-          'exchange' | 'boughtPrice' | 'path'
+          'amountIn' | 'exchange' | 'boughtPrice' | 'path'
         >)
     lastCall?: Maybe<
       { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<

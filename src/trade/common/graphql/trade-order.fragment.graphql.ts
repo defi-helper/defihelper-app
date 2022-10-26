@@ -23,6 +23,7 @@ export const TRADE_ORDER_FRAGMENT = gql`
         amountOut
       }
       ... on SmartTradeSwapHandlerCallDataType {
+        amountIn
         exchange
         boughtPrice
         path

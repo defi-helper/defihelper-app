@@ -21,7 +21,7 @@ import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { TradeStatusChart } from '~/trade/common/trade-status-chart'
-import { hasAmountIn, hasBoughtPrice, Order } from '~/trade/common/trade.types'
+import { hasBoughtPrice, Order } from '~/trade/common/trade.types'
 import { Exchange, tradeApi } from '~/trade/common/trade.api'
 import { TradeOrderDeposit } from '~/trade/common/trade-order-deposit'
 import { useWalletConnect } from '~/wallets/wallet-connect'
@@ -367,8 +367,8 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     ? order.callData.boughtPrice
                     : null
 
-                  const tokensAmountInOut = hasAmountIn(order.callData)
-                    ? [order.callData.amountIn, order.callData.amountOut]
+                  const tokensAmountInOut = hasBoughtPrice(order.callData)
+                    ? order.callData.amountIn
                     : null
 
                   const updating =
@@ -472,7 +472,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               )}
                               <Typography className={styles.fs12} as="div">
                                 {tokensAmountInOut
-                                  ? bignumberUtils.format(tokensAmountInOut[0])
+                                  ? bignumberUtils.format(tokensAmountInOut)
                                   : '-'}{' '}
                                 {order.tokens[0].token.symbol}
                               </Typography>
