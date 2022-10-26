@@ -309,22 +309,22 @@ export const Trade: React.VFC<TradeProps> = () => {
   useInterval(handleUpdatePrice, 15000)
 
   const [cancelOrder, handleCancelOrder] = useAsyncFn(
-    async (id: number | string) => {
+    async (values: { orderNumber: number | string; id: string }) => {
       if (!adapter) return
 
       try {
         await openConfirmDialog()
 
-        const can = await adapter?.router.canCancelOrder(id)
+        const can = await adapter?.router.canCancelOrder(values.orderNumber)
 
         if (can instanceof Error) throw can
 
-        const res = await adapter?.router.cancelOrder(id)
+        const res = await adapter?.router.cancelOrder(values.orderNumber)
 
         await res?.tx?.wait()
 
         await tradeOrdersModel.cancelOrderFx({
-          id: String(id),
+          id: values.id,
           swap: adapter.swap,
         })
       } catch (error) {

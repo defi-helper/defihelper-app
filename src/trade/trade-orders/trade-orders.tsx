@@ -44,7 +44,10 @@ import * as model from './trade-orders.model'
 
 export type TradeOrdersProps = {
   className?: string
-  onCancelOrder: (id: number | string) => Promise<void>
+  onCancelOrder: (values: {
+    orderNumber: number | string
+    id: string
+  }) => Promise<void>
   onUpdatePrice?: () => void
   updating?: boolean
   router?: SmartTradeRouter['methods']
@@ -626,7 +629,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
                                     setUpdatingOrderId(order.id)
 
-                                    props.onCancelOrder(order.number)
+                                    props.onCancelOrder({
+                                      orderNumber: order.number,
+                                      id: order.id,
+                                    })
                                   }}
                                 >
                                   Cancel order
