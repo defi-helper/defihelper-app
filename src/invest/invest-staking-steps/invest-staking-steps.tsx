@@ -39,7 +39,11 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const wallets = useStore(settingsWalletModel.$wallets)
 
-  const deploy = useQueryParams().get('deploy')
+  const queryParams = useQueryParams()
+
+  const deploy = queryParams.get('deploy')
+  const automateId = queryParams.get('automateId')
+  const walletId = queryParams.get('walletId')
 
   const [currentStep, setCurrentStep] = useState(0)
 
@@ -80,12 +84,22 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       return sameAddreses && String(currentWallet?.chainId) === wallet.network
     })
 
+    if (walletId) {
+      stakingAutomatesModel
+        .scanWalletMetricFx({
+          contract: props.contract.id,
+          wallet: walletId,
+          txId,
+        })
+        .catch(console.error)
+    }
+
     if (!findedWallet) return
 
     stakingAutomatesModel
       .scanWalletMetricFx({
-        wallet: findedWallet.id,
         contract: props.contract.id,
+        wallet: findedWallet.id,
         txId,
       })
       .catch(console.error)
@@ -290,7 +304,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
 
         model.automateInvestCreateFx({
           input: {
-            contract: props.contract.id,
+            contract: automateId ?? props.contract.id,
             wallet: findedWallet.id,
             amount: values.amount,
             amountUSD: values.amountInUSD,
