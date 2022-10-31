@@ -102,9 +102,8 @@ export const $orders = createStore<Orders | null>(null)
   }))
   .on(cancelOrderFx.doneData, (state, payload) => ({
     list:
-      state?.list.map((order) =>
-        order.number === payload.id ? payload : order
-      ) ?? [],
+      state?.list.map((order) => (order.id === payload.id ? payload : order)) ??
+      [],
     pagination: state?.pagination ?? 0,
   }))
   .on(updateOrderFx.doneData, (state, payload) => ({

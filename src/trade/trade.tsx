@@ -61,7 +61,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentPair, setCurrentPair] = useState('')
   const [currentWalletAddress, setCurrentWalletAddress] = useState('')
   const [searchPair, setSearchPair] = useState('')
-  const [currentSlippage, setCurrentSlippage] = useState('1')
+  const [currentSlippage, setCurrentSlippage] = useState('3')
   const [transactionDeadline, setTransactionDeadline] = useState('30')
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
@@ -625,7 +625,7 @@ export const Trade: React.VFC<TradeProps> = () => {
                   variant="body2"
                   className={styles.transactionSettingsTitle}
                 >
-                  Transactions Settings
+                  Transaction Settings
                 </Typography>
                 <Typography
                   variant="body3"
