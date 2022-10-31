@@ -44,7 +44,6 @@ export type TradeSmartSellProps = {
 
 type FormValues = {
   unit: string
-  total: string
   takeProfit: boolean
   stopLoss: boolean
   stopLossPercent: number
@@ -91,7 +90,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const unit = watch('unit')
   const takeProfitPercent = watch('takeProfitPercent')
   const stopLossPercent = watch('stopLossPercent')
-  const total = watch('total')
 
   const price = useAsyncRetry(async () => {
     const path = props.tokens?.map(({ address }) => address)
@@ -100,14 +98,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     return props.swap?.amountOut(props.exchangeAddress, path, '1')
   }, [props.exchangeAddress, props.tokens, unit])
-
-  useEffect(() => {
-    setValue(
-      'total',
-      bignumberUtils.toFixed(bignumberUtils.mul(unit, price.value), 6)
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unit, price.value])
 
   const isApproved = useAsyncRetry(async () => {
     if (!props.tokens?.[0]?.address || bignumberUtils.eq(unit, 0)) return false
@@ -178,15 +168,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       boughtToken: token,
     })
 
-    const getAmountOut = (percent: number) =>
-      bignumberUtils.toFixed(
-        bignumberUtils.plus(
-          bignumberUtils.mul(bignumberUtils.div(percent, 100), total),
-          total
-        ),
-        6
-      )
-
     try {
       const result = await props.swap?.createOrder(
         props.exchangeAddress,
@@ -194,18 +175,20 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         formValues.unit,
         formValues.stopLoss
           ? {
-              amountOut: getAmountOut(stopLossPercent),
+              amountOut: formValues.stopLossValue,
               slippage: props.slippage,
               moving: formValues.moving,
             }
           : null,
         formValues.takeProfit
           ? {
-              amountOut: getAmountOut(takeProfitPercent),
+              amountOut: formValues.takeProfitValue,
               slippage: props.slippage,
             }
           : null,
-        { token: formValues.unit }
+        {
+          token: formValues.unit,
+        }
       )
 
       if (!result) throw new Error('something went wrong')
@@ -228,7 +211,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           tokenOutDecimals: result.callData.tokenOutDecimals,
           amountIn: result.callData.amountIn,
           amountOut: result.callData.amountOut,
-          boughtPrice: price.value,
           stopLoss: result.callData.stopLoss
             ? {
                 amountOut: result.callData.stopLoss.amountOut,
