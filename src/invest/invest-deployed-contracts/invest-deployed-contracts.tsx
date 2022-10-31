@@ -409,6 +409,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   address={deployedContract.address}
                   network={deployedContract.contract?.network ?? ''}
                   protocol={deployedContract.protocol}
+                  automateId={deployedContract.id}
                   tokensIcons={
                     deployedContract.contract?.tokens.stake.map(
                       ({ alias }) => alias?.logoUrl ?? null

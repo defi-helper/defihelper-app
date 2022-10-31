@@ -38,7 +38,11 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
   const contractLoading = useStore(model.fetchContractFx.pending)
 
   const params = useParams<{ contractId: string }>()
-  const depoy = useQueryParams().get('deploy')
+
+  const queryParams = useQueryParams()
+
+  const depoy = queryParams.get('deploy')
+  const automateId = queryParams.get('automateId')
 
   const isDesktop = useMedia('(min-width: 960px)')
 
@@ -118,7 +122,7 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
                 from={match.path}
                 to={
                   depoy
-                    ? `${match.path}/stake?deploy=${depoy}`
+                    ? `${match.path}/stake?deploy=${depoy}&automateId=${automateId}`
                     : `${match.path}/stake`
                 }
               />
