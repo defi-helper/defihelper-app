@@ -72,14 +72,14 @@ const statuses = {
 }
 
 export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
+  const [currentTab, setCurrentTab] = useState(Tabs.Active)
+
   const orders = useStore(model.$orders)
 
   const loading = useStore(model.fetchOrdersFx.pending)
   const claimingOrder = useStore(model.$claimingOrder)
   const depositingOrder = useStore(model.$depositingOrder)
   const editingOrder = useStore(model.$editingOrder)
-
-  const [currentTab, setCurrentTab] = useState(Tabs.Active)
 
   const [updatingOrderId, setUpdatingOrderId] = useState('')
 
@@ -365,291 +365,296 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     Actions
                   </Typography>
                 </div>
-                {orders?.list.map((order) => {
-                  const boughtPrice = hasBoughtPrice(order.callData)
-                    ? order.callData.boughtPrice
-                    : null
+                {orders?.list
+                  .filter((order) =>
+                    statuses[currentTab].includes(order.status)
+                  )
+                  .map((order) => {
+                    const boughtPrice = hasBoughtPrice(order.callData)
+                      ? order.callData.boughtPrice
+                      : null
 
-                  const tokensAmountInOut = hasBoughtPrice(order.callData)
-                    ? order.callData.amountIn
-                    : null
+                    const tokensAmountInOut = hasBoughtPrice(order.callData)
+                      ? order.callData.amountIn
+                      : null
 
-                  const updating =
-                    props.updating && updatingOrderId === order.id
+                    const updating =
+                      props.updating && updatingOrderId === order.id
 
-                  const deposit = currentWallet
-                    ? handleDeposit(order)
-                    : handleConnect
+                    const deposit = currentWallet
+                      ? handleDeposit(order)
+                      : handleConnect
 
-                  const price = order.callData.currentPrice
+                    const price = order.callData.currentPrice
 
-                  return (
-                    <TradeOrderDeposit
-                      key={order.id}
-                      lowBalance={order.owner.billing.balance.lowFeeFunds}
-                      onDeposit={deposit}
-                      depositing={depositingOrder === order.id}
-                    >
-                      <div
-                        className={clsx(
-                          styles.tableRow,
-                          updating && styles.tableRowLoader
-                        )}
+                    return (
+                      <TradeOrderDeposit
+                        key={order.id}
+                        lowBalance={order.owner.billing.balance.lowFeeFunds}
+                        onDeposit={deposit}
+                        depositing={depositingOrder === order.id}
                       >
-                        <div className={styles.tableRowInner}>
-                          <div>
-                            <Typography
-                              variant="body2"
-                              as="div"
-                              className={styles.contractName}
-                            >
-                              <div className={styles.contractIcons}>
-                                {order.tokens.map(({ token }) => (
-                                  <React.Fragment key={token.id}>
-                                    {token.alias?.logoUrl ? (
-                                      <img
-                                        src={token.alias?.logoUrl}
-                                        className={styles.contractIcon}
-                                        alt=""
-                                      />
-                                    ) : (
-                                      <Paper
-                                        className={
-                                          styles.contractUnknownTokenIcon
-                                        }
-                                      >
-                                        <Icon
-                                          icon="unknownNetwork"
-                                          width="16"
-                                          height="16"
-                                        />
-                                      </Paper>
-                                    )}
-                                  </React.Fragment>
-                                ))}
-                              </div>
-                              {order.tokens
-                                .map(({ token }) => token.symbol)
-                                .join('/')}
-                            </Typography>
-                            <Typography
-                              className={styles.contractAddress}
-                              as="div"
-                            >
-                              {networksConfig[order.owner.network] && (
-                                <Icon
-                                  icon={
-                                    networksConfig[order.owner.network].icon
-                                  }
-                                  width="22"
-                                  height="22"
-                                />
-                              )}
-                              <Link
-                                href={buildExplorerUrl({
-                                  address: order.owner.address,
-                                  network: order.owner.network,
-                                })}
-                                target="_blank"
-                              >
-                                {order.owner.name}
-                              </Link>
-                            </Typography>
-                          </div>
-                          <div>
-                            <div className={styles.contractBalance}>
-                              {order.tokens[0].token.alias?.logoUrl ? (
-                                <img
-                                  src={order.tokens[0].token.alias?.logoUrl}
-                                  className={styles.contractBalanceIcon}
-                                  alt=""
-                                />
-                              ) : (
-                                <Paper className={styles.contractBalanceIcon}>
-                                  <Icon
-                                    icon="unknownNetwork"
-                                    width="16"
-                                    height="16"
-                                  />
-                                </Paper>
-                              )}
-                              <Typography className={styles.fs12} as="div">
-                                {tokensAmountInOut
-                                  ? bignumberUtils.format(tokensAmountInOut)
-                                  : '-'}{' '}
-                                {order.tokens[0].token.symbol}
-                              </Typography>
-                            </div>
-                          </div>
-                          <div>
-                            <div className={styles.contractBalance}>
-                              <Typography className={styles.fs12} as="div">
-                                {dateUtils.format(
-                                  order.createdAt,
-                                  'DD/MM/YY  h:mma'
-                                )}
-                              </Typography>
-                            </div>
-                            <div className={styles.contractBalance}>
-                              <Typography className={styles.fs12} as="div">
-                                ID {order.number}
-                              </Typography>
-                            </div>
-                          </div>
-                          {false && (
-                            <TradeStatusChart
-                              stopLoss="100"
-                              takeProfit="200"
-                              buy="150"
-                              className={styles.contractStatus}
-                            />
+                        <div
+                          className={clsx(
+                            styles.tableRow,
+                            updating && styles.tableRowLoader
                           )}
-                          <div>
-                            {[
-                              SmartTradeOrderStatusEnum.Succeeded,
-                              SmartTradeOrderStatusEnum.Canceled,
-                            ].includes(order.status) ? (
-                              <>
-                                {hasBoughtPrice(order.callData) && (
+                        >
+                          <div className={styles.tableRowInner}>
+                            <div>
+                              <Typography
+                                variant="body2"
+                                as="div"
+                                className={styles.contractName}
+                              >
+                                <div className={styles.contractIcons}>
+                                  {order.tokens.map(({ token }) => (
+                                    <React.Fragment key={token.id}>
+                                      {token.alias?.logoUrl ? (
+                                        <img
+                                          src={token.alias?.logoUrl}
+                                          className={styles.contractIcon}
+                                          alt=""
+                                        />
+                                      ) : (
+                                        <Paper
+                                          className={
+                                            styles.contractUnknownTokenIcon
+                                          }
+                                        >
+                                          <Icon
+                                            icon="unknownNetwork"
+                                            width="16"
+                                            height="16"
+                                          />
+                                        </Paper>
+                                      )}
+                                    </React.Fragment>
+                                  ))}
+                                </div>
+                                {order.tokens
+                                  .map(({ token }) => token.symbol)
+                                  .join('/')}
+                              </Typography>
+                              <Typography
+                                className={styles.contractAddress}
+                                as="div"
+                              >
+                                {networksConfig[order.owner.network] && (
+                                  <Icon
+                                    icon={
+                                      networksConfig[order.owner.network].icon
+                                    }
+                                    width="22"
+                                    height="22"
+                                  />
+                                )}
+                                <Link
+                                  href={buildExplorerUrl({
+                                    address: order.owner.address,
+                                    network: order.owner.network,
+                                  })}
+                                  target="_blank"
+                                >
+                                  {order.owner.name}
+                                </Link>
+                              </Typography>
+                            </div>
+                            <div>
+                              <div className={styles.contractBalance}>
+                                {order.tokens[0].token.alias?.logoUrl ? (
+                                  <img
+                                    src={order.tokens[0].token.alias?.logoUrl}
+                                    className={styles.contractBalanceIcon}
+                                    alt=""
+                                  />
+                                ) : (
+                                  <Paper className={styles.contractBalanceIcon}>
+                                    <Icon
+                                      icon="unknownNetwork"
+                                      width="16"
+                                      height="16"
+                                    />
+                                  </Paper>
+                                )}
+                                <Typography className={styles.fs12} as="div">
+                                  {tokensAmountInOut
+                                    ? bignumberUtils.format(tokensAmountInOut)
+                                    : '-'}{' '}
+                                  {order.tokens[0].token.symbol}
+                                </Typography>
+                              </div>
+                            </div>
+                            <div>
+                              <div className={styles.contractBalance}>
+                                <Typography className={styles.fs12} as="div">
+                                  {dateUtils.format(
+                                    order.createdAt,
+                                    'DD/MM/YY  h:mma'
+                                  )}
+                                </Typography>
+                              </div>
+                              <div className={styles.contractBalance}>
+                                <Typography className={styles.fs12} as="div">
+                                  ID {order.number}
+                                </Typography>
+                              </div>
+                            </div>
+                            {false && (
+                              <TradeStatusChart
+                                stopLoss="100"
+                                takeProfit="200"
+                                buy="150"
+                                className={styles.contractStatus}
+                              />
+                            )}
+                            <div>
+                              {[
+                                SmartTradeOrderStatusEnum.Succeeded,
+                                SmartTradeOrderStatusEnum.Canceled,
+                              ].includes(order.status) ? (
+                                <>
+                                  {hasBoughtPrice(order.callData) && (
+                                    <Button
+                                      color="green"
+                                      onClick={handleClaim(order)}
+                                      loading={claimingOrder === order.id}
+                                      disabled={Boolean(
+                                        claimingOrder.length &&
+                                          claimingOrder !== order.id
+                                      )}
+                                    >
+                                      Claim
+                                    </Button>
+                                  )}
+                                </>
+                              ) : (
+                                order.status
+                              )}
+                            </div>
+                            <div>
+                              {boughtPrice ? (
+                                <>
+                                  <div className={styles.contractBalance}>
+                                    <Icon
+                                      className={styles.contractBalanceIcon}
+                                      icon="USDT"
+                                    />
+                                    <Typography
+                                      className={clsx(styles.fs12, {
+                                        [styles.positive]: bignumberUtils.gt(
+                                          price,
+                                          boughtPrice
+                                        ),
+                                        [styles.negative]: bignumberUtils.lt(
+                                          price,
+                                          boughtPrice
+                                        ),
+                                      })}
+                                      as="div"
+                                    >
+                                      {bignumberUtils.format(boughtPrice)}
+                                    </Typography>
+                                  </div>
+                                  <div className={styles.contractBalance}>
+                                    <Typography
+                                      className={clsx(styles.fs12, {
+                                        [styles.positive]: bignumberUtils.gt(
+                                          price,
+                                          boughtPrice
+                                        ),
+                                        [styles.negative]: bignumberUtils.lt(
+                                          price,
+                                          boughtPrice
+                                        ),
+                                      })}
+                                      as="div"
+                                    >
+                                      {bignumberUtils.format(boughtPrice)}$ /{' '}
+                                      {bignumberUtils.format(boughtPrice)}%
+                                    </Typography>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <Typography
+                                    variant="body3"
+                                    className={styles.boughtPrice}
+                                  >
+                                    Bought price
+                                    <Dropdown
+                                      control={
+                                        <ButtonBase>
+                                          <Icon
+                                            icon="question"
+                                            width={16}
+                                            height={16}
+                                          />
+                                        </ButtonBase>
+                                      }
+                                      offset={[0, 8]}
+                                    >
+                                      <Typography variant="body3">
+                                        Enter the Bought price to see your
+                                        profit
+                                      </Typography>
+                                    </Dropdown>
+                                  </Typography>
                                   <Button
                                     color="green"
-                                    onClick={handleClaim(order)}
-                                    loading={claimingOrder === order.id}
-                                    disabled={Boolean(
-                                      claimingOrder.length &&
-                                        claimingOrder !== order.id
-                                    )}
+                                    loading={editingOrder === order.id}
+                                    onClick={handleEnterBoughtPrice(order)}
+                                    size="small"
                                   >
-                                    Claim
+                                    Enter
                                   </Button>
-                                )}
-                              </>
-                            ) : (
-                              order.status
-                            )}
-                          </div>
-                          <div>
-                            {boughtPrice ? (
-                              <>
-                                <div className={styles.contractBalance}>
-                                  <Icon
-                                    className={styles.contractBalanceIcon}
-                                    icon="USDT"
-                                  />
-                                  <Typography
-                                    className={clsx(styles.fs12, {
-                                      [styles.positive]: bignumberUtils.gt(
-                                        price,
-                                        boughtPrice
-                                      ),
-                                      [styles.negative]: bignumberUtils.lt(
-                                        price,
-                                        boughtPrice
-                                      ),
-                                    })}
-                                    as="div"
-                                  >
-                                    {bignumberUtils.format(boughtPrice)}
-                                  </Typography>
-                                </div>
-                                <div className={styles.contractBalance}>
-                                  <Typography
-                                    className={clsx(styles.fs12, {
-                                      [styles.positive]: bignumberUtils.gt(
-                                        price,
-                                        boughtPrice
-                                      ),
-                                      [styles.negative]: bignumberUtils.lt(
-                                        price,
-                                        boughtPrice
-                                      ),
-                                    })}
-                                    as="div"
-                                  >
-                                    {bignumberUtils.format(boughtPrice)}$ /{' '}
-                                    {bignumberUtils.format(boughtPrice)}%
-                                  </Typography>
-                                </div>
-                              </>
-                            ) : (
-                              <>
-                                <Typography
-                                  variant="body3"
-                                  className={styles.boughtPrice}
-                                >
-                                  Bought price
-                                  <Dropdown
-                                    control={
-                                      <ButtonBase>
-                                        <Icon
-                                          icon="question"
-                                          width={16}
-                                          height={16}
-                                        />
-                                      </ButtonBase>
-                                    }
-                                    offset={[0, 8]}
-                                  >
-                                    <Typography variant="body3">
-                                      Enter the Bought price to see your profit
-                                    </Typography>
-                                  </Dropdown>
-                                </Typography>
-                                <Button
-                                  color="green"
-                                  loading={editingOrder === order.id}
-                                  onClick={handleEnterBoughtPrice(order)}
-                                  size="small"
-                                >
-                                  Enter
-                                </Button>
-                              </>
-                            )}
-                          </div>
-                          <div className={styles.contractActions}>
-                            <ButtonBase onClick={handleUpdatePrice(order.id)}>
-                              <Icon width={16} height={16} icon="swap" />
-                            </ButtonBase>
-                            <Dropdown
-                              control={
-                                <ButtonBase>
-                                  <Icon
-                                    width={16}
-                                    height={16}
-                                    icon="dots"
-                                    className={styles.dots}
-                                  />
-                                </ButtonBase>
-                              }
-                            >
-                              {(close) => (
-                                <ButtonBase
-                                  onClick={async () => {
-                                    close()
-
-                                    setUpdatingOrderId(order.id)
-
-                                    props.onCancelOrder({
-                                      orderNumber: order.number,
-                                      id: order.id,
-                                    })
-                                  }}
-                                >
-                                  Cancel order
-                                </ButtonBase>
+                                </>
                               )}
-                            </Dropdown>
+                            </div>
+                            <div className={styles.contractActions}>
+                              <ButtonBase onClick={handleUpdatePrice(order.id)}>
+                                <Icon width={16} height={16} icon="swap" />
+                              </ButtonBase>
+                              <Dropdown
+                                control={
+                                  <ButtonBase>
+                                    <Icon
+                                      width={16}
+                                      height={16}
+                                      icon="dots"
+                                      className={styles.dots}
+                                    />
+                                  </ButtonBase>
+                                }
+                              >
+                                {(close) => (
+                                  <ButtonBase
+                                    onClick={async () => {
+                                      close()
+
+                                      setUpdatingOrderId(order.id)
+
+                                      props.onCancelOrder({
+                                        orderNumber: order.number,
+                                        id: order.id,
+                                      })
+                                    }}
+                                  >
+                                    Cancel order
+                                  </ButtonBase>
+                                )}
+                              </Dropdown>
+                            </div>
                           </div>
+                          {updating && (
+                            <div className={styles.tableRowInnerLoader}>
+                              <Loader height="1em" />
+                            </div>
+                          )}
                         </div>
-                        {updating && (
-                          <div className={styles.tableRowInnerLoader}>
-                            <Loader height="1em" />
-                          </div>
-                        )}
-                      </div>
-                    </TradeOrderDeposit>
-                  )
-                })}
+                      </TradeOrderDeposit>
+                    )
+                  })}
               </>
             )}
             {loading && (
