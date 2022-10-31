@@ -43,6 +43,7 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
 
   const depoy = queryParams.get('deploy')
   const automateId = queryParams.get('automateId')
+  const walletId = queryParams.get('walletId')
 
   const isDesktop = useMedia('(min-width: 960px)')
 
@@ -122,7 +123,7 @@ export const InvestDetail: React.VFC<InvestDetailProps> = () => {
                 from={match.path}
                 to={
                   depoy
-                    ? `${match.path}/stake?deploy=${depoy}&automateId=${automateId}`
+                    ? `${match.path}/stake?deploy=${depoy}&automateId=${automateId}&walletId=${walletId}`
                     : `${match.path}/stake`
                 }
               />
