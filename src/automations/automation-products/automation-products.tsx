@@ -1,16 +1,14 @@
 import { useGate, useStore } from 'effector-react'
+
 import { analytics } from '~/analytics'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { Dialog } from '~/common/dialog'
 import { pluralize } from '~/common/pluralize'
 import { Typography } from '~/common/typography'
-
-import { AutomationDialog } from '../common/automation-dialog'
-import {
-  AutomationSelectList,
-  AutomationSelectListItem,
-} from '../common/automation-select-list'
+import { Button } from '~/common/button'
 import * as styles from './automation-products.css'
 import * as model from './automation-products.model'
+import { Paper } from '~/common/paper'
 
 export type AutomationProductsProps = {
   balance: number
@@ -52,32 +50,44 @@ export const AutomationProducts: React.VFC<AutomationProductsProps> = (
   useGate(model.AutomationProductsGate)
 
   return (
-    <AutomationDialog
-      title={<span className={styles.title}>Buy Notification</span>}
-      className={styles.root}
-    >
-      <AutomationSelectList className={styles.selectList}>
+    <Dialog className={styles.root}>
+      <Typography className={styles.title} transform="uppercase" family="mono">
+        Buy Notification
+      </Typography>
+      <div className={styles.selectList}>
         {products.map((product) => {
           const num = numFromString(product.name)
           const title = product.name.replace(num, '')
 
           return (
-            <AutomationSelectListItem
+            <Paper
               key={product.id}
-              onClick={handleBuyProduct(product)}
-              loading={product.buying}
+              radius={8}
+              className={styles.selectListItem}
             >
-              <Typography as="div">
-                {bignumberUtils.format(num)}
+              <Typography as="div" className={styles.selectListItemTitle}>
+                <Typography variant="h3" as="span">
+                  {bignumberUtils.format(num)}
+                </Typography>
                 {title}
               </Typography>
-              <Typography as="div" variant="body3" className={styles.grey}>
-                ${bignumberUtils.format(product.priceUSD)}
-              </Typography>
-            </AutomationSelectListItem>
+              <div className={styles.actions}>
+                <Typography as="div">
+                  Price ${bignumberUtils.format(product.priceUSD)}
+                </Typography>
+                <Button
+                  onClick={handleBuyProduct(product)}
+                  loading={product.buying}
+                  color="green"
+                  className={styles.buy}
+                >
+                  buy
+                </Button>
+              </div>
+            </Paper>
           )
         })}
-      </AutomationSelectList>
+      </div>
       <Typography
         variant="body3"
         as="div"
@@ -88,6 +98,6 @@ export const AutomationProducts: React.VFC<AutomationProductsProps> = (
         balance: {bignumberUtils.format(props.balance)}{' '}
         {pluralize(props.balance, 'notification')}
       </Typography>
-    </AutomationDialog>
+    </Dialog>
   )
 }
