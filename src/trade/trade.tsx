@@ -572,7 +572,11 @@ export const Trade: React.VFC<TradeProps> = () => {
             className={clsx(
               styles.selectsBody,
               ((updating && !history) ||
-                (!config.IS_DEV && user?.role !== UserRoleEnum.Admin) ||
+                (!config.IS_DEV &&
+                  user &&
+                  ![UserRoleEnum.UserSt, UserRoleEnum.Admin].includes(
+                    user.role
+                  )) ||
                 !currentNetworkCorrect) &&
                 styles.selectsBodyBlur
             )}
@@ -696,38 +700,40 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Button>
             </div>
           )}
-          {!config.IS_DEV && user?.role !== UserRoleEnum.Admin && (
-            <div className={styles.beta}>
-              <Typography
-                variant="body2"
-                align="center"
-                family="mono"
-                className={styles.betaTitle}
-              >
-                Trade section is currently at the beta stage. Please leave your
-                email address to try it first.
-              </Typography>
-              <form
-                noValidate
-                autoComplete="off"
-                className={styles.betaForm}
-                onSubmit={handleOnSubmit}
-              >
-                <Input
-                  placeholder="youremail@gmail.com"
-                  {...register('email', {
-                    required: true,
-                    pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
-                  })}
-                  error={Boolean(formState.errors.email?.message)}
-                  helperText={formState.errors.email?.message}
-                />
-                <Button color="green" type="submit">
-                  join
-                </Button>
-              </form>
-            </div>
-          )}
+          {!config.IS_DEV &&
+            user &&
+            ![UserRoleEnum.UserSt, UserRoleEnum.Admin].includes(user.role) && (
+              <div className={styles.beta}>
+                <Typography
+                  variant="body2"
+                  align="center"
+                  family="mono"
+                  className={styles.betaTitle}
+                >
+                  Trade section is currently at the beta stage. Please leave
+                  your email address to try it first.
+                </Typography>
+                <form
+                  noValidate
+                  autoComplete="off"
+                  className={styles.betaForm}
+                  onSubmit={handleOnSubmit}
+                >
+                  <Input
+                    placeholder="youremail@gmail.com"
+                    {...register('email', {
+                      required: true,
+                      pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
+                    })}
+                    error={Boolean(formState.errors.email?.message)}
+                    helperText={formState.errors.email?.message}
+                  />
+                  <Button color="green" type="submit">
+                    join
+                  </Button>
+                </form>
+              </div>
+            )}
         </Paper>
       </div>
       <TradeOrders

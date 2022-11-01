@@ -3049,7 +3049,11 @@ export type TokenListType = {
 
 export type TokenMetricType = {
   __typename?: 'TokenMetricType'
-  risk: TokenRiskScoringEnum
+  totalRate: TokenRiskScoringEnum
+  reliabilityRate: TokenRiskScoringEnum
+  profitabilityRate: TokenRiskScoringEnum
+  volatilityRate: TokenRiskScoringEnum
+  total: Scalars['Float']
   reliability: Scalars['Float']
   profitability: Scalars['Float']
   volatility: Scalars['Float']
@@ -3569,12 +3573,10 @@ export type UserReferrerCodeType = {
 }
 
 export enum UserRoleEnum {
-  /** User */
-  User = 'user',
-  /** Administrator */
-  Admin = 'admin',
-  /** Demo */
   Demo = 'demo',
+  User = 'user',
+  UserSt = 'userST',
+  Admin = 'admin',
 }
 
 export type UserStoreBalanceType = {
