@@ -169,6 +169,10 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
             </Dropdown>
           </Can>
         </Typography>
+
+        <div className={styles.riskColumn}>
+          <Icon icon="redRisk" width={22} height={24} />
+        </div>
       </Paper>
     )
   }

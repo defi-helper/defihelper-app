@@ -47,6 +47,7 @@ import { ProtocolNotifications } from '../protocol-notifications'
 import { ProtocolCalculator } from '../protocol-calculator'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
+import { Dropdown } from '~/common/dropdown'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -219,6 +220,95 @@ export const ProtocolDetail: React.FC = () => {
                 Overview
               </Link>
             </div>
+
+            <div className={styles.riskOverview}>
+              <div className={styles.riskPanel}>
+                <div className={styles.riskColumnTotal}>
+                  Risk
+                  <span className={styles.totalRiskBadge}>low</span>
+                </div>
+
+                <div className={styles.riskColumnFactor}>
+                  <span className={styles.riskColumnFactorLabel}>
+                    Reliability
+                  </span>
+                  <Icon icon="greenRisk" width={22} height={24} />
+                </div>
+
+                <Dropdown
+                  control={
+                    <div className={styles.riskColumnFactor}>
+                      <span className={styles.riskColumnFactorLabel}>
+                        Profitability
+                      </span>
+                      <Icon icon="greenRisk" width={22} height={24} />
+                    </div>
+                  }
+                  offset={[0, 4]}
+                  placement="bottom-start"
+                  trigger="hover"
+                >
+                  <Typography className={styles.riskFactorTooltipBody}>
+                    Scoring:{' '}
+                    <span
+                      className={styles.riskFactorsDescriptionFactorModerate}
+                    >
+                      {' '}
+                      0.8 Medium risk
+                    </span>
+                  </Typography>
+
+                  <div className={styles.riskFactorTooltipBodyDivider} />
+
+                  <Typography
+                    className={styles.riskFactorTooltipFactorsDescribe}
+                  >
+                    <Typography
+                      className={styles.riskFactorTooltipRiskFactorsHeadline}
+                    >
+                      Risk Factors:
+                    </Typography>
+
+                    <Typography
+                      className={styles.riskFactorsDescriptionFactorModerate}
+                    >
+                      The project has problems with profitability
+                    </Typography>
+                  </Typography>
+
+                  <Link
+                    target="_blank"
+                    color="blue"
+                    href="/"
+                    className={styles.riskFactorTooltipRiskingFaqLink}
+                  >
+                    Learn more about how we scoring
+                  </Link>
+                </Dropdown>
+
+                <div className={styles.riskColumnFactor}>
+                  <span className={styles.riskColumnFactorLabel}>
+                    Volatility
+                  </span>
+                  <Icon icon="greenRisk" width={22} height={24} />
+                </div>
+              </div>
+
+              <div className={styles.riskFactorsDescription}>
+                <span className={styles.riskFactorsDescriptionHeadline}>
+                  Risk Factors:
+                </span>{' '}
+                <span
+                  className={clsx(
+                    styles.riskFactorsDescriptionFactor,
+                    styles.riskFactorsDescriptionFactorModerate
+                  )}
+                >
+                  The project has problems with profitability
+                </span>
+              </div>
+            </div>
+
             <Switch>
               <Redirect exact from={match.path} to={`${match.path}/earnings`} />
               <Route path={`${match.path}/earnings`}>
