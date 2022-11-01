@@ -573,10 +573,9 @@ export const Trade: React.VFC<TradeProps> = () => {
               styles.selectsBody,
               ((updating && !history) ||
                 (!config.IS_DEV &&
-                  user &&
-                  ![UserRoleEnum.UserSt, UserRoleEnum.Admin].includes(
-                    user.role
-                  )) ||
+                  !(
+                    [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
+                  ).includes(String(user?.role))) ||
                 !currentNetworkCorrect) &&
                 styles.selectsBodyBlur
             )}
@@ -701,8 +700,9 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
           )}
           {!config.IS_DEV &&
-            user &&
-            ![UserRoleEnum.UserSt, UserRoleEnum.Admin].includes(user.role) && (
+            !(
+              [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
+            ).includes(String(user?.role)) && (
               <div className={styles.beta}>
                 <Typography
                   variant="body2"
