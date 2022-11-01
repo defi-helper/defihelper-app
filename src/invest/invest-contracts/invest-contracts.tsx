@@ -102,6 +102,19 @@ const apyBoostDropdown = (
   </Dropdown>
 )
 
+const TVL = {
+  100000: '100 000 +',
+  1000000: '1 000 000 +',
+  10000000: '10 000 000 +',
+  100000000: '100 000 000 +',
+}
+
+const POOL_TYPES = {
+  stable: 'Only stable',
+  vs: 'Stable vs native',
+  major: 'Major coins',
+}
+
 export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
   const [openApyDialog] = useDialog(StakingApyDialog)
 
@@ -354,11 +367,25 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
             ))}
           </Select>
           <Select
-            placeholder="Choose risk"
+            placeholder="Choose options"
             className={styles.select}
             onChange={handleChooseRiskLevel}
             clearable
+            grouped
           >
+            <Typography variant="body3">TVL:</Typography>
+            {Object.entries(TVL).map(([value, title]) => (
+              <SelectOption value={value} key={title}>
+                {title}
+              </SelectOption>
+            ))}
+            <Typography variant="body3">Pool type:</Typography>
+            {Object.entries(POOL_TYPES).map(([value, title]) => (
+              <SelectOption value={value} key={title}>
+                {title}
+              </SelectOption>
+            ))}
+            <Typography variant="body3">RISK:</Typography>
             {Object.entries(ContractRiskFactorEnum)
               .filter(
                 ([, value]) => ContractRiskFactorEnum.NotCalculated !== value
