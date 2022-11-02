@@ -8,11 +8,14 @@ import {
   BuyLiquidityProtocolsSelectQueryVariables,
   BlockchainsSelectQueryVariables,
   BlockchainsSelectQuery,
+  ZapFeePayCreateMutationVariables,
+  ZapFeePayCreateMutation,
 } from '~/api/_generated-types'
 import { BLOCKCHAINS_SELECT } from './graphql/blockchains-select.graphql'
 import { BUY_LIQUIDITY_CONTRACT_LIST } from './graphql/buy-liquidity-contract-list.graphql'
 import { BUY_LIQUIDITY_PROTOCOL_LIST_SELECT } from './graphql/buy-liquidity-protocol-list-select.graphql'
 import { BUY_LIQUIDITY_PROTOCOL_LIST } from './graphql/buy-liquidity-protocol-list.graphql'
+import { ZAP_FEE_PAY_CREATE } from './graphql/zap-fee-pay-create.graphql'
 
 export const lpTokensApi = {
   protocols: (
@@ -105,4 +108,18 @@ export const lpTokensApi = {
         list: data?.contracts.list ?? [],
         count: data?.contracts.pagination.count ?? 0,
       })),
+
+  zapFeePayCreate: (input: ZapFeePayCreateMutationVariables['input']) =>
+    getAPIClient()
+      .request<
+        ZapFeePayCreateMutation,
+        unknown,
+        ZapFeePayCreateMutationVariables
+      >({
+        query: ZAP_FEE_PAY_CREATE.loc?.source.body ?? '',
+        variables: {
+          input,
+        },
+      })
+      .then(({ data }) => data?.zapFeePayCreate),
 }

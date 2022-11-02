@@ -26,6 +26,7 @@ import * as automationUpdateModel from '~/automations/automation-update/automati
 import * as model from '~/invest/invest-detail/invest-detail.model'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
+import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
 import * as styles from './invest-staking-steps.css'
 
 export type InvestStakingStepsProps = {
@@ -37,7 +38,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   props
 ) => {
   const currentWallet = walletNetworkModel.useWalletNetwork()
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
 
   const queryParams = useQueryParams()
 
@@ -75,15 +76,6 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
 
     if (!txId) return
 
-    const findedWallet = wallets.find((wallet) => {
-      const sameAddreses =
-        String(currentWallet?.chainId) === 'main'
-          ? currentWallet?.account === wallet.address
-          : currentWallet?.account?.toLowerCase() === wallet.address
-
-      return sameAddreses && String(currentWallet?.chainId) === wallet.network
-    })
-
     if (walletId) {
       stakingAutomatesModel
         .scanWalletMetricFx({
@@ -94,28 +86,24 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         .catch(console.error)
     }
 
-    if (!findedWallet) return
+    if (!currentUserWallet) return
 
     stakingAutomatesModel
       .scanWalletMetricFx({
         contract: props.contract.id,
-        wallet: findedWallet.id,
+        wallet: currentUserWallet.id,
         txId,
       })
       .catch(console.error)
   }
 
   const [deployState, handleDeploy] = useAsyncFn(async () => {
-    if (!currentWallet || !props.contract.automate.autorestake) return
-
-    const findedWallet = wallets.find((wallet) => {
-      const sameAddreses =
-        String(currentWallet.chainId) === 'main'
-          ? currentWallet.account === wallet.address
-          : currentWallet.account?.toLowerCase() === wallet.address
-
-      return sameAddreses && String(currentWallet.chainId) === wallet.network
-    })
+    if (
+      !currentWallet ||
+      !currentUserWallet ||
+      !props.contract.automate.autorestake
+    )
+      return
 
     const addresses = await model.fetchContractAddressesFx({
       contracts: [props.contract],
@@ -123,7 +111,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     })
     const { prototypeAddress = undefined } = addresses[props.contract.id]
 
-    if (!findedWallet || !prototypeAddress) return
+    if (!prototypeAddress) return
 
     const adapter = await deployModel.fetchDeployAdapterFx({
       address: prototypeAddress,
@@ -156,13 +144,13 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       protocol: props.contract.protocol.id,
       adapter: props.contract.automate.autorestake,
       contract: props.contract.id,
-      account: findedWallet.address,
+      account: currentUserWallet.address,
       chainId: String(currentWallet.chainId),
       provider: currentWallet.provider,
     })
 
     const createdTrigger = await automationUpdateModel.createTriggerFx({
-      wallet: findedWallet.id,
+      wallet: currentUserWallet.id,
       params: JSON.stringify({}),
       type: AutomateTriggerTypeEnum.EveryHour,
       name: `Autostaking ${props.contract.name}`,
@@ -251,7 +239,11 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       <InvestBuy
         key={0}
         contract={props.contract}
-        onSubmit={handleNextStep}
+        onSubmit={(values) => {
+          handleNextStep(values.tx)
+
+          lpTokensModel.zapFeePayCreateFx(values)
+        }}
         adapter={lp.value?.buyLiquidity}
         tokens={lp.value?.tokens}
       />,
@@ -289,23 +281,12 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       onSubmit={(values) => {
         handleNextStep(values.txHash)
 
-        const findedWallet = wallets.find((wallet) => {
-          const sameAddreses =
-            String(currentWallet?.chainId) === 'main'
-              ? currentWallet?.account === wallet.address
-              : currentWallet?.account?.toLowerCase() === wallet.address
-
-          return (
-            sameAddreses && String(currentWallet?.chainId) === wallet.network
-          )
-        })
-
-        if (!findedWallet) return
+        if (!currentUserWallet) return
 
         model.automateInvestCreateFx({
           input: {
             contract: automateId ?? props.contract.id,
-            wallet: findedWallet.id,
+            wallet: currentUserWallet.id,
             amount: values.amount,
             amountUSD: values.amountInUSD,
           },

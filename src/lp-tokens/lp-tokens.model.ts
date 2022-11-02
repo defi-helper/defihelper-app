@@ -78,6 +78,8 @@ export const $protocols = createStore<
   .on(fetchProtocolsFx.doneData, (_, payload) => payload)
   .reset(resetProtocols)
 
+export const zapFeePayCreateFx = createEffect(lpTokensApi.zapFeePayCreate)
+
 export const resetContracts = createEvent()
 
 export const fetchContractsFx = createEffect(

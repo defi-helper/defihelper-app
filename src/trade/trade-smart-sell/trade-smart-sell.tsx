@@ -55,7 +55,7 @@ type FormValues = {
 
 export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const currentWallet = useStore(walletNetworkModel.$wallet)
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
   const user = useStore(authModel.$user)
 
   const [takeProfitFocus, toggleTakeProfitFocus] = useToggle(false)
@@ -127,18 +127,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     )
       return
 
-    const findedWallet = wallets.find((wallet) => {
-      const sameAddreses =
-        String(currentWallet.chainId) === 'main'
-          ? currentWallet.account === wallet.address
-          : currentWallet.account?.toLowerCase() === wallet.address
-
-      return sameAddreses && String(currentWallet.chainId) === wallet.network
-    })
-
     const exchange = props.exchangesMap.get(props.exchangeAddress)
 
-    if (!findedWallet || !props.swap || !exchange) return
+    if (!currentUserWallet || !props.swap || !exchange) return
 
     const path = props.tokens.map(({ address }) => address)
 
@@ -159,11 +150,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     )
 
     await openTradeConfirmDialog({
-      network: findedWallet.network,
+      network: currentUserWallet.network,
       boughtPrice: price.value,
       exchange,
       tokens: pair?.pairInfo.tokens,
-      name: findedWallet.name,
+      name: currentUserWallet.name,
       totalRecieve: balance,
       boughtToken: token,
     })
@@ -200,7 +191,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       await model.createOrderFx({
         swap: props.swap,
         number: await result.getOrderNumber(),
-        owner: findedWallet.id,
+        owner: currentUserWallet.id,
         handler: result.handler,
         callDataRaw: result.callDataRaw,
         callData: {

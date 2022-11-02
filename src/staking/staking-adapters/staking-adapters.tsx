@@ -26,6 +26,7 @@ import * as stakingAutomatesModel from '~/staking/staking-automates/staking-auto
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
 import { LPTokensBuySellDialog } from '~/lp-tokens/common/lp-tokens-buy-sell-dialog'
+import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
 import { paths } from '~/paths'
 
 export type StakingAdaptersProps = {
@@ -58,7 +59,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
   const [openGovUnstakeDialog] = useDialog(StakingGovUnstakeDialog)
 
   const currentWallet = walletNetworkModel.useWalletNetwork()
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
 
   const actionLoading = useStore(model.$actionLoading)
   const buyLpLoading = useStore(model.buyLPFx.pending)
@@ -92,17 +93,11 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         if (!contract.actions || !contract.actions[action]) return
 
         const scanHandler = () => {
-          const findedWallet = wallets.find(
-            ({ address, network }) =>
-              address === currentWallet?.account &&
-              network === currentWallet.chainId
-          )
-
-          if (!findedWallet) return
+          if (!currentUserWallet) return
 
           stakingAutomatesModel
             .scanWalletMetricFx({
-              wallet: findedWallet.id,
+              wallet: currentUserWallet.id,
               contract: props.contractId,
             })
             .catch(console.error)
@@ -226,21 +221,12 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         network: props.network,
       })
 
-      const findedWallet = wallets.find((wallet) => {
-        const sameAddreses =
-          String(currentWallet.chainId) === 'main'
-            ? currentWallet.account === wallet.address
-            : currentWallet.account?.toLowerCase() === wallet.address
-
-        return sameAddreses && String(currentWallet.chainId) === wallet.network
-      })
-
-      if (!findedWallet) throw new Error('wallet is not connected')
+      if (!currentUserWallet) throw new Error('wallet is not connected')
 
       const cb = (txId?: string) => {
         stakingAutomatesModel
           .scanWalletMetricFx({
-            wallet: findedWallet.id,
+            wallet: currentUserWallet.id,
             contract: props.contractId,
             txId,
           })
@@ -251,7 +237,14 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         buyLiquidityAdapter: buyLiquidity,
         sellLiquidityAdapter: sellLiquidity,
         tokens,
-        onSubmit: cb,
+        onSubmit: (values) => {
+          cb(values.tx)
+
+          lpTokensModel.zapFeePayCreateFx({
+            ...values,
+            wallet: currentUserWallet.id,
+          })
+        },
         tokenSymbol: billingBalance.token ?? '',
       })
 

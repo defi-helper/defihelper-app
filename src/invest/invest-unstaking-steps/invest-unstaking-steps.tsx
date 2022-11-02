@@ -14,6 +14,7 @@ import { InvestUnstakingStepsSuccess } from './invest-unstaking-steps-success'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import * as model from '~/invest/invest-detail/invest-detail.model'
+import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
 import * as styles from './invest-unstaking-steps.css'
 
 export type InvestUnstakingStepsProps = {
@@ -26,7 +27,7 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
 ) => {
   const user = useStore(authModel.$user)
   const currentWallet = walletNetworkModel.useWalletNetwork()
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
 
   const [currentStep, setCurrentStep] = useState(0)
 
@@ -53,28 +54,17 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
     (txId?: string) => {
       setCurrentStep(currentStep + 1)
 
-      if (!txId) return
-
-      const findedWallet = wallets.find((wallet) => {
-        const sameAddreses =
-          String(currentWallet?.chainId) === 'main'
-            ? currentWallet?.account === wallet.address
-            : currentWallet?.account?.toLowerCase() === wallet.address
-
-        return sameAddreses && String(currentWallet?.chainId) === wallet.network
-      })
-
-      if (!findedWallet) return
+      if (!txId || !currentUserWallet) return
 
       stakingAutomatesModel
         .scanWalletMetricFx({
-          wallet: findedWallet.id,
+          wallet: currentUserWallet.id,
           contract: props.contract.id,
           txId,
         })
         .catch(console.error)
     },
-    [wallets, currentStep, currentWallet, props.contract.id]
+    [currentStep, currentUserWallet, props.contract.id]
   )
 
   const adapter = useAsync(async () => {
@@ -131,23 +121,12 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       onSubmit={() => {
         handleRefund()
 
-        const findedWallet = wallets.find((wallet) => {
-          const sameAddreses =
-            String(currentWallet?.chainId) === 'main'
-              ? currentWallet?.account === wallet.address
-              : currentWallet?.account?.toLowerCase() === wallet.address
-
-          return (
-            sameAddreses && String(currentWallet?.chainId) === wallet.network
-          )
-        })
-
-        if (!findedWallet) return
+        if (!currentUserWallet) return
 
         model.automateInvestRefundFx({
           input: {
             contract: props.contract.id,
-            wallet: findedWallet.id,
+            wallet: currentUserWallet.id,
           },
         })
       }}
@@ -156,7 +135,11 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
     <InvestSell
       key={3}
       contract={props.contract}
-      onSubmit={handleNextStep}
+      onSubmit={(values) => {
+        handleNextStep(values.tx)
+
+        lpTokensModel.zapFeePayCreateFx(values)
+      }}
       adapter={lp.value?.sellLiquidity}
       tokens={lp.value?.tokens}
       onChangeToken={setSellToken}

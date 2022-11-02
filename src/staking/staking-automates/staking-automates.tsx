@@ -41,7 +41,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
   const history = useHistory()
   const [openErrorDialog] = useDialog(StakingErrorDialog)
   const currentWallet = walletNetworkModel.useWalletNetwork()
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
   const user = useStore(authModel.$user)
   const handleConnect = useWalletConnect()
   const [openConfirmDialog] = useDialog(ConfirmDialog)
@@ -91,22 +91,11 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           action,
         })
 
-        const findedWallet = wallets.find((wallet) => {
-          const sameAddreses =
-            String(currentWallet?.chainId) === 'main'
-              ? currentWallet?.account === wallet.address
-              : currentWallet?.account?.toLowerCase() === wallet.address
-
-          return (
-            sameAddreses && String(currentWallet?.chainId) === wallet.network
-          )
-        })
-
         if (
           !adapter ||
           action === 'run' ||
           action === 'stopLoss' ||
-          !findedWallet
+          !currentUserWallet
         )
           return
 
@@ -141,18 +130,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
           action: 'run',
         })
 
-        const findedWallet = wallets.find((wallet) => {
-          const sameAddreses =
-            String(currentWallet?.chainId) === 'main'
-              ? currentWallet?.account === wallet.address
-              : currentWallet?.account?.toLowerCase() === wallet.address
-
-          return (
-            sameAddreses && String(currentWallet?.chainId) === wallet.network
-          )
-        })
-
-        if (!adapter || !findedWallet) return
+        if (!adapter || !currentUserWallet) return
 
         const tx = await adapter.run()
 
@@ -169,7 +147,7 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
 
           model
             .scanWalletMetricFx({
-              wallet: findedWallet.id,
+              wallet: currentUserWallet.id,
               contract: contract.id,
               txId: result.transactionHash,
             })
