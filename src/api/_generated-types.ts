@@ -1403,6 +1403,7 @@ export type Mutation = {
   productUpdate: StoreProductType
   productDelete: Scalars['Boolean']
   billingTransferCreate: BillingTransferType
+  zapFeePayCreate: Scalars['Boolean']
   automateTriggerCreate: AutomateTriggerType
   automateTriggerUpdate: AutomateTriggerType
   automateTriggerDelete: Scalars['Boolean']
@@ -1629,6 +1630,10 @@ export type MutationProductDeleteArgs = {
 
 export type MutationBillingTransferCreateArgs = {
   input: BillingTransferCreateInputType
+}
+
+export type MutationZapFeePayCreateArgs = {
+  input: ZapFeePayCreateInputType
 }
 
 export type MutationAutomateTriggerCreateArgs = {
@@ -4274,6 +4279,19 @@ export type WalletUpdateInputType = {
   name?: Maybe<Scalars['String']>
 }
 
+export type ZapFeePayCreateInputType = {
+  type: ZapFeePayCreateTypeEnum
+  wallet: Scalars['UuidType']
+  fee: Scalars['BigNumberType']
+  feeUSD: Scalars['BigNumberType']
+  tx: Scalars['String']
+}
+
+export enum ZapFeePayCreateTypeEnum {
+  Buy = 'Buy',
+  Sell = 'Sell',
+}
+
 export type AuthDemoMutationVariables = Exact<{ [key: string]: never }>
 
 export type AuthDemoMutation = { __typename?: 'Mutation' } & {
@@ -5109,6 +5127,15 @@ export type BuyLiquidityProtocolsQuery = { __typename?: 'Query' } & {
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
 }
+
+export type ZapFeePayCreateMutationVariables = Exact<{
+  input: ZapFeePayCreateInputType
+}>
+
+export type ZapFeePayCreateMutation = { __typename?: 'Mutation' } & Pick<
+  Mutation,
+  'zapFeePayCreate'
+>
 
 export type AddWalletMutationVariables = Exact<{
   input: AddWalletInputType

@@ -18,11 +18,12 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { analytics } from '~/analytics'
 import { config } from '~/config'
 import { NULL_ADDRESS } from '~/common/constants'
+import { ZapFeePayCreateInputType, ZapFeePayCreateTypeEnum } from '~/api'
 import * as styles from './lp-tokens-buy-form.css'
 
 export type LPTokensBuyFormProps = {
   onConfirm: () => void
-  onSubmit?: (transactionHash?: string | undefined) => void
+  onSubmit?: (variables: Omit<ZapFeePayCreateInputType, 'wallet'>) => void
   onCancel: () => void
   buyLiquidityAdapter: BuyLiquidity
   tokens: {
@@ -112,43 +113,54 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
     return props.buyLiquidityAdapter.methods.isApproved(tokenAddress, amount)
   }, [props.buyLiquidityAdapter.methods.isApproved, tokenAddress, amount])
 
-  const [buyState, onBuy] = useAsyncFn(async (formValues: FormValues) => {
-    const { buy, canBuy, buyETH, canBuyETH } = props.buyLiquidityAdapter.methods
+  const [buyState, onBuy] = useAsyncFn(
+    async (formValues: FormValues) => {
+      const { buy, canBuy, buyETH, canBuyETH } =
+        props.buyLiquidityAdapter.methods
 
-    setError(false)
+      setError(false)
 
-    const isNativeToken = formValues.token === NULL_ADDRESS
+      const isNativeToken = formValues.token === NULL_ADDRESS
 
-    try {
-      const can = isNativeToken
-        ? await canBuyETH(formValues.amount)
-        : await canBuy(formValues.token, formValues.amount)
+      try {
+        const can = isNativeToken
+          ? await canBuyETH(formValues.amount)
+          : await canBuy(formValues.token, formValues.amount)
 
-      if (can instanceof Error) throw can
-      if (!can) throw new Error("can't buy")
+        if (can instanceof Error) throw can
+        if (!can) throw new Error("can't buy")
 
-      const { tx } = isNativeToken
-        ? await buyETH(formValues.amount, formValues.slippage)
-        : await buy(formValues.token, formValues.amount, formValues.slippage)
+        const { tx } = isNativeToken
+          ? await buyETH(formValues.amount, formValues.slippage)
+          : await buy(formValues.token, formValues.amount, formValues.slippage)
 
-      const result = await tx?.wait()
-      analytics.log('lp_tokens_purchase_success', {
-        amount: bignumberUtils.floor(formValues.amount),
-      })
+        const result = await tx?.wait()
+        analytics.log('lp_tokens_purchase_success', {
+          amount: bignumberUtils.floor(formValues.amount),
+        })
 
-      props.onSubmit?.(result?.transactionHash)
+        if (!result?.transactionHash || !fee.value) return
 
-      return true
-    } catch {
-      setError(true)
+        props.onSubmit?.({
+          tx: result.transactionHash,
+          fee: fee.value.native,
+          feeUSD: fee.value.usd,
+          type: ZapFeePayCreateTypeEnum.Buy,
+        })
 
-      analytics.log('lp_tokens_purchase_unsuccess', {
-        amount: bignumberUtils.floor(formValues.amount),
-      })
+        return true
+      } catch {
+        setError(true)
 
-      return false
-    }
-  }, [])
+        analytics.log('lp_tokens_purchase_unsuccess', {
+          amount: bignumberUtils.floor(formValues.amount),
+        })
+
+        return false
+      }
+    },
+    [fee.value]
+  )
 
   const [approveState, onApprove] = useAsyncFn(
     async (formValues: FormValues) => {

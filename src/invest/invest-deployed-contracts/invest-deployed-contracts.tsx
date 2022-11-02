@@ -47,7 +47,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     const automatesContracts = useStore(model.$automatesContracts)
     const loading = useStore(model.fetchAutomatesContractsFx.pending)
     const user = useStore(authModel.$user)
-    const wallets = useStore(settingsWalletModel.$wallets)
     const { metrics } = useStore(model.$freshMetrics)
 
     const [openConfirmDialog] = useDialog(ConfirmDialog)
@@ -55,6 +54,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     const [openStopLossDialog] = useDialog(InvestStopLossDialog)
 
     const currentWallet = walletNetworkModel.useWalletNetwork()
+    const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
     const handleConnect = useWalletConnect()
 
     const isEmptyContracts = isEmpty(automatesContracts)
@@ -117,22 +117,11 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             action,
           })
 
-          const findedWallet = wallets.find((wallet) => {
-            const sameAddreses =
-              String(currentWallet.chainId) === 'main'
-                ? currentWallet.account === wallet.address
-                : currentWallet.account?.toLowerCase() === wallet.address
-
-            return (
-              sameAddreses && String(currentWallet.chainId) === wallet.network
-            )
-          })
-
           if (
             !adapter ||
             action === 'run' ||
             action === 'stopLoss' ||
-            !findedWallet
+            !currentUserWallet
           )
             return
 
@@ -180,18 +169,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
           )
             throw new Error('not enough money')
 
-          const findedWallet = wallets.find((wallet) => {
-            const sameAddreses =
-              String(currentWallet?.chainId) === 'main'
-                ? currentWallet?.account === wallet.address
-                : currentWallet?.account?.toLowerCase() === wallet.address
-
-            return (
-              sameAddreses && String(currentWallet?.chainId) === wallet.network
-            )
-          })
-
-          if (!currentWallet?.account || !findedWallet) return
+          if (!currentWallet?.account || !currentUserWallet) return
 
           const adapter = await model.fetchAdapterFx({
             protocolAdapter: contract.protocol.adapter,
@@ -220,7 +198,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
 
             model
               .scanWalletMetricFx({
-                wallet: findedWallet.id,
+                wallet: currentUserWallet.id,
                 contract: contract.id,
                 txId: trasactionReceipt.transactionHash,
               })

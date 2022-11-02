@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { useStore } from 'effector-react'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useAsync, useAsyncFn, useAsyncRetry, useThrottle } from 'react-use'
 
@@ -16,11 +17,12 @@ import { ButtonBase } from '~/common/button-base'
 import { toastsService } from '~/toasts'
 import { analytics } from '~/analytics'
 import { SellLiquidity } from '~/common/load-adapter'
-import * as styles from './invest-sell.css'
 import { NULL_ADDRESS } from '~/common/constants'
+import { ZapFeePayCreateInputType, ZapFeePayCreateTypeEnum } from '~/api'
+import * as styles from './invest-sell.css'
 
 export type InvestSellProps = {
-  onSubmit?: (transactionHash?: string) => void
+  onSubmit?: (variables: ZapFeePayCreateInputType) => void
   contract: InvestContract
   adapter?: SellLiquidity
   tokens?: {
@@ -36,6 +38,8 @@ export type InvestSellProps = {
 export const InvestSell = (props: InvestSellProps) => {
   const [amount, setAmount] = useState('0')
   const [tokenAddress, setTokenAddress] = useState('')
+
+  const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
 
   const billingBalance = useAsync(async () => {
     return settingsWalletModel.fetchBillingBalanceFx({
@@ -76,6 +80,11 @@ export const InvestSell = (props: InvestSellProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenAddress, tokens])
 
+  const fee = useAsync(
+    async () => props.adapter?.methods.fee(),
+    [props.adapter]
+  )
+
   const [sellState, handleSell] = useAsyncFn(async () => {
     if (!props.adapter) return
 
@@ -98,7 +107,15 @@ export const InvestSell = (props: InvestSellProps) => {
         amount: bignumberUtils.floor(amount),
       })
 
-      props.onSubmit?.(result?.transactionHash)
+      if (!result?.transactionHash || !currentUserWallet || !fee.value) return
+
+      props.onSubmit?.({
+        tx: result.transactionHash,
+        wallet: currentUserWallet.id,
+        fee: fee.value.native,
+        feeUSD: fee.value.usd,
+        type: ZapFeePayCreateTypeEnum.Sell,
+      })
 
       return true
     } catch (error) {
@@ -129,11 +146,6 @@ export const InvestSell = (props: InvestSellProps) => {
     setTokenAddress(props.tokens?.[0].address ?? '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.tokens])
-
-  const fee = useAsync(
-    async () => props.adapter?.methods.fee(),
-    [props.adapter]
-  )
 
   const amountOut = useAsync(async () => {
     if (!tokenAddress) return
