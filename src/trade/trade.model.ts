@@ -56,7 +56,7 @@ export const fetchExchangesFx = createEffect(async (network: string) => {
 
   return data.map((item) => {
     if (item.Name.toLowerCase() === 'pancakeswap') {
-      // @TODO: remove
+      // TODO: remove
       return {
         ...item,
         Address: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
