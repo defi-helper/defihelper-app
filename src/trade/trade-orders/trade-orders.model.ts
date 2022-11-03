@@ -1,4 +1,11 @@
-import { createStore, createEffect, createEvent, UnitValue } from 'effector'
+import {
+  createStore,
+  createEffect,
+  createEvent,
+  UnitValue,
+  sample,
+  combine,
+} from 'effector'
 
 import { tradeApi } from '~/trade/common/trade.api'
 import {
@@ -6,89 +13,33 @@ import {
   TradeUpdateOrderMutationVariables,
 } from '~/api'
 import * as tradeSmartSellModel from '~/trade/trade-smart-sell/trade-smart-sell.model'
-import { SmartTradeSwapHandler } from '~/common/load-adapter'
 import { hasBoughtPrice } from '~/trade/common/trade.types'
 
 export const reset = createEvent()
 
 export const fetchOrdersFx = createEffect(
-  async ({
-    swap,
-    ...variables
-  }: TradeOrderListQueryVariables & {
-    swap: SmartTradeSwapHandler['methods']
-  }) => {
-    const { list, pagination } = await tradeApi.fetchOrders(variables)
+  async (variables: TradeOrderListQueryVariables) => {
+    const data = await tradeApi.fetchOrders(variables)
 
-    return {
-      list: await Promise.all(
-        list.map(async ({ callData, ...order }) => ({
-          ...order,
-          callData: {
-            ...callData,
-            currentPrice: hasBoughtPrice(callData)
-              ? await swap.amountOut(callData.exchange, callData.path, '1')
-              : null,
-          },
-        }))
-      ),
-      pagination,
-    }
+    return data
   }
 )
 
-export const cancelOrderFx = createEffect(
-  async ({
-    id,
-    swap,
-  }: {
-    id: string
-    swap: SmartTradeSwapHandler['methods']
-  }) => {
-    const data = await tradeApi.cancelOrder(id)
+export const cancelOrderFx = createEffect(async ({ id }: { id: string }) => {
+  const data = await tradeApi.cancelOrder(id)
 
-    if (!data) throw new Error('something went wrong')
+  if (!data) throw new Error('something went wrong')
 
-    return {
-      ...data,
-      callData: {
-        ...data.callData,
-        currentPrice: hasBoughtPrice(data.callData)
-          ? await swap.amountOut(
-              data.callData.exchange,
-              data.callData.path,
-              '1'
-            )
-          : null,
-      },
-    }
-  }
-)
+  return data
+})
 
 export const updateOrderFx = createEffect(
-  async ({
-    swap,
-    ...variables
-  }: TradeUpdateOrderMutationVariables & {
-    swap: SmartTradeSwapHandler['methods']
-  }) => {
+  async (variables: TradeUpdateOrderMutationVariables) => {
     const data = await tradeApi.updateOrder(variables)
 
     if (!data) throw new Error('something went wrong')
 
-    return {
-      ...data,
-      callData: {
-        ...data.callData,
-        currentPrice: hasBoughtPrice(data.callData)
-          ? await swap.amountOut(
-              data.callData.exchange,
-              data.callData.path,
-              '1'
-            )
-          : null,
-      },
-    }
+    return data
   }
 )
 
@@ -114,6 +65,37 @@ export const $orders = createStore<Orders | null>(null)
   }))
   .reset(reset)
 
+export const fetchActualPricesFx = createEffect(
+  async (params: { id: string; path: string[] }[]) => {
+    const pricesArr = params.map(async ({ id, path }) => {
+      const actualPrice = await tradeApi.price(path)
+
+      return {
+        id,
+        path,
+        actualPrice,
+      }
+    })
+
+    const prices = await Promise.all(pricesArr)
+
+    return prices.reduce<Record<string, typeof prices[number]>>(
+      (acc, price) => {
+        acc[price.id] = price
+
+        return acc
+      },
+      {}
+    )
+  }
+)
+
+export const $prices = createStore<
+  UnitValue<typeof fetchActualPricesFx.doneData>
+>({})
+  .on(fetchActualPricesFx.doneData, (_, payload) => payload)
+  .reset(reset)
+
 export const claimStarted = createEvent<string>()
 
 export const claimEnded = createEvent()
@@ -137,3 +119,29 @@ export const editEnded = createEvent()
 export const $editingOrder = createStore<string>('')
   .on(editStarted, (_, payload) => payload)
   .reset(editEnded)
+
+sample({
+  clock: $orders.updates,
+  fn: (orders) =>
+    (orders?.list ?? [])
+      .map((order) => ({
+        id: order.id,
+        path: hasBoughtPrice(order.callData) ? order.callData.path : null,
+      }))
+      .filter((order): order is { id: string; path: string[] } =>
+        Boolean(order.path)
+      ),
+  target: fetchActualPricesFx,
+})
+
+export const $ordersWithPrice = combine($orders, $prices, (orders, prices) => {
+  return {
+    list:
+      orders?.list.map(({ id, ...order }) => ({
+        ...order,
+        id,
+        price: prices[id] ?? null,
+      })) ?? [],
+    pagination: orders?.pagination,
+  }
+})

@@ -170,13 +170,16 @@ export const tradeApi = {
 
   price: (request: string[]) =>
     apiV1
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .get<Response<any>>('get-actual-price', {
+      .get<
+        Response<
+          Record<string, { type: string; name: string; usd_price: number }>
+        >
+      >('get-actual-price', {
         params: {
           request: request.join(','),
         },
       })
-      .then(({ data }) => data),
+      .then(({ data }) => data.data),
 
   pairs: (
     network: string[],

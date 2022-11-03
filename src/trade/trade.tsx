@@ -325,7 +325,6 @@ export const Trade: React.VFC<TradeProps> = () => {
 
         await tradeOrdersModel.cancelOrderFx({
           id: values.id,
-          swap: adapter.swap,
         })
       } catch (error) {
         console.error(error)

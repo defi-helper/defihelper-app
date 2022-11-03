@@ -189,7 +189,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       if (!tx) throw new Error('something went wrong')
 
       await model.createOrderFx({
-        swap: props.swap,
         number: await result.getOrderNumber(),
         owner: currentUserWallet.id,
         handler: result.handler,
