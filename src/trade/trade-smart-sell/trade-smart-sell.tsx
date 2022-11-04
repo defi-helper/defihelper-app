@@ -199,7 +199,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           tokenOutDecimals: result.callData.tokenOutDecimals,
           amountIn: result.callData.amountIn,
           amountOut: result.callData.amountOut,
-          boughtPrice: '0',
           stopLoss: result.callData.stopLoss
             ? {
                 amountOut: result.callData.stopLoss.amountOut,
