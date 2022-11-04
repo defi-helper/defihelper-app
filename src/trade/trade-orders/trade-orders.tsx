@@ -98,12 +98,16 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   const handleClaim = (order: Order) => async () => {
     if (!hasBoughtPrice(order.callData) || !props.router) return
 
-    const [tokenAddress] = order.callData.path.slice(-1)
-
     try {
       model.claimStarted(order.id)
 
-      const res = await props.router.refund(tokenAddress, '')
+      const refund = order.callData.path.map((token) => ({ token, amount: '' }))
+
+      const canRefund = await props.router.canRefund(order.number, refund)
+
+      if (canRefund instanceof Error) throw canRefund
+
+      const res = await props.router.refund(order.number, refund)
 
       await res.tx?.wait()
     } catch {
@@ -502,10 +506,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                 className={styles.contractStatus}
                               />
                               <div className={styles.claim}>
-                                {[
-                                  SmartTradeOrderStatusEnum.Succeeded,
-                                  SmartTradeOrderStatusEnum.Canceled,
-                                ].includes(order.status) ? (
+                                {!order.claim &&
+                                order.status ===
+                                  SmartTradeOrderStatusEnum.Succeeded ? (
                                   <>
                                     {hasBoughtPrice(order.callData) && (
                                       <Button

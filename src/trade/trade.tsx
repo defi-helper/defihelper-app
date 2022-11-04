@@ -315,11 +315,11 @@ export const Trade: React.VFC<TradeProps> = () => {
       try {
         await openConfirmDialog()
 
-        const can = await adapter?.router.canCancelOrder(values.orderNumber)
+        const can = await adapter?.swap.canCancelOrder(values.orderNumber)
 
         if (can instanceof Error) throw can
 
-        const res = await adapter?.router.cancelOrder(values.orderNumber)
+        const res = await adapter?.swap.cancelOrder(values.orderNumber)
 
         await res?.tx?.wait()
 

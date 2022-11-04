@@ -177,9 +177,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               slippage: props.slippage,
             }
           : null,
-        {
-          token: formValues.unit,
-        }
+        {}
       )
 
       if (!result) throw new Error('something went wrong')
@@ -201,6 +199,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           tokenOutDecimals: result.callData.tokenOutDecimals,
           amountIn: result.callData.amountIn,
           amountOut: result.callData.amountOut,
+          boughtPrice: '',
           stopLoss: result.callData.stopLoss
             ? {
                 amountOut: result.callData.stopLoss.amountOut,

@@ -936,6 +936,7 @@ export type ContractListAutomateFilterInputType = {
 export type ContractListFilterInputType = {
   id?: Maybe<Scalars['UuidType']>
   protocol?: Maybe<Array<Scalars['UuidType']>>
+  tag?: Maybe<Array<Scalars['UuidType']>>
   blockchain?: Maybe<BlockchainFilterInputType>
   hidden?: Maybe<Scalars['Boolean']>
   deprecated?: Maybe<Scalars['Boolean']>
@@ -1074,6 +1075,7 @@ export type ContractType = {
   metric: ContractMetricType
   events: Array<Scalars['String']>
   tokens: ContractTokenLinkType
+  tags: Array<TagType>
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -1423,6 +1425,7 @@ export type Mutation = {
   automateContractTriggerUpdate: Array<AutomateTriggerType>
   tradingAuth?: Maybe<TradingAuthType>
   smartTradeCancel: SmartTradeOrderType
+  smartTradeClaim: SmartTradeOrderType
   smartTradeSwapOrderCreate: SmartTradeOrderType
   smartTradeSwapOrderUpdate: SmartTradeOrderType
 }
@@ -1706,6 +1709,10 @@ export type MutationAutomateContractTriggerUpdateArgs = {
 }
 
 export type MutationSmartTradeCancelArgs = {
+  id: Scalars['UuidType']
+}
+
+export type MutationSmartTradeClaimArgs = {
   id: Scalars['UuidType']
 }
 
@@ -2299,6 +2306,7 @@ export type Query = {
   monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringProtocolEarningsHistory: Array<MonitoringStatisticsEarningsPointType>
   smartTradeOrders: SmartTradeOrderListQuery
+  tags: Array<TagType>
 }
 
 export type QueryMeArgs = {
@@ -2570,6 +2578,7 @@ export type SmartTradeOrderType = {
   callData: SmartTradeOrderCallDataType
   /** Status */
   status: SmartTradeOrderStatusEnum
+  claim: Scalars['Boolean']
   /** Transaction hash */
   tx: Scalars['EthereumTransactionHashType']
   lastCall?: Maybe<SmartTradeOrderCallHistoryType>
@@ -2599,7 +2608,7 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   tokenOutDecimals: Scalars['Int']
   amountIn: Scalars['BigNumberType']
   amountOut: Scalars['BigNumberType']
-  boughtPrice?: Maybe<Scalars['BigNumberType']>
+  boughtPrice: Scalars['BigNumberType']
   stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
   takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
   /** Deadline seconds */
@@ -2834,6 +2843,19 @@ export type SwapOrderCallDataTakeProfitInputType = {
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
+}
+
+export type TagType = {
+  __typename?: 'TagType'
+  name: Scalars['String']
+  type: TagTypeEnum
+  id: Scalars['UuidType']
+}
+
+export enum TagTypeEnum {
+  Tvl = 'tvl',
+  Risk = 'risk',
+  PoolType = 'poolType',
 }
 
 export type TokenAlias = {
@@ -7203,6 +7225,16 @@ export type TradeCancelOrderMutation = { __typename?: 'Mutation' } & {
   } & TradeOrderFragmentFragment
 }
 
+export type TradeClaimOrderMutationVariables = Exact<{
+  id: Scalars['UuidType']
+}>
+
+export type TradeClaimOrderMutation = { __typename?: 'Mutation' } & {
+  smartTradeClaim: {
+    __typename?: 'SmartTradeOrderType'
+  } & TradeOrderFragmentFragment
+}
+
 export type TradeCreateOrderMutationVariables = Exact<{
   input: SmartTradeSwapOrderCreateInputType
 }>
@@ -7234,7 +7266,14 @@ export type TradeOrderFragmentFragment = {
   __typename?: 'SmartTradeOrderType'
 } & Pick<
   SmartTradeOrderType,
-  'id' | 'number' | 'handler' | 'status' | 'tx' | 'confirmed' | 'createdAt'
+  | 'id'
+  | 'number'
+  | 'handler'
+  | 'claim'
+  | 'status'
+  | 'tx'
+  | 'confirmed'
+  | 'createdAt'
 > & {
     owner: { __typename?: 'WalletBlockchainType' } & Pick<
       WalletBlockchainType,
