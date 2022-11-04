@@ -12,9 +12,13 @@ import { Protocol } from '~/protocols/common/protocol.types'
 import { paths } from '~/paths'
 import { createComponent } from '~/common/create-component'
 import * as styles from './protocol-card.css'
-import { ProtocolListMetricsQuery } from '~/api/_generated-types'
+import {
+  ProtocolListMetricsQuery,
+  TokenRiskScoringEnum,
+} from '~/api/_generated-types'
 import { Loader } from '~/common/loader'
 import { CanDemo } from '~/auth/can-demo'
+import { riskIcons } from '~/invest/common/constants'
 
 export type ProtocolCardProps = {
   onFavorite?: () => void
@@ -36,6 +40,8 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
       props.onFavorite?.()
     }
 
+    const risk =
+      props.metrics?.risk?.totalRate ?? TokenRiskScoringEnum.NotCalculated
     const tvl =
       props.tvl && bignumberUtils.gt(props.tvl, 0)
         ? props.tvl
@@ -171,7 +177,11 @@ export const ProtocolCard = createComponent<HTMLDivElement, ProtocolCardProps>(
         </Typography>
 
         <div className={styles.riskColumn}>
-          <Icon icon="redRisk" width={22} height={24} />
+          {props.metrics?.risk?.totalRate ? (
+            <Icon icon={riskIcons[risk]} width={22} height={24} />
+          ) : (
+            '-'
+          )}
         </div>
       </Paper>
     )

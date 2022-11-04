@@ -2085,6 +2085,7 @@ export type ProtocolMetricType = {
   myEarnedChange: MetricChangeType
   myAPYBoost: Scalars['String']
   myMinUpdatedAt?: Maybe<Scalars['DateTimeType']>
+  risk?: Maybe<TokenMetricType>
 }
 
 export type ProtocolResolveContractsInputType = {
@@ -3049,7 +3050,11 @@ export type TokenListType = {
 
 export type TokenMetricType = {
   __typename?: 'TokenMetricType'
-  risk: TokenRiskScoringEnum
+  totalRate: TokenRiskScoringEnum
+  reliabilityRate: TokenRiskScoringEnum
+  profitabilityRate: TokenRiskScoringEnum
+  volatilityRate: TokenRiskScoringEnum
+  total: Scalars['Float']
   reliability: Scalars['Float']
   profitability: Scalars['Float']
   volatility: Scalars['Float']
@@ -3569,12 +3574,10 @@ export type UserReferrerCodeType = {
 }
 
 export enum UserRoleEnum {
-  /** User */
-  User = 'user',
-  /** Administrator */
-  Admin = 'admin',
-  /** Demo */
   Demo = 'demo',
+  User = 'user',
+  UserSt = 'userST',
+  Admin = 'admin',
 }
 
 export type UserStoreBalanceType = {
@@ -5627,6 +5630,19 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
               MetricChangeType,
               'day'
             >
+            risk?: Maybe<
+              { __typename?: 'TokenMetricType' } & Pick<
+                TokenMetricType,
+                | 'totalRate'
+                | 'reliabilityRate'
+                | 'profitabilityRate'
+                | 'volatilityRate'
+                | 'total'
+                | 'reliability'
+                | 'profitability'
+                | 'volatility'
+              >
+            >
           }
         contractsDebank: { __typename?: 'ContractDebankListType' } & {
           list?: Maybe<
@@ -5736,7 +5752,21 @@ export type ProtocolListMetricsQuery = { __typename?: 'Query' } & {
               | 'myEarned'
               | 'myMinUpdatedAt'
               | 'myAPYBoost'
-            >
+            > & {
+                risk?: Maybe<
+                  { __typename?: 'TokenMetricType' } & Pick<
+                    TokenMetricType,
+                    | 'totalRate'
+                    | 'reliabilityRate'
+                    | 'profitabilityRate'
+                    | 'volatilityRate'
+                    | 'total'
+                    | 'reliability'
+                    | 'profitability'
+                    | 'volatility'
+                  >
+                >
+              }
           }
       >
     >
