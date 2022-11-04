@@ -2608,7 +2608,7 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   tokenOutDecimals: Scalars['Int']
   amountIn: Scalars['BigNumberType']
   amountOut: Scalars['BigNumberType']
-  boughtPrice: Scalars['BigNumberType']
+  boughtPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
   takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
   /** Deadline seconds */
