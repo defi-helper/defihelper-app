@@ -239,7 +239,7 @@ export const contractBalanceIcon = style([
 ])
 
 export const contractStatus = style({
-  marginBottom: 10,
+  marginBottom: 35,
 })
 
 export const contractActions = style({
@@ -282,4 +282,8 @@ export const positive = style({
 
 export const negative = style({
   color: theme.colors.common.red1,
+})
+
+export const claim = style({
+  paddingTop: 20,
 })

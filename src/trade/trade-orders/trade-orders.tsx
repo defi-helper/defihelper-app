@@ -494,37 +494,37 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                 </Typography>
                               </div>
                             </div>
-                            {false && (
+                            <div>
                               <TradeStatusChart
                                 stopLoss="100"
                                 takeProfit="200"
                                 buy="150"
                                 className={styles.contractStatus}
                               />
-                            )}
-                            <div>
-                              {[
-                                SmartTradeOrderStatusEnum.Succeeded,
-                                SmartTradeOrderStatusEnum.Canceled,
-                              ].includes(order.status) ? (
-                                <>
-                                  {hasBoughtPrice(order.callData) && (
-                                    <Button
-                                      color="green"
-                                      onClick={handleClaim(order)}
-                                      loading={claimingOrder === order.id}
-                                      disabled={Boolean(
-                                        claimingOrder.length &&
-                                          claimingOrder !== order.id
-                                      )}
-                                    >
-                                      Claim
-                                    </Button>
-                                  )}
-                                </>
-                              ) : (
-                                order.status
-                              )}
+                              <div className={styles.claim}>
+                                {[
+                                  SmartTradeOrderStatusEnum.Succeeded,
+                                  SmartTradeOrderStatusEnum.Canceled,
+                                ].includes(order.status) ? (
+                                  <>
+                                    {hasBoughtPrice(order.callData) && (
+                                      <Button
+                                        color="green"
+                                        onClick={handleClaim(order)}
+                                        loading={claimingOrder === order.id}
+                                        disabled={Boolean(
+                                          claimingOrder.length &&
+                                            claimingOrder !== order.id
+                                        )}
+                                      >
+                                        Claim
+                                      </Button>
+                                    )}
+                                  </>
+                                ) : (
+                                  order.status
+                                )}
+                              </div>
                             </div>
                             <div>
                               {boughtPrice ? (

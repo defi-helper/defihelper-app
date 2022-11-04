@@ -20,6 +20,7 @@ export const track = style({
   width: '100%',
   borderRadius: 1,
   position: 'absolute',
+  zIndex: -1,
 })
 
 export const trackNormal = style({
