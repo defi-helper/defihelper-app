@@ -37,6 +37,8 @@ import {
   BillingBalanceQueryVariables,
   BillingBalanceQuery,
   UserNotificationTypeEnum,
+  MonitoringTelegramContactsHistoryQuery,
+  MonitoringTelegramContactsHistoryQueryVariables,
 } from '~/api/_generated-types'
 import {
   USER_CONTACTS,
@@ -58,6 +60,7 @@ import {
   WALLET_UPDATE_STATISTICS,
   BILLING_BALANCE,
 } from './graphql'
+import { CONTACT_TELEGRAM_HISTORY } from './graphql/contact-telegram-history.graphql'
 
 export const settingsApi = {
   userNotificationsList: () =>
@@ -85,6 +88,20 @@ export const settingsApi = {
             return acc
           }, {})
       ),
+
+  getContactsTelegramHistory: (
+    variables: MonitoringTelegramContactsHistoryQueryVariables
+  ) =>
+    getAPIClient()
+      .request<
+        MonitoringTelegramContactsHistoryQuery,
+        unknown,
+        MonitoringTelegramContactsHistoryQueryVariables
+      >({
+        query: CONTACT_TELEGRAM_HISTORY.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.monitoringTelegramContactsHistory),
 
   billingTransferCreate: (variables: BillingTransferCreateMutationVariables) =>
     getAPIClient()

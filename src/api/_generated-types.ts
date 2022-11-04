@@ -1403,6 +1403,7 @@ export type Mutation = {
   productUpdate: StoreProductType
   productDelete: Scalars['Boolean']
   billingTransferCreate: BillingTransferType
+  zapFeePayCreate: Scalars['Boolean']
   automateTriggerCreate: AutomateTriggerType
   automateTriggerUpdate: AutomateTriggerType
   automateTriggerDelete: Scalars['Boolean']
@@ -1629,6 +1630,10 @@ export type MutationProductDeleteArgs = {
 
 export type MutationBillingTransferCreateArgs = {
   input: BillingTransferCreateInputType
+}
+
+export type MutationZapFeePayCreateArgs = {
+  input: ZapFeePayCreateInputType
 }
 
 export type MutationAutomateTriggerCreateArgs = {
@@ -2293,6 +2298,7 @@ export type Query = {
   monitoringAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringProtocolEarningsHistory: Array<MonitoringStatisticsEarningsPointType>
+  monitoringTelegramContactsHistory: Array<MonitoringStatisticsEarningsPointType>
   smartTradeOrders: SmartTradeOrderListQuery
 }
 
@@ -3049,7 +3055,11 @@ export type TokenListType = {
 
 export type TokenMetricType = {
   __typename?: 'TokenMetricType'
-  risk: TokenRiskScoringEnum
+  totalRate: TokenRiskScoringEnum
+  reliabilityRate: TokenRiskScoringEnum
+  profitabilityRate: TokenRiskScoringEnum
+  volatilityRate: TokenRiskScoringEnum
+  total: Scalars['Float']
   reliability: Scalars['Float']
   profitability: Scalars['Float']
   volatility: Scalars['Float']
@@ -3569,12 +3579,10 @@ export type UserReferrerCodeType = {
 }
 
 export enum UserRoleEnum {
-  /** User */
-  User = 'user',
-  /** Administrator */
-  Admin = 'admin',
-  /** Demo */
   Demo = 'demo',
+  User = 'user',
+  UserSt = 'userST',
+  Admin = 'admin',
 }
 
 export type UserStoreBalanceType = {
@@ -4270,6 +4278,19 @@ export enum WalletTokenMetricChartSortInputTypeColumnEnum {
 export type WalletUpdateInputType = {
   /** Name */
   name?: Maybe<Scalars['String']>
+}
+
+export type ZapFeePayCreateInputType = {
+  type: ZapFeePayCreateTypeEnum
+  wallet: Scalars['UuidType']
+  fee: Scalars['BigNumberType']
+  feeUSD: Scalars['BigNumberType']
+  tx: Scalars['String']
+}
+
+export enum ZapFeePayCreateTypeEnum {
+  Buy = 'Buy',
+  Sell = 'Sell',
 }
 
 export type AuthDemoMutationVariables = Exact<{ [key: string]: never }>
@@ -6197,6 +6218,21 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
         }
       }
     }
+  >
+}
+
+export type MonitoringTelegramContactsHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringTelegramContactsHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringTelegramContactsHistory: Array<
+    { __typename?: 'MonitoringStatisticsEarningsPointType' } & Pick<
+      MonitoringStatisticsEarningsPointType,
+      'date' | 'number'
+    >
   >
 }
 
