@@ -6,6 +6,8 @@ import {
   TradeAuthMutationVariables,
   TradeCancelOrderMutation,
   TradeCancelOrderMutationVariables,
+  TradeClaimOrderMutation,
+  TradeClaimOrderMutationVariables,
   TradeCreateOrderMutation,
   TradeCreateOrderMutationVariables,
   TradeOrderListQuery,
@@ -17,6 +19,7 @@ import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
 import { TRADE_AUTH } from './graphql/trade-auth.graphql'
 import { TRADE_CANCEL_ORDER } from './graphql/trade-cancel-order.graphql'
+import { TRADE_CLAIM_ORDER } from './graphql/trade-claim-order.graphql'
 import { TRADE_CREATE_ORDER } from './graphql/trade-create-order.graphql'
 import { TRADE_ORDER_LIST } from './graphql/trade-order-list.graphql'
 import { TRADE_UPDATE_ORDER } from './graphql/trade-update-order.graphql'
@@ -313,6 +316,20 @@ export const tradeApi = {
         list: data?.smartTradeOrders.list ?? [],
         pagination: data?.smartTradeOrders.pagination.count ?? 0,
       })),
+
+  claimOrder: (id: TradeClaimOrderMutationVariables['id']) =>
+    getAPIClient()
+      .request<
+        TradeClaimOrderMutation,
+        unknown,
+        TradeClaimOrderMutationVariables
+      >({
+        query: TRADE_CLAIM_ORDER.loc?.source.body ?? '',
+        variables: {
+          id,
+        },
+      })
+      .then(({ data }) => data?.smartTradeClaim),
 }
 
 const authRequestInterceptor = async (axiosConfig: AxiosRequestConfig) => {

@@ -29,6 +29,7 @@ export const TRADE_ORDER_FRAGMENT = gql`
         path
       }
     }
+    claim
     status
     tx
     lastCall {

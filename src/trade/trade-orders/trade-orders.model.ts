@@ -33,6 +33,14 @@ export const cancelOrderFx = createEffect(async ({ id }: { id: string }) => {
   return data
 })
 
+export const claimOrderFx = createEffect(async ({ id }: { id: string }) => {
+  const data = await tradeApi.claimOrder(id)
+
+  if (!data) throw new Error('something went wrong')
+
+  return data
+})
+
 export const updateOrderFx = createEffect(
   async (variables: TradeUpdateOrderMutationVariables) => {
     const data = await tradeApi.updateOrder(variables)
@@ -51,18 +59,16 @@ export const $orders = createStore<Orders | null>(null)
     list: [payload, ...(state?.list ?? [])],
     pagination: state?.pagination ?? 0,
   }))
-  .on(cancelOrderFx.doneData, (state, payload) => ({
-    list:
-      state?.list.map((order) => (order.id === payload.id ? payload : order)) ??
-      [],
-    pagination: state?.pagination ?? 0,
-  }))
-  .on(updateOrderFx.doneData, (state, payload) => ({
-    list:
-      state?.list.map((order) => (order.id === payload.id ? payload : order)) ??
-      [],
-    pagination: state?.pagination ?? 0,
-  }))
+  .on(
+    [cancelOrderFx.doneData, claimOrderFx.doneData, updateOrderFx.doneData],
+    (state, payload) => ({
+      list:
+        state?.list.map((order) =>
+          order.id === payload.id ? payload : order
+        ) ?? [],
+      pagination: state?.pagination ?? 0,
+    })
+  )
   .reset(reset)
 
 export const fetchActualPricesFx = createEffect(
