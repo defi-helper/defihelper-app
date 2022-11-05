@@ -2305,6 +2305,7 @@ export type Query = {
   monitoringAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringAutoRestakeAutomatesCreationHistory: Array<MonitoringStatisticsPointType>
   monitoringProtocolEarningsHistory: Array<MonitoringStatisticsEarningsPointType>
+  monitoringTelegramContactsHistory: Array<MonitoringStatisticsEarningsPointType>
   smartTradeOrders: SmartTradeOrderListQuery
   tags: Array<TagType>
 }
@@ -6248,6 +6249,21 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
         }
       }
     }
+  >
+}
+
+export type MonitoringTelegramContactsHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringTelegramContactsHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringTelegramContactsHistory: Array<
+    { __typename?: 'MonitoringStatisticsEarningsPointType' } & Pick<
+      MonitoringStatisticsEarningsPointType,
+      'date' | 'number'
+    >
   >
 }
 
