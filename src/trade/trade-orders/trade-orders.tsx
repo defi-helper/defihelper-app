@@ -39,11 +39,13 @@ import {
 } from '~/settings/common'
 import { analytics } from '~/analytics'
 import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
+import { useQueryParams } from '~/common/hooks'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { authModel } from '~/auth'
 import { TradeEditDialog } from '~/trade/common/trade-edit-dialog'
 import * as styles from './trade-orders.css'
 import * as model from './trade-orders.model'
+import { config } from '~/config'
 
 export type TradeOrdersProps = {
   className?: string
@@ -81,6 +83,17 @@ const titles: Record<string, string> = {
 
 export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   const [currentTab, setCurrentTab] = useState(Tabs.Active)
+
+  const queryParams = useQueryParams()
+
+  const goerliPrice = Array.from(queryParams, ([title, price]) => ({
+    price,
+    id: title.replace('price', '').replace('[', '').replace(']', ''),
+  })).reduce<Record<string, string>>((acc, item) => {
+    acc[item.id] = item.price
+
+    return acc
+  }, {})
 
   const orders = useStore(model.$ordersWithPrice)
 
@@ -554,7 +567,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                             order.callData.boughtPrice ??
                                             String(price)
                                           }
-                                          profit={String(price)}
+                                          profit={
+                                            order.owner.network === '5' &&
+                                            config.IS_DEV
+                                              ? goerliPrice[order.number]
+                                              : String(price)
+                                          }
                                           className={styles.contractStatus}
                                         />
                                       )}
