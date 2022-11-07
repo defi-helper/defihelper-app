@@ -499,12 +499,6 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               </div>
                             </div>
                             <div>
-                              <TradeStatusChart
-                                stopLoss="100"
-                                takeProfit="200"
-                                buy="150"
-                                className={styles.contractStatus}
-                              />
                               <div className={styles.claim}>
                                 {!order.claim &&
                                 order.status ===
@@ -525,7 +519,22 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     )}
                                   </>
                                 ) : (
-                                  order.status
+                                  <>
+                                    {hasBoughtPrice(order.callData) &&
+                                      order.callData.boughtPrice && (
+                                        <TradeStatusChart
+                                          stopLoss={
+                                            order.callData.stopLoss?.amountOut
+                                          }
+                                          takeProfit={
+                                            order.callData.takeProfit?.amountOut
+                                          }
+                                          buy={order.callData.boughtPrice}
+                                          profit={String(price)}
+                                          className={styles.contractStatus}
+                                        />
+                                      )}
+                                  </>
                                 )}
                               </div>
                             </div>

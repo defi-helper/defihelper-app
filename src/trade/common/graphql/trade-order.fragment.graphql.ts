@@ -27,6 +27,16 @@ export const TRADE_ORDER_FRAGMENT = gql`
         exchange
         boughtPrice
         path
+        stopLoss {
+          amountOut
+          amountOutMin
+          slippage
+        }
+        takeProfit {
+          amountOut
+          amountOutMin
+          slippage
+        }
       }
     }
     claim

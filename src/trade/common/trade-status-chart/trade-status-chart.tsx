@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import clsx from 'clsx'
+import { useMemo } from 'react'
+
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
-
 import * as styles from './trade-status-chart.css'
 
 export type TradeStatusChartProps = {
@@ -14,20 +14,32 @@ export type TradeStatusChartProps = {
   profit?: string
 }
 
-export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
-  const width = '100'
+const getPercentCurry =
+  (min = '0') =>
+  (max = '100') =>
+  (value = '0') => {
+    const left = bignumberUtils.minus(value, min)
+    const right = bignumberUtils.minus(max, min)
 
+    const div = bignumberUtils.div(left, right)
+
+    const mul = bignumberUtils.mul(div, 100)
+
+    return bignumberUtils.floor(mul)
+  }
+
+export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
   const total = props.takeProfit ?? props.buy
 
-  const left = '-20'
+  const getPercent = useMemo(() => getPercentCurry()(total), [total])
 
-  const right = '10'
+  const profitPos = getPercent(props.profit)
 
-  const buyPos = props.stopLoss ? '10' : '0'
+  const buyPos = getPercent(props.buy)
 
-  const leftGreaterThanZero = bignumberUtils.gte(left, 0)
-
-  const maxWidth = bignumberUtils.minus(width, left)
+  const maxWidth = bignumberUtils.gt(profitPos, buyPos)
+    ? `${bignumberUtils.minus(profitPos, buyPos)}%`
+    : `${bignumberUtils.minus(buyPos, profitPos)}%`
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -49,10 +61,12 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
       )}
       <div className={styles.rail}>
         <div
-          className={styles.profitLine}
+          className={clsx(styles.profitLine, {
+            [styles.normalColor]: bignumberUtils.gt(profitPos, buyPos),
+            [styles.reverseColor]: bignumberUtils.lt(profitPos, buyPos),
+          })}
           style={{
-            left: !leftGreaterThanZero ? `calc(${left}% - 1px)` : undefined,
-            right: leftGreaterThanZero ? `calc(${left}% - 1px)` : undefined,
+            left: `calc(${profitPos}% - 1px)`,
           }}
         >
           <Typography as="div" className={styles.profit} style={{ right: 4 }}>
@@ -61,7 +75,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
               className={styles.profitTitle}
               weight="bold"
             >
-              + 10%
+              {bignumberUtils.gt(profitPos, buyPos) ? '+' : '-'} {maxWidth}
             </Typography>
             <Typography variant="inherit">
               {bignumberUtils.format(props.profit)}
@@ -70,13 +84,14 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
         </div>
         <div
           className={clsx(styles.track, {
-            [styles.trackNormal]: !props.reverse,
-            [styles.trackReverse]: props.reverse,
+            [styles.normalColor]: bignumberUtils.gt(profitPos, buyPos),
+            [styles.reverseColor]: bignumberUtils.lt(profitPos, buyPos),
           })}
           style={{
-            left: !leftGreaterThanZero ? `${left}%` : undefined,
-            right: leftGreaterThanZero ? `${left}%` : undefined,
-            maxWidth: `${maxWidth}%`,
+            left: `${
+              bignumberUtils.lt(profitPos, buyPos) ? profitPos : buyPos
+            }%`,
+            maxWidth,
           }}
         />
         <div className={styles.buyLine} style={{ left: `${buyPos}%` }}>
