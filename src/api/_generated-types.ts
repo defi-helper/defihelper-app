@@ -6282,6 +6282,21 @@ export type BillingHistoryQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type MonitoringTelegramContactsHistoryQueryVariables = Exact<{
+  [key: string]: never
+}>
+
+export type MonitoringTelegramContactsHistoryQuery = {
+  __typename?: 'Query'
+} & {
+  monitoringTelegramContactsHistory: Array<
+    { __typename?: 'MonitoringStatisticsEarningsPointType' } & Pick<
+      MonitoringStatisticsEarningsPointType,
+      'date' | 'number'
+    >
+  >
+}
+
 export type IntegrationExchangeApiConnectMutationVariables = Exact<{
   input: IntegrationExchangeApiConnectInputType
 }>

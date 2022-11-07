@@ -5,6 +5,7 @@ import { MonitoringAutomateRunHistoryFilterEnum } from '~/api/_generated-types'
 import { protocolsApi } from '~/protocols/common'
 import { usersApi } from '~/users/common/users.api'
 import { networksConfig } from '~/networks-config'
+import { settingsApi } from '~/settings/common'
 
 const monitoringDomain = createDomain()
 
@@ -43,6 +44,12 @@ export const fetchWalletsRegisteringHistoryFx = monitoringDomain.createEffect(
   }
 )
 
+export const fetchTelegramContactsHistoryFx = monitoringDomain.createEffect(
+  () => {
+    return settingsApi.getContactsTelegramHistory({})
+  }
+)
+
 export const fetchAutomationsCreationHistoryFx = monitoringDomain.createEffect(
   () => {
     return automationApi.getAutomationsCreationHistory()
@@ -61,6 +68,10 @@ export const $usersRegisteringHistory = monitoringDomain
 export const $walletsRegisteringHistory = monitoringDomain
   .createStore<{ date: string; number: number }[]>([])
   .on(fetchWalletsRegisteringHistoryFx.doneData, (_, payload) => payload)
+
+export const $contactsTelegramHistory = monitoringDomain
+  .createStore<{ date: string; number: number }[]>([])
+  .on(fetchTelegramContactsHistoryFx.doneData, (_, payload) => payload)
 
 export const $automationsCreationHistory = monitoringDomain
   .createStore<{ date: string; number: number }[]>([])
@@ -104,6 +115,7 @@ export const fetchMetricsSyncFx = monitoringDomain.createEffect(async () => {
     fetchAutomationsAutorestakeCreationHistoryFx(),
     fetchAutomationsSuccessfulRunsHistoryFx(),
     fetchAutomationsFailedRunsHistoryFx(),
+    fetchTelegramContactsHistoryFx(),
     ...Object.values(networksConfig).map((network) =>
       fetchDfhProtocolEarningsHistoryFx(network.chainId.toString())
     ),
