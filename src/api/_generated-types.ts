@@ -1725,6 +1725,10 @@ export type MutationSmartTradeSwapOrderUpdateArgs = {
   input: SmartTradeSwapOrderUpdateInputType
 }
 
+export type OnOrderStatusChangedFilterInputType = {
+  user: Scalars['UuidType']
+}
+
 export type OnTokenMetricUpdatedFilterInputType = {
   token?: Maybe<Array<Scalars['UuidType']>>
   contract?: Maybe<Array<Scalars['UuidType']>>
@@ -2580,6 +2584,7 @@ export type SmartTradeOrderType = {
   /** Status */
   status: SmartTradeOrderStatusEnum
   claim: Scalars['Boolean']
+  active: Scalars['Boolean']
   /** Transaction hash */
   tx: Scalars['EthereumTransactionHashType']
   lastCall?: Maybe<SmartTradeOrderCallHistoryType>
@@ -2590,6 +2595,12 @@ export type SmartTradeOrderType = {
   createdAt: Scalars['DateTimeType']
 }
 
+export type SmartTradeSwapHandlerCallDataActivateType = {
+  __typename?: 'SmartTradeSwapHandlerCallDataActivateType'
+  amountOut: Scalars['BigNumberType']
+  direction: SwapOrderCallDataDirectionEnum
+}
+
 export type SmartTradeSwapHandlerCallDataType = {
   __typename?: 'SmartTradeSwapHandlerCallDataType'
   exchange: Scalars['EthereumAddressType']
@@ -2598,6 +2609,7 @@ export type SmartTradeSwapHandlerCallDataType = {
   boughtPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapHandlerCallDataRouteType>
   takeProfit?: Maybe<SwapHandlerCallDataRouteType>
+  activate?: Maybe<SmartTradeSwapHandlerCallDataActivateType>
   deadline: Scalars['Int']
 }
 
@@ -2612,6 +2624,7 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   boughtPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
   takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
+  activate?: Maybe<SwapOrderCallDataActivateInputType>
   /** Deadline seconds */
   deadline: Scalars['Int']
 }
@@ -2800,6 +2813,7 @@ export type Subscription = {
   onBillingTransferCreated: BillingTransferType
   onBillingTransferUpdated: BillingTransferType
   onUserContactActivated: UserContactType
+  onSmartTradeOrderUpdated: SmartTradeOrderType
 }
 
 export type SubscriptionOnWalletCreatedArgs = {
@@ -2826,11 +2840,27 @@ export type SubscriptionOnUserContactActivatedArgs = {
   filter?: Maybe<OnUserContactActivatedFilterInputType>
 }
 
+export type SubscriptionOnSmartTradeOrderUpdatedArgs = {
+  filter?: Maybe<OnOrderStatusChangedFilterInputType>
+}
+
 export type SwapHandlerCallDataRouteType = {
   __typename?: 'SwapHandlerCallDataRouteType'
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
+}
+
+export type SwapOrderCallDataActivateInputType = {
+  amountOut: Scalars['BigNumberType']
+  direction: SwapOrderCallDataDirectionEnum
+}
+
+export enum SwapOrderCallDataDirectionEnum {
+  /** great */
+  Gt = 'gt',
+  /** less */
+  Lt = 'lt',
 }
 
 export type SwapOrderCallDataStopLossInputType = {
@@ -7310,7 +7340,20 @@ export type TradeOrderFragmentFragment = {
       | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
           SmartTradeSwapHandlerCallDataType,
           'amountIn' | 'exchange' | 'boughtPrice' | 'path'
-        >)
+        > & {
+            stopLoss?: Maybe<
+              { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
+                SwapHandlerCallDataRouteType,
+                'amountOut' | 'amountOutMin' | 'slippage'
+              >
+            >
+            takeProfit?: Maybe<
+              { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
+                SwapHandlerCallDataRouteType,
+                'amountOut' | 'amountOutMin' | 'slippage'
+              >
+            >
+          })
     lastCall?: Maybe<
       { __typename?: 'SmartTradeOrderCallHistoryType' } & Pick<
         SmartTradeOrderCallHistoryType,

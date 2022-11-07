@@ -20,13 +20,14 @@ export const track = style({
   width: '100%',
   borderRadius: 1,
   position: 'absolute',
+  zIndex: -1,
 })
 
-export const trackNormal = style({
+export const normalColor = style({
   backgroundColor: theme.colors.common.green2,
 })
 
-export const trackReverse = style({
+export const reverseColor = style({
   backgroundColor: theme.colors.common.red1,
 })
 
@@ -110,7 +111,6 @@ export const buyTitle = style([fs12, {}])
 export const profitLine = style({
   position: 'absolute',
   bottom: 0,
-  background: theme.colors.common.green2,
   width: 1,
   height: 22,
 })
