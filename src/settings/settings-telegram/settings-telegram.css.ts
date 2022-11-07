@@ -9,19 +9,21 @@ export const root = style({
   display: 'flex',
   flexDirection: 'column',
   position: 'relative',
-  color: theme.colors.common.black1,
 })
 
 export const green = style({
   background: theme.colors.common.green2,
+  color: theme.colors.common.black1,
 })
 
 export const red = style({
   background: theme.colors.common.red1,
+  color: theme.colors.common.black1,
 })
 
 export const yellow = style({
   background: theme.colors.common.yellow,
+  color: theme.colors.common.black1,
 })
 
 export const text = style({

@@ -13,6 +13,7 @@ export const rail = style({
   width: '100%',
   borderRadius: 1,
   position: 'relative',
+  zIndex: 1,
 })
 
 export const track = style({
@@ -24,11 +25,11 @@ export const track = style({
 })
 
 export const normalColor = style({
-  backgroundColor: theme.colors.common.green2,
+  background: theme.colors.common.green2,
 })
 
 export const reverseColor = style({
-  backgroundColor: theme.colors.common.red1,
+  background: theme.colors.common.red1,
 })
 
 export const fs12 = style({

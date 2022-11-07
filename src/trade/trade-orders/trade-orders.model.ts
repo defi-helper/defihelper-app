@@ -12,8 +12,8 @@ import {
   TradeOrderListQueryVariables,
   TradeUpdateOrderMutationVariables,
 } from '~/api'
-import * as tradeSmartSellModel from '~/trade/trade-smart-sell/trade-smart-sell.model'
 import { hasBoughtPrice } from '~/trade/common/trade.types'
+import * as tradeSmartSellModel from '~/trade/trade-smart-sell/trade-smart-sell.model'
 
 export const reset = createEvent()
 
@@ -59,16 +59,16 @@ export const $orders = createStore<Orders | null>(null)
     list: [payload, ...(state?.list ?? [])],
     pagination: state?.pagination ?? 0,
   }))
-  .on(
-    [cancelOrderFx.doneData, claimOrderFx.doneData, updateOrderFx.doneData],
-    (state, payload) => ({
-      list:
-        state?.list.map((order) =>
-          order.id === payload.id ? payload : order
-        ) ?? [],
-      pagination: state?.pagination ?? 0,
-    })
-  )
+  .on([cancelOrderFx.doneData, updateOrderFx.doneData], (state, payload) => ({
+    list:
+      state?.list.map((order) => (order.id === payload.id ? payload : order)) ??
+      [],
+    pagination: state?.pagination ?? 0,
+  }))
+  .on(claimOrderFx.doneData, (state, payload) => ({
+    list: state?.list.filter((order) => order.id !== payload.id) ?? [],
+    pagination: state?.pagination ?? 0,
+  }))
   .reset(reset)
 
 export const fetchActualPricesFx = createEffect(
