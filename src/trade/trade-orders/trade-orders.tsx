@@ -110,6 +110,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       const res = await props.router.refund(order.number, refund)
 
       await res.tx?.wait()
+
+      model.claimOrderFx({
+        id: order.id,
+      })
     } catch {
       console.error('error')
     } finally {
@@ -357,9 +361,11 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                   >
                     Profit/Loss
                   </Typography>
-                  <Typography as="div" className={styles.tableHeadingsButton}>
-                    Actions
-                  </Typography>
+                  {currentTab === Tabs.Active && (
+                    <Typography as="div" className={styles.tableHeadingsButton}>
+                      Actions
+                    </Typography>
+                  )}
                 </div>
                 {orders?.list
                   .filter((order) =>
@@ -521,7 +527,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                 ) : (
                                   <>
                                     {hasBoughtPrice(order.callData) &&
-                                      order.callData.boughtPrice && (
+                                      statuses[Tabs.Active].includes(
+                                        order.status
+                                      ) && (
                                         <TradeStatusChart
                                           stopLoss={
                                             order.callData.stopLoss?.amountOut
@@ -529,10 +537,27 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                           takeProfit={
                                             order.callData.takeProfit?.amountOut
                                           }
-                                          buy={order.callData.boughtPrice}
+                                          buy={
+                                            order.callData.boughtPrice ??
+                                            String(price)
+                                          }
                                           profit={String(price)}
                                           className={styles.contractStatus}
                                         />
+                                      )}
+                                    {hasBoughtPrice(order.callData) &&
+                                      statuses[Tabs.History].includes(
+                                        order.status
+                                      ) && (
+                                        <Typography
+                                          variant="body3"
+                                          className={clsx({
+                                            [styles.positive]: false,
+                                            [styles.negative]: false,
+                                          })}
+                                        >
+                                          Closed at Market price:{' '}
+                                        </Typography>
                                       )}
                                   </>
                                 )}
@@ -617,40 +642,44 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                 </>
                               )}
                             </div>
-                            <div className={styles.contractActions}>
-                              <ButtonBase onClick={handleUpdatePrice(order.id)}>
-                                <Icon width={16} height={16} icon="swap" />
-                              </ButtonBase>
-                              <Dropdown
-                                control={
-                                  <ButtonBase>
-                                    <Icon
-                                      width={16}
-                                      height={16}
-                                      icon="dots"
-                                      className={styles.dots}
-                                    />
-                                  </ButtonBase>
-                                }
-                              >
-                                {(close) => (
-                                  <ButtonBase
-                                    onClick={async () => {
-                                      close()
+                            {statuses[Tabs.Active].includes(order.status) && (
+                              <div className={styles.contractActions}>
+                                <ButtonBase
+                                  onClick={handleUpdatePrice(order.id)}
+                                >
+                                  <Icon width={16} height={16} icon="swap" />
+                                </ButtonBase>
+                                <Dropdown
+                                  control={
+                                    <ButtonBase>
+                                      <Icon
+                                        width={16}
+                                        height={16}
+                                        icon="dots"
+                                        className={styles.dots}
+                                      />
+                                    </ButtonBase>
+                                  }
+                                >
+                                  {(close) => (
+                                    <ButtonBase
+                                      onClick={async () => {
+                                        close()
 
-                                      setUpdatingOrderId(order.id)
+                                        setUpdatingOrderId(order.id)
 
-                                      props.onCancelOrder({
-                                        orderNumber: order.number,
-                                        id: order.id,
-                                      })
-                                    }}
-                                  >
-                                    Cancel order
-                                  </ButtonBase>
-                                )}
-                              </Dropdown>
-                            </div>
+                                        props.onCancelOrder({
+                                          orderNumber: order.number,
+                                          id: order.id,
+                                        })
+                                      }}
+                                    >
+                                      Cancel order
+                                    </ButtonBase>
+                                  )}
+                                </Dropdown>
+                              </div>
+                            )}
                           </div>
                           {updating && (
                             <div className={styles.tableRowInnerLoader}>

@@ -25,21 +25,24 @@ const getPercentCurry =
 
     const mul = bignumberUtils.mul(div, 100)
 
+    if (bignumberUtils.isNaN(mul)) return '0'
+
     return bignumberUtils.floor(mul)
   }
 
 export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
   const total = props.takeProfit ?? props.buy
+  const min = props.stopLoss ?? props.buy
 
-  const getPercent = useMemo(() => getPercentCurry()(total), [total])
+  const getPercent = useMemo(() => getPercentCurry(min)(total), [total, min])
 
   const profitPos = getPercent(props.profit)
 
   const buyPos = getPercent(props.buy)
 
   const maxWidth = bignumberUtils.gt(profitPos, buyPos)
-    ? `${bignumberUtils.minus(profitPos, buyPos)}%`
-    : `${bignumberUtils.minus(buyPos, profitPos)}%`
+    ? bignumberUtils.minus(profitPos, buyPos)
+    : bignumberUtils.minus(buyPos, profitPos)
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -66,16 +69,22 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
             [styles.reverseColor]: bignumberUtils.lt(profitPos, buyPos),
           })}
           style={{
-            left: `calc(${profitPos}% - 1px)`,
+            left: `${profitPos}%`,
           }}
         >
-          <Typography as="div" className={styles.profit} style={{ right: 4 }}>
+          <Typography
+            as="div"
+            className={styles.profit}
+            style={
+              bignumberUtils.lt(profitPos, 50) ? { left: 4 } : { right: 4 }
+            }
+          >
             <Typography
               variant="inherit"
               className={styles.profitTitle}
               weight="bold"
             >
-              {bignumberUtils.gt(profitPos, buyPos) ? '+' : '-'} {maxWidth}
+              {bignumberUtils.gt(profitPos, buyPos) ? '+' : '-'} {maxWidth}%
             </Typography>
             <Typography variant="inherit">
               {bignumberUtils.format(props.profit)}
@@ -91,11 +100,15 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
             left: `${
               bignumberUtils.lt(profitPos, buyPos) ? profitPos : buyPos
             }%`,
-            maxWidth,
+            maxWidth: `${maxWidth}%`,
           }}
         />
         <div className={styles.buyLine} style={{ left: `${buyPos}%` }}>
-          <Typography as="div" className={styles.buy} style={{ left: 4 }}>
+          <Typography
+            as="div"
+            className={styles.buy}
+            style={bignumberUtils.gt(buyPos, 50) ? { right: 4 } : { left: 4 }}
+          >
             <Typography
               variant="inherit"
               className={styles.buyTitle}
