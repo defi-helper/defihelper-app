@@ -167,7 +167,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         formValues.stopLoss
           ? {
               amountOut: formValues.stopLossValue,
-              slippage: props.slippage,
+              slippage: '100',
               moving: formValues.moving,
             }
           : null,
