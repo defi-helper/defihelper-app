@@ -13,6 +13,7 @@ export const header = style({
   alignItems: 'center',
   padding: '14px 18px 13px 16px',
   flexWrap: 'wrap',
+  zIndex: 10,
 
   '@media': {
     [theme.mediaQueries.md()]: {
@@ -138,7 +139,7 @@ export const tableRow = style({
     right: 0,
     bottom: 0,
     background: theme.colors.common.white3,
-    zIndex: 1,
+    zIndex: 2,
     backdropFilter: 'blur(10px)',
     display: 'none',
   },

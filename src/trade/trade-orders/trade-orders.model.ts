@@ -12,8 +12,8 @@ import {
   TradeOrderListQueryVariables,
   TradeUpdateOrderMutationVariables,
 } from '~/api'
-import * as tradeSmartSellModel from '~/trade/trade-smart-sell/trade-smart-sell.model'
 import { hasBoughtPrice } from '~/trade/common/trade.types'
+import * as tradeSmartSellModel from '~/trade/trade-smart-sell/trade-smart-sell.model'
 
 export const reset = createEvent()
 

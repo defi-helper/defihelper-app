@@ -6,7 +6,10 @@ import { Sticky, StickyContainer } from 'react-sticky'
 import contracts from '@defihelper/networks/contracts.json'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { SmartTradeOrderStatusEnum } from '~/api'
+import {
+  SmartTradeOrderStatusEnum,
+  SmartTradeSwapHandlerCallDataType,
+} from '~/api'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
@@ -69,6 +72,11 @@ const statuses = {
     SmartTradeOrderStatusEnum.Processed,
     SmartTradeOrderStatusEnum.Canceled,
   ],
+}
+
+const titles: Record<string, string> = {
+  [SmartTradeOrderStatusEnum.Processed]: 'Closed at Market price',
+  [SmartTradeOrderStatusEnum.Canceled]: 'Stop loss finished',
 }
 
 export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
@@ -391,6 +399,11 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                       order.price?.actualPrice[order.tokens[0].token.address]
                         ?.usd_price
 
+                    const percent = bignumberUtils.div(
+                      bignumberUtils.minus(boughtPrice, price),
+                      bignumberUtils.mul(boughtPrice, 100)
+                    )
+
                     return (
                       <TradeOrderDeposit
                         key={order.id}
@@ -551,12 +564,20 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       ) && (
                                         <Typography
                                           variant="body3"
-                                          className={clsx({
-                                            [styles.positive]: false,
-                                            [styles.negative]: false,
+                                          className={clsx(styles.fs12, {
+                                            [styles.positive]:
+                                              bignumberUtils.gt(
+                                                price,
+                                                boughtPrice
+                                              ),
+                                            [styles.negative]:
+                                              bignumberUtils.lt(
+                                                price,
+                                                boughtPrice
+                                              ),
                                           })}
                                         >
-                                          Closed at Market price:{' '}
+                                          {titles[order.status]}: {percent}%
                                         </Typography>
                                       )}
                                   </>
@@ -601,8 +622,13 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       })}
                                       as="div"
                                     >
-                                      {bignumberUtils.format(boughtPrice)}$ /{' '}
-                                      {bignumberUtils.format(boughtPrice)}%
+                                      {bignumberUtils.minus(
+                                        (
+                                          order.callData as SmartTradeSwapHandlerCallDataType
+                                        ).boughtPrice,
+                                        price
+                                      )}
+                                      $ / {percent}%
                                     </Typography>
                                   </div>
                                 </>
