@@ -30,7 +30,26 @@ export const fetchPairsFx = createEffect(
 
     if (!data || message) throw new Error(message ?? 'something went wrong')
 
-    return data.list
+    return Promise.all(
+      data.list.map(async (pair) => {
+        const res = await Promise.all(
+          pair.pairInfo.tokens.map(async ({ symbol }) => {
+            const tokenIcon = await tradeApi.tokenAlias({
+              filter: {
+                symbol,
+              },
+            })
+
+            return tokenIcon
+          })
+        )
+
+        return {
+          ...pair,
+          tokenAlias: res,
+        }
+      })
+    )
   }
 )
 

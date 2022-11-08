@@ -453,6 +453,24 @@ export const Trade: React.VFC<TradeProps> = () => {
             )
             .map((pair, index) => (
               <SelectOption value={pair.pairInfo?.address} key={String(index)}>
+                <div className={styles.tickerIcons}>
+                  {pair.tokenAlias.map((alias) =>
+                    alias?.logoUrl ? (
+                      <img
+                        key={alias.id}
+                        alt=""
+                        src={alias.logoUrl}
+                        width="24"
+                        height="24"
+                        className={styles.pairIcon}
+                      />
+                    ) : (
+                      <Paper className={styles.pairIconUnknown} key={alias?.id}>
+                        <Icon icon="unknownNetwork" width="16" height="16" />
+                      </Paper>
+                    )
+                  )}
+                </div>
                 {pair.pairInfo?.ticker}
               </SelectOption>
             ))}
@@ -462,22 +480,24 @@ export const Trade: React.VFC<TradeProps> = () => {
         <Paper radius={8} className={styles.chart}>
           <div className={styles.chartHeader}>
             <div className={styles.ticker}>
-              {false && currentPairObj && (
+              {currentPairObj && (
                 <div className={styles.tickerIcons}>
-                  <img
-                    alt=""
-                    src={`https://whattofarm.io/assets/dex/${currentPairObj?.pairInfo?.lpToken?.network?.name}.svg`}
-                    width="24"
-                    height="24"
-                    className={styles.pairIcon}
-                  />
-                  <img
-                    alt=""
-                    src={`https://whattofarm.io/assets/dex/${currentPairObj?.pairInfo?.icon}.svg`}
-                    width="24"
-                    height="24"
-                    className={styles.pairIcon}
-                  />
+                  {currentPairObj.tokenAlias.map((alias) =>
+                    alias?.logoUrl ? (
+                      <img
+                        key={alias.id}
+                        alt=""
+                        src={alias.logoUrl}
+                        width="24"
+                        height="24"
+                        className={styles.pairIcon}
+                      />
+                    ) : (
+                      <Paper className={styles.pairIconUnknown} key={alias?.id}>
+                        <Icon icon="unknownNetwork" width="16" height="16" />
+                      </Paper>
+                    )
+                  )}
                 </div>
               )}
               <Typography>{currentPairObj?.pairInfo?.ticker ?? '-'}</Typography>
