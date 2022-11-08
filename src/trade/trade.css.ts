@@ -198,16 +198,19 @@ export const tabItemActive = style({
 })
 
 export const pairIcon = style({
-  width: 24,
+  minWidth: 24,
   height: 24,
   verticalAlign: 'middle',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 
   selectors: {
     '&:not(:first-child)': {
       marginLeft: -4,
     },
 
-    '&:last-of-type': {
+    '&:last-child': {
       marginRight: 8,
     },
   },
@@ -267,9 +270,11 @@ export const ticker = style({
 })
 
 export const tickerIcons = style({
-  display: 'flex',
+  display: 'inline-flex',
   width: 44,
   alignItems: 'center',
+  verticalAlign: 'middle',
+  marginRight: 8,
 })
 
 export const transactionSettings = style({
@@ -304,3 +309,11 @@ export const transactionSettingsButton = style({
   border: `1px solid ${theme.colors.border}`,
   justifyContent: 'center',
 })
+
+export const pairIconUnknown = style([
+  pairIcon,
+  {
+    borderRadius: '50%',
+    background: theme.colors.tertiary,
+  },
+])

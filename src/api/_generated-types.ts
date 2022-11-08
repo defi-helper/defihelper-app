@@ -7397,6 +7397,26 @@ export type TradeOrderFragmentFragment = {
     >
   }
 
+export type TradeTokenAliasesQueryVariables = Exact<{
+  filter?: Maybe<TokenAliasListFilterInputType>
+  sort?: Maybe<Array<TokenAliasListSortInputType> | TokenAliasListSortInputType>
+  pagination?: Maybe<TokenAliasListPaginationInputType>
+}>
+
+export type TradeTokenAliasesQuery = { __typename?: 'Query' } & {
+  tokensAlias: { __typename?: 'TokenAliasListQuery' } & {
+    list?: Maybe<
+      Array<
+        { __typename?: 'TokenAlias' } & Pick<
+          TokenAlias,
+          'id' | 'symbol' | 'logoUrl'
+        >
+      >
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
+}
+
 export type TradeUpdateOrderMutationVariables = Exact<{
   id: Scalars['UuidType']
   input: SmartTradeSwapOrderUpdateInputType
