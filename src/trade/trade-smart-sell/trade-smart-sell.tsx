@@ -263,7 +263,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       bignumberUtils.toFixed(
         bignumberUtils.plus(
           bignumberUtils.mul(
-            bignumberUtils.div(Number(value), 300),
+            bignumberUtils.div(Number(value), 100),
             price.value
           ),
           price.value
@@ -276,21 +276,20 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const handleChangeTakeProfitValue = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setValue(
-      'takeProfitPercent',
-      Number(
-        bignumberUtils.toFixed(
-          bignumberUtils.mul(
-            bignumberUtils.div(
-              bignumberUtils.minus(event.currentTarget.value, price.value),
-              price.value
-            ),
-            300
+    const percent = Number(
+      bignumberUtils.toFixed(
+        bignumberUtils.mul(
+          bignumberUtils.div(
+            bignumberUtils.minus(event.currentTarget.value, price.value),
+            price.value
           ),
-          2
-        )
+          100
+        ),
+        2
       )
     )
+
+    setValue('takeProfitPercent', percent)
 
     setValue('takeProfitValue', event.currentTarget.value)
   }
@@ -342,7 +341,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       bignumberUtils.toFixed(
         bignumberUtils.plus(
           bignumberUtils.mul(
-            bignumberUtils.div(takeProfitPercent, 300),
+            bignumberUtils.div(takeProfitPercent, 100),
             price.value
           ),
           price.value
@@ -449,7 +448,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   className={styles.trailingBuyInput}
                   rightSide="%"
                   min={0}
-                  max={300}
+                  max={100}
                   value={takeProfitPercent}
                   onChange={handleChangeTakeProfit}
                   size="small"
@@ -458,7 +457,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   className={styles.slider}
                   value={takeProfitPercent}
                   min={0}
-                  max={300}
+                  max={100}
                   onChange={handleChangeTakeProfit}
                 />
               </div>
