@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+
 import { Button } from '~/common/button'
 import { Typography } from '~/common/typography'
 import * as styles from './trade-order-deposit.css'

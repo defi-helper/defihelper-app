@@ -55,18 +55,14 @@ export type SmartTradeRouter = {
       tokenAddress: string,
       amount: string
     ): Promise<{ tx: Transaction | undefined }>
-    canDeposit(tokenAddress: string, amount: string): Promise<true | Error>
-    deposit(
-      tokenAddress: string,
-      amount: string
-    ): Promise<{ tx: Transaction | undefined }>
-    canRefund(tokenAddress: string, amount: string): Promise<true | Error>
+    canRefund(
+      orderId: string,
+      refund: Array<{ token: string; amount: string }>
+    ): Promise<true | Error>
     refund(
-      tokenAddress: string,
-      amount: string
+      orderId: string,
+      refund: Array<{ token: string; amount: string }>
     ): Promise<{ tx: Transaction | undefined }>
-    canCancelOrder(id: string | number): Promise<true | Error>
-    cancelOrder(id: string | number): Promise<{ tx: Transaction | undefined }>
   }
 }
 
@@ -83,6 +79,8 @@ export type SmartTradeSwapHandler = {
       tokenAddress: string,
       amount: string
     ): Promise<{ tx: Transaction | undefined | undefined }>
+    canCancelOrder(id: string | number): Promise<true | Error>
+    cancelOrder(id: string | number): Promise<{ tx: Transaction | undefined }>
     createOrder: (
       exchangeAddress: string,
       path: string[],
@@ -97,7 +95,6 @@ export type SmartTradeSwapHandler = {
         slippage: string | number
       } | null,
       deposit?: {
-        token?: string
         native?: string
       }
     ) => Promise<{

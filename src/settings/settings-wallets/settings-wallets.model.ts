@@ -275,6 +275,23 @@ export const $networksWithBalance = walletListDomain.createStore(
     }, {})
 )
 
+export const $currentUserWallet = combine(
+  $wallets,
+  walletNetworkModel.$wallet,
+  (wallets, blockchainWallet) => {
+    if (!blockchainWallet) return null
+
+    return wallets.find((wallet) => {
+      const sameAddreses =
+        String(blockchainWallet.chainId) === 'main'
+          ? blockchainWallet.account === wallet.address
+          : blockchainWallet.account?.toLowerCase() === wallet.address
+
+      return sameAddreses && String(blockchainWallet.chainId) === wallet.network
+    })
+  }
+)
+
 export const updated = walletListDomain.createEvent()
 
 sample({

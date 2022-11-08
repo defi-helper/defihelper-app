@@ -5,6 +5,12 @@ import { theme } from '~/common/theme'
 export const root = style({
   borderRadius: 8,
   border: `1px solid ${theme.colors.common.red1}`,
+
+  selectors: {
+    '&:not(:last-child)': {
+      marginBottom: 5,
+    },
+  },
 })
 
 export const header = style({

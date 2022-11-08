@@ -1,3 +1,4 @@
+import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import React, { useEffect, useState } from 'react'
 import { useAsync, useAsyncFn, useAsyncRetry, useThrottle } from 'react-use'
@@ -17,10 +18,11 @@ import { toastsService } from '~/toasts'
 import { analytics } from '~/analytics'
 import { BuyLiquidity } from '~/common/load-adapter'
 import { NULL_ADDRESS } from '~/common/constants'
+import { ZapFeePayCreateInputType, ZapFeePayCreateTypeEnum } from '~/api'
 import * as styles from './invest-buy.css'
 
 export type InvestBuyProps = {
-  onSubmit?: (transactionHash?: string) => void
+  onSubmit?: (variables: ZapFeePayCreateInputType) => void
   contract: InvestContract
   adapter?: BuyLiquidity
   tokens?: {
@@ -34,6 +36,8 @@ export type InvestBuyProps = {
 export const InvestBuy = (props: InvestBuyProps) => {
   const [amount, setAmount] = useState('0')
   const [tokenAddress, setTokenAddress] = useState('')
+
+  const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
 
   const billingBalance = useAsync(async () => {
     return settingsWalletModel.fetchBillingBalanceFx({
@@ -74,6 +78,11 @@ export const InvestBuy = (props: InvestBuyProps) => {
     }, {})
   }, [props.tokens, props.adapter])
 
+  const fee = useAsync(
+    async () => props.adapter?.methods.fee(),
+    [props.adapter]
+  )
+
   const [buyState, handleBuy] = useAsyncFn(async () => {
     if (!props.adapter) return
 
@@ -99,7 +108,15 @@ export const InvestBuy = (props: InvestBuyProps) => {
         amount: bignumberUtils.floor(amount),
       })
 
-      props.onSubmit?.(result?.transactionHash)
+      if (!result?.transactionHash || !currentUserWallet || !fee.value) return
+
+      props.onSubmit?.({
+        tx: result.transactionHash,
+        wallet: currentUserWallet.id,
+        fee: fee.value.native,
+        feeUSD: fee.value.usd,
+        type: ZapFeePayCreateTypeEnum.Buy,
+      })
 
       tokens.retry()
 
@@ -111,7 +128,7 @@ export const InvestBuy = (props: InvestBuyProps) => {
 
       throw error
     }
-  }, [props.adapter, tokenAddress, amount])
+  }, [props.adapter, tokenAddress, amount, fee.value])
 
   const [approveState, handleApprove] = useAsyncFn(async () => {
     if (!props.adapter) return
@@ -133,11 +150,6 @@ export const InvestBuy = (props: InvestBuyProps) => {
     setTokenAddress(props.tokens?.[0].address ?? '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.tokens])
-
-  const fee = useAsync(
-    async () => props.adapter?.methods.fee(),
-    [props.adapter]
-  )
 
   return (
     <React.Fragment>

@@ -1,7 +1,8 @@
 import clsx from 'clsx'
+import { useMemo } from 'react'
+
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Typography } from '~/common/typography'
-
 import * as styles from './trade-status-chart.css'
 
 export type TradeStatusChartProps = {
@@ -13,38 +14,77 @@ export type TradeStatusChartProps = {
   profit?: string
 }
 
+const getPercentCurry =
+  (min = '0') =>
+  (max = '100') =>
+  (value = '0') => {
+    const left = bignumberUtils.minus(value, min)
+    const right = bignumberUtils.minus(max, min)
+
+    const div = bignumberUtils.div(left, right)
+
+    const mul = bignumberUtils.mul(div, 100)
+
+    if (bignumberUtils.isNaN(mul)) return '0'
+
+    return bignumberUtils.floor(mul)
+  }
+
 export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
-  const left = '30'
-  const width = '100'
+  const total = props.takeProfit ?? props.buy
+  const min = props.stopLoss ?? props.buy
+
+  const getPercent = useMemo(() => getPercentCurry(min)(total), [total, min])
+
+  const profitPos = getPercent(props.profit)
+
+  const buyPos = getPercent(props.buy)
+
+  const maxWidth = bignumberUtils.gt(profitPos, buyPos)
+    ? bignumberUtils.minus(profitPos, buyPos)
+    : bignumberUtils.minus(buyPos, profitPos)
 
   return (
     <div className={clsx(styles.root, props.className)}>
-      <div className={styles.stopLossLine}>
-        <Typography as="div" className={styles.stopLoss}>
-          <Typography
-            variant="inherit"
-            className={styles.stopLossTitle}
-            weight="bold"
-          >
-            SL
+      {props.stopLoss && (
+        <div className={styles.stopLossLine}>
+          <Typography as="div" className={styles.stopLoss}>
+            <Typography
+              variant="inherit"
+              className={styles.stopLossTitle}
+              weight="bold"
+            >
+              SL
+            </Typography>
+            <Typography variant="inherit" className={styles.grey}>
+              {bignumberUtils.format(props.stopLoss)}
+            </Typography>
           </Typography>
-          <Typography variant="inherit" className={styles.grey}>
-            {bignumberUtils.format(props.stopLoss)}
-          </Typography>
-        </Typography>
-      </div>
+        </div>
+      )}
       <div className={styles.rail}>
         <div
-          className={styles.profitLine}
-          style={{ left: `calc(${width}% - 1px)` }}
+          className={clsx(styles.profitLine, {
+            [styles.normalColor]: bignumberUtils.gt(profitPos, buyPos),
+            [styles.reverseColor]: bignumberUtils.lt(profitPos, buyPos),
+          })}
+          style={{
+            left: `${profitPos}%`,
+          }}
         >
-          <Typography as="div" className={styles.profit} style={{ right: 4 }}>
+          <Typography
+            as="div"
+            className={styles.profit}
+            style={
+              bignumberUtils.lt(profitPos, 50) ? { left: 4 } : { right: 4 }
+            }
+          >
             <Typography
               variant="inherit"
               className={styles.profitTitle}
               weight="bold"
             >
-              + 10%
+              {bignumberUtils.gt(profitPos, buyPos) ? '+' : '-'} {maxWidth}%
             </Typography>
             <Typography variant="inherit">
               {bignumberUtils.format(props.profit)}
@@ -53,16 +93,22 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
         </div>
         <div
           className={clsx(styles.track, {
-            [styles.trackNormal]: !props.reverse,
-            [styles.trackReverse]: props.reverse,
+            [styles.normalColor]: bignumberUtils.gt(profitPos, buyPos),
+            [styles.reverseColor]: bignumberUtils.lt(profitPos, buyPos),
           })}
           style={{
-            left: `${left}%`,
-            maxWidth: `calc(${width}% - ${left}%)`,
+            left: `${
+              bignumberUtils.lt(profitPos, buyPos) ? profitPos : buyPos
+            }%`,
+            maxWidth: `${maxWidth}%`,
           }}
         />
-        <div className={styles.buyLine} style={{ left: `${left}%` }}>
-          <Typography as="div" className={styles.buy} style={{ left: 4 }}>
+        <div className={styles.buyLine} style={{ left: `${buyPos}%` }}>
+          <Typography
+            as="div"
+            className={styles.buy}
+            style={bignumberUtils.gt(buyPos, 50) ? { right: 4 } : { left: 4 }}
+          >
             <Typography
               variant="inherit"
               className={styles.buyTitle}
@@ -76,20 +122,22 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
           </Typography>
         </div>
       </div>
-      <div className={styles.takeProfitLine}>
-        <Typography as="div" className={styles.takeProfit}>
-          <Typography
-            variant="inherit"
-            className={styles.takeProfitTitle}
-            weight="bold"
-          >
-            TP
+      {props.takeProfit && (
+        <div className={styles.takeProfitLine}>
+          <Typography as="div" className={styles.takeProfit}>
+            <Typography
+              variant="inherit"
+              className={styles.takeProfitTitle}
+              weight="bold"
+            >
+              TP
+            </Typography>
+            <Typography variant="inherit" className={styles.grey}>
+              {bignumberUtils.format(props.takeProfit)}
+            </Typography>
           </Typography>
-          <Typography variant="inherit" className={styles.grey}>
-            {bignumberUtils.format(props.takeProfit)}
-          </Typography>
-        </Typography>
-      </div>
+        </div>
+      )}
     </div>
   )
 }
