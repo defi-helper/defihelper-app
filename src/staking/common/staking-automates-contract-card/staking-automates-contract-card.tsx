@@ -49,6 +49,8 @@ export type StakingAutomatesContractCardProps = {
   stopLossToken?: string
   status?: AutomateContractStopLossStatusEnum
   balanceInvest: string
+  automateId: string
+  contractWalletId?: string
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -385,6 +387,8 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                   as={ReactRouterLink}
                   to={`${paths.invest.detail(props.contractId)}?deploy=${
                     props.address
+                  }&automateId=${props.automateId}&walletId=${
+                    props.contractWalletId
                   }`}
                 >
                   Invest

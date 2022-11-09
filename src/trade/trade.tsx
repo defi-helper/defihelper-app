@@ -61,7 +61,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentPair, setCurrentPair] = useState('')
   const [currentWalletAddress, setCurrentWalletAddress] = useState('')
   const [searchPair, setSearchPair] = useState('')
-  const [currentSlippage, setCurrentSlippage] = useState('1')
+  const [currentSlippage, setCurrentSlippage] = useState('3')
   const [transactionDeadline, setTransactionDeadline] = useState('30')
   const [openConfirmDialog] = useDialog(ConfirmDialog)
 
@@ -315,17 +315,16 @@ export const Trade: React.VFC<TradeProps> = () => {
       try {
         await openConfirmDialog()
 
-        const can = await adapter?.router.canCancelOrder(values.orderNumber)
+        const can = await adapter?.swap.canCancelOrder(values.orderNumber)
 
         if (can instanceof Error) throw can
 
-        const res = await adapter?.router.cancelOrder(values.orderNumber)
+        const res = await adapter?.swap.cancelOrder(values.orderNumber)
 
         await res?.tx?.wait()
 
         await tradeOrdersModel.cancelOrderFx({
           id: values.id,
-          swap: adapter.swap,
         })
       } catch (error) {
         console.error(error)
@@ -454,6 +453,24 @@ export const Trade: React.VFC<TradeProps> = () => {
             )
             .map((pair, index) => (
               <SelectOption value={pair.pairInfo?.address} key={String(index)}>
+                <div className={styles.tickerIcons}>
+                  {pair.tokenAlias.map((alias) =>
+                    alias?.logoUrl ? (
+                      <img
+                        key={alias.id}
+                        alt=""
+                        src={alias.logoUrl}
+                        width="24"
+                        height="24"
+                        className={styles.pairIcon}
+                      />
+                    ) : (
+                      <Paper className={styles.pairIconUnknown} key={alias?.id}>
+                        <Icon icon="unknownNetwork" width="16" height="16" />
+                      </Paper>
+                    )
+                  )}
+                </div>
                 {pair.pairInfo?.ticker}
               </SelectOption>
             ))}
@@ -463,22 +480,24 @@ export const Trade: React.VFC<TradeProps> = () => {
         <Paper radius={8} className={styles.chart}>
           <div className={styles.chartHeader}>
             <div className={styles.ticker}>
-              {false && currentPairObj && (
+              {currentPairObj && (
                 <div className={styles.tickerIcons}>
-                  <img
-                    alt=""
-                    src={`https://whattofarm.io/assets/dex/${currentPairObj?.pairInfo?.lpToken?.network?.name}.svg`}
-                    width="24"
-                    height="24"
-                    className={styles.pairIcon}
-                  />
-                  <img
-                    alt=""
-                    src={`https://whattofarm.io/assets/dex/${currentPairObj?.pairInfo?.icon}.svg`}
-                    width="24"
-                    height="24"
-                    className={styles.pairIcon}
-                  />
+                  {currentPairObj.tokenAlias.map((alias) =>
+                    alias?.logoUrl ? (
+                      <img
+                        key={alias.id}
+                        alt=""
+                        src={alias.logoUrl}
+                        width="24"
+                        height="24"
+                        className={styles.pairIcon}
+                      />
+                    ) : (
+                      <Paper className={styles.pairIconUnknown} key={alias?.id}>
+                        <Icon icon="unknownNetwork" width="16" height="16" />
+                      </Paper>
+                    )
+                  )}
                 </div>
               )}
               <Typography>{currentPairObj?.pairInfo?.ticker ?? '-'}</Typography>
@@ -572,7 +591,10 @@ export const Trade: React.VFC<TradeProps> = () => {
             className={clsx(
               styles.selectsBody,
               ((updating && !history) ||
-                (!config.IS_DEV && user?.role !== UserRoleEnum.Admin) ||
+                (!config.IS_DEV &&
+                  !(
+                    [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
+                  ).includes(String(user?.role))) ||
                 !currentNetworkCorrect) &&
                 styles.selectsBodyBlur
             )}
@@ -625,7 +647,7 @@ export const Trade: React.VFC<TradeProps> = () => {
                   variant="body2"
                   className={styles.transactionSettingsTitle}
                 >
-                  Transactions Settings
+                  Transaction Settings
                 </Typography>
                 <Typography
                   variant="body3"
@@ -696,38 +718,41 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Button>
             </div>
           )}
-          {!config.IS_DEV && user?.role !== UserRoleEnum.Admin && (
-            <div className={styles.beta}>
-              <Typography
-                variant="body2"
-                align="center"
-                family="mono"
-                className={styles.betaTitle}
-              >
-                Trade section is currently at the beta stage. Please leave your
-                email address to try it first.
-              </Typography>
-              <form
-                noValidate
-                autoComplete="off"
-                className={styles.betaForm}
-                onSubmit={handleOnSubmit}
-              >
-                <Input
-                  placeholder="youremail@gmail.com"
-                  {...register('email', {
-                    required: true,
-                    pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
-                  })}
-                  error={Boolean(formState.errors.email?.message)}
-                  helperText={formState.errors.email?.message}
-                />
-                <Button color="green" type="submit">
-                  join
-                </Button>
-              </form>
-            </div>
-          )}
+          {!config.IS_DEV &&
+            !(
+              [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
+            ).includes(String(user?.role)) && (
+              <div className={styles.beta}>
+                <Typography
+                  variant="body2"
+                  align="center"
+                  family="mono"
+                  className={styles.betaTitle}
+                >
+                  Trade section is currently at the beta stage. Please leave
+                  your email address to try it first.
+                </Typography>
+                <form
+                  noValidate
+                  autoComplete="off"
+                  className={styles.betaForm}
+                  onSubmit={handleOnSubmit}
+                >
+                  <Input
+                    placeholder="youremail@gmail.com"
+                    {...register('email', {
+                      required: true,
+                      pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
+                    })}
+                    error={Boolean(formState.errors.email?.message)}
+                    helperText={formState.errors.email?.message}
+                  />
+                  <Button color="green" type="submit">
+                    join
+                  </Button>
+                </form>
+              </div>
+            )}
         </Paper>
       </div>
       <TradeOrders

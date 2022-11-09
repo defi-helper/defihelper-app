@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { useState } from 'react'
+import { ZapFeePayCreateInputType } from '~/api'
 
 import { ButtonBase } from '~/common/button-base'
 import { Dialog } from '~/common/dialog'
@@ -12,7 +13,7 @@ import * as styles from './lp-tokens-buy-sell-dialog.css'
 export type LPTokensBuySellDialogProps = {
   onConfirm: () => void
   onCancel: () => void
-  onSubmit?: (transactionHash?: string | undefined) => void
+  onSubmit?: (variables: Omit<ZapFeePayCreateInputType, 'wallet'>) => void
   buyLiquidityAdapter: BuyLiquidity
   sellLiquidityAdapter: SellLiquidity
   tokens: {

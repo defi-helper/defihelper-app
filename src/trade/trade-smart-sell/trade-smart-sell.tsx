@@ -44,7 +44,6 @@ export type TradeSmartSellProps = {
 
 type FormValues = {
   unit: string
-  total: string
   takeProfit: boolean
   stopLoss: boolean
   stopLossPercent: number
@@ -56,7 +55,7 @@ type FormValues = {
 
 export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const currentWallet = useStore(walletNetworkModel.$wallet)
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
   const user = useStore(authModel.$user)
 
   const [takeProfitFocus, toggleTakeProfitFocus] = useToggle(false)
@@ -91,7 +90,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const unit = watch('unit')
   const takeProfitPercent = watch('takeProfitPercent')
   const stopLossPercent = watch('stopLossPercent')
-  const total = watch('total')
 
   const price = useAsyncRetry(async () => {
     const path = props.tokens?.map(({ address }) => address)
@@ -100,14 +98,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     return props.swap?.amountOut(props.exchangeAddress, path, '1')
   }, [props.exchangeAddress, props.tokens, unit])
-
-  useEffect(() => {
-    setValue(
-      'total',
-      bignumberUtils.toFixed(bignumberUtils.mul(unit, price.value), 6)
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unit, price.value])
 
   const isApproved = useAsyncRetry(async () => {
     if (!props.tokens?.[0]?.address || bignumberUtils.eq(unit, 0)) return false
@@ -137,18 +127,9 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     )
       return
 
-    const findedWallet = wallets.find((wallet) => {
-      const sameAddreses =
-        String(currentWallet.chainId) === 'main'
-          ? currentWallet.account === wallet.address
-          : currentWallet.account?.toLowerCase() === wallet.address
-
-      return sameAddreses && String(currentWallet.chainId) === wallet.network
-    })
-
     const exchange = props.exchangesMap.get(props.exchangeAddress)
 
-    if (!findedWallet || !props.swap || !exchange) return
+    if (!currentUserWallet || !props.swap || !exchange) return
 
     const path = props.tokens.map(({ address }) => address)
 
@@ -169,23 +150,14 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     )
 
     await openTradeConfirmDialog({
-      network: findedWallet.network,
+      network: currentUserWallet.network,
       boughtPrice: price.value,
       exchange,
       tokens: pair?.pairInfo.tokens,
-      name: findedWallet.name,
+      name: currentUserWallet.name,
       totalRecieve: balance,
       boughtToken: token,
     })
-
-    const getAmountOut = (percent: number) =>
-      bignumberUtils.toFixed(
-        bignumberUtils.plus(
-          bignumberUtils.mul(bignumberUtils.div(percent, 100), total),
-          total
-        ),
-        6
-      )
 
     try {
       const result = await props.swap?.createOrder(
@@ -194,18 +166,18 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         formValues.unit,
         formValues.stopLoss
           ? {
-              amountOut: getAmountOut(stopLossPercent),
-              slippage: props.slippage,
+              amountOut: formValues.stopLossValue,
+              slippage: '100',
               moving: formValues.moving,
             }
           : null,
         formValues.takeProfit
           ? {
-              amountOut: getAmountOut(takeProfitPercent),
+              amountOut: formValues.takeProfitValue,
               slippage: props.slippage,
             }
           : null,
-        { token: formValues.unit }
+        {}
       )
 
       if (!result) throw new Error('something went wrong')
@@ -215,9 +187,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       if (!tx) throw new Error('something went wrong')
 
       await model.createOrderFx({
-        swap: props.swap,
         number: await result.getOrderNumber(),
-        owner: findedWallet.id,
+        owner: currentUserWallet.id,
         handler: result.handler,
         callDataRaw: result.callDataRaw,
         callData: {
@@ -228,7 +199,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           tokenOutDecimals: result.callData.tokenOutDecimals,
           amountIn: result.callData.amountIn,
           amountOut: result.callData.amountOut,
-          boughtPrice: price.value,
           stopLoss: result.callData.stopLoss
             ? {
                 amountOut: result.callData.stopLoss.amountOut,
@@ -293,7 +263,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       bignumberUtils.toFixed(
         bignumberUtils.plus(
           bignumberUtils.mul(
-            bignumberUtils.div(Number(value), 300),
+            bignumberUtils.div(Number(value), 100),
             price.value
           ),
           price.value
@@ -306,21 +276,20 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const handleChangeTakeProfitValue = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setValue(
-      'takeProfitPercent',
-      Number(
-        bignumberUtils.toFixed(
-          bignumberUtils.mul(
-            bignumberUtils.div(
-              bignumberUtils.minus(event.currentTarget.value, price.value),
-              price.value
-            ),
-            300
+    const percent = Number(
+      bignumberUtils.toFixed(
+        bignumberUtils.mul(
+          bignumberUtils.div(
+            bignumberUtils.minus(event.currentTarget.value, price.value),
+            price.value
           ),
-          2
-        )
+          100
+        ),
+        2
       )
     )
+
+    setValue('takeProfitPercent', percent)
 
     setValue('takeProfitValue', event.currentTarget.value)
   }
@@ -372,7 +341,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       bignumberUtils.toFixed(
         bignumberUtils.plus(
           bignumberUtils.mul(
-            bignumberUtils.div(takeProfitPercent, 300),
+            bignumberUtils.div(takeProfitPercent, 100),
             price.value
           ),
           price.value
@@ -400,7 +369,10 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       <div
         className={clsx(
           styles.root,
-          ((!config.IS_DEV && user?.role !== UserRoleEnum.Admin) ||
+          ((!config.IS_DEV &&
+            !(
+              [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
+            ).includes(String(user?.role))) ||
             balanceOf.loading) &&
             styles.overflow
         )}
@@ -476,7 +448,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   className={styles.trailingBuyInput}
                   rightSide="%"
                   min={0}
-                  max={300}
+                  max={100}
                   value={takeProfitPercent}
                   onChange={handleChangeTakeProfit}
                   size="small"
@@ -485,7 +457,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   className={styles.slider}
                   value={takeProfitPercent}
                   min={0}
-                  max={300}
+                  max={100}
                   onChange={handleChangeTakeProfit}
                 />
               </div>

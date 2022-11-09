@@ -77,7 +77,7 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
   const [openApyDialog] = useDialog(StakingApyDialog)
 
   const currentWallet = walletNetworkModel.useWalletNetwork()
-  const wallets = useStore(settingsWalletModel.$wallets)
+  const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
 
   const searchPoolDebounced = useDebounce(searchPool, 500)
 
@@ -220,21 +220,12 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
           protocol: contract.blockchain,
         })
 
-      const findedWallet = wallets.find((wallet) => {
-        const sameAddreses =
-          String(currentWallet.chainId) === 'main'
-            ? currentWallet.account === wallet.address
-            : currentWallet.account?.toLowerCase() === wallet.address
-
-        return sameAddreses && String(currentWallet.chainId) === wallet.network
-      })
-
-      if (!findedWallet) throw new Error('wallet is not connected')
+      if (!currentUserWallet) throw new Error('wallet is not connected')
 
       const cb = (txId?: string) => {
         stakingAutomatesModel
           .scanWalletMetricFx({
-            wallet: findedWallet.id,
+            wallet: currentUserWallet.id,
             contract: contract.id,
             txId,
           })
@@ -245,7 +236,14 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
         buyLiquidityAdapter: buyLiquidity,
         sellLiquidityAdapter: sellLiquidity,
         tokens,
-        onSubmit: cb,
+        onSubmit: (values) => {
+          cb(values.tx)
+
+          model.zapFeePayCreateFx({
+            ...values,
+            wallet: currentUserWallet.id,
+          })
+        },
         tokenSymbol: billingBalance.token ?? '',
       })
 

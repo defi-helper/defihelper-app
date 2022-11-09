@@ -14,6 +14,7 @@ export const Monitoring: React.VFC = () => {
   const [themeMode] = useTheme()
   const usersRegisteringHistory = useStore(model.$usersRegisteringHistory)
   const walletsRegisteringHistory = useStore(model.$walletsRegisteringHistory)
+  const contactsTelegramHistory = useStore(model.$contactsTelegramHistory)
   const automationsCreationHistory = useStore(model.$automationsCreationHistory)
   const dfhProfitsPerNetwork = useStore(model.$dfhEarningsHistory)
   const automationsAutorestakeCreationHistory = useStore(
@@ -219,6 +220,37 @@ export const Monitoring: React.VFC = () => {
             }))}
             tooltipText="{format}"
             id="failed_automations_metric"
+            loading={false}
+          />
+        </Paper>
+
+        <Paper radius={8} className={styles.root}>
+          <div className={styles.titleWrapper}>
+            <Typography variant="h5" className={styles.title}>
+              Telegram contacts
+            </Typography>
+
+            <Typography variant="h5" className={styles.total}>
+              {contactsTelegramHistory[contactsTelegramHistory.length - 1]
+                ?.number ?? 0}
+            </Typography>
+          </div>
+
+          <Chart
+            dataFields={[
+              {
+                valueY: 'number',
+                dateX: 'date',
+                color: themeMode === 'dark' ? '#CCFF3C' : '#39C077',
+              },
+            ]}
+            data={contactsTelegramHistory.map((point) => ({
+              date: dateUtils.toDate(point.date),
+              number: bignumberUtils.floor(point.number),
+              format: bignumberUtils.format(point.number),
+            }))}
+            tooltipText="{format}"
+            id="contactsTelegramHistory_metric"
             loading={false}
           />
         </Paper>

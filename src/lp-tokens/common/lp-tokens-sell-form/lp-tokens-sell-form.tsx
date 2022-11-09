@@ -18,10 +18,11 @@ import { Link } from '~/common/link'
 import { config } from '~/config'
 import * as styles from './lp-tokens-sell-form.css'
 import { NULL_ADDRESS } from '~/common/constants'
+import { ZapFeePayCreateInputType, ZapFeePayCreateTypeEnum } from '~/api'
 
 export type LPTokensSellFormProps = {
   onConfirm: () => void
-  onSubmit?: (transactionHash?: string | undefined) => void
+  onSubmit?: (variables: Omit<ZapFeePayCreateInputType, 'wallet'>) => void
   onCancel: () => void
   sellLiquidityAdapter: SellLiquidity
   tokens: {
@@ -84,40 +85,54 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
     return props.sellLiquidityAdapter.methods.isApproved(amount)
   }, [props.sellLiquidityAdapter.methods.isApproved, tokenAddress, amount])
 
-  const [sellState, onSell] = useAsyncFn(async (formValues: FormValues) => {
-    const { sell, canSell, sellETH } = props.sellLiquidityAdapter.methods
+  const [sellState, onSell] = useAsyncFn(
+    async (formValues: FormValues) => {
+      const { sell, canSell, sellETH } = props.sellLiquidityAdapter.methods
 
-    setError(false)
+      setError(false)
 
-    try {
-      const can = await canSell(formValues.amount)
+      try {
+        const can = await canSell(formValues.amount)
 
-      if (can instanceof Error) throw can
-      if (!can) throw new Error("can't sell")
+        if (can instanceof Error) throw can
+        if (!can) throw new Error("can't sell")
 
-      const { tx } =
-        formValues.token === NULL_ADDRESS
-          ? await sellETH(formValues.amount, formValues.slippage)
-          : await sell(formValues.token, formValues.amount, formValues.slippage)
+        const { tx } =
+          formValues.token === NULL_ADDRESS
+            ? await sellETH(formValues.amount, formValues.slippage)
+            : await sell(
+                formValues.token,
+                formValues.amount,
+                formValues.slippage
+              )
 
-      const result = await tx?.wait()
-      analytics.log('lp_tokens_purchase_success', {
-        amount: bignumberUtils.floor(formValues.amount),
-      })
+        const result = await tx?.wait()
+        analytics.log('lp_tokens_purchase_success', {
+          amount: bignumberUtils.floor(formValues.amount),
+        })
 
-      props.onSubmit?.(result?.transactionHash)
+        if (!result?.transactionHash || !fee.value) return
 
-      return true
-    } catch {
-      setError(true)
+        props.onSubmit?.({
+          tx: result.transactionHash,
+          fee: fee.value.native,
+          feeUSD: fee.value.usd,
+          type: ZapFeePayCreateTypeEnum.Sell,
+        })
 
-      analytics.log('lp_tokens_purchase_unsuccess', {
-        amount: bignumberUtils.floor(formValues.amount),
-      })
+        return true
+      } catch {
+        setError(true)
 
-      return false
-    }
-  }, [])
+        analytics.log('lp_tokens_purchase_unsuccess', {
+          amount: bignumberUtils.floor(formValues.amount),
+        })
+
+        return false
+      }
+    },
+    [fee.value]
+  )
 
   const [approveState, onApprove] = useAsyncFn(
     async (formValues: FormValues) => {

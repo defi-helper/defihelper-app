@@ -6,19 +6,25 @@ import {
   TradeAuthMutationVariables,
   TradeCancelOrderMutation,
   TradeCancelOrderMutationVariables,
+  TradeClaimOrderMutation,
+  TradeClaimOrderMutationVariables,
   TradeCreateOrderMutation,
   TradeCreateOrderMutationVariables,
   TradeOrderListQuery,
   TradeOrderListQueryVariables,
   TradeUpdateOrderMutation,
   TradeUpdateOrderMutationVariables,
+  TradeTokenAliasesQuery,
+  TradeTokenAliasesQueryVariables,
 } from '~/api'
 import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
 import { TRADE_AUTH } from './graphql/trade-auth.graphql'
 import { TRADE_CANCEL_ORDER } from './graphql/trade-cancel-order.graphql'
+import { TRADE_CLAIM_ORDER } from './graphql/trade-claim-order.graphql'
 import { TRADE_CREATE_ORDER } from './graphql/trade-create-order.graphql'
 import { TRADE_ORDER_LIST } from './graphql/trade-order-list.graphql'
+import { TRADE_TOKEN_ALIASES } from './graphql/trade-token-aliases.graphql'
 import { TRADE_UPDATE_ORDER } from './graphql/trade-update-order.graphql'
 import { pairMock } from './trade-dev.mock'
 
@@ -168,6 +174,19 @@ export const tradeApi = {
       })
       .then(({ data }) => data),
 
+  price: (request: string[]) =>
+    apiV1
+      .get<
+        Response<
+          Record<string, { type: string; name: string; usd_price: number }>
+        >
+      >('get-actual-price', {
+        params: {
+          request: request.join(','),
+        },
+      })
+      .then(({ data }) => data.data),
+
   pairs: (
     network: string[],
     pool: string[],
@@ -300,6 +319,32 @@ export const tradeApi = {
         list: data?.smartTradeOrders.list ?? [],
         pagination: data?.smartTradeOrders.pagination.count ?? 0,
       })),
+
+  claimOrder: (id: TradeClaimOrderMutationVariables['id']) =>
+    getAPIClient()
+      .request<
+        TradeClaimOrderMutation,
+        unknown,
+        TradeClaimOrderMutationVariables
+      >({
+        query: TRADE_CLAIM_ORDER.loc?.source.body ?? '',
+        variables: {
+          id,
+        },
+      })
+      .then(({ data }) => data?.smartTradeClaim),
+
+  tokenAlias: (variables: TradeTokenAliasesQueryVariables) =>
+    getAPIClient()
+      .request<
+        TradeTokenAliasesQuery,
+        unknown,
+        TradeTokenAliasesQueryVariables
+      >({
+        query: TRADE_TOKEN_ALIASES.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.tokensAlias.list?.[0]),
 }
 
 const authRequestInterceptor = async (axiosConfig: AxiosRequestConfig) => {
