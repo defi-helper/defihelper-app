@@ -53,18 +53,24 @@ export const updateOrderFx = createEffect(
 
 export type Orders = UnitValue<typeof fetchOrdersFx.doneData>
 
+export const updatedOrder = createEvent<Orders['list'][number]>()
+
 export const $orders = createStore<Orders | null>(null)
   .on(fetchOrdersFx.doneData, (_, payload) => payload)
   .on(tradeSmartSellModel.createOrderFx.doneData, (state, payload) => ({
     list: [payload, ...(state?.list ?? [])],
     pagination: state?.pagination ?? 0,
   }))
-  .on([cancelOrderFx.doneData, updateOrderFx.doneData], (state, payload) => ({
-    list:
-      state?.list.map((order) => (order.id === payload.id ? payload : order)) ??
-      [],
-    pagination: state?.pagination ?? 0,
-  }))
+  .on(
+    [cancelOrderFx.doneData, updateOrderFx.doneData, updatedOrder],
+    (state, payload) => ({
+      list:
+        state?.list.map((order) =>
+          order.id === payload.id ? payload : order
+        ) ?? [],
+      pagination: state?.pagination ?? 0,
+    })
+  )
   .on(claimOrderFx.doneData, (state, payload) => ({
     list: state?.list.filter((order) => order.id !== payload.id) ?? [],
     pagination: state?.pagination ?? 0,

@@ -46,6 +46,7 @@ import { TradeEditDialog } from '~/trade/common/trade-edit-dialog'
 import * as styles from './trade-orders.css'
 import * as model from './trade-orders.model'
 import { config } from '~/config'
+import { useTradeUpdated } from '../common/subscriptions'
 
 export type TradeOrdersProps = {
   className?: string
@@ -275,6 +276,13 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       user: [user.id],
     }
   }, [user])
+  const variablesTradeUpdated = useMemo(() => {
+    if (!user) return undefined
+
+    return {
+      user: user.id,
+    }
+  }, [user])
 
   useOnBillingTransferCreatedSubscription(({ data }) => {
     if (data?.onBillingTransferCreated.id) {
@@ -296,6 +304,14 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       })
     }
   }, variables)
+
+  useTradeUpdated(({ data }) => {
+    if (!data?.onSmartTradeOrderUpdated) {
+      return
+    }
+
+    model.updatedOrder(data.onSmartTradeOrderUpdated)
+  }, variablesTradeUpdated)
 
   return (
     <StickyContainer>
