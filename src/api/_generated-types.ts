@@ -2101,6 +2101,7 @@ export type ProtocolMetricType = {
   myEarnedChange: MetricChangeType
   myAPYBoost: Scalars['String']
   myMinUpdatedAt?: Maybe<Scalars['DateTimeType']>
+  risk?: Maybe<TokenMetricType>
 }
 
 export type ProtocolResolveContractsInputType = {
@@ -7306,6 +7307,16 @@ export type TradeOrderListQuery = { __typename?: 'Query' } & {
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
+}
+
+export type TradeOrderUpdatedSubscriptionVariables = Exact<{
+  user: Scalars['UuidType']
+}>
+
+export type TradeOrderUpdatedSubscription = { __typename?: 'Subscription' } & {
+  onSmartTradeOrderUpdated: {
+    __typename?: 'SmartTradeOrderType'
+  } & TradeOrderFragmentFragment
 }
 
 export type TradeOrderFragmentFragment = {
