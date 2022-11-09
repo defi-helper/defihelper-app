@@ -2101,6 +2101,7 @@ export type ProtocolMetricType = {
   myEarnedChange: MetricChangeType
   myAPYBoost: Scalars['String']
   myMinUpdatedAt?: Maybe<Scalars['DateTimeType']>
+  risk?: Maybe<TokenMetricType>
 }
 
 export type ProtocolResolveContractsInputType = {
@@ -5051,6 +5052,14 @@ export type AutostakingUserUnlinkMutation = { __typename?: 'Mutation' } & Pick<
   Mutation,
   'contractUserUnlink'
 >
+
+export type InvestTagsQueryVariables = Exact<{ [key: string]: never }>
+
+export type InvestTagsQuery = { __typename?: 'Query' } & {
+  tags: Array<
+    { __typename?: 'TagType' } & Pick<TagType, 'name' | 'type' | 'id'>
+  >
+}
 
 export type BlockchainsSelectQueryVariables = Exact<{
   testnet?: Maybe<Scalars['Boolean']>

@@ -10,12 +10,15 @@ import {
   AutomateInvestCreateMutation,
   AutomateInvestRefundMutation,
   AutomateInvestRefundMutationVariables,
+  InvestTagsQuery,
+  InvestTagsQueryVariables,
 } from '~/api'
 import { AUTOMATE_INVEST_CREATE } from './graphql/automate-invest-create.graphql'
 import { AUTOMATE_INVEST_REFUND } from './graphql/automate-invest-refund.graphql'
 import { AUTOSTAKING_STAKING_CONTRACTS } from './graphql/autostaking-staking-contracts.graphql'
 import { AUTOSTAKING_USER_LINK } from './graphql/autostaking-user-link.graphql'
 import { AUTOSTAKING_USER_UNLINK } from './graphql/autostaking-user-unlink.graphql'
+import { INVEST_TAGS } from './graphql/invest-tags.graphql'
 
 export const investApi = {
   contracts: (
@@ -97,4 +100,20 @@ export const investApi = {
         variables,
       })
       .then(({ data }) => data?.automateInvestRefund),
+
+  investTags: (variables: InvestTagsQueryVariables = {}) =>
+    getAPIClient()
+      .request<InvestTagsQuery, unknown, InvestTagsQueryVariables>({
+        query: INVEST_TAGS.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) =>
+        (data?.tags ?? []).reduce<
+          Record<string, Exclude<InvestTagsQuery['tags'], null | undefined>>
+        >((acc, item) => {
+          acc[item.type] = [...acc[item.type], item]
+
+          return acc
+        }, {})
+      ),
 }

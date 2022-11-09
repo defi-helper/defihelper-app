@@ -2,14 +2,10 @@ import { useHistory } from 'react-router-dom'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { useThrottle } from 'react-use'
 
-import {
-  ContractListSortInputTypeColumnEnum,
-  ContractRiskFactorEnum,
-  SortOrderEnum,
-} from '~/api'
+import { ContractListSortInputTypeColumnEnum, SortOrderEnum } from '~/api'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { useDialog } from '~/common/dialog'
@@ -22,7 +18,6 @@ import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { StakingApyDialog } from '~/staking/staking-apy-dialog'
-import { riskStatuses } from '~/invest/common/constants'
 import { Link } from '~/common/link'
 import { InvestContractCard } from '~/invest/common/invest-contract-card'
 import * as model from './invest-contracts.model'
@@ -102,19 +97,6 @@ const apyBoostDropdown = (
   </Dropdown>
 )
 
-const TVL = {
-  100000: '100 000 +',
-  1000000: '1 000 000 +',
-  10000000: '10 000 000 +',
-  100000000: '100 000 000 +',
-}
-
-const POOL_TYPES = {
-  stable: 'Only stable',
-  vs: 'Stable vs native',
-  major: 'Major coins',
-}
-
 export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
   const [openApyDialog] = useDialog(StakingApyDialog)
 
@@ -129,20 +111,20 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
   )
   const protocolsSelect = useStore(model.$protocolsSelect)
   const blockchainsSelect = useStore(model.$blockchainsSelect)
+  const tags = useStore(model.$tags)
 
   const [protocolIds, setProtocolIds] = useState<string[]>([])
   const protocolIdsRef = useRef<string[]>([])
   const [protocolSelectSearch, setProtocolSelectSearch] = useState('')
   const [search, setSearch] = useState('')
+  const [currentTag, setTag] = useState<string | null>(null)
 
   const protocolSelectSearchThrottled = useThrottle(protocolSelectSearch, 500)
   const searchThrottled = useThrottle(search, 500)
 
   const contractsOffset = useStore(model.useInfiniteScrollContracts.offset)
+
   const [blockchain, setBlockChain] = useState<string | null>(null)
-  const [riskLevel, setRiskLevel] = useState<ContractRiskFactorEnum | null>(
-    null
-  )
   const [sortBy, setSort] = useState({
     column: ContractListSortInputTypeColumnEnum.Tvl,
     order: SortOrderEnum.Desc,
@@ -160,7 +142,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
             protocol: networksConfig[blockchain].blockchain,
           }
         : undefined,
-      risk: isEmpty(riskLevel) ? null : riskLevel,
+      tag: currentTag ? currentTag.split(',') : null,
       automate: {
         lpTokensManager: true,
         autorestake: true,
@@ -186,15 +168,15 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
     protocolIds,
     sortBy,
     searchThrottled,
-    riskLevel,
     contractsOffset,
     blockchain,
+    currentTag,
   ])
 
   useEffect(() => {
     model.resetContracts()
     model.useInfiniteScrollContracts.reset()
-  }, [searchThrottled, blockchain, protocolIds, riskLevel, sortBy])
+  }, [searchThrottled, blockchain, protocolIds, sortBy, currentTag])
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -254,10 +236,8 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
     setBlockChain(event.target.value)
   }
 
-  const handleChooseRiskLevel = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRiskLevel(event.target.value as ContractRiskFactorEnum)
+  const handleChooseTag = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTag(event.target.value)
   }
 
   const handleOpenApy = (contract: typeof contracts[number]) => async () => {
@@ -291,6 +271,10 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
   const handleSort = (sort: typeof sortBy) => () => {
     setSort(sort)
   }
+
+  useEffect(() => {
+    model.fetchTagsFx()
+  }, [])
 
   return (
     <div className={clsx(styles.root, props.className)}>
@@ -369,32 +353,20 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
           <Select
             placeholder="Choose options"
             className={styles.select}
-            onChange={handleChooseRiskLevel}
+            onChange={handleChooseTag}
             clearable
             grouped
           >
-            <Typography variant="body3">TVL:</Typography>
-            {Object.entries(TVL).map(([value, title]) => (
-              <SelectOption value={value} key={title}>
-                {title}
-              </SelectOption>
+            {Object.entries(tags).map(([title, tagsItem]) => (
+              <Fragment key={title}>
+                <Typography variant="body3">{title}</Typography>
+                {tagsItem.map((tag) => (
+                  <SelectOption value={tag.id} key={tag.id}>
+                    {tag.name}
+                  </SelectOption>
+                ))}
+              </Fragment>
             ))}
-            <Typography variant="body3">Pool type:</Typography>
-            {Object.entries(POOL_TYPES).map(([value, title]) => (
-              <SelectOption value={value} key={title}>
-                {title}
-              </SelectOption>
-            ))}
-            <Typography variant="body3">RISK:</Typography>
-            {Object.entries(ContractRiskFactorEnum)
-              .filter(
-                ([, value]) => ContractRiskFactorEnum.NotCalculated !== value
-              )
-              .map(([key, value]) => (
-                <SelectOption value={value} key={key}>
-                  {riskStatuses[value]}
-                </SelectOption>
-              ))}
           </Select>
           <Input
             placeholder="Search"
