@@ -313,6 +313,24 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
     model.updatedOrder(data.onSmartTradeOrderUpdated)
   }, variablesTradeUpdated)
 
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (!event.data) return
+
+      const { data } = JSON.parse(event.data)
+
+      if (isEmpty(data.pricesUsd)) return
+
+      model.priceUpdated()
+    }
+
+    model.webSocket.addEventListener('message', onMessage)
+
+    return () => {
+      model.webSocket.removeEventListener('message', onMessage)
+    }
+  }, [])
+
   return (
     <StickyContainer>
       <div className={clsx(styles.root, props.className)}>

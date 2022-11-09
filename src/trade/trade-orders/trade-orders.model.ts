@@ -15,6 +15,8 @@ import {
 import { hasBoughtPrice } from '~/trade/common/trade.types'
 import * as tradeSmartSellModel from '~/trade/trade-smart-sell/trade-smart-sell.model'
 
+export const webSocket = new WebSocket('wss://whattofarm.io/ws')
+
 export const reset = createEvent()
 
 export const fetchOrdersFx = createEffect(
@@ -132,8 +134,11 @@ export const $editingOrder = createStore<string>('')
   .on(editStarted, (_, payload) => payload)
   .reset(editEnded)
 
+export const priceUpdated = createEvent()
+
 sample({
-  clock: $orders.updates,
+  source: $orders,
+  clock: [$orders.updates, priceUpdated],
   fn: (orders) =>
     (orders?.list ?? [])
       .map((order) => ({
