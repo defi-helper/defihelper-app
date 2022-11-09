@@ -454,10 +454,12 @@ export const Trade: React.VFC<TradeProps> = () => {
             .map((pair, index) => (
               <SelectOption value={pair.pairInfo?.address} key={String(index)}>
                 <div className={styles.tickerIcons}>
-                  {pair.tokenAlias.map((alias) =>
-                    alias?.logoUrl ? (
+                  {pair.tokenAlias.map((alias, aliasKey) => {
+                    const key = String(index + aliasKey)
+
+                    return alias?.logoUrl ? (
                       <img
-                        key={alias.id}
+                        key={key}
                         alt=""
                         src={alias.logoUrl}
                         width="24"
@@ -465,11 +467,11 @@ export const Trade: React.VFC<TradeProps> = () => {
                         className={styles.pairIcon}
                       />
                     ) : (
-                      <Paper className={styles.pairIconUnknown} key={alias?.id}>
+                      <Paper className={styles.pairIconUnknown} key={key}>
                         <Icon icon="unknownNetwork" width="16" height="16" />
                       </Paper>
                     )
-                  )}
+                  })}
                 </div>
                 {pair.pairInfo?.ticker}
               </SelectOption>
