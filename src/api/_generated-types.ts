@@ -2497,6 +2497,12 @@ export type SmartTradeMockHandlerCallDataType = {
   amountOut: Scalars['BigNumberType']
 }
 
+export type SmartTradeOrderBalanceType = {
+  __typename?: 'SmartTradeOrderBalanceType'
+  token: TokenType
+  balance: Scalars['BigNumberType']
+}
+
 export type SmartTradeOrderCallDataType =
   | SmartTradeMockHandlerCallDataType
   | SmartTradeSwapHandlerCallDataType
@@ -2590,6 +2596,7 @@ export type SmartTradeOrderType = {
   tx: Scalars['EthereumTransactionHashType']
   lastCall?: Maybe<SmartTradeOrderCallHistoryType>
   tokens: Array<SmartTradeOrderTokenLinkType>
+  balances: Array<SmartTradeOrderBalanceType>
   /** Is order confirmed on blockchain */
   confirmed: Scalars['Boolean']
   /** Date of created */
@@ -7402,6 +7409,21 @@ export type TradeOrderFragmentFragment = {
                     TokenPriceFeedCoingeckoAddressType,
                     'type' | 'platform' | 'address'
                   >)
+              >
+            }
+        }
+    >
+    balances: Array<
+      { __typename?: 'SmartTradeOrderBalanceType' } & Pick<
+        SmartTradeOrderBalanceType,
+        'balance'
+      > & {
+          token: { __typename?: 'TokenType' } & Pick<
+            TokenType,
+            'id' | 'address' | 'symbol'
+          > & {
+              alias?: Maybe<
+                { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
               >
             }
         }
