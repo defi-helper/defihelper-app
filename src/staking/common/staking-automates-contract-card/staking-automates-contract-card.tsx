@@ -229,7 +229,9 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     ),
                   })}
                 >
-                  (${bignumberUtils.format(props.balanceInvest)})
+                  ({bignumberUtils.lt(props.balanceInvest, 0) ? '-' : null}
+                  {bignumberUtils.gt(props.balanceInvest, 0) ? '+' : null}$
+                  {bignumberUtils.format(props.balanceInvest)})
                 </Typography>
               )}
               {!isEmpty(props.freshMetrics) && <StakingFreshMetrics />}

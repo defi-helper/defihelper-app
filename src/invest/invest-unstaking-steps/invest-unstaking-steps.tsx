@@ -11,6 +11,7 @@ import { settingsWalletModel } from '~/settings/settings-wallets'
 import { InvestSell } from '~/invest/invest-sell'
 import { InvestUnstakingStepsUnstake } from './invest-unstaking-steps-unstake'
 import { InvestUnstakingStepsSuccess } from './invest-unstaking-steps-success'
+import { useQueryParams } from '~/common/hooks'
 import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import * as model from '~/invest/invest-detail/invest-detail.model'
@@ -30,10 +31,12 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
   const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
 
   const [currentStep, setCurrentStep] = useState(0)
-
   const [sellToken, setSellToken] = useState('')
-
   const [withdrawedBalance, setWithdrawedBalance] = useState('0')
+
+  const queryParams = useQueryParams()
+
+  const automateId = queryParams.get('automateId')
 
   const lp = useAsync(async () => {
     if (!currentWallet?.account || !props.contract.automate.lpTokensManager)
@@ -68,7 +71,7 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
   )
 
   const adapter = useAsync(async () => {
-    if (!user) return
+    if (!user || !automateId) return
 
     const deployedContracts =
       await stakingAutomatesModel.fetchAutomatesContractsFx({
@@ -76,8 +79,7 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       })
 
     const deployedContract = deployedContracts.list.find(
-      ({ contract: deployedStakingContract }) =>
-        deployedStakingContract?.id === props.contract.id
+      (contract) => contract?.id === automateId
     )
 
     if (
@@ -96,7 +98,7 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       chainId: String(currentWallet.chainId),
       action: 'migrate',
     })
-  }, [currentWallet])
+  }, [currentWallet, automateId])
 
   const balanceOf = useAsyncRetry(async () => {
     return adapter.value?.refund.methods.staked()
@@ -121,11 +123,11 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       onSubmit={() => {
         handleRefund()
 
-        if (!currentUserWallet) return
+        if (!currentUserWallet || !automateId) return
 
         model.automateInvestRefundFx({
           input: {
-            contract: props.contract.id,
+            contract: automateId,
             wallet: currentUserWallet.id,
           },
         })

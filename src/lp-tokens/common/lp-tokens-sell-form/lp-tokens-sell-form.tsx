@@ -198,6 +198,12 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
     return props.sellLiquidityAdapter.methods.amountOut(tokenAddress, amount)
   }, [props.sellLiquidityAdapter.methods.amountOut, tokenAddress, amount])
 
+  useEffect(() => {
+    if (!balance.value) return
+
+    setValue('amount', balance.value)
+  }, [balance.value, setValue])
+
   return (
     <form
       noValidate

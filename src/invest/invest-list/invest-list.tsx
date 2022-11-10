@@ -1,5 +1,5 @@
 import { useGate, useStore } from 'effector-react'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import { useThrottle } from 'react-use'
 
 import { AppLayout } from '~/layouts'
@@ -127,10 +127,20 @@ export const InvestList: React.VFC<unknown> = () => {
     }
   }, [])
 
-  const migrateContractsWithHidden = [
-    ...migrateContracts,
-    ...migrateHiddenContracts,
-  ]
+  const migrateContractsWithHidden = useMemo(
+    () => [...migrateContracts, ...migrateHiddenContracts],
+    [migrateContracts, migrateHiddenContracts]
+  )
+
+  useEffect(() => {
+    if (loading) return
+
+    if (!contracts.length && !migrateContractsWithHidden.length) return
+
+    if (!contracts.length && migrateContractsWithHidden.length) {
+      setCurrentTab(1)
+    }
+  }, [migrateContractsWithHidden.length, contracts.length, loading])
 
   return (
     <AppLayout title="Invest">
@@ -146,16 +156,16 @@ export const InvestList: React.VFC<unknown> = () => {
           value={currentTab}
         >
           <InvestTabs.Header>
-            {contracts.length ? (
+            {Boolean(contracts.length) && (
               <Typography as={ButtonBase} variant="h3">
                 Your investments
               </Typography>
-            ) : undefined}
-            {migrateContractsWithHidden.length ? (
+            )}
+            {Boolean(migrateContractsWithHidden.length) && (
               <Typography as={ButtonBase} variant="h3">
                 Investments to migrate
               </Typography>
-            ) : undefined}
+            )}
             <InvestTabs.HeaderRight>
               <Input
                 placeholder="Search"
@@ -164,10 +174,10 @@ export const InvestList: React.VFC<unknown> = () => {
               />
             </InvestTabs.HeaderRight>
           </InvestTabs.Header>
-          {contracts.length ? (
+          {Boolean(contracts.length) && (
             <InvestDeployedContracts search={searchThrottled} />
-          ) : undefined}
-          {migrateContractsWithHidden.length ? (
+          )}
+          {Boolean(migrateContractsWithHidden.length) && (
             <InvestMigrateContracts
               search={searchThrottled}
               contracts={migrateContracts}
@@ -176,7 +186,7 @@ export const InvestList: React.VFC<unknown> = () => {
               onShow={handleShow}
               onHide={handleHide}
             />
-          ) : undefined}
+          )}
         </InvestTabs>
       )}
       <InvestContracts />
