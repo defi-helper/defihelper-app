@@ -451,6 +451,8 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                       bignumberUtils.mul(boughtPrice, 100)
                     )
 
+                    const { balances } = order
+
                     return (
                       <TradeOrderDeposit
                         key={order.id}
@@ -548,6 +550,35 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                   {order.tokens[0].token.symbol}
                                 </Typography>
                               </div>
+                              {Boolean(balances.length) && (
+                                <div className={styles.contractBalance}>
+                                  {balances?.[0]?.token.alias?.logoUrl ? (
+                                    <img
+                                      src={balances?.[0]?.token.alias?.logoUrl}
+                                      className={styles.contractBalanceIcon}
+                                      alt=""
+                                    />
+                                  ) : (
+                                    <Paper
+                                      className={styles.contractBalanceIcon}
+                                    >
+                                      <Icon
+                                        icon="unknownNetwork"
+                                        width="16"
+                                        height="16"
+                                      />
+                                    </Paper>
+                                  )}
+                                  <Typography className={styles.fs12} as="div">
+                                    {balances?.[0]?.balance
+                                      ? bignumberUtils.format(
+                                          balances[0].balance
+                                        )
+                                      : '-'}{' '}
+                                    {balances?.[0]?.token.symbol}
+                                  </Typography>
+                                </div>
+                              )}
                             </div>
                             <div>
                               <div className={styles.contractBalance}>
