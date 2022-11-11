@@ -2556,6 +2556,7 @@ export type SmartTradeOrderListSortInputType = {
 export enum SmartTradeOrderListSortInputTypeColumnEnum {
   Id = 'id',
   CreatedAt = 'createdAt',
+  UpdatedAt = 'updatedAt',
 }
 
 export enum SmartTradeOrderStatusEnum {
@@ -2942,7 +2943,7 @@ export enum TokenAliasLiquidityEnum {
 export type TokenAliasListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   liquidity?: Maybe<TokenAliasLiquidityEnum>
-  symbol?: Maybe<Scalars['String']>
+  symbol?: Maybe<Array<Scalars['String']>>
   hasLogo?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }

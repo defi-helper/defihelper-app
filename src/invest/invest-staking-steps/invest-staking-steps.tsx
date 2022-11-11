@@ -1,7 +1,7 @@
 import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { InvestContract } from '~/invest/common/invest.types'
 import { InvestBuy } from '~/invest/invest-buy'
@@ -20,7 +20,12 @@ import {
   AutomateActionTypeEnum,
   AutomateConditionTypeEnum,
   AutomateTriggerTypeEnum,
+  UserContactBrokerEnum,
+  UserContactStatusEnum,
 } from '~/api'
+import { authModel } from '~/auth'
+import { useOnUserContactActivated } from '~/settings/common'
+import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import * as deployModel from '~/automations/automation-deploy-contract/automation-deploy-contract.model'
 import * as automationUpdateModel from '~/automations/automation-update/automation-update.model'
 import * as model from '~/invest/invest-detail/invest-detail.model'
@@ -47,6 +52,34 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const walletId = queryParams.get('walletId')
 
   const [currentStep, setCurrentStep] = useState(0)
+
+  const contacts = useStore(settingsContacts.$userContactList)
+
+  const user = useStore(authModel.$user)
+
+  const telegram = contacts.find(
+    (contact) => contact.broker === UserContactBrokerEnum.Telegram
+  )
+
+  const variables = useMemo(() => {
+    if (!user) return undefined
+
+    return {
+      user: [user.id],
+    }
+  }, [user])
+
+  useOnUserContactActivated(({ data }) => {
+    if (data?.onUserContactActivated) {
+      settingsContacts.replaceUserContact(data.onUserContactActivated)
+    }
+  }, variables)
+
+  useEffect(() => {
+    if (!telegram || telegram.status === UserContactStatusEnum.Inactive) return
+
+    setCurrentStep((step) => step + 1)
+  }, [telegram])
 
   const lp = useAsync(async () => {
     if (!currentWallet?.account || !props.contract.automate.lpTokensManager)
@@ -301,6 +334,13 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       onSubmit={handleNextStep}
     />,
     <InvestStakingStepsTelegram key={5} />,
+    telegram?.status === UserContactStatusEnum.Active ? (
+      <InvestStakingStepsSuccess
+        key={4}
+        contract={props.contract}
+        onSubmit={handleNextStep}
+      />
+    ) : null,
   ].filter(Boolean)
 
   const currentStepObj = steps[currentStep % steps.length]
