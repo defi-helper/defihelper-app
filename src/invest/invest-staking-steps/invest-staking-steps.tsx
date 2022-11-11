@@ -268,7 +268,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
 
   const steps = [
     ...initialSteps[canMigrate ? 'migrate' : 'buy'],
-    !deploy && !canMigrate ? (
+    !deploy ? (
       <InvestStakingStepsDeploy
         key={2}
         onDeploy={handleDeploy}
