@@ -88,7 +88,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   }
 
   const exchanges = useStore(model.$exchanges)
-  const pairs = useStore(model.$pairs)
+  const pairs = useStore(model.$pairsWithAlias)
   const settingsWallets = useStore(settingsWalletModel.$wallets)
   const loadingExchanges = useStore(model.fetchExchangesFx.pending)
   const loadingPairs = useStore(model.fetchPairsFx.pending)
@@ -454,7 +454,7 @@ export const Trade: React.VFC<TradeProps> = () => {
             .map((pair, index) => (
               <SelectOption value={pair.pairInfo?.address} key={String(index)}>
                 <div className={styles.tickerIcons}>
-                  {pair.tokenAlias.map((alias, aliasKey) => {
+                  {pair.tokensAlias.map((alias, aliasKey) => {
                     const key = String(index + aliasKey)
 
                     return alias?.logoUrl ? (
@@ -484,7 +484,7 @@ export const Trade: React.VFC<TradeProps> = () => {
             <div className={styles.ticker}>
               {currentPairObj && (
                 <div className={styles.tickerIcons}>
-                  {currentPairObj.tokenAlias.map((alias) =>
+                  {currentPairObj.tokensAlias.map((alias) =>
                     alias?.logoUrl ? (
                       <img
                         key={alias.id}
@@ -602,40 +602,44 @@ export const Trade: React.VFC<TradeProps> = () => {
             )}
           >
             <div className={styles.tradeSelectHeader}>
-              <Dropdown
-                control={(open) => (
-                  <Typography
-                    variant="body3"
-                    as={ButtonBase}
-                    transform="uppercase"
-                    family="mono"
-                    className={styles.tradeSellSelect}
-                  >
-                    {currentSelect}
-                    <Icon
-                      icon={open ? 'arrowUp' : 'arrowDown'}
-                      width="16"
-                      height="16"
-                    />
-                  </Typography>
-                )}
-                placement="bottom-start"
-                offset={[0, 8]}
-              >
-                {(close) =>
-                  Object.values(Selects).map((select) => (
+              {(
+                [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
+              ).includes(String(user?.role)) && (
+                <Dropdown
+                  control={(open) => (
                     <Typography
                       variant="body3"
-                      key={select}
-                      onClick={handleChangeSelect(select, close)}
                       as={ButtonBase}
                       transform="uppercase"
+                      family="mono"
+                      className={styles.tradeSellSelect}
                     >
-                      {select}
+                      {currentSelect}
+                      <Icon
+                        icon={open ? 'arrowUp' : 'arrowDown'}
+                        width="16"
+                        height="16"
+                      />
                     </Typography>
-                  ))
-                }
-              </Dropdown>
+                  )}
+                  placement="bottom-start"
+                  offset={[0, 8]}
+                >
+                  {(close) =>
+                    Object.values(Selects).map((select) => (
+                      <Typography
+                        variant="body3"
+                        key={select}
+                        onClick={handleChangeSelect(select, close)}
+                        as={ButtonBase}
+                        transform="uppercase"
+                      >
+                        {select}
+                      </Typography>
+                    ))
+                  }
+                </Dropdown>
+              )}
               <Dropdown
                 control={
                   <ButtonBase>

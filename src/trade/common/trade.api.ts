@@ -344,7 +344,21 @@ export const tradeApi = {
         query: TRADE_TOKEN_ALIASES.loc?.source.body ?? '',
         variables,
       })
-      .then(({ data }) => data?.tokensAlias.list?.[0]),
+      .then(({ data }) =>
+        data?.tokensAlias.list?.reduce<
+          Record<
+            string,
+            Exclude<
+              TradeTokenAliasesQuery['tokensAlias']['list'],
+              null | undefined
+            >[number]
+          >
+        >((acc, alias) => {
+          acc[alias.symbol] = alias
+
+          return acc
+        }, {})
+      ),
 }
 
 const authRequestInterceptor = async (axiosConfig: AxiosRequestConfig) => {

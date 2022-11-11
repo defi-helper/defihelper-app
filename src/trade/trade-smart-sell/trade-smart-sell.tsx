@@ -355,6 +355,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   useInterval(
     () => {
       balanceOf.retry()
+      price.retry()
     },
     currentWallet ? 15000 : null
   )

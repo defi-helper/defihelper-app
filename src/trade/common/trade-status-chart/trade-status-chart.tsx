@@ -25,7 +25,9 @@ const getPercentCurry =
 
     const mul = bignumberUtils.mul(div, 100)
 
-    if (bignumberUtils.isNaN(mul)) return '0'
+    if (bignumberUtils.gt(mul, 100)) return '100'
+
+    if (bignumberUtils.isNaN(mul) || bignumberUtils.lt(mul, 0)) return '0'
 
     return bignumberUtils.floor(mul)
   }
