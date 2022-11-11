@@ -2,7 +2,7 @@ import { useGate, useStore } from 'effector-react'
 import { useState, useMemo, useCallback } from 'react'
 import { ethers } from 'ethers'
 import type { JsonFragment } from '@ethersproject/abi'
-import { useAsync } from 'react-use'
+import { useAsync, useAsyncFn } from 'react-use'
 
 import { AppLayout } from '~/layouts'
 import { Button } from '~/common/button'
@@ -263,6 +263,12 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
     }
   }, [queryObj.network, wallet])
 
+  const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
+    if (!queryObj.network) return
+
+    return switchNetwork(queryObj.network)
+  }, [queryObj.network])
+
   useGate(model.GovernanceMultisigGate)
 
   return (
@@ -274,7 +280,16 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
       {isOwner.loading && 'loading...'}
       {isOwner.value === true && !changeNetwork.error?.message && (
         <>
-          <Button onClick={createTransaction}>Create transaction</Button>
+          <Button
+            onClick={
+              queryObj.network === wallet?.chainId
+                ? createTransaction
+                : handleSwitchNetwork
+            }
+            loading={switchNetworkState.loading}
+          >
+            Create transaction
+          </Button>
           <div>
             {actions.map((action, index) => (
               <div key={String(index)}>
