@@ -156,15 +156,19 @@ export const InvestList: React.VFC<unknown> = () => {
           value={currentTab}
         >
           <InvestTabs.Header>
-            {Boolean(contracts.length) && (
+            {contracts.length ? (
               <Typography as={ButtonBase} variant="h3">
                 Your investments
               </Typography>
+            ) : (
+              <></>
             )}
-            {Boolean(migrateContractsWithHidden.length) && (
+            {migrateContractsWithHidden.length ? (
               <Typography as={ButtonBase} variant="h3">
                 Investments to migrate
               </Typography>
+            ) : (
+              <></>
             )}
             <InvestTabs.HeaderRight>
               <Input
@@ -174,10 +178,12 @@ export const InvestList: React.VFC<unknown> = () => {
               />
             </InvestTabs.HeaderRight>
           </InvestTabs.Header>
-          {Boolean(contracts.length) && (
+          {contracts.length ? (
             <InvestDeployedContracts search={searchThrottled} />
+          ) : (
+            <></>
           )}
-          {Boolean(migrateContractsWithHidden.length) && (
+          {migrateContractsWithHidden.length ? (
             <InvestMigrateContracts
               search={searchThrottled}
               contracts={migrateContracts}
@@ -186,6 +192,8 @@ export const InvestList: React.VFC<unknown> = () => {
               onShow={handleShow}
               onHide={handleHide}
             />
+          ) : (
+            <></>
           )}
         </InvestTabs>
       )}
