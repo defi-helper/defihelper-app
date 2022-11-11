@@ -79,5 +79,16 @@ export const TRADE_ORDER_FRAGMENT = gql`
     }
     confirmed
     createdAt
+    balances {
+      token {
+        id
+        alias {
+          logoUrl
+        }
+        address
+        symbol
+      }
+      balance
+    }
   }
 `
