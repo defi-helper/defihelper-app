@@ -7,8 +7,10 @@ import contracts from '@defihelper/networks/contracts.json'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import {
+  SmartTradeOrderListSortInputTypeColumnEnum,
   SmartTradeOrderStatusEnum,
   SmartTradeSwapHandlerCallDataType,
+  SortOrderEnum,
 } from '~/api'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { Button } from '~/common/button'
@@ -148,6 +150,16 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       filter: {
         status: statuses[currentTab],
       },
+      sort:
+        currentTab === Tabs.Active
+          ? {
+              column: SmartTradeOrderListSortInputTypeColumnEnum.CreatedAt,
+              order: SortOrderEnum.Desc,
+            }
+          : {
+              column: SmartTradeOrderListSortInputTypeColumnEnum.UpdatedAt,
+              order: SortOrderEnum.Desc,
+            },
     })
 
     return () => {
@@ -177,7 +189,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         analytics.log('settings_wallet_defihelper_balance_top_up_click')
         await switchNetwork(order.owner.network)
 
-        if (!currentWallet?.account || !currentWallet.chainId) return
+        if (!currentWallet?.chainId) return
 
         const balanceAdapter = await settingsWalletModel.loadAdapterFx({
           provider: currentWallet.provider,
@@ -198,15 +210,15 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
           adapter: balanceAdapter,
           recomendedIncome: billingBalance.recomendedIncome,
           priceUSD: billingBalance.priceUSD,
-          wallet: currentWallet.account,
-          network: currentWallet.chainId,
+          wallet: order.owner.address,
+          network: order.owner.network,
           token: billingBalance.token,
         })
 
         await settingsWalletModel.depositFx({
           blockchain: order.owner.blockchain,
           amount: result.amount,
-          walletAddress: currentWallet.account,
+          walletAddress: order.owner.address,
           chainId: String(currentWallet.chainId),
           provider: currentWallet.provider,
           transactionHash: result.transactionHash,
@@ -290,6 +302,16 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         filter: {
           status: statuses[currentTab],
         },
+        sort:
+          currentTab === Tabs.Active
+            ? {
+                column: SmartTradeOrderListSortInputTypeColumnEnum.CreatedAt,
+                order: SortOrderEnum.Desc,
+              }
+            : {
+                column: SmartTradeOrderListSortInputTypeColumnEnum.UpdatedAt,
+                order: SortOrderEnum.Desc,
+              },
       })
     }
   }, variables)
@@ -301,6 +323,16 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         filter: {
           status: statuses[currentTab],
         },
+        sort:
+          currentTab === Tabs.Active
+            ? {
+                column: SmartTradeOrderListSortInputTypeColumnEnum.CreatedAt,
+                order: SortOrderEnum.Desc,
+              }
+            : {
+                column: SmartTradeOrderListSortInputTypeColumnEnum.UpdatedAt,
+                order: SortOrderEnum.Desc,
+              },
       })
     }
   }, variables)
@@ -453,10 +485,18 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
                     const { balances } = order
 
+                    const currentPrice =
+                      order.owner.network === '5' && config.IS_DEV
+                        ? goerliPrice[order.number]
+                        : String(price)
+
                     return (
                       <TradeOrderDeposit
                         key={order.id}
-                        lowBalance={order.owner.billing.balance.lowFeeFunds}
+                        lowBalance={
+                          order.owner.billing.balance.lowFeeFunds &&
+                          statuses[Tabs.Active].includes(order.status)
+                        }
                         onDeposit={deposit}
                         depositing={depositingOrder === order.id}
                       >
@@ -630,14 +670,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                           }
                                           buy={
                                             order.callData.boughtPrice ??
-                                            String(price)
+                                            currentPrice
                                           }
-                                          profit={
-                                            order.owner.network === '5' &&
-                                            config.IS_DEV
-                                              ? goerliPrice[order.number]
-                                              : String(price)
-                                          }
+                                          profit={currentPrice}
                                           className={styles.contractStatus}
                                         />
                                       )}
@@ -650,12 +685,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                           className={clsx(styles.fs12, {
                                             [styles.positive]:
                                               bignumberUtils.gt(
-                                                price,
+                                                currentPrice,
                                                 boughtPrice
                                               ),
                                             [styles.negative]:
                                               bignumberUtils.lt(
-                                                price,
+                                                currentPrice,
                                                 boughtPrice
                                               ),
                                           })}
@@ -678,11 +713,11 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     <Typography
                                       className={clsx(styles.fs12, {
                                         [styles.positive]: bignumberUtils.gt(
-                                          price,
+                                          currentPrice,
                                           boughtPrice
                                         ),
                                         [styles.negative]: bignumberUtils.lt(
-                                          price,
+                                          currentPrice,
                                           boughtPrice
                                         ),
                                       })}
@@ -695,11 +730,11 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     <Typography
                                       className={clsx(styles.fs12, {
                                         [styles.positive]: bignumberUtils.gt(
-                                          price,
+                                          currentPrice,
                                           boughtPrice
                                         ),
                                         [styles.negative]: bignumberUtils.lt(
-                                          price,
+                                          currentPrice,
                                           boughtPrice
                                         ),
                                       })}
@@ -709,7 +744,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                         (
                                           order.callData as SmartTradeSwapHandlerCallDataType
                                         ).boughtPrice,
-                                        price
+                                        currentPrice
                                       )}
                                       $ / {percent}%
                                     </Typography>
