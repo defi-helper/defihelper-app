@@ -1,19 +1,58 @@
 import clsx from 'clsx'
+import { useStore } from 'effector-react'
+import { useEffect, useMemo } from 'react'
 
 import { Button } from '~/common/button'
 import { Icon } from '~/common/icon'
 import { Paper } from '~/common/paper'
 import { Typography } from '~/common/typography'
+import { authModel } from '~/auth'
+import { useOnUserContactActivated } from '~/settings/common'
+import { UserContactBrokerEnum, UserContactStatusEnum } from '~/api'
+import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import * as telegramModel from '~/settings/settings-telegram/settings-telegram.model'
 import * as styles from './invest-staking-steps.css'
 
-export type InvestStakingStepsTelegramProps = unknown
+export type InvestStakingStepsTelegramProps = {
+  onSubmit: () => void
+}
 
 export const InvestStakingStepsTelegram: React.FC<InvestStakingStepsTelegramProps> =
-  () => {
+  (props) => {
+    const user = useStore(authModel.$user)
+
+    const variables = useMemo(() => {
+      if (!user) return undefined
+
+      return {
+        user: [user.id],
+      }
+    }, [user])
+
+    useOnUserContactActivated(({ data }) => {
+      if (data?.onUserContactActivated) {
+        settingsContacts.replaceUserContact(data.onUserContactActivated)
+      }
+    }, variables)
+
     const handleOpenTelegram = () => {
       telegramModel.openTelegram(undefined)
     }
+
+    const contacts = useStore(settingsContacts.$userContactList)
+
+    useEffect(() => {
+      const activatedTelegram = contacts.find(
+        ({ broker, status }) =>
+          broker === UserContactBrokerEnum.Telegram &&
+          status === UserContactStatusEnum.Active
+      )
+
+      if (!activatedTelegram) return
+
+      props.onSubmit()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [contacts])
 
     return (
       <>
