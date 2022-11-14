@@ -1,12 +1,12 @@
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
+import { useMemo } from 'react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
-import { InvestContract } from '~/invest/common/invest.types'
 import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
 import { UserContactBrokerEnum } from '~/api'
 import { paths } from '~/paths'
@@ -15,17 +15,19 @@ import * as settingsContacts from '~/settings/settings-contacts/settings-contact
 import * as styles from './invest-staking-steps.css'
 
 export type InvestStakingStepsSuccessProps = {
-  balanceOf?: string
   onSubmit: () => void
-  contract: InvestContract
 }
 
 export const InvestStakingStepsSuccess: React.FC<InvestStakingStepsSuccessProps> =
   (props) => {
     const contacts = useStore(settingsContacts.$userContactList)
 
-    const telegram = contacts.find(
-      ({ broker }) => broker === UserContactBrokerEnum.Telegram
+    const telegram = useMemo(
+      () =>
+        contacts.find(
+          ({ broker }) => broker === UserContactBrokerEnum.Telegram
+        ),
+      [contacts]
     )
 
     const handleOpenTelegram = () => {
