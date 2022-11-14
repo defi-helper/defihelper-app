@@ -2532,6 +2532,7 @@ export type SmartTradeOrderListFilterInputType = {
   type?: Maybe<Array<SmartTradeOrderHandlerTypeEnum>>
   status?: Maybe<Array<SmartTradeOrderStatusEnum>>
   confirmed?: Maybe<Scalars['Boolean']>
+  claim?: Maybe<Scalars['Boolean']>
 }
 
 export type SmartTradeOrderListPaginationInputType = {
@@ -2858,6 +2859,7 @@ export type SwapHandlerCallDataRouteType = {
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
+  moving: Scalars['Boolean']
 }
 
 export type SwapOrderCallDataActivateInputType = {
@@ -7363,13 +7365,13 @@ export type TradeOrderFragmentFragment = {
             stopLoss?: Maybe<
               { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
                 SwapHandlerCallDataRouteType,
-                'amountOut' | 'amountOutMin' | 'slippage'
+                'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
               >
             >
             takeProfit?: Maybe<
               { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
                 SwapHandlerCallDataRouteType,
-                'amountOut' | 'amountOutMin' | 'slippage'
+                'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
               >
             >
           })

@@ -31,11 +31,13 @@ export const TRADE_ORDER_FRAGMENT = gql`
           amountOut
           amountOutMin
           slippage
+          moving
         }
         takeProfit {
           amountOut
           amountOutMin
           slippage
+          moving
         }
       }
     }
