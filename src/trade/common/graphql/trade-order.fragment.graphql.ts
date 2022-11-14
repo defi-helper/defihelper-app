@@ -27,6 +27,7 @@ export const TRADE_ORDER_FRAGMENT = gql`
         exchange
         boughtPrice
         path
+        swapPrice
         stopLoss {
           amountOut
           amountOutMin
