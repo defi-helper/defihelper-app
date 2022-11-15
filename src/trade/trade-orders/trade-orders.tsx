@@ -476,10 +476,13 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
                   const { balances } = order
 
+                  const stringPrice =
+                    price !== undefined ? String(price) : undefined
+
                   const currentPrice =
                     order.owner.network === '5' && config.IS_DEV
                       ? goerliPrice[order.number]
-                      : String(price)
+                      : stringPrice
 
                   const percent = bignumberUtils.mul(
                     bignumberUtils.div(
@@ -599,31 +602,37 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                 {order.tokens[0].token.symbol}
                               </Typography>
                             </div>
-                            {Boolean(balances.length) && (
-                              <div className={styles.contractBalance}>
-                                {balances?.[0]?.token.alias?.logoUrl ? (
-                                  <img
-                                    src={balances?.[0]?.token.alias?.logoUrl}
-                                    className={styles.contractBalanceIcon}
-                                    alt=""
-                                  />
-                                ) : (
-                                  <Paper className={styles.contractBalanceIcon}>
-                                    <Icon
-                                      icon="unknownNetwork"
-                                      width="16"
-                                      height="16"
+                            {Boolean(balances.length) &&
+                              order.status ===
+                                SmartTradeOrderStatusEnum.Succeeded && (
+                                <div className={styles.contractBalance}>
+                                  {balances?.[0]?.token.alias?.logoUrl ? (
+                                    <img
+                                      src={balances?.[0]?.token.alias?.logoUrl}
+                                      className={styles.contractBalanceIcon}
+                                      alt=""
                                     />
-                                  </Paper>
-                                )}
-                                <Typography className={styles.fs12} as="div">
-                                  {balances?.[0]?.balance
-                                    ? bignumberUtils.format(balances[0].balance)
-                                    : '-'}{' '}
-                                  {balances?.[0]?.token.symbol}
-                                </Typography>
-                              </div>
-                            )}
+                                  ) : (
+                                    <Paper
+                                      className={styles.contractBalanceIcon}
+                                    >
+                                      <Icon
+                                        icon="unknownNetwork"
+                                        width="16"
+                                        height="16"
+                                      />
+                                    </Paper>
+                                  )}
+                                  <Typography className={styles.fs12} as="div">
+                                    {balances?.[0]?.balance
+                                      ? bignumberUtils.format(
+                                          balances[0].balance
+                                        )
+                                      : '-'}{' '}
+                                    {balances?.[0]?.token.symbol}
+                                  </Typography>
+                                </div>
+                              )}
                           </div>
                           <div>
                             <div className={styles.contractBalance}>
