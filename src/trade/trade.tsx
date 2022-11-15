@@ -252,6 +252,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           slippage={currentSlippage}
           key={String(currentPair || currentWalletAddress || currentExchange)}
           exchangesMap={exchangesMap}
+          currentPair={currentPairObj}
         />
       </>
     ),

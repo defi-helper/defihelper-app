@@ -23,7 +23,7 @@ import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
 import { useDialog } from '~/common/dialog'
-import { Exchange, tradeApi } from '~/trade/common/trade.api'
+import { Exchange, Pair } from '~/trade/common/trade.api'
 import * as model from './trade-smart-sell.model'
 import * as styles from './trade-smart-sell.css'
 
@@ -40,6 +40,7 @@ export type TradeSmartSellProps = {
   transactionDeadline: string
   slippage: string
   exchangesMap: Map<string, Exchange>
+  currentPair?: Pair
 }
 
 type FormValues = {
@@ -135,17 +136,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     const [tokenAddress] = path.slice(-1)
 
-    const balance = await props.router.balanceOf(tokenAddress)
-
-    const pairs = await tradeApi.pairs([], [props.exchangeAddress])
-
-    const pair = pairs.data.list.find(({ pairInfo }) =>
-      pairInfo.tokens.some(
-        ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
-      )
-    )
-
-    const token = pair?.pairInfo.tokens.find(
+    const token = props.currentPair?.pairInfo.tokens.find(
       ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
     )
 
@@ -153,11 +144,13 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       network: currentUserWallet.network,
       boughtPrice: price.value,
       exchange,
-      tokens: pair?.pairInfo.tokens,
+      tokens: props.currentPair?.pairInfo.tokens,
       name: currentUserWallet.name,
-      totalRecieve: balance,
+      totalRecieve: formValues.unit,
       boughtToken: token,
     })
+
+    const amountOut = bignumberUtils.mul(price.value, formValues.unit)
 
     try {
       const result = await props.swap?.createOrder(
@@ -166,14 +159,14 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         formValues.unit,
         formValues.stopLoss
           ? {
-              amountOut: formValues.stopLossValue,
+              amountOut,
               slippage: '100',
               moving: formValues.moving,
             }
           : null,
         formValues.takeProfit
           ? {
-              amountOut: formValues.takeProfitValue,
+              amountOut,
               slippage: props.slippage,
             }
           : null,

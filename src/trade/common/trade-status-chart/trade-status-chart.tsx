@@ -22,9 +22,13 @@ const getPercentCurry =
     const left = bignumberUtils.minus(value, min)
     const right = bignumberUtils.minus(max, min)
 
+    // console.log(left, right, value, min, max, 'left, right')
+
     const div = bignumberUtils.div(left, right)
 
     const mul = bignumberUtils.mul(div, 100)
+
+    // console.log(mul, value)
 
     if (bignumberUtils.gt(mul, 100)) return '100'
 
@@ -35,13 +39,11 @@ const getPercentCurry =
 
 export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
   const total =
-    props.takeProfit ?? bignumberUtils.gt(props.profit, props.buy)
-      ? props.profit
-      : props.buy
+    props.takeProfit ??
+    (bignumberUtils.gt(props.profit, props.buy) ? props.profit : props.buy)
   const min =
-    props.stopLoss ?? bignumberUtils.lt(props.profit, props.buy)
-      ? props.profit
-      : props.buy
+    props.stopLoss ??
+    (bignumberUtils.lt(props.profit, props.buy) ? props.profit : props.buy)
 
   const getPercent = useMemo(() => getPercentCurry(min)(total), [total, min])
 
@@ -72,46 +74,50 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
         </div>
       )}
       <div className={styles.rail}>
-        <div
-          className={clsx(styles.profitLine, {
-            [styles.normalColor]: bignumberUtils.gt(profitPos, buyPos),
-            [styles.reverseColor]: bignumberUtils.lt(profitPos, buyPos),
-          })}
-          style={{
-            left: `${profitPos}%`,
-          }}
-        >
-          <Typography
-            as="div"
-            className={styles.profit}
-            style={
-              bignumberUtils.lt(profitPos, 50) ? { left: 4 } : { right: 4 }
-            }
+        {props.profit && (
+          <div
+            className={clsx(styles.profitLine, {
+              [styles.normalColor]: bignumberUtils.gt(profitPos, buyPos),
+              [styles.reverseColor]: bignumberUtils.lt(profitPos, buyPos),
+            })}
+            style={{
+              left: `${profitPos}%`,
+            }}
           >
             <Typography
-              variant="inherit"
-              className={styles.profitTitle}
-              weight="bold"
+              as="div"
+              className={styles.profit}
+              style={
+                bignumberUtils.lt(profitPos, 50) ? { left: 4 } : { right: 4 }
+              }
             >
-              {bignumberUtils.gt(profitPos, buyPos) ? '+' : '-'} {maxWidth}%
+              <Typography
+                variant="inherit"
+                className={styles.profitTitle}
+                weight="bold"
+              >
+                {bignumberUtils.gt(profitPos, buyPos) ? '+' : '-'} {maxWidth}%
+              </Typography>
+              <Typography variant="inherit">
+                {bignumberUtils.format(props.profit)}
+              </Typography>
             </Typography>
-            <Typography variant="inherit">
-              {bignumberUtils.format(props.profit)}
-            </Typography>
-          </Typography>
-        </div>
-        <div
-          className={clsx(styles.track, {
-            [styles.normalColor]: bignumberUtils.gt(profitPos, buyPos),
-            [styles.reverseColor]: bignumberUtils.lt(profitPos, buyPos),
-          })}
-          style={{
-            left: `${
-              bignumberUtils.lt(profitPos, buyPos) ? profitPos : buyPos
-            }%`,
-            maxWidth: `${maxWidth}%`,
-          }}
-        />
+          </div>
+        )}
+        {props.profit && (
+          <div
+            className={clsx(styles.track, {
+              [styles.normalColor]: bignumberUtils.gt(profitPos, buyPos),
+              [styles.reverseColor]: bignumberUtils.lt(profitPos, buyPos),
+            })}
+            style={{
+              left: `${
+                bignumberUtils.lt(profitPos, buyPos) ? profitPos : buyPos
+              }%`,
+              maxWidth: `${maxWidth}%`,
+            }}
+          />
+        )}
         <div className={styles.buyLine} style={{ left: `${buyPos}%` }}>
           <Typography
             as="div"

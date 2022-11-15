@@ -21,7 +21,13 @@ export const reset = createEvent()
 
 export const fetchOrdersFx = createEffect(
   async (variables: TradeOrderListQueryVariables) => {
-    const data = await tradeApi.fetchOrders(variables)
+    const data = await tradeApi.fetchOrders({
+      ...variables,
+      filter: {
+        ...variables.filter,
+        my: true,
+      },
+    })
 
     return data
   }
@@ -73,8 +79,8 @@ export const $orders = createStore<Orders | null>(null)
       pagination: state?.pagination ?? 0,
     })
   )
-  .on(claimOrderFx.doneData, (state, payload) => ({
-    list: state?.list.filter((order) => order.id !== payload.id) ?? [],
+  .on(claimOrderFx.done, (state, { params }) => ({
+    list: state?.list.filter((order) => order.id !== params.id) ?? [],
     pagination: state?.pagination ?? 0,
   }))
   .reset(reset)
