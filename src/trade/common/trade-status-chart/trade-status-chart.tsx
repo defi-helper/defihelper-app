@@ -12,6 +12,7 @@ export type TradeStatusChartProps = {
   takeProfit?: string
   buy?: string
   profit?: string
+  moving?: boolean
 }
 
 const getPercentCurry =
@@ -33,8 +34,14 @@ const getPercentCurry =
   }
 
 export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
-  const total = props.takeProfit ?? props.buy
-  const min = props.stopLoss ?? props.buy
+  const total =
+    props.takeProfit ?? bignumberUtils.gt(props.profit, props.buy)
+      ? props.profit
+      : props.buy
+  const min =
+    props.stopLoss ?? bignumberUtils.lt(props.profit, props.buy)
+      ? props.profit
+      : props.buy
 
   const getPercent = useMemo(() => getPercentCurry(min)(total), [total, min])
 
@@ -56,7 +63,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
               className={styles.stopLossTitle}
               weight="bold"
             >
-              SL
+              {props.moving ? 'TSL' : 'SL'}
             </Typography>
             <Typography variant="inherit" className={styles.grey}>
               {bignumberUtils.format(props.stopLoss)}

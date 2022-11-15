@@ -170,6 +170,8 @@ export const tradeApi = {
       .get<Response<Pool[]>>('pool-info', {
         params: {
           networks: networks.join(','),
+          sort: 'liquidity',
+          direction: 'asc',
         },
       })
       .then(({ data }) => data),
