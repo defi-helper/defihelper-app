@@ -113,10 +113,13 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     await res?.tx?.wait()
 
-    isApproved.retry()
-
     return true
   }, [props.tokens, unit])
+
+  useEffect(() => {
+    isApproved.retry()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [approve.loading, approve.value, approve.error])
 
   const handleOnSubmit = handleSubmit(async (formValues) => {
     if (
@@ -140,33 +143,39 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
     )
 
-    await openTradeConfirmDialog({
-      network: currentUserWallet.network,
-      boughtPrice: price.value,
-      exchange,
-      tokens: props.currentPair?.pairInfo.tokens,
-      name: currentUserWallet.name,
-      totalRecieve: formValues.unit,
-      boughtToken: token,
-    })
-
-    const amountOut = bignumberUtils.mul(price.value, formValues.unit)
+    const priceMultiplied = bignumberUtils.mul(price.value, unit)
 
     try {
+      await openTradeConfirmDialog({
+        network: currentUserWallet.network,
+        boughtPrice: price.value,
+        exchange,
+        tokens: props.currentPair?.pairInfo.tokens,
+        name: currentUserWallet.name,
+        totalRecieve: formValues.unit,
+        boughtToken: token,
+      })
+
       const result = await props.swap?.createOrder(
         props.exchangeAddress,
         path,
         formValues.unit,
         formValues.stopLoss
           ? {
-              amountOut,
+              amountOut: bignumberUtils.mul(
+                priceMultiplied,
+                bignumberUtils.div(1 - formValues.stopLossPercent, 99)
+              ),
               slippage: '100',
               moving: formValues.moving,
             }
           : null,
         formValues.takeProfit
           ? {
-              amountOut,
+              amountOut: bignumberUtils.mul(
+                priceMultiplied,
+                bignumberUtils.div(1 + formValues.stopLossPercent, 100)
+              ),
               slippage: props.slippage,
             }
           : null,
