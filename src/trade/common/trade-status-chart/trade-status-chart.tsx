@@ -118,24 +118,26 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
             }}
           />
         )}
-        <div className={styles.buyLine} style={{ left: `${buyPos}%` }}>
-          <Typography
-            as="div"
-            className={styles.buy}
-            style={bignumberUtils.gt(buyPos, 50) ? { right: 4 } : { left: 4 }}
-          >
+        {props.buy && (
+          <div className={styles.buyLine} style={{ left: `${buyPos}%` }}>
             <Typography
-              variant="inherit"
-              className={styles.buyTitle}
-              weight="bold"
+              as="div"
+              className={styles.buy}
+              style={bignumberUtils.gt(buyPos, 50) ? { right: 4 } : { left: 4 }}
             >
-              Buy
+              <Typography
+                variant="inherit"
+                className={styles.buyTitle}
+                weight="bold"
+              >
+                Buy
+              </Typography>
+              <Typography variant="inherit">
+                {bignumberUtils.format(props.buy)}
+              </Typography>
             </Typography>
-            <Typography variant="inherit">
-              {bignumberUtils.format(props.buy)}
-            </Typography>
-          </Typography>
-        </div>
+          </div>
+        )}
       </div>
       {props.takeProfit && (
         <div className={styles.takeProfitLine}>

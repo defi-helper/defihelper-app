@@ -721,10 +721,23 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             {boughtPrice ? (
                               <>
                                 <div className={styles.contractBalance}>
-                                  <Icon
-                                    className={styles.contractBalanceIcon}
-                                    icon="USDT"
-                                  />
+                                  {balances?.[0]?.token.alias?.logoUrl ? (
+                                    <img
+                                      src={balances?.[0]?.token.alias?.logoUrl}
+                                      className={styles.contractBalanceIcon}
+                                      alt=""
+                                    />
+                                  ) : (
+                                    <Paper
+                                      className={styles.contractBalanceIcon}
+                                    >
+                                      <Icon
+                                        icon="unknownNetwork"
+                                        width="16"
+                                        height="16"
+                                      />
+                                    </Paper>
+                                  )}
                                   <Typography
                                     className={clsx(styles.fs12, {
                                       [styles.positive]: bignumberUtils.gt(
@@ -738,30 +751,38 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     })}
                                     as="div"
                                   >
-                                    {bignumberUtils.format(boughtPrice)}
-                                  </Typography>
-                                </div>
-                                <div className={styles.contractBalance}>
-                                  <Typography
-                                    className={clsx(styles.fs12, {
-                                      [styles.positive]: bignumberUtils.gt(
-                                        currentPrice,
-                                        boughtPrice
-                                      ),
-                                      [styles.negative]: bignumberUtils.lt(
-                                        currentPrice,
-                                        boughtPrice
-                                      ),
-                                    })}
-                                    as="div"
-                                  >
-                                    {bignumberUtils.minus(
-                                      currentPrice,
-                                      boughtPrice
+                                    {bignumberUtils.format(
+                                      balances?.[0]?.balance
+                                        ? bignumberUtils.format(
+                                            balances[0].balance
+                                          )
+                                        : '0'
                                     )}
-                                    $ / {bignumberUtils.toFixed(percent)}%
                                   </Typography>
                                 </div>
+                                {currentPrice && (
+                                  <div className={styles.contractBalance}>
+                                    <Typography
+                                      className={clsx(styles.fs12, {
+                                        [styles.positive]: bignumberUtils.gt(
+                                          currentPrice,
+                                          boughtPrice
+                                        ),
+                                        [styles.negative]: bignumberUtils.lt(
+                                          currentPrice,
+                                          boughtPrice
+                                        ),
+                                      })}
+                                      as="div"
+                                    >
+                                      {bignumberUtils.minus(
+                                        currentPrice,
+                                        boughtPrice
+                                      )}
+                                      $ / {bignumberUtils.toFixed(percent)}%
+                                    </Typography>
+                                  </div>
+                                )}
                               </>
                             ) : (
                               <>
