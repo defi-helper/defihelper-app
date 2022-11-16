@@ -113,10 +113,13 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     await res?.tx?.wait()
 
-    isApproved.retry()
-
     return true
   }, [props.tokens, unit])
+
+  useEffect(() => {
+    isApproved.retry()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [approve.loading, approve.value, approve.error])
 
   const handleOnSubmit = handleSubmit(async (formValues) => {
     if (
