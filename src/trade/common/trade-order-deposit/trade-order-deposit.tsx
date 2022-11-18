@@ -18,7 +18,7 @@ export const TradeOrderDeposit: React.FC<TradeOrderDepositProps> = (props) => {
     <div className={clsx(props.className, styles.root)}>
       <div className={styles.header}>
         <Typography variant="body3">
-          Top up your Defihelper Balance to enable automation
+          Top up your DeFiHelper balance to pay blockchain fee
         </Typography>
         <Button
           variant="outlined"

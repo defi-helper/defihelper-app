@@ -2497,6 +2497,12 @@ export type SmartTradeMockHandlerCallDataType = {
   amountOut: Scalars['BigNumberType']
 }
 
+export type SmartTradeOrderBalanceType = {
+  __typename?: 'SmartTradeOrderBalanceType'
+  token: TokenType
+  balance: Scalars['BigNumberType']
+}
+
 export type SmartTradeOrderCallDataType =
   | SmartTradeMockHandlerCallDataType
   | SmartTradeSwapHandlerCallDataType
@@ -2526,6 +2532,7 @@ export type SmartTradeOrderListFilterInputType = {
   type?: Maybe<Array<SmartTradeOrderHandlerTypeEnum>>
   status?: Maybe<Array<SmartTradeOrderStatusEnum>>
   confirmed?: Maybe<Scalars['Boolean']>
+  claim?: Maybe<Scalars['Boolean']>
 }
 
 export type SmartTradeOrderListPaginationInputType = {
@@ -2550,6 +2557,7 @@ export type SmartTradeOrderListSortInputType = {
 export enum SmartTradeOrderListSortInputTypeColumnEnum {
   Id = 'id',
   CreatedAt = 'createdAt',
+  UpdatedAt = 'updatedAt',
 }
 
 export enum SmartTradeOrderStatusEnum {
@@ -2590,6 +2598,7 @@ export type SmartTradeOrderType = {
   tx: Scalars['EthereumTransactionHashType']
   lastCall?: Maybe<SmartTradeOrderCallHistoryType>
   tokens: Array<SmartTradeOrderTokenLinkType>
+  balances: Array<SmartTradeOrderBalanceType>
   /** Is order confirmed on blockchain */
   confirmed: Scalars['Boolean']
   /** Date of created */
@@ -2608,6 +2617,7 @@ export type SmartTradeSwapHandlerCallDataType = {
   path: Array<Scalars['EthereumAddressType']>
   amountIn: Scalars['BigNumberType']
   boughtPrice?: Maybe<Scalars['BigNumberType']>
+  swapPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapHandlerCallDataRouteType>
   takeProfit?: Maybe<SwapHandlerCallDataRouteType>
   activate?: Maybe<SmartTradeSwapHandlerCallDataActivateType>
@@ -2850,6 +2860,7 @@ export type SwapHandlerCallDataRouteType = {
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
+  moving: Scalars['Boolean']
 }
 
 export type SwapOrderCallDataActivateInputType = {
@@ -2935,7 +2946,7 @@ export enum TokenAliasLiquidityEnum {
 export type TokenAliasListFilterInputType = {
   blockchain?: Maybe<BlockchainFilterInputType>
   liquidity?: Maybe<TokenAliasLiquidityEnum>
-  symbol?: Maybe<Scalars['String']>
+  symbol?: Maybe<Array<Scalars['String']>>
   hasLogo?: Maybe<Scalars['Boolean']>
   search?: Maybe<Scalars['String']>
 }
@@ -7317,6 +7328,16 @@ export type TradeOrderListQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type TradeOrderUpdatedSubscriptionVariables = Exact<{
+  user: Scalars['UuidType']
+}>
+
+export type TradeOrderUpdatedSubscription = { __typename?: 'Subscription' } & {
+  onSmartTradeOrderUpdated: {
+    __typename?: 'SmartTradeOrderType'
+  } & TradeOrderFragmentFragment
+}
+
 export type TradeOrderFragmentFragment = {
   __typename?: 'SmartTradeOrderType'
 } & Pick<
@@ -7348,18 +7369,18 @@ export type TradeOrderFragmentFragment = {
         >)
       | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
           SmartTradeSwapHandlerCallDataType,
-          'amountIn' | 'exchange' | 'boughtPrice' | 'path'
+          'amountIn' | 'exchange' | 'boughtPrice' | 'path' | 'swapPrice'
         > & {
             stopLoss?: Maybe<
               { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
                 SwapHandlerCallDataRouteType,
-                'amountOut' | 'amountOutMin' | 'slippage'
+                'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
               >
             >
             takeProfit?: Maybe<
               { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
                 SwapHandlerCallDataRouteType,
-                'amountOut' | 'amountOutMin' | 'slippage'
+                'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
               >
             >
           })
@@ -7400,6 +7421,21 @@ export type TradeOrderFragmentFragment = {
                     TokenPriceFeedCoingeckoAddressType,
                     'type' | 'platform' | 'address'
                   >)
+              >
+            }
+        }
+    >
+    balances: Array<
+      { __typename?: 'SmartTradeOrderBalanceType' } & Pick<
+        SmartTradeOrderBalanceType,
+        'balance'
+      > & {
+          token: { __typename?: 'TokenType' } & Pick<
+            TokenType,
+            'id' | 'address' | 'symbol'
+          > & {
+              alias?: Maybe<
+                { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
               >
             }
         }

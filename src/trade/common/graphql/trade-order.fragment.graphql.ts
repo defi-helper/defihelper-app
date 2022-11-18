@@ -27,15 +27,18 @@ export const TRADE_ORDER_FRAGMENT = gql`
         exchange
         boughtPrice
         path
+        swapPrice
         stopLoss {
           amountOut
           amountOutMin
           slippage
+          moving
         }
         takeProfit {
           amountOut
           amountOutMin
           slippage
+          moving
         }
       }
     }
@@ -79,5 +82,16 @@ export const TRADE_ORDER_FRAGMENT = gql`
     }
     confirmed
     createdAt
+    balances {
+      token {
+        id
+        alias {
+          logoUrl
+        }
+        address
+        symbol
+      }
+      balance
+    }
   }
 `

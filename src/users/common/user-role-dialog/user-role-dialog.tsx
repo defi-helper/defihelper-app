@@ -32,7 +32,11 @@ export const UserRoleDialog: React.VFC<UserRoleDialogProps> = (props) => {
           control={control}
           render={({ field }) => (
             <Select {...field} label="Role" className={styles.input}>
-              <SelectOption value={UserRoleEnum.User}>User</SelectOption>
+              {Object.entries(UserRoleEnum).map(([key, value]) => (
+                <SelectOption key={key} value={value}>
+                  {value}
+                </SelectOption>
+              ))}
             </Select>
           )}
         />

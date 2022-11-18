@@ -15,11 +15,19 @@ import {
 import { hasBoughtPrice } from '~/trade/common/trade.types'
 import * as tradeSmartSellModel from '~/trade/trade-smart-sell/trade-smart-sell.model'
 
+export const webSocket = new WebSocket('wss://whattofarm.io/ws')
+
 export const reset = createEvent()
 
 export const fetchOrdersFx = createEffect(
   async (variables: TradeOrderListQueryVariables) => {
-    const data = await tradeApi.fetchOrders(variables)
+    const data = await tradeApi.fetchOrders({
+      ...variables,
+      filter: {
+        ...variables.filter,
+        my: true,
+      },
+    })
 
     return data
   }
@@ -53,20 +61,26 @@ export const updateOrderFx = createEffect(
 
 export type Orders = UnitValue<typeof fetchOrdersFx.doneData>
 
+export const updatedOrder = createEvent<Orders['list'][number]>()
+
 export const $orders = createStore<Orders | null>(null)
   .on(fetchOrdersFx.doneData, (_, payload) => payload)
   .on(tradeSmartSellModel.createOrderFx.doneData, (state, payload) => ({
     list: [payload, ...(state?.list ?? [])],
     pagination: state?.pagination ?? 0,
   }))
-  .on([cancelOrderFx.doneData, updateOrderFx.doneData], (state, payload) => ({
-    list:
-      state?.list.map((order) => (order.id === payload.id ? payload : order)) ??
-      [],
-    pagination: state?.pagination ?? 0,
-  }))
-  .on(claimOrderFx.doneData, (state, payload) => ({
-    list: state?.list.filter((order) => order.id !== payload.id) ?? [],
+  .on(
+    [cancelOrderFx.doneData, updateOrderFx.doneData, updatedOrder],
+    (state, payload) => ({
+      list:
+        state?.list.map((order) =>
+          order.id === payload.id ? payload : order
+        ) ?? [],
+      pagination: state?.pagination ?? 0,
+    })
+  )
+  .on(claimOrderFx.done, (state, { params }) => ({
+    list: state?.list.filter((order) => order.id !== params.id) ?? [],
     pagination: state?.pagination ?? 0,
   }))
   .reset(reset)
@@ -126,8 +140,11 @@ export const $editingOrder = createStore<string>('')
   .on(editStarted, (_, payload) => payload)
   .reset(editEnded)
 
+export const priceUpdated = createEvent()
+
 sample({
-  clock: $orders.updates,
+  source: $orders,
+  clock: [$orders.updates, priceUpdated],
   fn: (orders) =>
     (orders?.list ?? [])
       .map((order) => ({

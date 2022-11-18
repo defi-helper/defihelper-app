@@ -3,6 +3,7 @@ import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
 import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
+
 import { Button } from '~/common/button'
 import { dateUtils } from '~/common/date-utils'
 import { Icon } from '~/common/icon'
@@ -21,17 +22,17 @@ export const ProtocolMediaActivity: React.VFC = () => {
 
   const handleReadMore = () => {
     model.fetchSocialPostsFx({
-      ...params,
+      protocolId: params.protocolId,
       offset: (socialPostsOffset.current += 3),
     })
   }
 
   useEffect(() => {
     model.fetchSocialPostsFx({
-      ...params,
+      protocolId: params.protocolId,
       offset: 0,
     })
-  }, [params])
+  }, [params.protocolId])
 
   useEffect(() => {
     return () => model.reset()

@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import { useForm } from 'react-hook-form'
+import contracts from '@defihelper/networks/contracts.json'
 
 import { Head } from '~/common/head'
 import { AppLayout } from '~/layouts'
@@ -59,7 +60,9 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentTab, setCurrentTab] = useState(0)
   const [currentExchange, setCurrentExchange] = useState('')
   const [currentPair, setCurrentPair] = useState('')
-  const [currentWalletAddress, setCurrentWalletAddress] = useState('')
+  const [currentWalletAddress, setCurrentWalletAddress] = useState<
+    string | undefined
+  >(undefined)
   const [searchPair, setSearchPair] = useState('')
   const [currentSlippage, setCurrentSlippage] = useState('3')
   const [transactionDeadline, setTransactionDeadline] = useState('30')
@@ -88,7 +91,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   }
 
   const exchanges = useStore(model.$exchanges)
-  const pairs = useStore(model.$pairs)
+  const pairs = useStore(model.$pairsWithAlias)
   const settingsWallets = useStore(settingsWalletModel.$wallets)
   const loadingExchanges = useStore(model.fetchExchangesFx.pending)
   const loadingPairs = useStore(model.fetchPairsFx.pending)
@@ -114,10 +117,9 @@ export const Trade: React.VFC<TradeProps> = () => {
     [wallets]
   )
 
-  const wallet = useMemo(
-    () => walletsMap.get(currentWalletAddress),
-    [currentWalletAddress, walletsMap]
-  )
+  const wallet = useMemo(() => {
+    if (currentWalletAddress) return walletsMap.get(currentWalletAddress)
+  }, [currentWalletAddress, walletsMap])
 
   useEffect(() => {
     model.fetchExchangesFx(wallet?.network ?? config.DEFAULT_CHAIN_ID)
@@ -152,9 +154,7 @@ export const Trade: React.VFC<TradeProps> = () => {
       )
     })
 
-    const walletId = findedWallet?.id ?? correctWallets[0]?.id
-
-    if (!walletId) return
+    const walletId = findedWallet?.id
 
     setCurrentWalletAddress(walletId)
   }, [wallets, currentWallet])
@@ -252,6 +252,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           slippage={currentSlippage}
           key={String(currentPair || currentWalletAddress || currentExchange)}
           exchangesMap={exchangesMap}
+          currentPair={currentPairObj}
         />
       </>
     ),
@@ -334,15 +335,16 @@ export const Trade: React.VFC<TradeProps> = () => {
   )
 
   const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
-    if (!wallet) return
+    if (!wallet) return switchNetwork('1').catch(console.error)
 
     await switchNetwork(wallet.network).catch(console.error)
   }, [wallet])
 
-  const currentNetworkCorrect =
-    currentWallet?.chainId === 'main'
-      ? currentWallet?.chainId === wallet?.network
-      : currentWallet?.chainId === wallet?.network
+  const currentNetworkCorrect = (currentWallet?.chainId ?? '') in model.networks
+
+  const hasContract =
+    'SmartTradeRouter' in
+    (contracts[currentWallet?.chainId as keyof typeof contracts] ?? {})
 
   const handleSearchPair = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchPair(event.target.value)
@@ -362,6 +364,7 @@ export const Trade: React.VFC<TradeProps> = () => {
         {wallets.length ? (
           <Select
             label="Wallet"
+            placeholder="Choose wallet"
             value={currentWalletAddress}
             onChange={handleChangeWallet}
           >
@@ -454,10 +457,12 @@ export const Trade: React.VFC<TradeProps> = () => {
             .map((pair, index) => (
               <SelectOption value={pair.pairInfo?.address} key={String(index)}>
                 <div className={styles.tickerIcons}>
-                  {pair.tokenAlias.map((alias) =>
-                    alias?.logoUrl ? (
+                  {pair.tokensAlias.map((alias, aliasKey) => {
+                    const key = String(index + aliasKey)
+
+                    return alias?.logoUrl ? (
                       <img
-                        key={alias.id}
+                        key={key}
                         alt=""
                         src={alias.logoUrl}
                         width="24"
@@ -465,11 +470,11 @@ export const Trade: React.VFC<TradeProps> = () => {
                         className={styles.pairIcon}
                       />
                     ) : (
-                      <Paper className={styles.pairIconUnknown} key={alias?.id}>
+                      <Paper className={styles.pairIconUnknown} key={key}>
                         <Icon icon="unknownNetwork" width="16" height="16" />
                       </Paper>
                     )
-                  )}
+                  })}
                 </div>
                 {pair.pairInfo?.ticker}
               </SelectOption>
@@ -482,10 +487,10 @@ export const Trade: React.VFC<TradeProps> = () => {
             <div className={styles.ticker}>
               {currentPairObj && (
                 <div className={styles.tickerIcons}>
-                  {currentPairObj.tokenAlias.map((alias) =>
+                  {currentPairObj.tokensAlias.map((alias, index) =>
                     alias?.logoUrl ? (
                       <img
-                        key={alias.id}
+                        key={String(index)}
                         alt=""
                         src={alias.logoUrl}
                         width="24"
@@ -493,7 +498,10 @@ export const Trade: React.VFC<TradeProps> = () => {
                         className={styles.pairIcon}
                       />
                     ) : (
-                      <Paper className={styles.pairIconUnknown} key={alias?.id}>
+                      <Paper
+                        className={styles.pairIconUnknown}
+                        key={String(index)}
+                      >
                         <Icon icon="unknownNetwork" width="16" height="16" />
                       </Paper>
                     )
@@ -595,45 +603,50 @@ export const Trade: React.VFC<TradeProps> = () => {
                   !(
                     [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
                   ).includes(String(user?.role))) ||
-                !currentNetworkCorrect) &&
+                !currentNetworkCorrect ||
+                !hasContract) &&
                 styles.selectsBodyBlur
             )}
           >
             <div className={styles.tradeSelectHeader}>
-              <Dropdown
-                control={(open) => (
-                  <Typography
-                    variant="body3"
-                    as={ButtonBase}
-                    transform="uppercase"
-                    family="mono"
-                    className={styles.tradeSellSelect}
-                  >
-                    {currentSelect}
-                    <Icon
-                      icon={open ? 'arrowUp' : 'arrowDown'}
-                      width="16"
-                      height="16"
-                    />
-                  </Typography>
-                )}
-                placement="bottom-start"
-                offset={[0, 8]}
-              >
-                {(close) =>
-                  Object.values(Selects).map((select) => (
+              {(
+                [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
+              ).includes(String(user?.role)) && (
+                <Dropdown
+                  control={(open) => (
                     <Typography
                       variant="body3"
-                      key={select}
-                      onClick={handleChangeSelect(select, close)}
                       as={ButtonBase}
                       transform="uppercase"
+                      family="mono"
+                      className={styles.tradeSellSelect}
                     >
-                      {select}
+                      {currentSelect}
+                      <Icon
+                        icon={open ? 'arrowUp' : 'arrowDown'}
+                        width="16"
+                        height="16"
+                      />
                     </Typography>
-                  ))
-                }
-              </Dropdown>
+                  )}
+                  placement="bottom-start"
+                  offset={[0, 8]}
+                >
+                  {(close) =>
+                    Object.values(Selects).map((select) => (
+                      <Typography
+                        variant="body3"
+                        key={select}
+                        onClick={handleChangeSelect(select, close)}
+                        as={ButtonBase}
+                        transform="uppercase"
+                      >
+                        {select}
+                      </Typography>
+                    ))
+                  }
+                </Dropdown>
+              )}
               <Dropdown
                 control={
                   <ButtonBase>
@@ -698,6 +711,27 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
             {SelectComponents[currentSelect]}
           </div>
+          {currentNetworkCorrect && !hasContract && currentWallet?.chainId && (
+            <div className={styles.beta}>
+              <Typography
+                variant="body2"
+                align="center"
+                family="mono"
+                className={styles.betaTitle}
+              >
+                {networksConfig[currentWallet.chainId]?.title} not supported.
+                Please switch your network
+              </Typography>
+              <Button
+                color="green"
+                className={styles.switchNetwork}
+                onClick={handleSwitchNetwork}
+                loading={switchNetworkState.loading}
+              >
+                switch network
+              </Button>
+            </div>
+          )}
           {!currentNetworkCorrect && (
             <div className={styles.beta}>
               <Typography

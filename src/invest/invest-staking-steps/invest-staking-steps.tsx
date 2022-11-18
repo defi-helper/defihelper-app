@@ -28,6 +28,7 @@ import * as stakingAutomatesModel from '~/staking/staking-automates/staking-auto
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
 import * as styles from './invest-staking-steps.css'
+import { InvestStakingStepsTelegramConnected } from './invest-staking-steps-telegram-connected'
 
 export type InvestStakingStepsProps = {
   className?: string
@@ -268,7 +269,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
 
   const steps = [
     ...initialSteps[canMigrate ? 'migrate' : 'buy'],
-    !deploy && !canMigrate ? (
+    !deploy ? (
       <InvestStakingStepsDeploy
         key={2}
         onDeploy={handleDeploy}
@@ -295,12 +296,9 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       contract={props.contract}
       deployedContract={deploy ?? deployState.value?.address}
     />,
-    <InvestStakingStepsSuccess
-      key={4}
-      contract={props.contract}
-      onSubmit={handleNextStep}
-    />,
-    <InvestStakingStepsTelegram key={5} />,
+    <InvestStakingStepsSuccess key={4} onSubmit={handleNextStep} />,
+    <InvestStakingStepsTelegram key={5} onSubmit={handleNextStep} />,
+    <InvestStakingStepsTelegramConnected key={6} />,
   ].filter(Boolean)
 
   const currentStepObj = steps[currentStep % steps.length]

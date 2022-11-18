@@ -15,7 +15,6 @@ import { SettingsIntegrationBitmartForm } from '~/settings/common/settings-integ
 import { SettingsIntegrationCoinexForm } from '~/settings/common/settings-integration-coinex-form'
 import { SettingsIntegrationPoloniexForm } from '~/settings/common/settings-integration-poloniex-form'
 import { SettingsIntegrationBybitForm } from '~/settings/common/settings-integration-bybit-form'
-import { SettingsIntegrationFtxForm } from '~/settings/common/settings-integration-ftx-form'
 import { SettingsIntegrationGateioForm } from '../settings-integration-gateio-form'
 import { SettingsIntegrationLbankForm } from '../settings-integration-lbank-form'
 import { WalletExchangeTypeEnum } from '~/api'
@@ -73,14 +72,6 @@ const forms: Record<string, { title: string; form: React.ElementType }> = {
   [WalletExchangeTypeEnum.Poloniex]: {
     title: 'Poloniex',
     form: SettingsIntegrationPoloniexForm,
-  },
-  [WalletExchangeTypeEnum.Ftx]: {
-    title: 'FTX',
-    form: SettingsIntegrationFtxForm,
-  },
-  [WalletExchangeTypeEnum.Ftxus]: {
-    title: 'FTX US',
-    form: SettingsIntegrationFtxForm,
   },
   [WalletExchangeTypeEnum.Bybit]: {
     title: 'Bybit',

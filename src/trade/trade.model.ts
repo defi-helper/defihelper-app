@@ -1,4 +1,12 @@
-import { createStore, createEffect, createEvent, UnitValue } from 'effector'
+import {
+  createStore,
+  createEffect,
+  createEvent,
+  UnitValue,
+  combine,
+  guard,
+  sample,
+} from 'effector'
 import contracts from '@defihelper/networks/contracts.json'
 
 import { loadAdapter } from '~/common/load-adapter'
@@ -30,32 +38,52 @@ export const fetchPairsFx = createEffect(
 
     if (!data || message) throw new Error(message ?? 'something went wrong')
 
-    return Promise.all(
-      data.list.map(async (pair) => {
-        const res = await Promise.all(
-          pair.pairInfo.tokens.map(async ({ symbol }) => {
-            const tokenIcon = await tradeApi.tokenAlias({
-              filter: {
-                symbol,
-              },
-            })
-
-            return tokenIcon
-          })
-        )
-
-        return {
-          ...pair,
-          tokenAlias: res,
-        }
-      })
-    )
+    return data.list
   }
 )
 
 export const $pairs = createStore<UnitValue<typeof fetchPairsFx.doneData>>([])
   .on(fetchPairsFx.doneData, (_, payload) => payload)
   .reset(reset)
+
+export const fetchTokensAliasFx = createEffect(async (symbols: string[]) => {
+  return tradeApi.tokenAlias({
+    filter: {
+      symbol: symbols,
+    },
+  })
+})
+
+export const $tokensAlias = createStore<
+  UnitValue<typeof fetchTokensAliasFx.doneData>
+>({})
+  .on(fetchTokensAliasFx.doneData, (_, payload) => payload)
+  .reset(reset)
+
+export const $pairsWithAlias = combine(
+  $pairs,
+  $tokensAlias,
+  (pairs, tokensAlias) => {
+    return pairs.map((pair) => ({
+      ...pair,
+      tokensAlias: pair.pairInfo.tokens.map(
+        ({ symbol }) => tokensAlias?.[symbol] ?? null
+      ),
+    }))
+  }
+)
+
+sample({
+  clock: guard({
+    clock: $pairs.updates,
+    filter: (pairs) => Boolean(pairs.length),
+  }),
+  fn: (pairs) =>
+    pairs.flatMap((pair) =>
+      pair.pairInfo.tokens.flatMap(({ symbol }) => symbol)
+    ),
+  target: fetchTokensAliasFx,
+})
 
 export const fetchExchangesFx = createEffect(async (network: string) => {
   const { data, message } = await tradeApi.exchanges([networks[network]])
@@ -75,15 +103,6 @@ export const fetchExchangesFx = createEffect(async (network: string) => {
 
   return data
     .map((item) => {
-      if (item.Name.toLowerCase() === 'pancakeswap') {
-        // TODO: remove
-        return {
-          ...item,
-          Address: '0x10ED43C718714eb63d5aA57B78B54704E256024E',
-          Liquidity: 0,
-        }
-      }
-
       const Liquidity = poolInfoMap[item.Name.toLowerCase()]?.Liquidity ?? 0
 
       return {

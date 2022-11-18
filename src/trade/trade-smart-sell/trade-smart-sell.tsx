@@ -23,7 +23,7 @@ import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
 import { useDialog } from '~/common/dialog'
-import { Exchange, tradeApi } from '~/trade/common/trade.api'
+import { Exchange, Pair } from '~/trade/common/trade.api'
 import * as model from './trade-smart-sell.model'
 import * as styles from './trade-smart-sell.css'
 
@@ -40,6 +40,7 @@ export type TradeSmartSellProps = {
   transactionDeadline: string
   slippage: string
   exchangesMap: Map<string, Exchange>
+  currentPair?: Pair
 }
 
 type FormValues = {
@@ -112,10 +113,13 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     await res?.tx?.wait()
 
-    isApproved.retry()
-
     return true
   }, [props.tokens, unit])
+
+  useEffect(() => {
+    isApproved.retry()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [approve.loading, approve.value, approve.error])
 
   const handleOnSubmit = handleSubmit(async (formValues) => {
     if (
@@ -135,45 +139,43 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     const [tokenAddress] = path.slice(-1)
 
-    const balance = await props.router.balanceOf(tokenAddress)
-
-    const pairs = await tradeApi.pairs([], [props.exchangeAddress])
-
-    const pair = pairs.data.list.find(({ pairInfo }) =>
-      pairInfo.tokens.some(
-        ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
-      )
-    )
-
-    const token = pair?.pairInfo.tokens.find(
+    const token = props.currentPair?.pairInfo.tokens.find(
       ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
     )
 
-    await openTradeConfirmDialog({
-      network: currentUserWallet.network,
-      boughtPrice: price.value,
-      exchange,
-      tokens: pair?.pairInfo.tokens,
-      name: currentUserWallet.name,
-      totalRecieve: balance,
-      boughtToken: token,
-    })
+    const priceMultiplied = bignumberUtils.mul(price.value, unit)
 
     try {
+      await openTradeConfirmDialog({
+        network: currentUserWallet.network,
+        boughtPrice: price.value,
+        exchange,
+        tokens: props.currentPair?.pairInfo.tokens,
+        name: currentUserWallet.name,
+        totalRecieve: formValues.unit,
+        boughtToken: token,
+      })
+
       const result = await props.swap?.createOrder(
         props.exchangeAddress,
         path,
         formValues.unit,
         formValues.stopLoss
           ? {
-              amountOut: formValues.stopLossValue,
+              amountOut: bignumberUtils.mul(
+                priceMultiplied,
+                bignumberUtils.div(1 - formValues.stopLossPercent, 99)
+              ),
               slippage: '100',
               moving: formValues.moving,
             }
           : null,
         formValues.takeProfit
           ? {
-              amountOut: formValues.takeProfitValue,
+              amountOut: bignumberUtils.mul(
+                priceMultiplied,
+                bignumberUtils.div(1 + formValues.stopLossPercent, 100)
+              ),
               slippage: props.slippage,
             }
           : null,
@@ -355,6 +357,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   useInterval(
     () => {
       balanceOf.retry()
+      price.retry()
     },
     currentWallet ? 15000 : null
   )
