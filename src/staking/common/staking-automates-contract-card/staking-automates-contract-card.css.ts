@@ -227,3 +227,11 @@ export const negative = style({
 export const positive = style({
   color: theme.colors.common.green2,
 })
+
+export const balance = style({
+  marginBottom: 8,
+})
+
+export const balanceInvest = style({
+  marginBottom: 24,
+})

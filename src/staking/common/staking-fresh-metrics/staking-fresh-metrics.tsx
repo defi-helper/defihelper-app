@@ -17,7 +17,7 @@ export const StakingFreshMetrics: React.VFC<StakingFreshMetricsProps> = (
     <Dropdown
       control={
         <ButtonBase className={clsx(styles.freshMetricsIcon, props.className)}>
-          <Icon icon="light" />
+          <Icon icon="light" height="1em" width="1em" />
         </ButtonBase>
       }
       trigger="hover"
