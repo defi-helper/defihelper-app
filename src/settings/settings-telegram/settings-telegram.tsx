@@ -56,9 +56,9 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
       radius={4}
       className={clsx(
         styles.root,
-        leftDays > 4 && styles.green,
+        leftDays >= 4 && styles.green,
         leftDays < 1 && styles.red,
-        leftDays > 1 && leftDays < 4 && styles.yellow
+        leftDays >= 1 && leftDays < 4 && styles.yellow
       )}
     >
       <img alt="" src={notification} className={styles.notification} />
