@@ -170,6 +170,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               moving: formValues.moving,
             }
           : null,
+        null,
         formValues.takeProfit
           ? {
               amountOut: bignumberUtils.mul(
@@ -179,6 +180,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               slippage: props.slippage,
             }
           : null,
+        null,
         {}
       )
 
