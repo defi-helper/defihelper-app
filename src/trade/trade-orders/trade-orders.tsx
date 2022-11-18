@@ -671,14 +671,16 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     order.status ===
                                       SmartTradeOrderStatusEnum.Pending && (
                                       <TradeStatusChart
-                                        stopLoss={
+                                        stopLoss={bignumberUtils.div(
                                           callDataWithBoughtPrice.stopLoss
-                                            ?.amountOut
-                                        }
-                                        takeProfit={
+                                            ?.amountOut,
+                                          callDataWithBoughtPrice.amountIn
+                                        )}
+                                        takeProfit={bignumberUtils.div(
                                           callDataWithBoughtPrice.takeProfit
-                                            ?.amountOut
-                                        }
+                                            ?.amountOut,
+                                          callDataWithBoughtPrice.amountIn
+                                        )}
                                         buy={boughtPrice ?? currentPrice}
                                         profit={currentPrice}
                                         className={styles.contractStatus}
@@ -754,7 +756,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     {bignumberUtils.format(
                                       balances?.[0]?.balance
                                         ? bignumberUtils.format(
-                                            balances[0].balance
+                                            balances[0].balance,
+                                            2,
+                                            false
                                           )
                                         : '0'
                                     )}
