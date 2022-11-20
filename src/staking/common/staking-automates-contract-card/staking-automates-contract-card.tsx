@@ -170,6 +170,24 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Dropdown>
             )}
           </div>
+          <Typography variant="h3" as="div">
+            $
+            {bignumberUtils.format(
+              props.freshMetrics?.myStaked ?? props.balance
+            )}
+            {!isEmpty(props.freshMetrics) && <StakingFreshMetrics />}
+          </Typography>
+          <Typography
+            variant="body2"
+            as="div"
+            className={clsx(styles.balanceInvest, {
+              [styles.negative]: bignumberUtils.lt(props.balanceInvest, 0),
+              [styles.positive]: bignumberUtils.gt(props.balanceInvest, 0),
+            })}
+          >
+            {bignumberUtils.gt(props.balanceInvest, 0) ? '+' : null}
+            {bignumberUtils.format(props.balanceInvest, 2, false)}
+          </Typography>
           <div className={styles.row}>
             <Typography
               variant="body2"
@@ -200,41 +218,6 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
             <Typography variant="body2" as="span">
               {networksConfig[props.network]?.title}
-            </Typography>
-          </div>
-          <div className={styles.row}>
-            <Typography
-              variant="body2"
-              as="span"
-              className={clsx(styles.infoTitle, styles.opacity)}
-            >
-              Balance
-            </Typography>
-            <Typography variant="body2" as="span">
-              $
-              {bignumberUtils.format(
-                props.freshMetrics?.myStaked ?? props.balance
-              )}{' '}
-              {bignumberUtils.gt(props.balanceInvest, '0.01') && (
-                <Typography
-                  variant="inherit"
-                  className={clsx({
-                    [styles.negative]: bignumberUtils.lt(
-                      props.balanceInvest,
-                      0
-                    ),
-                    [styles.positive]: bignumberUtils.gt(
-                      props.balanceInvest,
-                      0
-                    ),
-                  })}
-                >
-                  ({bignumberUtils.lt(props.balanceInvest, 0) ? '-' : null}
-                  {bignumberUtils.gt(props.balanceInvest, 0) ? '+' : null}$
-                  {bignumberUtils.format(props.balanceInvest)})
-                </Typography>
-              )}
-              {!isEmpty(props.freshMetrics) && <StakingFreshMetrics />}
             </Typography>
           </div>
           {props.protocol && (

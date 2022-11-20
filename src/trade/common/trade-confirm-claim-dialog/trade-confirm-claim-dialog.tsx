@@ -27,7 +27,7 @@ export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
     return (
       <Dialog className={styles.root}>
         <Typography variant="h4" className={styles.title}>
-          Confirmation of a transaction
+          Order confirmation
         </Typography>
         <div className={styles.row}>
           <Typography variant="body2">Wallet</Typography>

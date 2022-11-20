@@ -90,11 +90,20 @@ export type SmartTradeSwapHandler = {
         slippage: string | number
         moving: boolean
       } | null,
+      stopLoss2: {
+        amountOut: string
+        slippage: string | number
+        moving: boolean
+      } | null,
       takeProfit: {
         amountOut: string
         slippage: string | number
       } | null,
-      deposit?: {
+      activate: {
+        amountOut: string
+        direction: 'gt' | 'lt'
+      } | null,
+      deposit: {
         native?: string
       }
     ) => Promise<{
