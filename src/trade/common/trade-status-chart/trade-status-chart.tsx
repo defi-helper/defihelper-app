@@ -68,7 +68,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
               {props.moving ? 'TSL' : 'SL'}
             </Typography>
             <Typography variant="inherit" className={styles.grey}>
-              {bignumberUtils.format(props.stopLoss)}
+              {bignumberUtils.format(props.stopLoss, 2, false)}
             </Typography>
           </Typography>
         </div>

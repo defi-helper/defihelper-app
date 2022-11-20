@@ -143,8 +143,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
     )
 
-    const priceMultiplied = bignumberUtils.mul(price.value, unit)
-
     try {
       await openTradeConfirmDialog({
         network: currentUserWallet.network,
@@ -163,8 +161,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         formValues.stopLoss
           ? {
               amountOut: bignumberUtils.mul(
-                priceMultiplied,
-                bignumberUtils.div(1 - formValues.stopLossPercent, 99)
+                formValues.unit,
+                formValues.stopLossValue
               ),
               slippage: '100',
               moving: formValues.moving,
@@ -174,8 +172,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         formValues.takeProfit
           ? {
               amountOut: bignumberUtils.mul(
-                priceMultiplied,
-                bignumberUtils.div(1 + formValues.stopLossPercent, 100)
+                formValues.unit,
+                formValues.takeProfitValue
               ),
               slippage: props.slippage,
             }
