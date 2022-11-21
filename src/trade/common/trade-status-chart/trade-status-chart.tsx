@@ -38,12 +38,23 @@ const getPercentCurry =
   }
 
 export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
+  const takeProfit = bignumberUtils.gt(props.takeProfit, 0)
+    ? props.takeProfit
+    : undefined
+  const stopLoss = bignumberUtils.gt(props.stopLoss, 0)
+    ? props.stopLoss
+    : undefined
+
   const total =
-    props.takeProfit ??
-    (bignumberUtils.gt(props.profit, props.buy) ? props.profit : props.buy)
+    takeProfit ??
+    (bignumberUtils.gt(props.profit, props.buy) ? props.profit : props.buy) ??
+    props.buy ??
+    props.profit
   const min =
-    props.stopLoss ??
-    (bignumberUtils.lt(props.profit, props.buy) ? props.profit : props.buy)
+    stopLoss ??
+    (bignumberUtils.lt(props.profit, props.buy) ? props.profit : props.buy) ??
+    props.buy ??
+    props.profit
 
   const getPercent = useMemo(() => getPercentCurry(min)(total), [total, min])
 
@@ -57,7 +68,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
 
   return (
     <div className={clsx(styles.root, props.className)}>
-      {props.stopLoss && (
+      {bignumberUtils.gt(props.stopLoss, 0) && (
         <div className={styles.stopLossLine}>
           <Typography as="div" className={styles.stopLoss}>
             <Typography
@@ -139,7 +150,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
           </div>
         )}
       </div>
-      {props.takeProfit && (
+      {bignumberUtils.gt(props.takeProfit, 0) && (
         <div className={styles.takeProfitLine}>
           <Typography as="div" className={styles.takeProfit}>
             <Typography

@@ -81,12 +81,6 @@ export const TradeEditDialog: React.VFC<TradeEditDialogProps> = (props) => {
         </Typography>
       </div>
       <div className={styles.row}>
-        <Typography variant="body2">Mode</Typography>
-        <Typography variant="body2" as="div">
-          Buy
-        </Typography>
-      </div>
-      <div className={styles.row}>
         <Typography variant="body2">Bought price</Typography>
         <NumericalInput
           value={boughtPrice}
