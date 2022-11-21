@@ -10,6 +10,7 @@ export type TradePercentagePickerProps = {
   onChange?: (value: string) => void
   value?: string
   available?: string
+  disabled?: boolean
 }
 
 const PERCENTAGES = [5, 10, 25, 50, 100].map(String)
@@ -60,6 +61,7 @@ export const TradePercentagePicker: React.VFC<TradePercentagePickerProps> = (
         <ButtonBase
           key={percent}
           onClick={handleChange(percent)}
+          disabled={props.disabled}
           className={clsx(styles.item, {
             [styles.itemActive]: currentPercent === percent,
           })}

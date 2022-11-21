@@ -6,7 +6,6 @@ import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
 import { networksConfig } from '~/networks-config'
 import { Exchange, Pair, Token } from '~/trade/common/trade.api'
-import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './trade-confirm-claim-dialog.css'
 
 export type TradeConfirmClaimDialogProps = {
@@ -52,25 +51,6 @@ export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
           <Typography variant="body2">Trading Pair</Typography>
           <Typography variant="body2" as="div" className={styles.contractName}>
             {props.tokens?.map(({ symbol }) => symbol).join('/')}
-          </Typography>
-        </div>
-        <div className={styles.row}>
-          <Typography variant="body2">Mode</Typography>
-          <Typography variant="body2" as="div">
-            Buy
-          </Typography>
-        </div>
-        <div className={styles.row}>
-          <Typography variant="body2">Bought price</Typography>
-          <Typography variant="body2" as="div">
-            {bignumberUtils.format(props.boughtPrice)}{' '}
-            {props.boughtToken?.symbol}
-          </Typography>
-        </div>
-        <div className={styles.row}>
-          <Typography variant="body2">Total Receive</Typography>
-          <Typography variant="body2" as="div">
-            {bignumberUtils.format(props.totalRecieve)}
           </Typography>
         </div>
         <Button

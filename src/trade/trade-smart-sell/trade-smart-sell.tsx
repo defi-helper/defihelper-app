@@ -402,6 +402,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   </>
                 }
                 rightSide={props.tokens?.[0]?.symbol}
+                disabled={formState.isSubmitting}
                 {...field}
               />
             )}
@@ -410,6 +411,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             value={unit}
             available={balanceOf.value}
             onChange={(value) => setValue('unit', value)}
+            disabled={formState.isSubmitting}
           />
           <div>
             <Typography
@@ -419,7 +421,10 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               className={styles.currentPrice}
             >
               Current Price:{' '}
-              <ButtonBase className={styles.currentPriceButton}>
+              <ButtonBase
+                className={styles.currentPriceButton}
+                disabled={formState.isSubmitting}
+              >
                 {bignumberUtils.format(price.value, 6)}{' '}
                 {props.tokens?.[1]?.symbol}
               </ButtonBase>
@@ -435,6 +440,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               size="small"
               checked={takeProfit}
               onChange={({ target }) => setValue('takeProfit', target.checked)}
+              disabled={formState.isSubmitting}
             />
           </div>
           {takeProfit && (
@@ -445,6 +451,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 onChange={handleChangeTakeProfitValue}
                 onFocus={toggleTakeProfitFocus}
                 onBlur={toggleTakeProfitFocus}
+                disabled={formState.isSubmitting}
               />
               <div className={styles.trailingBuy}>
                 <NumericalInput
@@ -455,6 +462,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   value={takeProfitPercent}
                   onChange={handleChangeTakeProfit}
                   size="small"
+                  disabled={formState.isSubmitting}
                 />
                 <Slider
                   className={styles.slider}
@@ -462,6 +470,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   min={0}
                   max={100}
                   onChange={handleChangeTakeProfit}
+                  disabled={formState.isSubmitting}
                 />
               </div>
             </>
@@ -476,6 +485,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               size="small"
               checked={stopLoss}
               onChange={({ target }) => setValue('stopLoss', target.checked)}
+              disabled={formState.isSubmitting}
             />
           </div>
           {stopLoss && (
@@ -486,6 +496,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 onChange={handleChangeStopLossValue}
                 onFocus={toggleStopLossFocus}
                 onBlur={toggleStopLossFocus}
+                disabled={formState.isSubmitting}
               />
               <div className={styles.trailingBuy}>
                 <NumericalInput
@@ -497,6 +508,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   max={99}
                   onChange={handleChangeStopLoss}
                   size="small"
+                  disabled={formState.isSubmitting}
                 />
                 <Slider
                   className={styles.slider}
@@ -505,6 +517,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   min={0}
                   max={99}
                   onChange={handleChangeStopLoss}
+                  disabled={formState.isSubmitting}
                 />
               </div>
               <div className={styles.trailingBuyTitle}>
@@ -534,6 +547,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   size="small"
                   onChange={({ target }) => setValue('moving', target.checked)}
                   checked={moving}
+                  disabled={formState.isSubmitting}
                 />
               </div>
             </>
