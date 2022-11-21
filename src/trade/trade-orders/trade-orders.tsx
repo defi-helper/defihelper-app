@@ -28,7 +28,7 @@ import { TradeStatusChart } from '~/trade/common/trade-status-chart'
 import { hasBoughtPrice, Order } from '~/trade/common/trade.types'
 import { Exchange, tradeApi } from '~/trade/common/trade.api'
 import { TradeOrderDeposit } from '~/trade/common/trade-order-deposit'
-import { useWalletConnect } from '~/wallets/wallet-connect'
+import { useWalletConnect, WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { switchNetwork } from '~/wallets/common'
 import {
@@ -41,13 +41,14 @@ import {
 import { analytics } from '~/analytics'
 import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
 import { useQueryParams } from '~/common/hooks'
+import { config } from '~/config'
+import { useTradeUpdated } from '../common/subscriptions'
+import { StakingErrorDialog } from '~/staking/common'
 import * as settingsWalletModel from '~/settings/settings-wallets/settings-wallets.model'
 import { authModel } from '~/auth'
 import { TradeEditDialog } from '~/trade/common/trade-edit-dialog'
 import * as styles from './trade-orders.css'
 import * as model from './trade-orders.model'
-import { config } from '~/config'
-import { useTradeUpdated } from '../common/subscriptions'
 
 export type TradeOrdersProps = {
   className?: string
@@ -79,8 +80,7 @@ const statuses = {
 }
 
 const titles: Record<string, string> = {
-  [SmartTradeOrderStatusEnum.Processed]: 'Closed at Market price',
-  [SmartTradeOrderStatusEnum.Canceled]: 'Stop loss finished',
+  [SmartTradeOrderStatusEnum.Canceled]: 'Order cancelled by user',
   [SmartTradeOrderStatusEnum.Succeeded]: 'Stop loss finished',
 }
 
@@ -108,12 +108,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   const [updatingOrderId, setUpdatingOrderId] = useState('')
 
   const [openTradeEditDialog] = useDialog(TradeEditDialog)
+  const [openErrorDialog] = useDialog(StakingErrorDialog)
+  const [openSuccess] = useDialog(SettingsSuccessDialog)
+  const [openBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
 
   const handleConnect = useWalletConnect()
   const currentWallet = walletNetworkModel.useWalletNetwork()
-
-  const [openSuccess] = useDialog(SettingsSuccessDialog)
-  const [openBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
 
   const handleChangeTab = (tab: Tabs) => () => {
     setCurrentTab(tab)
@@ -278,6 +278,19 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         model.editEnded()
       }
     }
+
+  const handleWrongAddress =
+    (order: typeof orders.list[number]) => async () => {
+      openErrorDialog({
+        contractName:
+          order.tokens.map(({ token }) => token.symbol).join('/') ?? '',
+        address: order.owner.address,
+        network: order.owner.network,
+      }).catch(console.error)
+    }
+
+  const handleSwitchNetwork = (order: typeof orders.list[number]) => () =>
+    switchNetwork(order.owner.network).catch(console.error)
 
   const user = useStore(authModel.$user)
 
@@ -502,6 +515,34 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     100
                   )
 
+                  const wrongAccount =
+                    currentWallet?.account !== order.owner.address &&
+                    currentWallet?.chainId !== order.owner.network
+
+                  const wrongNetwork =
+                    String(currentWallet?.chainId) !== order.owner.network
+                      ? handleSwitchNetwork(order)
+                      : null
+
+                  const claim =
+                    wrongNetwork ??
+                    (wrongAccount
+                      ? handleWrongAddress(order)
+                      : handleClaim(order))
+
+                  const cancel =
+                    wrongNetwork ??
+                    (wrongAccount
+                      ? handleWrongAddress(order)
+                      : async () => {
+                          setUpdatingOrderId(order.id)
+
+                          props.onCancelOrder({
+                            orderNumber: order.number,
+                            id: order.id,
+                          })
+                        })
+
                   return (
                     <TradeOrderDeposit
                       key={order.id}
@@ -597,7 +638,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               )}
                               <Typography className={styles.fs12} as="div">
                                 {tokensAmountInOut
-                                  ? bignumberUtils.format(tokensAmountInOut)
+                                  ? bignumberUtils.toFixed(tokensAmountInOut, 2)
                                   : '-'}{' '}
                                 {order.tokens[0].token.symbol}
                               </Typography>
@@ -654,17 +695,23 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               {order.status ===
                                 SmartTradeOrderStatusEnum.Succeeded &&
                               !order.claim ? (
-                                <Button
-                                  color="green"
-                                  onClick={handleClaim(order)}
-                                  loading={claimingOrder === order.id}
-                                  disabled={Boolean(
-                                    claimingOrder.length &&
-                                      claimingOrder !== order.id
-                                  )}
+                                <WalletConnect
+                                  fallback={
+                                    <Button color="green">Claim</Button>
+                                  }
                                 >
-                                  Claim
-                                </Button>
+                                  <Button
+                                    color="green"
+                                    onClick={claim}
+                                    loading={claimingOrder === order.id}
+                                    disabled={Boolean(
+                                      claimingOrder.length &&
+                                        claimingOrder !== order.id
+                                    )}
+                                  >
+                                    Claim
+                                  </Button>
+                                </WalletConnect>
                               ) : (
                                 <>
                                   {callDataWithBoughtPrice &&
@@ -841,20 +888,21 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                 }
                               >
                                 {(close) => (
-                                  <ButtonBase
-                                    onClick={async () => {
-                                      close()
-
-                                      setUpdatingOrderId(order.id)
-
-                                      props.onCancelOrder({
-                                        orderNumber: order.number,
-                                        id: order.id,
-                                      })
-                                    }}
+                                  <WalletConnect
+                                    fallback={
+                                      <ButtonBase>Cancel order</ButtonBase>
+                                    }
                                   >
-                                    Cancel order
-                                  </ButtonBase>
+                                    <ButtonBase
+                                      onClick={async () => {
+                                        close()
+
+                                        cancel()
+                                      }}
+                                    >
+                                      Cancel order
+                                    </ButtonBase>
+                                  </WalletConnect>
                                 )}
                               </Dropdown>
                             </div>

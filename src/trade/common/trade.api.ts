@@ -183,9 +183,7 @@ export const tradeApi = {
           Record<string, { type: string; name: string; usd_price: number }>
         >
       >('get-actual-price', {
-        params: {
-          request: request.join(','),
-        },
+        data: request,
       })
       .then(({ data }) => data.data),
 

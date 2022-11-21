@@ -609,9 +609,9 @@ export const Trade: React.VFC<TradeProps> = () => {
             )}
           >
             <div className={styles.tradeSelectHeader}>
-              {(
-                [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
-              ).includes(String(user?.role)) && (
+              {([UserRoleEnum.Admin] as Array<string>).includes(
+                String(user?.role)
+              ) && (
                 <Dropdown
                   control={(open) => (
                     <Typography
