@@ -13,6 +13,7 @@ export type TradeStatusChartProps = {
   buy?: string
   profit?: string
   moving?: boolean
+  percent: string
 }
 
 const getPercentCurry =
@@ -22,13 +23,9 @@ const getPercentCurry =
     const left = bignumberUtils.minus(value, min)
     const right = bignumberUtils.minus(max, min)
 
-    // console.log(left, right, value, min, max, 'left, right')
-
     const div = bignumberUtils.div(left, right)
 
     const mul = bignumberUtils.mul(div, 100)
-
-    // console.log(mul, value)
 
     if (bignumberUtils.gt(mul, 100)) return '100'
 
@@ -107,7 +104,8 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
                 className={styles.profitTitle}
                 weight="bold"
               >
-                {bignumberUtils.gt(profitPos, buyPos) ? '+' : '-'} {maxWidth}%
+                {bignumberUtils.gt(profitPos, buyPos) && '+'}
+                {props.percent}%
               </Typography>
               <Typography variant="inherit">
                 {bignumberUtils.toFixed(props.profit, 4)}
