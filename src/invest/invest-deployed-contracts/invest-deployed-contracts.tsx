@@ -423,16 +423,13 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                       ?.lowFeeFunds
                   }
                   freshMetrics={metrics[deployedContract.id]}
-                  balanceInvest={
-                    '-10' ||
-                    bignumberUtils.minus(
-                      deployedContract.metric.invest,
-                      bignumberUtils.plus(
-                        deployedContract.metric.staked,
-                        deployedContract.metric.earned
-                      )
+                  balanceInvest={bignumberUtils.minus(
+                    deployedContract.metric.invest,
+                    bignumberUtils.plus(
+                      deployedContract.metric.staked,
+                      deployedContract.metric.earned
                     )
-                  }
+                  )}
                 />
               )
             })}
