@@ -119,6 +119,13 @@ export const fs12 = style({
   lineHeight: '16px',
 })
 
+export const status = style([
+  fs12,
+  {
+    marginBottom: 10,
+  },
+])
+
 export const tableHeadingsButton = style([
   fs12,
   {
