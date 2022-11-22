@@ -82,6 +82,7 @@ const statuses = {
 const titles: Record<string, string> = {
   [SmartTradeOrderStatusEnum.Canceled]: 'Order cancelled by user',
   [SmartTradeOrderStatusEnum.Succeeded]: 'Stop loss finished',
+  completed: 'Stop loss completed',
 }
 
 export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
@@ -693,6 +694,39 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                           </div>
                           <div>
                             <div className={styles.claim}>
+                              {callDataWithBoughtPrice &&
+                                (statuses[Tabs.History].includes(
+                                  order.status
+                                ) ||
+                                  order.claim ||
+                                  (order.status ===
+                                    SmartTradeOrderStatusEnum.Succeeded &&
+                                    !order.claim)) && (
+                                  <Typography
+                                    variant="body3"
+                                    className={clsx(styles.status, {
+                                      [styles.positive]: bignumberUtils.gt(
+                                        currentPrice,
+                                        boughtPrice
+                                      ),
+                                      [styles.negative]: bignumberUtils.lt(
+                                        currentPrice,
+                                        boughtPrice
+                                      ),
+                                    })}
+                                  >
+                                    {!order.claim &&
+                                    order.status ===
+                                      SmartTradeOrderStatusEnum.Succeeded
+                                      ? titles.completed
+                                      : titles[order.status]}
+                                    :{' '}
+                                    {callDataWithBoughtPrice.swapPrice
+                                      ? bignumberUtils.toFixed(swapPerent)
+                                      : bignumberUtils.toFixed(percent)}
+                                    %
+                                  </Typography>
+                                )}
                               {order.status ===
                                 SmartTradeOrderStatusEnum.Succeeded &&
                               !order.claim ? (
@@ -737,31 +771,6 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                             ?.moving
                                         }
                                       />
-                                    )}
-                                  {callDataWithBoughtPrice &&
-                                    (statuses[Tabs.History].includes(
-                                      order.status
-                                    ) ||
-                                      order.claim) && (
-                                      <Typography
-                                        variant="body3"
-                                        className={clsx(styles.fs12, {
-                                          [styles.positive]: bignumberUtils.gt(
-                                            currentPrice,
-                                            boughtPrice
-                                          ),
-                                          [styles.negative]: bignumberUtils.lt(
-                                            currentPrice,
-                                            boughtPrice
-                                          ),
-                                        })}
-                                      >
-                                        {titles[order.status]}:{' '}
-                                        {callDataWithBoughtPrice.swapPrice
-                                          ? bignumberUtils.toFixed(swapPerent)
-                                          : bignumberUtils.toFixed(percent)}
-                                        %
-                                      </Typography>
                                     )}
                                 </>
                               )}
