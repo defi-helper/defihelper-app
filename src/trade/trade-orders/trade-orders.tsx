@@ -484,8 +484,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     : handleConnect
 
                   const price =
-                    order.price?.actualPrice[order.tokens[0].token.address]
-                      ?.usd_price
+                    order.price?.actualPrice[
+                      order.tokens[0].token.address.toLowerCase()
+                    ]?.usd_price
 
                   const { balances } = order
 
@@ -826,9 +827,11 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       })}
                                       as="div"
                                     >
-                                      {bignumberUtils.minus(
-                                        currentPrice,
-                                        boughtPrice
+                                      {bignumberUtils.format(
+                                        bignumberUtils.minus(
+                                          currentPrice,
+                                          boughtPrice
+                                        )
                                       )}
                                       $ / {bignumberUtils.toFixed(percent)}%
                                     </Typography>
