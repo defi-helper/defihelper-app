@@ -12,8 +12,8 @@ export type PortfolioMetricCardProps = {
   className?: string
 }
 
-const ValueChangeRender: React.FC<{ value?: string }> = ({ value = '0' }) => {
-  const contibutedPercent = value
+const ValueChangeRender: React.FC<{ value?: string }> = ({ value }) => {
+  const contibutedPercent = bignumberUtils.toFixed(value, 2)
 
   const isPositive = bignumberUtils.gte(contibutedPercent, 0)
 
