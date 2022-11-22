@@ -79,7 +79,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
               {props.moving ? 'TSL' : 'SL'}
             </Typography>
             <Typography variant="inherit" className={styles.grey}>
-              {bignumberUtils.format(props.stopLoss, 2, false)}
+              {bignumberUtils.toFixed(props.stopLoss, 4)}
             </Typography>
           </Typography>
         </div>
@@ -110,7 +110,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
                 {bignumberUtils.gt(profitPos, buyPos) ? '+' : '-'} {maxWidth}%
               </Typography>
               <Typography variant="inherit">
-                {bignumberUtils.format(props.profit)}
+                {bignumberUtils.toFixed(props.profit, 4)}
               </Typography>
             </Typography>
           </div>
@@ -144,7 +144,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
                 Buy
               </Typography>
               <Typography variant="inherit">
-                {bignumberUtils.format(props.buy)}
+                {bignumberUtils.toFixed(props.buy, 4)}
               </Typography>
             </Typography>
           </div>
@@ -161,7 +161,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
               TP
             </Typography>
             <Typography variant="inherit" className={styles.grey}>
-              {bignumberUtils.format(props.takeProfit)}
+              {bignumberUtils.toFixed(props.takeProfit, 4)}
             </Typography>
           </Typography>
         </div>

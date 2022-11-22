@@ -9,6 +9,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import {
   SmartTradeOrderListSortInputTypeColumnEnum,
   SmartTradeOrderStatusEnum,
+  SmartTradeOrderTokenLinkTypeEnum,
   SortOrderEnum,
 } from '~/api'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
@@ -484,15 +485,31 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     ? handleDeposit(order)
                     : handleConnect
 
-                  const price =
+                  const { balances } = order
+
+                  const usdPrice =
                     order.price?.actualPrice[
                       order.tokens[0].token.address.toLowerCase()
                     ]?.usd_price
 
-                  const { balances } = order
+                  const tokenIn = order.tokens.find(
+                    ({ type }) => type === SmartTradeOrderTokenLinkTypeEnum.In
+                  )
+                  const orderTokenOut = order.tokens.find(
+                    ({ type }) => type === SmartTradeOrderTokenLinkTypeEnum.Out
+                  )
+
+                  const price = bignumberUtils.div(
+                    order.price?.actualPrice[
+                      tokenIn?.token.address.toLowerCase() ?? ''
+                    ]?.usd_price,
+                    order.price?.actualPrice[
+                      orderTokenOut?.token.address.toLowerCase() ?? ''
+                    ]?.usd_price
+                  )
 
                   const stringPrice =
-                    price !== undefined ? String(price) : undefined
+                    usdPrice !== undefined ? String(price) : undefined
 
                   const currentPrice =
                     order.owner.network === '5' && config.IS_DEV
@@ -544,6 +561,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             id: order.id,
                           })
                         })
+
+                  const tokenOut = balances.find(
+                    ({ token }) =>
+                      token.address.toLowerCase() !==
+                      tokenIn?.token.address.toLowerCase()
+                  )
 
                   return (
                     <TradeOrderDeposit
@@ -623,9 +646,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                           </div>
                           <div>
                             <div className={styles.contractBalance}>
-                              {order.tokens[0].token.alias?.logoUrl ? (
+                              {tokenIn?.token.alias?.logoUrl ? (
                                 <img
-                                  src={order.tokens[0].token.alias?.logoUrl}
+                                  src={tokenIn.token.alias?.logoUrl}
                                   className={styles.contractBalanceIcon}
                                   alt=""
                                 />
@@ -642,16 +665,16 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                 {tokensAmountInOut
                                   ? bignumberUtils.toFixed(tokensAmountInOut, 2)
                                   : '-'}{' '}
-                                {order.tokens[0].token.symbol}
+                                {tokenIn?.token.symbol}
                               </Typography>
                             </div>
                             {Boolean(balances.length) &&
                               order.status ===
                                 SmartTradeOrderStatusEnum.Succeeded && (
                                 <div className={styles.contractBalance}>
-                                  {balances?.[1]?.token.alias?.logoUrl ? (
+                                  {tokenOut?.token.alias?.logoUrl ? (
                                     <img
-                                      src={balances?.[1]?.token.alias?.logoUrl}
+                                      src={tokenOut?.token.alias?.logoUrl}
                                       className={styles.contractBalanceIcon}
                                       alt=""
                                     />
@@ -667,12 +690,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     </Paper>
                                   )}
                                   <Typography className={styles.fs12} as="div">
-                                    {balances?.[1]?.balance
+                                    {tokenOut?.balance
                                       ? bignumberUtils.format(
                                           balances[1].balance
                                         )
                                       : '-'}{' '}
-                                    {balances?.[1]?.token.symbol}
+                                    {tokenOut?.token.symbol}
                                   </Typography>
                                 </div>
                               )}
@@ -780,9 +803,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             {boughtPrice ? (
                               <>
                                 <div className={styles.contractBalance}>
-                                  {balances?.[1]?.token.alias?.logoUrl ? (
+                                  {tokenOut?.token.alias?.logoUrl ? (
                                     <img
-                                      src={balances?.[1]?.token.alias?.logoUrl}
+                                      src={tokenOut?.token.alias?.logoUrl}
                                       className={styles.contractBalanceIcon}
                                       alt=""
                                     />
@@ -811,9 +834,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     as="div"
                                   >
                                     {bignumberUtils.format(
-                                      balances?.[1]?.balance
+                                      tokenOut?.balance
                                         ? bignumberUtils.format(
-                                            balances[1].balance,
+                                            tokenOut.balance,
                                             2,
                                             false
                                           )
