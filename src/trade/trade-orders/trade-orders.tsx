@@ -649,9 +649,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               order.status ===
                                 SmartTradeOrderStatusEnum.Succeeded && (
                                 <div className={styles.contractBalance}>
-                                  {balances?.[0]?.token.alias?.logoUrl ? (
+                                  {balances?.[1]?.token.alias?.logoUrl ? (
                                     <img
-                                      src={balances?.[0]?.token.alias?.logoUrl}
+                                      src={balances?.[1]?.token.alias?.logoUrl}
                                       className={styles.contractBalanceIcon}
                                       alt=""
                                     />
@@ -667,12 +667,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     </Paper>
                                   )}
                                   <Typography className={styles.fs12} as="div">
-                                    {balances?.[0]?.balance
+                                    {balances?.[1]?.balance
                                       ? bignumberUtils.format(
-                                          balances[0].balance
+                                          balances[1].balance
                                         )
                                       : '-'}{' '}
-                                    {balances?.[0]?.token.symbol}
+                                    {balances?.[1]?.token.symbol}
                                   </Typography>
                                 </div>
                               )}
@@ -780,9 +780,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             {boughtPrice ? (
                               <>
                                 <div className={styles.contractBalance}>
-                                  {balances?.[0]?.token.alias?.logoUrl ? (
+                                  {balances?.[1]?.token.alias?.logoUrl ? (
                                     <img
-                                      src={balances?.[0]?.token.alias?.logoUrl}
+                                      src={balances?.[1]?.token.alias?.logoUrl}
                                       className={styles.contractBalanceIcon}
                                       alt=""
                                     />
@@ -811,9 +811,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     as="div"
                                   >
                                     {bignumberUtils.format(
-                                      balances?.[0]?.balance
+                                      balances?.[1]?.balance
                                         ? bignumberUtils.format(
-                                            balances[0].balance,
+                                            balances[1].balance,
                                             2,
                                             false
                                           )
