@@ -833,14 +833,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     })}
                                     as="div"
                                   >
-                                    {bignumberUtils.format(
-                                      tokenOut?.balance
-                                        ? bignumberUtils.format(
-                                            tokenOut.balance,
-                                            2,
-                                            false
-                                          )
-                                        : '0'
+                                    {bignumberUtils.toFixed(
+                                      bignumberUtils.minus(
+                                        currentPrice,
+                                        boughtPrice
+                                      ),
+                                      4
                                     )}
                                   </Typography>
                                 </div>
@@ -859,7 +857,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       })}
                                       as="div"
                                     >
-                                      {bignumberUtils.format(
+                                      {bignumberUtils.toFixed(
                                         bignumberUtils.minus(
                                           currentPrice,
                                           boughtPrice
