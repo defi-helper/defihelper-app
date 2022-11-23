@@ -3,6 +3,7 @@
 import { useAsyncFn, useInterval } from 'react-use'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
+import { useHistory } from 'react-router-dom'
 import { useStore } from 'effector-react'
 import { useForm } from 'react-hook-form'
 import contracts from '@defihelper/networks/contracts.json'
@@ -55,6 +56,8 @@ const USDC_ETH = '0xEa26B78255Df2bBC31C1eBf60010D78670185bD0'
 export const Trade: React.VFC<TradeProps> = () => {
   const { register, handleSubmit, formState, reset } =
     useForm<{ email: string }>()
+
+  const routerHistory = useHistory()
 
   const [currentSelect, setCurrentSelect] = useState(Selects.SmartSell)
   const [currentTab, setCurrentTab] = useState(0)
@@ -162,17 +165,17 @@ export const Trade: React.VFC<TradeProps> = () => {
   useEffect(() => {
     const [firstExchange] = exchanges
 
-    if (!firstExchange) return
+    if (!firstExchange || loadingExchanges) return
 
     setCurrentExchange(firstExchange.Name)
-  }, [exchanges])
+  }, [exchanges, loadingExchanges])
   useEffect(() => {
     const [firstPair] = pairs
 
-    if (!firstPair) return
+    if (!firstPair || loadingPairs) return
 
     setCurrentPair(firstPair.pairInfo?.address ?? '')
-  }, [pairs])
+  }, [pairs, loadingPairs])
 
   const pairMap = useMemo(
     () =>
@@ -203,6 +206,15 @@ export const Trade: React.VFC<TradeProps> = () => {
     () => exchangesMap.get(currentExchange),
     [exchangesMap, currentExchange]
   )
+
+  useEffect(() => {
+    if (!currentPair || !currentExchangeObj) return
+
+    routerHistory.replace({
+      search: `exchange=${currentExchangeObj.Address}&pair=${currentPair}`,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPair, currentExchangeObj])
 
   const tokens = useMemo(() => {
     const tokensCp = [...(currentPairObj?.pairInfo?.tokens ?? [])]
@@ -351,6 +363,8 @@ export const Trade: React.VFC<TradeProps> = () => {
   }
 
   useEffect(() => {
+    if (!currentPair) return
+
     setSearchPair('')
   }, [currentPair])
 
