@@ -131,3 +131,11 @@ export const profit = style([
 ])
 
 export const profitTitle = style([fs12, {}])
+
+export const positive = style({
+  color: theme.colors.textColorGreen,
+})
+
+export const negative = style({
+  color: theme.colors.common.red1,
+})
