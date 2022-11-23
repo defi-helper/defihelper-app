@@ -13,10 +13,7 @@ export type PortfolioMetricCardProps = {
 }
 
 const ValueChangeRender: React.FC<{ value?: string }> = ({ value }) => {
-  const contibutedPercent = bignumberUtils.toFixed(
-    bignumberUtils.mul(bignumberUtils.minus(value, 1), 100),
-    2
-  )
+  const contibutedPercent = bignumberUtils.toFixed(value, 2)
 
   const isPositive = bignumberUtils.gte(contibutedPercent, 0)
 

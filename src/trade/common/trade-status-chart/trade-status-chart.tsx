@@ -13,6 +13,7 @@ export type TradeStatusChartProps = {
   buy?: string
   profit?: string
   moving?: boolean
+  percent: string
 }
 
 const getPercentCurry =
@@ -22,13 +23,9 @@ const getPercentCurry =
     const left = bignumberUtils.minus(value, min)
     const right = bignumberUtils.minus(max, min)
 
-    // console.log(left, right, value, min, max, 'left, right')
-
     const div = bignumberUtils.div(left, right)
 
     const mul = bignumberUtils.mul(div, 100)
-
-    // console.log(mul, value)
 
     if (bignumberUtils.gt(mul, 100)) return '100'
 
@@ -38,29 +35,33 @@ const getPercentCurry =
   }
 
 export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
-  const takeProfit = bignumberUtils.gt(props.takeProfit, 0)
-    ? props.takeProfit
-    : undefined
+  const buy = props.buy ?? props.profit
+
+  const takeProfit =
+    bignumberUtils.gt(props.takeProfit, 0) ||
+    !bignumberUtils.gt(props.stopLoss, props.takeProfit)
+      ? props.takeProfit
+      : undefined
   const stopLoss = bignumberUtils.gt(props.stopLoss, 0)
     ? props.stopLoss
     : undefined
 
   const total =
     takeProfit ??
-    (bignumberUtils.gt(props.profit, props.buy) ? props.profit : props.buy) ??
-    props.buy ??
+    (bignumberUtils.gt(props.profit, buy) ? props.profit : buy) ??
+    buy ??
     props.profit
   const min =
     stopLoss ??
-    (bignumberUtils.lt(props.profit, props.buy) ? props.profit : props.buy) ??
-    props.buy ??
+    (bignumberUtils.lt(props.profit, buy) ? props.profit : buy) ??
+    buy ??
     props.profit
 
   const getPercent = useMemo(() => getPercentCurry(min)(total), [total, min])
 
   const profitPos = getPercent(props.profit)
 
-  const buyPos = getPercent(props.buy)
+  const buyPos = getPercent(buy)
 
   const maxWidth = bignumberUtils.gt(profitPos, buyPos)
     ? bignumberUtils.minus(profitPos, buyPos)
@@ -79,7 +80,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
               {props.moving ? 'TSL' : 'SL'}
             </Typography>
             <Typography variant="inherit" className={styles.grey}>
-              {bignumberUtils.format(props.stopLoss, 2, false)}
+              {bignumberUtils.toFixed(props.stopLoss, 4)}
             </Typography>
           </Typography>
         </div>
@@ -102,15 +103,21 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
                 bignumberUtils.lt(profitPos, 50) ? { left: 4 } : { right: 4 }
               }
             >
-              <Typography
-                variant="inherit"
-                className={styles.profitTitle}
-                weight="bold"
-              >
-                {bignumberUtils.gt(profitPos, buyPos) ? '+' : '-'} {maxWidth}%
-              </Typography>
+              {props.buy && (
+                <Typography
+                  variant="inherit"
+                  className={clsx(styles.profitTitle, {
+                    [styles.positive]: bignumberUtils.gt(props.percent, 0),
+                    [styles.negative]: bignumberUtils.lt(props.percent, 0),
+                  })}
+                  weight="bold"
+                >
+                  {bignumberUtils.gt(profitPos, buyPos) && '+'}
+                  {props.percent}%
+                </Typography>
+              )}
               <Typography variant="inherit">
-                {bignumberUtils.format(props.profit)}
+                {bignumberUtils.toFixed(props.profit, 4)}
               </Typography>
             </Typography>
           </div>
@@ -129,7 +136,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
             }}
           />
         )}
-        {props.buy && (
+        {buy && (
           <div className={styles.buyLine} style={{ left: `${buyPos}%` }}>
             <Typography
               as="div"
@@ -144,7 +151,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
                 Buy
               </Typography>
               <Typography variant="inherit">
-                {bignumberUtils.format(props.buy)}
+                {bignumberUtils.toFixed(buy, 4)}
               </Typography>
             </Typography>
           </div>
@@ -161,7 +168,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
               TP
             </Typography>
             <Typography variant="inherit" className={styles.grey}>
-              {bignumberUtils.format(props.takeProfit)}
+              {bignumberUtils.toFixed(props.takeProfit, 4)}
             </Typography>
           </Typography>
         </div>

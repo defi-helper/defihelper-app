@@ -9,6 +9,7 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import {
   SmartTradeOrderListSortInputTypeColumnEnum,
   SmartTradeOrderStatusEnum,
+  SmartTradeOrderTokenLinkTypeEnum,
   SortOrderEnum,
 } from '~/api'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
@@ -82,6 +83,7 @@ const statuses = {
 const titles: Record<string, string> = {
   [SmartTradeOrderStatusEnum.Canceled]: 'Order cancelled by user',
   [SmartTradeOrderStatusEnum.Succeeded]: 'Stop loss finished',
+  completed: 'Stop loss completed',
 }
 
 export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
@@ -483,38 +485,49 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     ? handleDeposit(order)
                     : handleConnect
 
-                  const price =
-                    order.price?.actualPrice[
-                      order.tokens[0].token.address.toLowerCase()
-                    ]?.usd_price
-
                   const { balances } = order
 
-                  const stringPrice =
-                    price !== undefined ? String(price) : undefined
+                  const tokenIn = order.tokens.find(
+                    ({ type }) => type === SmartTradeOrderTokenLinkTypeEnum.In
+                  )
+                  const orderTokenOut = order.tokens.find(
+                    ({ type }) => type === SmartTradeOrderTokenLinkTypeEnum.Out
+                  )
 
-                  const currentPrice =
+                  const usdPrice =
+                    order.price?.actualPrice[
+                      tokenIn?.token.address.toLowerCase() ?? ''
+                    ]?.usd_price
+
+                  const actualPrice = bignumberUtils.div(
+                    order.price?.actualPrice[
+                      tokenIn?.token.address.toLowerCase() ?? ''
+                    ]?.usd_price,
+                    order.price?.actualPrice[
+                      orderTokenOut?.token.address.toLowerCase() ?? ''
+                    ]?.usd_price
+                  )
+
+                  const stringPrice =
+                    usdPrice !== undefined ? String(actualPrice) : undefined
+
+                  const price =
                     order.owner.network === '5' && config.IS_DEV
                       ? goerliPrice[order.number]
                       : stringPrice
 
-                  const percent = bignumberUtils.mul(
-                    bignumberUtils.div(
-                      bignumberUtils.minus(currentPrice, boughtPrice),
-                      boughtPrice
-                    ),
-                    100
-                  )
-                  const swapPerent = bignumberUtils.mul(
-                    bignumberUtils.div(
-                      bignumberUtils.minus(
-                        callDataWithBoughtPrice?.swapPrice,
-                        boughtPrice
-                      ),
-                      boughtPrice
-                    ),
-                    100
-                  )
+                  const currentPrice =
+                    callDataWithBoughtPrice?.swapPrice ?? price
+
+                  const percent = bignumberUtils.eq(boughtPrice, 0)
+                    ? '0'
+                    : bignumberUtils.mul(
+                        bignumberUtils.div(
+                          bignumberUtils.minus(currentPrice, boughtPrice),
+                          boughtPrice
+                        ),
+                        100
+                      )
 
                   const wrongAccount =
                     currentWallet?.account !== order.owner.address &&
@@ -543,6 +556,24 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             id: order.id,
                           })
                         })
+
+                  const tokenOut = balances.find(
+                    ({ token }) =>
+                      token.address.toLowerCase() !==
+                      tokenIn?.token.address.toLowerCase()
+                  )
+
+                  const profit = bignumberUtils.minus(
+                    bignumberUtils.mul(tokensAmountInOut, currentPrice),
+                    bignumberUtils.mul(tokensAmountInOut, boughtPrice)
+                  )
+
+                  const profitUSD = bignumberUtils.mul(
+                    profit,
+                    order.price?.actualPrice[
+                      orderTokenOut?.token.address.toLowerCase() ?? ''
+                    ]?.usd_price
+                  )
 
                   return (
                     <TradeOrderDeposit
@@ -622,9 +653,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                           </div>
                           <div>
                             <div className={styles.contractBalance}>
-                              {order.tokens[0].token.alias?.logoUrl ? (
+                              {tokenIn?.token.alias?.logoUrl ? (
                                 <img
-                                  src={order.tokens[0].token.alias?.logoUrl}
+                                  src={tokenIn.token.alias?.logoUrl}
                                   className={styles.contractBalanceIcon}
                                   alt=""
                                 />
@@ -639,18 +670,18 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               )}
                               <Typography className={styles.fs12} as="div">
                                 {tokensAmountInOut
-                                  ? bignumberUtils.toFixed(tokensAmountInOut, 2)
+                                  ? bignumberUtils.toFixed(tokensAmountInOut, 4)
                                   : '-'}{' '}
-                                {order.tokens[0].token.symbol}
+                                {tokenIn?.token.symbol}
                               </Typography>
                             </div>
                             {Boolean(balances.length) &&
                               order.status ===
                                 SmartTradeOrderStatusEnum.Succeeded && (
                                 <div className={styles.contractBalance}>
-                                  {balances?.[0]?.token.alias?.logoUrl ? (
+                                  {tokenOut?.token.alias?.logoUrl ? (
                                     <img
-                                      src={balances?.[0]?.token.alias?.logoUrl}
+                                      src={tokenOut?.token.alias?.logoUrl}
                                       className={styles.contractBalanceIcon}
                                       alt=""
                                     />
@@ -666,12 +697,13 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     </Paper>
                                   )}
                                   <Typography className={styles.fs12} as="div">
-                                    {balances?.[0]?.balance
-                                      ? bignumberUtils.format(
-                                          balances[0].balance
+                                    {tokenOut?.balance
+                                      ? bignumberUtils.toFixed(
+                                          tokenOut?.balance,
+                                          4
                                         )
                                       : '-'}{' '}
-                                    {balances?.[0]?.token.symbol}
+                                    {tokenOut?.token.symbol}
                                   </Typography>
                                 </div>
                               )}
@@ -693,6 +725,36 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                           </div>
                           <div>
                             <div className={styles.claim}>
+                              {callDataWithBoughtPrice &&
+                                (order.claim ||
+                                  (order.status ===
+                                    SmartTradeOrderStatusEnum.Succeeded &&
+                                    !order.claim)) &&
+                                ![
+                                  SmartTradeOrderStatusEnum.Pending,
+                                  SmartTradeOrderStatusEnum.Processed,
+                                ].includes(order.status) && (
+                                  <Typography
+                                    variant="body3"
+                                    className={clsx(styles.status, {
+                                      [styles.positive]: bignumberUtils.gt(
+                                        percent,
+                                        0
+                                      ),
+                                      [styles.negative]: bignumberUtils.lt(
+                                        percent,
+                                        0
+                                      ),
+                                    })}
+                                  >
+                                    {!order.claim &&
+                                    order.status ===
+                                      SmartTradeOrderStatusEnum.Succeeded
+                                      ? titles.completed
+                                      : titles[order.status]}
+                                    : {bignumberUtils.toFixed(percent, 4)}%
+                                  </Typography>
+                                )}
                               {order.status ===
                                 SmartTradeOrderStatusEnum.Succeeded &&
                               !order.claim ? (
@@ -716,8 +778,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               ) : (
                                 <>
                                   {callDataWithBoughtPrice &&
-                                    order.status ===
-                                      SmartTradeOrderStatusEnum.Pending && (
+                                    [
+                                      SmartTradeOrderStatusEnum.Pending,
+                                      SmartTradeOrderStatusEnum.Processed,
+                                    ].includes(order.status) && (
                                       <TradeStatusChart
                                         stopLoss={bignumberUtils.div(
                                           callDataWithBoughtPrice.stopLoss
@@ -729,39 +793,18 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                             ?.amountOut,
                                           callDataWithBoughtPrice.amountIn
                                         )}
-                                        buy={boughtPrice ?? currentPrice}
+                                        buy={boughtPrice ?? undefined}
                                         profit={currentPrice}
                                         className={styles.contractStatus}
                                         moving={
                                           callDataWithBoughtPrice.stopLoss
                                             ?.moving
                                         }
+                                        percent={bignumberUtils.toFixed(
+                                          percent,
+                                          4
+                                        )}
                                       />
-                                    )}
-                                  {callDataWithBoughtPrice &&
-                                    (statuses[Tabs.History].includes(
-                                      order.status
-                                    ) ||
-                                      order.claim) && (
-                                      <Typography
-                                        variant="body3"
-                                        className={clsx(styles.fs12, {
-                                          [styles.positive]: bignumberUtils.gt(
-                                            currentPrice,
-                                            boughtPrice
-                                          ),
-                                          [styles.negative]: bignumberUtils.lt(
-                                            currentPrice,
-                                            boughtPrice
-                                          ),
-                                        })}
-                                      >
-                                        {titles[order.status]}:{' '}
-                                        {callDataWithBoughtPrice.swapPrice
-                                          ? bignumberUtils.toFixed(swapPerent)
-                                          : bignumberUtils.toFixed(percent)}
-                                        %
-                                      </Typography>
                                     )}
                                 </>
                               )}
@@ -771,9 +814,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             {boughtPrice ? (
                               <>
                                 <div className={styles.contractBalance}>
-                                  {balances?.[0]?.token.alias?.logoUrl ? (
+                                  {tokenOut?.token.alias?.logoUrl ? (
                                     <img
-                                      src={balances?.[0]?.token.alias?.logoUrl}
+                                      src={tokenOut?.token.alias?.logoUrl}
                                       className={styles.contractBalanceIcon}
                                       alt=""
                                     />
@@ -791,25 +834,17 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                   <Typography
                                     className={clsx(styles.fs12, {
                                       [styles.positive]: bignumberUtils.gt(
-                                        currentPrice,
-                                        boughtPrice
+                                        percent,
+                                        0
                                       ),
                                       [styles.negative]: bignumberUtils.lt(
-                                        currentPrice,
-                                        boughtPrice
+                                        percent,
+                                        0
                                       ),
                                     })}
                                     as="div"
                                   >
-                                    {bignumberUtils.format(
-                                      balances?.[0]?.balance
-                                        ? bignumberUtils.format(
-                                            balances[0].balance,
-                                            2,
-                                            false
-                                          )
-                                        : '0'
-                                    )}
+                                    {bignumberUtils.toFixed(profit, 4)}
                                   </Typography>
                                 </div>
                                 {currentPrice && (
@@ -817,23 +852,23 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     <Typography
                                       className={clsx(styles.fs12, {
                                         [styles.positive]: bignumberUtils.gt(
-                                          currentPrice,
-                                          boughtPrice
+                                          percent,
+                                          0
                                         ),
                                         [styles.negative]: bignumberUtils.lt(
-                                          currentPrice,
-                                          boughtPrice
+                                          percent,
+                                          0
                                         ),
                                       })}
                                       as="div"
                                     >
-                                      {bignumberUtils.format(
-                                        bignumberUtils.minus(
-                                          currentPrice,
-                                          boughtPrice
-                                        )
-                                      )}
-                                      $ / {bignumberUtils.toFixed(percent)}%
+                                      {currentPrice && (
+                                        <>
+                                          {bignumberUtils.toFixed(profitUSD, 4)}
+                                          $ /
+                                        </>
+                                      )}{' '}
+                                      {bignumberUtils.toFixed(percent, 4)}%
                                     </Typography>
                                   </div>
                                 )}

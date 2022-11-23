@@ -186,7 +186,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             })}
           >
             {bignumberUtils.gt(props.balanceInvest, 0) ? '+' : null}
-            {bignumberUtils.format(props.balanceInvest, 2, false)}
+            {bignumberUtils.format(props.balanceInvest, 2, false)}$
           </Typography>
           <div className={styles.row}>
             <Typography
