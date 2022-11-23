@@ -520,9 +520,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     callDataWithBoughtPrice?.swapPrice ?? price
 
                   const percent = bignumberUtils.mul(
-                    bignumberUtils.minus(
-                      bignumberUtils.div(currentPrice, boughtPrice),
-                      1
+                    bignumberUtils.div(
+                      bignumberUtils.minus(currentPrice, boughtPrice),
+                      boughtPrice
                     ),
                     100
                   )
