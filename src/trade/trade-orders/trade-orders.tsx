@@ -519,13 +519,15 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                   const currentPrice =
                     callDataWithBoughtPrice?.swapPrice ?? price
 
-                  const percent = bignumberUtils.mul(
-                    bignumberUtils.div(
-                      bignumberUtils.minus(currentPrice, boughtPrice),
-                      boughtPrice
-                    ),
-                    100
-                  )
+                  const percent = bignumberUtils.eq(boughtPrice, 0)
+                    ? '0'
+                    : bignumberUtils.mul(
+                        bignumberUtils.div(
+                          bignumberUtils.minus(currentPrice, boughtPrice),
+                          boughtPrice
+                        ),
+                        100
+                      )
 
                   const wrongAccount =
                     currentWallet?.account !== order.owner.address &&
