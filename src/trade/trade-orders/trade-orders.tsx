@@ -862,7 +862,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       })}
                                       as="div"
                                     >
-                                      {bignumberUtils.toFixed(profitUSD, 4)}$ /{' '}
+                                      {currentPrice && (
+                                        <>
+                                          {bignumberUtils.toFixed(profitUSD, 4)}
+                                          $ /
+                                        </>
+                                      )}{' '}
                                       {bignumberUtils.toFixed(percent, 4)}%
                                     </Typography>
                                   </div>
