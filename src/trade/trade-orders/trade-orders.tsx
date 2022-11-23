@@ -561,14 +561,16 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                       tokenIn?.token.address.toLowerCase()
                   )
 
-                  const profitLossVolume = bignumberUtils.minus(
+                  const profit = bignumberUtils.minus(
                     bignumberUtils.mul(tokensAmountInOut, currentPrice),
                     bignumberUtils.mul(tokensAmountInOut, boughtPrice)
                   )
 
                   const profitUSD = bignumberUtils.mul(
-                    profitLossVolume,
-                    currentPrice
+                    profit,
+                    order.price?.actualPrice[
+                      orderTokenOut?.token.address.toLowerCase() ?? ''
+                    ]?.usd_price
                   )
 
                   return (
@@ -666,7 +668,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               )}
                               <Typography className={styles.fs12} as="div">
                                 {tokensAmountInOut
-                                  ? bignumberUtils.toFixed(tokensAmountInOut, 2)
+                                  ? bignumberUtils.toFixed(tokensAmountInOut, 4)
                                   : '-'}{' '}
                                 {tokenIn?.token.symbol}
                               </Typography>
@@ -694,8 +696,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                   )}
                                   <Typography className={styles.fs12} as="div">
                                     {tokenOut?.balance
-                                      ? bignumberUtils.format(
-                                          balances[1].balance
+                                      ? bignumberUtils.toFixed(
+                                          tokenOut?.balance,
+                                          4
                                         )
                                       : '-'}{' '}
                                     {tokenOut?.token.symbol}
@@ -839,10 +842,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     })}
                                     as="div"
                                   >
-                                    {bignumberUtils.toFixed(
-                                      profitLossVolume,
-                                      4
-                                    )}
+                                    {bignumberUtils.toFixed(profit, 4)}
                                   </Typography>
                                 </div>
                                 {currentPrice && (
