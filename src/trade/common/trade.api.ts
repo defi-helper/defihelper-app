@@ -182,7 +182,7 @@ export const tradeApi = {
         Response<
           Record<string, { type: string; name: string; usd_price: number }>
         >
-      >(`${config.API_URL?.replace('/api', '')}/get-actual-price`, {
+      >(`get-actual-price`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${JSON.parse(
