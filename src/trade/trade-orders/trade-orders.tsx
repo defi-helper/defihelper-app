@@ -844,6 +844,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     })}
                                     as="div"
                                   >
+                                    {bignumberUtils.gt(percent, 0) && '+'}
                                     {bignumberUtils.toFixed(profit, 4)}
                                   </Typography>
                                 </div>
@@ -864,10 +865,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     >
                                       {currentPrice && (
                                         <>
+                                          {bignumberUtils.gt(percent, 0) && '+'}
                                           {bignumberUtils.toFixed(profitUSD, 4)}
                                           $ /
                                         </>
                                       )}{' '}
+                                      {bignumberUtils.gt(percent, 0) && '+'}
                                       {bignumberUtils.toFixed(percent, 4)}%
                                     </Typography>
                                   </div>
