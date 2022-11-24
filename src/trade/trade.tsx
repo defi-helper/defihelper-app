@@ -362,7 +362,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   )
 
   const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
-    if (!wallet) return switchNetwork('1').catch(console.error)
+    if (!wallet) return switchNetwork('56').catch(console.error)
 
     await switchNetwork(wallet.network).catch(console.error)
   }, [wallet])
