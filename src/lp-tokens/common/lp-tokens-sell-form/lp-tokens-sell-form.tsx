@@ -305,8 +305,8 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
       <div className={styles.wrap}>
         {error ? (
           <Typography variant="body3" as="div" className={styles.error}>
-            Your transaction failed due to current market conditions. You can
-            try to change the amount or use another token
+            Transaction failed. Please check that you have enough native tokens
+            on your wallet to pay the fees.
           </Typography>
         ) : (
           <div className={styles.serviceFee}>
