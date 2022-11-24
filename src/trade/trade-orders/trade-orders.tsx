@@ -929,21 +929,28 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                 }
                               >
                                 {(close) => (
-                                  <WalletConnect
-                                    fallback={
-                                      <ButtonBase>Cancel order</ButtonBase>
-                                    }
-                                  >
-                                    <ButtonBase
-                                      onClick={async () => {
-                                        close()
-
-                                        cancel()
-                                      }}
+                                  <>
+                                    <WalletConnect
+                                      fallback={
+                                        <ButtonBase>Cancel order</ButtonBase>
+                                      }
                                     >
-                                      Cancel order
+                                      <ButtonBase
+                                        onClick={async () => {
+                                          close()
+
+                                          cancel()
+                                        }}
+                                      >
+                                        Cancel order
+                                      </ButtonBase>
+                                    </WalletConnect>
+                                    <ButtonBase
+                                      onClick={handleEnterBoughtPrice(order)}
+                                    >
+                                      Edit bought price
                                     </ButtonBase>
-                                  </WalletConnect>
+                                  </>
                                 )}
                               </Dropdown>
                             </div>
