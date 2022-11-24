@@ -14,7 +14,7 @@ export const StopTransactionDialog: React.VFC<StopTransactionDialogProps> = (
   props
 ) => {
   const {
-    title = 'Please note that you need to begin the whole process from the start of you will close this page. Are you sure that you want to close this page?',
+    title = 'Please note that your transaction can be lost if you will close this page. Are you sure to close this page?',
     actions = (
       <>
         <Button onClick={() => props.onConfirm?.()} color="red" size="small">
