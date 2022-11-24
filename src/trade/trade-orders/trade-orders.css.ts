@@ -119,6 +119,13 @@ export const fs12 = style({
   lineHeight: '16px',
 })
 
+export const status = style([
+  fs12,
+  {
+    marginBottom: 10,
+  },
+])
+
 export const tableHeadingsButton = style([
   fs12,
   {
@@ -140,8 +147,13 @@ export const tableRow = style({
     bottom: 0,
     background: theme.colors.common.white3,
     zIndex: 2,
-    backdropFilter: 'blur(10px)',
     display: 'none',
+  },
+
+  selectors: {
+    '&:not(:last-child)': {
+      borderBottom: `1px solid ${theme.colors.border}`,
+    },
   },
 })
 
@@ -155,12 +167,6 @@ export const tableRowInner = style([
   row,
   {
     padding: 16,
-
-    selectors: {
-      '&:not(:last-child)': {
-        borderBottom: `1px solid ${theme.colors.border}`,
-      },
-    },
   },
 ])
 

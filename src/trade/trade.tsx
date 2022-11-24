@@ -3,6 +3,7 @@
 import { useAsyncFn, useInterval } from 'react-use'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
+import { useHistory } from 'react-router-dom'
 import { useStore } from 'effector-react'
 import { useForm } from 'react-hook-form'
 import contracts from '@defihelper/networks/contracts.json'
@@ -37,6 +38,7 @@ import { switchNetwork } from '~/wallets/common'
 import { NumericalInput } from '~/common/numerical-input'
 import { authModel } from '~/auth'
 import { UserRoleEnum } from '~/api'
+import { useQueryParams } from '~/common/hooks'
 import * as model from './trade.model'
 import * as tradeOrdersModel from './trade-orders/trade-orders.model'
 import * as styles from './trade.css'
@@ -56,10 +58,16 @@ export const Trade: React.VFC<TradeProps> = () => {
   const { register, handleSubmit, formState, reset } =
     useForm<{ email: string }>()
 
+  const routerHistory = useHistory()
+
+  const queryParams = useQueryParams()
+  const exchangeQuery = queryParams.get('exchange')
+  const pairQuery = queryParams.get('pair')
+
   const [currentSelect, setCurrentSelect] = useState(Selects.SmartSell)
   const [currentTab, setCurrentTab] = useState(0)
   const [currentExchange, setCurrentExchange] = useState('')
-  const [currentPair, setCurrentPair] = useState('')
+  const [currentPair, setCurrentPair] = useState(pairQuery ?? '')
   const [currentWalletAddress, setCurrentWalletAddress] = useState<
     string | undefined
   >(undefined)
@@ -126,13 +134,13 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [wallet])
 
   useEffect(() => {
-    if (!currentExchange) return
+    if (!currentExchange || loadingExchanges) return
 
     model.fetchPairsFx({
       network: wallet?.network ?? config.DEFAULT_CHAIN_ID,
       exchange: currentExchange,
     })
-  }, [wallet, currentExchange])
+  }, [wallet, currentExchange, loadingExchanges])
 
   useEffect(() => {
     return () => model.reset()
@@ -162,17 +170,17 @@ export const Trade: React.VFC<TradeProps> = () => {
   useEffect(() => {
     const [firstExchange] = exchanges
 
-    if (!firstExchange) return
+    if (!firstExchange || loadingExchanges || exchangeQuery) return
 
     setCurrentExchange(firstExchange.Name)
-  }, [exchanges])
+  }, [exchanges, loadingExchanges, exchangeQuery])
   useEffect(() => {
     const [firstPair] = pairs
 
-    if (!firstPair) return
+    if (!firstPair || loadingPairs || pairQuery) return
 
     setCurrentPair(firstPair.pairInfo?.address ?? '')
-  }, [pairs])
+  }, [pairs, loadingPairs, pairQuery])
 
   const pairMap = useMemo(
     () =>
@@ -203,6 +211,25 @@ export const Trade: React.VFC<TradeProps> = () => {
     () => exchangesMap.get(currentExchange),
     [exchangesMap, currentExchange]
   )
+
+  useEffect(() => {
+    if (!exchangeQuery) return
+
+    const exchange = exchangesMap.get(exchangeQuery)
+
+    if (!exchange) return
+
+    setCurrentExchange(exchange.Name)
+  }, [exchangeQuery, exchangesMap])
+
+  useEffect(() => {
+    if (!currentPair || !currentExchangeObj) return
+
+    routerHistory.replace({
+      search: `exchange=${currentExchangeObj.Address}&pair=${currentPair}`,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPair, currentExchangeObj])
 
   const tokens = useMemo(() => {
     const tokensCp = [...(currentPairObj?.pairInfo?.tokens ?? [])]
@@ -351,6 +378,8 @@ export const Trade: React.VFC<TradeProps> = () => {
   }
 
   useEffect(() => {
+    if (!currentPair) return
+
     setSearchPair('')
   }, [currentPair])
 
@@ -609,9 +638,9 @@ export const Trade: React.VFC<TradeProps> = () => {
             )}
           >
             <div className={styles.tradeSelectHeader}>
-              {(
-                [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
-              ).includes(String(user?.role)) && (
+              {([UserRoleEnum.Admin] as Array<string>).includes(
+                String(user?.role)
+              ) && (
                 <Dropdown
                   control={(open) => (
                     <Typography

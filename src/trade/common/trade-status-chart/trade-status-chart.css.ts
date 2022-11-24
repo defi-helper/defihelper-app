@@ -55,6 +55,7 @@ export const stopLossLine = style({
   background: theme.colors.common.red1,
   width: 1,
   height: 40,
+  zIndex: 2,
 })
 
 export const stopLoss = style([
@@ -76,6 +77,7 @@ export const takeProfitLine = style({
   background: theme.colors.common.green2,
   width: 1,
   height: 40,
+  zIndex: 2,
 })
 
 export const takeProfit = style([
@@ -96,6 +98,7 @@ export const buyLine = style({
   background: theme.colors.textColorPrimary,
   width: 1,
   height: 24,
+  zIndex: 2,
 })
 
 export const buy = style([
@@ -114,6 +117,7 @@ export const profitLine = style({
   bottom: 0,
   width: 1,
   height: 22,
+  zIndex: 2,
 })
 
 export const profit = style([
@@ -127,3 +131,11 @@ export const profit = style([
 ])
 
 export const profitTitle = style([fs12, {}])
+
+export const positive = style({
+  color: theme.colors.textColorGreen,
+})
+
+export const negative = style({
+  color: theme.colors.common.red1,
+})

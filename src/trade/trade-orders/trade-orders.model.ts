@@ -93,7 +93,12 @@ export const fetchActualPricesFx = createEffect(
       return {
         id,
         path,
-        actualPrice,
+        actualPrice: Object.fromEntries(
+          Object.entries(actualPrice).map(([key, value]) => [
+            key.toLowerCase(),
+            value,
+          ])
+        ),
       }
     })
 
