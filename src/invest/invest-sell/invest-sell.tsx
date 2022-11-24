@@ -35,7 +35,29 @@ export type InvestSellProps = {
   onSell: (sellAmount: string) => void
 }
 
+enum Errors {
+  default,
+  balance,
+}
+
+const ErrorMessages = {
+  [Errors.default]: (
+    <>
+      Your transaction failed due to current market conditions. You can try to
+      change the amount or use another token
+    </>
+  ),
+  [Errors.balance]: (
+    <>
+      Transaction failed. Please check that you have enough native tokens on
+      your wallet to pay the fees.
+    </>
+  ),
+}
+
 export const InvestSell = (props: InvestSellProps) => {
+  const [error, setError] = useState<Errors | null>(null)
+
   const [amount, setAmount] = useState('0')
   const [tokenAddress, setTokenAddress] = useState('')
 
@@ -85,10 +107,18 @@ export const InvestSell = (props: InvestSellProps) => {
     [props.adapter]
   )
 
+  const balanceOf = useAsyncRetry(async () => {
+    if (!props.adapter) return
+
+    return props.adapter?.methods.balanceOf()
+  }, [props.adapter])
+
   const [sellState, handleSell] = useAsyncFn(async () => {
     if (!props.adapter) return
 
     const { sell, canSell, sellETH } = props.adapter.methods
+
+    setError(null)
 
     try {
       const can = await canSell(amount)
@@ -109,6 +139,12 @@ export const InvestSell = (props: InvestSellProps) => {
 
       if (!result?.transactionHash || !currentUserWallet || !fee.value) return
 
+      if (bignumberUtils.gt(fee.value.native, balanceOf.value)) {
+        setError(Errors.balance)
+
+        return
+      }
+
       props.onSubmit?.({
         tx: result.transactionHash,
         wallet: currentUserWallet.id,
@@ -118,26 +154,38 @@ export const InvestSell = (props: InvestSellProps) => {
       })
 
       return true
-    } catch (error) {
+    } catch {
       analytics.log('lp_tokens_purchase_unsuccess', {
         amount: bignumberUtils.floor(amount),
       })
 
-      throw error
+      setError(Errors.default)
+
+      return false
     }
-  }, [props.adapter, tokenAddress, amount])
+  }, [props.adapter, tokenAddress, amount, balanceOf.value])
 
   const [approveState, handleApprove] = useAsyncFn(async () => {
     if (!props.adapter) return
 
     const { approve } = props.adapter.methods
 
-    const { tx } = await approve(amount)
+    setError(null)
 
-    await tx?.wait()
+    try {
+      const { tx } = await approve(amount)
 
-    approved.retry()
-    toastsService.info('tokens approved!')
+      await tx?.wait()
+
+      approved.retry()
+      toastsService.info('tokens approved!')
+
+      return true
+    } catch {
+      setError(Errors.default)
+
+      return false
+    }
   }, [props.adapter, tokenAddress, amount])
 
   useEffect(() => {
@@ -163,6 +211,14 @@ export const InvestSell = (props: InvestSellProps) => {
     props.onSell(amountOut.value)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountOut.value])
+
+  useEffect(() => {
+    const message = approveState.error?.message ?? sellState.error?.message
+
+    if (!message) return setError(null)
+
+    setError(Errors.default)
+  }, [approveState.error, sellState.error])
 
   return (
     <React.Fragment>
@@ -229,10 +285,9 @@ export const InvestSell = (props: InvestSellProps) => {
           })}
         </Select>
       </div>
-      {sellState.error || approveState.error ? (
+      {error ? (
         <Typography variant="body3" as="div" className={styles.error}>
-          Transaction failed. Please check that you have enough native tokens on
-          your wallet to pay the fees.
+          {ErrorMessages[error]}
         </Typography>
       ) : (
         <InvestFee

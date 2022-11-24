@@ -42,8 +42,28 @@ type FormValues = {
 
 const SLIPPAGE = ['0.1', '0.5', '1']
 
+enum Errors {
+  default,
+  balance,
+}
+
+const ErrorMessages = {
+  [Errors.default]: (
+    <>
+      Your transaction failed due to current market conditions. You can try to
+      change the amount or use another token
+    </>
+  ),
+  [Errors.balance]: (
+    <>
+      Transaction failed. Please check that you have enough native tokens on
+      your wallet to pay the fees.
+    </>
+  ),
+}
+
 export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
-  const [error, setError] = useState(false)
+  const [error, setError] = useState<Errors | null>(null)
 
   const { control, handleSubmit, formState, watch, setValue } =
     useForm<FormValues>({
@@ -118,7 +138,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
       const { buy, canBuy, buyETH, canBuyETH } =
         props.buyLiquidityAdapter.methods
 
-      setError(false)
+      setError(null)
 
       const isNativeToken = formValues.token === NULL_ADDRESS
 
@@ -141,6 +161,17 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
 
         if (!result?.transactionHash || !fee.value) return
 
+        if (
+          bignumberUtils.gt(
+            fee.value.native,
+            tokens.value?.[formValues.token]?.balance
+          )
+        ) {
+          setError(Errors.balance)
+
+          return
+        }
+
         props.onSubmit?.({
           tx: result.transactionHash,
           fee: fee.value.native,
@@ -150,7 +181,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
 
         return true
       } catch {
-        setError(true)
+        setError(Errors.default)
 
         analytics.log('lp_tokens_purchase_unsuccess', {
           amount: bignumberUtils.floor(formValues.amount),
@@ -159,13 +190,13 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
         return false
       }
     },
-    [fee.value]
+    [fee.value, tokens.value]
   )
 
   const [approveState, onApprove] = useAsyncFn(
     async (formValues: FormValues) => {
       const { approve } = props.buyLiquidityAdapter.methods
-      setError(false)
+      setError(null)
 
       try {
         const { tx } = await approve(formValues.token, formValues.amount)
@@ -177,7 +208,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
 
         return true
       } catch {
-        setError(true)
+        setError(Errors.default)
 
         return false
       }
@@ -215,9 +246,9 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
   useEffect(() => {
     const message = approveState.error?.message ?? buyState.error?.message
 
-    if (!message) return setError(false)
+    if (!message) return setError(null)
 
-    setError(true)
+    setError(Errors.default)
   }, [approveState.error, buyState.error])
 
   return (
@@ -349,8 +380,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
             <div className={styles.wrap}>
               {error ? (
                 <Typography variant="body3" as="div" className={styles.error}>
-                  Transaction failed. Please check that you have enough native
-                  tokens on your wallet to pay the fees.
+                  {ErrorMessages[error]}
                 </Typography>
               ) : (
                 <div className={styles.serviceFee}>
