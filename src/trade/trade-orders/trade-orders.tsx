@@ -755,91 +755,113 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             </div>
                           </div>
                           <div>
-                            <div className={styles.claim}>
-                              {callDataWithBoughtPrice &&
-                                (order.claim ||
-                                  (order.status ===
-                                    SmartTradeOrderStatusEnum.Succeeded &&
-                                    !order.claim)) &&
-                                ![
-                                  SmartTradeOrderStatusEnum.Pending,
-                                  SmartTradeOrderStatusEnum.Processed,
-                                ].includes(order.status) && (
-                                  <Typography
-                                    variant="body3"
-                                    className={clsx(styles.status, {
-                                      [styles.positive]: bignumberUtils.gt(
-                                        percent,
-                                        0
-                                      ),
-                                      [styles.negative]: bignumberUtils.lt(
-                                        percent,
-                                        0
-                                      ),
-                                    })}
-                                  >
-                                    {!order.claim &&
-                                    order.status ===
-                                      SmartTradeOrderStatusEnum.Succeeded
-                                      ? titles.completed
-                                      : titles[order.status]}
-                                    : {bignumberUtils.toFixed(percent, 4)}%
-                                  </Typography>
-                                )}
-                              {order.status ===
-                                SmartTradeOrderStatusEnum.Succeeded &&
-                              !order.claim ? (
-                                <WalletConnect
-                                  fallback={
-                                    <Button color="green">Claim</Button>
-                                  }
+                            {order.closed && (
+                              <div className={styles.claim}>
+                                <Typography
+                                  variant="body3"
+                                  className={clsx(styles.status, {
+                                    [styles.positive]: bignumberUtils.gt(
+                                      percent,
+                                      0
+                                    ),
+                                    [styles.negative]: bignumberUtils.lt(
+                                      percent,
+                                      0
+                                    ),
+                                  })}
                                 >
-                                  <Button
-                                    color="green"
-                                    onClick={claim}
-                                    loading={claimingOrder === order.id}
-                                    disabled={Boolean(
-                                      claimingOrder.length &&
-                                        claimingOrder !== order.id
-                                    )}
-                                  >
-                                    Claim
-                                  </Button>
-                                </WalletConnect>
-                              ) : (
-                                <>
-                                  {callDataWithBoughtPrice &&
-                                    [
-                                      SmartTradeOrderStatusEnum.Pending,
-                                      SmartTradeOrderStatusEnum.Processed,
-                                    ].includes(order.status) && (
-                                      <TradeStatusChart
-                                        stopLoss={bignumberUtils.div(
-                                          callDataWithBoughtPrice.stopLoss
-                                            ?.amountOut,
-                                          callDataWithBoughtPrice.amountIn
-                                        )}
-                                        takeProfit={bignumberUtils.div(
-                                          callDataWithBoughtPrice.takeProfit
-                                            ?.amountOut,
-                                          callDataWithBoughtPrice.amountIn
-                                        )}
-                                        buy={boughtPrice ?? undefined}
-                                        profit={currentPrice}
-                                        className={styles.contractStatus}
-                                        moving={
-                                          callDataWithBoughtPrice.stopLoss
-                                            ?.moving
-                                        }
-                                        percent={bignumberUtils.toFixed(
+                                  Order closed by market price :{' '}
+                                  {bignumberUtils.toFixed(percent, 4)}%
+                                </Typography>
+                              </div>
+                            )}
+                            {!order.closed && (
+                              <div className={styles.claim}>
+                                {callDataWithBoughtPrice &&
+                                  (order.claim ||
+                                    (order.status ===
+                                      SmartTradeOrderStatusEnum.Succeeded &&
+                                      !order.claim)) &&
+                                  ![
+                                    SmartTradeOrderStatusEnum.Pending,
+                                    SmartTradeOrderStatusEnum.Processed,
+                                  ].includes(order.status) && (
+                                    <Typography
+                                      variant="body3"
+                                      className={clsx(styles.status, {
+                                        [styles.positive]: bignumberUtils.gt(
                                           percent,
-                                          4
-                                        )}
-                                      />
-                                    )}
-                                </>
-                              )}
-                            </div>
+                                          0
+                                        ),
+                                        [styles.negative]: bignumberUtils.lt(
+                                          percent,
+                                          0
+                                        ),
+                                      })}
+                                    >
+                                      {!order.claim &&
+                                      order.status ===
+                                        SmartTradeOrderStatusEnum.Succeeded
+                                        ? titles.completed
+                                        : titles[order.status]}
+                                      : {bignumberUtils.toFixed(percent, 4)}%
+                                    </Typography>
+                                  )}
+                                {order.status ===
+                                  SmartTradeOrderStatusEnum.Succeeded &&
+                                !order.claim ? (
+                                  <WalletConnect
+                                    fallback={
+                                      <Button color="green">Claim</Button>
+                                    }
+                                  >
+                                    <Button
+                                      color="green"
+                                      onClick={claim}
+                                      loading={claimingOrder === order.id}
+                                      disabled={Boolean(
+                                        claimingOrder.length &&
+                                          claimingOrder !== order.id
+                                      )}
+                                    >
+                                      Claim
+                                    </Button>
+                                  </WalletConnect>
+                                ) : (
+                                  <>
+                                    {callDataWithBoughtPrice &&
+                                      [
+                                        SmartTradeOrderStatusEnum.Pending,
+                                        SmartTradeOrderStatusEnum.Processed,
+                                      ].includes(order.status) && (
+                                        <TradeStatusChart
+                                          stopLoss={bignumberUtils.div(
+                                            callDataWithBoughtPrice.stopLoss
+                                              ?.amountOut,
+                                            callDataWithBoughtPrice.amountIn
+                                          )}
+                                          takeProfit={bignumberUtils.div(
+                                            callDataWithBoughtPrice.takeProfit
+                                              ?.amountOut,
+                                            callDataWithBoughtPrice.amountIn
+                                          )}
+                                          buy={boughtPrice ?? undefined}
+                                          profit={currentPrice}
+                                          className={styles.contractStatus}
+                                          moving={
+                                            callDataWithBoughtPrice.stopLoss
+                                              ?.moving
+                                          }
+                                          percent={bignumberUtils.toFixed(
+                                            percent,
+                                            4
+                                          )}
+                                        />
+                                      )}
+                                  </>
+                                )}
+                              </div>
+                            )}
                           </div>
                           <div>
                             {boughtPrice ? (
@@ -949,7 +971,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               </ButtonBase>
                               <Dropdown
                                 control={
-                                  <ButtonBase>
+                                  <ButtonBase
+                                    disabled={
+                                      order.status ===
+                                      SmartTradeOrderStatusEnum.Processed
+                                    }
+                                  >
                                     <Icon
                                       width={16}
                                       height={16}

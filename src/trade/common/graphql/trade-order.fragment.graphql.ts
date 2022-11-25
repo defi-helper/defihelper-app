@@ -4,6 +4,7 @@ export const TRADE_ORDER_FRAGMENT = gql`
   fragment tradeOrderFragment on SmartTradeOrderType {
     id
     number
+    closed
     owner {
       id
       network

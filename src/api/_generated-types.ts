@@ -7369,6 +7369,7 @@ export type TradeOrderFragmentFragment = {
   SmartTradeOrderType,
   | 'id'
   | 'number'
+  | 'closed'
   | 'handler'
   | 'claim'
   | 'status'
