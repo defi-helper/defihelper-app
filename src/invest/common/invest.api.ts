@@ -108,6 +108,14 @@ export const investApi = {
         variables,
       })
       .then(({ data }) => {
-        return data?.tags ?? []
+        const groupedTags = (data?.tags ?? []).reduce<
+          Record<string, Exclude<typeof data, null | undefined>['tags']>
+        >((acc, tag) => {
+          acc[tag.type] = [...(acc[tag.type] ?? []), tag]
+
+          return acc
+        }, {})
+
+        return Object.entries(groupedTags).flat(2)
       }),
 }
