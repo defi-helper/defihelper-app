@@ -357,11 +357,17 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
             clearable
             grouped
           >
-            {tags.map((tag) => (
-              <SelectOption value={tag.id} key={tag.id}>
-                {tag.name}
-              </SelectOption>
-            ))}
+            {tags.map((tag) =>
+              typeof tag === 'string' ? (
+                <Typography key={tag} variant="body3">
+                  {tag}
+                </Typography>
+              ) : (
+                <SelectOption value={tag.id} key={tag.id}>
+                  {tag.name}
+                </SelectOption>
+              )
+            )}
           </Select>
           <Input
             placeholder="Search"
