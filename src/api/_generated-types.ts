@@ -2619,6 +2619,7 @@ export type SmartTradeSwapHandlerCallDataType = {
   boughtPrice?: Maybe<Scalars['BigNumberType']>
   swapPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapHandlerCallDataRouteType>
+  stopLoss2?: Maybe<SwapHandlerCallDataRouteType>
   takeProfit?: Maybe<SwapHandlerCallDataRouteType>
   activate?: Maybe<SmartTradeSwapHandlerCallDataActivateType>
   deadline: Scalars['Int']
@@ -2634,6 +2635,7 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   amountOut: Scalars['BigNumberType']
   boughtPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
+  stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
   takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
   activate?: Maybe<SwapOrderCallDataActivateInputType>
   /** Deadline seconds */

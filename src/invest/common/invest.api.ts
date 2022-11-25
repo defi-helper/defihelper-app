@@ -107,13 +107,7 @@ export const investApi = {
         query: INVEST_TAGS.loc?.source.body ?? '',
         variables,
       })
-      .then(({ data }) =>
-        (data?.tags ?? []).reduce<
-          Record<string, Exclude<InvestTagsQuery['tags'], null | undefined>>
-        >((acc, item) => {
-          acc[item.type] = [...acc[item.type], item]
-
-          return acc
-        }, {})
-      ),
+      .then(({ data }) => {
+        return data?.tags ?? []
+      }),
 }

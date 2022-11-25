@@ -146,6 +146,6 @@ export const fetchTagsFx = createEffect(() => investApi.investTags())
 
 export const resetTags = createEvent()
 
-export const $tags = createStore<UnitValue<typeof fetchTagsFx.doneData>>({})
+export const $tags = createStore<UnitValue<typeof fetchTagsFx.doneData>>([])
   .on(fetchTagsFx.doneData, (_, payload) => payload)
   .reset(resetTags)
