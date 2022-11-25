@@ -359,7 +359,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
           >
             {tags.map((tag) =>
               typeof tag === 'string' ? (
-                <Typography key={tag} variant="body3">
+                <Typography key={tag} variant="body3" transform="uppercase">
                   {tag}
                 </Typography>
               ) : (
