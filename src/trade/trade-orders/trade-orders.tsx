@@ -62,6 +62,7 @@ export type TradeOrdersProps = {
   router?: SmartTradeRouter['methods']
   swap?: SmartTradeSwapHandler['methods']
   exchangesMap: Map<string, Exchange>
+  transactionDeadline: string
 }
 
 enum Tabs {
@@ -144,6 +145,30 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       console.error('error')
     } finally {
       model.claimEnded()
+    }
+  }
+
+  const handleCloseOnMarket = (order: Order) => async () => {
+    if (!hasBoughtPrice(order.callData) || !props.router) return
+
+    try {
+      const res = await props.swap?.emergencyHandleOrder(
+        order.number,
+        dateUtils.toDate(
+          dateUtils.addDate(Number(props.transactionDeadline), 'minutes')
+        )
+      )
+
+      if (!res?.tx?.hash) return
+
+      model.closeOnMarketFx({
+        id: order.id,
+        input: {
+          tx: res.tx.hash,
+        },
+      })
+    } catch (e) {
+      console.error(e)
     }
   }
 
@@ -557,6 +582,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                           })
                         })
 
+                  const closeOnMarket =
+                    wrongNetwork ??
+                    (wrongAccount
+                      ? handleWrongAddress(order)
+                      : handleCloseOnMarket(order))
+
                   const tokenOut = balances.find(
                     ({ token }) =>
                       token.address.toLowerCase() !==
@@ -943,6 +974,15 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                         }}
                                       >
                                         Cancel order
+                                      </ButtonBase>
+                                    </WalletConnect>
+                                    <WalletConnect
+                                      fallback={
+                                        <ButtonBase>Close on market</ButtonBase>
+                                      }
+                                    >
+                                      <ButtonBase onClick={closeOnMarket}>
+                                        Close on market
                                       </ButtonBase>
                                     </WalletConnect>
                                     <ButtonBase

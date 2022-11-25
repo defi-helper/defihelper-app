@@ -81,6 +81,10 @@ export type SmartTradeSwapHandler = {
     ): Promise<{ tx: Transaction | undefined | undefined }>
     canCancelOrder(id: string | number): Promise<true | Error>
     cancelOrder(id: string | number): Promise<{ tx: Transaction | undefined }>
+    emergencyHandleOrder(
+      id: string,
+      deadline: Date
+    ): Promise<{ tx: Transaction | undefined }>
     createOrder: (
       exchangeAddress: string,
       path: string[],
@@ -182,7 +186,10 @@ export interface AutomationAdapterActions {
   stopLoss: StopLossComponent
 }
 
-type Transaction = { wait: () => Promise<{ transactionHash: string }> }
+type Transaction = {
+  hash: string
+  wait: () => Promise<{ transactionHash: string }>
+}
 
 export type AdapterStep = {
   can: (...args: unknown[]) => Promise<boolean | Error>

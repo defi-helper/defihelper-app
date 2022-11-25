@@ -53,8 +53,8 @@ export const dateUtils = {
   addTimestamp: (value: number, unit?: OpUnitType) =>
     dayjs().add(value, unit).unix(),
 
-  addDate: (value: number, unit?: OpUnitType) =>
-    dayjs().add(value, unit).toISOString(),
+  addDate: (value: number, unit?: OpUnitType, date = new Date()) =>
+    dayjs(date).add(value, unit).toISOString(),
 
   after: (from: string | number | Date, to: string | number | Date) =>
     dayjs(from).isAfter(to),
