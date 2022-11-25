@@ -743,47 +743,55 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
             {SelectComponents[currentSelect]}
           </div>
-          {currentNetworkCorrect && !hasContract && currentWallet?.chainId && (
-            <div className={styles.beta}>
-              <Typography
-                variant="body2"
-                align="center"
-                family="mono"
-                className={styles.betaTitle}
-              >
-                {networksConfig[currentWallet.chainId]?.title} not supported.
-                Please switch your network
-              </Typography>
-              <Button
-                color="green"
-                className={styles.switchNetwork}
-                onClick={handleSwitchNetwork}
-                loading={switchNetworkState.loading}
-              >
-                switch network
-              </Button>
-            </div>
-          )}
-          {!currentNetworkCorrect && (
-            <div className={styles.beta}>
-              <Typography
-                variant="body2"
-                align="center"
-                family="mono"
-                className={styles.betaTitle}
-              >
-                Please switch your network to continue
-              </Typography>
-              <Button
-                color="green"
-                className={styles.switchNetwork}
-                onClick={handleSwitchNetwork}
-                loading={switchNetworkState.loading}
-              >
-                switch network
-              </Button>
-            </div>
-          )}
+          {currentNetworkCorrect &&
+            !hasContract &&
+            currentWallet?.chainId &&
+            (
+              [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
+            ).includes(String(user?.role)) && (
+              <div className={styles.beta}>
+                <Typography
+                  variant="body2"
+                  align="center"
+                  family="mono"
+                  className={styles.betaTitle}
+                >
+                  {networksConfig[currentWallet.chainId]?.title} not supported.
+                  Please switch your network
+                </Typography>
+                <Button
+                  color="green"
+                  className={styles.switchNetwork}
+                  onClick={handleSwitchNetwork}
+                  loading={switchNetworkState.loading}
+                >
+                  switch network
+                </Button>
+              </div>
+            )}
+          {!currentNetworkCorrect &&
+            (
+              [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
+            ).includes(String(user?.role)) && (
+              <div className={styles.beta}>
+                <Typography
+                  variant="body2"
+                  align="center"
+                  family="mono"
+                  className={styles.betaTitle}
+                >
+                  Please switch your network to continue
+                </Typography>
+                <Button
+                  color="green"
+                  className={styles.switchNetwork}
+                  onClick={handleSwitchNetwork}
+                  loading={switchNetworkState.loading}
+                >
+                  switch network
+                </Button>
+              </div>
+            )}
           {!config.IS_DEV &&
             !(
               [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
