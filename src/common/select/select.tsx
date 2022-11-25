@@ -100,7 +100,7 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
         const childGroupedValues = Object.values(
           childValueArr.reduce<Record<string, string | number>>(
             (acc, localVal) => {
-              acc[groupedChildren[localVal].group] = localVal
+              acc[groupedChildren[localVal]?.group] = localVal
 
               return acc
             },
