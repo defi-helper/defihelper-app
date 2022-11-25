@@ -20,33 +20,37 @@ export const dropdownInner = style({
   display: 'flex',
   flexDirection: 'column',
   padding: 16,
+  gap: 8,
 })
 
-export const option = style({
-  justifyContent: 'flex-start',
+export const groupTitle = style([
+  {
+    color: theme.colors.textColorGrey,
+  },
+])
 
-  '@media': {
-    [theme.mediaQueries.hover()]: {
-      ':hover': {
-        color: theme.colors.textColorGreen,
-        opacity: 1,
+export const option = style([
+  {
+    justifyContent: 'flex-start',
+    gap: 10,
+
+    '@media': {
+      [theme.mediaQueries.hover()]: {
+        ':hover': {
+          color: theme.colors.textColorGreen,
+          opacity: 1,
+        },
       },
     },
   },
-
-  selectors: {
-    '&:not(:last-child)': {
-      marginBottom: 8,
-    },
-  },
-})
-
-export const active = style({})
+])
 
 export const error = style({})
 
 export const checkbox = style({
   marginLeft: 'auto',
+  width: 24,
+  height: 24,
 })
 
 export const input = style({

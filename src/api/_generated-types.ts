@@ -2619,6 +2619,7 @@ export type SmartTradeSwapHandlerCallDataType = {
   boughtPrice?: Maybe<Scalars['BigNumberType']>
   swapPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapHandlerCallDataRouteType>
+  stopLoss2?: Maybe<SwapHandlerCallDataRouteType>
   takeProfit?: Maybe<SwapHandlerCallDataRouteType>
   activate?: Maybe<SmartTradeSwapHandlerCallDataActivateType>
   deadline: Scalars['Int']
@@ -2634,6 +2635,7 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   amountOut: Scalars['BigNumberType']
   boughtPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
+  stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
   takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
   activate?: Maybe<SwapOrderCallDataActivateInputType>
   /** Deadline seconds */
@@ -5063,6 +5065,14 @@ export type AutostakingUserUnlinkMutation = { __typename?: 'Mutation' } & Pick<
   Mutation,
   'contractUserUnlink'
 >
+
+export type InvestTagsQueryVariables = Exact<{ [key: string]: never }>
+
+export type InvestTagsQuery = { __typename?: 'Query' } & {
+  tags: Array<
+    { __typename?: 'TagType' } & Pick<TagType, 'name' | 'type' | 'id'>
+  >
+}
 
 export type BlockchainsSelectQueryVariables = Exact<{
   testnet?: Maybe<Scalars['Boolean']>
