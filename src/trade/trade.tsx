@@ -63,6 +63,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const queryParams = useQueryParams()
   const exchangeQuery = queryParams.get('exchange')
   const pairQuery = queryParams.get('pair')
+  const networkQuery = queryParams.get('network')
 
   const [currentSelect, setCurrentSelect] = useState(Selects.SmartSell)
   const [currentTab, setCurrentTab] = useState(0)
@@ -130,17 +131,19 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [currentWalletAddress, walletsMap])
 
   useEffect(() => {
-    model.fetchExchangesFx(wallet?.network ?? config.DEFAULT_CHAIN_ID)
-  }, [wallet])
+    model.fetchExchangesFx(
+      networkQuery ?? wallet?.network ?? config.DEFAULT_CHAIN_ID
+    )
+  }, [wallet, networkQuery])
 
   useEffect(() => {
     if (!currentExchange || loadingExchanges) return
 
     model.fetchPairsFx({
-      network: wallet?.network ?? config.DEFAULT_CHAIN_ID,
+      network: networkQuery ?? wallet?.network ?? config.DEFAULT_CHAIN_ID,
       exchange: currentExchange,
     })
-  }, [wallet, currentExchange, loadingExchanges])
+  }, [wallet, currentExchange, loadingExchanges, networkQuery])
 
   useEffect(() => {
     return () => model.reset()
@@ -223,13 +226,13 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [exchangeQuery, exchangesMap])
 
   useEffect(() => {
-    if (!currentPair || !currentExchangeObj) return
+    if (!currentPair || !currentExchangeObj || !wallet) return
 
     routerHistory.replace({
-      search: `exchange=${currentExchangeObj.Address}&pair=${currentPair}`,
+      search: `exchange=${currentExchangeObj.Address}&pair=${currentPair}&network=${wallet.network}`,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPair, currentExchangeObj])
+  }, [currentPair, currentExchangeObj, wallet])
 
   const tokens = useMemo(() => {
     const tokensCp = [...(currentPairObj?.pairInfo?.tokens ?? [])]
