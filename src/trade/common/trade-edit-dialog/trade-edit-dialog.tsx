@@ -94,7 +94,7 @@ export const TradeEditDialog: React.VFC<TradeEditDialogProps> = (props) => {
         <Typography variant="body2">Current price</Typography>
         <Typography variant="body2" as="div">
           {props.currentPrice}
-          {props.boughtToken?.symbol}
+          BUSD
         </Typography>
       </div>
       <Button color="green" onClick={handleConfirm} className={styles.button}>
