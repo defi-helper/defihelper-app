@@ -752,7 +752,13 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       SmartTradeOrderStatusEnum.Succeeded
                                       ? titles.completed
                                       : titles[order.status]}
-                                    : {bignumberUtils.toFixed(percent, 4)}%
+                                    {order.status ===
+                                    SmartTradeOrderStatusEnum.Canceled
+                                      ? null
+                                      : `: ${bignumberUtils.toFixed(
+                                          percent,
+                                          4
+                                        )}%`}
                                   </Typography>
                                 )}
                               {order.status ===
@@ -810,46 +816,29 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               )}
                             </div>
                           </div>
-                          <div>
-                            {boughtPrice ? (
-                              <>
-                                <div className={styles.contractBalance}>
-                                  {tokenOut?.token.alias?.logoUrl ? (
-                                    <img
-                                      src={tokenOut?.token.alias?.logoUrl}
-                                      className={styles.contractBalanceIcon}
-                                      alt=""
-                                    />
-                                  ) : (
-                                    <Paper
-                                      className={styles.contractBalanceIcon}
-                                    >
-                                      <Icon
-                                        icon="unknownNetwork"
-                                        width="16"
-                                        height="16"
-                                      />
-                                    </Paper>
-                                  )}
-                                  <Typography
-                                    className={clsx(styles.fs12, {
-                                      [styles.positive]: bignumberUtils.gt(
-                                        percent,
-                                        0
-                                      ),
-                                      [styles.negative]: bignumberUtils.lt(
-                                        percent,
-                                        0
-                                      ),
-                                    })}
-                                    as="div"
-                                  >
-                                    {bignumberUtils.gt(percent, 0) && '+'}
-                                    {bignumberUtils.toFixed(profit, 4)}
-                                  </Typography>
-                                </div>
-                                {currentPrice && (
+                          {order.status !==
+                            SmartTradeOrderStatusEnum.Canceled && (
+                            <div>
+                              {boughtPrice ? (
+                                <>
                                   <div className={styles.contractBalance}>
+                                    {tokenOut?.token.alias?.logoUrl ? (
+                                      <img
+                                        src={tokenOut?.token.alias?.logoUrl}
+                                        className={styles.contractBalanceIcon}
+                                        alt=""
+                                      />
+                                    ) : (
+                                      <Paper
+                                        className={styles.contractBalanceIcon}
+                                      >
+                                        <Icon
+                                          icon="unknownNetwork"
+                                          width="16"
+                                          height="16"
+                                        />
+                                      </Paper>
+                                    )}
                                     <Typography
                                       className={clsx(styles.fs12, {
                                         [styles.positive]: bignumberUtils.gt(
@@ -863,54 +852,79 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       })}
                                       as="div"
                                     >
-                                      {currentPrice && (
-                                        <>
-                                          {bignumberUtils.gt(percent, 0) && '+'}
-                                          {bignumberUtils.toFixed(profitUSD, 4)}
-                                          $ /
-                                        </>
-                                      )}{' '}
                                       {bignumberUtils.gt(percent, 0) && '+'}
-                                      {bignumberUtils.toFixed(percent, 4)}%
+                                      {bignumberUtils.toFixed(profit, 4)}
                                     </Typography>
                                   </div>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <Typography
-                                  variant="body3"
-                                  className={styles.boughtPrice}
-                                >
-                                  Bought price
-                                  <Dropdown
-                                    control={
-                                      <ButtonBase>
-                                        <Icon
-                                          icon="question"
-                                          width={16}
-                                          height={16}
-                                        />
-                                      </ButtonBase>
-                                    }
-                                    offset={[0, 8]}
+                                  {currentPrice && (
+                                    <div className={styles.contractBalance}>
+                                      <Typography
+                                        className={clsx(styles.fs12, {
+                                          [styles.positive]: bignumberUtils.gt(
+                                            percent,
+                                            0
+                                          ),
+                                          [styles.negative]: bignumberUtils.lt(
+                                            percent,
+                                            0
+                                          ),
+                                        })}
+                                        as="div"
+                                      >
+                                        {currentPrice && (
+                                          <>
+                                            {bignumberUtils.gt(percent, 0) &&
+                                              '+'}
+                                            {bignumberUtils.toFixed(
+                                              profitUSD,
+                                              4
+                                            )}
+                                            $ /
+                                          </>
+                                        )}{' '}
+                                        {bignumberUtils.gt(percent, 0) && '+'}
+                                        {bignumberUtils.toFixed(percent, 4)}%
+                                      </Typography>
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  <Typography
+                                    variant="body3"
+                                    className={styles.boughtPrice}
                                   >
-                                    <Typography variant="body3">
-                                      Enter the Bought price to see your profit
-                                    </Typography>
-                                  </Dropdown>
-                                </Typography>
-                                <Button
-                                  color="green"
-                                  loading={editingOrder === order.id}
-                                  onClick={handleEnterBoughtPrice(order)}
-                                  size="small"
-                                >
-                                  Enter
-                                </Button>
-                              </>
-                            )}
-                          </div>
+                                    Bought price
+                                    <Dropdown
+                                      control={
+                                        <ButtonBase>
+                                          <Icon
+                                            icon="question"
+                                            width={16}
+                                            height={16}
+                                          />
+                                        </ButtonBase>
+                                      }
+                                      offset={[0, 8]}
+                                    >
+                                      <Typography variant="body3">
+                                        Enter the Bought price to see your
+                                        profit
+                                      </Typography>
+                                    </Dropdown>
+                                  </Typography>
+                                  <Button
+                                    color="green"
+                                    loading={editingOrder === order.id}
+                                    onClick={handleEnterBoughtPrice(order)}
+                                    size="small"
+                                  >
+                                    Enter
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          )}
                           {statuses[Tabs.Active].includes(order.status) && (
                             <div className={styles.contractActions}>
                               <ButtonBase onClick={handleUpdatePrice(order.id)}>
