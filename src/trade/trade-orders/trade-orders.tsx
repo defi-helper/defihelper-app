@@ -262,7 +262,11 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
     }
 
   const handleEnterBoughtPrice =
-    (order: Exclude<typeof orders, null>['list'][number]) => async () => {
+    (
+      order: Exclude<typeof orders, null>['list'][number],
+      currentPrice?: string
+    ) =>
+    async () => {
       if (!hasBoughtPrice(order.callData)) return
 
       try {
@@ -289,6 +293,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
           order,
           exchange,
           boughtToken: token,
+          currentPrice,
         })
 
         await model.updateOrderFx({
@@ -956,7 +961,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                 <Button
                                   color="green"
                                   loading={editingOrder === order.id}
-                                  onClick={handleEnterBoughtPrice(order)}
+                                  onClick={handleEnterBoughtPrice(
+                                    order,
+                                    currentPrice
+                                  )}
                                   size="small"
                                 >
                                   Enter
