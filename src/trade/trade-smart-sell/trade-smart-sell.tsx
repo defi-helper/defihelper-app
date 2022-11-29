@@ -1,7 +1,13 @@
 import { useStore } from 'effector-react'
 import { Controller, useForm } from 'react-hook-form'
 import clsx from 'clsx'
-import { useAsyncFn, useAsyncRetry, useInterval, useToggle } from 'react-use'
+import {
+  useAsyncFn,
+  useAsyncRetry,
+  useInterval,
+  useThrottle,
+  useToggle,
+} from 'react-use'
 import React, { useEffect } from 'react'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -92,6 +98,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const takeProfitPercent = watch('takeProfitPercent')
   const stopLossPercent = watch('stopLossPercent')
 
+  const unitThrottled = useThrottle(unit, 300)
+
   const price = useAsyncRetry(async () => {
     const path = props.tokens?.map(({ address }) => address)
 
@@ -101,10 +109,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   }, [props.exchangeAddress, props.tokens, unit])
 
   const isApproved = useAsyncRetry(async () => {
-    if (!props.tokens?.[0]?.address || bignumberUtils.eq(unit, 0)) return false
+    if (!props.tokens?.[0]?.address || bignumberUtils.eq(unitThrottled, 0))
+      return false
 
-    return props.router?.isApproved(props.tokens?.[0]?.address, unit)
-  }, [props.tokens, unit])
+    return props.router?.isApproved(props.tokens?.[0]?.address, unitThrottled)
+  }, [props.tokens, unitThrottled])
 
   const [approve, handleApprove] = useAsyncFn(async () => {
     if (!props.tokens?.[0]?.address || bignumberUtils.eq(unit, 0)) return false
