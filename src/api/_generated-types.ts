@@ -1427,6 +1427,7 @@ export type Mutation = {
   smartTradeCancel: SmartTradeOrderType
   smartTradeClaim: SmartTradeOrderType
   smartTradeSwapOrderCreate: SmartTradeOrderType
+  smartTradeSwapOrderSetBoughtPrice: SmartTradeOrderType
   smartTradeSwapOrderUpdate: SmartTradeOrderType
   smartTradeSwapOrderClose: SmartTradeOrderType
 }
@@ -1719,6 +1720,11 @@ export type MutationSmartTradeClaimArgs = {
 
 export type MutationSmartTradeSwapOrderCreateArgs = {
   input: SmartTradeSwapOrderCreateInputType
+}
+
+export type MutationSmartTradeSwapOrderSetBoughtPriceArgs = {
+  id: Scalars['UuidType']
+  input: SmartTradeSwapOrderSetBoughtPriceInputType
 }
 
 export type MutationSmartTradeSwapOrderUpdateArgs = {
@@ -2668,12 +2674,28 @@ export type SmartTradeSwapOrderCreateInputType = {
   tx: Scalars['EthereumTransactionHashType']
 }
 
+export type SmartTradeSwapOrderSetBoughtPriceCallDataInputType = {
+  boughtPrice: Scalars['BigNumberType']
+}
+
+export type SmartTradeSwapOrderSetBoughtPriceInputType = {
+  callData: SmartTradeSwapOrderSetBoughtPriceCallDataInputType
+}
+
 export type SmartTradeSwapOrderUpdateCallDataInputType = {
-  boughtPrice?: Maybe<Scalars['BigNumberType']>
+  amountOut: Scalars['BigNumberType']
+  stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
+  stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
+  takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
+  activate?: Maybe<SwapOrderCallDataActivateInputType>
+  /** Deadline seconds */
+  deadline: Scalars['Int']
 }
 
 export type SmartTradeSwapOrderUpdateInputType = {
-  callData?: Maybe<SmartTradeSwapOrderUpdateCallDataInputType>
+  /** Handler raw call data */
+  callDataRaw: Scalars['String']
+  callData: SmartTradeSwapOrderUpdateCallDataInputType
 }
 
 export enum SortOrderEnum {
