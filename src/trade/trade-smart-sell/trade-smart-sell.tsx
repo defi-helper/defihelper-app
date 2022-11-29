@@ -18,7 +18,7 @@ import { WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { authModel } from '~/auth'
-import { UserRoleEnum } from '~/api'
+import { SwapOrderCallDataDirectionEnum, UserRoleEnum } from '~/api'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
@@ -51,7 +51,9 @@ type FormValues = {
   takeProfitPercent: number
   takeProfitValue: string
   stopLossValue: string
-  moving: boolean
+  trailingStopLoss: boolean
+  trailingTakeProfit: boolean
+  followMaxPrice: number
 }
 
 export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
@@ -74,13 +76,17 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         stopLossValue: '0',
         takeProfitValue: '0',
         unit: '0',
-        moving: false,
+        trailingStopLoss: false,
+        trailingTakeProfit: false,
+        followMaxPrice: 0,
       },
     })
 
   const takeProfit = watch('takeProfit')
-  const moving = watch('moving')
+  const trailingStopLoss = watch('trailingStopLoss')
+  const trailingTakeProfit = watch('trailingTakeProfit')
   const stopLoss = watch('stopLoss')
+  const followMaxPrice = watch('followMaxPrice')
 
   const balanceOf = useAsyncRetry(async () => {
     if (!props.tokens?.[0]?.address || !props.router) return
@@ -154,6 +160,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         boughtToken: token,
       })
 
+      const takeProfitAmountOut = bignumberUtils.mul(
+        formValues.unit,
+        formValues.takeProfitValue
+      )
+
       const result = await props.swap?.createOrder(
         props.exchangeAddress,
         path,
@@ -165,20 +176,31 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 formValues.stopLossValue
               ),
               slippage: '100',
-              moving: formValues.moving,
+              moving: formValues.trailingStopLoss,
             }
           : null,
-        null,
-        formValues.takeProfit
+        formValues.trailingTakeProfit
           ? {
               amountOut: bignumberUtils.mul(
-                formValues.unit,
-                formValues.takeProfitValue
+                takeProfitAmountOut,
+                formValues.followMaxPrice
               ),
+              slippage: '100',
+              moving: formValues.trailingTakeProfit,
+            }
+          : null,
+        formValues.takeProfit
+          ? {
+              amountOut: takeProfitAmountOut,
               slippage: props.slippage,
             }
           : null,
-        null,
+        formValues.trailingTakeProfit
+          ? {
+              amountOut: takeProfitAmountOut,
+              direction: 'gt',
+            }
+          : null,
         {}
       )
 
@@ -201,6 +223,13 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           tokenOutDecimals: result.callData.tokenOutDecimals,
           amountIn: result.callData.amountIn,
           amountOut: result.callData.amountOut,
+          activate: result.callData.activate
+            ? {
+                amountOut: result.callData.activate.amountOut,
+                direction: result.callData.activate
+                  .direction as SwapOrderCallDataDirectionEnum,
+              }
+            : null,
           stopLoss: result.callData.stopLoss
             ? {
                 amountOut: result.callData.stopLoss.amountOut,
@@ -248,6 +277,17 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         6
       )
     )
+  }
+
+  const handleChangeFollowMaxPrice = (
+    event: number | number[] | React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value =
+      Array.isArray(event) || typeof event === 'number'
+        ? event
+        : event.currentTarget.value
+
+    setValue('followMaxPrice', Number(value))
   }
 
   const handleChangeTakeProfit = (
@@ -473,6 +513,71 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   disabled={formState.isSubmitting}
                 />
               </div>
+              <div className={styles.trailingBuyTitle}>
+                <Typography
+                  as="div"
+                  variant="body3"
+                  className={styles.takeProfitLabel}
+                >
+                  Traling take profit
+                </Typography>
+                <Dropdown
+                  control={
+                    <ButtonBase>
+                      <Icon icon="info" width="16" height="16" />
+                    </ButtonBase>
+                  }
+                  offset={[0, 8]}
+                  className={styles.dropdown}
+                  placement="bottom-start"
+                >
+                  <Typography variant="body2">
+                    Will follow the price movements up. It will be at the same
+                    distance from the reached price
+                  </Typography>
+                </Dropdown>
+                <Switch
+                  size="small"
+                  onChange={({ target }) =>
+                    setValue('trailingTakeProfit', target.checked)
+                  }
+                  checked={trailingTakeProfit}
+                  disabled={formState.isSubmitting}
+                />
+              </div>
+              {trailingTakeProfit && (
+                <>
+                  <Typography
+                    as="div"
+                    variant="body3"
+                    className={styles.takeProfitLabel}
+                  >
+                    Follow max price with deviation [%]
+                  </Typography>
+                  <div className={styles.trailingBuy}>
+                    <NumericalInput
+                      className={styles.trailingBuyInput}
+                      negative
+                      value={-followMaxPrice}
+                      rightSide="%"
+                      min={0}
+                      max={100}
+                      onChange={handleChangeFollowMaxPrice}
+                      size="small"
+                      disabled={formState.isSubmitting}
+                    />
+                    <Slider
+                      className={styles.slider}
+                      reverse
+                      value={followMaxPrice}
+                      min={0}
+                      max={100}
+                      onChange={handleChangeFollowMaxPrice}
+                      disabled={formState.isSubmitting}
+                    />
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>
@@ -545,8 +650,10 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 </Dropdown>
                 <Switch
                   size="small"
-                  onChange={({ target }) => setValue('moving', target.checked)}
-                  checked={moving}
+                  onChange={({ target }) =>
+                    setValue('trailingStopLoss', target.checked)
+                  }
+                  checked={trailingStopLoss}
                   disabled={formState.isSubmitting}
                 />
               </div>

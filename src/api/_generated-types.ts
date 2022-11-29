@@ -1428,6 +1428,7 @@ export type Mutation = {
   smartTradeClaim: SmartTradeOrderType
   smartTradeSwapOrderCreate: SmartTradeOrderType
   smartTradeSwapOrderUpdate: SmartTradeOrderType
+  smartTradeSwapOrderClose: SmartTradeOrderType
 }
 
 export type MutationUserUpdateArgs = {
@@ -1723,6 +1724,11 @@ export type MutationSmartTradeSwapOrderCreateArgs = {
 export type MutationSmartTradeSwapOrderUpdateArgs = {
   id: Scalars['UuidType']
   input: SmartTradeSwapOrderUpdateInputType
+}
+
+export type MutationSmartTradeSwapOrderCloseArgs = {
+  id: Scalars['UuidType']
+  input: SmartTradeSwapOrderCloseInputType
 }
 
 export type OnOrderStatusChangedFilterInputType = {
@@ -2601,6 +2607,8 @@ export type SmartTradeOrderType = {
   balances: Array<SmartTradeOrderBalanceType>
   /** Is order confirmed on blockchain */
   confirmed: Scalars['Boolean']
+  /** Is order closed with market price */
+  closed: Scalars['Boolean']
   /** Date of created */
   createdAt: Scalars['DateTimeType']
 }
@@ -2623,6 +2631,10 @@ export type SmartTradeSwapHandlerCallDataType = {
   takeProfit?: Maybe<SwapHandlerCallDataRouteType>
   activate?: Maybe<SmartTradeSwapHandlerCallDataActivateType>
   deadline: Scalars['Int']
+}
+
+export type SmartTradeSwapOrderCloseInputType = {
+  tx: Scalars['EthereumTransactionHashType']
 }
 
 export type SmartTradeSwapOrderCreateCallDataInputType = {

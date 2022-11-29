@@ -124,14 +124,25 @@ export type SmartTradeSwapHandler = {
           amountOutMin: string
           moving: boolean
           direction: 'gt' | 'lt'
-        }
+        } | null
         takeProfit: {
           amountOut: string
           slippage: string
           amountOutMin: string
           moving: boolean
           direction: 'gt' | 'lt'
-        }
+        } | null
+        stopLoss2: {
+          amountOut: string
+          slippage: string
+          amountOutMin: string
+          moving: boolean
+          direction: 'gt' | 'lt'
+        } | null
+        activate: {
+          amountOut: string
+          direction: 'gt' | 'lt'
+        } | null
       }
       getOrderNumber: () => Promise<string>
     }>
