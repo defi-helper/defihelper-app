@@ -16,12 +16,15 @@ import {
   TradeUpdateOrderMutationVariables,
   TradeTokenAliasesQuery,
   TradeTokenAliasesQueryVariables,
+  TradeCloseOnMarketMutation,
+  TradeCloseOnMarketMutationVariables,
 } from '~/api'
 import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
 import { TRADE_AUTH } from './graphql/trade-auth.graphql'
 import { TRADE_CANCEL_ORDER } from './graphql/trade-cancel-order.graphql'
 import { TRADE_CLAIM_ORDER } from './graphql/trade-claim-order.graphql'
+import { TRADE_CLOSE_ON_MARKET } from './graphql/trade-close-on-market.graphql'
 import { TRADE_CREATE_ORDER } from './graphql/trade-create-order.graphql'
 import { TRADE_ORDER_LIST } from './graphql/trade-order-list.graphql'
 import { TRADE_TOKEN_ALIASES } from './graphql/trade-token-aliases.graphql'
@@ -266,6 +269,18 @@ export const tradeApi = {
         query: TRADE_AUTH.loc?.source.body ?? '',
       })
       .then(({ data }) => data?.tradingAuth),
+
+  closeOnMarket: (variables: TradeCloseOnMarketMutationVariables) =>
+    getAPIClient()
+      .request<
+        TradeCloseOnMarketMutation,
+        unknown,
+        TradeCloseOnMarketMutationVariables
+      >({
+        query: TRADE_CLOSE_ON_MARKET.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.smartTradeSwapOrderClose),
 
   createOrder: (input: TradeCreateOrderMutationVariables['input']) =>
     getAPIClient()
