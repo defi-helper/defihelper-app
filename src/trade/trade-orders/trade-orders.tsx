@@ -10,6 +10,7 @@ import {
   SmartTradeOrderListSortInputTypeColumnEnum,
   SmartTradeOrderStatusEnum,
   SmartTradeOrderTokenLinkTypeEnum,
+  SmartTradeSwapOrderUpdateCallDataInputType,
   SortOrderEnum,
 } from '~/api'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
@@ -299,9 +300,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         await model.updateOrderFx({
           id: order.id,
           input: {
+            callDataRaw: '',
             callData: {
               boughtPrice: result,
-            },
+            } as unknown as SmartTradeSwapOrderUpdateCallDataInputType,
           },
         })
       } catch (error) {
