@@ -7510,6 +7510,17 @@ export type TradeTokenAliasesQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type TradeUpdateBoughtPriceMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: SmartTradeSwapOrderSetBoughtPriceInputType
+}>
+
+export type TradeUpdateBoughtPriceMutation = { __typename?: 'Mutation' } & {
+  smartTradeSwapOrderSetBoughtPrice: {
+    __typename?: 'SmartTradeOrderType'
+  } & TradeOrderFragmentFragment
+}
+
 export type TradeUpdateOrderMutationVariables = Exact<{
   id: Scalars['UuidType']
   input: SmartTradeSwapOrderUpdateInputType

@@ -11,6 +11,7 @@ import { tradeApi } from '~/trade/common/trade.api'
 import {
   TradeCloseOnMarketMutationVariables,
   TradeOrderListQueryVariables,
+  TradeUpdateBoughtPriceMutationVariables,
   TradeUpdateOrderMutationVariables,
 } from '~/api'
 import { hasBoughtPrice } from '~/trade/common/trade.types'
@@ -60,6 +61,16 @@ export const updateOrderFx = createEffect(
   }
 )
 
+export const updateBoughtPriceFx = createEffect(
+  async (variables: TradeUpdateBoughtPriceMutationVariables) => {
+    const data = await tradeApi.updateBoughtPrice(variables)
+
+    if (!data) throw new Error('something went wrong')
+
+    return data
+  }
+)
+
 export const closeOnMarketFx = createEffect(
   async (variables: TradeCloseOnMarketMutationVariables) => {
     const data = await tradeApi.closeOnMarket(variables)
@@ -86,6 +97,7 @@ export const $orders = createStore<Orders | null>(null)
       updateOrderFx.doneData,
       updatedOrder,
       closeOnMarketFx.doneData,
+      updateBoughtPriceFx.doneData,
     ],
     (state, payload) => ({
       list:

@@ -18,6 +18,8 @@ import {
   TradeTokenAliasesQueryVariables,
   TradeCloseOnMarketMutation,
   TradeCloseOnMarketMutationVariables,
+  TradeUpdateBoughtPriceMutationVariables,
+  TradeUpdateBoughtPriceMutation,
 } from '~/api'
 import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
@@ -28,6 +30,7 @@ import { TRADE_CLOSE_ON_MARKET } from './graphql/trade-close-on-market.graphql'
 import { TRADE_CREATE_ORDER } from './graphql/trade-create-order.graphql'
 import { TRADE_ORDER_LIST } from './graphql/trade-order-list.graphql'
 import { TRADE_TOKEN_ALIASES } from './graphql/trade-token-aliases.graphql'
+import { TRADE_UPDATE_BOUGHT_PRICE } from './graphql/trade-update-bought-price.graphql'
 import { TRADE_UPDATE_ORDER } from './graphql/trade-update-order.graphql'
 import { pairMock } from './trade-dev.mock'
 
@@ -321,6 +324,18 @@ export const tradeApi = {
         variables,
       })
       .then(({ data }) => data?.smartTradeSwapOrderUpdate),
+
+  updateBoughtPrice: (variables: TradeUpdateBoughtPriceMutationVariables) =>
+    getAPIClient()
+      .request<
+        TradeUpdateBoughtPriceMutation,
+        unknown,
+        TradeUpdateBoughtPriceMutationVariables
+      >({
+        query: TRADE_UPDATE_BOUGHT_PRICE.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.smartTradeSwapOrderSetBoughtPrice),
 
   fetchOrders: (variables: TradeOrderListQueryVariables) =>
     getAPIClient()
