@@ -836,6 +836,7 @@ export const Trade: React.VFC<TradeProps> = () => {
         router={adapter?.router}
         swap={adapter?.swap}
         exchangesMap={exchangesMap}
+        transactionDeadline={transactionDeadline}
       />
     </AppLayout>
   )

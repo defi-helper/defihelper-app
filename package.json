@@ -12,7 +12,7 @@
     "@datapunt/matomo-tracker-react": "^0.5.1",
     "@defihelper/docs": "^0.0.3",
     "@defihelper/ethers-multicall": "^0.3.2",
-    "@defihelper/networks": "^1.0.40",
+    "@defihelper/networks": "^1.0.41-emergency-edit",
     "@defihelper/provider-keeper": "^0.1.5-dfh",
     "@defihelper/react-joyride": "^2.4.1-dfh",
     "@ethersproject/abi": "^5.4.0",

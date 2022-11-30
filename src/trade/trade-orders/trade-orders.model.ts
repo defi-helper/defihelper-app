@@ -9,7 +9,9 @@ import {
 
 import { tradeApi } from '~/trade/common/trade.api'
 import {
+  TradeCloseOnMarketMutationVariables,
   TradeOrderListQueryVariables,
+  TradeUpdateBoughtPriceMutationVariables,
   TradeUpdateOrderMutationVariables,
 } from '~/api'
 import { hasBoughtPrice } from '~/trade/common/trade.types'
@@ -59,6 +61,26 @@ export const updateOrderFx = createEffect(
   }
 )
 
+export const updateBoughtPriceFx = createEffect(
+  async (variables: TradeUpdateBoughtPriceMutationVariables) => {
+    const data = await tradeApi.updateBoughtPrice(variables)
+
+    if (!data) throw new Error('something went wrong')
+
+    return data
+  }
+)
+
+export const closeOnMarketFx = createEffect(
+  async (variables: TradeCloseOnMarketMutationVariables) => {
+    const data = await tradeApi.closeOnMarket(variables)
+
+    if (!data) throw new Error('something went wrong')
+
+    return data
+  }
+)
+
 export type Orders = UnitValue<typeof fetchOrdersFx.doneData>
 
 export const updatedOrder = createEvent<Orders['list'][number]>()
@@ -70,7 +92,13 @@ export const $orders = createStore<Orders | null>(null)
     pagination: state?.pagination ?? 0,
   }))
   .on(
-    [cancelOrderFx.doneData, updateOrderFx.doneData, updatedOrder],
+    [
+      cancelOrderFx.doneData,
+      updateOrderFx.doneData,
+      updatedOrder,
+      closeOnMarketFx.doneData,
+      updateBoughtPriceFx.doneData,
+    ],
     (state, payload) => ({
       list:
         state?.list.map((order) =>
