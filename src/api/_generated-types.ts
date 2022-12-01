@@ -2628,6 +2628,7 @@ export type SmartTradeSwapHandlerCallDataActivateType = {
 export type SmartTradeSwapHandlerCallDataType = {
   __typename?: 'SmartTradeSwapHandlerCallDataType'
   exchange: Scalars['EthereumAddressType']
+  pair: Scalars['EthereumAddressType']
   path: Array<Scalars['EthereumAddressType']>
   amountIn: Scalars['BigNumberType']
   boughtPrice?: Maybe<Scalars['BigNumberType']>
@@ -7417,7 +7418,12 @@ export type TradeOrderFragmentFragment = {
         >)
       | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
           SmartTradeSwapHandlerCallDataType,
-          'amountIn' | 'exchange' | 'boughtPrice' | 'path' | 'swapPrice'
+          | 'amountIn'
+          | 'exchange'
+          | 'boughtPrice'
+          | 'path'
+          | 'swapPrice'
+          | 'pair'
         > & {
             stopLoss?: Maybe<
               { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
