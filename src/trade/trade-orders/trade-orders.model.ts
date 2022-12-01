@@ -5,6 +5,7 @@ import {
   UnitValue,
   sample,
   combine,
+  StoreValue,
 } from 'effector'
 
 import { tradeApi } from '~/trade/common/trade.api'
@@ -165,13 +166,13 @@ export const $depositingOrder = createStore<string>('')
   .on(depositStarted, (_, payload) => payload)
   .reset(depositEnded)
 
-export const editStarted = createEvent<string>()
+export const editBoughtPriceStarted = createEvent<string>()
 
-export const editEnded = createEvent()
+export const editBoughtPriceEnded = createEvent()
 
-export const $editingOrder = createStore<string>('')
-  .on(editStarted, (_, payload) => payload)
-  .reset(editEnded)
+export const $editingBoughtPrice = createStore<string>('')
+  .on(editBoughtPriceStarted, (_, payload) => payload)
+  .reset(editBoughtPriceEnded)
 
 export const priceUpdated = createEvent()
 
@@ -201,3 +202,14 @@ export const $ordersWithPrice = combine($orders, $prices, (orders, prices) => {
     pagination: orders?.pagination,
   }
 })
+
+export const editOrderStart =
+  createEvent<StoreValue<typeof $ordersWithPrice>['list'][number]>()
+
+export const editOrderEnd = createEvent()
+
+export const $editingOrder = createStore<
+  StoreValue<typeof $ordersWithPrice>['list'][number] | null
+>(null)
+  .on(editOrderStart, (_, payload) => payload)
+  .reset(editOrderEnd)

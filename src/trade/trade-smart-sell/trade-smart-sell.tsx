@@ -30,8 +30,10 @@ import { Icon } from '~/common/icon'
 import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
 import { useDialog } from '~/common/dialog'
 import { Exchange, Pair } from '~/trade/common/trade.api'
+import * as tradeOrdersModel from '~/trade/trade-orders/trade-orders.model'
 import * as model from './trade-smart-sell.model'
 import * as styles from './trade-smart-sell.css'
+import { hasBoughtPrice } from '../common/trade.types'
 
 export type TradeSmartSellProps = {
   className?: string
@@ -66,6 +68,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const currentWallet = useStore(walletNetworkModel.$wallet)
   const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
   const user = useStore(authModel.$user)
+
+  const editingOrder = useStore(tradeOrdersModel.$editingOrder)
 
   const [takeProfitFocus, toggleTakeProfitFocus] = useToggle(false)
   const [stopLossFocus, toggleStopLossFocus] = useToggle(false)
@@ -136,7 +140,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [approve.loading, approve.value, approve.error])
 
-  const handleOnSubmit = handleSubmit(async (formValues) => {
+  const handleCreateOrder = handleSubmit(async (formValues) => {
     if (
       !props.tokens ||
       !props.exchangeAddress ||
@@ -260,6 +264,103 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       })
     } catch (e) {
       console.error(e)
+    }
+  })
+
+  const handleEditOrder = handleSubmit(async (formValues) => {
+    if (
+      !props.tokens ||
+      !props.exchangeAddress ||
+      !currentWallet ||
+      !price.value ||
+      !props.router ||
+      !editingOrder
+    )
+      return
+
+    const exchange = props.exchangesMap.get(props.exchangeAddress)
+
+    if (!currentUserWallet || !props.swap || !exchange) return
+
+    const path = props.tokens.map(({ address }) => address)
+
+    const [tokenAddress] = path.slice(-1)
+
+    const token = props.currentPair?.pairInfo.tokens.find(
+      ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase()
+    )
+
+    try {
+      await openTradeConfirmDialog({
+        network: currentUserWallet.network,
+        boughtPrice: price.value,
+        exchange,
+        tokens: props.currentPair?.pairInfo.tokens,
+        name: currentUserWallet.name,
+        totalRecieve: formValues.unit,
+        boughtToken: token,
+      })
+
+      const result = await props.swap.updateOrder(
+        editingOrder.number,
+        formValues.stopLoss
+          ? {
+              amountOut: bignumberUtils.mul(
+                formValues.unit,
+                formValues.stopLossValue
+              ),
+              slippage: '100',
+              moving: formValues.moving,
+            }
+          : null,
+        null,
+        formValues.takeProfit
+          ? {
+              amountOut: bignumberUtils.mul(
+                formValues.unit,
+                formValues.takeProfitValue
+              ),
+              slippage: props.slippage,
+            }
+          : null,
+        null
+      )
+
+      if (!result) throw new Error('something went wrong')
+
+      const tx = (await result.tx?.wait())?.transactionHash
+
+      if (!tx) throw new Error('something went wrong')
+
+      await tradeOrdersModel.updateOrderFx({
+        id: editingOrder.id,
+        input: {
+          callDataRaw: result.callDataRaw,
+          callData: {
+            amountOut: result.callData.amountOut,
+            stopLoss: result.callData.stopLoss
+              ? {
+                  amountOut: result.callData.stopLoss.amountOut,
+                  amountOutMin: result.callData.stopLoss.amountOutMin,
+                  slippage: Number(result.callData.stopLoss.slippage),
+                  moving: result.callData.stopLoss.moving,
+                }
+              : null,
+            takeProfit: result.callData.takeProfit
+              ? {
+                  amountOut: result.callData.takeProfit.amountOut,
+                  amountOutMin: result.callData.takeProfit.amountOutMin,
+                  slippage: Number(result.callData.takeProfit.slippage),
+                }
+              : null,
+            deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
+          },
+        },
+      })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      tradeOrdersModel.editOrderEnd()
     }
   })
 
@@ -411,10 +512,55 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     currentWallet ? 15000 : null
   )
 
+  const callDataEditingOrder = hasBoughtPrice(editingOrder?.callData)
+    ? editingOrder?.callData
+    : null
+
+  useEffect(() => {
+    if (!callDataEditingOrder || !editingOrder) return
+
+    setValue('unit', callDataEditingOrder.amountIn)
+  }, [callDataEditingOrder, editingOrder, setValue])
+
+  useEffect(() => {
+    if (!callDataEditingOrder?.stopLoss || !editingOrder) return
+
+    setValue(
+      'stopLossValue',
+      bignumberUtils.div(
+        callDataEditingOrder.stopLoss?.amountOut,
+        callDataEditingOrder.amountIn
+      )
+    )
+  }, [callDataEditingOrder, editingOrder, setValue])
+  useEffect(() => {
+    if (!callDataEditingOrder?.takeProfit || !editingOrder) return
+
+    setValue(
+      'takeProfitValue',
+      bignumberUtils.div(
+        callDataEditingOrder.takeProfit?.amountOut,
+        callDataEditingOrder.amountIn
+      )
+    )
+  }, [callDataEditingOrder, editingOrder, setValue])
+
+  useEffect(() => {
+    if (!callDataEditingOrder?.stopLoss) return
+
+    setValue('stopLoss', Boolean(callDataEditingOrder?.stopLoss))
+    setValue('moving', Boolean(callDataEditingOrder?.stopLoss?.moving))
+  }, [callDataEditingOrder, setValue])
+  useEffect(() => {
+    if (!callDataEditingOrder?.takeProfit) return
+
+    setValue('takeProfit', Boolean(callDataEditingOrder?.takeProfit))
+  }, [callDataEditingOrder, setValue])
+
   return (
     <form
       className={styles.form}
-      onSubmit={handleOnSubmit}
+      onSubmit={editingOrder ? handleEditOrder : handleCreateOrder}
       autoComplete="off"
       noValidate
     >
@@ -451,7 +597,10 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   </>
                 }
                 rightSide={props.tokens?.[0]?.symbol}
-                disabled={formState.isSubmitting}
+                disabled={
+                  formState.isSubmitting ||
+                  Boolean(callDataEditingOrder?.amountIn)
+                }
                 {...field}
               />
             )}
@@ -597,7 +746,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             </Typography>
             <Switch
               size="small"
-              checked={stopLoss}
+              checked={stopLoss || Boolean(callDataEditingOrder?.stopLoss)}
               onChange={({ target }) => setValue('stopLoss', target.checked)}
               disabled={formState.isSubmitting}
             />
@@ -705,7 +854,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             loading={formState.isSubmitting}
             disabled={!isApproved.value || (!takeProfit && !stopLoss)}
           >
-            Create Order
+            {editingOrder ? 'Edit' : 'Create'} Order
           </Button>
         </WalletConnect>
       </div>

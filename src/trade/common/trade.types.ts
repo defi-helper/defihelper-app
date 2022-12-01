@@ -10,8 +10,10 @@ export type Order = Exclude<
 >[number]
 
 export const hasBoughtPrice = (
-  callData: Record<string, unknown>
+  callData?: Record<string, unknown>
 ): callData is SmartTradeSwapHandlerCallDataType => {
+  if (!callData) return false
+
   return 'boughtPrice' in callData
 }
 
