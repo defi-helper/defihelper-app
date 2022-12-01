@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
+import { useHistory } from 'react-router-dom'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Sticky, StickyContainer } from 'react-sticky'
 import contracts from '@defihelper/networks/contracts.json'
@@ -92,6 +93,8 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
   const queryParams = useQueryParams()
 
+  const history = useHistory()
+
   const goerliPrice = Array.from(queryParams, ([title, price]) => ({
     price,
     id: title.replace('price', '').replace('[', '').replace(']', ''),
@@ -106,7 +109,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   const loading = useStore(model.fetchOrdersFx.pending)
   const claimingOrder = useStore(model.$claimingOrder)
   const depositingOrder = useStore(model.$depositingOrder)
-  const editingOrder = useStore(model.$editingOrder)
+  const editingBoughtPrice = useStore(model.$editingBoughtPrice)
 
   const [updatingOrderId, setUpdatingOrderId] = useState('')
 
@@ -261,6 +264,19 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       }
     }
 
+  const handleEditOrder =
+    (order: Exclude<typeof orders, null>['list'][number]) => () => {
+      const { callData } = order
+
+      if (!hasBoughtPrice(callData)) return
+
+      model.editOrderStart(order)
+
+      history.replace({
+        search: `exchange=${callData.exchange}&pair=${callData.pair}&network=${order.owner.network}`,
+      })
+    }
+
   const handleEnterBoughtPrice =
     (
       order: Exclude<typeof orders, null>['list'][number],
@@ -270,7 +286,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       if (!hasBoughtPrice(order.callData)) return
 
       try {
-        model.editStarted(order.id)
+        model.editBoughtPriceStarted(order.id)
 
         const [tokenAddress] = order.callData.path.slice(-1)
 
@@ -307,7 +323,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       } catch (error) {
         console.error(error)
       } finally {
-        model.editEnded()
+        model.editBoughtPriceEnded()
       }
     }
 
@@ -586,6 +602,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             id: order.id,
                           })
                         })
+
+                  const edit =
+                    wrongNetwork ??
+                    (wrongAccount
+                      ? handleWrongAddress(order)
+                      : handleEditOrder(order))
 
                   const closeOnMarket =
                     wrongNetwork ??
@@ -955,7 +977,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                   </Typography>
                                   <Button
                                     color="green"
-                                    loading={editingOrder === order.id}
+                                    loading={editingBoughtPrice === order.id}
                                     onClick={handleEnterBoughtPrice(
                                       order,
                                       currentPrice
@@ -1007,6 +1029,24 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                         Cancel order
                                       </ButtonBase>
                                     </WalletConnect>
+                                    {order.status ===
+                                      SmartTradeOrderStatusEnum.Pending && (
+                                      <WalletConnect
+                                        fallback={
+                                          <ButtonBase>Edit order</ButtonBase>
+                                        }
+                                      >
+                                        <ButtonBase
+                                          onClick={() => {
+                                            edit()
+
+                                            close()
+                                          }}
+                                        >
+                                          Edit order
+                                        </ButtonBase>
+                                      </WalletConnect>
+                                    )}
                                     <WalletConnect
                                       fallback={
                                         <ButtonBase>Close on market</ButtonBase>
