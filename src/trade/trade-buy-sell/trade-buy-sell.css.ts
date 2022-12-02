@@ -6,6 +6,7 @@ export const form = style({
   flex: '1 0 auto',
   display: 'flex',
   flexDirection: 'column',
+  maxHeight: 661,
 })
 
 export const flex = style({
@@ -17,7 +18,7 @@ export const root = style([
   flex,
   {
     gap: 24,
-    maxHeight: 449,
+    height: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
     padding: '0 10px',

@@ -775,26 +775,33 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             </div>
                           </div>
                           <div>
-                            {order.closed && (
-                              <div className={styles.claim}>
-                                <Typography
-                                  variant="body3"
-                                  className={clsx(styles.status, {
-                                    [styles.positive]: bignumberUtils.gt(
-                                      percent,
-                                      0
-                                    ),
-                                    [styles.negative]: bignumberUtils.lt(
-                                      percent,
-                                      0
-                                    ),
-                                  })}
-                                >
-                                  Order closed by market price :{' '}
-                                  {bignumberUtils.toFixed(percent, 4)}%
-                                </Typography>
-                              </div>
-                            )}
+                            {order.closed &&
+                              order.status ===
+                                SmartTradeOrderStatusEnum.Succeeded && (
+                                <div className={styles.claim}>
+                                  <Typography
+                                    variant="body3"
+                                    className={clsx(styles.status, {
+                                      [styles.positive]: bignumberUtils.gt(
+                                        percent,
+                                        0
+                                      ),
+                                      [styles.negative]: bignumberUtils.lt(
+                                        percent,
+                                        0
+                                      ),
+                                    })}
+                                  >
+                                    Order closed by market price
+                                    {boughtPrice && (
+                                      <>
+                                        {' '}
+                                        : {bignumberUtils.toFixed(percent, 4)}%
+                                      </>
+                                    )}
+                                  </Typography>
+                                </div>
+                              )}
                             {!order.closed && (
                               <div className={styles.claim}>
                                 {callDataWithBoughtPrice &&

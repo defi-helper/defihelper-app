@@ -34,6 +34,7 @@ import * as tradeOrdersModel from '~/trade/trade-orders/trade-orders.model'
 import * as model from './trade-smart-sell.model'
 import * as styles from './trade-smart-sell.css'
 import { hasBoughtPrice } from '../common/trade.types'
+import { toastsService } from '~/toasts'
 
 export type TradeSmartSellProps = {
   className?: string
@@ -328,6 +329,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           },
         },
       })
+
+      toastsService.success('Order saved!')
     } catch (e) {
       console.error(e)
     } finally {
@@ -569,7 +572,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             value={unit}
             available={balanceOf.value}
             onChange={(value) => setValue('unit', value)}
-            disabled={formState.isSubmitting}
+            disabled={formState.isSubmitting || Boolean(editingOrder)}
           />
           <div>
             <Typography
@@ -641,7 +644,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             </Typography>
             <Switch
               size="small"
-              checked={stopLoss || Boolean(callDataEditingOrder?.stopLoss)}
+              checked={stopLoss}
               onChange={({ target }) => setValue('stopLoss', target.checked)}
               disabled={formState.isSubmitting}
             />
@@ -747,7 +750,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
             loading={formState.isSubmitting}
             disabled={!isApproved.value || (!takeProfit && !stopLoss)}
           >
-            {editingOrder ? 'Edit' : 'Create'} Order
+            {editingOrder ? 'Save' : 'Create'} Order
           </Button>
         </WalletConnect>
       </div>
