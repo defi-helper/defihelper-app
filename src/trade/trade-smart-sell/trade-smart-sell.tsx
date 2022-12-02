@@ -301,6 +301,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         boughtToken: token,
       })
 
+      const takeProfitAmountOut = bignumberUtils.mul(
+        formValues.unit,
+        formValues.takeProfitValue
+      )
+
       const result = await props.swap.updateOrder(
         editingOrder.number,
         formValues.stopLoss
@@ -310,10 +315,19 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 formValues.stopLossValue
               ),
               slippage: '100',
-              moving: formValues.moving,
+              moving: formValues.trailingStopLoss,
             }
           : null,
-        null,
+        formValues.trailingTakeProfit
+          ? {
+              amountOut: bignumberUtils.mul(
+                takeProfitAmountOut,
+                formValues.followMaxPrice
+              ),
+              slippage: '100',
+              moving: formValues.trailingTakeProfit,
+            }
+          : null,
         formValues.takeProfit
           ? {
               amountOut: bignumberUtils.mul(
@@ -323,7 +337,12 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               slippage: props.slippage,
             }
           : null,
-        null
+        formValues.trailingTakeProfit
+          ? {
+              amountOut: takeProfitAmountOut,
+              direction: 'gt',
+            }
+          : null
       )
 
       if (!result) throw new Error('something went wrong')
@@ -549,7 +568,14 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     if (!callDataEditingOrder?.stopLoss) return
 
     setValue('stopLoss', Boolean(callDataEditingOrder?.stopLoss))
-    setValue('moving', Boolean(callDataEditingOrder?.stopLoss?.moving))
+    setValue(
+      'trailingStopLoss',
+      Boolean(callDataEditingOrder?.stopLoss?.moving)
+    )
+    setValue(
+      'trailingTakeProfit',
+      Boolean(callDataEditingOrder?.stopLoss2?.moving)
+    )
   }, [callDataEditingOrder, setValue])
   useEffect(() => {
     if (!callDataEditingOrder?.takeProfit) return
