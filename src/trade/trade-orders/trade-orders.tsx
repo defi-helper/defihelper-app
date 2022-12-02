@@ -1052,12 +1052,22 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                         <ButtonBase>Close on market</ButtonBase>
                                       }
                                     >
-                                      <ButtonBase onClick={closeOnMarket}>
+                                      <ButtonBase
+                                        onClick={() => {
+                                          closeOnMarket()
+
+                                          close()
+                                        }}
+                                      >
                                         Close on market
                                       </ButtonBase>
                                     </WalletConnect>
                                     <ButtonBase
-                                      onClick={handleEnterBoughtPrice(order)}
+                                      onClick={() => {
+                                        handleEnterBoughtPrice(order)
+
+                                        close()
+                                      }}
                                     >
                                       Edit bought price
                                     </ButtonBase>
