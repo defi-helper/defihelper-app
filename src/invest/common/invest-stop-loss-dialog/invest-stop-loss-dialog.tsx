@@ -54,9 +54,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
       props.withdrawTokens?.[0]?.address ??
       ''
   )
-  const [stopLossPrice, setStopLossPrice] = useState(
-    props.initialStopLoss?.params?.amountOut ?? ''
-  )
+  const [stopLossPrice, setStopLossPrice] = useState('')
   const [percent, setPercent] = useState(0)
 
   const path = useAsyncRetry(async () => {
@@ -115,7 +113,11 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   const [confirm, handleConfirm] = useAsyncFn(async () => {
     if (!props.adapter || !path.value) return
 
-    if (stopLoss) {
+    if (
+      stopLoss ||
+      (props.initialStopLoss?.params?.amountOut &&
+        props.initialStopLoss.params.amountOut !== stopLossPrice)
+    ) {
       const can = await props.adapter.methods.canSetStopLoss(
         path.value,
         stopLossPrice,
@@ -165,6 +167,14 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     props.onToggleAutoCompound(autoCompound)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoCompound])
+
+  const initialPrice = props.initialStopLoss?.params?.amountOut
+
+  useEffect(() => {
+    if (!price.value || !initialPrice) return
+
+    setStopLossPrice(initialPrice)
+  }, [price.value, initialPrice])
 
   return (
     <Dialog className={styles.root}>
