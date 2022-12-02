@@ -166,6 +166,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         name: currentUserWallet.name,
         totalRecieve: formValues.unit,
         boughtToken: token,
+        firstToken: props.tokens[0]?.symbol,
+        secondToken: props.tokens[1]?.symbol,
+        unit: formValues.unit,
+        stopLoss: formValues.stopLossValue,
+        takeProfit: formValues.takeProfitValue,
       })
 
       const result = await props.swap?.createOrder(
@@ -271,6 +276,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         name: currentUserWallet.name,
         totalRecieve: formValues.unit,
         boughtToken: token,
+        firstToken: props.tokens[0]?.symbol,
+        secondToken: props.tokens[1]?.symbol,
+        unit: formValues.unit,
+        stopLoss: formValues.stopLossValue,
+        takeProfit: formValues.takeProfitValue,
       })
 
       const result = await props.swap.updateOrder(
