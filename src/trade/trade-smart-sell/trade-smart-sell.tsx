@@ -200,15 +200,21 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           : null,
         formValues.trailingTakeProfit
           ? {
-              amountOut: bignumberUtils.mul(
+              amountOut: bignumberUtils.minus(
                 takeProfitAmountOut,
-                formValues.followMaxPrice
+                bignumberUtils.mul(
+                  takeProfitAmountOut,
+                  bignumberUtils.div(
+                    bignumberUtils.abs(formValues.followMaxPrice),
+                    100
+                  )
+                )
               ),
               slippage: '100',
               moving: formValues.trailingTakeProfit,
             }
           : null,
-        formValues.takeProfit
+        formValues.takeProfit && !formValues.trailingTakeProfit
           ? {
               amountOut: takeProfitAmountOut,
               slippage: props.slippage,
@@ -339,11 +345,17 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               moving: formValues.trailingTakeProfit,
             }
           : null,
-        formValues.takeProfit
+        formValues.takeProfit && !formValues.trailingTakeProfit
           ? {
-              amountOut: bignumberUtils.mul(
-                formValues.unit,
-                formValues.takeProfitValue
+              amountOut: bignumberUtils.minus(
+                takeProfitAmountOut,
+                bignumberUtils.mul(
+                  takeProfitAmountOut,
+                  bignumberUtils.div(
+                    bignumberUtils.abs(formValues.followMaxPrice),
+                    100
+                  )
+                )
               ),
               slippage: props.slippage,
             }
