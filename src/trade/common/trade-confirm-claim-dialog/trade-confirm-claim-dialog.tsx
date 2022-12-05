@@ -22,6 +22,8 @@ export type TradeConfirmClaimDialogProps = {
   stopLoss?: string
   secondToken?: string
   firstToken?: string
+  trailingTakeProfit?: boolean
+  trailingStopLoss?: boolean
 }
 
 export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
@@ -61,8 +63,7 @@ export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
         <div className={styles.row}>
           <Typography variant="body2">Unit</Typography>
           <Typography variant="body2" as="div" className={styles.contractName}>
-            {props.unit}
-            {props.firstToken}
+            {props.unit} {props.firstToken}
           </Typography>
         </div>
         {props.takeProfit && (
@@ -73,8 +74,7 @@ export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
               as="div"
               className={styles.contractName}
             >
-              {props.takeProfit}
-              {props.secondToken}
+              {props.takeProfit} {props.secondToken}
             </Typography>
           </div>
         )}
@@ -86,11 +86,22 @@ export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
               as="div"
               className={styles.contractName}
             >
-              {props.stopLoss}
-              {props.secondToken}
+              {props.stopLoss} {props.secondToken}
             </Typography>
           </div>
         )}
+        <div className={styles.row}>
+          <Typography variant="body2">Trailing take profit</Typography>
+          <Typography variant="body2" as="div" className={styles.contractName}>
+            {props.trailingTakeProfit ? 'on' : 'off'}
+          </Typography>
+        </div>
+        <div className={styles.row}>
+          <Typography variant="body2">Trailing stop-loss</Typography>
+          <Typography variant="body2" as="div" className={styles.contractName}>
+            {props.trailingStopLoss ? 'on' : 'off'}
+          </Typography>
+        </div>
         <Button
           color="green"
           onClick={props.onConfirm}

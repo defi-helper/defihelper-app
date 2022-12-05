@@ -171,6 +171,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         unit: formValues.unit,
         stopLoss: formValues.stopLossValue,
         takeProfit: formValues.takeProfitValue,
+        trailingStopLoss: formValues.moving,
+        trailingTakeProfit: false,
       })
 
       const result = await props.swap?.createOrder(
@@ -281,6 +283,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         unit: formValues.unit,
         stopLoss: formValues.stopLossValue,
         takeProfit: formValues.takeProfitValue,
+        trailingStopLoss: formValues.moving,
+        trailingTakeProfit: false,
       })
 
       const result = await props.swap.updateOrder(
