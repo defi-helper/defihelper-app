@@ -77,6 +77,10 @@ export const takeProfitLabel = style([
   },
 ])
 
+export const greyTitle = style({
+  color: theme.colors.textColorGrey,
+})
+
 export const slider = style({
   maxWidth: 'calc(100% - 124px)',
   marginLeft: 'auto',
@@ -106,4 +110,8 @@ export const balanceButton = style({
 
 export const dropdown = style({
   maxWidth: 200,
+})
+
+export const trailingTakeProfit = style({
+  marginBottom: 8,
 })

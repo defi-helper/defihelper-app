@@ -89,7 +89,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         unit: '0',
         trailingStopLoss: false,
         trailingTakeProfit: false,
-        followMaxPrice: 0,
+        followMaxPrice: 2,
       },
     })
 
@@ -698,7 +698,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         </div>
         <div className={styles.inputGroup}>
           <div className={styles.trailingBuyTitle}>
-            <Typography as="div" className={styles.takeProfitLabel}>
+            <Typography as="div" className={clsx(styles.takeProfitLabel)}>
               Take profit
             </Typography>
             <Switch
@@ -738,13 +738,18 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   disabled={formState.isSubmitting}
                 />
               </div>
-              <div className={styles.trailingBuyTitle}>
+              <div
+                className={clsx(
+                  styles.trailingBuyTitle,
+                  styles.trailingTakeProfit
+                )}
+              >
                 <Typography
                   as="div"
                   variant="body3"
-                  className={styles.takeProfitLabel}
+                  className={clsx(styles.takeProfitLabel, styles.greyTitle)}
                 >
-                  Traling take profit
+                  Trailing take profit
                 </Typography>
                 <Dropdown
                   control={
@@ -757,8 +762,10 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   placement="bottom-start"
                 >
                   <Typography variant="body2">
-                    Will follow the price movements up. It will be at the same
-                    distance from the reached price
+                    Will activate trailing on specified price and start to
+                    follow the price movements. Will not sell if the price goes
+                    up, but will sell if the price will be less the maximum
+                    price minus trailing deviation.
                   </Typography>
                 </Dropdown>
                 <Switch
@@ -775,7 +782,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   <Typography
                     as="div"
                     variant="body3"
-                    className={styles.takeProfitLabel}
+                    className={clsx(styles.takeProfitLabel, styles.greyTitle)}
                   >
                     Follow max price with deviation [%]
                   </Typography>
@@ -854,7 +861,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 <Typography
                   as="div"
                   variant="body3"
-                  className={styles.takeProfitLabel}
+                  className={clsx(styles.takeProfitLabel, styles.greyTitle)}
                 >
                   Trailing stop-loss
                 </Typography>
