@@ -100,13 +100,26 @@ export const $orders = createStore<Orders | null>(null)
       closeOnMarketFx.doneData,
       updateBoughtPriceFx.doneData,
     ],
-    (state, payload) => ({
-      list:
-        state?.list.map((order) =>
-          order.id === payload.id ? payload : order
-        ) ?? [],
-      pagination: state?.pagination ?? 0,
-    })
+    (state, payload) => {
+      const list = state?.list ?? []
+      const pagination = state?.pagination ?? 0
+
+      const hasOrder = list.some((order) => order.id === payload.id)
+
+      if (hasOrder) {
+        return {
+          list: list.map((order) =>
+            order.id === payload.id ? payload : order
+          ),
+          pagination,
+        }
+      }
+
+      return {
+        list: [payload, ...list],
+        pagination: state?.pagination ?? 0,
+      }
+    }
   )
   .on(claimOrderFx.done, (state, { params }) => ({
     list: state?.list.filter((order) => order.id !== params.id) ?? [],
