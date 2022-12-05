@@ -109,6 +109,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const history = useStore(model.$history)
   const updating = useStore(model.fetchHistoryFx.pending)
   const user = useStore(authModel.$user)
+  const editingOrder = useStore(tradeOrdersModel.$editingOrder)
 
   const wallets = useMemo(
     () =>
@@ -272,7 +273,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const SelectComponents = {
     [Selects.SmartSell]: (
       <>
-        {tabs}
+        {!editingOrder && tabs}
         <TradeSmartSell
           router={adapter?.router}
           swap={adapter?.swap}
@@ -288,7 +289,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     ),
     [Selects.BuySell]: (
       <>
-        {tabs}
+        {!editingOrder && tabs}
         <TradeBuySell
           router={adapter?.router}
           swap={adapter?.swap}
