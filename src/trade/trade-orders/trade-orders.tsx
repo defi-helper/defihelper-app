@@ -626,6 +626,58 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     bignumberUtils.mul(tokensAmountInOut, boughtPrice)
                   )
 
+                  const claimButton =
+                    (order.status === SmartTradeOrderStatusEnum.Succeeded &&
+                      !order.claim) ||
+                    (order.closed && !order.claim) ? (
+                      <WalletConnect
+                        fallback={<Button color="green">Claim</Button>}
+                      >
+                        <Button
+                          color="green"
+                          onClick={claim}
+                          loading={claimingOrder === order.id}
+                          disabled={Boolean(
+                            claimingOrder.length && claimingOrder !== order.id
+                          )}
+                        >
+                          Claim
+                        </Button>
+                      </WalletConnect>
+                    ) : (
+                      <>
+                        {callDataWithBoughtPrice &&
+                          [
+                            SmartTradeOrderStatusEnum.Pending,
+                            SmartTradeOrderStatusEnum.Processed,
+                          ].includes(order.status) && (
+                            <TradeStatusChart
+                              stopLoss={bignumberUtils.div(
+                                callDataWithBoughtPrice.stopLoss?.amountOut,
+                                callDataWithBoughtPrice.amountIn
+                              )}
+                              takeProfit={bignumberUtils.div(
+                                callDataWithBoughtPrice.takeProfit?.amountOut,
+                                callDataWithBoughtPrice.amountIn
+                              )}
+                              buy={boughtPrice ?? undefined}
+                              profit={currentPrice}
+                              className={styles.contractStatus}
+                              stopLossMoving={
+                                callDataWithBoughtPrice.stopLoss?.moving
+                              }
+                              tralingTakeProfitMoving={
+                                callDataWithBoughtPrice.stopLoss2?.moving
+                              }
+                              tralingTakeProfit={
+                                callDataWithBoughtPrice.stopLoss2?.amountOut
+                              }
+                              percent={bignumberUtils.toFixed(percent, 4)}
+                            />
+                          )}
+                      </>
+                    )
+
                   return (
                     <TradeOrderDeposit
                       key={order.id}
@@ -800,6 +852,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       </>
                                     )}
                                   </Typography>
+                                  {claimButton}
                                 </div>
                               )}
                             {!order.closed && (
@@ -840,67 +893,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                           )}%`}
                                     </Typography>
                                   )}
-                                {order.status ===
-                                  SmartTradeOrderStatusEnum.Succeeded &&
-                                !order.claim ? (
-                                  <WalletConnect
-                                    fallback={
-                                      <Button color="green">Claim</Button>
-                                    }
-                                  >
-                                    <Button
-                                      color="green"
-                                      onClick={claim}
-                                      loading={claimingOrder === order.id}
-                                      disabled={Boolean(
-                                        claimingOrder.length &&
-                                          claimingOrder !== order.id
-                                      )}
-                                    >
-                                      Claim
-                                    </Button>
-                                  </WalletConnect>
-                                ) : (
-                                  <>
-                                    {callDataWithBoughtPrice &&
-                                      [
-                                        SmartTradeOrderStatusEnum.Pending,
-                                        SmartTradeOrderStatusEnum.Processed,
-                                      ].includes(order.status) && (
-                                        <TradeStatusChart
-                                          stopLoss={bignumberUtils.div(
-                                            callDataWithBoughtPrice.stopLoss
-                                              ?.amountOut,
-                                            callDataWithBoughtPrice.amountIn
-                                          )}
-                                          takeProfit={bignumberUtils.div(
-                                            callDataWithBoughtPrice.takeProfit
-                                              ?.amountOut,
-                                            callDataWithBoughtPrice.amountIn
-                                          )}
-                                          buy={boughtPrice ?? undefined}
-                                          profit={currentPrice}
-                                          className={styles.contractStatus}
-                                          stopLossMoving={
-                                            callDataWithBoughtPrice.stopLoss
-                                              ?.moving
-                                          }
-                                          tralingTakeProfitMoving={
-                                            callDataWithBoughtPrice.stopLoss2
-                                              ?.moving
-                                          }
-                                          tralingTakeProfit={
-                                            callDataWithBoughtPrice.stopLoss2
-                                              ?.amountOut
-                                          }
-                                          percent={bignumberUtils.toFixed(
-                                            percent,
-                                            4
-                                          )}
-                                        />
-                                      )}
-                                  </>
-                                )}
+                                {claimButton}
                               </div>
                             )}
                           </div>
