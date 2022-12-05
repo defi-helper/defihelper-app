@@ -130,14 +130,6 @@ export const betaTitle = style({
   maxWidth: 275,
 })
 
-export const betaForm = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 16,
-  width: '100%',
-  maxWidth: 320,
-})
-
 export const tradeSellSelect = style({
   backgroundColor: theme.colors.common.green1,
   padding: '8px 16px',
