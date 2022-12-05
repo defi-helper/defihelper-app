@@ -5,7 +5,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useHistory } from 'react-router-dom'
 import { useStore } from 'effector-react'
-import { useForm } from 'react-hook-form'
 import contracts from '@defihelper/networks/contracts.json'
 
 import { Head } from '~/common/head'
@@ -24,10 +23,8 @@ import { TradeChart } from './trade-chart'
 import { networksConfig } from '~/networks-config'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Input } from '~/common/input'
-import { tradeApi } from './common/trade.api'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { config } from '~/config'
-import { toastsService } from '~/toasts'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { TradePlusMinus } from './common/trade-plus-minus'
@@ -55,9 +52,6 @@ enum Selects {
 const USDC_ETH = '0xEa26B78255Df2bBC31C1eBf60010D78670185bD0'
 
 export const Trade: React.VFC<TradeProps> = () => {
-  const { register, handleSubmit, formState, reset } =
-    useForm<{ email: string }>()
-
   const routerHistory = useHistory()
 
   const queryParams = useQueryParams()
@@ -299,18 +293,6 @@ export const Trade: React.VFC<TradeProps> = () => {
       </>
     ),
   }
-
-  const handleOnSubmit = handleSubmit(async (formValues) => {
-    try {
-      await tradeApi.sendForm('2', formValues)
-
-      reset({ email: '' })
-
-      toastsService.success(`Thank you! We will notify you about our updates.`)
-    } catch {
-      console.error('something went wrong')
-    }
-  })
 
   useEffect(() => {
     if (!currentWallet?.provider || !currentWallet.chainId) return
@@ -744,90 +726,47 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
             {SelectComponents[currentSelect]}
           </div>
-          {currentNetworkCorrect &&
-            !hasContract &&
-            currentWallet?.chainId &&
-            (
-              [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
-            ).includes(String(user?.role)) && (
-              <div className={styles.beta}>
-                <Typography
-                  variant="body2"
-                  align="center"
-                  family="mono"
-                  className={styles.betaTitle}
-                >
-                  {networksConfig[currentWallet.chainId]?.title} not supported.
-                  Please switch your network
-                </Typography>
-                <Button
-                  color="green"
-                  className={styles.switchNetwork}
-                  onClick={handleSwitchNetwork}
-                  loading={switchNetworkState.loading}
-                >
-                  switch network
-                </Button>
-              </div>
-            )}
-          {!currentNetworkCorrect &&
-            (
-              [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
-            ).includes(String(user?.role)) && (
-              <div className={styles.beta}>
-                <Typography
-                  variant="body2"
-                  align="center"
-                  family="mono"
-                  className={styles.betaTitle}
-                >
-                  Please switch your network to continue
-                </Typography>
-                <Button
-                  color="green"
-                  className={styles.switchNetwork}
-                  onClick={handleSwitchNetwork}
-                  loading={switchNetworkState.loading}
-                >
-                  switch network
-                </Button>
-              </div>
-            )}
-          {!config.IS_DEV &&
-            !(
-              [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
-            ).includes(String(user?.role)) && (
-              <div className={styles.beta}>
-                <Typography
-                  variant="body2"
-                  align="center"
-                  family="mono"
-                  className={styles.betaTitle}
-                >
-                  Trade section is currently at the beta stage. Please leave
-                  your email address to try it first.
-                </Typography>
-                <form
-                  noValidate
-                  autoComplete="off"
-                  className={styles.betaForm}
-                  onSubmit={handleOnSubmit}
-                >
-                  <Input
-                    placeholder="youremail@gmail.com"
-                    {...register('email', {
-                      required: true,
-                      pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
-                    })}
-                    error={Boolean(formState.errors.email?.message)}
-                    helperText={formState.errors.email?.message}
-                  />
-                  <Button color="green" type="submit">
-                    join
-                  </Button>
-                </form>
-              </div>
-            )}
+          {currentNetworkCorrect && !hasContract && currentWallet?.chainId && (
+            <div className={styles.beta}>
+              <Typography
+                variant="body2"
+                align="center"
+                family="mono"
+                className={styles.betaTitle}
+              >
+                {networksConfig[currentWallet.chainId]?.title} not supported.
+                Please switch your network
+              </Typography>
+              <Button
+                color="green"
+                className={styles.switchNetwork}
+                onClick={handleSwitchNetwork}
+                loading={switchNetworkState.loading}
+              >
+                switch network
+              </Button>
+            </div>
+          )}
+          {!currentNetworkCorrect && (
+            <div className={styles.beta}>
+              <Typography
+                variant="body2"
+                align="center"
+                family="mono"
+                className={styles.betaTitle}
+              >
+                Please switch your network to continue
+              </Typography>
+              <Button
+                color="green"
+                className={styles.switchNetwork}
+                onClick={handleSwitchNetwork}
+                loading={switchNetworkState.loading}
+              >
+                switch network
+              </Button>
+            </div>
+          )}
         </Paper>
       </div>
       <TradeOrders

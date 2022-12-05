@@ -139,11 +139,11 @@ const ForceRenderOrLazyLoad = (
 }
 
 const PortfolioNameEditor: React.FC<{
-  name: string | null
+  name: string
   onChange: (name: string) => void
 }> = (props) => {
   const [toggle, setToggle] = useState(false)
-  const [name, setName] = useState(props.name ?? 'Portfolio')
+  const [name, setName] = useState(props.name)
 
   useEffect(() => {
     if (!props.name) return
@@ -357,7 +357,7 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           />
 
           <PortfolioNameEditor
-            name={portfolioName}
+            name={portfolioName || 'My portfolio'}
             onChange={(name) => handleUpdatePortfolioName(name)}
           />
 

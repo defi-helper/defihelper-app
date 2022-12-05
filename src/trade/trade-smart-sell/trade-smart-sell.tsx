@@ -19,12 +19,9 @@ import { Slider } from '~/common/slider'
 import { TradePercentagePicker } from '~/trade/common/trade-percentage-picker'
 import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
 import { Button } from '~/common/button'
-import { config } from '~/config'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { settingsWalletModel } from '~/settings/settings-wallets'
-import { authModel } from '~/auth'
-import { UserRoleEnum } from '~/api'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
@@ -66,7 +63,6 @@ type FormValues = {
 export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const currentWallet = useStore(walletNetworkModel.$wallet)
   const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
-  const user = useStore(authModel.$user)
 
   const editingOrder = useStore(tradeOrdersModel.$editingOrder)
 
@@ -171,6 +167,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         unit: formValues.unit,
         stopLoss: formValues.stopLossValue,
         takeProfit: formValues.takeProfitValue,
+        trailingStopLoss: formValues.moving,
+        trailingTakeProfit: false,
       })
 
       const result = await props.swap?.createOrder(
@@ -281,6 +279,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         unit: formValues.unit,
         stopLoss: formValues.stopLossValue,
         takeProfit: formValues.takeProfitValue,
+        trailingStopLoss: formValues.moving,
+        trailingTakeProfit: false,
       })
 
       const result = await props.swap.updateOrder(
@@ -537,17 +537,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
       autoComplete="off"
       noValidate
     >
-      <div
-        className={clsx(
-          styles.root,
-          ((!config.IS_DEV &&
-            !(
-              [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
-            ).includes(String(user?.role))) ||
-            balanceOf.loading) &&
-            styles.overflow
-        )}
-      >
+      <div className={clsx(styles.root, balanceOf.loading && styles.overflow)}>
         <div className={styles.inputGroup}>
           <Controller
             name="unit"
