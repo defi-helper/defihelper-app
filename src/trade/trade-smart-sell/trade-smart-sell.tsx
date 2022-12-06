@@ -33,6 +33,7 @@ import * as styles from './trade-smart-sell.css'
 import { hasBoughtPrice } from '../common/trade.types'
 import { toastsService } from '~/toasts'
 import { SwapOrderCallDataDirectionEnum } from '~/api'
+import { Can } from '~/auth'
 
 export type TradeSmartSellProps = {
   className?: string
@@ -729,78 +730,80 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   disabled={formState.isSubmitting}
                 />
               </div>
-              <div
-                className={clsx(
-                  styles.trailingBuyTitle,
-                  styles.trailingTakeProfit
-                )}
-              >
-                <Typography
-                  as="div"
-                  variant="body3"
-                  className={clsx(styles.takeProfitLabel, styles.greyTitle)}
+              <Can I="update" a="Contract">
+                <div
+                  className={clsx(
+                    styles.trailingBuyTitle,
+                    styles.trailingTakeProfit
+                  )}
                 >
-                  Trailing take profit
-                </Typography>
-                <Dropdown
-                  control={
-                    <ButtonBase>
-                      <Icon icon="info" width="16" height="16" />
-                    </ButtonBase>
-                  }
-                  offset={[0, 8]}
-                  className={styles.dropdown}
-                  placement="bottom-start"
-                >
-                  <Typography variant="body2">
-                    Will activate trailing on specified price and start to
-                    follow the price movements. Will not sell if the price goes
-                    up, but will sell if the price will be less the maximum
-                    price minus trailing deviation.
-                  </Typography>
-                </Dropdown>
-                <Switch
-                  size="small"
-                  onChange={({ target }) =>
-                    setValue('trailingTakeProfit', target.checked)
-                  }
-                  checked={trailingTakeProfit}
-                  disabled={formState.isSubmitting}
-                />
-              </div>
-              {trailingTakeProfit && (
-                <>
                   <Typography
                     as="div"
                     variant="body3"
                     className={clsx(styles.takeProfitLabel, styles.greyTitle)}
                   >
-                    Follow max price with deviation [%]
+                    Trailing take profit
                   </Typography>
-                  <div className={styles.trailingBuy}>
-                    <NumericalInput
-                      className={styles.trailingBuyInput}
-                      negative
-                      value={-followMaxPrice}
-                      rightSide="%"
-                      min={0}
-                      max={100}
-                      onChange={handleChangeFollowMaxPrice}
-                      size="small"
-                      disabled={formState.isSubmitting}
-                    />
-                    <Slider
-                      className={styles.slider}
-                      reverse
-                      value={followMaxPrice}
-                      min={0}
-                      max={100}
-                      onChange={handleChangeFollowMaxPrice}
-                      disabled={formState.isSubmitting}
-                    />
-                  </div>
-                </>
-              )}
+                  <Dropdown
+                    control={
+                      <ButtonBase>
+                        <Icon icon="info" width="16" height="16" />
+                      </ButtonBase>
+                    }
+                    offset={[0, 8]}
+                    className={styles.dropdown}
+                    placement="bottom-start"
+                  >
+                    <Typography variant="body2">
+                      Will activate trailing on specified price and start to
+                      follow the price movements. Will not sell if the price
+                      goes up, but will sell if the price will be less the
+                      maximum price minus trailing deviation.
+                    </Typography>
+                  </Dropdown>
+                  <Switch
+                    size="small"
+                    onChange={({ target }) =>
+                      setValue('trailingTakeProfit', target.checked)
+                    }
+                    checked={trailingTakeProfit}
+                    disabled={formState.isSubmitting}
+                  />
+                </div>
+                {trailingTakeProfit && (
+                  <>
+                    <Typography
+                      as="div"
+                      variant="body3"
+                      className={clsx(styles.takeProfitLabel, styles.greyTitle)}
+                    >
+                      Follow max price with deviation [%]
+                    </Typography>
+                    <div className={styles.trailingBuy}>
+                      <NumericalInput
+                        className={styles.trailingBuyInput}
+                        negative
+                        value={-followMaxPrice}
+                        rightSide="%"
+                        min={0}
+                        max={100}
+                        onChange={handleChangeFollowMaxPrice}
+                        size="small"
+                        disabled={formState.isSubmitting}
+                      />
+                      <Slider
+                        className={styles.slider}
+                        reverse
+                        value={followMaxPrice}
+                        min={0}
+                        max={100}
+                        onChange={handleChangeFollowMaxPrice}
+                        disabled={formState.isSubmitting}
+                      />
+                    </div>
+                  </>
+                )}
+              </Can>
             </>
           )}
         </div>
