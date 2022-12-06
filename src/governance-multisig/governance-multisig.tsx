@@ -52,7 +52,7 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
 
   const wallet = walletNetworkModel.useWalletNetwork()
 
-  const createTransaction = async () => {
+  const handleCreateTransaction = async () => {
     try {
       const contract = await openContractsDialog({
         contracts: Object.keys(contracts),
@@ -111,9 +111,7 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
 
       setActions([...actions, { ...params, contract }])
     } catch (error) {
-      if (error instanceof Error) {
-        console.error(error.message)
-      }
+      console.error(error)
     }
   }
 
@@ -271,6 +269,11 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
 
   useGate(model.GovernanceMultisigGate)
 
+  const createTransaction =
+    queryObj.network === wallet?.chainId || !queryObj.network
+      ? handleCreateTransaction
+      : handleSwitchNetwork
+
   return (
     <AppLayout>
       <WalletConnect fallback={<Button>Connect</Button>}>
@@ -281,11 +284,7 @@ export const GovernanceMultisig: React.VFC<GovernanceMultisigProps> = () => {
       {isOwner.value === true && !changeNetwork.error?.message && (
         <>
           <Button
-            onClick={
-              queryObj.network === wallet?.chainId
-                ? createTransaction
-                : handleSwitchNetwork
-            }
+            onClick={createTransaction}
             loading={switchNetworkState.loading}
           >
             Create transaction
