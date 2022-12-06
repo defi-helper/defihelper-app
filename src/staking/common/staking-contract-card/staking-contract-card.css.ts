@@ -21,6 +21,8 @@ export const contractName = style({
   gap: 4,
 })
 
+export const contactNameInner = style({})
+
 export const coinIcons = style({
   display: 'inline-flex',
   alignItems: 'center',

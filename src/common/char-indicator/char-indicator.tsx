@@ -1,14 +1,28 @@
 import clsx from 'clsx'
 
+import { createComponent } from '~/common/create-component'
 import * as styles from './char-indicator.css'
 
-export type CharIndicatorProps = {
-  color: 'green' | 'red'
+type Props<C extends React.ElementType = 'button'> = {
+  as?: C
+  color: keyof typeof styles.colors
   className?: string
 }
 
-export const CharIndicator: React.FC<CharIndicatorProps> = (props) => {
+export type CharIndicatorProps<C extends React.ElementType = 'div'> = Props<C> &
+  Omit<React.ComponentProps<C>, keyof Props<C>>
+
+export const CharIndicator = createComponent(function CharIndicator<
+  C extends React.ElementType = 'div',
+  R extends HTMLElement = HTMLDivElement
+>(props: CharIndicatorProps<C>, ref: React.ForwardedRef<R>) {
   const { color, className, ...restOfProps } = props
 
-  return <div className={clsx(styles.root, className)} {...restOfProps} />
-}
+  return (
+    <span
+      ref={ref}
+      className={clsx(styles.root, className, styles.colors[color])}
+      {...restOfProps}
+    />
+  )
+})
