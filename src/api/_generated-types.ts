@@ -1427,7 +1427,9 @@ export type Mutation = {
   smartTradeCancel: SmartTradeOrderType
   smartTradeClaim: SmartTradeOrderType
   smartTradeSwapOrderCreate: SmartTradeOrderType
+  smartTradeSwapOrderSetBoughtPrice: SmartTradeOrderType
   smartTradeSwapOrderUpdate: SmartTradeOrderType
+  smartTradeSwapOrderClose: SmartTradeOrderType
 }
 
 export type MutationUserUpdateArgs = {
@@ -1720,9 +1722,19 @@ export type MutationSmartTradeSwapOrderCreateArgs = {
   input: SmartTradeSwapOrderCreateInputType
 }
 
+export type MutationSmartTradeSwapOrderSetBoughtPriceArgs = {
+  id: Scalars['UuidType']
+  input: SmartTradeSwapOrderSetBoughtPriceInputType
+}
+
 export type MutationSmartTradeSwapOrderUpdateArgs = {
   id: Scalars['UuidType']
   input: SmartTradeSwapOrderUpdateInputType
+}
+
+export type MutationSmartTradeSwapOrderCloseArgs = {
+  id: Scalars['UuidType']
+  input: SmartTradeSwapOrderCloseInputType
 }
 
 export type OnOrderStatusChangedFilterInputType = {
@@ -2601,6 +2613,8 @@ export type SmartTradeOrderType = {
   balances: Array<SmartTradeOrderBalanceType>
   /** Is order confirmed on blockchain */
   confirmed: Scalars['Boolean']
+  /** Is order closed with market price */
+  closed: Scalars['Boolean']
   /** Date of created */
   createdAt: Scalars['DateTimeType']
 }
@@ -2614,14 +2628,20 @@ export type SmartTradeSwapHandlerCallDataActivateType = {
 export type SmartTradeSwapHandlerCallDataType = {
   __typename?: 'SmartTradeSwapHandlerCallDataType'
   exchange: Scalars['EthereumAddressType']
+  pair: Scalars['EthereumAddressType']
   path: Array<Scalars['EthereumAddressType']>
   amountIn: Scalars['BigNumberType']
   boughtPrice?: Maybe<Scalars['BigNumberType']>
   swapPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapHandlerCallDataRouteType>
+  stopLoss2?: Maybe<SwapHandlerCallDataRouteType>
   takeProfit?: Maybe<SwapHandlerCallDataRouteType>
   activate?: Maybe<SmartTradeSwapHandlerCallDataActivateType>
   deadline: Scalars['Int']
+}
+
+export type SmartTradeSwapOrderCloseInputType = {
+  tx: Scalars['EthereumTransactionHashType']
 }
 
 export type SmartTradeSwapOrderCreateCallDataInputType = {
@@ -2634,6 +2654,7 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   amountOut: Scalars['BigNumberType']
   boughtPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
+  stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
   takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
   activate?: Maybe<SwapOrderCallDataActivateInputType>
   /** Deadline seconds */
@@ -2654,12 +2675,28 @@ export type SmartTradeSwapOrderCreateInputType = {
   tx: Scalars['EthereumTransactionHashType']
 }
 
+export type SmartTradeSwapOrderSetBoughtPriceCallDataInputType = {
+  boughtPrice: Scalars['BigNumberType']
+}
+
+export type SmartTradeSwapOrderSetBoughtPriceInputType = {
+  callData: SmartTradeSwapOrderSetBoughtPriceCallDataInputType
+}
+
 export type SmartTradeSwapOrderUpdateCallDataInputType = {
-  boughtPrice?: Maybe<Scalars['BigNumberType']>
+  amountOut: Scalars['BigNumberType']
+  stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
+  stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
+  takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
+  activate?: Maybe<SwapOrderCallDataActivateInputType>
+  /** Deadline seconds */
+  deadline: Scalars['Int']
 }
 
 export type SmartTradeSwapOrderUpdateInputType = {
-  callData?: Maybe<SmartTradeSwapOrderUpdateCallDataInputType>
+  /** Handler raw call data */
+  callDataRaw: Scalars['String']
+  callData: SmartTradeSwapOrderUpdateCallDataInputType
 }
 
 export enum SortOrderEnum {
@@ -5064,6 +5101,14 @@ export type AutostakingUserUnlinkMutation = { __typename?: 'Mutation' } & Pick<
   'contractUserUnlink'
 >
 
+export type InvestTagsQueryVariables = Exact<{ [key: string]: never }>
+
+export type InvestTagsQuery = { __typename?: 'Query' } & {
+  tags: Array<
+    { __typename?: 'TagType' } & Pick<TagType, 'name' | 'type' | 'id'>
+  >
+}
+
 export type BlockchainsSelectQueryVariables = Exact<{
   testnet?: Maybe<Scalars['Boolean']>
   autorestake?: Maybe<Scalars['Boolean']>
@@ -7293,6 +7338,17 @@ export type TradeClaimOrderMutation = { __typename?: 'Mutation' } & {
   } & TradeOrderFragmentFragment
 }
 
+export type TradeCloseOnMarketMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: SmartTradeSwapOrderCloseInputType
+}>
+
+export type TradeCloseOnMarketMutation = { __typename?: 'Mutation' } & {
+  smartTradeSwapOrderClose: {
+    __typename?: 'SmartTradeOrderType'
+  } & TradeOrderFragmentFragment
+}
+
 export type TradeCreateOrderMutationVariables = Exact<{
   input: SmartTradeSwapOrderCreateInputType
 }>
@@ -7336,6 +7392,7 @@ export type TradeOrderFragmentFragment = {
   SmartTradeOrderType,
   | 'id'
   | 'number'
+  | 'closed'
   | 'handler'
   | 'claim'
   | 'status'
@@ -7361,9 +7418,28 @@ export type TradeOrderFragmentFragment = {
         >)
       | ({ __typename?: 'SmartTradeSwapHandlerCallDataType' } & Pick<
           SmartTradeSwapHandlerCallDataType,
-          'amountIn' | 'exchange' | 'boughtPrice' | 'path' | 'swapPrice'
+          | 'amountIn'
+          | 'exchange'
+          | 'boughtPrice'
+          | 'path'
+          | 'swapPrice'
+          | 'pair'
         > & {
             stopLoss?: Maybe<
+              { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
+                SwapHandlerCallDataRouteType,
+                'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
+              >
+            >
+            activate?: Maybe<
+              {
+                __typename?: 'SmartTradeSwapHandlerCallDataActivateType'
+              } & Pick<
+                SmartTradeSwapHandlerCallDataActivateType,
+                'amountOut' | 'direction'
+              >
+            >
+            stopLoss2?: Maybe<
               { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
                 SwapHandlerCallDataRouteType,
                 'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
@@ -7452,6 +7528,17 @@ export type TradeTokenAliasesQuery = { __typename?: 'Query' } & {
     >
     pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
   }
+}
+
+export type TradeUpdateBoughtPriceMutationVariables = Exact<{
+  id: Scalars['UuidType']
+  input: SmartTradeSwapOrderSetBoughtPriceInputType
+}>
+
+export type TradeUpdateBoughtPriceMutation = { __typename?: 'Mutation' } & {
+  smartTradeSwapOrderSetBoughtPrice: {
+    __typename?: 'SmartTradeOrderType'
+  } & TradeOrderFragmentFragment
 }
 
 export type TradeUpdateOrderMutationVariables = Exact<{

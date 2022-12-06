@@ -81,6 +81,10 @@ export type SmartTradeSwapHandler = {
     ): Promise<{ tx: Transaction | undefined | undefined }>
     canCancelOrder(id: string | number): Promise<true | Error>
     cancelOrder(id: string | number): Promise<{ tx: Transaction | undefined }>
+    emergencyHandleOrder(
+      id: string,
+      deadline: Date
+    ): Promise<{ tx: Transaction | undefined }>
     createOrder: (
       exchangeAddress: string,
       path: string[],
@@ -124,16 +128,79 @@ export type SmartTradeSwapHandler = {
           amountOutMin: string
           moving: boolean
           direction: 'gt' | 'lt'
-        }
+        } | null
         takeProfit: {
           amountOut: string
           slippage: string
           amountOutMin: string
           moving: boolean
           direction: 'gt' | 'lt'
-        }
+        } | null
+        stopLoss2: {
+          amountOut: string
+          slippage: string
+          amountOutMin: string
+          moving: boolean
+          direction: 'gt' | 'lt'
+        } | null
+        activate: {
+          amountOut: string
+          direction: 'gt' | 'lt'
+        } | null
       }
       getOrderNumber: () => Promise<string>
+    }>
+    updateOrder(
+      orderId: string,
+      stopLoss: {
+        amountOut: string
+        slippage: string | number
+        moving: boolean
+      } | null,
+      stopLoss2: {
+        amountOut: string
+        slippage: string | number
+        moving: boolean
+      } | null,
+      takeProfit: {
+        amountOut: string
+        slippage: string | number
+      } | null,
+      activate: {
+        amountOut: string
+        direction: 'gt' | 'lt'
+      } | null
+    ): Promise<{
+      tx: Transaction
+      callDataRaw: string
+      callData: {
+        amountOut: string
+        stopLoss: {
+          amountOut: string
+          slippage: string
+          amountOutMin: string
+          moving: boolean
+          direction: 'gt' | 'lt'
+        } | null
+        takeProfit: {
+          amountOut: string
+          slippage: string
+          amountOutMin: string
+          moving: boolean
+          direction: 'gt' | 'lt'
+        } | null
+        stopLoss2: {
+          amountOut: string
+          slippage: string
+          amountOutMin: string
+          moving: boolean
+          direction: 'gt' | 'lt'
+        } | null
+        activate: {
+          amountOut: string
+          direction: 'gt' | 'lt'
+        } | null
+      }
     }>
   }
 }
@@ -182,7 +249,10 @@ export interface AutomationAdapterActions {
   stopLoss: StopLossComponent
 }
 
-type Transaction = { wait: () => Promise<{ transactionHash: string }> }
+type Transaction = {
+  hash: string
+  wait: () => Promise<{ transactionHash: string }>
+}
 
 export type AdapterStep = {
   can: (...args: unknown[]) => Promise<boolean | Error>

@@ -12,7 +12,9 @@ export type TradeStatusChartProps = {
   takeProfit?: string
   buy?: string
   profit?: string
-  moving?: boolean
+  stopLossMoving?: boolean
+  tralingTakeProfitMoving?: boolean
+  tralingTakeProfit?: string
   percent: string
 }
 
@@ -37,10 +39,14 @@ const getPercentCurry =
 export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
   const buy = props.buy ?? props.profit
 
+  const takeProfitVal = props.tralingTakeProfitMoving
+    ? props.tralingTakeProfit
+    : props.takeProfit
+
   const takeProfit =
-    bignumberUtils.gt(props.takeProfit, 0) ||
-    !bignumberUtils.gt(props.stopLoss, props.takeProfit)
-      ? props.takeProfit
+    bignumberUtils.gt(takeProfitVal, 0) ||
+    !bignumberUtils.gt(props.stopLoss, takeProfitVal)
+      ? takeProfitVal
       : undefined
   const stopLoss = bignumberUtils.gt(props.stopLoss, 0)
     ? props.stopLoss
@@ -77,7 +83,7 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
               className={styles.stopLossTitle}
               weight="bold"
             >
-              {props.moving ? 'TSL' : 'SL'}
+              {props.stopLossMoving ? 'TSL' : 'SL'}
             </Typography>
             <Typography variant="inherit" className={styles.grey}>
               {bignumberUtils.toFixed(props.stopLoss, 4)}
@@ -157,7 +163,23 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
           </div>
         )}
       </div>
-      {bignumberUtils.gt(props.takeProfit, 0) && (
+      {props.tralingTakeProfitMoving && (
+        <div className={styles.takeProfit2line}>
+          <Typography as="div" className={styles.takeProfit}>
+            <Typography
+              variant="inherit"
+              className={styles.takeProfit2Title}
+              weight="bold"
+            >
+              TP
+            </Typography>
+            <Typography variant="inherit" className={styles.grey}>
+              {bignumberUtils.toFixed(props.takeProfit, 4)}
+            </Typography>
+          </Typography>
+        </div>
+      )}
+      {bignumberUtils.gt(takeProfitVal, 0) && (
         <div className={styles.takeProfitLine}>
           <Typography as="div" className={styles.takeProfit}>
             <Typography
@@ -165,10 +187,10 @@ export const TradeStatusChart: React.VFC<TradeStatusChartProps> = (props) => {
               className={styles.takeProfitTitle}
               weight="bold"
             >
-              TP
+              {props.tralingTakeProfitMoving ? 'TTP' : 'TP'}
             </Typography>
             <Typography variant="inherit" className={styles.grey}>
-              {bignumberUtils.toFixed(props.takeProfit, 4)}
+              {bignumberUtils.toFixed(takeProfitVal, 4)}
             </Typography>
           </Typography>
         </div>

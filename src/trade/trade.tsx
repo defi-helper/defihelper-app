@@ -5,7 +5,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useHistory } from 'react-router-dom'
 import { useStore } from 'effector-react'
-import { useForm } from 'react-hook-form'
 import contracts from '@defihelper/networks/contracts.json'
 
 import { Head } from '~/common/head'
@@ -24,10 +23,8 @@ import { TradeChart } from './trade-chart'
 import { networksConfig } from '~/networks-config'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Input } from '~/common/input'
-import { tradeApi } from './common/trade.api'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { config } from '~/config'
-import { toastsService } from '~/toasts'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { TradePlusMinus } from './common/trade-plus-minus'
@@ -55,14 +52,12 @@ enum Selects {
 const USDC_ETH = '0xEa26B78255Df2bBC31C1eBf60010D78670185bD0'
 
 export const Trade: React.VFC<TradeProps> = () => {
-  const { register, handleSubmit, formState, reset } =
-    useForm<{ email: string }>()
-
   const routerHistory = useHistory()
 
   const queryParams = useQueryParams()
   const exchangeQuery = queryParams.get('exchange')
   const pairQuery = queryParams.get('pair')
+  const networkQuery = queryParams.get('network')
 
   const [currentSelect, setCurrentSelect] = useState(Selects.SmartSell)
   const [currentTab, setCurrentTab] = useState(0)
@@ -108,6 +103,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const history = useStore(model.$history)
   const updating = useStore(model.fetchHistoryFx.pending)
   const user = useStore(authModel.$user)
+  const editingOrder = useStore(tradeOrdersModel.$editingOrder)
 
   const wallets = useMemo(
     () =>
@@ -130,17 +126,19 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [currentWalletAddress, walletsMap])
 
   useEffect(() => {
-    model.fetchExchangesFx(wallet?.network ?? config.DEFAULT_CHAIN_ID)
-  }, [wallet])
+    model.fetchExchangesFx(
+      networkQuery ?? wallet?.network ?? config.DEFAULT_CHAIN_ID
+    )
+  }, [wallet, networkQuery])
 
   useEffect(() => {
     if (!currentExchange || loadingExchanges) return
 
     model.fetchPairsFx({
-      network: wallet?.network ?? config.DEFAULT_CHAIN_ID,
+      network: networkQuery ?? wallet?.network ?? config.DEFAULT_CHAIN_ID,
       exchange: currentExchange,
     })
-  }, [wallet, currentExchange, loadingExchanges])
+  }, [wallet, currentExchange, loadingExchanges, networkQuery])
 
   useEffect(() => {
     return () => model.reset()
@@ -223,13 +221,13 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [exchangeQuery, exchangesMap])
 
   useEffect(() => {
-    if (!currentPair || !currentExchangeObj) return
+    if (!currentPair || !currentExchangeObj || !wallet) return
 
     routerHistory.replace({
-      search: `exchange=${currentExchangeObj.Address}&pair=${currentPair}`,
+      search: `exchange=${currentExchangeObj.Address}&pair=${currentPair}&network=${wallet.network}`,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPair, currentExchangeObj])
+  }, [currentPair, currentExchangeObj, wallet])
 
   const tokens = useMemo(() => {
     const tokensCp = [...(currentPairObj?.pairInfo?.tokens ?? [])]
@@ -269,7 +267,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const SelectComponents = {
     [Selects.SmartSell]: (
       <>
-        {tabs}
+        {!editingOrder && tabs}
         <TradeSmartSell
           router={adapter?.router}
           swap={adapter?.swap}
@@ -285,7 +283,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     ),
     [Selects.BuySell]: (
       <>
-        {tabs}
+        {!editingOrder && tabs}
         <TradeBuySell
           router={adapter?.router}
           swap={adapter?.swap}
@@ -295,18 +293,6 @@ export const Trade: React.VFC<TradeProps> = () => {
       </>
     ),
   }
-
-  const handleOnSubmit = handleSubmit(async (formValues) => {
-    try {
-      await tradeApi.sendForm('2', formValues)
-
-      reset({ email: '' })
-
-      toastsService.success(`Thank you! We will notify you about our updates.`)
-    } catch {
-      console.error('something went wrong')
-    }
-  })
 
   useEffect(() => {
     if (!currentWallet?.provider || !currentWallet.chainId) return
@@ -362,7 +348,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   )
 
   const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
-    if (!wallet) return switchNetwork('1').catch(console.error)
+    if (!wallet) return switchNetwork('56').catch(console.error)
 
     await switchNetwork(wallet.network).catch(console.error)
   }, [wallet])
@@ -781,41 +767,6 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Button>
             </div>
           )}
-          {!config.IS_DEV &&
-            !(
-              [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
-            ).includes(String(user?.role)) && (
-              <div className={styles.beta}>
-                <Typography
-                  variant="body2"
-                  align="center"
-                  family="mono"
-                  className={styles.betaTitle}
-                >
-                  Trade section is currently at the beta stage. Please leave
-                  your email address to try it first.
-                </Typography>
-                <form
-                  noValidate
-                  autoComplete="off"
-                  className={styles.betaForm}
-                  onSubmit={handleOnSubmit}
-                >
-                  <Input
-                    placeholder="youremail@gmail.com"
-                    {...register('email', {
-                      required: true,
-                      pattern: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/g,
-                    })}
-                    error={Boolean(formState.errors.email?.message)}
-                    helperText={formState.errors.email?.message}
-                  />
-                  <Button color="green" type="submit">
-                    join
-                  </Button>
-                </form>
-              </div>
-            )}
         </Paper>
       </div>
       <TradeOrders
@@ -825,6 +776,7 @@ export const Trade: React.VFC<TradeProps> = () => {
         router={adapter?.router}
         swap={adapter?.swap}
         exchangesMap={exchangesMap}
+        transactionDeadline={transactionDeadline}
       />
     </AppLayout>
   )

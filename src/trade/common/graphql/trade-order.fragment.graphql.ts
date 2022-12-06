@@ -4,6 +4,7 @@ export const TRADE_ORDER_FRAGMENT = gql`
   fragment tradeOrderFragment on SmartTradeOrderType {
     id
     number
+    closed
     owner {
       id
       network
@@ -28,7 +29,18 @@ export const TRADE_ORDER_FRAGMENT = gql`
         boughtPrice
         path
         swapPrice
+        pair
         stopLoss {
+          amountOut
+          amountOutMin
+          slippage
+          moving
+        }
+        activate {
+          amountOut
+          direction
+        }
+        stopLoss2 {
           amountOut
           amountOutMin
           slippage

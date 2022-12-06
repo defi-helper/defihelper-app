@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import isEmpty from 'lodash.isempty'
+import { useHistory } from 'react-router-dom'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Sticky, StickyContainer } from 'react-sticky'
 import contracts from '@defihelper/networks/contracts.json'
@@ -62,6 +63,7 @@ export type TradeOrdersProps = {
   router?: SmartTradeRouter['methods']
   swap?: SmartTradeSwapHandler['methods']
   exchangesMap: Map<string, Exchange>
+  transactionDeadline: string
 }
 
 enum Tabs {
@@ -91,6 +93,8 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
   const queryParams = useQueryParams()
 
+  const history = useHistory()
+
   const goerliPrice = Array.from(queryParams, ([title, price]) => ({
     price,
     id: title.replace('price', '').replace('[', '').replace(']', ''),
@@ -105,7 +109,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
   const loading = useStore(model.fetchOrdersFx.pending)
   const claimingOrder = useStore(model.$claimingOrder)
   const depositingOrder = useStore(model.$depositingOrder)
-  const editingOrder = useStore(model.$editingOrder)
+  const editingBoughtPrice = useStore(model.$editingBoughtPrice)
 
   const [updatingOrderId, setUpdatingOrderId] = useState('')
 
@@ -144,6 +148,30 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       console.error('error')
     } finally {
       model.claimEnded()
+    }
+  }
+
+  const handleCloseOnMarket = (order: Order) => async () => {
+    if (!hasBoughtPrice(order.callData) || !props.router) return
+
+    try {
+      const res = await props.swap?.emergencyHandleOrder(
+        order.number,
+        dateUtils.toDate(
+          dateUtils.addDate(Number(props.transactionDeadline), 'minutes')
+        )
+      )
+
+      if (!res?.tx?.hash) return
+
+      model.closeOnMarketFx({
+        id: order.id,
+        input: {
+          tx: res.tx.hash,
+        },
+      })
+    } catch (e) {
+      console.error(e)
     }
   }
 
@@ -236,12 +264,29 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       }
     }
 
+  const handleEditOrder =
+    (order: Exclude<typeof orders, null>['list'][number]) => () => {
+      const { callData } = order
+
+      if (!hasBoughtPrice(callData)) return
+
+      model.editOrderStart(order)
+
+      history.replace({
+        search: `exchange=${callData.exchange}&pair=${callData.pair}&network=${order.owner.network}`,
+      })
+    }
+
   const handleEnterBoughtPrice =
-    (order: Exclude<typeof orders, null>['list'][number]) => async () => {
+    (
+      order: Exclude<typeof orders, null>['list'][number],
+      currentPrice?: string
+    ) =>
+    async () => {
       if (!hasBoughtPrice(order.callData)) return
 
       try {
-        model.editStarted(order.id)
+        model.editBoughtPriceStarted(order.id)
 
         const [tokenAddress] = order.callData.path.slice(-1)
 
@@ -264,9 +309,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
           order,
           exchange,
           boughtToken: token,
+          currentPrice,
         })
 
-        await model.updateOrderFx({
+        await model.updateBoughtPriceFx({
           id: order.id,
           input: {
             callData: {
@@ -277,7 +323,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
       } catch (error) {
         console.error(error)
       } finally {
-        model.editEnded()
+        model.editBoughtPriceEnded()
       }
     }
 
@@ -557,6 +603,18 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                           })
                         })
 
+                  const edit =
+                    wrongNetwork ??
+                    (wrongAccount
+                      ? handleWrongAddress(order)
+                      : handleEditOrder(order))
+
+                  const closeOnMarket =
+                    wrongNetwork ??
+                    (wrongAccount
+                      ? handleWrongAddress(order)
+                      : handleCloseOnMarket(order))
+
                   const tokenOut = balances.find(
                     ({ token }) =>
                       token.address.toLowerCase() !==
@@ -568,12 +626,57 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     bignumberUtils.mul(tokensAmountInOut, boughtPrice)
                   )
 
-                  const profitUSD = bignumberUtils.mul(
-                    profit,
-                    order.price?.actualPrice[
-                      orderTokenOut?.token.address.toLowerCase() ?? ''
-                    ]?.usd_price
-                  )
+                  const claimButton =
+                    (order.status === SmartTradeOrderStatusEnum.Succeeded &&
+                      !order.claim) ||
+                    (order.closed && !order.claim) ? (
+                      <WalletConnect
+                        fallback={<Button color="green">Claim</Button>}
+                      >
+                        <Button
+                          color="green"
+                          onClick={claim}
+                          loading={claimingOrder === order.id}
+                          disabled={Boolean(
+                            claimingOrder.length && claimingOrder !== order.id
+                          )}
+                        >
+                          Claim
+                        </Button>
+                      </WalletConnect>
+                    ) : (
+                      <>
+                        {callDataWithBoughtPrice &&
+                          [
+                            SmartTradeOrderStatusEnum.Pending,
+                            SmartTradeOrderStatusEnum.Processed,
+                          ].includes(order.status) && (
+                            <TradeStatusChart
+                              stopLoss={bignumberUtils.div(
+                                callDataWithBoughtPrice.stopLoss?.amountOut,
+                                callDataWithBoughtPrice.amountIn
+                              )}
+                              takeProfit={bignumberUtils.div(
+                                callDataWithBoughtPrice.takeProfit?.amountOut,
+                                callDataWithBoughtPrice.amountIn
+                              )}
+                              buy={boughtPrice ?? undefined}
+                              profit={currentPrice}
+                              className={styles.contractStatus}
+                              stopLossMoving={
+                                callDataWithBoughtPrice.stopLoss?.moving
+                              }
+                              tralingTakeProfitMoving={
+                                callDataWithBoughtPrice.stopLoss2?.moving
+                              }
+                              tralingTakeProfit={
+                                callDataWithBoughtPrice.stopLoss2?.amountOut
+                              }
+                              percent={bignumberUtils.toFixed(percent, 4)}
+                            />
+                          )}
+                      </>
+                    )
 
                   return (
                     <TradeOrderDeposit
@@ -724,16 +827,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             </div>
                           </div>
                           <div>
-                            <div className={styles.claim}>
-                              {callDataWithBoughtPrice &&
-                                (order.claim ||
-                                  (order.status ===
-                                    SmartTradeOrderStatusEnum.Succeeded &&
-                                    !order.claim)) &&
-                                ![
-                                  SmartTradeOrderStatusEnum.Pending,
-                                  SmartTradeOrderStatusEnum.Processed,
-                                ].includes(order.status) && (
+                            {order.closed &&
+                              order.status ===
+                                SmartTradeOrderStatusEnum.Succeeded && (
+                                <div className={styles.claim}>
                                   <Typography
                                     variant="body3"
                                     className={clsx(styles.status, {
@@ -747,109 +844,82 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       ),
                                     })}
                                   >
-                                    {!order.claim &&
-                                    order.status ===
-                                      SmartTradeOrderStatusEnum.Succeeded
-                                      ? titles.completed
-                                      : titles[order.status]}
-                                    : {bignumberUtils.toFixed(percent, 4)}%
-                                  </Typography>
-                                )}
-                              {order.status ===
-                                SmartTradeOrderStatusEnum.Succeeded &&
-                              !order.claim ? (
-                                <WalletConnect
-                                  fallback={
-                                    <Button color="green">Claim</Button>
-                                  }
-                                >
-                                  <Button
-                                    color="green"
-                                    onClick={claim}
-                                    loading={claimingOrder === order.id}
-                                    disabled={Boolean(
-                                      claimingOrder.length &&
-                                        claimingOrder !== order.id
+                                    Order closed by market price
+                                    {boughtPrice && (
+                                      <>
+                                        {' '}
+                                        : {bignumberUtils.toFixed(percent, 4)}%
+                                      </>
                                     )}
-                                  >
-                                    Claim
-                                  </Button>
-                                </WalletConnect>
-                              ) : (
-                                <>
-                                  {callDataWithBoughtPrice &&
-                                    [
-                                      SmartTradeOrderStatusEnum.Pending,
-                                      SmartTradeOrderStatusEnum.Processed,
-                                    ].includes(order.status) && (
-                                      <TradeStatusChart
-                                        stopLoss={bignumberUtils.div(
-                                          callDataWithBoughtPrice.stopLoss
-                                            ?.amountOut,
-                                          callDataWithBoughtPrice.amountIn
-                                        )}
-                                        takeProfit={bignumberUtils.div(
-                                          callDataWithBoughtPrice.takeProfit
-                                            ?.amountOut,
-                                          callDataWithBoughtPrice.amountIn
-                                        )}
-                                        buy={boughtPrice ?? undefined}
-                                        profit={currentPrice}
-                                        className={styles.contractStatus}
-                                        moving={
-                                          callDataWithBoughtPrice.stopLoss
-                                            ?.moving
-                                        }
-                                        percent={bignumberUtils.toFixed(
-                                          percent,
-                                          4
-                                        )}
-                                      />
-                                    )}
-                                </>
-                              )}
-                            </div>
-                          </div>
-                          <div>
-                            {boughtPrice ? (
-                              <>
-                                <div className={styles.contractBalance}>
-                                  {tokenOut?.token.alias?.logoUrl ? (
-                                    <img
-                                      src={tokenOut?.token.alias?.logoUrl}
-                                      className={styles.contractBalanceIcon}
-                                      alt=""
-                                    />
-                                  ) : (
-                                    <Paper
-                                      className={styles.contractBalanceIcon}
-                                    >
-                                      <Icon
-                                        icon="unknownNetwork"
-                                        width="16"
-                                        height="16"
-                                      />
-                                    </Paper>
-                                  )}
-                                  <Typography
-                                    className={clsx(styles.fs12, {
-                                      [styles.positive]: bignumberUtils.gt(
-                                        percent,
-                                        0
-                                      ),
-                                      [styles.negative]: bignumberUtils.lt(
-                                        percent,
-                                        0
-                                      ),
-                                    })}
-                                    as="div"
-                                  >
-                                    {bignumberUtils.gt(percent, 0) && '+'}
-                                    {bignumberUtils.toFixed(profit, 4)}
                                   </Typography>
+                                  {claimButton}
                                 </div>
-                                {currentPrice && (
+                              )}
+                            {!order.closed && (
+                              <div className={styles.claim}>
+                                {callDataWithBoughtPrice &&
+                                  (order.claim ||
+                                    (order.status ===
+                                      SmartTradeOrderStatusEnum.Succeeded &&
+                                      !order.claim)) &&
+                                  ![
+                                    SmartTradeOrderStatusEnum.Pending,
+                                    SmartTradeOrderStatusEnum.Processed,
+                                  ].includes(order.status) && (
+                                    <Typography
+                                      variant="body3"
+                                      className={clsx(styles.status, {
+                                        [styles.positive]: bignumberUtils.gt(
+                                          percent,
+                                          0
+                                        ),
+                                        [styles.negative]: bignumberUtils.lt(
+                                          percent,
+                                          0
+                                        ),
+                                      })}
+                                    >
+                                      {!order.claim &&
+                                      order.status ===
+                                        SmartTradeOrderStatusEnum.Succeeded
+                                        ? titles.completed
+                                        : titles[order.status]}
+                                      {order.status ===
+                                      SmartTradeOrderStatusEnum.Canceled
+                                        ? null
+                                        : `: ${bignumberUtils.toFixed(
+                                            percent,
+                                            4
+                                          )}%`}
+                                    </Typography>
+                                  )}
+                                {claimButton}
+                              </div>
+                            )}
+                          </div>
+                          {order.status !==
+                            SmartTradeOrderStatusEnum.Canceled && (
+                            <div>
+                              {boughtPrice ? (
+                                <>
                                   <div className={styles.contractBalance}>
+                                    {tokenOut?.token.alias?.logoUrl ? (
+                                      <img
+                                        src={tokenOut?.token.alias?.logoUrl}
+                                        className={styles.contractBalanceIcon}
+                                        alt=""
+                                      />
+                                    ) : (
+                                      <Paper
+                                        className={styles.contractBalanceIcon}
+                                      >
+                                        <Icon
+                                          icon="unknownNetwork"
+                                          width="16"
+                                          height="16"
+                                        />
+                                      </Paper>
+                                    )}
                                     <Typography
                                       className={clsx(styles.fs12, {
                                         [styles.positive]: bignumberUtils.gt(
@@ -863,54 +933,71 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                       })}
                                       as="div"
                                     >
-                                      {currentPrice && (
-                                        <>
-                                          {bignumberUtils.gt(percent, 0) && '+'}
-                                          {bignumberUtils.toFixed(profitUSD, 4)}
-                                          $ /
-                                        </>
-                                      )}{' '}
                                       {bignumberUtils.gt(percent, 0) && '+'}
-                                      {bignumberUtils.toFixed(percent, 4)}%
+                                      {bignumberUtils.toFixed(profit, 4)}
                                     </Typography>
                                   </div>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <Typography
-                                  variant="body3"
-                                  className={styles.boughtPrice}
-                                >
-                                  Bought price
-                                  <Dropdown
-                                    control={
-                                      <ButtonBase>
-                                        <Icon
-                                          icon="question"
-                                          width={16}
-                                          height={16}
-                                        />
-                                      </ButtonBase>
-                                    }
-                                    offset={[0, 8]}
+                                  {currentPrice && (
+                                    <div className={styles.contractBalance}>
+                                      <Typography
+                                        className={clsx(styles.fs12, {
+                                          [styles.positive]: bignumberUtils.gt(
+                                            percent,
+                                            0
+                                          ),
+                                          [styles.negative]: bignumberUtils.lt(
+                                            percent,
+                                            0
+                                          ),
+                                        })}
+                                        as="div"
+                                      >
+                                        {bignumberUtils.gt(percent, 0) && '+'}
+                                        {bignumberUtils.toFixed(profit, 4)}
+                                      </Typography>
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  <Typography
+                                    variant="body3"
+                                    className={styles.boughtPrice}
                                   >
-                                    <Typography variant="body3">
-                                      Enter the Bought price to see your profit
-                                    </Typography>
-                                  </Dropdown>
-                                </Typography>
-                                <Button
-                                  color="green"
-                                  loading={editingOrder === order.id}
-                                  onClick={handleEnterBoughtPrice(order)}
-                                  size="small"
-                                >
-                                  Enter
-                                </Button>
-                              </>
-                            )}
-                          </div>
+                                    Bought price
+                                    <Dropdown
+                                      control={
+                                        <ButtonBase>
+                                          <Icon
+                                            icon="question"
+                                            width={16}
+                                            height={16}
+                                          />
+                                        </ButtonBase>
+                                      }
+                                      offset={[0, 8]}
+                                    >
+                                      <Typography variant="body3">
+                                        Enter the Bought price to see your
+                                        profit
+                                      </Typography>
+                                    </Dropdown>
+                                  </Typography>
+                                  <Button
+                                    color="green"
+                                    loading={editingBoughtPrice === order.id}
+                                    onClick={handleEnterBoughtPrice(
+                                      order,
+                                      currentPrice
+                                    )}
+                                    size="small"
+                                  >
+                                    Enter
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          )}
                           {statuses[Tabs.Active].includes(order.status) && (
                             <div className={styles.contractActions}>
                               <ButtonBase onClick={handleUpdatePrice(order.id)}>
@@ -918,7 +1005,12 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               </ButtonBase>
                               <Dropdown
                                 control={
-                                  <ButtonBase>
+                                  <ButtonBase
+                                    disabled={
+                                      order.status ===
+                                      SmartTradeOrderStatusEnum.Processed
+                                    }
+                                  >
                                     <Icon
                                       width={16}
                                       height={16}
@@ -929,21 +1021,65 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                 }
                               >
                                 {(close) => (
-                                  <WalletConnect
-                                    fallback={
-                                      <ButtonBase>Cancel order</ButtonBase>
-                                    }
-                                  >
-                                    <ButtonBase
-                                      onClick={async () => {
-                                        close()
+                                  <>
+                                    <WalletConnect
+                                      fallback={
+                                        <ButtonBase>Cancel order</ButtonBase>
+                                      }
+                                    >
+                                      <ButtonBase
+                                        onClick={async () => {
+                                          close()
 
-                                        cancel()
+                                          cancel()
+                                        }}
+                                      >
+                                        Cancel order
+                                      </ButtonBase>
+                                    </WalletConnect>
+                                    {order.status ===
+                                      SmartTradeOrderStatusEnum.Pending && (
+                                      <WalletConnect
+                                        fallback={
+                                          <ButtonBase>Edit order</ButtonBase>
+                                        }
+                                      >
+                                        <ButtonBase
+                                          onClick={() => {
+                                            edit()
+
+                                            close()
+                                          }}
+                                        >
+                                          Edit order
+                                        </ButtonBase>
+                                      </WalletConnect>
+                                    )}
+                                    <WalletConnect
+                                      fallback={
+                                        <ButtonBase>Close on market</ButtonBase>
+                                      }
+                                    >
+                                      <ButtonBase
+                                        onClick={() => {
+                                          closeOnMarket()
+
+                                          close()
+                                        }}
+                                      >
+                                        Close on market
+                                      </ButtonBase>
+                                    </WalletConnect>
+                                    <ButtonBase
+                                      onClick={() => {
+                                        handleEnterBoughtPrice(order)
+
+                                        close()
                                       }}
                                     >
-                                      Cancel order
+                                      Edit bought price
                                     </ButtonBase>
-                                  </WalletConnect>
+                                  </>
                                 )}
                               </Dropdown>
                             </div>

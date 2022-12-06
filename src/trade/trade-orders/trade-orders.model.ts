@@ -5,11 +5,14 @@ import {
   UnitValue,
   sample,
   combine,
+  StoreValue,
 } from 'effector'
 
 import { tradeApi } from '~/trade/common/trade.api'
 import {
+  TradeCloseOnMarketMutationVariables,
   TradeOrderListQueryVariables,
+  TradeUpdateBoughtPriceMutationVariables,
   TradeUpdateOrderMutationVariables,
 } from '~/api'
 import { hasBoughtPrice } from '~/trade/common/trade.types'
@@ -59,6 +62,26 @@ export const updateOrderFx = createEffect(
   }
 )
 
+export const updateBoughtPriceFx = createEffect(
+  async (variables: TradeUpdateBoughtPriceMutationVariables) => {
+    const data = await tradeApi.updateBoughtPrice(variables)
+
+    if (!data) throw new Error('something went wrong')
+
+    return data
+  }
+)
+
+export const closeOnMarketFx = createEffect(
+  async (variables: TradeCloseOnMarketMutationVariables) => {
+    const data = await tradeApi.closeOnMarket(variables)
+
+    if (!data) throw new Error('something went wrong')
+
+    return data
+  }
+)
+
 export type Orders = UnitValue<typeof fetchOrdersFx.doneData>
 
 export const updatedOrder = createEvent<Orders['list'][number]>()
@@ -70,14 +93,33 @@ export const $orders = createStore<Orders | null>(null)
     pagination: state?.pagination ?? 0,
   }))
   .on(
-    [cancelOrderFx.doneData, updateOrderFx.doneData, updatedOrder],
-    (state, payload) => ({
-      list:
-        state?.list.map((order) =>
-          order.id === payload.id ? payload : order
-        ) ?? [],
-      pagination: state?.pagination ?? 0,
-    })
+    [
+      cancelOrderFx.doneData,
+      updateOrderFx.doneData,
+      updatedOrder,
+      closeOnMarketFx.doneData,
+      updateBoughtPriceFx.doneData,
+    ],
+    (state, payload) => {
+      const list = state?.list ?? []
+      const pagination = state?.pagination ?? 0
+
+      const hasOrder = list.some((order) => order.id === payload.id)
+
+      if (hasOrder) {
+        return {
+          list: list.map((order) =>
+            order.id === payload.id ? payload : order
+          ),
+          pagination,
+        }
+      }
+
+      return {
+        list: [payload, ...list],
+        pagination: state?.pagination ?? 0,
+      }
+    }
   )
   .on(claimOrderFx.done, (state, { params }) => ({
     list: state?.list.filter((order) => order.id !== params.id) ?? [],
@@ -137,13 +179,13 @@ export const $depositingOrder = createStore<string>('')
   .on(depositStarted, (_, payload) => payload)
   .reset(depositEnded)
 
-export const editStarted = createEvent<string>()
+export const editBoughtPriceStarted = createEvent<string>()
 
-export const editEnded = createEvent()
+export const editBoughtPriceEnded = createEvent()
 
-export const $editingOrder = createStore<string>('')
-  .on(editStarted, (_, payload) => payload)
-  .reset(editEnded)
+export const $editingBoughtPrice = createStore<string>('')
+  .on(editBoughtPriceStarted, (_, payload) => payload)
+  .reset(editBoughtPriceEnded)
 
 export const priceUpdated = createEvent()
 
@@ -173,3 +215,14 @@ export const $ordersWithPrice = combine($orders, $prices, (orders, prices) => {
     pagination: orders?.pagination,
   }
 })
+
+export const editOrderStart =
+  createEvent<StoreValue<typeof $ordersWithPrice>['list'][number]>()
+
+export const editOrderEnd = createEvent()
+
+export const $editingOrder = createStore<
+  StoreValue<typeof $ordersWithPrice>['list'][number] | null
+>(null)
+  .on(editOrderStart, (_, payload) => payload)
+  .reset(editOrderEnd)

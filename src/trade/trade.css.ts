@@ -30,6 +30,7 @@ export const content = style({
   display: 'grid',
   gap: 24,
   marginBottom: 24,
+  maxHeight: 731,
 
   '@media': {
     [theme.mediaQueries.lg()]: {
@@ -127,14 +128,6 @@ export const switchNetwork = style({
 
 export const betaTitle = style({
   maxWidth: 275,
-})
-
-export const betaForm = style({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 16,
-  width: '100%',
-  maxWidth: 320,
 })
 
 export const tradeSellSelect = style({

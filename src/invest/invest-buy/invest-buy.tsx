@@ -33,7 +33,29 @@ export type InvestBuyProps = {
   }[]
 }
 
+enum Errors {
+  default,
+  balance,
+}
+
+const ErrorMessages = {
+  [Errors.default]: (
+    <>
+      Your transaction is failed due to current market conditions. You can try
+      to change the slippage or use another token
+    </>
+  ),
+  [Errors.balance]: (
+    <>
+      Transaction failed. Please check that you have enough native tokens on
+      your wallet to pay the fees.
+    </>
+  ),
+}
+
 export const InvestBuy = (props: InvestBuyProps) => {
+  const [error, setError] = useState<Errors | null>(null)
+
   const [amount, setAmount] = useState('0')
   const [tokenAddress, setTokenAddress] = useState('')
 
@@ -90,6 +112,8 @@ export const InvestBuy = (props: InvestBuyProps) => {
 
     const isNativeToken = tokenAddress === NULL_ADDRESS
 
+    setError(null)
+
     try {
       const can = isNativeToken
         ? await canBuyETH(amount)
@@ -110,6 +134,17 @@ export const InvestBuy = (props: InvestBuyProps) => {
 
       if (!result?.transactionHash || !currentUserWallet || !fee.value) return
 
+      if (
+        bignumberUtils.gt(
+          fee.value.native,
+          tokens.value?.[tokenAddress]?.balance
+        )
+      ) {
+        setError(Errors.balance)
+
+        return
+      }
+
       props.onSubmit?.({
         tx: result.transactionHash,
         wallet: currentUserWallet.id,
@@ -121,27 +156,35 @@ export const InvestBuy = (props: InvestBuyProps) => {
       tokens.retry()
 
       return true
-    } catch (error) {
+    } catch {
       analytics.log('lp_tokens_purchase_unsuccess', {
         amount: bignumberUtils.floor(amount),
       })
 
-      throw error
+      setError(Errors.default)
+
+      return false
     }
-  }, [props.adapter, tokenAddress, amount, fee.value])
+  }, [props.adapter, tokenAddress, amount, fee.value, tokens.value])
 
   const [approveState, handleApprove] = useAsyncFn(async () => {
     if (!props.adapter) return
 
     const { approve } = props.adapter.methods
 
-    const { tx } = await approve(tokenAddress, amount)
+    setError(null)
 
-    await tx?.wait()
+    try {
+      const { tx } = await approve(tokenAddress, amount)
 
-    tokens.retry()
-    approved.retry()
-    toastsService.info('tokens approved!')
+      await tx?.wait()
+
+      tokens.retry()
+      approved.retry()
+      toastsService.info('tokens approved!')
+    } catch {
+      setError(Errors.default)
+    }
   }, [props.adapter, tokenAddress, amount])
 
   useEffect(() => {
@@ -150,6 +193,14 @@ export const InvestBuy = (props: InvestBuyProps) => {
     setTokenAddress(props.tokens?.[0].address ?? '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.tokens])
+
+  useEffect(() => {
+    const message = approveState.error?.message ?? buyState.error?.message
+
+    if (!message) return setError(null)
+
+    setError(Errors.default)
+  }, [approveState.error, buyState.error])
 
   return (
     <React.Fragment>
@@ -234,10 +285,9 @@ export const InvestBuy = (props: InvestBuyProps) => {
           onChange={(event) => setAmount(event.target.value)}
         />
       </div>
-      {buyState.error || approveState.error ? (
+      {error ? (
         <Typography variant="body3" as="div" className={styles.error}>
-          Your transaction is failed due to current market conditions. You can
-          try to change the slippage or use another token
+          {ErrorMessages[error]}
         </Typography>
       ) : (
         <InvestFee

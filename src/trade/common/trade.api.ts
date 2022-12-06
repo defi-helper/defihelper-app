@@ -16,15 +16,21 @@ import {
   TradeUpdateOrderMutationVariables,
   TradeTokenAliasesQuery,
   TradeTokenAliasesQueryVariables,
+  TradeCloseOnMarketMutation,
+  TradeCloseOnMarketMutationVariables,
+  TradeUpdateBoughtPriceMutationVariables,
+  TradeUpdateBoughtPriceMutation,
 } from '~/api'
 import { dateUtils } from '~/common/date-utils'
 import { config } from '~/config'
 import { TRADE_AUTH } from './graphql/trade-auth.graphql'
 import { TRADE_CANCEL_ORDER } from './graphql/trade-cancel-order.graphql'
 import { TRADE_CLAIM_ORDER } from './graphql/trade-claim-order.graphql'
+import { TRADE_CLOSE_ON_MARKET } from './graphql/trade-close-on-market.graphql'
 import { TRADE_CREATE_ORDER } from './graphql/trade-create-order.graphql'
 import { TRADE_ORDER_LIST } from './graphql/trade-order-list.graphql'
 import { TRADE_TOKEN_ALIASES } from './graphql/trade-token-aliases.graphql'
+import { TRADE_UPDATE_BOUGHT_PRICE } from './graphql/trade-update-bought-price.graphql'
 import { TRADE_UPDATE_ORDER } from './graphql/trade-update-order.graphql'
 import { pairMock } from './trade-dev.mock'
 
@@ -267,6 +273,18 @@ export const tradeApi = {
       })
       .then(({ data }) => data?.tradingAuth),
 
+  closeOnMarket: (variables: TradeCloseOnMarketMutationVariables) =>
+    getAPIClient()
+      .request<
+        TradeCloseOnMarketMutation,
+        unknown,
+        TradeCloseOnMarketMutationVariables
+      >({
+        query: TRADE_CLOSE_ON_MARKET.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.smartTradeSwapOrderClose),
+
   createOrder: (input: TradeCreateOrderMutationVariables['input']) =>
     getAPIClient()
       .request<
@@ -306,6 +324,18 @@ export const tradeApi = {
         variables,
       })
       .then(({ data }) => data?.smartTradeSwapOrderUpdate),
+
+  updateBoughtPrice: (variables: TradeUpdateBoughtPriceMutationVariables) =>
+    getAPIClient()
+      .request<
+        TradeUpdateBoughtPriceMutation,
+        unknown,
+        TradeUpdateBoughtPriceMutationVariables
+      >({
+        query: TRADE_UPDATE_BOUGHT_PRICE.loc?.source.body ?? '',
+        variables,
+      })
+      .then(({ data }) => data?.smartTradeSwapOrderSetBoughtPrice),
 
   fetchOrders: (variables: TradeOrderListQueryVariables) =>
     getAPIClient()

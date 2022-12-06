@@ -15,7 +15,7 @@ import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
 import { createComponent } from '~/common/create-component'
 import { ButtonBase } from '~/common/button-base'
-import { Checkbox } from '~/common/checkbox'
+import { SelectOption } from './select-option'
 import * as styles from './select.css'
 
 export type SelectProps = Omit<
@@ -26,6 +26,7 @@ export type SelectProps = Omit<
   value?: string | number | string[] | number[]
   defaultValue?: string | number | string[] | number[]
   multiple?: boolean
+  grouped?: boolean
   clearable?: boolean
   header?: React.ReactNode
   footer?: React.ReactNode
@@ -33,11 +34,42 @@ export type SelectProps = Omit<
 
 export const Select = createComponent<HTMLInputElement, SelectProps>(
   function Select(props, ref) {
-    const { sameWidth = true, value, defaultValue, className } = props
+    const {
+      sameWidth = true,
+      value,
+      grouped,
+      multiple,
+      defaultValue,
+      className,
+    } = props
 
     const [localValue, setLocalValue] = useState(defaultValue ?? value ?? '')
 
     const children = Children.toArray(props.children)
+
+    const [, groupedChildren] = children.reduce<
+      [string, Record<string, { group: string; value: any }>]
+    >(
+      ([lastGroup, acc], child) => {
+        let newLastGroup = lastGroup
+
+        if (!isValidElement(child)) return [newLastGroup, acc]
+
+        if (child.type !== SelectOption) {
+          newLastGroup = child.props.children
+        }
+
+        if (child.type === SelectOption) {
+          acc[child.props.value] = {
+            group: newLastGroup,
+            value: child.props.renderValue ?? child.props.children,
+          }
+        }
+
+        return [newLastGroup, acc]
+      },
+      ['', {}]
+    )
 
     const handleClickOnOption =
       (
@@ -65,7 +97,22 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
             )
           : [...localValueArr, child.props.value]
 
-        const childValue = props.multiple ? childValueArr : child.props.value
+        const childGroupedValues = Object.values(
+          childValueArr.reduce<Record<string, string | number>>(
+            (acc, localVal) => {
+              acc[groupedChildren[localVal]?.group] = localVal
+
+              return acc
+            },
+            {}
+          )
+        )
+
+        const childPropsValues = grouped
+          ? childGroupedValues
+          : child.props.value
+
+        const childValue = multiple ? childValueArr : childPropsValues
 
         newEvent.target.value = childValue
         newEvent.target.name = props.name ?? ''
@@ -77,7 +124,7 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
 
         props.onChange?.(newEvent)
 
-        if (!props.header || !props.multiple) {
+        if (!props.header || !multiple || !grouped) {
           cb?.()
         }
       }
@@ -225,23 +272,20 @@ export const Select = createComponent<HTMLInputElement, SelectProps>(
                             cb()
                           },
                       className: clsx(
-                        styles.option,
-                        child.props.className,
-                        localValueArr.includes(child.props.value) &&
-                          styles.active
+                        child.type === SelectOption && styles.option,
+                        child.type !== SelectOption && styles.groupTitle,
+                        child.props.className
                       ),
                       children: (
                         <>
-                          {child.props.children}{' '}
-                          {props.multiple && !child.props.disabled && (
-                            <Checkbox
-                              checked={localValueArr.includes(
-                                child.props.value
-                              )}
-                              onChange={handleClickOnOption(child)}
-                              className={styles.checkbox}
-                            />
-                          )}
+                          {child.props.children}
+                          {child.type === SelectOption &&
+                            localValueArr.includes(child.props.value) && (
+                              <Icon
+                                icon="checked"
+                                className={styles.checkbox}
+                              />
+                            )}
                         </>
                       ),
                     })

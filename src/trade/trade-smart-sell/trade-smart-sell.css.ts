@@ -6,6 +6,7 @@ export const form = style({
   flex: '1 0 auto',
   display: 'flex',
   flexDirection: 'column',
+  maxHeight: 661,
 })
 
 export const flex = style({
@@ -17,7 +18,6 @@ export const root = style([
   flex,
   {
     gap: 24,
-    maxHeight: 469,
     height: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
@@ -77,6 +77,10 @@ export const takeProfitLabel = style([
   },
 ])
 
+export const greyTitle = style({
+  color: theme.colors.textColorGrey,
+})
+
 export const slider = style({
   maxWidth: 'calc(100% - 124px)',
   marginLeft: 'auto',
@@ -106,4 +110,8 @@ export const balanceButton = style({
 
 export const dropdown = style({
   maxWidth: 200,
+})
+
+export const trailingTakeProfit = style({
+  marginBottom: 8,
 })

@@ -17,6 +17,13 @@ export type TradeConfirmClaimDialogProps = {
   boughtPrice: string
   tokens?: Token[]
   name: string
+  unit: string
+  takeProfit?: string
+  stopLoss?: string
+  secondToken?: string
+  firstToken?: string
+  trailingTakeProfit?: boolean
+  trailingStopLoss?: boolean
 }
 
 export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
@@ -51,6 +58,48 @@ export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
           <Typography variant="body2">Trading Pair</Typography>
           <Typography variant="body2" as="div" className={styles.contractName}>
             {props.tokens?.map(({ symbol }) => symbol).join('/')}
+          </Typography>
+        </div>
+        <div className={styles.row}>
+          <Typography variant="body2">Unit</Typography>
+          <Typography variant="body2" as="div" className={styles.contractName}>
+            {props.unit} {props.firstToken}
+          </Typography>
+        </div>
+        {props.takeProfit && (
+          <div className={styles.row}>
+            <Typography variant="body2">Take profit</Typography>
+            <Typography
+              variant="body2"
+              as="div"
+              className={styles.contractName}
+            >
+              {props.takeProfit} {props.secondToken}
+            </Typography>
+          </div>
+        )}
+        {props.stopLoss && (
+          <div className={styles.row}>
+            <Typography variant="body2">Stop-loss</Typography>
+            <Typography
+              variant="body2"
+              as="div"
+              className={styles.contractName}
+            >
+              {props.stopLoss} {props.secondToken}
+            </Typography>
+          </div>
+        )}
+        <div className={styles.row}>
+          <Typography variant="body2">Trailing take profit</Typography>
+          <Typography variant="body2" as="div" className={styles.contractName}>
+            {props.trailingTakeProfit ? 'on' : 'off'}
+          </Typography>
+        </div>
+        <div className={styles.row}>
+          <Typography variant="body2">Trailing stop-loss</Typography>
+          <Typography variant="body2" as="div" className={styles.contractName}>
+            {props.trailingStopLoss ? 'on' : 'off'}
           </Typography>
         </div>
         <Button
