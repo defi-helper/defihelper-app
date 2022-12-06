@@ -2,7 +2,10 @@ import { createDomain, guard, sample, restore, UnitValue } from 'effector'
 import { createGate } from 'effector-react'
 
 import { authModel } from '~/auth'
-import { ProtocolFavoriteMutationVariables } from '~/api/_generated-types'
+import {
+  ProtocolFavoriteMutationVariables,
+  TokenRiskScoringEnum,
+} from '~/api/_generated-types'
 import { protocolsApi, Protocol, Tabs } from '~/protocols/common'
 import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
 
@@ -120,7 +123,11 @@ export const protocolFavoriteFx = protocolListDomain.createEffect(
 )
 
 export const $protocolList = protocolListDomain
-  .createStore<(Protocol & { metric?: { tvl?: string } })[]>([])
+  .createStore<
+    (Protocol & {
+      metric?: { tvl?: string; totalRate?: TokenRiskScoringEnum }
+    })[]
+  >([])
   .on(fetchProtocolListFx.doneData, (state, payload) =>
     state.concat(
       payload.list.map((protocol) => ({

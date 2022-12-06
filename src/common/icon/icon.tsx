@@ -104,6 +104,7 @@ import { ReactComponent as OrderIcon } from '~/assets/icons/order.svg'
 import { ReactComponent as NoResultsIcon } from '~/assets/icons/no-results.svg'
 import { ReactComponent as YellowRiskIcon } from '~/assets/icons/yellow-risk.svg'
 import { ReactComponent as GreenRiskIcon } from '~/assets/icons/green-risk.svg'
+import { ReactComponent as GreyRiskIcon } from '~/assets/icons/grey-risk.svg'
 import { ReactComponent as RedRiskIcon } from '~/assets/icons/red-risk.svg'
 import { ReactComponent as DeployIcon } from '~/assets/icons/deploy.svg'
 
@@ -221,6 +222,7 @@ const ICONS = {
   yellowRisk: YellowRiskIcon,
   greenRisk: GreenRiskIcon,
   redRisk: RedRiskIcon,
+  greyRisk: GreyRiskIcon,
   deploy: DeployIcon,
 } as const
 

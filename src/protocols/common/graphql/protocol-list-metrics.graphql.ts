@@ -16,6 +16,16 @@ export const PROTOCOL_LIST_METRICS = gql`
           myEarned
           myMinUpdatedAt
           myAPYBoost
+          risk {
+            totalRate
+            reliabilityRate
+            profitabilityRate
+            volatilityRate
+            total
+            reliability
+            profitability
+            volatility
+          }
         }
       }
     }

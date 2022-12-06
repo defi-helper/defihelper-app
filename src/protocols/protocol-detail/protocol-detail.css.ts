@@ -128,7 +128,7 @@ export const tabs = style({
 
   '@media': {
     [theme.mediaQueries.md()]: {
-      marginBottom: 64,
+      marginBottom: 40,
     },
   },
 })
@@ -164,3 +164,92 @@ export const edit = style({
 export const charts = style({})
 
 export const staking = style({})
+
+export const totalRiskBadge = style({
+  background: theme.colors.common.green2,
+  color: '#000',
+  padding: '2px 32.5px',
+  borderRadius: '22px',
+  marginLeft: '16px',
+  fontSize: '14px',
+  lineHeight: '20px',
+})
+
+export const riskOverview = style({
+  marginBottom: 64,
+})
+
+export const riskPanel = style({
+  display: 'grid',
+  gridTemplateColumns: 'auto 1fr 1fr 1fr',
+  backgroundColor: theme.colors.common.black2,
+  fontFamily: theme.fonts.mono,
+  padding: '13px 32px',
+  borderRadius: 6,
+  marginBottom: 16,
+})
+
+export const riskColumnTotal = style({
+  padding: '10px 32px 10px 0px',
+  marginRight: '32px',
+  display: 'flex',
+  fontSize: '20px',
+  lineHeight: '24px',
+  borderRight: `1px solid ${theme.colors.common.black7}`,
+})
+
+export const riskColumnFactor = style({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+})
+
+export const riskColumnFactorLabel = style({
+  marginRight: 8,
+})
+
+export const riskFactorsDescription = style({
+  fontFamily: theme.fonts.square,
+  fontSize: '14px',
+})
+
+export const riskFactorsDescriptionFactor = style({
+  fontFamily: theme.fonts.square,
+  fontSize: '14px',
+})
+
+export const riskFactorsDescriptionFactorModerate = style({
+  color: theme.colors.common.yellow,
+  fontSize: '14px',
+  lineHeight: '20px',
+})
+
+export const riskFactorTooltipBodyDivider = style({
+  borderBottom: `1px solid ${theme.colors.common.black7}`,
+  margin: '16px 0px',
+})
+
+export const riskFactorsDescriptionHeadline = style({
+  color: theme.colors.common.grey1,
+})
+
+export const riskFactorTooltipBody = style({
+  fontSize: '14px',
+  lineHeight: '20px',
+})
+
+export const riskFactorTooltipRiskFactorsHeadline = style({
+  fontSize: '14px',
+  lineHeight: '20px',
+  color: '#8A8F8F',
+})
+
+export const riskFactorTooltipRiskingFaqLink = style({
+  fontFamily: theme.fonts.mono,
+  fontSize: '12px',
+  textDecoration: 'underline',
+})
+
+export const riskFactorTooltipFactorsDescribe = style({
+  marginBottom: '16px',
+})
