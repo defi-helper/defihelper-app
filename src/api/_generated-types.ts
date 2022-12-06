@@ -7431,6 +7431,20 @@ export type TradeOrderFragmentFragment = {
                 'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
               >
             >
+            activate?: Maybe<
+              {
+                __typename?: 'SmartTradeSwapHandlerCallDataActivateType'
+              } & Pick<
+                SmartTradeSwapHandlerCallDataActivateType,
+                'amountOut' | 'direction'
+              >
+            >
+            stopLoss2?: Maybe<
+              { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
+                SwapHandlerCallDataRouteType,
+                'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
+              >
+            >
             takeProfit?: Maybe<
               { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
                 SwapHandlerCallDataRouteType,

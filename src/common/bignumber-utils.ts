@@ -109,4 +109,7 @@ export const bignumberUtils = {
   isNaN: (num?: string | number | null) => new BigNumber(num || 0).isNaN(),
   isZero: (num?: string | number | null) =>
     new BigNumber(num || 0).mod(num || 0).isZero(),
+
+  abs: (num?: string | number | null) =>
+    new BigNumber(num || 0).abs().toString(10),
 }

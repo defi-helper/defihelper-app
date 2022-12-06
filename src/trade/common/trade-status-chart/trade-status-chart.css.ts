@@ -139,3 +139,28 @@ export const positive = style({
 export const negative = style({
   color: theme.colors.common.red1,
 })
+
+export const takeProfit2line = style({
+  position: 'absolute',
+  top: 0,
+  background: theme.colors.common.green2,
+  width: 1,
+  height: 24,
+  zIndex: 2,
+})
+
+export const takeProfit2 = style([
+  fs12,
+  posa,
+  grey,
+  {
+    whiteSpace: 'nowrap',
+  },
+])
+
+export const takeProfit2Title = style([
+  fs12,
+  {
+    color: theme.colors.common.green2,
+  },
+])

@@ -663,7 +663,15 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                               buy={boughtPrice ?? undefined}
                               profit={currentPrice}
                               className={styles.contractStatus}
-                              moving={callDataWithBoughtPrice.stopLoss?.moving}
+                              stopLossMoving={
+                                callDataWithBoughtPrice.stopLoss?.moving
+                              }
+                              tralingTakeProfitMoving={
+                                callDataWithBoughtPrice.stopLoss2?.moving
+                              }
+                              tralingTakeProfit={
+                                callDataWithBoughtPrice.stopLoss2?.amountOut
+                              }
                               percent={bignumberUtils.toFixed(percent, 4)}
                             />
                           )}
