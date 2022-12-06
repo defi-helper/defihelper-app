@@ -614,10 +614,6 @@ export const Trade: React.VFC<TradeProps> = () => {
             className={clsx(
               styles.selectsBody,
               ((updating && !history) ||
-                (!config.IS_DEV &&
-                  !(
-                    [UserRoleEnum.UserSt, UserRoleEnum.Admin] as Array<string>
-                  ).includes(String(user?.role))) ||
                 !currentNetworkCorrect ||
                 !hasContract) &&
                 styles.selectsBodyBlur
