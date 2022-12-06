@@ -15,6 +15,7 @@ import { StakeRewardTokens } from '~/common/stake-reward-tokens'
 import { riskStatuses, riskIcons } from '~/invest/common/constants'
 import { AutostakingStakingContractsQuery } from '~/api'
 import * as styles from './invest-contract-card.css'
+import { CharIndicator } from '~/common/char-indicator'
 
 export type InvestContractCardProps = {
   className?: string
@@ -68,6 +69,20 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
       )}
       <Typography as="div" variant="body2" className={styles.contractCardName}>
         <Typography variant="inherit">{contract.name}</Typography>
+        <div>
+          <Dropdown
+            trigger="hover"
+            control={<CharIndicator color="red">S</CharIndicator>}
+          >
+            some text
+          </Dropdown>
+          <Dropdown
+            trigger="hover"
+            control={<CharIndicator color="green">A</CharIndicator>}
+          >
+            some text
+          </Dropdown>
+        </div>
         {isDesktop && (
           <span className={styles.contractCardIcons}>
             {networksConfig[contract.network]?.icon ? (

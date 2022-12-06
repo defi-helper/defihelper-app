@@ -6,6 +6,7 @@ import { Link as ReactRouterLink } from 'react-router-dom'
 import { Can } from '~/auth'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
+import { CharIndicator } from '~/common/char-indicator'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { StakeRewardTokens } from '~/common/stake-reward-tokens'
@@ -81,24 +82,37 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
       tabIndex={0}
     >
       <div className={styles.contractName}>
-        <Typography variant="body2" as="div">
-          {props.name}
-          {props.deprecated && (
-            <>
-              {' '}
-              - <span className={styles.grey}>deprecated</span>
-            </>
-          )}
-
-          <Can I="update" a="Protocol">
-            <br />
-            <StakingListRowSyncIndicator
-              row={{ ...props, ...props.scannerData }}
-              onContractRegister={props.onScannerRegister}
-            />
-          </Can>
-          {props.error}
-        </Typography>
+        <div className={styles.contactNameInner}>
+          <Typography variant="body2" as="div">
+            {props.name}
+            {props.deprecated && (
+              <>
+                {' '}
+                - <span className={styles.grey}>deprecated</span>
+              </>
+            )}
+            <Can I="update" a="Protocol">
+              <br />
+              <StakingListRowSyncIndicator
+                row={{ ...props, ...props.scannerData }}
+                onContractRegister={props.onScannerRegister}
+              />
+            </Can>
+            {props.error}
+          </Typography>
+          <Dropdown
+            trigger="hover"
+            control={<CharIndicator color="red">S</CharIndicator>}
+          >
+            some text
+          </Dropdown>
+          <Dropdown
+            trigger="hover"
+            control={<CharIndicator color="green">A</CharIndicator>}
+          >
+            some text
+          </Dropdown>
+        </div>
         {currentNetwork &&
           !isEmpty([...props.tokens.stake, ...props.tokens.reward]) && (
             <div className={styles.coinIcons}>
