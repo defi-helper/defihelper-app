@@ -11,6 +11,7 @@ export const root = style({
   width: 15,
   height: 15,
   fontSize: 12,
+  cursor: 'pointer',
 })
 
 export const colors = styleVariants({
