@@ -12,6 +12,7 @@ export const root = style({
   height: 15,
   fontSize: 12,
   cursor: 'pointer',
+  color: theme.colors.common.black1,
 })
 
 export const colors = styleVariants({
