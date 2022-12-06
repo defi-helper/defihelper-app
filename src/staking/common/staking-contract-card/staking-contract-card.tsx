@@ -85,6 +85,30 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
         <div className={styles.contactNameInner}>
           <Typography variant="body2" as="div">
             {props.name}
+            <sup>
+              <Dropdown
+                trigger="hover"
+                control={<CharIndicator color="red">S</CharIndicator>}
+              >
+                You can protect your investment in this pool with our
+                <br />
+                &apos;Stop-Loss&apos; feature. We will track the value of your
+                <br />
+                liquidity, and then remove and sell your LP tokens to the single
+                <br />
+                token when the price is lower than the threshold that you set.
+              </Dropdown>
+              <Dropdown
+                trigger="hover"
+                control={<CharIndicator color="green">A</CharIndicator>}
+              >
+                This pool has a built-in &apos;Auto-staking&apos; automation. It
+                <br />
+                helps you earn more by automatically adding your profits to the
+                <br />
+                deposit, effectively auto-compounding your interest.
+              </Dropdown>
+            </sup>
             {props.deprecated && (
               <>
                 {' '}
@@ -100,18 +124,6 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
             </Can>
             {props.error}
           </Typography>
-          <Dropdown
-            trigger="hover"
-            control={<CharIndicator color="red">S</CharIndicator>}
-          >
-            some text
-          </Dropdown>
-          <Dropdown
-            trigger="hover"
-            control={<CharIndicator color="green">A</CharIndicator>}
-          >
-            some text
-          </Dropdown>
         </div>
         {currentNetwork &&
           !isEmpty([...props.tokens.stake, ...props.tokens.reward]) && (
