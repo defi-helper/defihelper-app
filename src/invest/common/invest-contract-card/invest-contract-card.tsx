@@ -74,13 +74,18 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
             trigger="hover"
             control={<CharIndicator color="red">S</CharIndicator>}
           >
-            some text
+            You can protect your investment in this pool with our
+            &apos;Stop-Loss&apos; feature. We will track the value of your
+            liquidity, and then remove and sell your LP tokens to the single
+            token when the price is lower than the threshold that you set.
           </Dropdown>
           <Dropdown
             trigger="hover"
             control={<CharIndicator color="green">A</CharIndicator>}
           >
-            some text
+            This pool has a built-in &apos;Auto-staking&apos; automation. It
+            helps you earn more by automatically adding your profits to the
+            deposit, effectively auto-compounding your interest.
           </Dropdown>
         </div>
         {isDesktop && (
