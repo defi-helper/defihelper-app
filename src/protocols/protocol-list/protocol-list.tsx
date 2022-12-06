@@ -184,6 +184,9 @@ export const ProtocolList: React.VFC<ProtocolListProps> = () => {
           <Typography variant="body2" align="right" className={styles.profit}>
             My profit
           </Typography>
+          <Typography variant="body2" align="right" className={styles.profit}>
+            Risk
+          </Typography>
         </div>
         <ul className={styles.protocols}>
           {!loading && !protocolList?.length && userReady && (

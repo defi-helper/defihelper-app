@@ -61,7 +61,7 @@ export const protocols = style({
 
 export const proposalsHeader = style({
   alignItems: 'center',
-  gridTemplateColumns: '1fr 21% 16% 15% 18% 21%',
+  gridTemplateColumns: '1fr 21% 13% 12% 18% 19% 8%',
   color: theme.colors.textColorGrey,
   marginBottom: 8,
   display: 'none',
