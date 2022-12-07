@@ -7,9 +7,12 @@ export const riskStatuses = {
   [ContractRiskFactorEnum.NotCalculated]: '-',
 }
 
-export const riskIcons: Record<string, 'redRisk' | 'greenRisk' | 'yellowRisk'> =
-  {
-    [ContractRiskFactorEnum.High]: 'redRisk',
-    [ContractRiskFactorEnum.Low]: 'greenRisk',
-    [ContractRiskFactorEnum.Moderate]: 'yellowRisk',
-  }
+export const riskIcons: Record<
+  string,
+  'redRisk' | 'greenRisk' | 'yellowRisk' | 'greyRisk'
+> = {
+  [ContractRiskFactorEnum.NotCalculated]: 'greyRisk',
+  [ContractRiskFactorEnum.High]: 'redRisk',
+  [ContractRiskFactorEnum.Low]: 'greenRisk',
+  [ContractRiskFactorEnum.Moderate]: 'yellowRisk',
+}

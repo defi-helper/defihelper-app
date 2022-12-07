@@ -678,6 +678,13 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                       </>
                     )
 
+                  const profitUSD = bignumberUtils.mul(
+                    profit,
+                    order.price?.actualPrice[
+                      orderTokenOut?.token.address.toLowerCase() ?? ''
+                    ]?.usd_price
+                  )
+
                   return (
                     <TradeOrderDeposit
                       key={order.id}
@@ -952,6 +959,17 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                         })}
                                         as="div"
                                       >
+                                        {currentPrice && (
+                                          <>
+                                            {bignumberUtils.gt(percent, 0) &&
+                                              '+'}
+                                            {bignumberUtils.toFixed(
+                                              profitUSD,
+                                              4
+                                            )}
+                                            $ /
+                                          </>
+                                        )}{' '}
                                         {bignumberUtils.gt(percent, 0) && '+'}
                                         {bignumberUtils.toFixed(profit, 4)}
                                       </Typography>

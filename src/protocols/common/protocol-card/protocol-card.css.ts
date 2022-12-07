@@ -13,7 +13,7 @@ export const card = style({
 
   '@media': {
     [theme.mediaQueries.md()]: {
-      gridTemplateColumns: '1fr 21% 16% 15% 18% 21%',
+      gridTemplateColumns: '1fr 21% 13% 12% 18% 19% 8%',
       padding: 0,
     },
   },
@@ -65,6 +65,11 @@ export const label = style({
       display: 'none',
     },
   },
+})
+
+export const riskColumn = style({
+  textAlign: 'right',
+  marginRight: '18px',
 })
 
 export const value = style({

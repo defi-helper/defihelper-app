@@ -20,6 +20,16 @@ export const PROTOCOL_DETAIL = gql`
         myEarnedChange {
           day
         }
+        risk {
+          totalRate
+          reliabilityRate
+          profitabilityRate
+          volatilityRate
+          total
+          reliability
+          profitability
+          volatility
+        }
       }
       contractsDebank(
         filter: { hidden: $hidden }

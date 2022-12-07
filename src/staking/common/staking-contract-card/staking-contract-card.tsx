@@ -6,6 +6,7 @@ import { Link as ReactRouterLink } from 'react-router-dom'
 import { Can } from '~/auth'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
+import { CharIndicator } from '~/common/char-indicator'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
 import { StakeRewardTokens } from '~/common/stake-reward-tokens'
@@ -81,24 +82,49 @@ export const StakingContractCard: React.VFC<StakingContractCardProps> = (
       tabIndex={0}
     >
       <div className={styles.contractName}>
-        <Typography variant="body2" as="div">
-          {props.name}
-          {props.deprecated && (
-            <>
-              {' '}
-              - <span className={styles.grey}>deprecated</span>
-            </>
-          )}
-
-          <Can I="update" a="Protocol">
-            <br />
-            <StakingListRowSyncIndicator
-              row={{ ...props, ...props.scannerData }}
-              onContractRegister={props.onScannerRegister}
-            />
-          </Can>
-          {props.error}
-        </Typography>
+        <div className={styles.contactNameInner}>
+          <Typography variant="body2" as="div">
+            {props.name}
+            <sup>
+              <Dropdown
+                trigger="hover"
+                control={<CharIndicator color="red">S</CharIndicator>}
+              >
+                You can protect your investment in this pool with our
+                <br />
+                &apos;Stop-Loss&apos; feature. We will track the value of your
+                <br />
+                liquidity, and then remove and sell your LP tokens to the single
+                <br />
+                token when the price is lower than the threshold that you set.
+              </Dropdown>
+              <Dropdown
+                trigger="hover"
+                control={<CharIndicator color="green">A</CharIndicator>}
+              >
+                This pool has a built-in &apos;Auto-staking&apos; automation. It
+                <br />
+                helps you earn more by automatically adding your profits to the
+                <br />
+                deposit, effectively auto-compounding your interest.
+              </Dropdown>
+            </sup>
+            {props.deprecated && (
+              <>
+                {' '}
+                - <span className={styles.grey}>deprecated</span>
+              </>
+            )}
+            <Can I="update" a="Protocol">
+              <br />
+              <StakingListRowSyncIndicator
+                row={{ ...props, ...props.scannerData }}
+                onContractRegister={props.onScannerRegister}
+              />
+            </Can>
+            {props.error}
+          </Typography>
+        </div>
         {currentNetwork &&
           !isEmpty([...props.tokens.stake, ...props.tokens.reward]) && (
             <div className={styles.coinIcons}>

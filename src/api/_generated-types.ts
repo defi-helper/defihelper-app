@@ -5766,6 +5766,19 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
               MetricChangeType,
               'day'
             >
+            risk?: Maybe<
+              { __typename?: 'TokenMetricType' } & Pick<
+                TokenMetricType,
+                | 'totalRate'
+                | 'reliabilityRate'
+                | 'profitabilityRate'
+                | 'volatilityRate'
+                | 'total'
+                | 'reliability'
+                | 'profitability'
+                | 'volatility'
+              >
+            >
           }
         contractsDebank: { __typename?: 'ContractDebankListType' } & {
           list?: Maybe<
@@ -5875,7 +5888,21 @@ export type ProtocolListMetricsQuery = { __typename?: 'Query' } & {
               | 'myEarned'
               | 'myMinUpdatedAt'
               | 'myAPYBoost'
-            >
+            > & {
+                risk?: Maybe<
+                  { __typename?: 'TokenMetricType' } & Pick<
+                    TokenMetricType,
+                    | 'totalRate'
+                    | 'reliabilityRate'
+                    | 'profitabilityRate'
+                    | 'volatilityRate'
+                    | 'total'
+                    | 'reliability'
+                    | 'profitability'
+                    | 'volatility'
+                  >
+                >
+              }
           }
       >
     >
