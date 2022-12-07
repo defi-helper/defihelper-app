@@ -9,6 +9,7 @@ import { hasBoughtPrice, Order } from '~/trade/common/trade.types'
 import { Exchange, Pair } from '~/trade/common/trade.api'
 import { Paper } from '~/common/paper'
 import { NumericalInput } from '~/common/numerical-input'
+import { ButtonBase } from '~/common/button-base'
 import * as styles from './trade-edit-dialog.css'
 
 export type TradeEditDialogProps = {
@@ -30,6 +31,10 @@ export const TradeEditDialog: React.VFC<TradeEditDialogProps> = (props) => {
 
   const handleConfirm = () => {
     props.onConfirm(boughtPrice)
+  }
+
+  const handleChangePrice = () => {
+    setBoughtPrice(props.currentPrice ?? '0')
   }
 
   return (
@@ -92,13 +97,24 @@ export const TradeEditDialog: React.VFC<TradeEditDialogProps> = (props) => {
       </div>
       <div className={styles.row}>
         <Typography variant="body2">Current price</Typography>
-        <Typography variant="body2" as="div">
-          {props.currentPrice} BUSD
+        <Typography
+          as={ButtonBase}
+          variant="body2"
+          onClick={handleChangePrice}
+          className={styles.currentPrice}
+        >
+          {props.currentPrice ?? '0'} BUSD
         </Typography>
       </div>
-      <Button color="green" onClick={handleConfirm} className={styles.button}>
-        Confirm
-      </Button>
+      <div className={styles.button}>
+        <Button
+          color="green"
+          onClick={handleConfirm}
+          className={styles.buttonInner}
+        >
+          Confirm
+        </Button>
+      </div>
     </Dialog>
   )
 }

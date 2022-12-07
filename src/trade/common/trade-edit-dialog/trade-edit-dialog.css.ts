@@ -35,6 +35,10 @@ export const button = style({
   marginTop: 'auto',
 })
 
+export const buttonInner = style({
+  width: '100%',
+})
+
 export const contractName = style({
   display: 'flex',
   alignItems: 'center',
@@ -67,3 +71,8 @@ export const contractUnknownTokenIcon = style([
     background: theme.colors.background,
   },
 ])
+
+export const currentPrice = style({
+  color: theme.colors.common.blue1,
+  justifyContent: 'flex-start',
+})

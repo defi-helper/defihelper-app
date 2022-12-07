@@ -102,13 +102,15 @@ export const TradeConfirmClaimDialog: React.VFC<TradeConfirmClaimDialogProps> =
             {props.trailingStopLoss ? 'on' : 'off'}
           </Typography>
         </div>
-        <Button
-          color="green"
-          onClick={props.onConfirm}
-          className={styles.button}
-        >
-          Confirm
-        </Button>
+        <div className={styles.button}>
+          <Button
+            color="green"
+            onClick={props.onConfirm}
+            className={styles.buttonInner}
+          >
+            Confirm
+          </Button>
+        </div>
       </Dialog>
     )
   }
