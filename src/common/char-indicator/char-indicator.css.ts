@@ -8,9 +8,9 @@ export const root = style({
   justifyContent: 'center',
   borderRadius: 5,
   padding: 5,
-  width: 15,
-  height: 15,
-  fontSize: 12,
+  width: 13,
+  height: 13,
+  fontSize: 10,
   cursor: 'pointer',
   color: theme.colors.common.black1,
 })

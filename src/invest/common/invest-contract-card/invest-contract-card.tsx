@@ -68,26 +68,33 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
         </div>
       )}
       <Typography as="div" variant="body2" className={styles.contractCardName}>
-        <Typography variant="inherit">{contract.name}</Typography>
-        <div>
-          <Dropdown
-            trigger="hover"
-            control={<CharIndicator color="red">S</CharIndicator>}
-          >
-            You can protect your investment in this pool with our
-            &apos;Stop-Loss&apos; feature. We will track the value of your
-            liquidity, and then remove and sell your LP tokens to the single
-            token when the price is lower than the threshold that you set.
-          </Dropdown>
-          <Dropdown
-            trigger="hover"
-            control={<CharIndicator color="green">A</CharIndicator>}
-          >
-            This pool has a built-in &apos;Auto-staking&apos; automation. It
-            helps you earn more by automatically adding your profits to the
-            deposit, effectively auto-compounding your interest.
-          </Dropdown>
-        </div>
+        <Typography variant="inherit">
+          {contract.name}{' '}
+          <sup>
+            <Dropdown
+              trigger="hover"
+              control={<CharIndicator color="red">S</CharIndicator>}
+            >
+              You can protect your investment in this pool with our
+              <br />
+              &apos;Stop-Loss&apos; feature. We will track the value of your
+              <br />
+              liquidity, and then remove and sell your LP tokens to the single
+              <br />
+              token when the price is lower than the threshold that you set.
+            </Dropdown>
+            <Dropdown
+              trigger="hover"
+              control={<CharIndicator color="green">A</CharIndicator>}
+            >
+              This pool has a built-in &apos;Auto-staking&apos; automation. It
+              <br />
+              helps you earn more by automatically adding your profits to the
+              <br />
+              deposit, effectively auto-compounding your interest.
+            </Dropdown>
+          </sup>
+        </Typography>
         {isDesktop && (
           <span className={styles.contractCardIcons}>
             {networksConfig[contract.network]?.icon ? (
