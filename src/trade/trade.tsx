@@ -62,7 +62,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const [currentSelect, setCurrentSelect] = useState(Selects.SmartSell)
   const [currentTab, setCurrentTab] = useState(0)
   const [currentExchange, setCurrentExchange] = useState('')
-  const [currentPair, setCurrentPair] = useState(pairQuery ?? '')
+  const [currentPair, setCurrentPair] = useState('')
   const [currentWalletAddress, setCurrentWalletAddress] = useState<
     string | undefined
   >(undefined)
@@ -144,12 +144,25 @@ export const Trade: React.VFC<TradeProps> = () => {
     return () => model.reset()
   }, [])
 
+  const correctWallets = useMemo(
+    () => wallets.filter(({ network }) => network in model.networks),
+    [wallets]
+  )
+
+  const walletMap = useMemo(
+    () =>
+      correctWallets.reduce((acc, correctWallet) => {
+        acc.set(correctWallet.id, correctWallet)
+
+        return acc
+      }, new Map<string, typeof correctWallets[number]>()),
+    [correctWallets]
+  )
+
+  const selectedWallet = walletMap.get(currentWalletAddress ?? '')
+
   useEffect(() => {
     if (!currentWallet) return
-
-    const correctWallets = wallets.filter(({ network }) =>
-      Boolean(model.networks[network])
-    )
 
     const findedWallet = correctWallets.find(({ network, address }) => {
       return (
@@ -163,22 +176,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     const walletId = findedWallet?.id
 
     setCurrentWalletAddress(walletId)
-  }, [wallets, currentWallet])
-
-  useEffect(() => {
-    const [firstExchange] = exchanges
-
-    if (!firstExchange || loadingExchanges || exchangeQuery) return
-
-    setCurrentExchange(firstExchange.Name)
-  }, [exchanges, loadingExchanges, exchangeQuery])
-  useEffect(() => {
-    const [firstPair] = pairs
-
-    if (!firstPair || loadingPairs || pairQuery) return
-
-    setCurrentPair(firstPair.pairInfo?.address ?? '')
-  }, [pairs, loadingPairs, pairQuery])
+  }, [wallets, currentWallet, correctWallets])
 
   const pairMap = useMemo(
     () =>
@@ -189,6 +187,18 @@ export const Trade: React.VFC<TradeProps> = () => {
       }, new Map<string, typeof pairs[number]>()),
     [pairs]
   )
+
+  useEffect(() => {
+    const [firstPair] = pairs
+
+    if (!firstPair || loadingPairs) return
+
+    if (pairQuery && pairMap.has(pairQuery)) {
+      setCurrentPair(pairQuery ?? '')
+    } else {
+      setCurrentPair(firstPair.pairInfo?.address ?? '')
+    }
+  }, [pairs, loadingPairs, pairMap, pairQuery])
 
   const currentPairObj = useMemo(
     () => pairMap.get(currentPair),
@@ -211,14 +221,20 @@ export const Trade: React.VFC<TradeProps> = () => {
   )
 
   useEffect(() => {
-    if (!exchangeQuery) return
+    const [firstExchange] = exchanges
 
-    const exchange = exchangesMap.get(exchangeQuery)
+    if (!firstExchange || loadingExchanges) return
 
-    if (!exchange) return
+    if (exchangeQuery && exchangesMap.has(exchangeQuery)) {
+      const exchange = exchangesMap.get(exchangeQuery)
 
-    setCurrentExchange(exchange.Name)
-  }, [exchangeQuery, exchangesMap])
+      if (!exchange) return
+
+      setCurrentExchange(exchange.Name)
+    } else {
+      setCurrentExchange(firstExchange.Name)
+    }
+  }, [exchanges, loadingExchanges, exchangeQuery, exchangesMap])
 
   useEffect(() => {
     if (!currentPair || !currentExchangeObj || !wallet) return
@@ -357,7 +373,9 @@ export const Trade: React.VFC<TradeProps> = () => {
 
   const hasContract =
     'SmartTradeRouter' in
-    (contracts[currentWallet?.chainId as keyof typeof contracts] ?? {})
+      (contracts[currentWallet?.chainId as keyof typeof contracts] ?? {}) &&
+    'SmartTradeRouter' in
+      (contracts[selectedWallet?.network as keyof typeof contracts] ?? {})
 
   const handleSearchPair = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchPair(event.target.value)

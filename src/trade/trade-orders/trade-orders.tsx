@@ -626,6 +626,40 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     bignumberUtils.mul(tokensAmountInOut, boughtPrice)
                   )
 
+                  const statusWidget = (
+                    <>
+                      {callDataWithBoughtPrice &&
+                        [
+                          SmartTradeOrderStatusEnum.Pending,
+                          SmartTradeOrderStatusEnum.Processed,
+                        ].includes(order.status) && (
+                          <TradeStatusChart
+                            stopLoss={bignumberUtils.div(
+                              callDataWithBoughtPrice.stopLoss?.amountOut,
+                              callDataWithBoughtPrice.amountIn
+                            )}
+                            takeProfit={bignumberUtils.div(
+                              callDataWithBoughtPrice.takeProfit?.amountOut,
+                              callDataWithBoughtPrice.amountIn
+                            )}
+                            buy={boughtPrice ?? undefined}
+                            profit={currentPrice}
+                            className={styles.contractStatus}
+                            stopLossMoving={
+                              callDataWithBoughtPrice.stopLoss?.moving
+                            }
+                            tralingTakeProfitMoving={
+                              callDataWithBoughtPrice.stopLoss2?.moving
+                            }
+                            tralingTakeProfit={
+                              callDataWithBoughtPrice.stopLoss2?.amountOut
+                            }
+                            percent={bignumberUtils.toFixed(percent, 4)}
+                          />
+                        )}
+                    </>
+                  )
+
                   const claimButton =
                     (order.status === SmartTradeOrderStatusEnum.Succeeded &&
                       !order.claim) ||
@@ -645,37 +679,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                         </Button>
                       </WalletConnect>
                     ) : (
-                      <>
-                        {callDataWithBoughtPrice &&
-                          [
-                            SmartTradeOrderStatusEnum.Pending,
-                            SmartTradeOrderStatusEnum.Processed,
-                          ].includes(order.status) && (
-                            <TradeStatusChart
-                              stopLoss={bignumberUtils.div(
-                                callDataWithBoughtPrice.stopLoss?.amountOut,
-                                callDataWithBoughtPrice.amountIn
-                              )}
-                              takeProfit={bignumberUtils.div(
-                                callDataWithBoughtPrice.takeProfit?.amountOut,
-                                callDataWithBoughtPrice.amountIn
-                              )}
-                              buy={boughtPrice ?? undefined}
-                              profit={currentPrice}
-                              className={styles.contractStatus}
-                              stopLossMoving={
-                                callDataWithBoughtPrice.stopLoss?.moving
-                              }
-                              tralingTakeProfitMoving={
-                                callDataWithBoughtPrice.stopLoss2?.moving
-                              }
-                              tralingTakeProfit={
-                                callDataWithBoughtPrice.stopLoss2?.amountOut
-                              }
-                              percent={bignumberUtils.toFixed(percent, 4)}
-                            />
-                          )}
-                      </>
+                      statusWidget
                     )
 
                   const profitUSD = bignumberUtils.mul(
@@ -834,6 +838,9 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                             </div>
                           </div>
                           <div>
+                            {order.status ===
+                              SmartTradeOrderStatusEnum.Processed &&
+                              statusWidget}
                             {order.closed &&
                               order.status ===
                                 SmartTradeOrderStatusEnum.Succeeded && (
@@ -1090,7 +1097,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                                     </WalletConnect>
                                     <ButtonBase
                                       onClick={() => {
-                                        handleEnterBoughtPrice(order)
+                                        handleEnterBoughtPrice(
+                                          order,
+                                          currentPrice
+                                        )()
 
                                         close()
                                       }}

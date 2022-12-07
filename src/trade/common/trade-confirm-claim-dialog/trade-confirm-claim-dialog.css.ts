@@ -16,8 +16,8 @@ export const title = style({
 
 export const row = style({
   display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  maxWidth: 284,
+  gridTemplateColumns: '150px 1fr',
+  alignItems: 'center',
   gap: 10,
 
   selectors: {
@@ -33,6 +33,10 @@ globalStyle(`${row} > *:first-child`, {
 
 export const button = style({
   marginTop: 'auto',
+})
+
+export const buttonInner = style({
+  width: '100%',
 })
 
 export const contractName = style({
