@@ -10,6 +10,7 @@ import notification from '~/assets/images/notification.png'
 import { dateUtils } from '~/common/date-utils'
 import { pluralize } from '~/common/pluralize'
 import { useOnUserContactActivated } from '~/settings/common'
+import { CanDemo } from '~/auth/can-demo'
 import * as authModel from '~/auth/auth.model'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './settings-telegram.css'
@@ -77,15 +78,17 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
         )}
       </Typography>
       <div className={styles.buttons}>
-        <Button
-          size="small"
-          color="primary"
-          variant="contained"
-          className={styles.button}
-          onClick={handleOpenTelegram}
-        >
-          Connect telegram
-        </Button>
+        <CanDemo>
+          <Button
+            size="small"
+            color="primary"
+            variant="contained"
+            className={styles.button}
+            onClick={handleOpenTelegram}
+          >
+            Connect telegram
+          </Button>
+        </CanDemo>
       </div>
     </Paper>
   )

@@ -60,17 +60,19 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
           </Typography>
         </div>
         <div>
-          <Button
-            color="blue"
-            onClick={props.onConnect}
-            className={styles.connectPrimaryButton}
-          >
-            Connect
-            <Icon
-              icon={props.type === 'email' ? 'email' : 'telegram'}
-              className={styles.icon}
-            />
-          </Button>
+          <CanDemo>
+            <Button
+              color="blue"
+              onClick={props.onConnect}
+              className={styles.connectPrimaryButton}
+            >
+              Connect
+              <Icon
+                icon={props.type === 'email' ? 'email' : 'telegram'}
+                className={styles.icon}
+              />
+            </Button>
+          </CanDemo>
         </div>
       </Paper>
     )
