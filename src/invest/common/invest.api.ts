@@ -108,8 +108,14 @@ export const investApi = {
         variables,
       })
       .then(({ data }) => {
-        const groupedTags = (data?.tags ?? []).reduce<
-          Record<string, Exclude<typeof data, null | undefined>['tags']>
+        const groupedTags = (data?.tags.list ?? []).reduce<
+          Record<
+            string,
+            Exclude<
+              Exclude<typeof data, null | undefined>['tags']['list'],
+              null | undefined
+            >
+          >
         >((acc, tag) => {
           acc[tag.type] = [...(acc[tag.type] ?? []), tag]
 
