@@ -17,15 +17,19 @@ export const row = style({
     [theme.mediaQueries.md()]: {
       display: 'grid',
       gap: 30,
-      gridTemplateColumns: '13% 12% 9% 8% 15% 12% 5% 7%',
       alignItems: 'center',
       padding: '20px 16px',
+      gridTemplateColumns: '13% 13% 9% 9% 9% 9% 4% 10%',
 
       selectors: {
         '&:not(:last-child)': {
           borderBottom: `1px solid ${theme.colors.border}`,
         },
       },
+    },
+
+    [theme.mediaQueries.lg()]: {
+      gridTemplateColumns: '13% 12% 9% 8% 15% 12% 5% 7%',
     },
   },
 })

@@ -30,13 +30,13 @@ export const content = style({
   display: 'grid',
   gap: 24,
   marginBottom: 24,
-  maxHeight: 731,
 
   '@media': {
-    [theme.mediaQueries.lg()]: {
+    [theme.mediaQueries.md()]: {
       gridTemplateColumns: '1fr 1fr 1fr',
       columnGap: 24,
       rowGap: 12,
+      maxHeight: 731,
     },
   },
 })
@@ -45,7 +45,7 @@ export const chart = style({
   padding: '10px 8px',
 
   '@media': {
-    [theme.mediaQueries.lg()]: {
+    [theme.mediaQueries.md()]: {
       padding: '8px 16px',
       gridColumnStart: 1,
       gridColumnEnd: 3,
