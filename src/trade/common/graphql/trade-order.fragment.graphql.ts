@@ -35,22 +35,33 @@ export const TRADE_ORDER_FRAGMENT = gql`
           amountOutMin
           slippage
           moving
-        }
-        activate {
-          amountOut
-          direction
+          activation {
+            amountOut
+            direction
+            activated
+          }
         }
         stopLoss2 {
           amountOut
           amountOutMin
           slippage
           moving
+          activation {
+            amountOut
+            direction
+            activated
+          }
         }
         takeProfit {
           amountOut
           amountOutMin
           slippage
           moving
+          activation {
+            amountOut
+            direction
+            activated
+          }
         }
       }
     }

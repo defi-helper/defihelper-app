@@ -2624,12 +2624,6 @@ export type SmartTradeOrderType = {
   createdAt: Scalars['DateTimeType']
 }
 
-export type SmartTradeSwapHandlerCallDataActivateType = {
-  __typename?: 'SmartTradeSwapHandlerCallDataActivateType'
-  amountOut: Scalars['BigNumberType']
-  direction: SwapOrderCallDataDirectionEnum
-}
-
 export type SmartTradeSwapHandlerCallDataType = {
   __typename?: 'SmartTradeSwapHandlerCallDataType'
   exchange: Scalars['EthereumAddressType']
@@ -2641,7 +2635,6 @@ export type SmartTradeSwapHandlerCallDataType = {
   stopLoss?: Maybe<SwapHandlerCallDataRouteType>
   stopLoss2?: Maybe<SwapHandlerCallDataRouteType>
   takeProfit?: Maybe<SwapHandlerCallDataRouteType>
-  activate?: Maybe<SmartTradeSwapHandlerCallDataActivateType>
   deadline: Scalars['Int']
 }
 
@@ -2656,12 +2649,10 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   tokenInDecimals: Scalars['Int']
   tokenOutDecimals: Scalars['Int']
   amountIn: Scalars['BigNumberType']
-  amountOut: Scalars['BigNumberType']
   boughtPrice?: Maybe<Scalars['BigNumberType']>
   stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
   stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
   takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
-  activate?: Maybe<SwapOrderCallDataActivateInputType>
   /** Deadline seconds */
   deadline: Scalars['Int']
 }
@@ -2689,11 +2680,9 @@ export type SmartTradeSwapOrderSetBoughtPriceInputType = {
 }
 
 export type SmartTradeSwapOrderUpdateCallDataInputType = {
-  amountOut: Scalars['BigNumberType']
   stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
   stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
   takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
-  activate?: Maybe<SwapOrderCallDataActivateInputType>
   /** Deadline seconds */
   deadline: Scalars['Int']
 }
@@ -2897,17 +2886,20 @@ export type SubscriptionOnSmartTradeOrderUpdatedArgs = {
   filter?: Maybe<OnOrderStatusChangedFilterInputType>
 }
 
+export type SwapHandlerCallDataRouteActivationType = {
+  __typename?: 'SwapHandlerCallDataRouteActivationType'
+  amountOut: Scalars['BigNumberType']
+  direction: SwapOrderCallDataDirectionEnum
+  activated: Scalars['Boolean']
+}
+
 export type SwapHandlerCallDataRouteType = {
   __typename?: 'SwapHandlerCallDataRouteType'
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
   moving: Scalars['Boolean']
-}
-
-export type SwapOrderCallDataActivateInputType = {
-  amountOut: Scalars['BigNumberType']
-  direction: SwapOrderCallDataDirectionEnum
+  activation?: Maybe<SwapHandlerCallDataRouteActivationType>
 }
 
 export enum SwapOrderCallDataDirectionEnum {
@@ -2917,17 +2909,24 @@ export enum SwapOrderCallDataDirectionEnum {
   Lt = 'lt',
 }
 
+export type SwapOrderCallDataRouteActivationInputType = {
+  amountOut: Scalars['BigNumberType']
+  direction: SwapOrderCallDataDirectionEnum
+}
+
 export type SwapOrderCallDataStopLossInputType = {
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
-  moving: Scalars['Boolean']
   slippage: Scalars['Float']
+  moving?: Maybe<Scalars['BigNumberType']>
+  activation?: Maybe<SwapOrderCallDataRouteActivationInputType>
 }
 
 export type SwapOrderCallDataTakeProfitInputType = {
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
+  activation?: Maybe<SwapOrderCallDataRouteActivationInputType>
 }
 
 export type TagType = {
@@ -7491,27 +7490,46 @@ export type TradeOrderFragmentFragment = {
               { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
                 SwapHandlerCallDataRouteType,
                 'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
-              >
-            >
-            activate?: Maybe<
-              {
-                __typename?: 'SmartTradeSwapHandlerCallDataActivateType'
-              } & Pick<
-                SmartTradeSwapHandlerCallDataActivateType,
-                'amountOut' | 'direction'
-              >
+              > & {
+                  activation?: Maybe<
+                    {
+                      __typename?: 'SwapHandlerCallDataRouteActivationType'
+                    } & Pick<
+                      SwapHandlerCallDataRouteActivationType,
+                      'amountOut' | 'direction' | 'activated'
+                    >
+                  >
+                }
             >
             stopLoss2?: Maybe<
               { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
                 SwapHandlerCallDataRouteType,
                 'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
-              >
+              > & {
+                  activation?: Maybe<
+                    {
+                      __typename?: 'SwapHandlerCallDataRouteActivationType'
+                    } & Pick<
+                      SwapHandlerCallDataRouteActivationType,
+                      'amountOut' | 'direction' | 'activated'
+                    >
+                  >
+                }
             >
             takeProfit?: Maybe<
               { __typename?: 'SwapHandlerCallDataRouteType' } & Pick<
                 SwapHandlerCallDataRouteType,
                 'amountOut' | 'amountOutMin' | 'slippage' | 'moving'
-              >
+              > & {
+                  activation?: Maybe<
+                    {
+                      __typename?: 'SwapHandlerCallDataRouteActivationType'
+                    } & Pick<
+                      SwapHandlerCallDataRouteActivationType,
+                      'amountOut' | 'direction' | 'activated'
+                    >
+                  >
+                }
             >
           })
     lastCall?: Maybe<

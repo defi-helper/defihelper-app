@@ -27,13 +27,12 @@ import { Icon } from '~/common/icon'
 import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
 import { useDialog } from '~/common/dialog'
 import { Exchange, Pair } from '~/trade/common/trade.api'
+import { hasBoughtPrice } from '~/trade/common/trade.types'
+import { toastsService } from '~/toasts'
+import { Can } from '~/auth'
 import * as tradeOrdersModel from '~/trade/trade-orders/trade-orders.model'
 import * as model from './trade-smart-sell.model'
 import * as styles from './trade-smart-sell.css'
-import { hasBoughtPrice } from '../common/trade.types'
-import { toastsService } from '~/toasts'
-import { SwapOrderCallDataDirectionEnum } from '~/api'
-import { Can } from '~/auth'
 
 export type TradeSmartSellProps = {
   className?: string
@@ -184,18 +183,29 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         formValues.takeProfitValue
       )
 
+      const stopLossAmountOut = bignumberUtils.mul(
+        formValues.unit,
+        formValues.stopLossValue
+      )
+
+      const stopLoss2AmountOut = bignumberUtils.mul(
+        takeProfitAmountOut,
+        formValues.followMaxPrice
+      )
+
       const result = await props.swap?.createOrder(
         props.exchangeAddress,
         path,
         formValues.unit,
         formValues.stopLoss
           ? {
-              amountOut: bignumberUtils.mul(
-                formValues.unit,
-                formValues.stopLossValue
-              ),
+              amountOut: stopLossAmountOut,
               slippage: '100',
-              moving: formValues.trailingStopLoss,
+              moving: bignumberUtils.minus(
+                bignumberUtils.mul(price.value, formValues.unit),
+                stopLossAmountOut
+              ),
+              activation: null,
             }
           : null,
         formValues.trailingTakeProfit
@@ -211,19 +221,32 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 )
               ),
               slippage: '100',
-              moving: formValues.trailingTakeProfit,
+              moving: bignumberUtils.minus(
+                takeProfitAmountOut,
+                stopLoss2AmountOut
+              ),
+              activation: formValues.trailingTakeProfit
+                ? {
+                    amountOut: takeProfitAmountOut,
+                    direction: 'gt',
+                  }
+                : null,
             }
           : null,
         formValues.takeProfit && !formValues.trailingTakeProfit
           ? {
-              amountOut: takeProfitAmountOut,
+              amountOut: bignumberUtils.minus(
+                takeProfitAmountOut,
+                bignumberUtils.mul(
+                  takeProfitAmountOut,
+                  bignumberUtils.div(
+                    bignumberUtils.abs(formValues.followMaxPrice),
+                    100
+                  )
+                )
+              ),
               slippage: props.slippage,
-            }
-          : null,
-        formValues.trailingTakeProfit
-          ? {
-              amountOut: takeProfitAmountOut,
-              direction: 'gt',
+              activation: null,
             }
           : null,
         {}
@@ -247,14 +270,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
           tokenInDecimals: result.callData.tokenInDecimals,
           tokenOutDecimals: result.callData.tokenOutDecimals,
           amountIn: result.callData.amountIn,
-          amountOut: result.callData.amountOut,
-          activate: result.callData.activate
-            ? {
-                amountOut: result.callData.activate.amountOut,
-                direction: result.callData.activate
-                  .direction as SwapOrderCallDataDirectionEnum,
-              }
-            : null,
           stopLoss: result.callData.stopLoss
             ? {
                 amountOut: result.callData.stopLoss.amountOut,
@@ -333,26 +348,43 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         formValues.takeProfitValue
       )
 
+      const stopLossAmountOut = bignumberUtils.mul(
+        formValues.unit,
+        formValues.stopLossValue
+      )
+
+      const stopLoss2AmountOut = bignumberUtils.mul(
+        takeProfitAmountOut,
+        formValues.followMaxPrice
+      )
+
       const result = await props.swap.updateOrder(
         editingOrder.number,
         formValues.stopLoss
           ? {
-              amountOut: bignumberUtils.mul(
-                formValues.unit,
-                formValues.stopLossValue
-              ),
+              amountOut: stopLossAmountOut,
               slippage: '100',
-              moving: formValues.trailingStopLoss,
+              moving: bignumberUtils.minus(
+                bignumberUtils.mul(price.value, formValues.unit),
+                stopLossAmountOut
+              ),
+              activation: null,
             }
           : null,
         formValues.trailingTakeProfit
           ? {
-              amountOut: bignumberUtils.mul(
-                takeProfitAmountOut,
-                formValues.followMaxPrice
-              ),
+              amountOut: stopLoss2AmountOut,
               slippage: '100',
-              moving: formValues.trailingTakeProfit,
+              moving: bignumberUtils.minus(
+                takeProfitAmountOut,
+                stopLoss2AmountOut
+              ),
+              activation: formValues.trailingTakeProfit
+                ? {
+                    amountOut: takeProfitAmountOut,
+                    direction: 'gt',
+                  }
+                : null,
             }
           : null,
         formValues.takeProfit && !formValues.trailingTakeProfit
@@ -368,12 +400,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 )
               ),
               slippage: props.slippage,
-            }
-          : null,
-        formValues.trailingTakeProfit
-          ? {
-              amountOut: takeProfitAmountOut,
-              direction: 'gt',
+              activation: null,
             }
           : null
       )
@@ -389,7 +416,6 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         input: {
           callDataRaw: result.callDataRaw,
           callData: {
-            amountOut: result.callData.amountOut,
             stopLoss: result.callData.stopLoss
               ? {
                   amountOut: result.callData.stopLoss.amountOut,
