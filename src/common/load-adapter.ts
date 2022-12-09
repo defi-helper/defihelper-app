@@ -66,6 +66,35 @@ export type SmartTradeRouter = {
   }
 }
 
+type Direction = 'gt' | 'lt'
+
+type RouteActivation = {
+  amountOut: string
+  direction: Direction
+}
+
+type Route = {
+  amountOut: string
+  slippage: string
+  amountOutMin: string
+  moving: string | null
+  direction: Direction
+  activation: RouteActivation | null
+}
+
+type StopLoss = {
+  amountOut: string
+  slippage: string | number
+  moving: string | null
+  activation: RouteActivation | null
+}
+
+type TakeProfit = {
+  amountOut: string
+  slippage: string | number
+  activation: RouteActivation | null
+}
+
 export type SmartTradeSwapHandler = {
   name: 'DFHSmartTradeSwapHandler'
   methods: {
@@ -89,24 +118,9 @@ export type SmartTradeSwapHandler = {
       exchangeAddress: string,
       path: string[],
       amountIn: string,
-      stopLoss: {
-        amountOut: string
-        slippage: string | number
-        moving: boolean
-      } | null,
-      stopLoss2: {
-        amountOut: string
-        slippage: string | number
-        moving: boolean
-      } | null,
-      takeProfit: {
-        amountOut: string
-        slippage: string | number
-      } | null,
-      activate: {
-        amountOut: string
-        direction: 'gt' | 'lt'
-      } | null,
+      stopLoss: StopLoss | null,
+      stopLoss2: StopLoss | null,
+      takeProfit: TakeProfit | null,
       deposit: {
         native?: string
       }
@@ -121,85 +135,24 @@ export type SmartTradeSwapHandler = {
         tokenInDecimals: number
         tokenOutDecimals: number
         amountIn: string
-        amountOut: string
-        stopLoss: {
-          amountOut: string
-          slippage: string
-          amountOutMin: string
-          moving: boolean
-          direction: 'gt' | 'lt'
-        } | null
-        takeProfit: {
-          amountOut: string
-          slippage: string
-          amountOutMin: string
-          moving: boolean
-          direction: 'gt' | 'lt'
-        } | null
-        stopLoss2: {
-          amountOut: string
-          slippage: string
-          amountOutMin: string
-          moving: boolean
-          direction: 'gt' | 'lt'
-        } | null
-        activate: {
-          amountOut: string
-          direction: 'gt' | 'lt'
-        } | null
+        stopLoss: Route | null
+        takeProfit: Route | null
+        stopLoss2: Route | null
       }
       getOrderNumber: () => Promise<string>
     }>
     updateOrder(
       orderId: string,
-      stopLoss: {
-        amountOut: string
-        slippage: string | number
-        moving: boolean
-      } | null,
-      stopLoss2: {
-        amountOut: string
-        slippage: string | number
-        moving: boolean
-      } | null,
-      takeProfit: {
-        amountOut: string
-        slippage: string | number
-      } | null,
-      activate: {
-        amountOut: string
-        direction: 'gt' | 'lt'
-      } | null
+      stopLoss: StopLoss | null,
+      stopLoss2: StopLoss | null,
+      takeProfit: TakeProfit | null
     ): Promise<{
       tx: Transaction
       callDataRaw: string
       callData: {
-        amountOut: string
-        stopLoss: {
-          amountOut: string
-          slippage: string
-          amountOutMin: string
-          moving: boolean
-          direction: 'gt' | 'lt'
-        } | null
-        takeProfit: {
-          amountOut: string
-          slippage: string
-          amountOutMin: string
-          moving: boolean
-          direction: 'gt' | 'lt'
-        } | null
-        stopLoss2: {
-          amountOut: string
-          slippage: string
-          amountOutMin: string
-          moving: boolean
-          direction: 'gt' | 'lt'
-        } | null
-        activate: {
-          amountOut: string
-          direction: 'gt' | 'lt'
-        } | null
+        stopLoss: Route | null
+        takeProfit: Route | null
+        stopLoss2: Route | null
       }
     }>
   }
