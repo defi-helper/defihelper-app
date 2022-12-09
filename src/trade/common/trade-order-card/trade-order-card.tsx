@@ -270,7 +270,14 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
           </div>
         </div>
         <div>
-          {order.status === SmartTradeOrderStatusEnum.Processed && statusWidget}
+          {order.status === SmartTradeOrderStatusEnum.Processed && (
+            <>
+              {statusWidget}
+              <Typography variant="body3" className={styles.processing}>
+                Order is processing
+              </Typography>
+            </>
+          )}
           {order.closed &&
             order.status === SmartTradeOrderStatusEnum.Succeeded && (
               <div className={styles.claim}>
