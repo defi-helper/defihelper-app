@@ -20,6 +20,13 @@ export const status = style([
   },
 ])
 
+export const processing = style([
+  fs12,
+  {
+    marginTop: 47,
+  },
+])
+
 export const tableRow = style({
   position: 'relative',
 
