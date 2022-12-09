@@ -65,6 +65,10 @@ export const table = style({
   '@media': {
     [theme.mediaQueries.md()]: {
       background: theme.colors.paper,
+      minWidth: 927,
+    },
+
+    [theme.mediaQueries.lg()]: {
       minWidth: 1100,
     },
   },
@@ -80,11 +84,17 @@ export const row = style([
     alignItems: 'center',
     gap: 30,
     display: 'grid',
-    gridTemplateColumns: '13% 12% 9% 8% 15% 12% 5% 7%',
+    gridTemplateColumns: '13% 13% 9% 9% 9% 9% 4% 10%',
 
     selectors: {
       '&:not(:last-child)': {
         borderBottom: `1px solid ${theme.colors.border}`,
+      },
+    },
+
+    '@media': {
+      [theme.mediaQueries.lg()]: {
+        gridTemplateColumns: '13% 12% 9% 8% 15% 12% 5% 7%',
       },
     },
   },

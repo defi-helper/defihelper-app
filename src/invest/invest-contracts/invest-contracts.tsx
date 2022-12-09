@@ -431,7 +431,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
                 })}
                 className="real_apy"
               >
-                7D Performance{' '}
+                7D Perf.{' '}
                 {sortBy.column ===
                   ContractListSortInputTypeColumnEnum.AprWeekReal &&
                   sortIcon(
@@ -455,7 +455,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
                 })}
                 className={styles.apyBoost}
               >
-                APY Boost{' '}
+                Boost{' '}
                 {sortBy.column ===
                   ContractListSortInputTypeColumnEnum.AprBoosted &&
                   sortIcon(

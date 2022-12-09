@@ -10,6 +10,14 @@ export const root = style({
   },
 })
 
+export const hidden = style({
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      width: 'calc(100% - 57px)',
+    },
+  },
+})
+
 export const content = style({
   maxWidth: 1136,
   width: '100%',

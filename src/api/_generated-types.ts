@@ -2324,7 +2324,7 @@ export type Query = {
   monitoringProtocolEarningsHistory: Array<MonitoringStatisticsEarningsPointType>
   monitoringTelegramContactsHistory: Array<MonitoringStatisticsEarningsPointType>
   smartTradeOrders: SmartTradeOrderListQuery
-  tags: Array<TagType>
+  tags: TagsListQuery
 }
 
 export type QueryMeArgs = {
@@ -2479,6 +2479,11 @@ export type QuerySmartTradeOrdersArgs = {
   filter?: Maybe<SmartTradeOrderListFilterInputType>
   sort?: Maybe<Array<SmartTradeOrderListSortInputType>>
   pagination?: Maybe<SmartTradeOrderListPaginationInputType>
+}
+
+export type QueryTagsArgs = {
+  sort?: Maybe<Array<TagsListSortInputType>>
+  pagination?: Maybe<TagsListPaginationInputType>
 }
 
 export type RestakeCalculatorType = {
@@ -2936,6 +2941,30 @@ export enum TagTypeEnum {
   Tvl = 'tvl',
   Risk = 'risk',
   PoolType = 'poolType',
+}
+
+export type TagsListPaginationInputType = {
+  /** Limit */
+  limit?: Maybe<Scalars['Int']>
+  /** Offset */
+  offset?: Maybe<Scalars['Int']>
+}
+
+export type TagsListQuery = {
+  __typename?: 'TagsListQuery'
+  /** Elements */
+  list?: Maybe<Array<TagType>>
+  pagination: Pagination
+}
+
+export type TagsListSortInputType = {
+  column: TagsListSortInputTypeColumnEnum
+  order?: Maybe<SortOrderEnum>
+}
+
+export enum TagsListSortInputTypeColumnEnum {
+  Position = 'position',
+  Name = 'name',
 }
 
 export type TokenAlias = {
@@ -5101,12 +5130,18 @@ export type AutostakingUserUnlinkMutation = { __typename?: 'Mutation' } & Pick<
   'contractUserUnlink'
 >
 
-export type InvestTagsQueryVariables = Exact<{ [key: string]: never }>
+export type InvestTagsQueryVariables = Exact<{
+  sort?: Maybe<Array<TagsListSortInputType> | TagsListSortInputType>
+  pagination?: Maybe<TagsListPaginationInputType>
+}>
 
 export type InvestTagsQuery = { __typename?: 'Query' } & {
-  tags: Array<
-    { __typename?: 'TagType' } & Pick<TagType, 'name' | 'type' | 'id'>
-  >
+  tags: { __typename?: 'TagsListQuery' } & {
+    list?: Maybe<
+      Array<{ __typename?: 'TagType' } & Pick<TagType, 'name' | 'type' | 'id'>>
+    >
+    pagination: { __typename?: 'Pagination' } & Pick<Pagination, 'count'>
+  }
 }
 
 export type BlockchainsSelectQueryVariables = Exact<{

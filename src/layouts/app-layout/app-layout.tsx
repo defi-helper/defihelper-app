@@ -171,7 +171,7 @@ export const AppLayout: React.FC<AppLayoutProps> = (props) => {
           </LayoutSidebar>
         </div>
       )}
-      <LayoutContainer>
+      <LayoutContainer hidden={hidden}>
         <LayoutBreadcrumbs className={styles.breadcrumbs}>
           {props.title}
         </LayoutBreadcrumbs>
