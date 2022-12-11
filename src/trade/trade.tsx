@@ -369,13 +369,12 @@ export const Trade: React.VFC<TradeProps> = () => {
     await switchNetwork(wallet.network).catch(console.error)
   }, [wallet])
 
-  const currentNetworkCorrect = (currentWallet?.chainId ?? '') in model.networks
+  const currentNetworkCorrect =
+    (selectedWallet?.network ?? '') in model.networks
 
   const hasContract =
     'SmartTradeRouter' in
-      (contracts[currentWallet?.chainId as keyof typeof contracts] ?? {}) &&
-    'SmartTradeRouter' in
-      (contracts[selectedWallet?.network as keyof typeof contracts] ?? {})
+    (contracts[selectedWallet?.network as keyof typeof contracts] ?? {})
 
   const handleSearchPair = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchPair(event.target.value)
