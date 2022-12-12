@@ -111,14 +111,19 @@ export const Trade: React.VFC<TradeProps> = () => {
     [settingsWallets]
   )
 
+  const correctWallets = useMemo(
+    () => wallets.filter(({ network }) => network in model.networks),
+    [wallets]
+  )
+
   const walletsMap = useMemo(
     () =>
-      wallets.reduce((acc, wallet) => {
+      correctWallets.reduce((acc, wallet) => {
         acc.set(wallet.id, wallet)
 
         return acc
-      }, new Map<string, typeof wallets[number]>()),
-    [wallets]
+      }, new Map<string, typeof correctWallets[number]>()),
+    [correctWallets]
   )
 
   const wallet = useMemo(() => {
@@ -143,23 +148,6 @@ export const Trade: React.VFC<TradeProps> = () => {
   useEffect(() => {
     return () => model.reset()
   }, [])
-
-  const correctWallets = useMemo(
-    () => wallets.filter(({ network }) => network in model.networks),
-    [wallets]
-  )
-
-  const walletMap = useMemo(
-    () =>
-      correctWallets.reduce((acc, correctWallet) => {
-        acc.set(correctWallet.id, correctWallet)
-
-        return acc
-      }, new Map<string, typeof correctWallets[number]>()),
-    [correctWallets]
-  )
-
-  const selectedWallet = walletMap.get(currentWalletAddress ?? '')
 
   useEffect(() => {
     if (!currentWallet) return
@@ -369,12 +357,11 @@ export const Trade: React.VFC<TradeProps> = () => {
     await switchNetwork(wallet.network).catch(console.error)
   }, [wallet])
 
-  const currentNetworkCorrect =
-    (selectedWallet?.network ?? '') in model.networks
+  const currentNetworkCorrect = (wallet?.network ?? '') in model.networks
 
   const hasContract =
     'SmartTradeRouter' in
-    (contracts[selectedWallet?.network as keyof typeof contracts] ?? {})
+    (contracts[wallet?.network as keyof typeof contracts] ?? {})
 
   const handleSearchPair = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchPair(event.target.value)
@@ -739,7 +726,7 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
             {SelectComponents[currentSelect]}
           </div>
-          {currentNetworkCorrect && !hasContract && currentWallet?.chainId && (
+          {currentNetworkCorrect && !hasContract && wallet?.network && (
             <div className={styles.beta}>
               <Typography
                 variant="body2"
@@ -747,8 +734,8 @@ export const Trade: React.VFC<TradeProps> = () => {
                 family="mono"
                 className={styles.betaTitle}
               >
-                {networksConfig[currentWallet.chainId]?.title} not supported.
-                Please switch your network
+                {networksConfig[wallet.network]?.title} not supported. Please
+                switch your network
               </Typography>
               <Button
                 color="green"
