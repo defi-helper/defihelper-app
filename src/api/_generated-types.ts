@@ -6886,7 +6886,7 @@ export type StakingAutomatesContractFragmentFragment = {
         billing: { __typename?: 'WalletBillingType' } & {
           balance: { __typename?: 'BillingWalletBalanceType' } & Pick<
             BillingWalletBalanceType,
-            'netBalanceUSD'
+            'netBalanceUSD' | 'lowFeeFunds'
           >
         }
         automates: Array<

@@ -82,6 +82,7 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       billing {
         balance {
           netBalanceUSD
+          lowFeeFunds
         }
       }
       automates {
