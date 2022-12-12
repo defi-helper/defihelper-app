@@ -936,7 +936,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         )}
         <WalletConnect
           fallback={
-            <Button color="green" className={styles.fullWidth}>
+            <Button
+              color="green"
+              className={styles.fullWidth}
+              disabled={!isApproved.value || (!takeProfit && !stopLoss)}
+            >
               Create Order
             </Button>
           }
