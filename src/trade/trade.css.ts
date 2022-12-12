@@ -192,6 +192,7 @@ export const tabItemActive = style({
 
 export const pairIcon = style({
   minWidth: 24,
+  width: 24,
   height: 24,
   verticalAlign: 'middle',
   display: 'inline-flex',
