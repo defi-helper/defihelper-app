@@ -42,7 +42,6 @@ import { useDialog } from '~/common/dialog'
 import { Input } from '~/common/input'
 import { CanDemo } from '~/auth/can-demo'
 import { ButtonBase } from '~/common/button-base'
-import { dateUtils } from '~/common/date-utils'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './portfolio.css'
 import * as model from './portfolio.model'
@@ -322,9 +321,6 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
 
   const telegram = contactsMap.get(UserContactBrokerEnum.Telegram)
   const email = contactsMap.get(UserContactBrokerEnum.Email)
-  const leftDays = user?.portfolioCollectingFreezedAt
-    ? Math.round(dateUtils.leftDays(user.portfolioCollectingFreezedAt))
-    : null
 
   return (
     <AppLayout title="Portfolio">
@@ -365,10 +361,8 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
             <PortfolioMetricCards className={styles.cards} />
           </ForceRenderOrLazyLoad>
           {!(
-            telegram?.address ||
-            contactListLoading ||
-            !userReady ||
-            !leftDays
+            user?.isMetricsTracked &&
+            (contactListLoading || telegram?.address || loading || !userReady)
           ) && (
             <Paper radius={8} className={styles.connectTelegram}>
               <Typography variant="body2" family="mono">
