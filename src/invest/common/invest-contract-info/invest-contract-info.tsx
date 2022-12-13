@@ -180,17 +180,17 @@ export const InvestContractInfo: React.VFC<InvestContractInfoProps> = (
           as="div"
           className={clsx(
             styles.risk,
-            riskIcons[props.contract.metric.risk] && styles.positive
+            riskIcons[props.contract.metric.risk.totalRate] && styles.positive
           )}
         >
-          {riskIcons[props.contract.metric.risk] && (
+          {riskIcons[props.contract.metric.risk.totalRate] && (
             <Icon
-              icon={riskIcons[props.contract.metric.risk]}
+              icon={riskIcons[props.contract.metric.risk.totalRate]}
               width={22}
               height={24}
             />
           )}
-          {riskStatuses[props.contract.metric.risk]}
+          {riskStatuses[props.contract.metric.risk.totalRate]}
         </Typography>
       </div>
     </div>

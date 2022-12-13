@@ -24,9 +24,9 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
   const loading = useStore(settingsContacts.fetchUserContactListFx.pending)
   const userReady = useStore(authModel.$userReady)
 
-  const leftDays = user?.portfolioCollectingFreezedAt
+  let leftDays = user?.portfolioCollectingFreezedAt
     ? Math.round(dateUtils.leftDays(user.portfolioCollectingFreezedAt))
-    : null
+    : 0
 
   const telegram = contacts.find(
     ({ broker }) => broker === UserContactBrokerEnum.Telegram
@@ -46,10 +46,18 @@ export const SettingsTelegram: React.VFC<SettingsTelegramProps> = () => {
     }
   }, variables)
 
-  if (telegram?.address || loading || !userReady || !leftDays) return <></>
+  if (
+    (user?.isMetricsTracked && (telegram?.address || loading || !userReady)) ||
+    !user
+  )
+    return <></>
 
   const handleOpenTelegram = () => {
     model.openTelegram(undefined)
+  }
+
+  if (user?.isMetricsTracked === false) {
+    leftDays = 0
   }
 
   return (

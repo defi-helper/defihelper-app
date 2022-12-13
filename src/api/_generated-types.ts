@@ -941,7 +941,7 @@ export type ContractListFilterInputType = {
   hidden?: Maybe<Scalars['Boolean']>
   deprecated?: Maybe<Scalars['Boolean']>
   userLink?: Maybe<ContractUserLinkTypeEnum>
-  risk?: Maybe<ContractRiskFactorEnum>
+  risk?: Maybe<TokenRiskScoringEnum>
   automate?: Maybe<ContractListAutomateFilterInputType>
   search?: Maybe<Scalars['String']>
 }
@@ -1006,6 +1006,18 @@ export type ContractMetricFilterInputType = {
   wallet?: Maybe<ContractMetricWalletFilterInputType>
 }
 
+export type ContractMetricRiskType = {
+  __typename?: 'ContractMetricRiskType'
+  totalRate: TokenRiskScoringEnum
+  reliabilityRate: TokenRiskScoringEnum
+  profitabilityRate: TokenRiskScoringEnum
+  volatilityRate: TokenRiskScoringEnum
+  total: Scalars['Float']
+  reliability: Scalars['Float']
+  profitability: Scalars['Float']
+  volatility: Scalars['Float']
+}
+
 export type ContractMetricType = {
   __typename?: 'ContractMetricType'
   tvl: Scalars['String']
@@ -1013,8 +1025,8 @@ export type ContractMetricType = {
   aprWeek: Scalars['String']
   aprMonth: Scalars['String']
   aprYear: Scalars['String']
-  risk: ContractRiskFactorEnum
   aprWeekReal?: Maybe<Scalars['String']>
+  risk: ContractMetricRiskType
   myStaked: Scalars['String']
   myStakedChange: MetricChangeType
   myEarned: Scalars['String']
@@ -1024,13 +1036,6 @@ export type ContractMetricType = {
 
 export type ContractMetricWalletFilterInputType = {
   type?: Maybe<Array<WalletBlockchainTypeEnum>>
-}
-
-export enum ContractRiskFactorEnum {
-  NotCalculated = 'notCalculated',
-  Low = 'low',
-  Moderate = 'moderate',
-  High = 'high',
 }
 
 export type ContractTokenLinkType = {
@@ -2113,7 +2118,7 @@ export type ProtocolMetricType = {
   myEarnedChange: MetricChangeType
   myAPYBoost: Scalars['String']
   myMinUpdatedAt?: Maybe<Scalars['DateTimeType']>
-  risk?: Maybe<TokenMetricType>
+  risk?: Maybe<TokenMetricRiskType>
 }
 
 export type ProtocolResolveContractsInputType = {
@@ -3182,8 +3187,8 @@ export type TokenListType = {
   pagination: Pagination
 }
 
-export type TokenMetricType = {
-  __typename?: 'TokenMetricType'
+export type TokenMetricRiskType = {
+  __typename?: 'TokenMetricRiskType'
   totalRate: TokenRiskScoringEnum
   reliabilityRate: TokenRiskScoringEnum
   profitabilityRate: TokenRiskScoringEnum
@@ -3192,6 +3197,11 @@ export type TokenMetricType = {
   reliability: Scalars['Float']
   profitability: Scalars['Float']
   volatility: Scalars['Float']
+}
+
+export type TokenMetricType = {
+  __typename?: 'TokenMetricType'
+  risk: TokenMetricRiskType
 }
 
 export type TokenMetricUpdatedEvent = {
@@ -3897,6 +3907,7 @@ export type UserType = {
   store: UserStoreType
   /** Date of last auth */
   authAt: Scalars['DateTimeType']
+  isMetricsTracked: Scalars['Boolean']
   /** Date of created account */
   createdAt: Scalars['DateTimeType']
 }
@@ -4484,6 +4495,7 @@ export type UserFragmentFragment = { __typename?: 'UserType' } & Pick<
   | 'createdAt'
   | 'timezone'
   | 'portfolioCollectingFreezedAt'
+  | 'isMetricsTracked'
 >
 
 export type AutomationActionCreateMutationVariables = Exact<{
@@ -5064,8 +5076,19 @@ export type AutostakingStakingContractsQuery = { __typename?: 'Query' } & {
               | 'myStaked'
               | 'aprWeekReal'
               | 'myAPYBoost'
-              | 'risk'
-            >
+            > & {
+                risk: { __typename?: 'ContractMetricRiskType' } & Pick<
+                  ContractMetricRiskType,
+                  | 'totalRate'
+                  | 'reliabilityRate'
+                  | 'profitabilityRate'
+                  | 'volatilityRate'
+                  | 'total'
+                  | 'reliability'
+                  | 'profitability'
+                  | 'volatility'
+                >
+              }
             tokens: { __typename?: 'ContractTokenLinkType' } & {
               stakeBase?: Maybe<
                 { __typename?: 'TokenType' } & Pick<
@@ -5801,8 +5824,8 @@ export type ProtocolQuery = { __typename?: 'Query' } & {
               'day'
             >
             risk?: Maybe<
-              { __typename?: 'TokenMetricType' } & Pick<
-                TokenMetricType,
+              { __typename?: 'TokenMetricRiskType' } & Pick<
+                TokenMetricRiskType,
                 | 'totalRate'
                 | 'reliabilityRate'
                 | 'profitabilityRate'
@@ -5924,8 +5947,8 @@ export type ProtocolListMetricsQuery = { __typename?: 'Query' } & {
               | 'myAPYBoost'
             > & {
                 risk?: Maybe<
-                  { __typename?: 'TokenMetricType' } & Pick<
-                    TokenMetricType,
+                  { __typename?: 'TokenMetricRiskType' } & Pick<
+                    TokenMetricRiskType,
                     | 'totalRate'
                     | 'reliabilityRate'
                     | 'profitabilityRate'
