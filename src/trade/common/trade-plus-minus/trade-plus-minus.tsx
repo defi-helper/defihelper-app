@@ -1,28 +1,29 @@
+import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import * as styles from './trade-plus-minus.css'
 
 export type TradePlusMinusProps = {
-  onPlus: (value: number) => void
-  onMinus: (value: number) => void
-  min: number
-  max: number
-  value?: number
+  onPlus: (value: string | number) => void
+  onMinus: (value: string | number) => void
+  min: string | number
+  max: string | number
+  value?: string | number
 }
 
 export const TradePlusMinus: React.VFC<TradePlusMinusProps> = (props) => {
   const { value = 0 } = props
 
   const handleMinus = () => {
-    if (props.min === value) return
+    if (bignumberUtils.eq(props.min, value)) return
 
-    props.onMinus(value - 1)
+    props.onMinus(bignumberUtils.minus(value, 1))
   }
 
   const handlePlus = () => {
-    if (props.max === value) return
+    if (bignumberUtils.eq(props.max, value)) return
 
-    props.onPlus(value + 1)
+    props.onPlus(bignumberUtils.plus(value, 1))
   }
 
   return (

@@ -487,10 +487,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     setValue(
       'stopLossValue',
       bignumberUtils.toFixed(
-        bignumberUtils.minus(
-          price.value,
-          bignumberUtils.mul(bignumberUtils.div(Number(value), 99), price.value)
-        ),
+        bignumberUtils.fromPercent(price.value, Number(value), 99),
         6
       )
     )
@@ -520,13 +517,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     setValue(
       'takeProfitValue',
       bignumberUtils.toFixed(
-        bignumberUtils.plus(
-          bignumberUtils.mul(
-            bignumberUtils.div(Number(value), 100),
-            price.value
-          ),
-          price.value
-        ),
+        bignumberUtils.fromPercent(price.value, Number(value), 100),
         6
       )
     )
@@ -580,13 +571,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     setValue(
       'stopLossValue',
       bignumberUtils.toFixed(
-        bignumberUtils.minus(
-          price.value,
-          bignumberUtils.mul(
-            bignumberUtils.div(stopLossPercent, 99),
-            price.value
-          )
-        ),
+        bignumberUtils.fromPercent(price.value, stopLossPercent, 99),
         6
       )
     )
@@ -598,13 +583,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
     setValue(
       'takeProfitValue',
       bignumberUtils.toFixed(
-        bignumberUtils.plus(
-          bignumberUtils.mul(
-            bignumberUtils.div(takeProfitPercent, 100),
-            price.value
-          ),
-          price.value
-        ),
+        bignumberUtils.fromPercent(price.value, takeProfitPercent, 100),
         6
       )
     )

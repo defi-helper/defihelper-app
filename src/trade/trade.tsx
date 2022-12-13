@@ -36,6 +36,7 @@ import { NumericalInput } from '~/common/numerical-input'
 import { authModel } from '~/auth'
 import { UserRoleEnum } from '~/api'
 import { useQueryParams } from '~/common/hooks'
+import { TradeTrailingBuy } from './trade-trailing-buy'
 import * as model from './trade.model'
 import * as tradeOrdersModel from './trade-orders/trade-orders.model'
 import * as styles from './trade.css'
@@ -47,6 +48,7 @@ const Tabs = ['buy', 'sell']
 enum Selects {
   BuySell = 'trade',
   SmartSell = 'smart sell',
+  TrailingBuy = 'trailing buy',
 }
 
 const USDC_ETH = '0xEa26B78255Df2bBC31C1eBf60010D78670185bD0'
@@ -246,6 +248,7 @@ export const Trade: React.VFC<TradeProps> = () => {
   const tabNames = {
     [Selects.SmartSell]: tokensTab,
     [Selects.BuySell]: Tabs,
+    [Selects.TrailingBuy]: tokensTab,
   }
 
   const tabs = tabNames[currentSelect].length ? (
@@ -293,6 +296,22 @@ export const Trade: React.VFC<TradeProps> = () => {
           swap={adapter?.swap}
           tokens={tokens}
           key={String(currentPair || currentWalletAddress || currentExchange)}
+        />
+      </>
+    ),
+    [Selects.TrailingBuy]: (
+      <>
+        {!editingOrder && tabs}
+        <TradeTrailingBuy
+          router={adapter?.router}
+          swap={adapter?.swap}
+          tokens={tokens}
+          exchangeAddress={currentExchangeObj?.Address}
+          transactionDeadline={transactionDeadline}
+          slippage={currentSlippage}
+          key={String(currentPair || currentWalletAddress || currentExchange)}
+          exchangesMap={exchangesMap}
+          currentPair={currentPairObj}
         />
       </>
     ),
@@ -719,7 +738,7 @@ export const Trade: React.VFC<TradeProps> = () => {
                     onMinus={(value) => setTransactionDeadline(String(value))}
                     min={1}
                     max={100}
-                    value={Number(transactionDeadline)}
+                    value={transactionDeadline}
                   />
                 </div>
               </Dropdown>
