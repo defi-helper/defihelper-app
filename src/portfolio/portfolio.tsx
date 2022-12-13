@@ -45,6 +45,7 @@ import { ButtonBase } from '~/common/button-base'
 import * as settingsContacts from '~/settings/settings-contacts/settings-contact.model'
 import * as styles from './portfolio.css'
 import * as model from './portfolio.model'
+import { dateUtils } from '~/common/date-utils'
 
 export type PortfolioProps = unknown
 
@@ -322,6 +323,10 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
   const telegram = contactsMap.get(UserContactBrokerEnum.Telegram)
   const email = contactsMap.get(UserContactBrokerEnum.Email)
 
+  const leftDays = user?.portfolioCollectingFreezedAt
+    ? Math.round(dateUtils.leftDays(user.portfolioCollectingFreezedAt))
+    : null
+
   return (
     <AppLayout title="Portfolio">
       <Head title="Portfolio" />
@@ -362,7 +367,11 @@ export const Portfolio: React.VFC<PortfolioProps> = () => {
           </ForceRenderOrLazyLoad>
           {!(
             user?.isMetricsTracked &&
-            (contactListLoading || telegram?.address || loading || !userReady)
+            (contactListLoading ||
+              telegram?.address ||
+              loading ||
+              !userReady ||
+              !leftDays)
           ) && (
             <Paper radius={8} className={styles.connectTelegram}>
               <Typography variant="body2" family="mono">
