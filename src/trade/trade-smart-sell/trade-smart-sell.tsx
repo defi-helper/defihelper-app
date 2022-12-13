@@ -30,6 +30,7 @@ import { Exchange, Pair } from '~/trade/common/trade.api'
 import { hasBoughtPrice } from '~/trade/common/trade.types'
 import { toastsService } from '~/toasts'
 import { Can } from '~/auth'
+import { SwapOrderCallDataRouteActivationInputType } from '~/api'
 import * as tradeOrdersModel from '~/trade/trade-orders/trade-orders.model'
 import * as model from './trade-smart-sell.model'
 import * as styles from './trade-smart-sell.css'
@@ -188,9 +189,12 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         formValues.stopLossValue
       )
 
-      const stopLoss2AmountOut = bignumberUtils.mul(
+      const stopLoss2AmountOut = bignumberUtils.minus(
         takeProfitAmountOut,
-        formValues.followMaxPrice
+        bignumberUtils.div(
+          bignumberUtils.mul(takeProfitAmountOut, formValues.followMaxPrice),
+          100
+        )
       )
 
       const result = await props.swap?.createOrder(
@@ -276,6 +280,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 amountOutMin: result.callData.stopLoss.amountOutMin,
                 slippage: Number(result.callData.stopLoss.slippage),
                 moving: result.callData.stopLoss.moving,
+                activation: result.callData.stopLoss
+                  .activation as SwapOrderCallDataRouteActivationInputType,
               }
             : null,
           stopLoss2: result.callData.stopLoss2
@@ -284,6 +290,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 amountOutMin: result.callData.stopLoss2.amountOutMin,
                 moving: result.callData.stopLoss2.moving,
                 slippage: Number(result.callData.stopLoss2.slippage),
+                activation: result.callData.stopLoss2
+                  .activation as SwapOrderCallDataRouteActivationInputType,
               }
             : null,
           takeProfit: result.callData.takeProfit
@@ -291,6 +299,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 amountOut: result.callData.takeProfit.amountOut,
                 amountOutMin: result.callData.takeProfit.amountOutMin,
                 slippage: Number(result.callData.takeProfit.slippage),
+                activation: result.callData.takeProfit
+                  .activation as SwapOrderCallDataRouteActivationInputType,
               }
             : null,
           deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
@@ -353,9 +363,12 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         formValues.stopLossValue
       )
 
-      const stopLoss2AmountOut = bignumberUtils.mul(
+      const stopLoss2AmountOut = bignumberUtils.minus(
         takeProfitAmountOut,
-        formValues.followMaxPrice
+        bignumberUtils.div(
+          bignumberUtils.mul(takeProfitAmountOut, formValues.followMaxPrice),
+          100
+        )
       )
 
       const result = await props.swap.updateOrder(
@@ -422,6 +435,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   amountOutMin: result.callData.stopLoss.amountOutMin,
                   slippage: Number(result.callData.stopLoss.slippage),
                   moving: result.callData.stopLoss.moving,
+                  activation: result.callData.stopLoss
+                    .activation as SwapOrderCallDataRouteActivationInputType,
                 }
               : null,
             takeProfit: result.callData.takeProfit
@@ -429,6 +444,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   amountOut: result.callData.takeProfit.amountOut,
                   amountOutMin: result.callData.takeProfit.amountOutMin,
                   slippage: Number(result.callData.takeProfit.slippage),
+                  activation: result.callData.takeProfit
+                    .activation as SwapOrderCallDataRouteActivationInputType,
                 }
               : null,
             stopLoss2: result.callData.stopLoss2
@@ -437,6 +454,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   amountOutMin: result.callData.stopLoss2.amountOutMin,
                   moving: result.callData.stopLoss2.moving,
                   slippage: Number(result.callData.stopLoss2.slippage),
+                  activation: result.callData.stopLoss2
+                    .activation as SwapOrderCallDataRouteActivationInputType,
                 }
               : null,
             deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
