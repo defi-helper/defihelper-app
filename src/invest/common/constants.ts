@@ -1,18 +1,18 @@
-import { ContractRiskFactorEnum } from '~/api'
+import { TokenRiskScoringEnum } from '~/api'
 
 export const riskStatuses = {
-  [ContractRiskFactorEnum.High]: 'High risk',
-  [ContractRiskFactorEnum.Low]: 'Low risk',
-  [ContractRiskFactorEnum.Moderate]: 'Moderate risk',
-  [ContractRiskFactorEnum.NotCalculated]: '-',
+  [TokenRiskScoringEnum.High]: 'High risk',
+  [TokenRiskScoringEnum.Low]: 'Low risk',
+  [TokenRiskScoringEnum.Moderate]: 'Moderate risk',
+  [TokenRiskScoringEnum.NotCalculated]: '-',
 }
 
 export const riskIcons: Record<
   string,
   'redRisk' | 'greenRisk' | 'yellowRisk' | 'greyRisk'
 > = {
-  [ContractRiskFactorEnum.NotCalculated]: 'greyRisk',
-  [ContractRiskFactorEnum.High]: 'redRisk',
-  [ContractRiskFactorEnum.Low]: 'greenRisk',
-  [ContractRiskFactorEnum.Moderate]: 'yellowRisk',
+  [TokenRiskScoringEnum.NotCalculated]: 'greyRisk',
+  [TokenRiskScoringEnum.High]: 'redRisk',
+  [TokenRiskScoringEnum.Low]: 'greenRisk',
+  [TokenRiskScoringEnum.Moderate]: 'yellowRisk',
 }

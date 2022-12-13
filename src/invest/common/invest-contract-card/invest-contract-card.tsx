@@ -167,7 +167,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
           align="center"
           className={styles.mobileRisk}
         >
-          {riskStatuses[contract.metric.risk]}
+          {riskStatuses[contract.metric.risk.totalRate]}
         </Typography>
       )}
       <Typography
@@ -236,17 +236,21 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
         </Typography>
       </div>
       <Typography variant="inherit">
-        {riskIcons[contract.metric.risk] && isDesktop && (
-          <Icon icon={riskIcons[contract.metric.risk]} width={22} height={24} />
+        {riskIcons[contract.metric.risk.totalRate] && isDesktop && (
+          <Icon
+            icon={riskIcons[contract.metric.risk.totalRate]}
+            width={22}
+            height={24}
+          />
         )}
         {false && (
           <Dropdown
             className={styles.riskLevel}
             control={
               <ButtonBase>
-                {riskIcons[contract.metric.risk] && (
+                {riskIcons[contract.metric.risk.totalRate] && (
                   <Icon
-                    icon={riskIcons[contract.metric.risk]}
+                    icon={riskIcons[contract.metric.risk.totalRate]}
                     width={22}
                     height={24}
                   />
@@ -263,7 +267,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
                 variant="body2"
                 className={styles.riskLevelStatus}
               >
-                {riskStatuses[contract.metric.risk]}
+                {riskStatuses[contract.metric.risk.totalRate]}
               </Typography>
             </Typography>
             <span className={styles.riskLevelSpacing} />
