@@ -5,7 +5,11 @@ import isEmpty from 'lodash.isempty'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { useThrottle } from 'react-use'
 
-import { ContractListSortInputTypeColumnEnum, SortOrderEnum } from '~/api'
+import {
+  ContractListSortInputTypeColumnEnum,
+  SortOrderEnum,
+  UserRoleEnum,
+} from '~/api'
 import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { useDialog } from '~/common/dialog'
@@ -20,9 +24,10 @@ import { networksConfig } from '~/networks-config'
 import { StakingApyDialog } from '~/staking/staking-apy-dialog'
 import { Link } from '~/common/link'
 import { InvestContractCard } from '~/invest/common/invest-contract-card'
+import { paths } from '~/paths'
+import { authModel } from '~/auth'
 import * as model from './invest-contracts.model'
 import * as styles from './invest-contracts.css'
-import { paths } from '~/paths'
 
 export type InvestContractsProps = {
   className?: string
@@ -101,6 +106,8 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
   const [openApyDialog] = useDialog(StakingApyDialog)
 
   const history = useHistory()
+
+  const user = useStore(authModel.$user)
 
   const contractsLoading = useStore(model.fetchContractsFx.pending)
   const contracts = useStore(model.$contractsWithAutostakingLoading)
@@ -494,6 +501,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
               <InvestContractCard
                 contract={contract}
                 onOpenApy={handleOpenApy(contract)}
+                canViewRisk={user?.role === UserRoleEnum.Admin}
                 key={String(contract.id + ind)}
               />
             )

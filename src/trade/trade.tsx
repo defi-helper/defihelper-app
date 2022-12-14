@@ -376,7 +376,15 @@ export const Trade: React.VFC<TradeProps> = () => {
     await switchNetwork(wallet.network).catch(console.error)
   }, [wallet])
 
-  const currentNetworkCorrect = (wallet?.network ?? '') in model.networks
+  const selectedNetworkCorrect = (wallet?.network ?? '') in model.networks
+  const currentNetworkCorrect = (currentWallet?.chainId ?? '') in model.networks
+  const currentNetworkAndSelectedAreEqual =
+    wallet?.network === currentWallet?.chainId
+
+  const networkCorrect =
+    selectedNetworkCorrect ||
+    currentNetworkCorrect ||
+    currentNetworkAndSelectedAreEqual
 
   const hasContract =
     'SmartTradeRouter' in
@@ -636,9 +644,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           <div
             className={clsx(
               styles.selectsBody,
-              ((updating && !history) ||
-                !currentNetworkCorrect ||
-                !hasContract) &&
+              ((updating && !history) || !networkCorrect || !hasContract) &&
                 styles.selectsBodyBlur
             )}
           >
@@ -745,7 +751,7 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
             {SelectComponents[currentSelect]}
           </div>
-          {currentNetworkCorrect && !hasContract && wallet?.network && (
+          {networkCorrect && !hasContract && wallet?.network && (
             <div className={styles.beta}>
               <Typography
                 variant="body2"
@@ -766,7 +772,7 @@ export const Trade: React.VFC<TradeProps> = () => {
               </Button>
             </div>
           )}
-          {!currentNetworkCorrect && (
+          {!networkCorrect && (
             <div className={styles.beta}>
               <Typography
                 variant="body2"
