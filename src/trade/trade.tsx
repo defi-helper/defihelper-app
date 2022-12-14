@@ -370,21 +370,33 @@ export const Trade: React.VFC<TradeProps> = () => {
     [adapter]
   )
 
-  const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
-    if (!wallet) return switchNetwork('56').catch(console.error)
-
-    await switchNetwork(wallet.network).catch(console.error)
-  }, [wallet])
-
   const selectedNetworkCorrect = (wallet?.network ?? '') in model.networks
   const currentNetworkCorrect = (currentWallet?.chainId ?? '') in model.networks
   const currentNetworkAndSelectedAreEqual =
     wallet?.network === currentWallet?.chainId
 
   const networkCorrect =
-    selectedNetworkCorrect ||
     currentNetworkCorrect ||
+    selectedNetworkCorrect ||
     currentNetworkAndSelectedAreEqual
+
+  const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
+    let network =
+      !currentNetworkCorrect || !selectedNetworkCorrect ? '56' : wallet?.network
+
+    if (!currentNetworkAndSelectedAreEqual) {
+      network = wallet?.network
+    }
+
+    if (!network) return
+
+    await switchNetwork(network).catch(console.error)
+  }, [
+    wallet,
+    selectedNetworkCorrect,
+    currentNetworkCorrect,
+    currentNetworkAndSelectedAreEqual,
+  ])
 
   const hasContract =
     'SmartTradeRouter' in
@@ -751,7 +763,7 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
             {SelectComponents[currentSelect]}
           </div>
-          {networkCorrect && !hasContract && wallet?.network && (
+          {(!networkCorrect || (!hasContract && wallet?.network)) && (
             <div className={styles.beta}>
               <Typography
                 variant="body2"
@@ -759,28 +771,18 @@ export const Trade: React.VFC<TradeProps> = () => {
                 family="mono"
                 className={styles.betaTitle}
               >
-                {networksConfig[wallet.network]?.title} not supported. Please
-                switch your network
-              </Typography>
-              <Button
-                color="green"
-                className={styles.switchNetwork}
-                onClick={handleSwitchNetwork}
-                loading={switchNetworkState.loading}
-              >
-                switch network
-              </Button>
-            </div>
-          )}
-          {!networkCorrect && (
-            <div className={styles.beta}>
-              <Typography
-                variant="body2"
-                align="center"
-                family="mono"
-                className={styles.betaTitle}
-              >
-                Please switch your network to continue
+                {!currentNetworkAndSelectedAreEqual && (
+                  <>Please switch your wallet and switch network</>
+                )}
+                {!currentNetworkCorrect && (
+                  <>Please switch your network to continue</>
+                )}
+                {wallet && !selectedNetworkCorrect && (
+                  <>
+                    {networksConfig[wallet.network]?.title} not supported.
+                    Please switch your network
+                  </>
+                )}
               </Typography>
               <Button
                 color="green"
