@@ -14,7 +14,7 @@ import { ButtonBase } from '~/common/button-base'
 import { TradePlusMinus } from '~/trade/common/trade-plus-minus'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Exchange, Pair } from '~/trade/common/trade.api'
-import * as styles from './trade-trailing-buy.css'
+import * as styles from './trade-smart-sell.css'
 
 export type TradeTrailingBuyProps = {
   className?: string
