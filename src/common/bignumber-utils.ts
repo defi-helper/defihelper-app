@@ -112,4 +112,14 @@ export const bignumberUtils = {
 
   abs: (num?: string | number | null) =>
     new BigNumber(num || 0).abs().toString(10),
+
+  fromPercent: (
+    num1?: string | number | null,
+    percent?: string | number | null,
+    total?: string | number | null
+  ) =>
+    bignumberUtils.minus(
+      num1,
+      bignumberUtils.mul(bignumberUtils.div(percent, total), num1)
+    ),
 }
