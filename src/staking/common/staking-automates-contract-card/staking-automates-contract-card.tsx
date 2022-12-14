@@ -254,9 +254,9 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
         <div
           className={clsx(
             styles.footer,
-            props.error ||
-              (props.status === AutomateContractStopLossStatusEnum.Completed &&
-                styles.error)
+            (props.error ||
+              props.status === AutomateContractStopLossStatusEnum.Completed) &&
+              styles.error
           )}
         >
           <div className={styles.row}>
