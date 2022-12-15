@@ -224,7 +224,8 @@ export const Trade: React.VFC<TradeProps> = () => {
     } else {
       setCurrentExchange(firstExchange.Name)
     }
-  }, [exchanges, loadingExchanges, exchangeQuery, exchangesMap])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exchanges, loadingExchanges, exchangesMap])
 
   useEffect(() => {
     if (!currentPair || !currentExchangeObj || !wallet) return
@@ -373,7 +374,9 @@ export const Trade: React.VFC<TradeProps> = () => {
   const selectedNetworkCorrect = (wallet?.network ?? '') in model.networks
   const currentNetworkCorrect = (currentWallet?.chainId ?? '') in model.networks
   const currentNetworkAndSelectedAreEqual =
-    wallet?.network === currentWallet?.chainId
+    wallet?.network === currentWallet?.chainId &&
+    wallet?.network !== undefined &&
+    currentWallet?.chainId !== undefined
 
   const networkCorrect =
     currentNetworkCorrect ||
@@ -771,13 +774,16 @@ export const Trade: React.VFC<TradeProps> = () => {
                 family="mono"
                 className={styles.betaTitle}
               >
-                {!currentNetworkAndSelectedAreEqual && (
-                  <>Please switch your wallet and switch network</>
-                )}
-                {!currentNetworkCorrect && (
+                {!currentNetworkAndSelectedAreEqual &&
+                  wallet &&
+                  currentWallet && (
+                    <>Please switch your wallet and switch network</>
+                  )}
+                {!currentNetworkCorrect && currentWallet && (
                   <>Please switch your network to continue</>
                 )}
-                {wallet && !selectedNetworkCorrect && (
+                {((wallet && !selectedNetworkCorrect) ||
+                  (wallet && !hasContract)) && (
                   <>
                     {networksConfig[wallet.network]?.title} not supported.
                     Please switch your network
