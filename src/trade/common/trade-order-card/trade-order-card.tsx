@@ -301,23 +301,25 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
                   (order.status === SmartTradeOrderStatusEnum.Succeeded &&
                     !order.claim)) &&
                 ![SmartTradeOrderStatusEnum.Pending].includes(order.status) && (
-                  <Typography
-                    variant="body3"
-                    className={clsx(styles.status, {
-                      [styles.positive]: bignumberUtils.gt(percent, 0),
-                      [styles.negative]: bignumberUtils.lt(percent, 0),
-                    })}
-                  >
-                    {!order.claim &&
-                    order.status === SmartTradeOrderStatusEnum.Succeeded
-                      ? titles.completed
-                      : titles[order.status]}
-                    {order.status === SmartTradeOrderStatusEnum.Canceled
-                      ? null
-                      : `: ${bignumberUtils.toFixed(percent, 4)}%`}
-                  </Typography>
+                  <>
+                    <Typography
+                      variant="body3"
+                      className={clsx(styles.status, {
+                        [styles.positive]: bignumberUtils.gt(percent, 0),
+                        [styles.negative]: bignumberUtils.lt(percent, 0),
+                      })}
+                    >
+                      {!order.claim &&
+                      order.status === SmartTradeOrderStatusEnum.Succeeded
+                        ? titles.completed
+                        : titles[order.status]}
+                      {order.status === SmartTradeOrderStatusEnum.Canceled
+                        ? null
+                        : `: ${bignumberUtils.toFixed(percent, 4)}%`}
+                    </Typography>{' '}
+                    {claimButton}
+                  </>
                 )}
-              {claimButton}
             </div>
           )}
         </div>
