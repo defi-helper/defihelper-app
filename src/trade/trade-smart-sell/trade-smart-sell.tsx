@@ -118,8 +118,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   }, [props.exchangeAddress, props.tokens, unit])
 
   const isApproved = useAsyncRetry(async () => {
-    if (!props.tokens?.[0]?.address || bignumberUtils.eq(unitThrottled, 0))
-      return false
+    if (!props.tokens?.[0]?.address) return false
 
     return props.router?.isApproved(props.tokens?.[0]?.address, unitThrottled)
   }, [props.tokens, unitThrottled])
@@ -131,13 +130,10 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
 
     await res?.tx?.wait()
 
+    isApproved.retry()
+
     return true
   }, [props.tokens, unit])
-
-  useEffect(() => {
-    isApproved.retry()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [approve.loading, approve.value, approve.error])
 
   const handleCreateOrder = handleSubmit(async (formValues) => {
     if (

@@ -24,6 +24,7 @@ export type InvestContractCardProps = {
     null | undefined
   >[number]
   onOpenApy: () => void
+  canViewRisk: boolean
 }
 
 export const InvestContractCard: React.FC<InvestContractCardProps> = (
@@ -236,14 +237,16 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
         </Typography>
       </div>
       <Typography variant="inherit">
-        {riskIcons[contract.metric.risk.totalRate] && isDesktop && (
-          <Icon
-            icon={riskIcons[contract.metric.risk.totalRate]}
-            width={22}
-            height={24}
-          />
-        )}
-        {false && (
+        {!props.canViewRisk &&
+          riskIcons[contract.metric.risk.totalRate] &&
+          isDesktop && (
+            <Icon
+              icon={riskIcons[contract.metric.risk.totalRate]}
+              width={22}
+              height={24}
+            />
+          )}
+        {props.canViewRisk && (
           <Dropdown
             className={styles.riskLevel}
             control={
@@ -281,7 +284,11 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
               className={styles.riskLevelRow}
             >
               <Typography variant="inherit">Reliability</Typography>
-              <Icon icon="greenRisk" width={19} height={20} />
+              <Icon
+                icon={riskIcons[contract.metric.risk.reliabilityRate]}
+                width={19}
+                height={20}
+              />
             </Typography>
             <Typography
               family="mono"
@@ -290,7 +297,11 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
               className={styles.riskLevelRow}
             >
               <Typography variant="inherit">Profitability</Typography>
-              <Icon icon="yellowRisk" width={19} height={20} />
+              <Icon
+                icon={riskIcons[contract.metric.risk.profitabilityRate]}
+                width={19}
+                height={20}
+              />
             </Typography>
             <Typography
               family="mono"
@@ -299,7 +310,11 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
               className={styles.riskLevelRow}
             >
               <Typography variant="inherit">Volatility</Typography>
-              <Icon icon="greenRisk" width={19} height={20} />
+              <Icon
+                icon={riskIcons[contract.metric.risk.volatilityRate]}
+                width={19}
+                height={20}
+              />
             </Typography>
           </Dropdown>
         )}

@@ -300,27 +300,26 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
                 (order.claim ||
                   (order.status === SmartTradeOrderStatusEnum.Succeeded &&
                     !order.claim)) &&
-                ![
-                  SmartTradeOrderStatusEnum.Pending,
-                  SmartTradeOrderStatusEnum.Processed,
-                ].includes(order.status) && (
-                  <Typography
-                    variant="body3"
-                    className={clsx(styles.status, {
-                      [styles.positive]: bignumberUtils.gt(percent, 0),
-                      [styles.negative]: bignumberUtils.lt(percent, 0),
-                    })}
-                  >
-                    {!order.claim &&
-                    order.status === SmartTradeOrderStatusEnum.Succeeded
-                      ? titles.completed
-                      : titles[order.status]}
-                    {order.status === SmartTradeOrderStatusEnum.Canceled
-                      ? null
-                      : `: ${bignumberUtils.toFixed(percent, 4)}%`}
-                  </Typography>
+                ![SmartTradeOrderStatusEnum.Pending].includes(order.status) && (
+                  <>
+                    <Typography
+                      variant="body3"
+                      className={clsx(styles.status, {
+                        [styles.positive]: bignumberUtils.gt(percent, 0),
+                        [styles.negative]: bignumberUtils.lt(percent, 0),
+                      })}
+                    >
+                      {!order.claim &&
+                      order.status === SmartTradeOrderStatusEnum.Succeeded
+                        ? titles.completed
+                        : titles[order.status]}
+                      {order.status === SmartTradeOrderStatusEnum.Canceled
+                        ? null
+                        : `: ${bignumberUtils.toFixed(percent, 4)}%`}
+                    </Typography>{' '}
+                    {claimButton}
+                  </>
                 )}
-              {claimButton}
             </div>
           )}
         </div>
