@@ -262,6 +262,7 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
             }
             offset={[0, 4]}
             placement="left-start"
+            trigger="hover"
           >
             <Typography family="mono" as="div" className={styles.riskLevelRow}>
               <Typography variant="inherit">Risk</Typography>
