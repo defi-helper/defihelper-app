@@ -262,13 +262,17 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
             }
             offset={[0, 4]}
             placement="left-start"
+            trigger="hover"
           >
             <Typography family="mono" as="div" className={styles.riskLevelRow}>
               <Typography variant="inherit">Risk</Typography>
               <Typography
                 as="div"
                 variant="body2"
-                className={styles.riskLevelStatus}
+                className={clsx(
+                  styles.riskLevelStatus,
+                  styles.riskLevelStatuses[contract.metric.risk.totalRate]
+                )}
               >
                 {riskStatuses[contract.metric.risk.totalRate]}
               </Typography>
