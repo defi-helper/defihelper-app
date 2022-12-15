@@ -1,5 +1,6 @@
-import { globalStyle, style } from '@vanilla-extract/css'
+import { globalStyle, style, styleVariants } from '@vanilla-extract/css'
 
+import { TokenRiskScoringEnum } from '~/api'
 import { theme } from '~/common/theme'
 
 export const row = style({
@@ -198,10 +199,24 @@ export const riskLevelSpacing = style({
 })
 
 export const riskLevelStatus = style({
-  background: theme.colors.common.green2,
   padding: '0 31px',
   borderRadius: 22,
   color: theme.colors.secondary,
+})
+
+export const riskLevelStatuses = styleVariants({
+  [TokenRiskScoringEnum.High]: {
+    background: theme.colors.common.red1,
+  },
+  [TokenRiskScoringEnum.Moderate]: {
+    background: theme.colors.common.yellow,
+  },
+  [TokenRiskScoringEnum.Low]: {
+    background: theme.colors.common.green2,
+  },
+  [TokenRiskScoringEnum.NotCalculated]: {
+    background: theme.colors.textColorGrey,
+  },
 })
 
 export const networkDropdown = style({
