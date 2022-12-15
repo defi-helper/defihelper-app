@@ -265,7 +265,10 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
               <Typography
                 as="div"
                 variant="body2"
-                className={styles.riskLevelStatus}
+                className={clsx(
+                  styles.riskLevelStatus,
+                  styles.riskLevelStatuses[contract.metric.risk.totalRate]
+                )}
               >
                 {riskStatuses[contract.metric.risk.totalRate]}
               </Typography>
