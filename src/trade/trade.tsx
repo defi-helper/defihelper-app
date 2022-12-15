@@ -151,21 +151,22 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [])
 
   useEffect(() => {
-    if (!currentWallet) return
+    if (!correctWallets.length) return
 
     const findedWallet = correctWallets.find(({ network, address }) => {
       return (
-        (network === 'main'
-          ? address === currentWallet.account
-          : address.toLowerCase() === currentWallet.account?.toLowerCase()) &&
-        network === currentWallet.chainId
+        ((network === 'main'
+          ? address === currentWallet?.account
+          : address.toLowerCase() === currentWallet?.account?.toLowerCase()) &&
+          network === currentWallet?.chainId) ||
+        network === networkQuery
       )
     })
 
-    const walletId = findedWallet?.id
+    const walletId = findedWallet?.id ?? correctWallets[0]?.id
 
     setCurrentWalletAddress(walletId)
-  }, [wallets, currentWallet, correctWallets])
+  }, [wallets, currentWallet, correctWallets, networkQuery])
 
   const pairMap = useMemo(
     () =>
