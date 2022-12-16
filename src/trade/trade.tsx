@@ -14,7 +14,7 @@ import { Select, SelectOption } from '~/common/select'
 import { Paper } from '~/common/paper'
 import { TradeOrders } from './trade-orders'
 import { TradeBuySell } from './trade-buy-sell'
-import { TradeSmartSell, TradeTrailingBuy } from './trade-smart-sell'
+import { TradeSmartOrderSell, TradeSmartOrderBuy } from './trade-smart-order'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
@@ -276,7 +276,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     [Selects.SmartSell]: (
       <>
         {!editingOrder && tabs}
-        <TradeSmartSell
+        <TradeSmartOrderSell
           router={adapter?.router}
           swap={adapter?.swap}
           tokens={tokens}
@@ -303,7 +303,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     [Selects.TrailingBuy]: (
       <>
         {!editingOrder && tabs}
-        <TradeTrailingBuy
+        <TradeSmartOrderBuy
           router={adapter?.router}
           swap={adapter?.swap}
           tokens={tokens}

@@ -16,7 +16,7 @@ import {
   TradeUpdateOrderMutationVariables,
 } from '~/api'
 import { hasBoughtPrice } from '~/trade/common/trade.types'
-import * as tradeSmartSellModel from '~/trade/trade-smart-sell/trade-smart-sell.model'
+import * as tradeSmartSellModel from '~/trade/trade-smart-order/trade-smart-order.model'
 
 export const webSocket = new WebSocket('wss://whattofarm.io/ws')
 

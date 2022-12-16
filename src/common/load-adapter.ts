@@ -95,6 +95,13 @@ type TakeProfit = {
   activation: RouteActivation | null
 }
 
+type RouteInput = {
+  amountOut: string
+  slippage: string | number
+  moving: string | null
+  activation: RouteActivation | null
+}
+
 export type SmartTradeSwapHandler = {
   name: 'DFHSmartTradeSwapHandler'
   methods: {
@@ -118,9 +125,9 @@ export type SmartTradeSwapHandler = {
       exchangeAddress: string,
       path: string[],
       amountIn: string,
-      stopLoss: StopLoss | null,
-      stopLoss2: StopLoss | null,
-      takeProfit: TakeProfit | null,
+      stopLoss: RouteInput | null,
+      stopLoss2: RouteInput | null,
+      takeProfit: RouteInput | null,
       deposit: {
         native?: string
       }

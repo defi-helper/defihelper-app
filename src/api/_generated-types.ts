@@ -2655,9 +2655,9 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   tokenOutDecimals: Scalars['Int']
   amountIn: Scalars['BigNumberType']
   boughtPrice?: Maybe<Scalars['BigNumberType']>
-  stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
-  stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
-  takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
+  stopLoss?: Maybe<SwapOrderCallDataRouteInputType>
+  stopLoss2?: Maybe<SwapOrderCallDataRouteInputType>
+  takeProfit?: Maybe<SwapOrderCallDataRouteInputType>
   /** Deadline seconds */
   deadline: Scalars['Int']
 }
@@ -2685,9 +2685,9 @@ export type SmartTradeSwapOrderSetBoughtPriceInputType = {
 }
 
 export type SmartTradeSwapOrderUpdateCallDataInputType = {
-  stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
-  stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
-  takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
+  stopLoss?: Maybe<SwapOrderCallDataRouteInputType>
+  stopLoss2?: Maybe<SwapOrderCallDataRouteInputType>
+  takeProfit?: Maybe<SwapOrderCallDataRouteInputType>
   /** Deadline seconds */
   deadline: Scalars['Int']
 }
@@ -2919,18 +2919,11 @@ export type SwapOrderCallDataRouteActivationInputType = {
   direction: SwapOrderCallDataDirectionEnum
 }
 
-export type SwapOrderCallDataStopLossInputType = {
+export type SwapOrderCallDataRouteInputType = {
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
   moving?: Maybe<Scalars['BigNumberType']>
-  activation?: Maybe<SwapOrderCallDataRouteActivationInputType>
-}
-
-export type SwapOrderCallDataTakeProfitInputType = {
-  amountOut: Scalars['BigNumberType']
-  amountOutMin: Scalars['BigNumberType']
-  slippage: Scalars['Float']
   activation?: Maybe<SwapOrderCallDataRouteActivationInputType>
 }
 
