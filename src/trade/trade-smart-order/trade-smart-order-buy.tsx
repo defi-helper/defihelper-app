@@ -44,7 +44,6 @@ type FormValues = {
   price: string
   total: string
   trailingBuy: boolean
-  targetPrice: string
   trailingBuyPercent: string
 }
 
@@ -288,13 +287,6 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
                     disabled={formState.isSubmitting}
                   />
                 </div>
-                <Typography
-                  as="div"
-                  variant="body3"
-                  className={clsx(styles.takeProfitLabel, styles.greyTitle)}
-                >
-                  Target price: 50000 {props.tokens?.[1]?.symbol}
-                </Typography>
               </>
             )}
           </div>
