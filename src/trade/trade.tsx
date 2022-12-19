@@ -133,18 +133,30 @@ export const Trade: React.VFC<TradeProps> = () => {
   }, [currentWalletAddress, walletsMap])
 
   useEffect(() => {
-    model.fetchExchangesFx(
-      networkQuery ?? wallet?.network ?? config.DEFAULT_CHAIN_ID
-    )
+    const abortController = new AbortController()
+
+    model.fetchExchangesFx({
+      network: networkQuery ?? wallet?.network ?? config.DEFAULT_CHAIN_ID,
+      signal: abortController.signal,
+    })
+
+    return () => abortController.abort()
   }, [wallet, networkQuery])
 
   useEffect(() => {
     if (!currentExchange || loadingExchanges) return
 
+    const abortController = new AbortController()
+
     model.fetchPairsFx({
       network: networkQuery ?? wallet?.network ?? config.DEFAULT_CHAIN_ID,
       exchange: currentExchange,
+      signal: abortController.signal,
     })
+
+    return () => {
+      abortController.abort()
+    }
   }, [wallet, currentExchange, loadingExchanges, networkQuery])
 
   useEffect(() => {
@@ -167,7 +179,8 @@ export const Trade: React.VFC<TradeProps> = () => {
     const walletId = findedWallet?.id ?? correctWallets[0]?.id
 
     setCurrentWalletAddress(walletId)
-  }, [wallets, currentWallet, correctWallets, networkQuery])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wallets, currentWallet, correctWallets])
 
   const pairMap = useMemo(
     () =>
@@ -790,15 +803,18 @@ export const Trade: React.VFC<TradeProps> = () => {
                     Please switch your network
                   </>
                 )}
+                {!wallet && <>Please choose your wallet</>}
               </Typography>
-              <Button
-                color="green"
-                className={styles.switchNetwork}
-                onClick={handleSwitchNetwork}
-                loading={switchNetworkState.loading}
-              >
-                switch network
-              </Button>
+              {wallet && (
+                <Button
+                  color="green"
+                  className={styles.switchNetwork}
+                  onClick={handleSwitchNetwork}
+                  loading={switchNetworkState.loading}
+                >
+                  switch network
+                </Button>
+              )}
             </div>
           )}
         </Paper>
