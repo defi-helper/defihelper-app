@@ -68,6 +68,10 @@ export type SmartTradeRouter = {
 
 type Direction = 'gt' | 'lt'
 
+type RouteTimeout = {
+  duration: number
+}
+
 type RouteActivation = {
   amountOut: string
   direction: Direction
@@ -80,6 +84,7 @@ type Route = {
   moving: string | null
   direction: Direction
   activation: RouteActivation | null
+  timeout: RouteTimeout | null
 }
 
 type StopLoss = {
@@ -87,12 +92,14 @@ type StopLoss = {
   slippage: string | number
   moving: string | null
   activation: RouteActivation | null
+  timeout: RouteTimeout | null
 }
 
 type TakeProfit = {
   amountOut: string
   slippage: string | number
   activation: RouteActivation | null
+  timeout: RouteTimeout | null
 }
 
 type RouteInput = {
@@ -100,6 +107,7 @@ type RouteInput = {
   slippage: string | number
   moving: string | null
   activation: RouteActivation | null
+  timeout: RouteTimeout | null
 }
 
 export type SmartTradeSwapHandler = {

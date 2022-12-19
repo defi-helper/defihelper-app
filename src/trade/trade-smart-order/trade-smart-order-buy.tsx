@@ -159,6 +159,7 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
             formValues.amount,
             bignumberUtils.div(formValues.trailingBuyPercent, 100)
           ),
+          timeout: null,
         },
         {}
       )
@@ -190,6 +191,7 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
                 slippage: Number(result.callData.takeProfit.slippage),
                 activation: result.callData.takeProfit
                   .activation as SwapOrderCallDataRouteActivationInputType,
+                timeout: result.callData.takeProfit.timeout,
               }
             : null,
           deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),

@@ -33,6 +33,7 @@ import { SwapOrderCallDataRouteActivationInputType } from '~/api'
 import * as tradeOrdersModel from '~/trade/trade-orders/trade-orders.model'
 import * as model from './trade-smart-order.model'
 import * as styles from './trade-smart-order.css'
+import { TradePlusMinus } from '../common/trade-plus-minus'
 
 export type TradeSmartOrderSellProps = {
   className?: string
@@ -61,6 +62,8 @@ type FormValues = {
   trailingStopLoss: boolean
   trailingTakeProfit: boolean
   followMaxPrice: number
+  stopLossTimeoutValue: string
+  stopLossTimeout: boolean
 }
 
 export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
@@ -89,6 +92,8 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
         trailingStopLoss: false,
         trailingTakeProfit: false,
         followMaxPrice: 2,
+        stopLossTimeout: false,
+        stopLossTimeoutValue: '0',
       },
     })
 
@@ -97,6 +102,8 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
   const trailingTakeProfit = watch('trailingTakeProfit')
   const stopLoss = watch('stopLoss')
   const followMaxPrice = watch('followMaxPrice')
+  const stopLossTimeout = watch('stopLossTimeout')
+  const stopLossTimeoutValue = watch('stopLossTimeoutValue')
 
   const balanceOf = useAsyncRetry(async () => {
     if (!props.tokens?.[0]?.address || !props.router) return
@@ -207,6 +214,11 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                 stopLossAmountOut
               ),
               activation: null,
+              timeout: formValues.stopLossTimeout
+                ? {
+                    duration: Number(formValues.stopLossTimeoutValue),
+                  }
+                : null,
             }
           : null,
         formValues.trailingTakeProfit
@@ -232,6 +244,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                     direction: 'gt',
                   }
                 : null,
+              timeout: null,
             }
           : null,
         formValues.takeProfit && !formValues.trailingTakeProfit
@@ -249,6 +262,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
               slippage: props.slippage,
               activation: null,
               moving: null,
+              timeout: null,
             }
           : null,
         {}
@@ -280,6 +294,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                 moving: result.callData.stopLoss.moving,
                 activation: result.callData.stopLoss
                   .activation as SwapOrderCallDataRouteActivationInputType,
+                timeout: result.callData.stopLoss.timeout,
               }
             : null,
           stopLoss2: result.callData.stopLoss2
@@ -290,6 +305,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                 slippage: Number(result.callData.stopLoss2.slippage),
                 activation: result.callData.stopLoss2
                   .activation as SwapOrderCallDataRouteActivationInputType,
+                timeout: result.callData.stopLoss2.timeout,
               }
             : null,
           takeProfit: result.callData.takeProfit
@@ -299,6 +315,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                 slippage: Number(result.callData.takeProfit.slippage),
                 activation: result.callData.takeProfit
                   .activation as SwapOrderCallDataRouteActivationInputType,
+                timeout: result.callData.takeProfit.timeout,
               }
             : null,
           deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
@@ -380,6 +397,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                 stopLossAmountOut
               ),
               activation: null,
+              timeout: null,
             }
           : null,
         formValues.trailingTakeProfit
@@ -396,6 +414,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                     direction: 'gt',
                   }
                 : null,
+              timeout: null,
             }
           : null,
         formValues.takeProfit && !formValues.trailingTakeProfit
@@ -412,6 +431,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
               ),
               slippage: props.slippage,
               activation: null,
+              timeout: null,
             }
           : null
       )
@@ -435,6 +455,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                   moving: result.callData.stopLoss.moving,
                   activation: result.callData.stopLoss
                     .activation as SwapOrderCallDataRouteActivationInputType,
+                  timeout: result.callData.stopLoss.timeout,
                 }
               : null,
             takeProfit: result.callData.takeProfit
@@ -444,6 +465,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                   slippage: Number(result.callData.takeProfit.slippage),
                   activation: result.callData.takeProfit
                     .activation as SwapOrderCallDataRouteActivationInputType,
+                  timeout: result.callData.takeProfit.timeout,
                 }
               : null,
             stopLoss2: result.callData.stopLoss2
@@ -454,6 +476,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                   slippage: Number(result.callData.stopLoss2.slippage),
                   activation: result.callData.stopLoss2
                     .activation as SwapOrderCallDataRouteActivationInputType,
+                  timeout: result.callData.stopLoss2.timeout,
                 }
               : null,
             deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
@@ -904,6 +927,66 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
                   disabled={formState.isSubmitting}
                 />
               </div>
+              <div className={styles.trailingBuyTitle}>
+                <Typography
+                  as="div"
+                  variant="body3"
+                  className={clsx(styles.takeProfitLabel, styles.greyTitle)}
+                >
+                  Stop loss timeout
+                </Typography>
+                <Dropdown
+                  control={
+                    <ButtonBase>
+                      <Icon icon="info" width="16" height="16" />
+                    </ButtonBase>
+                  }
+                  offset={[0, 8]}
+                  className={styles.dropdown}
+                  placement="bottom-start"
+                >
+                  <Typography variant="body2">text</Typography>
+                </Dropdown>
+                <Switch
+                  size="small"
+                  onChange={({ target }) =>
+                    setValue('stopLossTimeout', target.checked)
+                  }
+                  checked={stopLossTimeout}
+                  disabled={formState.isSubmitting}
+                />
+              </div>
+              {stopLossTimeout && (
+                <>
+                  <div className={styles.trailingBuy}>
+                    <Controller
+                      control={control}
+                      name="stopLossTimeoutValue"
+                      render={({ field }) => (
+                        <NumericalInput
+                          size="small"
+                          rightSide="Sec"
+                          className={styles.trailingBuyInput}
+                          disabled={formState.isSubmitting}
+                          {...field}
+                        />
+                      )}
+                    />
+                    <TradePlusMinus
+                      onPlus={(value) =>
+                        setValue('stopLossTimeoutValue', String(value))
+                      }
+                      onMinus={(value) =>
+                        setValue('stopLossTimeoutValue', String(value))
+                      }
+                      min={1}
+                      max={100}
+                      value={stopLossTimeoutValue}
+                      disabled={formState.isSubmitting}
+                    />
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>

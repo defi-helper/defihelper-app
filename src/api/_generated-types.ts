@@ -2898,13 +2898,19 @@ export type SwapHandlerCallDataRouteActivationType = {
   activated: Scalars['Boolean']
 }
 
+export type SwapHandlerCallDataRouteTimeoutType = {
+  __typename?: 'SwapHandlerCallDataRouteTimeoutType'
+  duration: Scalars['Int']
+}
+
 export type SwapHandlerCallDataRouteType = {
   __typename?: 'SwapHandlerCallDataRouteType'
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
-  moving: Scalars['Boolean']
+  moving?: Maybe<Scalars['BigNumberType']>
   activation?: Maybe<SwapHandlerCallDataRouteActivationType>
+  timeout?: Maybe<SwapHandlerCallDataRouteTimeoutType>
 }
 
 export enum SwapOrderCallDataDirectionEnum {
@@ -2925,6 +2931,11 @@ export type SwapOrderCallDataRouteInputType = {
   slippage: Scalars['Float']
   moving?: Maybe<Scalars['BigNumberType']>
   activation?: Maybe<SwapOrderCallDataRouteActivationInputType>
+  timeout?: Maybe<SwapOrderCallDataRouteTimeoutInputType>
+}
+
+export type SwapOrderCallDataRouteTimeoutInputType = {
+  duration: Scalars['Int']
 }
 
 export type TagType = {
