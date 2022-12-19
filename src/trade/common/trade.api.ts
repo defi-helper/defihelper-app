@@ -150,12 +150,13 @@ export type Pair = {
 type Response<T> = { code: 200 | 500 | 405; data: T; message?: string }
 
 export const tradeApi = {
-  exchanges: (networks: string[]) =>
+  exchanges: (networks: string[], signal: AbortSignal) =>
     apiV1
       .get<Response<Exchange[]>>('dex-info', {
         params: {
           networks: networks.join(','),
         },
+        signal,
       })
       .then(({ data }) => ({
         data: config.IS_DEV
@@ -171,7 +172,7 @@ export const tradeApi = {
         message: data.message,
       })),
 
-  poolInfo: (networks: string[]) =>
+  poolInfo: (networks: string[], signal: AbortSignal) =>
     apiV1
       .get<Response<Pool[]>>('pool-info', {
         params: {
@@ -179,6 +180,7 @@ export const tradeApi = {
           sort: 'liquidity',
           direction: 'asc',
         },
+        signal,
       })
       .then(({ data }) => data),
 
@@ -191,17 +193,33 @@ export const tradeApi = {
       >(`get-actual-price`, request)
       .then(({ data }) => data.data),
 
-  pairs: (
-    network: string[],
-    pool: string[],
-    payload: {
-      excludedPairAddresses: string[]
-      pairAddresses: string[]
-    } = {
+  // network: string[],
+  // pool: string[],
+  // payload: {
+  //   excludedPairAddresses: string[]
+  //   pairAddresses: string[]
+  // } = {
+  //   excludedPairAddresses: [],
+  //   pairAddresses: [],
+  // }
+
+  pairs: ({
+    signal,
+    network,
+    pool,
+    payload = {
       excludedPairAddresses: [],
       pairAddresses: [],
+    },
+  }: {
+    network: string[]
+    pool: string[]
+    payload?: {
+      excludedPairAddresses: string[]
+      pairAddresses: string[]
     }
-  ) =>
+    signal?: AbortSignal
+  }) =>
     apiV1
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .post<Response<{ list: Pair[] }>>(
@@ -212,6 +230,7 @@ export const tradeApi = {
             network: network.join(','),
             pool: pool.join(','),
           },
+          signal,
         }
       )
       .then(({ data }) => ({
@@ -222,13 +241,17 @@ export const tradeApi = {
         },
       })),
 
-  history: (
-    address: string,
-    from: string,
-    to: string,
-    countback: number,
-    resolution = '60'
-  ) =>
+  history: ({
+    resolution = '60',
+    address,
+    ...restOfparams
+  }: {
+    address: string
+    from: string
+    to: string
+    countback: number
+    resolution?: string
+  }) =>
     apiV1
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .get<any>(
@@ -236,9 +259,7 @@ export const tradeApi = {
         {
           params: {
             resolution,
-            from,
-            to,
-            countback,
+            ...restOfparams,
           },
         }
       )
@@ -397,7 +418,7 @@ const authRequestInterceptor = async (axiosConfig: AxiosRequestConfig) => {
     whattofarm.tokenExpired &&
     !dateUtils.isAfter(whattofarm.tokenExpired)
   ) {
-    Object.assign(axiosConfig.headers, {
+    Object.assign(axiosConfig.headers ?? {}, {
       Authorization: `Bearer ${whattofarm?.accessToken}`,
     })
   }

@@ -259,7 +259,10 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
 
         const exchange = props.exchangesMap.get(order.callData.exchange)
 
-        const pairs = await tradeApi.pairs([], [order.callData.exchange])
+        const pairs = await tradeApi.pairs({
+          network: [],
+          pool: [order.callData.exchange],
+        })
 
         const pair = pairs.data.list.find(({ pairInfo }) =>
           pairInfo.tokens.some(
