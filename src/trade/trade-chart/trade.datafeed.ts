@@ -85,12 +85,12 @@ export default {
     console.log('[getBars]: Method call', symbolInfo, resolution, from, to)
 
     try {
-      const { data } = await tradeApi.history(
-        symbolInfo.ticker,
+      const { data } = await tradeApi.history({
+        address: symbolInfo.ticker,
         from,
         to,
-        countBack
-      )
+        countback: countBack,
+      })
 
       const bars = data.map((item: any) => ({
         close: item.CloseUsdPrice0,
