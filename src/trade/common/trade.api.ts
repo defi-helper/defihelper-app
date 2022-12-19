@@ -193,16 +193,6 @@ export const tradeApi = {
       >(`get-actual-price`, request)
       .then(({ data }) => data.data),
 
-  // network: string[],
-  // pool: string[],
-  // payload: {
-  //   excludedPairAddresses: string[]
-  //   pairAddresses: string[]
-  // } = {
-  //   excludedPairAddresses: [],
-  //   pairAddresses: [],
-  // }
-
   pairs: ({
     signal,
     network,
