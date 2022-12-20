@@ -50,6 +50,7 @@ import { riskIcons } from '~/invest/common/constants'
 import { TokenRiskScoringEnum } from '~/api/_generated-types'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -83,6 +84,13 @@ const EARNINGS = [
     activity and demand.
   </React.Fragment>,
 ]
+
+const RISK_STATUSES = {
+  [TokenRiskScoringEnum.High]: 'high',
+  [TokenRiskScoringEnum.Moderate]: 'medium',
+  [TokenRiskScoringEnum.Low]: 'low',
+  [TokenRiskScoringEnum.NotCalculated]: 'not calculated',
+}
 
 const HEIGHT = 300
 
@@ -238,18 +246,20 @@ export const ProtocolDetail: React.FC = () => {
             <Can I="update" a="Protocol">
               {protocol && (
                 <div className={styles.riskOverview}>
-                  <div className={styles.riskPanel}>
+                  <Paper radius={6} className={styles.riskPanel}>
                     <div className={styles.riskColumnTotal}>
                       Risk
-                      <span className={styles.totalRiskBadge}>
+                      <span
+                        className={clsx(
+                          styles.totalRiskBadge,
+                          styles.riskLevelStatuses[
+                            protocol.metric.risk?.totalRate ??
+                              TokenRiskScoringEnum.NotCalculated
+                          ]
+                        )}
+                      >
                         {
-                          {
-                            [TokenRiskScoringEnum.High]: 'high',
-                            [TokenRiskScoringEnum.Moderate]: 'moderate',
-                            [TokenRiskScoringEnum.Low]: 'low',
-                            [TokenRiskScoringEnum.NotCalculated]:
-                              'not calculated',
-                          }[
+                          RISK_STATUSES[
                             protocol.metric.risk?.totalRate ??
                               TokenRiskScoringEnum.NotCalculated
                           ]
@@ -286,7 +296,12 @@ export const ProtocolDetail: React.FC = () => {
                             styles.riskFactorsDescriptionFactorModerate
                           }
                         >
-                          {(protocol.metric.risk?.reliability ?? 1).toFixed(2)}
+                          {bignumberUtils.toFixed(
+                            bignumberUtils.mul(
+                              protocol.metric.risk?.reliability ?? 0,
+                              100
+                            )
+                          )}
                         </span>
                       </Typography>
 
@@ -354,8 +369,11 @@ export const ProtocolDetail: React.FC = () => {
                             styles.riskFactorsDescriptionFactorModerate
                           }
                         >
-                          {(protocol.metric.risk?.profitability ?? 1).toFixed(
-                            2
+                          {bignumberUtils.toFixed(
+                            bignumberUtils.mul(
+                              protocol.metric.risk?.profitability ?? 0,
+                              100
+                            )
                           )}
                         </span>
                       </Typography>
@@ -424,7 +442,12 @@ export const ProtocolDetail: React.FC = () => {
                             styles.riskFactorsDescriptionFactorModerate
                           }
                         >
-                          {(protocol.metric.risk?.volatility ?? 1).toFixed(2)}
+                          {bignumberUtils.toFixed(
+                            bignumberUtils.mul(
+                              protocol.metric.risk?.volatility ?? 0,
+                              100
+                            )
+                          )}
                         </span>
                       </Typography>
 
@@ -462,7 +485,7 @@ export const ProtocolDetail: React.FC = () => {
                         Learn more about how we scoring
                       </Link>
                     </Dropdown>
-                  </div>
+                  </Paper>
 
                   <div className={styles.riskFactorsDescription}>
                     <span className={styles.riskFactorsDescriptionHeadline}>
