@@ -57,7 +57,7 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
   const { handleSubmit, control, watch, setValue, formState } =
     useForm<FormValues>({
       defaultValues: {
-        trailingBuyPercent: '0',
+        trailingBuyPercent: '5',
         total: '0',
         amount: '0',
       },
@@ -118,9 +118,7 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
     const exchange = props.exchangesMap.get(props.exchangeAddress)
 
     if (!currentUserWallet || !props.swap || !exchange) return
-    const tokenAddreses = props.tokens.map(({ address }) => address)
-
-    const path = props.hasReverse ? [...tokenAddreses].reverse() : tokenAddreses
+    const path = props.tokens.map(({ address }) => address).reverse()
 
     const [tokenAddress] = path.slice(-1)
 
@@ -345,7 +343,7 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
             color="green"
             className={styles.fullWidth}
             onClick={handleApprove}
-            loading={formState.isSubmitting}
+            loading={formState.isSubmitting || approve.loading}
           >
             Approve {props.tokens?.[0]?.symbol}
           </Button>
