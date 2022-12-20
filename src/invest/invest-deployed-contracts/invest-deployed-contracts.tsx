@@ -421,11 +421,11 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   error={deployedContract.wallet?.billing?.balance?.lowFeeFunds}
                   freshMetrics={metrics[deployedContract.id]}
                   balanceInvest={bignumberUtils.minus(
-                    deployedContract.metric.invest,
                     bignumberUtils.plus(
                       deployedContract.metric.staked,
                       deployedContract.metric.earned
-                    )
+                    ),
+                    deployedContract.metric.invest
                   )}
                 />
               )
