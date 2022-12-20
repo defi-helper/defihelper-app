@@ -50,6 +50,7 @@ import { riskIcons } from '~/invest/common/constants'
 import { TokenRiskScoringEnum } from '~/api/_generated-types'
 import * as model from './protocol-detail.model'
 import * as styles from './protocol-detail.css'
+import { bignumberUtils } from '~/common/bignumber-utils'
 
 export type ProtocolDetailProps = {
   protocolId: string
@@ -83,6 +84,13 @@ const EARNINGS = [
     activity and demand.
   </React.Fragment>,
 ]
+
+const RISK_STATUSES = {
+  [TokenRiskScoringEnum.High]: 'high',
+  [TokenRiskScoringEnum.Moderate]: 'medium',
+  [TokenRiskScoringEnum.Low]: 'low',
+  [TokenRiskScoringEnum.NotCalculated]: 'not calculated',
+}
 
 const HEIGHT = 300
 
@@ -235,251 +243,237 @@ export const ProtocolDetail: React.FC = () => {
               </Link>
             </div>
 
-            <Can I="update" a="Protocol">
-              {protocol && (
-                <div className={styles.riskOverview}>
-                  <div className={styles.riskPanel}>
-                    <div className={styles.riskColumnTotal}>
-                      Risk
-                      <span className={styles.totalRiskBadge}>
-                        {
-                          {
-                            [TokenRiskScoringEnum.High]: 'high',
-                            [TokenRiskScoringEnum.Moderate]: 'moderate',
-                            [TokenRiskScoringEnum.Low]: 'low',
-                            [TokenRiskScoringEnum.NotCalculated]:
-                              'not calculated',
-                          }[
-                            protocol.metric.risk?.totalRate ??
-                              TokenRiskScoringEnum.NotCalculated
-                          ]
-                        }
-                      </span>
-                    </div>
-
-                    <Dropdown
-                      control={
-                        <div className={styles.riskColumnFactor}>
-                          <span className={styles.riskColumnFactorLabel}>
-                            Reliability
-                          </span>
-                          <Icon
-                            icon={
-                              riskIcons[
-                                protocol.metric.risk?.reliabilityRate ??
-                                  TokenRiskScoringEnum.High
-                              ]
-                            }
-                            width={22}
-                            height={24}
-                          />
-                        </div>
-                      }
-                      offset={[0, 4]}
-                      placement="bottom-start"
-                      trigger="hover"
-                    >
-                      <Typography className={styles.riskFactorTooltipBody}>
-                        Scoring:{' '}
-                        <span
-                          className={
-                            styles.riskFactorsDescriptionFactorModerate
-                          }
-                        >
-                          {(protocol.metric.risk?.reliability ?? 1).toFixed(2)}
-                        </span>
-                      </Typography>
-
-                      <div className={styles.riskFactorTooltipBodyDivider} />
-
-                      {riskBadFactors.length && (
-                        <Typography
-                          className={styles.riskFactorTooltipFactorsDescribe}
-                        >
-                          <Typography
-                            className={
-                              styles.riskFactorTooltipRiskFactorsHeadline
-                            }
-                          >
-                            Risk Factors:
-                          </Typography>
-
-                          <Typography
-                            className={
-                              styles.riskFactorsDescriptionFactorModerate
-                            }
-                          >
-                            The project has problems with{' '}
-                            {riskBadFactors.join(', ')}
-                          </Typography>
-                        </Typography>
-                      )}
-
-                      <Link
-                        target="_blank"
-                        color="blue"
-                        href="/"
-                        className={styles.riskFactorTooltipRiskingFaqLink}
-                      >
-                        Learn more about how we scoring
-                      </Link>
-                    </Dropdown>
-
-                    <Dropdown
-                      control={
-                        <div className={styles.riskColumnFactor}>
-                          <span className={styles.riskColumnFactorLabel}>
-                            Profitability
-                          </span>
-                          <Icon
-                            icon={
-                              riskIcons[
-                                protocol.metric.risk?.profitabilityRate ??
-                                  TokenRiskScoringEnum.High
-                              ]
-                            }
-                            width={22}
-                            height={24}
-                          />
-                        </div>
-                      }
-                      offset={[0, 4]}
-                      placement="bottom-start"
-                      trigger="hover"
-                    >
-                      <Typography className={styles.riskFactorTooltipBody}>
-                        Scoring:{' '}
-                        <span
-                          className={
-                            styles.riskFactorsDescriptionFactorModerate
-                          }
-                        >
-                          {(protocol.metric.risk?.profitability ?? 1).toFixed(
-                            2
-                          )}
-                        </span>
-                      </Typography>
-
-                      <div className={styles.riskFactorTooltipBodyDivider} />
-
-                      {riskBadFactors.length && (
-                        <Typography
-                          className={styles.riskFactorTooltipFactorsDescribe}
-                        >
-                          <Typography
-                            className={
-                              styles.riskFactorTooltipRiskFactorsHeadline
-                            }
-                          >
-                            Risk Factors:
-                          </Typography>
-
-                          <Typography
-                            className={
-                              styles.riskFactorsDescriptionFactorModerate
-                            }
-                          >
-                            The project has problems with{' '}
-                            {riskBadFactors.join(', ')}
-                          </Typography>
-                        </Typography>
-                      )}
-
-                      <Link
-                        target="_blank"
-                        color="blue"
-                        href="/"
-                        className={styles.riskFactorTooltipRiskingFaqLink}
-                      >
-                        Learn more about how we scoring
-                      </Link>
-                    </Dropdown>
-
-                    <Dropdown
-                      control={
-                        <div className={styles.riskColumnFactor}>
-                          <span className={styles.riskColumnFactorLabel}>
-                            Volatility
-                          </span>
-                          <Icon
-                            icon={
-                              riskIcons[
-                                protocol.metric.risk?.volatilityRate ??
-                                  TokenRiskScoringEnum.High
-                              ]
-                            }
-                            width={22}
-                            height={24}
-                          />
-                        </div>
-                      }
-                      offset={[0, 4]}
-                      placement="bottom-start"
-                      trigger="hover"
-                    >
-                      <Typography className={styles.riskFactorTooltipBody}>
-                        Scoring:{' '}
-                        <span
-                          className={
-                            styles.riskFactorsDescriptionFactorModerate
-                          }
-                        >
-                          {(protocol.metric.risk?.volatility ?? 1).toFixed(2)}
-                        </span>
-                      </Typography>
-
-                      <div className={styles.riskFactorTooltipBodyDivider} />
-
-                      {riskBadFactors.length && (
-                        <Typography
-                          className={styles.riskFactorTooltipFactorsDescribe}
-                        >
-                          <Typography
-                            className={
-                              styles.riskFactorTooltipRiskFactorsHeadline
-                            }
-                          >
-                            Risk Factors:
-                          </Typography>
-
-                          <Typography
-                            className={
-                              styles.riskFactorsDescriptionFactorModerate
-                            }
-                          >
-                            The project has problems with{' '}
-                            {riskBadFactors.join(', ')}
-                          </Typography>
-                        </Typography>
-                      )}
-
-                      <Link
-                        target="_blank"
-                        color="blue"
-                        href="/"
-                        className={styles.riskFactorTooltipRiskingFaqLink}
-                      >
-                        Learn more about how we scoring
-                      </Link>
-                    </Dropdown>
-                  </div>
-
-                  <div className={styles.riskFactorsDescription}>
-                    <span className={styles.riskFactorsDescriptionHeadline}>
-                      Risk Factors:
-                    </span>{' '}
+            {protocol && protocol.metric.risk && (
+              <div className={styles.riskOverview}>
+                <Paper radius={6} className={styles.riskPanel}>
+                  <div className={styles.riskColumnTotal}>
+                    Risk
                     <span
                       className={clsx(
-                        styles.riskFactorsDescriptionFactor,
-                        styles.riskFactorsDescriptionFactorModerate
+                        styles.totalRiskBadge,
+                        styles.riskLevelStatuses[protocol.metric.risk.totalRate]
                       )}
                     >
-                      The project has problems with {riskBadFactors.join(', ')}
+                      {RISK_STATUSES[protocol.metric.risk.totalRate]}
                     </span>
                   </div>
+
+                  <Dropdown
+                    control={
+                      <div className={styles.riskColumnFactor}>
+                        <span className={styles.riskColumnFactorLabel}>
+                          Reliability
+                        </span>
+                        <Icon
+                          icon={riskIcons[protocol.metric.risk.reliabilityRate]}
+                          width={22}
+                          height={24}
+                        />
+                      </div>
+                    }
+                    offset={[0, 4]}
+                    placement="bottom-start"
+                    trigger="hover"
+                  >
+                    <Typography className={styles.riskFactorTooltipBody}>
+                      Scoring:{' '}
+                      <span
+                        className={styles.riskFactorsDescriptionFactorModerate}
+                      >
+                        {bignumberUtils.toFixed(
+                          bignumberUtils.mul(
+                            protocol.metric.risk.reliability,
+                            100
+                          )
+                        )}
+                      </span>
+                    </Typography>
+
+                    <div className={styles.riskFactorTooltipBodyDivider} />
+
+                    {riskBadFactors.length && (
+                      <Typography
+                        className={styles.riskFactorTooltipFactorsDescribe}
+                      >
+                        <Typography
+                          className={
+                            styles.riskFactorTooltipRiskFactorsHeadline
+                          }
+                        >
+                          Risk Factors:
+                        </Typography>
+
+                        <Typography
+                          className={
+                            styles.riskFactorsDescriptionFactorModerate
+                          }
+                        >
+                          The project has problems with{' '}
+                          {riskBadFactors.join(', ')}
+                        </Typography>
+                      </Typography>
+                    )}
+
+                    <Link
+                      target="_blank"
+                      color="blue"
+                      href="/"
+                      className={styles.riskFactorTooltipRiskingFaqLink}
+                    >
+                      Learn more about how we scoring
+                    </Link>
+                  </Dropdown>
+
+                  <Dropdown
+                    control={
+                      <div className={styles.riskColumnFactor}>
+                        <span className={styles.riskColumnFactorLabel}>
+                          Profitability
+                        </span>
+                        <Icon
+                          icon={
+                            riskIcons[protocol.metric.risk.profitabilityRate]
+                          }
+                          width={22}
+                          height={24}
+                        />
+                      </div>
+                    }
+                    offset={[0, 4]}
+                    placement="bottom-start"
+                    trigger="hover"
+                  >
+                    <Typography className={styles.riskFactorTooltipBody}>
+                      Scoring:{' '}
+                      <span
+                        className={styles.riskFactorsDescriptionFactorModerate}
+                      >
+                        {bignumberUtils.toFixed(
+                          bignumberUtils.mul(
+                            protocol.metric.risk.profitability,
+                            100
+                          )
+                        )}
+                      </span>
+                    </Typography>
+
+                    <div className={styles.riskFactorTooltipBodyDivider} />
+
+                    {riskBadFactors.length && (
+                      <Typography
+                        className={styles.riskFactorTooltipFactorsDescribe}
+                      >
+                        <Typography
+                          className={
+                            styles.riskFactorTooltipRiskFactorsHeadline
+                          }
+                        >
+                          Risk Factors:
+                        </Typography>
+
+                        <Typography
+                          className={
+                            styles.riskFactorsDescriptionFactorModerate
+                          }
+                        >
+                          The project has problems with{' '}
+                          {riskBadFactors.join(', ')}
+                        </Typography>
+                      </Typography>
+                    )}
+
+                    <Link
+                      target="_blank"
+                      color="blue"
+                      href="/"
+                      className={styles.riskFactorTooltipRiskingFaqLink}
+                    >
+                      Learn more about how we scoring
+                    </Link>
+                  </Dropdown>
+
+                  <Dropdown
+                    control={
+                      <div className={styles.riskColumnFactor}>
+                        <span className={styles.riskColumnFactorLabel}>
+                          Volatility
+                        </span>
+                        <Icon
+                          icon={riskIcons[protocol.metric.risk.volatilityRate]}
+                          width={22}
+                          height={24}
+                        />
+                      </div>
+                    }
+                    offset={[0, 4]}
+                    placement="bottom-start"
+                    trigger="hover"
+                  >
+                    <Typography className={styles.riskFactorTooltipBody}>
+                      Scoring:{' '}
+                      <span
+                        className={styles.riskFactorsDescriptionFactorModerate}
+                      >
+                        {bignumberUtils.toFixed(
+                          bignumberUtils.mul(
+                            protocol.metric.risk?.volatility ?? 0,
+                            100
+                          )
+                        )}
+                      </span>
+                    </Typography>
+
+                    <div className={styles.riskFactorTooltipBodyDivider} />
+
+                    {riskBadFactors.length && (
+                      <Typography
+                        className={styles.riskFactorTooltipFactorsDescribe}
+                      >
+                        <Typography
+                          className={
+                            styles.riskFactorTooltipRiskFactorsHeadline
+                          }
+                        >
+                          Risk Factors:
+                        </Typography>
+
+                        <Typography
+                          className={
+                            styles.riskFactorsDescriptionFactorModerate
+                          }
+                        >
+                          The project has problems with{' '}
+                          {riskBadFactors.join(', ')}
+                        </Typography>
+                      </Typography>
+                    )}
+
+                    <Link
+                      target="_blank"
+                      color="blue"
+                      href="/"
+                      className={styles.riskFactorTooltipRiskingFaqLink}
+                    >
+                      Learn more about how we scoring
+                    </Link>
+                  </Dropdown>
+                </Paper>
+
+                <div className={styles.riskFactorsDescription}>
+                  <span className={styles.riskFactorsDescriptionHeadline}>
+                    Risk Factors:
+                  </span>{' '}
+                  <span
+                    className={clsx(
+                      styles.riskFactorsDescriptionFactor,
+                      styles.riskFactorsDescriptionFactorModerate
+                    )}
+                  >
+                    The project has problems with {riskBadFactors.join(', ')}
+                  </span>
                 </div>
-              )}
-            </Can>
+              </div>
+            )}
 
             <Switch>
               <Redirect exact from={match.path} to={`${match.path}/earnings`} />
