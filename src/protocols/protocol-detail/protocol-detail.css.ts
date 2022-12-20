@@ -1,5 +1,6 @@
-import { style } from '@vanilla-extract/css'
+import { style, styleVariants } from '@vanilla-extract/css'
 
+import { TokenRiskScoringEnum } from '~/api'
 import { theme } from '~/common/theme'
 
 export const header = style({
@@ -166,8 +167,6 @@ export const charts = style({})
 export const staking = style({})
 
 export const totalRiskBadge = style({
-  background: theme.colors.common.green2,
-  color: '#000',
   padding: '2px 32.5px',
   borderRadius: '22px',
   marginLeft: '16px',
@@ -182,10 +181,8 @@ export const riskOverview = style({
 export const riskPanel = style({
   display: 'grid',
   gridTemplateColumns: 'auto 1fr 1fr 1fr',
-  backgroundColor: theme.colors.common.black2,
   fontFamily: theme.fonts.mono,
   padding: '13px 32px',
-  borderRadius: 6,
   marginBottom: 16,
 })
 
@@ -195,7 +192,23 @@ export const riskColumnTotal = style({
   display: 'flex',
   fontSize: '20px',
   lineHeight: '24px',
-  borderRight: `1px solid ${theme.colors.common.black7}`,
+  borderRight: `1px solid ${theme.colors.border}`,
+})
+
+export const riskLevelStatuses = styleVariants({
+  [TokenRiskScoringEnum.High]: {
+    background: theme.colors.common.red1,
+  },
+  [TokenRiskScoringEnum.Moderate]: {
+    background: theme.colors.common.yellow,
+  },
+  [TokenRiskScoringEnum.Low]: {
+    background: theme.colors.common.green2,
+  },
+  [TokenRiskScoringEnum.NotCalculated]: {
+    background: theme.colors.textColorGrey,
+    color: theme.colors.textColorSecondary,
+  },
 })
 
 export const riskColumnFactor = style({
@@ -225,12 +238,12 @@ export const riskFactorsDescriptionFactorModerate = style({
 })
 
 export const riskFactorTooltipBodyDivider = style({
-  borderBottom: `1px solid ${theme.colors.common.black7}`,
+  borderBottom: `1px solid ${theme.colors.border}`,
   margin: '16px 0px',
 })
 
 export const riskFactorsDescriptionHeadline = style({
-  color: theme.colors.common.grey1,
+  color: theme.colors.textColorGrey,
 })
 
 export const riskFactorTooltipBody = style({
