@@ -243,7 +243,7 @@ export const ProtocolDetail: React.FC = () => {
               </Link>
             </div>
 
-            {protocol && (
+            {protocol && protocol.metric.risk && (
               <div className={styles.riskOverview}>
                 <Paper radius={6} className={styles.riskPanel}>
                   <div className={styles.riskColumnTotal}>
@@ -251,18 +251,10 @@ export const ProtocolDetail: React.FC = () => {
                     <span
                       className={clsx(
                         styles.totalRiskBadge,
-                        styles.riskLevelStatuses[
-                          protocol.metric.risk?.totalRate ??
-                            TokenRiskScoringEnum.NotCalculated
-                        ]
+                        styles.riskLevelStatuses[protocol.metric.risk.totalRate]
                       )}
                     >
-                      {
-                        RISK_STATUSES[
-                          protocol.metric.risk?.totalRate ??
-                            TokenRiskScoringEnum.NotCalculated
-                        ]
-                      }
+                      {RISK_STATUSES[protocol.metric.risk.totalRate]}
                     </span>
                   </div>
 
@@ -273,12 +265,7 @@ export const ProtocolDetail: React.FC = () => {
                           Reliability
                         </span>
                         <Icon
-                          icon={
-                            riskIcons[
-                              protocol.metric.risk?.reliabilityRate ??
-                                TokenRiskScoringEnum.High
-                            ]
-                          }
+                          icon={riskIcons[protocol.metric.risk.reliabilityRate]}
                           width={22}
                           height={24}
                         />
@@ -295,7 +282,7 @@ export const ProtocolDetail: React.FC = () => {
                       >
                         {bignumberUtils.toFixed(
                           bignumberUtils.mul(
-                            protocol.metric.risk?.reliability ?? 0,
+                            protocol.metric.risk.reliability,
                             100
                           )
                         )}
@@ -345,10 +332,7 @@ export const ProtocolDetail: React.FC = () => {
                         </span>
                         <Icon
                           icon={
-                            riskIcons[
-                              protocol.metric.risk?.profitabilityRate ??
-                                TokenRiskScoringEnum.High
-                            ]
+                            riskIcons[protocol.metric.risk.profitabilityRate]
                           }
                           width={22}
                           height={24}
@@ -366,7 +350,7 @@ export const ProtocolDetail: React.FC = () => {
                       >
                         {bignumberUtils.toFixed(
                           bignumberUtils.mul(
-                            protocol.metric.risk?.profitability ?? 0,
+                            protocol.metric.risk.profitability,
                             100
                           )
                         )}
@@ -415,12 +399,7 @@ export const ProtocolDetail: React.FC = () => {
                           Volatility
                         </span>
                         <Icon
-                          icon={
-                            riskIcons[
-                              protocol.metric.risk?.volatilityRate ??
-                                TokenRiskScoringEnum.High
-                            ]
-                          }
+                          icon={riskIcons[protocol.metric.risk.volatilityRate]}
                           width={22}
                           height={24}
                         />
