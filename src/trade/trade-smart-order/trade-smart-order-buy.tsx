@@ -4,7 +4,6 @@ import clsx from 'clsx'
 import { Controller, useForm } from 'react-hook-form'
 
 import { NumericalInput } from '~/common/numerical-input'
-import { Switch } from '~/common/switch'
 import { Typography } from '~/common/typography'
 import { TradePercentagePicker } from '~/trade/common/trade-percentage-picker'
 import { SmartTradeRouter, SmartTradeSwapHandler } from '~/common/load-adapter'
@@ -18,7 +17,7 @@ import { Exchange, Pair } from '~/trade/common/trade.api'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { SwapOrderCallDataRouteActivationInputType } from '~/api'
 import { settingsWalletModel } from '~/settings/settings-wallets'
-import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
+import { TradeConfirmBuyDialog } from '~/trade/common/trade-confirm-buy-dialog'
 import { useDialog } from '~/common/dialog'
 import * as model from './trade-smart-order.model'
 import * as styles from './trade-smart-order.css'
@@ -37,13 +36,13 @@ export type TradeSmartOrderBuyProps = {
   slippage: string
   exchangesMap: Map<string, Exchange>
   currentPair?: Pair
+  hasReverse: boolean
 }
 
 type FormValues = {
   amount: string
   price: string
   total: string
-  trailingBuy: boolean
   trailingBuyPercent: string
 }
 
@@ -53,18 +52,16 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
   const currentWallet = useStore(walletNetworkModel.$wallet)
   const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
 
-  const [openTradeConfirmDialog] = useDialog(TradeConfirmClaimDialog)
+  const [openTradeConfirmDialog] = useDialog(TradeConfirmBuyDialog)
 
   const { handleSubmit, control, watch, setValue, formState } =
     useForm<FormValues>({
       defaultValues: {
-        trailingBuy: false,
         trailingBuyPercent: '0',
         total: '0',
         amount: '0',
       },
     })
-  const trailingBuy = watch('trailingBuy')
   const trailingBuyPercent = watch('trailingBuyPercent')
   const total = watch('total')
   const totalThrottled = useThrottle(total, 300)
@@ -121,8 +118,9 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
     const exchange = props.exchangesMap.get(props.exchangeAddress)
 
     if (!currentUserWallet || !props.swap || !exchange) return
+    const tokenAddreses = props.tokens.map(({ address }) => address)
 
-    const path = props.tokens.map(({ address }) => address)
+    const path = props.hasReverse ? [...tokenAddreses].reverse() : tokenAddreses
 
     const [tokenAddress] = path.slice(-1)
 
@@ -137,12 +135,11 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
         exchange,
         tokens: props.currentPair?.pairInfo.tokens,
         name: currentUserWallet.name,
-        totalRecieve: formValues.amount,
+        total: formValues.total,
         boughtToken: token,
         firstToken: props.tokens[0]?.symbol,
         secondToken: props.tokens[1]?.symbol,
-        unit: formValues.amount,
-        takeProfit: formValues.total,
+        amount: formValues.amount,
       })
 
       const result = await props.swap?.createOrder(
@@ -203,6 +200,24 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
     }
   })
 
+  const handleChangeAmount = (event: React.FormEvent<HTMLInputElement>) => {
+    const currentAmount = event.currentTarget.value
+
+    setValue('amount', currentAmount)
+
+    setValue('total', bignumberUtils.mul(currentAmount, price.value))
+  }
+  const handleChangeTotal = (
+    event: React.FormEvent<HTMLInputElement> | string
+  ) => {
+    const currentTotal =
+      typeof event === 'string' ? event : event.currentTarget.value
+
+    setValue('total', currentTotal)
+
+    setValue('amount', bignumberUtils.div(currentTotal, price.value))
+  }
+
   return (
     <form
       className={styles.form}
@@ -220,7 +235,11 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
                 label="Amount"
                 rightSide={props.tokens?.[0]?.symbol}
                 disabled={formState.isSubmitting}
-                {...field}
+                ref={field.ref}
+                onChange={handleChangeAmount}
+                name={field.name}
+                onBlur={field.onBlur}
+                value={field.value}
               />
             )}
           />
@@ -251,46 +270,34 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
               >
                 <Typography variant="body2">text</Typography>
               </Dropdown>
-              <Switch
-                size="small"
-                onChange={({ target }) =>
-                  setValue('trailingBuy', target.checked)
+            </div>
+            <div className={styles.trailingBuy}>
+              <Controller
+                control={control}
+                name="trailingBuyPercent"
+                render={({ field }) => (
+                  <NumericalInput
+                    size="small"
+                    rightSide="%"
+                    className={styles.trailingBuyInput}
+                    disabled={formState.isSubmitting}
+                    {...field}
+                  />
+                )}
+              />
+              <TradePlusMinus
+                onPlus={(value) =>
+                  setValue('trailingBuyPercent', String(value))
                 }
-                checked={trailingBuy}
+                onMinus={(value) =>
+                  setValue('trailingBuyPercent', String(value))
+                }
+                min={1}
+                max={100}
+                value={trailingBuyPercent}
                 disabled={formState.isSubmitting}
               />
             </div>
-            {trailingBuy && (
-              <>
-                <div className={styles.trailingBuy}>
-                  <Controller
-                    control={control}
-                    name="trailingBuyPercent"
-                    render={({ field }) => (
-                      <NumericalInput
-                        size="small"
-                        rightSide="%"
-                        className={styles.trailingBuyInput}
-                        disabled={formState.isSubmitting}
-                        {...field}
-                      />
-                    )}
-                  />
-                  <TradePlusMinus
-                    onPlus={(value) =>
-                      setValue('trailingBuyPercent', String(value))
-                    }
-                    onMinus={(value) =>
-                      setValue('trailingBuyPercent', String(value))
-                    }
-                    min={1}
-                    max={100}
-                    value={trailingBuyPercent}
-                    disabled={formState.isSubmitting}
-                  />
-                </div>
-              </>
-            )}
           </div>
           <Controller
             control={control}
@@ -316,14 +323,18 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
                   </>
                 }
                 rightSide={props.tokens?.[1]?.symbol}
-                {...field}
+                ref={field.ref}
+                onChange={handleChangeTotal}
+                name={field.name}
+                onBlur={field.onBlur}
+                value={field.value}
               />
             )}
           />
           <TradePercentagePicker
             value={total}
             available={balanceOf.value}
-            onChange={(value) => setValue('total', value)}
+            onChange={handleChangeTotal}
             disabled={formState.isSubmitting}
           />
         </div>

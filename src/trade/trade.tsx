@@ -326,6 +326,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           key={String(currentPair || currentWalletAddress || currentExchange)}
           exchangesMap={exchangesMap}
           currentPair={currentPairObj}
+          hasReverse={currentTab > 0}
         />
       </>
     ),

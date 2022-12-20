@@ -24,7 +24,7 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
-import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
+import { TradeConfirmSellDialog } from '~/trade/common/trade-confirm-sell-dialog'
 import { useDialog } from '~/common/dialog'
 import { Exchange, Pair } from '~/trade/common/trade.api'
 import { hasBoughtPrice } from '~/trade/common/trade.types'
@@ -77,7 +77,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
   const [takeProfitFocus, toggleTakeProfitFocus] = useToggle(false)
   const [stopLossFocus, toggleStopLossFocus] = useToggle(false)
 
-  const [openTradeConfirmDialog] = useDialog(TradeConfirmClaimDialog)
+  const [openTradeConfirmDialog] = useDialog(TradeConfirmSellDialog)
 
   const { handleSubmit, control, watch, setValue, formState } =
     useForm<FormValues>({
