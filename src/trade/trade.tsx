@@ -14,7 +14,7 @@ import { Select, SelectOption } from '~/common/select'
 import { Paper } from '~/common/paper'
 import { TradeOrders } from './trade-orders'
 import { TradeBuySell } from './trade-buy-sell'
-import { TradeSmartSell } from './trade-smart-sell'
+import { TradeSmartOrderSell, TradeSmartOrderBuy } from './trade-smart-order'
 import { ButtonBase } from '~/common/button-base'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
@@ -36,7 +36,6 @@ import { NumericalInput } from '~/common/numerical-input'
 import { authModel } from '~/auth'
 import { UserRoleEnum } from '~/api'
 import { useQueryParams } from '~/common/hooks'
-import { TradeTrailingBuy } from './trade-trailing-buy'
 import * as model from './trade.model'
 import * as tradeOrdersModel from './trade-orders/trade-orders.model'
 import * as styles from './trade.css'
@@ -290,7 +289,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     [Selects.SmartSell]: (
       <>
         {!editingOrder && tabs}
-        <TradeSmartSell
+        <TradeSmartOrderSell
           router={adapter?.router}
           swap={adapter?.swap}
           tokens={tokens}
@@ -317,7 +316,7 @@ export const Trade: React.VFC<TradeProps> = () => {
     [Selects.TrailingBuy]: (
       <>
         {!editingOrder && tabs}
-        <TradeTrailingBuy
+        <TradeSmartOrderBuy
           router={adapter?.router}
           swap={adapter?.swap}
           tokens={tokens}
@@ -327,6 +326,7 @@ export const Trade: React.VFC<TradeProps> = () => {
           key={String(currentPair || currentWalletAddress || currentExchange)}
           exchangesMap={exchangesMap}
           currentPair={currentPairObj}
+          hasReverse={currentTab > 0}
         />
       </>
     ),

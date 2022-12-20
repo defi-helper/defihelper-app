@@ -9,6 +9,7 @@ export type TradePlusMinusProps = {
   min: string | number
   max: string | number
   value?: string | number
+  disabled?: boolean
 }
 
 export const TradePlusMinus: React.VFC<TradePlusMinusProps> = (props) => {
@@ -28,10 +29,18 @@ export const TradePlusMinus: React.VFC<TradePlusMinusProps> = (props) => {
 
   return (
     <div className={styles.root}>
-      <ButtonBase className={styles.button} onClick={handleMinus}>
+      <ButtonBase
+        className={styles.button}
+        onClick={handleMinus}
+        disabled={props.disabled}
+      >
         <Icon icon="minus" width="24" height="24" />
       </ButtonBase>
-      <ButtonBase className={styles.button} onClick={handlePlus}>
+      <ButtonBase
+        className={styles.button}
+        onClick={handlePlus}
+        disabled={props.disabled}
+      >
         <Icon icon="plus" width="24" height="24" />
       </ButtonBase>
     </div>
