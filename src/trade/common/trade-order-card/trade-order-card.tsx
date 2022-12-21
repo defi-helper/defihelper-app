@@ -272,6 +272,7 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
           </div>
         </div>
         <div>
+          {order.status === SmartTradeOrderStatusEnum.Pending && statusWidget}
           {order.status === SmartTradeOrderStatusEnum.Processed && (
             <>
               {statusWidget}
@@ -301,8 +302,7 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
               {callDataWithBoughtPrice &&
                 (order.claim ||
                   (order.status === SmartTradeOrderStatusEnum.Succeeded &&
-                    !order.claim)) &&
-                ![SmartTradeOrderStatusEnum.Pending].includes(order.status) && (
+                    !order.claim)) && (
                   <>
                     <Typography
                       variant="body3"
