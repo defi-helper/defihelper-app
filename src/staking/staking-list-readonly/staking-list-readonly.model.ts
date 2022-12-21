@@ -12,7 +12,7 @@ import {
 } from '~/staking/common'
 import { PaginationState } from '~/common/create-pagination'
 import { toastsService } from '~/toasts'
-import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
+import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 import * as stakingUpdateModel from '~/staking/staking-update/staking-update.model'
 import { createUseInfiniteScroll } from '~/common/create-use-infinite-scroll'
 

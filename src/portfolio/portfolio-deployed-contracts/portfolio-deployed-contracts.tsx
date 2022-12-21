@@ -15,7 +15,7 @@ import { networksConfig } from '~/networks-config'
 import { PortfolioAssetCard, PortfolioAssetsHeader } from '~/portfolio/common'
 import { ButtonBase } from '~/common/button-base'
 import { Loader } from '~/common/loader'
-import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
+import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 import * as styles from './portfolio-deployed-contracts.css'
 import * as model from './portfolio-deployed-contracts.model'
 
