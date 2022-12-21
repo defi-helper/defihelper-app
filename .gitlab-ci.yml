@@ -24,8 +24,8 @@ build:app:
   stage: build
   extends: .build_image
   variables:
-    KUBERNETES_CPU_REQUEST: 1
-    KUBERNETES_CPU_LIMIT: 4
+    KUBERNETES_CPU_REQUEST: 500m
+    KUBERNETES_CPU_LIMIT: 2
     KUBERNETES_MEMORY_REQUEST: 8192M
     KUBERNETES_MEMORY_LIMIT: 8192M
     APP_NAME: "app"
