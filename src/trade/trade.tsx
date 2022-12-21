@@ -429,6 +429,12 @@ export const Trade: React.VFC<TradeProps> = () => {
     setSearchPair('')
   }, [currentPair])
 
+  const selects = !([UserRoleEnum.Admin] as Array<string>).includes(
+    String(user?.role)
+  )
+    ? Object.values(Selects).filter((select) => select !== Selects.BuySell)
+    : Object.values(Selects)
+
   return (
     <AppLayout title="Trade">
       <Head title="Trade" />
@@ -678,44 +684,40 @@ export const Trade: React.VFC<TradeProps> = () => {
             )}
           >
             <div className={styles.tradeSelectHeader}>
-              {([UserRoleEnum.Admin] as Array<string>).includes(
-                String(user?.role)
-              ) && (
-                <Dropdown
-                  control={(open) => (
+              <Dropdown
+                control={(open) => (
+                  <Typography
+                    variant="body3"
+                    as={ButtonBase}
+                    transform="uppercase"
+                    family="mono"
+                    className={styles.tradeSellSelect}
+                  >
+                    {currentSelect}
+                    <Icon
+                      icon={open ? 'arrowUp' : 'arrowDown'}
+                      width="16"
+                      height="16"
+                    />
+                  </Typography>
+                )}
+                placement="bottom-start"
+                offset={[0, 8]}
+              >
+                {(close) =>
+                  selects.map((select) => (
                     <Typography
                       variant="body3"
+                      key={select}
+                      onClick={handleChangeSelect(select, close)}
                       as={ButtonBase}
                       transform="uppercase"
-                      family="mono"
-                      className={styles.tradeSellSelect}
                     >
-                      {currentSelect}
-                      <Icon
-                        icon={open ? 'arrowUp' : 'arrowDown'}
-                        width="16"
-                        height="16"
-                      />
+                      {select}
                     </Typography>
-                  )}
-                  placement="bottom-start"
-                  offset={[0, 8]}
-                >
-                  {(close) =>
-                    Object.values(Selects).map((select) => (
-                      <Typography
-                        variant="body3"
-                        key={select}
-                        onClick={handleChangeSelect(select, close)}
-                        as={ButtonBase}
-                        transform="uppercase"
-                      >
-                        {select}
-                      </Typography>
-                    ))
-                  }
-                </Dropdown>
-              )}
+                  ))
+                }
+              </Dropdown>
               <Dropdown
                 control={
                   <ButtonBase>

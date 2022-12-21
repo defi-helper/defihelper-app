@@ -148,7 +148,7 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
         null,
         {
           amountOut: formValues.amount,
-          slippage: props.slippage,
+          slippage: '100',
           activation: null,
           moving: bignumberUtils.mul(
             formValues.amount,
@@ -187,6 +187,7 @@ export const TradeSmartOrderBuy: React.VFC<TradeSmartOrderBuyProps> = (
                 activation: result.callData.takeProfit
                   .activation as SwapOrderCallDataRouteActivationInputType,
                 timeout: result.callData.takeProfit.timeout,
+                moving: result.callData.takeProfit.moving,
               }
             : null,
           deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
