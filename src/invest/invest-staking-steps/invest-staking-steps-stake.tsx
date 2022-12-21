@@ -11,7 +11,7 @@ import { analytics } from '~/analytics'
 import { toastsService } from '~/toasts'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import * as styles from './invest-staking-steps.css'
-import * as stakingAutomatesModel from '~/staking/staking-automates/staking-automates.model'
+import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 
 export type InvestStakingStepsStakeProps = {
   onSubmit?: (values: {

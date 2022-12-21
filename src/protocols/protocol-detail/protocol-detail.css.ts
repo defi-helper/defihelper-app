@@ -266,3 +266,7 @@ export const riskFactorTooltipRiskingFaqLink = style({
 export const riskFactorTooltipFactorsDescribe = style({
   marginBottom: '16px',
 })
+
+export const investmentsTitle = style({
+  marginBottom: 32,
+})

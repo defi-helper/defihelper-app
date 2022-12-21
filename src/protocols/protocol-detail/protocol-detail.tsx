@@ -32,7 +32,8 @@ import * as protocolOverviewModel from '~/protocols/protocol-overview/protocol-o
 import { Head } from '~/common/head'
 import { Icon } from '~/common/icon'
 import { Carousel } from '~/common/carousel'
-import { StakingAutomates } from '~/staking/staking-automates'
+import { InvestDeployedContracts } from '~/invest/invest-deployed-contracts'
+import * as investDeployedContractsModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 import { Loader } from '~/common/loader'
 import { ButtonBase } from '~/common/button-base'
 import { paths } from '~/paths'
@@ -105,6 +106,10 @@ export const ProtocolDetail: React.FC = () => {
     ...params,
     hidden: ability.can('update', 'Contract') ? null : false,
     signal: abortController.signal,
+  })
+
+  useGate(investDeployedContractsModel.StakingAutomatesGate, {
+    protocolId: params.protocolId,
   })
 
   const protocol = useStore(model.$protocol)
@@ -541,9 +546,15 @@ export const ProtocolDetail: React.FC = () => {
                         </LazyLoad>
                       </div>
                     </div>
-                    <LazyLoad height={HEIGHT} className={styles.automates}>
-                      <StakingAutomates protocolId={params.protocolId} />
-                    </LazyLoad>
+                    <div className={styles.automates}>
+                      <Typography
+                        variant="h3"
+                        className={styles.investmentsTitle}
+                      >
+                        Your investments
+                      </Typography>
+                      <InvestDeployedContracts />
+                    </div>
                   </>
                 )}
                 <LazyLoad height={HEIGHT}>
