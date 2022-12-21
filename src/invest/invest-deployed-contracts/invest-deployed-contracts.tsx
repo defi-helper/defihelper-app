@@ -32,13 +32,12 @@ import { settingsWalletModel } from '~/settings/settings-wallets'
 import { InvestStopLossDialog } from '~/invest/common/invest-stop-loss-dialog'
 import { paths } from '~/paths'
 import { NULL_ADDRESS } from '~/common/constants'
-import * as model from '~/staking/staking-automates/staking-automates.model'
+import * as model from './invest-deployed-contracts.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './invest-deployed-contracts.css'
 
 export type InvestDeployedContractsProps = {
   className?: string
-  search: string
 }
 
 export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =

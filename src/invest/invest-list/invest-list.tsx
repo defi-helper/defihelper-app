@@ -12,7 +12,7 @@ import { Input } from '~/common/input'
 import { InvestDeployedContracts } from '~/invest/invest-deployed-contracts'
 import { InvestMigrateContracts } from '~/invest/common/invest-migrate-contracts'
 import { InvestContracts } from '~/invest/invest-contracts'
-import * as model from '~/staking/staking-automates/staking-automates.model'
+import * as model from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 import * as investListModel from './invest-list.model'
 import * as styles from './invest-list.css'
 import { authModel } from '~/auth'
@@ -178,11 +178,7 @@ export const InvestList: React.VFC<unknown> = () => {
               />
             </InvestTabs.HeaderRight>
           </InvestTabs.Header>
-          {contracts.length ? (
-            <InvestDeployedContracts search={searchThrottled} />
-          ) : (
-            <></>
-          )}
+          {contracts.length ? <InvestDeployedContracts /> : <></>}
           {migrateContractsWithHidden.length ? (
             <InvestMigrateContracts
               search={searchThrottled}
