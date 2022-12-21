@@ -30,11 +30,19 @@ export const networks: Record<string, string> = {
 }
 
 export const fetchPairsFx = createEffect(
-  async (params: { network: string; exchange: string }) => {
-    const { data, message } = await tradeApi.pairs(
-      [networks[params.network]],
-      [params.exchange]
-    )
+  async ({
+    signal,
+    ...params
+  }: {
+    network: string
+    exchange: string
+    signal: AbortSignal
+  }) => {
+    const { data, message } = await tradeApi.pairs({
+      network: [networks[params.network]],
+      pool: [params.exchange],
+      signal,
+    })
 
     if (!data || message) throw new Error(message ?? 'something went wrong')
 
@@ -85,36 +93,41 @@ sample({
   target: fetchTokensAliasFx,
 })
 
-export const fetchExchangesFx = createEffect(async (network: string) => {
-  const { data, message } = await tradeApi.exchanges([networks[network]])
-  const poolInfo = await tradeApi.poolInfo([networks[network]])
+export const fetchExchangesFx = createEffect(
+  async ({ network, signal }: { network: string; signal: AbortSignal }) => {
+    const { data, message } = await tradeApi.exchanges(
+      [networks[network]],
+      signal
+    )
+    const poolInfo = await tradeApi.poolInfo([networks[network]], signal)
 
-  if (!data || message || !poolInfo.code || poolInfo.message)
-    throw new Error(poolInfo.message ?? message ?? 'something went wrong')
+    if (!data || message || !poolInfo.code || poolInfo.message)
+      throw new Error(poolInfo.message ?? message ?? 'something went wrong')
 
-  const poolInfoMap = poolInfo.data.reduce<Record<string, Pool>>(
-    (acc, item) => {
-      acc[item.DexName.toLowerCase()] = item
+    const poolInfoMap = poolInfo.data.reduce<Record<string, Pool>>(
+      (acc, item) => {
+        acc[item.DexName.toLowerCase()] = item
 
-      return acc
-    },
-    {}
-  )
+        return acc
+      },
+      {}
+    )
 
-  return data
-    .map((item) => {
-      const Liquidity = poolInfoMap[item.Name.toLowerCase()]?.Liquidity ?? 0
+    return data
+      .map((item) => {
+        const Liquidity = poolInfoMap[item.Name.toLowerCase()]?.Liquidity ?? 0
 
-      return {
-        ...item,
-        Address:
-          item.Address ??
-          poolInfoMap[item.Name.toLowerCase()]?.Routers?.[0]?.Address,
-        Liquidity,
-      }
-    })
-    .sort((a, b) => (a.Liquidity > b.Liquidity ? -1 : 1))
-})
+        return {
+          ...item,
+          Address:
+            item.Address ??
+            poolInfoMap[item.Name.toLowerCase()]?.Routers?.[0]?.Address,
+          Liquidity,
+        }
+      })
+      .sort((a, b) => (a.Liquidity > b.Liquidity ? -1 : 1))
+  }
+)
 
 export const $exchanges = createStore<
   UnitValue<typeof fetchExchangesFx.doneData>
@@ -123,7 +136,12 @@ export const $exchanges = createStore<
   .reset(reset)
 
 export const fetchHistoryFx = createEffect((params: { address: string }) =>
-  tradeApi.history(params.address, '1660012666', '1661164666', 320, '60')
+  tradeApi.history({
+    address: params.address,
+    from: '1660012666',
+    to: '1661164666',
+    countback: 320,
+  })
 )
 
 export const $history = createStore<UnitValue<

@@ -2655,9 +2655,9 @@ export type SmartTradeSwapOrderCreateCallDataInputType = {
   tokenOutDecimals: Scalars['Int']
   amountIn: Scalars['BigNumberType']
   boughtPrice?: Maybe<Scalars['BigNumberType']>
-  stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
-  stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
-  takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
+  stopLoss?: Maybe<SwapOrderCallDataRouteInputType>
+  stopLoss2?: Maybe<SwapOrderCallDataRouteInputType>
+  takeProfit?: Maybe<SwapOrderCallDataRouteInputType>
   /** Deadline seconds */
   deadline: Scalars['Int']
 }
@@ -2685,9 +2685,9 @@ export type SmartTradeSwapOrderSetBoughtPriceInputType = {
 }
 
 export type SmartTradeSwapOrderUpdateCallDataInputType = {
-  stopLoss?: Maybe<SwapOrderCallDataStopLossInputType>
-  stopLoss2?: Maybe<SwapOrderCallDataStopLossInputType>
-  takeProfit?: Maybe<SwapOrderCallDataTakeProfitInputType>
+  stopLoss?: Maybe<SwapOrderCallDataRouteInputType>
+  stopLoss2?: Maybe<SwapOrderCallDataRouteInputType>
+  takeProfit?: Maybe<SwapOrderCallDataRouteInputType>
   /** Deadline seconds */
   deadline: Scalars['Int']
 }
@@ -2898,13 +2898,19 @@ export type SwapHandlerCallDataRouteActivationType = {
   activated: Scalars['Boolean']
 }
 
+export type SwapHandlerCallDataRouteTimeoutType = {
+  __typename?: 'SwapHandlerCallDataRouteTimeoutType'
+  duration: Scalars['Int']
+}
+
 export type SwapHandlerCallDataRouteType = {
   __typename?: 'SwapHandlerCallDataRouteType'
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
-  moving: Scalars['Boolean']
+  moving?: Maybe<Scalars['BigNumberType']>
   activation?: Maybe<SwapHandlerCallDataRouteActivationType>
+  timeout?: Maybe<SwapHandlerCallDataRouteTimeoutType>
 }
 
 export enum SwapOrderCallDataDirectionEnum {
@@ -2919,19 +2925,17 @@ export type SwapOrderCallDataRouteActivationInputType = {
   direction: SwapOrderCallDataDirectionEnum
 }
 
-export type SwapOrderCallDataStopLossInputType = {
+export type SwapOrderCallDataRouteInputType = {
   amountOut: Scalars['BigNumberType']
   amountOutMin: Scalars['BigNumberType']
   slippage: Scalars['Float']
   moving?: Maybe<Scalars['BigNumberType']>
   activation?: Maybe<SwapOrderCallDataRouteActivationInputType>
+  timeout?: Maybe<SwapOrderCallDataRouteTimeoutInputType>
 }
 
-export type SwapOrderCallDataTakeProfitInputType = {
-  amountOut: Scalars['BigNumberType']
-  amountOutMin: Scalars['BigNumberType']
-  slippage: Scalars['Float']
-  activation?: Maybe<SwapOrderCallDataRouteActivationInputType>
+export type SwapOrderCallDataRouteTimeoutInputType = {
+  duration: Scalars['Int']
 }
 
 export type TagType = {

@@ -24,18 +24,18 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
-import { TradeConfirmClaimDialog } from '~/trade/common/trade-confirm-claim-dialog'
+import { TradeConfirmSellDialog } from '~/trade/common/trade-confirm-sell-dialog'
 import { useDialog } from '~/common/dialog'
 import { Exchange, Pair } from '~/trade/common/trade.api'
 import { hasBoughtPrice } from '~/trade/common/trade.types'
 import { toastsService } from '~/toasts'
-import { Can } from '~/auth'
 import { SwapOrderCallDataRouteActivationInputType } from '~/api'
 import * as tradeOrdersModel from '~/trade/trade-orders/trade-orders.model'
-import * as model from './trade-smart-sell.model'
-import * as styles from './trade-smart-sell.css'
+import * as model from './trade-smart-order.model'
+import * as styles from './trade-smart-order.css'
+import { TradePlusMinus } from '../common/trade-plus-minus'
 
-export type TradeSmartSellProps = {
+export type TradeSmartOrderSellProps = {
   className?: string
   router?: SmartTradeRouter['methods']
   swap?: SmartTradeSwapHandler['methods']
@@ -62,9 +62,13 @@ type FormValues = {
   trailingStopLoss: boolean
   trailingTakeProfit: boolean
   followMaxPrice: number
+  stopLossTimeoutValue: string
+  stopLossTimeout: boolean
 }
 
-export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
+export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
+  props
+) => {
   const currentWallet = useStore(walletNetworkModel.$wallet)
   const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
 
@@ -73,7 +77,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const [takeProfitFocus, toggleTakeProfitFocus] = useToggle(false)
   const [stopLossFocus, toggleStopLossFocus] = useToggle(false)
 
-  const [openTradeConfirmDialog] = useDialog(TradeConfirmClaimDialog)
+  const [openTradeConfirmDialog] = useDialog(TradeConfirmSellDialog)
 
   const { handleSubmit, control, watch, setValue, formState } =
     useForm<FormValues>({
@@ -88,6 +92,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
         trailingStopLoss: false,
         trailingTakeProfit: false,
         followMaxPrice: 2,
+        stopLossTimeout: false,
+        stopLossTimeoutValue: '0',
       },
     })
 
@@ -96,6 +102,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
   const trailingTakeProfit = watch('trailingTakeProfit')
   const stopLoss = watch('stopLoss')
   const followMaxPrice = watch('followMaxPrice')
+  const stopLossTimeout = watch('stopLossTimeout')
+  const stopLossTimeoutValue = watch('stopLossTimeoutValue')
 
   const balanceOf = useAsyncRetry(async () => {
     if (!props.tokens?.[0]?.address || !props.router) return
@@ -206,6 +214,11 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 stopLossAmountOut
               ),
               activation: null,
+              timeout: formValues.stopLossTimeout
+                ? {
+                    duration: Number(formValues.stopLossTimeoutValue),
+                  }
+                : null,
             }
           : null,
         formValues.trailingTakeProfit
@@ -231,6 +244,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                     direction: 'gt',
                   }
                 : null,
+              timeout: null,
             }
           : null,
         formValues.takeProfit && !formValues.trailingTakeProfit
@@ -247,6 +261,8 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               ),
               slippage: props.slippage,
               activation: null,
+              moving: null,
+              timeout: null,
             }
           : null,
         {}
@@ -278,6 +294,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 moving: result.callData.stopLoss.moving,
                 activation: result.callData.stopLoss
                   .activation as SwapOrderCallDataRouteActivationInputType,
+                timeout: result.callData.stopLoss.timeout,
               }
             : null,
           stopLoss2: result.callData.stopLoss2
@@ -288,6 +305,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 slippage: Number(result.callData.stopLoss2.slippage),
                 activation: result.callData.stopLoss2
                   .activation as SwapOrderCallDataRouteActivationInputType,
+                timeout: result.callData.stopLoss2.timeout,
               }
             : null,
           takeProfit: result.callData.takeProfit
@@ -297,6 +315,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 slippage: Number(result.callData.takeProfit.slippage),
                 activation: result.callData.takeProfit
                   .activation as SwapOrderCallDataRouteActivationInputType,
+                timeout: result.callData.takeProfit.timeout,
               }
             : null,
           deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
@@ -378,6 +397,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                 stopLossAmountOut
               ),
               activation: null,
+              timeout: null,
             }
           : null,
         formValues.trailingTakeProfit
@@ -394,6 +414,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                     direction: 'gt',
                   }
                 : null,
+              timeout: null,
             }
           : null,
         formValues.takeProfit && !formValues.trailingTakeProfit
@@ -410,6 +431,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
               ),
               slippage: props.slippage,
               activation: null,
+              timeout: null,
             }
           : null
       )
@@ -433,6 +455,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   moving: result.callData.stopLoss.moving,
                   activation: result.callData.stopLoss
                     .activation as SwapOrderCallDataRouteActivationInputType,
+                  timeout: result.callData.stopLoss.timeout,
                 }
               : null,
             takeProfit: result.callData.takeProfit
@@ -442,6 +465,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   slippage: Number(result.callData.takeProfit.slippage),
                   activation: result.callData.takeProfit
                     .activation as SwapOrderCallDataRouteActivationInputType,
+                  timeout: result.callData.takeProfit.timeout,
                 }
               : null,
             stopLoss2: result.callData.stopLoss2
@@ -452,6 +476,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   slippage: Number(result.callData.stopLoss2.slippage),
                   activation: result.callData.stopLoss2
                     .activation as SwapOrderCallDataRouteActivationInputType,
+                  timeout: result.callData.stopLoss2.timeout,
                 }
               : null,
             deadline: Number(bignumberUtils.mul(props.transactionDeadline, 60)),
@@ -668,6 +693,7 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                       <ButtonBase
                         className={styles.balanceButton}
                         onClick={() => setValue('unit', balanceOf.value ?? '0')}
+                        disabled={formState.isSubmitting}
                       >
                         {bignumberUtils.format(balanceOf.value)}{' '}
                         {props.tokens?.[0]?.symbol}
@@ -750,80 +776,78 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   disabled={formState.isSubmitting}
                 />
               </div>
-              <Can I="update" a="Contract">
-                <div
-                  className={clsx(
-                    styles.trailingBuyTitle,
-                    styles.trailingTakeProfit
-                  )}
+              <div
+                className={clsx(
+                  styles.trailingBuyTitle,
+                  styles.trailingTakeProfit
+                )}
+              >
+                <Typography
+                  as="div"
+                  variant="body3"
+                  className={clsx(styles.takeProfitLabel, styles.greyTitle)}
                 >
+                  Trailing take profit
+                </Typography>
+                <Dropdown
+                  control={
+                    <ButtonBase>
+                      <Icon icon="info" width="16" height="16" />
+                    </ButtonBase>
+                  }
+                  offset={[0, 8]}
+                  className={styles.dropdown}
+                  placement="bottom-start"
+                >
+                  <Typography variant="body2">
+                    Will activate trailing on specified price and start to
+                    follow the price movements. Will not sell if the price goes
+                    up, but will sell if the price will be less the maximum
+                    price minus trailing deviation.
+                  </Typography>
+                </Dropdown>
+                <Switch
+                  size="small"
+                  onChange={({ target }) =>
+                    setValue('trailingTakeProfit', target.checked)
+                  }
+                  checked={trailingTakeProfit}
+                  disabled={formState.isSubmitting}
+                />
+              </div>
+              {trailingTakeProfit && (
+                <>
                   <Typography
                     as="div"
                     variant="body3"
                     className={clsx(styles.takeProfitLabel, styles.greyTitle)}
                   >
-                    Trailing take profit
+                    Follow max price with deviation [%]
                   </Typography>
-                  <Dropdown
-                    control={
-                      <ButtonBase>
-                        <Icon icon="info" width="16" height="16" />
-                      </ButtonBase>
-                    }
-                    offset={[0, 8]}
-                    className={styles.dropdown}
-                    placement="bottom-start"
-                  >
-                    <Typography variant="body2">
-                      Will activate trailing on specified price and start to
-                      follow the price movements. Will not sell if the price
-                      goes up, but will sell if the price will be less the
-                      maximum price minus trailing deviation.
-                    </Typography>
-                  </Dropdown>
-                  <Switch
-                    size="small"
-                    onChange={({ target }) =>
-                      setValue('trailingTakeProfit', target.checked)
-                    }
-                    checked={trailingTakeProfit}
-                    disabled={formState.isSubmitting}
-                  />
-                </div>
-                {trailingTakeProfit && (
-                  <>
-                    <Typography
-                      as="div"
-                      variant="body3"
-                      className={clsx(styles.takeProfitLabel, styles.greyTitle)}
-                    >
-                      Follow max price with deviation [%]
-                    </Typography>
-                    <div className={styles.trailingBuy}>
-                      <NumericalInput
-                        className={styles.trailingBuyInput}
-                        negative
-                        value={-followMaxPrice}
-                        rightSide="%"
-                        min={0}
-                        max={100}
-                        onChange={handleChangeFollowMaxPrice}
-                        size="small"
-                        disabled={formState.isSubmitting}
-                      />
-                      <Slider
-                        className={styles.slider}
-                        reverse
-                        value={followMaxPrice}
-                        min={0}
-                        max={100}
-                        onChange={handleChangeFollowMaxPrice}
-                        disabled={formState.isSubmitting}
-                      />
-                    </div>
-                  </>
-                )}
-              </Can>
+                  <div className={styles.trailingBuy}>
+                    <NumericalInput
+                      className={styles.trailingBuyInput}
+                      negative
+                      value={-followMaxPrice}
+                      rightSide="%"
+                      min={0}
+                      max={100}
+                      onChange={handleChangeFollowMaxPrice}
+                      size="small"
+                      disabled={formState.isSubmitting}
+                    />
+                    <Slider
+                      className={styles.slider}
+                      reverse
+                      value={followMaxPrice}
+                      min={0}
+                      max={100}
+                      onChange={handleChangeFollowMaxPrice}
+                      disabled={formState.isSubmitting}
+                    />
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>
@@ -903,6 +927,66 @@ export const TradeSmartSell: React.VFC<TradeSmartSellProps> = (props) => {
                   disabled={formState.isSubmitting}
                 />
               </div>
+              <div className={styles.trailingBuyTitle}>
+                <Typography
+                  as="div"
+                  variant="body3"
+                  className={clsx(styles.takeProfitLabel, styles.greyTitle)}
+                >
+                  Stop loss timeout
+                </Typography>
+                <Dropdown
+                  control={
+                    <ButtonBase>
+                      <Icon icon="info" width="16" height="16" />
+                    </ButtonBase>
+                  }
+                  offset={[0, 8]}
+                  className={styles.dropdown}
+                  placement="bottom-start"
+                >
+                  <Typography variant="body2">text</Typography>
+                </Dropdown>
+                <Switch
+                  size="small"
+                  onChange={({ target }) =>
+                    setValue('stopLossTimeout', target.checked)
+                  }
+                  checked={stopLossTimeout}
+                  disabled={formState.isSubmitting}
+                />
+              </div>
+              {stopLossTimeout && (
+                <>
+                  <div className={styles.trailingBuy}>
+                    <Controller
+                      control={control}
+                      name="stopLossTimeoutValue"
+                      render={({ field }) => (
+                        <NumericalInput
+                          size="small"
+                          rightSide="Sec"
+                          className={styles.trailingBuyInput}
+                          disabled={formState.isSubmitting}
+                          {...field}
+                        />
+                      )}
+                    />
+                    <TradePlusMinus
+                      onPlus={(value) =>
+                        setValue('stopLossTimeoutValue', String(value))
+                      }
+                      onMinus={(value) =>
+                        setValue('stopLossTimeoutValue', String(value))
+                      }
+                      min={1}
+                      max={100}
+                      value={stopLossTimeoutValue}
+                      disabled={formState.isSubmitting}
+                    />
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>

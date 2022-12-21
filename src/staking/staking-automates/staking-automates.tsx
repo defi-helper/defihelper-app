@@ -340,11 +340,11 @@ export const StakingAutomates: React.VFC<StakingAutomatesProps> = (props) => {
               error={automatesContract.wallet?.billing.balance.lowFeeFunds}
               freshMetrics={metrics[automatesContract.id]}
               balanceInvest={bignumberUtils.minus(
-                automatesContract.metric.invest,
                 bignumberUtils.plus(
                   automatesContract.metric.staked,
                   automatesContract.metric.earned
-                )
+                ),
+                automatesContract.metric.invest
               )}
             />
           )
