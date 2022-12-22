@@ -272,14 +272,18 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
           </div>
         </div>
         <div>
-          {order.status === SmartTradeOrderStatusEnum.Pending && statusWidget}
-          {order.status === SmartTradeOrderStatusEnum.Processed && (
-            <>
+          {[
+            SmartTradeOrderStatusEnum.Pending,
+            SmartTradeOrderStatusEnum.Processed,
+          ].includes(order.status) && (
+            <div className={styles.claim}>
               {statusWidget}
-              <Typography variant="body3" className={styles.processing}>
-                Order is processing
-              </Typography>
-            </>
+              {order.status === SmartTradeOrderStatusEnum.Processed && (
+                <Typography variant="body3" className={styles.processing}>
+                  Order is processing
+                </Typography>
+              )}
+            </div>
           )}
           {order.closed &&
             order.status === SmartTradeOrderStatusEnum.Succeeded && (
@@ -297,31 +301,32 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
                 {claimButton}
               </div>
             )}
-          {!order.closed && (
+          {((!order.closed &&
+            !order.claim &&
+            [
+              SmartTradeOrderStatusEnum.Succeeded,
+              SmartTradeOrderStatusEnum.Canceled,
+            ].includes(order.status)) ||
+            (order.claim && order.closed)) && (
             <div className={styles.claim}>
-              {callDataWithBoughtPrice &&
-                (order.claim ||
-                  (order.status === SmartTradeOrderStatusEnum.Succeeded &&
-                    !order.claim)) && (
-                  <>
-                    <Typography
-                      variant="body3"
-                      className={clsx(styles.status, {
-                        [styles.positive]: bignumberUtils.gt(percent, 0),
-                        [styles.negative]: bignumberUtils.lt(percent, 0),
-                      })}
-                    >
-                      {!order.claim &&
-                      order.status === SmartTradeOrderStatusEnum.Succeeded
-                        ? titles.completed
-                        : titles[order.status]}
-                      {order.status === SmartTradeOrderStatusEnum.Canceled
-                        ? null
-                        : `: ${bignumberUtils.toFixed(percent, 4)}%`}
-                    </Typography>{' '}
-                    {claimButton}
-                  </>
-                )}
+              <>
+                <Typography
+                  variant="body3"
+                  className={clsx(styles.status, {
+                    [styles.positive]: bignumberUtils.gt(percent, 0),
+                    [styles.negative]: bignumberUtils.lt(percent, 0),
+                  })}
+                >
+                  {!order.claim &&
+                  order.status === SmartTradeOrderStatusEnum.Succeeded
+                    ? titles.completed
+                    : titles[order.status]}
+                  {order.status === SmartTradeOrderStatusEnum.Canceled
+                    ? null
+                    : `: ${bignumberUtils.toFixed(percent, 4)}%`}
+                </Typography>{' '}
+                {claimButton}
+              </>
             </div>
           )}
         </div>
