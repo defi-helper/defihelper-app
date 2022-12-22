@@ -286,6 +286,7 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
             </div>
           )}
           {order.closed &&
+            !order.claim &&
             order.status === SmartTradeOrderStatusEnum.Succeeded && (
               <div className={styles.claim}>
                 <Typography
@@ -307,7 +308,7 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
               SmartTradeOrderStatusEnum.Succeeded,
               SmartTradeOrderStatusEnum.Canceled,
             ].includes(order.status)) ||
-            (order.claim && order.closed)) && (
+            order.claim) && (
             <div className={styles.claim}>
               <>
                 <Typography
