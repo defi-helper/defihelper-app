@@ -1,11 +1,33 @@
 import { style, globalStyle } from '@vanilla-extract/css'
+import { theme } from '~/common/theme'
 
 export const root = style({
+  position: 'relative',
+})
+
+export const chart = style({
   position: 'relative',
   overflow: 'hidden',
   width: '100%',
   paddingTop: '56.25%',
   zIndex: 0,
+  height: '100%',
+})
+
+export const copyright = style({
+  position: 'absolute',
+  bottom: 0,
+  right: 0,
+  width: 150,
+  background: theme.colors.paper,
+  borderTopLeftRadius: 8,
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+})
+
+export const copyrightIcon = style({
+  width: 120,
 })
 
 globalStyle(`${root} iframe`, {
