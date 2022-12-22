@@ -18,7 +18,7 @@ export const copyright = style({
   position: 'absolute',
   bottom: 0,
   right: 0,
-  width: 150,
+  width: 190,
   background: theme.colors.paper,
   borderTopLeftRadius: 8,
   display: 'flex',
@@ -27,7 +27,7 @@ export const copyright = style({
 })
 
 export const copyrightIcon = style({
-  width: 120,
+  width: 140,
 })
 
 globalStyle(`${root} iframe`, {
