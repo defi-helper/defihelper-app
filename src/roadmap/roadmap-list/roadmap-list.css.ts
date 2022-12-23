@@ -37,13 +37,8 @@ export const createMobile = style({
   borderRadius: 6,
 })
 
-export const year = style({
-  marginLeft: 'auto',
-  color: theme.colors.common.pink3,
-})
-
 export const addButton = style({
-  marginLeft: 24,
+  marginLeft: 'auto',
 })
 
 export const loader = style({
