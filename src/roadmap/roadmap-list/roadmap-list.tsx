@@ -31,7 +31,6 @@ import { ProposalTagEnum } from '~/api/_generated-types'
 import { Select, SelectOption } from '~/common/select'
 import { CanDemo } from '~/auth/can-demo'
 import { paths } from '~/paths'
-import { Link } from '~/common/link'
 import * as model from './roadmap-list.model'
 import * as styles from './roadmap-list.css'
 
@@ -242,17 +241,6 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
           className={styles.inacitveTab}
         >
           Governance
-        </Typography>
-        <Typography
-          variant="body2"
-          transform="uppercase"
-          family="mono"
-          className={styles.year}
-          as={Link}
-          href="https://bitter-drain-b3e.notion.site/fd2f13ff00a344579890d56906a160c8?v=7e9ba5539e2a4fe4ae216b1da21bf057"
-          target="_blank"
-        >
-          DFH {new Date().getFullYear()} roadmap
         </Typography>
         <CanDemo>
           <Button
