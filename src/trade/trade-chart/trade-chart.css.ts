@@ -23,7 +23,7 @@ export const copyright = style({
   display: 'flex',
   gap: 9,
   justifyContent: 'center',
-  alignItems: 'center',
+  alignItems: 'flex-end',
   fontSize: 12,
   lineHeight: '16px',
   color: theme.colors.textColorGrey,
