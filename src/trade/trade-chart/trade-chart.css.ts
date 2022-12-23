@@ -1,4 +1,5 @@
 import { style, globalStyle } from '@vanilla-extract/css'
+
 import { theme } from '~/common/theme'
 
 export const root = style({
@@ -6,7 +7,7 @@ export const root = style({
 })
 
 export const chart = style({
-  position: 'relative',
+  position: 'absolute',
   overflow: 'hidden',
   width: '100%',
   paddingTop: '56.25%',
@@ -15,19 +16,24 @@ export const chart = style({
 })
 
 export const copyright = style({
-  position: 'absolute',
   bottom: 0,
   right: 0,
-  width: 190,
-  background: theme.colors.paper,
+  width: 226,
   borderTopLeftRadius: 8,
   display: 'flex',
+  gap: 9,
   justifyContent: 'center',
   alignItems: 'center',
+  fontSize: 12,
+  lineHeight: '16px',
+  color: theme.colors.textColorGrey,
+  padding: '13px 0',
+  marginLeft: 'auto',
 })
 
 export const copyrightIcon = style({
-  width: 140,
+  width: 123,
+  height: 21,
 })
 
 globalStyle(`${root} iframe`, {

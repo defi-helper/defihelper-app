@@ -36,7 +36,7 @@ export const content = style({
       gridTemplateColumns: '1fr 1fr 1fr',
       columnGap: 24,
       rowGap: 12,
-      maxHeight: 731,
+      maxHeight: 780,
     },
   },
 })
