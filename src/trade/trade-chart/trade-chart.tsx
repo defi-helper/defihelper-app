@@ -5,6 +5,9 @@ import { useEffect } from 'react'
 
 import { Loader } from '~/common/loader'
 import { useTheme } from '~/common/theme'
+import { ReactComponent as WTFCopyright } from '~/assets/icons/WTF_transparant.svg'
+import { Link } from '~/common/link'
+import { Typography } from '~/common/typography'
 import * as styles from './trade-chart.css'
 
 export type TradeChartProps = {
@@ -12,6 +15,8 @@ export type TradeChartProps = {
   address?: string
   loading?: boolean
 }
+
+const WTF_LINK = 'https://whattofarm.io/'
 
 export const TradeChart: React.VFC<TradeChartProps> = (props) => {
   const [themeMode = 'light'] = useTheme()
@@ -66,14 +71,21 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
     }
   }, [props.address, themeMode, props.loading])
 
-  return props.loading ? (
-    <div className={styles.loader}>
-      <Loader height={36} />
-    </div>
-  ) : (
-    <div
-      className={clsx(styles.root, props.className)}
-      id="tv_chart_container"
-    />
+  return (
+    <>
+      {props.loading ? (
+        <div className={styles.loader}>
+          <Loader height={36} />
+        </div>
+      ) : (
+        <div className={clsx(styles.root, props.className)}>
+          <div className={styles.chart} id="tv_chart_container" />
+        </div>
+      )}
+      <Link href={WTF_LINK} target="_blank" className={styles.copyright}>
+        <Typography variant="inherit">data provided by</Typography>
+        <WTFCopyright className={styles.copyrightIcon} />
+      </Link>
+    </>
   )
 }
