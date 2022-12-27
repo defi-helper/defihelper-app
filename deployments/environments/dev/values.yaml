@@ -50,8 +50,13 @@ autoscaling:
   maxReplicas: 1
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
-nodeSelector: {}
-tolerations: []
+nodeSelector:
+  group_name: "service"
+tolerations:
+  - key: node-role.kubernetes.io/service
+    operator: "Equal"
+    value: "true"
+    effect: NoSchedule
 affinity: {}
 nameOverride: ""
 fullnameOverride: ""
