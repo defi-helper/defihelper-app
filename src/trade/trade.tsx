@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useAsyncFn, useInterval } from 'react-use'
+import { useAsyncFn, useInterval, usePrevious } from 'react-use'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { useHistory } from 'react-router-dom'
@@ -130,6 +130,8 @@ export const Trade: React.VFC<TradeProps> = () => {
   const wallet = useMemo(() => {
     if (currentWalletAddress) return walletsMap.get(currentWalletAddress)
   }, [currentWalletAddress, walletsMap])
+
+  const previousWallet = usePrevious(currentWalletAddress)
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -392,11 +394,6 @@ export const Trade: React.VFC<TradeProps> = () => {
     wallet?.network !== undefined &&
     currentWallet?.chainId !== undefined
 
-  const networkCorrect =
-    currentNetworkCorrect ||
-    selectedNetworkCorrect ||
-    currentNetworkAndSelectedAreEqual
-
   const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
     let network =
       !currentNetworkCorrect || !selectedNetworkCorrect ? '56' : wallet?.network
@@ -428,6 +425,19 @@ export const Trade: React.VFC<TradeProps> = () => {
 
     setSearchPair('')
   }, [currentPair])
+
+  useEffect(() => {
+    if (
+      !currentWalletAddress ||
+      !previousWallet ||
+      currentWalletAddress === previousWallet
+    )
+      return
+
+    setCurrentExchange('')
+    setCurrentPair('')
+    model.reset()
+  }, [currentWalletAddress, previousWallet])
 
   const selects = !([UserRoleEnum.Admin] as Array<string>).includes(
     String(user?.role)
@@ -679,7 +689,11 @@ export const Trade: React.VFC<TradeProps> = () => {
           <div
             className={clsx(
               styles.selectsBody,
-              ((updating && !history) || !networkCorrect || !hasContract) &&
+              ((updating && !history) ||
+                !currentNetworkAndSelectedAreEqual ||
+                !currentNetworkCorrect ||
+                !selectedNetworkCorrect ||
+                !hasContract) &&
                 styles.selectsBodyBlur
             )}
           >
@@ -782,7 +796,10 @@ export const Trade: React.VFC<TradeProps> = () => {
             </div>
             {SelectComponents[currentSelect]}
           </div>
-          {(!networkCorrect || (!hasContract && wallet?.network)) && (
+          {(!currentNetworkAndSelectedAreEqual ||
+            !currentNetworkCorrect ||
+            !selectedNetworkCorrect ||
+            (!hasContract && wallet?.network)) && (
             <div className={styles.beta}>
               <Typography
                 variant="body2"
