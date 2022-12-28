@@ -508,7 +508,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
     setValue(
       'stopLossValue',
       bignumberUtils.toFixed(
-        bignumberUtils.fromPercent(price.value, Number(value), 99),
+        bignumberUtils.toStopLoss(price.value, Number(value), 99),
         6
       )
     )
@@ -538,7 +538,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
     setValue(
       'takeProfitValue',
       bignumberUtils.toFixed(
-        bignumberUtils.fromPercent(price.value, Number(value), 100),
+        bignumberUtils.toTakeProfit(price.value, Number(value), 100),
         6
       )
     )
@@ -592,7 +592,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
     setValue(
       'stopLossValue',
       bignumberUtils.toFixed(
-        bignumberUtils.fromPercent(price.value, stopLossPercent, 99),
+        bignumberUtils.toStopLoss(price.value, stopLossPercent, 99),
         6
       )
     )
@@ -604,7 +604,7 @@ export const TradeSmartOrderSell: React.VFC<TradeSmartOrderSellProps> = (
     setValue(
       'takeProfitValue',
       bignumberUtils.toFixed(
-        bignumberUtils.fromPercent(price.value, takeProfitPercent, 100),
+        bignumberUtils.toTakeProfit(price.value, takeProfitPercent, 100),
         6
       )
     )
