@@ -5,13 +5,20 @@ type EthereumEventMap = {
   chainChanged: string | number
   accountsChanged: string[]
   networkChanged: string | number
-  close: number
+  disconnect: number
+  message: {
+    type: string
+    data: unknown
+  }
 }
 
 interface Window {
   ethereum?: {
     isMetaMask?: true
     isTrust?: true
+    _metamask?: {
+      isUnlocked?(): Promise<boolean>
+    }
     on?: <K extends keyof EthereumEventMap>(
       type: K,
       listener: (ev: EthereumEventMap[K], options?: unknown) => void
