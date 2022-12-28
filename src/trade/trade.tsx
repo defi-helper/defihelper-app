@@ -823,8 +823,9 @@ export const Trade: React.VFC<TradeProps> = () => {
                   </>
                 )}
                 {!wallet && <>Please choose your wallet</>}
+                {!currentWallet && <>Please unlock your wallet</>}
               </Typography>
-              {wallet && (
+              {wallet && currentWallet && (
                 <Button
                   color="green"
                   className={styles.switchNetwork}

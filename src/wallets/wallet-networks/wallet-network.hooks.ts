@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useStore } from 'effector-react'
 import { ConnectorEvent, ConnectorUpdate } from '@web3-react/types'
+import { useInterval } from 'react-use'
 
 import { connectors, connectorsByName } from '~/wallets/common'
 import {
@@ -66,6 +67,20 @@ export const useEagerConnect = () => {
 export const useInactiveListener = (suppress = false) => {
   const wallet = useStore($wallet)
 
+  useInterval(
+    async () => {
+      if (!window.ethereum) return
+
+      // eslint-disable-next-line no-underscore-dangle
+      const unlocked = await window.ethereum?._metamask?.isUnlocked?.()
+
+      if (wallet?.connector && unlocked) return
+
+      activateWalletFx({ connector: connectors.injected })
+    },
+    !wallet ? 5000 : null
+  )
+
   useEffect(() => {
     const { ethereum } = window
 
@@ -91,9 +106,14 @@ export const useInactiveListener = (suppress = false) => {
         updateWalletFx({ connector: connectors.injected, update: wallet })
       }
 
+      const handleDeactivate = () => {
+        diactivateWalletFx()
+      }
+
       ethereum.on('connect', handleConnect)
       ethereum.on('chainChanged', handleChainChanged)
       ethereum.on('accountsChanged', handleAccountsChanged)
+      ethereum.on('disconnect', handleDeactivate)
 
       return () => {
         if (!ethereum.removeListener) return
@@ -101,6 +121,7 @@ export const useInactiveListener = (suppress = false) => {
         ethereum.removeListener('connect', handleConnect)
         ethereum.removeListener('chainChanged', handleChainChanged)
         ethereum.removeListener('accountsChanged', handleAccountsChanged)
+        ethereum.removeListener('disconnect', handleDeactivate)
       }
     }
   }, [wallet, suppress])
@@ -125,7 +146,7 @@ export const useEthereumNetwork = () => {
     }
 
     const handleDeactivate = () => {
-      diactivateWalletFx(wallet?.connector)
+      diactivateWalletFx()
     }
 
     if (wallet?.connector) {
