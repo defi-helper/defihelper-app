@@ -22,7 +22,8 @@ export const list = style({
   display: 'flex',
   flexDirection: 'column',
   gap: 8,
-  width: '258px',
+  width: 258,
+  minHeight: 258,
 
   '@media': {
     [theme.mediaQueries.md()]: {
