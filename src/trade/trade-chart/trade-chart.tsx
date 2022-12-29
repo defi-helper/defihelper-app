@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable new-cap */
 import clsx from 'clsx'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { Loader } from '~/common/loader'
 import { useTheme } from '~/common/theme'
@@ -20,6 +20,9 @@ const WTF_LINK = 'https://whattofarm.io/'
 
 export const TradeChart: React.VFC<TradeChartProps> = (props) => {
   const [themeMode = 'light'] = useTheme()
+  const chartInstance = useRef<any>(null)
+  const [firstChar, ...restChars] = Array.from(themeMode)
+  const theme = [firstChar.toLocaleUpperCase(), ...restChars].join('')
 
   useEffect(() => {
     if (props.loading || !window.TradingView || !props.address) return
@@ -34,9 +37,7 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
     )
     localStorage.setItem('tradingview.chart.lastUsedStyle', '1')
 
-    const [firstChar, ...restChars] = Array.from(themeMode)
-
-    const tradingView = new window.TradingView.widget({
+    chartInstance.current = new window.TradingView.widget({
       symbol: props.address,
       interval: '60',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -49,7 +50,7 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
       library_path: `tradingview/charting_library/`,
       autosize: true,
       fullscreen: false,
-      theme: [firstChar.toLocaleUpperCase(), ...restChars].join(''),
+      theme,
       client_id: 'tradingview.com',
       user_id: 'public_user_id',
       overrides: {
@@ -67,9 +68,16 @@ export const TradeChart: React.VFC<TradeChartProps> = (props) => {
     })
 
     return () => {
-      tradingView.remove()
+      chartInstance.current?.remove()
     }
-  }, [props.address, themeMode, props.loading])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.address, props.loading])
+
+  useEffect(() => {
+    if (!chartInstance.current) return
+
+    chartInstance.current.changeTheme(theme)
+  }, [theme])
 
   return (
     <>

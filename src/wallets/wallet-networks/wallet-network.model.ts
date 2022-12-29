@@ -85,11 +85,11 @@ export const updateWalletFx = createEffect(
   }
 )
 
-export const diactivateWalletFx = createEffect(
-  async (connector?: AbstractConnector) => {
-    connector?.deactivate()
-  }
-)
+export const diactivateWalletFx = createEffect(async () => {
+  Object.values(connectorsByName).forEach(({ connector }) =>
+    connector.deactivate?.()
+  )
+})
 
 const activated = debounce({ source: activateWalletFx.doneData, timeout: 500 })
 const updated = debounce({ source: updateWalletFx.doneData, timeout: 500 })

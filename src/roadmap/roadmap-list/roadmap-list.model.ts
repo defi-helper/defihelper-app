@@ -95,6 +95,24 @@ export const updateProposalFx = proposalListDomain.createEffect(
   }
 )
 
+export const dragProposalFx = proposalListDomain.createEffect(
+  async (
+    variables: ProposalUpdateMutationVariables & { proposal: Proposal }
+  ) => {
+    const { title, description, status, plannedAt, releasedAt } =
+      variables.input
+
+    const data = await roadmapApi.proposalUpdate({
+      ...omit(variables, 'proposal', 'input'),
+      input: { title, description, status, plannedAt, releasedAt },
+    })
+
+    if (!data) throw new Error('not updated')
+
+    return data
+  }
+)
+
 const ERROR_MESSAGE = "can't vote"
 
 export const voteProposalFx = proposalListDomain.createEffect(
@@ -292,6 +310,42 @@ export const $groupedProposals = proposalListDomain
           : [result, ...(state[result.status]?.list ?? [])],
         pagination: {
           count: (state[result.status]?.pagination.count ?? 1) + 1,
+        },
+      },
+    }
+  })
+  .on(dragProposalFx, (state, { proposal, input }) => {
+    const sameStatus = proposal.status === input.status
+
+    if (!input.status) return
+
+    return {
+      ...state,
+      ...(!sameStatus
+        ? {
+            [proposal.status]: {
+              ...state[proposal.status],
+              list: state[proposal.status]?.list?.filter(
+                (item) => item.id !== proposal.id
+              ),
+              pagination: {
+                count: (state[proposal.status]?.pagination.count ?? 1) - 1,
+              },
+            },
+          }
+        : {}),
+      [input.status]: {
+        ...state[input.status],
+        list: sameStatus
+          ? state[input.status]?.list?.map((item) =>
+              item.id === proposal.id ? { ...item, status: input.status } : item
+            )
+          : [
+              { ...proposal, status: input.status },
+              ...(state[input.status]?.list ?? []),
+            ],
+        pagination: {
+          count: (state[input.status]?.pagination.count ?? 1) + 1,
         },
       },
     }

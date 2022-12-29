@@ -27,7 +27,7 @@ import { ButtonBase } from '~/common/button-base'
 import { Icon } from '~/common/icon'
 import { Loader } from '~/common/loader'
 import { SearchDialog } from '~/common/search-dialog'
-import { ProposalTagEnum } from '~/api/_generated-types'
+import { ProposalTagEnum, UserRoleEnum } from '~/api/_generated-types'
 import { Select, SelectOption } from '~/common/select'
 import { CanDemo } from '~/auth/can-demo'
 import { paths } from '~/paths'
@@ -136,6 +136,27 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
       await model.updateProposalFx({
         id: proposal.id,
         input: result,
+        proposal,
+      })
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message)
+      }
+    }
+  }
+  const handleDragEnd = async (
+    proposal: Proposal & { nextStatus: Proposal['status'] }
+  ) => {
+    try {
+      await model.dragProposalFx({
+        id: proposal.id,
+        input: {
+          title: proposal.title,
+          description: proposal.description,
+          status: proposal.nextStatus,
+          plannedAt: proposal.plannedAt,
+          releasedAt: proposal.releasedAt,
+        },
         proposal,
       })
     } catch (error) {
@@ -294,6 +315,8 @@ export const RoadmapList: React.VFC<RoadmapListProps> = () => {
             onAddTag={handleAddTag}
             onRemoveTag={handleRemoveTag}
             user={user}
+            onDragEnd={handleDragEnd}
+            dragDisabled={user?.role !== UserRoleEnum.Admin}
           />
         )}
       {!(loading || loadingGrid) && (status || search || currentOption) && (
