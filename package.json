@@ -170,8 +170,8 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "npx cross-env REACT_APP_ENV=development node ./generate-networks && craco start",
-    "build": "node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false npx cross-env NODE_OPTIONS='--max-old-space-size=4096' craco build",
+    "start": "npx cross-env REACT_APP_ENV=development npx cross-env DISABLE_ESLINT_PLUGIN=true node ./generate-networks && craco start",
+    "build": "node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false npx cross-env DISABLE_ESLINT_PLUGIN=true npx cross-env NODE_OPTIONS='--max-old-space-size=4096' craco build",
     "build-dev": "cross-env REACT_APP_ENV=development node ./generate-networks && npx cross-env CI='' npx cross-env GENERATE_SOURCEMAP=false craco build",
     "test": "craco test",
     "watch": "node ./watch.js",
@@ -216,5 +216,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "resolutions": {
+    "react-scripts/eslint-webpack-plugin": "2.3.0"
   }
 }

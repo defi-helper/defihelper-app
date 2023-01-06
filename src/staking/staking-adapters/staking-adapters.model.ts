@@ -68,9 +68,10 @@ export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
       signer: networkProvider?.getSigner(),
     })
 
-    const actions = params.account
-      ? await adapter.actions(params.account)
-      : null
+    const actions =
+      params.account && adapter.actions
+        ? await adapter.actions(params.account)
+        : null
 
     return {
       contractAddress: contract.address,

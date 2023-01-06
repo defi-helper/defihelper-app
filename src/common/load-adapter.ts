@@ -326,7 +326,7 @@ export type Adapter = {
     aprYear: string
   }
   wallet: (walletAddress: string) => Promise<AdapterWallet>
-  actions: (walletAddress: string) => Promise<AdapterActions>
+  actions?: (walletAddress: string) => Promise<AdapterActions>
 }
 
 export type AdapterFn = (
