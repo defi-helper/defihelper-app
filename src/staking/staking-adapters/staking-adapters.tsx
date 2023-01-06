@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useStore } from 'effector-react'
 import { Link as ReactRouterLink } from 'react-router-dom'
 
@@ -26,8 +27,8 @@ import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/inves
 import * as model from './staking-adapters.model'
 import * as styles from './staking-adapters.css'
 import { LPTokensBuySellDialog } from '~/lp-tokens/common/lp-tokens-buy-sell-dialog'
-import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
 import { paths } from '~/paths'
+import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
 
 export type StakingAdaptersProps = {
   className?: string
@@ -60,6 +61,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
 
   const currentWallet = walletNetworkModel.useWalletNetwork()
   const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
+
+  const [hasActions, setHasActions] = useState(false)
 
   const actionLoading = useStore(model.$actionLoading)
   const buyLpLoading = useStore(model.buyLPFx.pending)
@@ -192,6 +195,30 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
 
   const user = useStore(authModel.$user)
 
+  useEffect(() => {
+    if (!currentWallet?.account) return
+
+    model
+      .fetchContractAdapterFx({
+        protocolAdapter: props.protocolAdapter,
+        contract: {
+          address: props.contractAddress,
+          adapter: props.contractAdapter,
+        },
+        chainId: String(currentWallet.chainId),
+        account: currentWallet.account,
+        provider: currentWallet.provider,
+      })
+      .then(({ actions }) => {
+        setHasActions(Boolean(actions))
+      })
+  }, [
+    currentWallet,
+    props.protocolAdapter,
+    props.contractAdapter,
+    props.contractAddress,
+  ])
+
   const handleClaim = createAdapterAction('claim')
   const handleStake = createAdapterAction('stake')
   const handleUnStake = createAdapterAction('unstake')
@@ -278,23 +305,27 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           blockchain={props.blockchain}
           network={props.network}
         >
-          <Button
-            type="submit"
-            onClick={
-              props.network !== currentWallet?.chainId
-                ? handleSwitchNetwork
-                : handleStake
-            }
-            size="small"
-            variant="outlined"
-            disabled={Boolean(
-              (actionLoading && actionLoading.action !== 'stake') ||
-                props.deprecated
-            )}
-            loading={actionLoading?.action === 'stake'}
-          >
-            Stake
-          </Button>
+          {hasActions ? (
+            <Button
+              type="submit"
+              onClick={
+                props.network !== currentWallet?.chainId
+                  ? handleSwitchNetwork
+                  : handleStake
+              }
+              size="small"
+              variant="outlined"
+              disabled={Boolean(
+                (actionLoading && actionLoading.action !== 'stake') ||
+                  props.deprecated
+              )}
+              loading={actionLoading?.action === 'stake'}
+            >
+              Stake
+            </Button>
+          ) : (
+            <></>
+          )}
         </WalletConnect>
       </div>
       {hasBuyLiquidity && (
@@ -346,23 +377,27 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
           blockchain={props.blockchain}
           network={props.network}
         >
-          <Button
-            type="submit"
-            onClick={
-              props.network !== currentWallet?.chainId
-                ? handleSwitchNetwork
-                : handleUnStake
-            }
-            size="small"
-            variant="outlined"
-            disabled={Boolean(
-              (actionLoading && actionLoading.action !== 'unstake') ||
-                props.deprecated
-            )}
-            loading={actionLoading?.action === 'unstake'}
-          >
-            Unstake
-          </Button>
+          {hasActions ? (
+            <Button
+              type="submit"
+              onClick={
+                props.network !== currentWallet?.chainId
+                  ? handleSwitchNetwork
+                  : handleUnStake
+              }
+              size="small"
+              variant="outlined"
+              disabled={Boolean(
+                (actionLoading && actionLoading.action !== 'unstake') ||
+                  props.deprecated
+              )}
+              loading={actionLoading?.action === 'unstake'}
+            >
+              Unstake
+            </Button>
+          ) : (
+            <></>
+          )}
         </WalletConnect>
       </div>
       <div className={styles.claim}>
@@ -380,22 +415,26 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
             blockchain={props.blockchain}
             network={props.network}
           >
-            <Button
-              onClick={
-                props.network !== currentWallet?.chainId
-                  ? handleSwitchNetwork
-                  : handleClaim
-              }
-              size="small"
-              variant="outlined"
-              disabled={Boolean(
-                (actionLoading && actionLoading.action !== 'claim') ||
-                  props.deprecated
-              )}
-              loading={actionLoading?.action === 'claim'}
-            >
-              Claim
-            </Button>
+            {hasActions ? (
+              <Button
+                onClick={
+                  props.network !== currentWallet?.chainId
+                    ? handleSwitchNetwork
+                    : handleClaim
+                }
+                size="small"
+                variant="outlined"
+                disabled={Boolean(
+                  (actionLoading && actionLoading.action !== 'claim') ||
+                    props.deprecated
+                )}
+                loading={actionLoading?.action === 'claim'}
+              >
+                Claim
+              </Button>
+            ) : (
+              <></>
+            )}
           </WalletConnect>
         )}
       </div>
