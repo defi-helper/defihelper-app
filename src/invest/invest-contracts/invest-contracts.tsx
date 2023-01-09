@@ -150,10 +150,7 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
           }
         : undefined,
       tag: currentTag ? currentTag.split(',') : null,
-      automate: {
-        lpTokensManager: true,
-        autorestake: true,
-      },
+      invest: true,
     }
 
     model.fetchContractsFx({
