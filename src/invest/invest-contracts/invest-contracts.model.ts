@@ -39,10 +39,6 @@ export const fetchContractsFx = createEffect(
         filter: {
           ...variables.filter,
           hidden: false,
-          automate: {
-            ...variables.filter?.automate,
-            autorestake: true,
-          },
         },
         sort: [
           ...sort,

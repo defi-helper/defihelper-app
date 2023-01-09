@@ -938,6 +938,7 @@ export type ContractListFilterInputType = {
   protocol?: Maybe<Array<Scalars['UuidType']>>
   tag?: Maybe<Array<Scalars['UuidType']>>
   blockchain?: Maybe<BlockchainFilterInputType>
+  invest?: Maybe<Scalars['Boolean']>
   hidden?: Maybe<Scalars['Boolean']>
   deprecated?: Maybe<Scalars['Boolean']>
   userLink?: Maybe<ContractUserLinkTypeEnum>
