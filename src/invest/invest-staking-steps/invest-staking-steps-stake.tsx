@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 import clsx from 'clsx'
 
@@ -10,6 +11,10 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { analytics } from '~/analytics'
 import { toastsService } from '~/toasts'
 import { bignumberUtils } from '~/common/bignumber-utils'
+import { Restake, Position } from '~/common/load-adapter'
+import { Select, SelectOption } from '~/common/select'
+import { Paper } from '~/common/paper'
+import { Icon } from '~/common/icon'
 import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 
@@ -22,6 +27,8 @@ export type InvestStakingStepsStakeProps = {
   }) => void
   contract: InvestContract
   deployedContract?: string
+  isUniV3: boolean
+  positions?: Position[]
 }
 
 export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
@@ -29,11 +36,16 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
 ) => {
   const currentWallet = walletNetworkModel.useWalletNetwork()
 
+  const positionsId = props.positions?.[0]?.id ?? ''
+
+  const [tokenId, setTokenId] = useState(String(positionsId))
+
   const adapter = useAsync(async () => {
     if (
       !currentWallet ||
       !props.contract.automate.autorestake ||
-      !props.deployedContract
+      !props.deployedContract ||
+      props.isUniV3
     )
       return
 
@@ -46,7 +58,27 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
       chainId: String(currentWallet.chainId),
       action: 'migrate',
     })
-  }, [currentWallet, props.deployedContract])
+  }, [currentWallet, props.deployedContract, props.isUniV3])
+
+  const adapterUniV3 = useAsync(async () => {
+    if (
+      !currentWallet ||
+      !props.contract.automate.autorestake ||
+      !props.deployedContract ||
+      !props.isUniV3
+    )
+      return
+
+    return stakingAutomatesModel.fetchAdapterFx({
+      protocolAdapter: props.contract.protocol.adapter,
+      contractAdapter: 'Restake',
+      contractId: props.contract.id,
+      contractAddress: props.deployedContract,
+      provider: currentWallet.provider,
+      chainId: String(currentWallet.chainId),
+      action: 'migrate',
+    }) as unknown as Promise<Restake | undefined>
+  }, [currentWallet, props.deployedContract, props.isUniV3])
 
   const balanceOf = useAsync(async () => {
     if (!adapter.value) return
@@ -61,26 +93,29 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
   }, [adapter.value])
 
   const [depositState, onDeposit] = useAsyncFn(async () => {
-    if (!adapter.value || !balanceOf.value) return false
+    const currentAdapter = adapterUniV3.value ?? adapter.value
+    const value = props.isUniV3 ? tokenId : balanceOf.value
+
+    if (!currentAdapter || !value) return false
     analytics.log('auto_staking_migrate_dialog_deposit_click')
 
     const { deposit, canDeposit: canDepositMethod } =
-      adapter.value.deposit.methods
+      currentAdapter.deposit.methods
 
     try {
-      const can = await canDepositMethod(balanceOf.value)
+      const can = await canDepositMethod(value)
 
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't deposit")
 
-      const { tx } = await deposit(balanceOf.value)
+      const { tx } = await deposit(value)
 
       const result = await tx?.wait()
 
       props.onSubmit?.({
         txHash: result.transactionHash,
         tokenPriceUSD: tokenPriceUSD.value,
-        amount: balanceOf.value,
+        amount: value,
         amountInUSD: bignumberUtils.mul(balanceOf.value, tokenPriceUSD.value),
       })
       analytics.log('auto_staking_migrate_dialog_deposit_success')
@@ -94,21 +129,44 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
 
       return false
     }
-  }, [adapter.value, balanceOf.value, tokenPriceUSD.value])
+  }, [
+    adapter.value,
+    balanceOf.value,
+    tokenPriceUSD.value,
+    adapterUniV3.value,
+    props.isUniV3,
+    tokenId,
+  ])
 
   const isApproved = useAsyncRetry(async () => {
-    if (!balanceOf.value) return
+    const isApprovedFn =
+      adapter.value?.deposit.methods.isApproved ??
+      adapterUniV3.value?.deposit.methods.isApproved
 
-    return adapter.value?.deposit.methods.isApproved(balanceOf.value)
-  }, [balanceOf.value, adapter.value])
+    const value = props.isUniV3 ? tokenId : balanceOf.value
+
+    if (!value) return
+
+    return isApprovedFn?.(value)
+  }, [
+    balanceOf.value,
+    adapter.value,
+    adapterUniV3.value,
+    props.isUniV3,
+    tokenId,
+  ])
 
   const [approve, handleApprove] = useAsyncFn(async () => {
-    if (!adapter.value || !balanceOf.value) return false
+    const approveFn =
+      adapter.value?.deposit.methods.approve ??
+      adapterUniV3.value?.deposit.methods.approve
+
+    const value = props.isUniV3 ? tokenId : balanceOf.value
+
+    if (!approveFn || !value) return false
 
     try {
-      const approveMethod = await adapter.value.deposit.methods.approve(
-        balanceOf.value
-      )
+      const approveMethod = await approveFn(value)
 
       if (approveMethod instanceof Error) throw approveMethod
 
@@ -126,7 +184,22 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
     } finally {
       isApproved.retry()
     }
-  }, [adapter.value, balanceOf.value])
+  }, [
+    adapter.value,
+    balanceOf.value,
+    adapterUniV3.value,
+    props.isUniV3,
+    tokenId,
+  ])
+
+  const iconMap = props.contract.tokens.reward.reduce<Record<string, string>>(
+    (acc, token) => {
+      acc[token.symbol] = token.alias?.logoUrl ?? ''
+
+      return acc
+    },
+    {}
+  )
 
   return (
     <>
@@ -150,6 +223,51 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
         tokens as a reward - you need to stake your investment in{' '}
         {props.contract.protocol.name} protocol.
       </Typography>
+      {props.isUniV3 && (
+        <div className={styles.depositSelect}>
+          <Select
+            label="TOKEN"
+            value={tokenId}
+            onChange={({ target }) => setTokenId(target.value)}
+          >
+            {props.positions?.map((position) => {
+              const token0Icon = iconMap[position.token0.symbol]
+
+              const renderValue = (
+                <>
+                  {token0Icon ? (
+                    <img alt="" src={token0Icon} className={styles.tokenIcon} />
+                  ) : (
+                    <Paper className={styles.tokenIcon}>
+                      <Icon icon="unknownNetwork" width="16" height="16" />
+                    </Paper>
+                  )}
+                  {props.contract.tokens.reward.map}
+                  {position.token0.price.lower} - {position.token0.price.upper}{' '}
+                  per {position.token1.symbol} - $
+                  {bignumberUtils.format(
+                    bignumberUtils.plus(
+                      position.token0.amountUSD,
+                      position.token1.amountUSD
+                    )
+                  )}
+                </>
+              )
+
+              return (
+                <SelectOption
+                  value={String(position.id)}
+                  key={position.id}
+                  renderValue={renderValue}
+                  className={styles.justifyContentStart}
+                >
+                  {renderValue}
+                </SelectOption>
+              )
+            })}
+          </Select>
+        </div>
+      )}
       <div className={clsx(styles.stakeActions, styles.mt)}>
         {!isApproved.value && (
           <Button
@@ -167,7 +285,7 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
           loading={depositState.loading}
           disabled={approve.loading || !isApproved.value}
         >
-          STAKE TOKENS
+          {props.isUniV3 ? 'DEPOSIT TOKENS' : 'STAKE TOKENS'}
         </Button>
       </div>
     </>

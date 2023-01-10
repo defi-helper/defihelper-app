@@ -24,6 +24,23 @@ export const successContent = style({
   alignItems: 'center',
   flexDirection: 'column',
   marginBottom: 60,
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      marginLeft: -30,
+      marginRight: -30,
+    },
+  },
+})
+
+globalStyle(`${successContent} br`, {
+  display: 'none',
+
+  '@media': {
+    [theme.mediaQueries.md()]: {
+      display: 'block',
+    },
+  },
 })
 
 export const checked = style({
@@ -151,3 +168,27 @@ export const loader = style([
     justifyContent: 'center',
   },
 ])
+
+export const justifyContentStart = style({
+  justifyContent: 'flex-start',
+  textAlign: 'left',
+})
+
+export const depositSelect = style({
+  marginBottom: 48,
+})
+
+export const tokenIcon = style({
+  width: 24,
+  height: 24,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  verticalAlign: 'middle',
+
+  selectors: {
+    '&:not(:last-child)': {
+      marginRight: -4,
+    },
+  },
+})

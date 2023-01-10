@@ -1,32 +1,19 @@
-import { useAsyncFn } from 'react-use'
 import { Button } from '~/common/button'
 import { Icon } from '~/common/icon'
+import { Link } from '~/common/link'
 import { Typography } from '~/common/typography'
 import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
 import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
 import { InvestContract } from '~/invest/common/invest.types'
-import { switchNetwork } from '~/wallets/common'
 import { WalletConnect } from '~/wallets/wallet-connect'
-import { walletNetworkModel } from '~/wallets/wallet-networks'
 import * as styles from './invest-staking-steps.css'
 
-export type InvestStakingStepsMigrateProps = {
-  onSubmit: () => void
-  loading: boolean
+export type InvestStakingStepsDontHaveInvestProps = {
   contract: InvestContract
-  isUniV3: boolean
 }
 
-export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps> =
+export const InvestStakingStepsDontHaveInvest: React.FC<InvestStakingStepsDontHaveInvestProps> =
   (props) => {
-    const currentWallet = walletNetworkModel.useWalletNetwork()
-
-    const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
-      if (!props.contract) return
-
-      return switchNetwork(props.contract.network)
-    }, [props.contract])
-
     return (
       <>
         <InvestStepsProgress success={0} />
@@ -37,7 +24,7 @@ export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps>
           align="center"
           className={styles.title}
         >
-          MIGRATE TOKENS
+          BUY TOKENS
         </Typography>
         <div className={styles.successContent}>
           <Icon
@@ -47,7 +34,8 @@ export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps>
             className={styles.checked}
           />
           <Typography as="div" align="center">
-            You have invested in
+            Sorry, you don&apos;t have any
+            <br /> investments in
           </Typography>
           <Typography as="div" align="center" className={styles.pool}>
             <div className={styles.pool}>
@@ -57,23 +45,21 @@ export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps>
             earlier.
           </Typography>
           <Typography as="div" align="center">
-            We can boost your investment with auto-staking and stop-loss
-            features. To continue you need unstake your tokens and deploy your
-            own contract to control investments.
+            Please go to Uniswap and invest some tokens in
+            <br /> this pool and return back. After that we can
+            <br /> boost your investment with auto-staking
+            <br /> and stop-loss features.
           </Typography>
         </div>
         <WalletConnect fallback={<Button color="green">Connect wallet</Button>}>
           <Button
-            onClick={
-              props.contract.network !== currentWallet?.chainId
-                ? handleSwitchNetwork
-                : () => props.onSubmit()
-            }
-            loading={switchNetworkState.loading || props.loading}
+            as={Link}
             color="green"
+            href={props.contract.link ?? ''}
+            target="_blank"
             className={styles.mt}
           >
-            {props.isUniV3 ? 'NEXT STEP' : 'UNSTAKE TOKENS'}
+            GO TO UNISWAP
           </Button>
         </WalletConnect>
       </>
