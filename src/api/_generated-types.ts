@@ -2289,7 +2289,6 @@ export type ProtocolUpdateInputType = {
 
 export type Query = {
   __typename?: 'Query'
-  ping: Scalars['String']
   config: ConfigType
   me?: Maybe<UserType>
   userReferrer: UserReferrerCodeType

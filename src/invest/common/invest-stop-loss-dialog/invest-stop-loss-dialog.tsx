@@ -144,6 +144,10 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   }, [props.adapter, path.value, stopLossPrice, stopLoss])
 
   const [deleteState, handleDelete] = useAsyncFn(async () => {
+    const res = await props.adapter?.methods.removeStopLoss()
+
+    await res?.tx.wait()
+
     await props.onDelete()
 
     return props.onCancel()
