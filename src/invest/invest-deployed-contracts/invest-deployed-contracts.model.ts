@@ -56,6 +56,9 @@ export const stakingAutomatesDomain = createDomain()
 export const fetchAutomatesContractsFx = stakingAutomatesDomain.createEffect(
   async (params: FetchAutomatesParams) => {
     const data = await stakingApi.automatesContractList({
+      pagination: {
+        limit: 40,
+      },
       filter: {
         user: params.userId,
         archived: false,

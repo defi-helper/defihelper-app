@@ -28,6 +28,7 @@ export const InvestList: React.VFC<unknown> = () => {
     investListModel.$hiddenContractsWithLoading
   )
   const loading = useStore(investListModel.fetchContractsFx.pending)
+  const automatesLoading = useStore(model.fetchAutomatesContractsFx.pending)
 
   const user = useStore(authModel.$user)
 
@@ -149,14 +150,17 @@ export const InvestList: React.VFC<unknown> = () => {
         <Icon icon="settings" className={styles.headerIcon} />
         <Typography variant="h3">Invest</Typography>
       </div>
-      {Boolean(contracts.length || migrateContractsWithHidden.length) && (
+      {(Boolean(contracts.length || migrateContractsWithHidden.length) ||
+        Boolean(search) ||
+        automatesLoading ||
+        loading) && (
         <InvestTabs
           className={styles.tabs}
           onChange={setCurrentTab}
           value={currentTab}
         >
           <InvestTabs.Header>
-            {contracts.length ? (
+            {contracts.length || automatesLoading || Boolean(search) ? (
               <Typography as={ButtonBase} variant="h3">
                 Your investments
               </Typography>
@@ -178,7 +182,11 @@ export const InvestList: React.VFC<unknown> = () => {
               />
             </InvestTabs.HeaderRight>
           </InvestTabs.Header>
-          {contracts.length ? <InvestDeployedContracts /> : <></>}
+          {contracts.length || automatesLoading || Boolean(search) ? (
+            <InvestDeployedContracts />
+          ) : (
+            <></>
+          )}
           {migrateContractsWithHidden.length ? (
             <InvestMigrateContracts
               search={searchThrottled}
