@@ -131,6 +131,13 @@ export const mt = style({
   },
 })
 
+export const gotoUni = style([
+  mt,
+  {
+    color: theme.colors.textColorSecondary,
+  },
+])
+
 export const img = style({
   width: 24,
   height: 24,

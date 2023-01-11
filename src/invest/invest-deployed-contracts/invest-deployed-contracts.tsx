@@ -385,6 +385,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               return (
                 <StakingAutomatesContractCard
                   key={deployedContract.id}
+                  staked={deployedContract.metric.staked}
+                  protocolAdapter={deployedContract.contract?.protocol.adapter}
                   restakeAt={deployedContract.restakeAt ?? null}
                   title={deployedContract.contract?.name ?? ''}
                   address={deployedContract.address}

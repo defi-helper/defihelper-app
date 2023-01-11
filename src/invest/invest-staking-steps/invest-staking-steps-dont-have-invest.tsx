@@ -1,6 +1,6 @@
+import { Link } from '~/common/link'
 import { Button } from '~/common/button'
 import { Icon } from '~/common/icon'
-import { Link } from '~/common/link'
 import { Typography } from '~/common/typography'
 import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
 import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
@@ -57,7 +57,7 @@ export const InvestStakingStepsDontHaveInvest: React.FC<InvestStakingStepsDontHa
             color="green"
             href={props.contract.link ?? ''}
             target="_blank"
-            className={styles.mt}
+            className={styles.gotoUni}
           >
             GO TO UNISWAP
           </Button>

@@ -51,11 +51,15 @@ export type StakingAutomatesContractCardProps = {
   balanceInvest: string
   automateId: string
   contractWalletId?: string
+  staked: string
+  protocolAdapter?: string
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
   (props) => {
     const pending = props.deleting || props.refunding
+
+    const isUniV3 = props.protocolAdapter === 'uniswap3'
 
     const apyboostDifference = bignumberUtils.minus(props.apyBoost, props.apy)
 
@@ -358,28 +362,29 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
           </div>
           <div className={styles.buttons}>
-            {props.contractId && (
-              <CanDemo>
-                <Button
-                  size="small"
-                  className={styles.deposit}
-                  disabled={
-                    props.deleting ||
-                    props.refunding ||
-                    props.running ||
-                    props.stopLossing
-                  }
-                  as={ReactRouterLink}
-                  to={`${paths.invest.detail(props.contractId)}?deploy=${
-                    props.address
-                  }&automateId=${props.automateId}&walletId=${
-                    props.contractWalletId
-                  }`}
-                >
-                  Invest
-                </Button>
-              </CanDemo>
-            )}
+            {(!isUniV3 || (isUniV3 && !bignumberUtils.gt(props.staked, 0))) &&
+              props.contractId && (
+                <CanDemo>
+                  <Button
+                    size="small"
+                    className={styles.deposit}
+                    disabled={
+                      props.deleting ||
+                      props.refunding ||
+                      props.running ||
+                      props.stopLossing
+                    }
+                    as={ReactRouterLink}
+                    to={`${paths.invest.detail(props.contractId)}?deploy=${
+                      props.address
+                    }&automateId=${props.automateId}&walletId=${
+                      props.contractWalletId
+                    }`}
+                  >
+                    Invest
+                  </Button>
+                </CanDemo>
+              )}
 
             <CanDemo>
               <Button
