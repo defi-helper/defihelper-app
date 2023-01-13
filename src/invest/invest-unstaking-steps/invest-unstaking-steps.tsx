@@ -135,17 +135,17 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
   }, [currentWallet, automateId, isUniV3])
 
   const canRefund = useAsyncRetry(async () => {
-    const can =
-      adapterUniV3.value?.refund.methods.can ??
-      adapter.value?.refund.methods.can
+    const can = isUniV3
+      ? adapterUniV3.value?.refund.methods.can
+      : adapter.value?.refund.methods.can
 
     return can?.()
   }, [adapter.value, isUniV3, adapterUniV3.value])
 
   const [refund, handleRefund] = useAsyncFn(async () => {
-    const refundMethod =
-      adapterUniV3.value?.refund.methods.refund ??
-      adapter.value?.refund.methods.refund
+    const refundMethod = isUniV3
+      ? adapterUniV3.value?.refund.methods.refund
+      : adapter.value?.refund.methods.refund
 
     const res = await refundMethod?.()
 
@@ -154,6 +154,8 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
     if (isUniV3 && automateId) {
       await automationsListModel.deleteContractFx(automateId)
     }
+    if (!resTx?.transactionHash) return
+
     handleNextStep(resTx?.transactionHash)
   }, [adapter.value, adapterUniV3.value, handleNextStep, automateId, isUniV3])
 
