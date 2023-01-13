@@ -112,11 +112,22 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
 
       const result = await tx?.wait()
 
+      let amountInUSD = bignumberUtils.mul(balanceOf.value, tokenPriceUSD.value)
+
+      const position = props.positions?.find(({ id }) => String(id) === tokenId)
+
+      if (position && props.isUniV3) {
+        amountInUSD = bignumberUtils.plus(
+          position.token0.amountUSD,
+          position.token1.amountUSD
+        )
+      }
+
       props.onSubmit?.({
         txHash: result.transactionHash,
         tokenPriceUSD: tokenPriceUSD.value,
         amount: value,
-        amountInUSD: bignumberUtils.mul(balanceOf.value, tokenPriceUSD.value),
+        amountInUSD,
       })
       analytics.log('auto_staking_migrate_dialog_deposit_success')
 
@@ -135,6 +146,7 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
     tokenPriceUSD.value,
     adapterUniV3.value,
     props.isUniV3,
+    props.positions,
     tokenId,
   ])
 
