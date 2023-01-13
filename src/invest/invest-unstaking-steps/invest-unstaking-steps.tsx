@@ -18,6 +18,7 @@ import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapte
 import * as model from '~/invest/invest-detail/invest-detail.model'
 import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
 import * as styles from './invest-unstaking-steps.css'
+import { Restake } from '~/common/load-adapter'
 
 export type InvestUnstakingStepsProps = {
   className?: string
@@ -74,7 +75,7 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
   )
 
   const adapter = useAsync(async () => {
-    if (!user || !automateId) return
+    if (!user || !automateId || isUniV3) return
 
     const deployedContracts =
       await stakingAutomatesModel.fetchAutomatesContractsFx({
@@ -101,18 +102,52 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       chainId: String(currentWallet.chainId),
       action: 'migrate',
     })
-  }, [currentWallet, automateId])
+  }, [currentWallet, automateId, isUniV3])
 
-  const balanceOf = useAsyncRetry(async () => {
-    return adapter.value?.refund.methods.staked()
-  }, [adapter.value])
+  const adapterUniV3 = useAsync(async () => {
+    if (!user || !automateId || !isUniV3) return
+
+    const deployedContracts =
+      await stakingAutomatesModel.fetchAutomatesContractsFx({
+        userId: user.id,
+      })
+
+    const deployedContract = deployedContracts.list.find(
+      (contract) => contract?.id === automateId
+    )
+
+    if (
+      !currentWallet ||
+      !props.contract.automate.autorestake ||
+      !deployedContract
+    )
+      return
+
+    return stakingAutomatesModel.fetchAdapterFx({
+      protocolAdapter: props.contract.protocol.adapter,
+      contractAdapter: 'Restake',
+      contractId: props.contract.id,
+      contractAddress: deployedContract.address,
+      provider: currentWallet.provider,
+      chainId: String(currentWallet.chainId),
+      action: 'migrate',
+    }) as unknown as Promise<Restake | undefined>
+  }, [currentWallet, automateId, isUniV3])
 
   const canRefund = useAsyncRetry(async () => {
-    return adapter.value?.refund.methods.can()
-  }, [adapter.value])
+    const can =
+      adapterUniV3.value?.refund.methods.can ??
+      adapter.value?.refund.methods.can
+
+    return can?.()
+  }, [adapter.value, isUniV3, adapterUniV3.value])
 
   const [refund, handleRefund] = useAsyncFn(async () => {
-    const res = await adapter.value?.refund.methods.refund()
+    const refundMethod =
+      adapterUniV3.value?.refund.methods.refund ??
+      adapter.value?.refund.methods.refund
+
+    const res = await refundMethod?.()
 
     const resTx = await res?.tx.wait()
 
@@ -120,7 +155,7 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       await automationsListModel.deleteContractFx(automateId)
     }
     handleNextStep(resTx?.transactionHash)
-  }, [adapter.value, handleNextStep, automateId, isUniV3])
+  }, [adapter.value, adapterUniV3.value, handleNextStep, automateId, isUniV3])
 
   const steps = [
     <InvestUnstakingStepsUnstake
@@ -169,10 +204,7 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
   return (
     <div className={clsx(styles.root, props.className)}>
       <div className={styles.content}>
-        {canRefund.loading ||
-        balanceOf.loading ||
-        adapter.loading ||
-        lp.loading ? (
+        {canRefund.loading || adapter.loading || lp.loading ? (
           <div className={styles.loader}>
             <Loader height="36" />
           </div>
