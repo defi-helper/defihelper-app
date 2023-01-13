@@ -302,6 +302,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             onToggleAutoCompound: (active) =>
               model.toggleAutoCompoundFx({ id: automateContract.id, active }),
             autoCompoundActive: automateContract.trigger?.active ?? null,
+            canDelete: bignumberUtils.eq(automateContract.metric.invest, 0),
           })
 
           if (res.active) {
@@ -386,6 +387,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                 <StakingAutomatesContractCard
                   key={deployedContract.id}
                   staked={deployedContract.metric.staked}
+                  blockedAt={deployedContract.blockedAt ?? null}
+                  invest={deployedContract.metric.invest}
                   protocolAdapter={deployedContract.contract?.protocol.adapter}
                   restakeAt={deployedContract.restakeAt ?? null}
                   title={deployedContract.contract?.name ?? ''}

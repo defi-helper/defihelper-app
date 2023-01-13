@@ -35,6 +35,7 @@ export type InvestStopLossDialogProps = {
   onCancel: () => void
   onToggleAutoCompound: (active: boolean) => void
   autoCompoundActive: boolean | null
+  canDelete: boolean
 }
 
 export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
@@ -304,7 +305,11 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
           </div>
         </div>
       )}
-      <ButtonBase onClick={handleDelete} className={styles.deleteButton}>
+      <ButtonBase
+        onClick={handleDelete}
+        className={styles.deleteButton}
+        disabled={deleteState.loading || !props.canDelete}
+      >
         {deleteState.loading && (
           <CircularProgress
             height="1em"

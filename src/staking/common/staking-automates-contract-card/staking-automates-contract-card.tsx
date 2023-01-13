@@ -52,6 +52,8 @@ export type StakingAutomatesContractCardProps = {
   automateId: string
   contractWalletId?: string
   staked: string
+  blockedAt: string | null
+  invest: string
   protocolAdapter?: string
 }
 
@@ -361,43 +363,54 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 : '-'}
             </Typography>
           </div>
-          <div className={styles.buttons}>
-            {(!isUniV3 || (isUniV3 && !bignumberUtils.gt(props.staked, 0))) &&
-              props.contractId && (
-                <CanDemo>
-                  <Button
-                    size="small"
-                    className={styles.deposit}
-                    disabled={
-                      props.deleting ||
-                      props.refunding ||
-                      props.running ||
-                      props.stopLossing
-                    }
-                    as={ReactRouterLink}
-                    to={`${paths.invest.detail(props.contractId)}?deploy=${
-                      props.address
-                    }&automateId=${props.automateId}&walletId=${
-                      props.contractWalletId
-                    }`}
-                  >
-                    Invest
-                  </Button>
-                </CanDemo>
-              )}
 
-            <CanDemo>
-              <Button
-                size="small"
-                variant="light"
-                className={styles.refund}
-                onClick={props.onRefund}
-                loading={props.refunding}
-                disabled={props.deleting || props.running || props.stopLossing}
-              >
-                Unstake
-              </Button>
-            </CanDemo>
+          <div className={styles.buttons}>
+            {!props.blockedAt && (
+              <>
+                {(!isUniV3 ||
+                  (isUniV3 && !bignumberUtils.gt(props.staked, 0)) ||
+                  bignumberUtils.eq(props.invest, 0)) &&
+                  props.contractId && (
+                    <CanDemo>
+                      <Button
+                        size="small"
+                        className={styles.deposit}
+                        disabled={
+                          props.deleting ||
+                          props.refunding ||
+                          props.running ||
+                          props.stopLossing
+                        }
+                        as={ReactRouterLink}
+                        to={`${paths.invest.detail(props.contractId)}?deploy=${
+                          props.address
+                        }&automateId=${props.automateId}&walletId=${
+                          props.contractWalletId
+                        }`}
+                      >
+                        Invest
+                      </Button>
+                    </CanDemo>
+                  )}
+
+                {bignumberUtils.gt(props.invest, 0) && (
+                  <CanDemo>
+                    <Button
+                      size="small"
+                      variant="light"
+                      className={styles.refund}
+                      onClick={props.onRefund}
+                      loading={props.refunding}
+                      disabled={
+                        props.deleting || props.running || props.stopLossing
+                      }
+                    >
+                      Unstake
+                    </Button>
+                  </CanDemo>
+                )}
+              </>
+            )}
             {props.error && (
               <Dropdown
                 control={
