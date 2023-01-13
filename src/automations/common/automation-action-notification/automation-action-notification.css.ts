@@ -10,3 +10,7 @@ export const root = style({
 export const input = style({
   marginBottom: 16,
 })
+
+export const disable = style({
+  pointerEvents: 'none',
+})
