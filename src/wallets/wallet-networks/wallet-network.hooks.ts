@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react'
 import { useStore } from 'effector-react'
 import { ConnectorEvent, ConnectorUpdate } from '@web3-react/types'
-import { useInterval } from 'react-use'
 
 import { connectors, connectorsByName } from '~/wallets/common'
 import {
@@ -66,22 +65,6 @@ export const useEagerConnect = () => {
 
 export const useInactiveListener = (suppress = false) => {
   const wallet = useStore($wallet)
-
-  useInterval(
-    async () => {
-      if (!window.ethereum) return
-
-      // eslint-disable-next-line no-underscore-dangle
-      const unlocked = await window.ethereum?._metamask
-        ?.isUnlocked?.()
-        .catch(console.log)
-
-      if (wallet?.connector && unlocked) return
-
-      activateWalletFx({ connector: connectors.injected })
-    },
-    !wallet ? 5000 : null
-  )
 
   useEffect(() => {
     const { ethereum } = window
