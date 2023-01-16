@@ -72,7 +72,9 @@ export const useInactiveListener = (suppress = false) => {
       if (!window.ethereum) return
 
       // eslint-disable-next-line no-underscore-dangle
-      const unlocked = await window.ethereum?._metamask?.isUnlocked?.()
+      const unlocked = await window.ethereum?._metamask
+        ?.isUnlocked?.()
+        .catch(console.log)
 
       if (wallet?.connector && unlocked) return
 
