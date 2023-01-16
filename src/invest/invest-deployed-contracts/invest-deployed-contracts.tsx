@@ -4,6 +4,7 @@ import isEmpty from 'lodash.isempty'
 import { useMemo } from 'react'
 import { useInterval, useMedia } from 'react-use'
 import { useStore } from 'effector-react'
+import contracts from '@defihelper/networks/contracts.json'
 
 import { Paper } from '~/common/paper'
 import { InvestCarousel } from '~/invest/common/invest-carousel'
@@ -35,6 +36,11 @@ import { NULL_ADDRESS } from '~/common/constants'
 import * as model from './invest-deployed-contracts.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './invest-deployed-contracts.css'
+import {
+  SettingsSuccessDialog,
+  SettingsWalletBalanceDialog,
+  TransactionEnum,
+} from '~/settings/common'
 
 export type InvestDeployedContractsProps = {
   className?: string
@@ -51,6 +57,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     const [openConfirmDialog] = useDialog(ConfirmDialog)
     const [openErrorDialog] = useDialog(StakingErrorDialog)
     const [openStopLossDialog] = useDialog(InvestStopLossDialog)
+    const [openBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
+    const [openSuccess] = useDialog(SettingsSuccessDialog)
 
     const currentWallet = walletNetworkModel.useWalletNetwork()
     const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
@@ -86,6 +94,62 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         }
       }
     }
+
+    const handleDepositWallet =
+      (automateContract: typeof automatesContracts[number]) => async () => {
+        const wallet = automateContract.contract
+
+        if (!wallet) return
+
+        try {
+          analytics.log('settings_wallet_defihelper_balance_top_up_click')
+          await switchNetwork(wallet.network)
+
+          if (!currentWallet?.account || !currentWallet.chainId) return
+
+          const balanceAdapter = await settingsWalletModel.loadAdapterFx({
+            provider: currentWallet.provider,
+            chainId: currentWallet.chainId,
+            type:
+              'BalanceUpgradable' in
+              contracts[wallet.network as keyof typeof contracts]
+                ? 'BalanceUpgradable'
+                : 'Balance',
+          })
+
+          const billingBalance =
+            await settingsWalletModel.fetchBillingBalanceFx({
+              blockchain: wallet.blockchain,
+              network: wallet.network,
+            })
+
+          const result = await openBalanceDialog({
+            adapter: balanceAdapter,
+            recomendedIncome: billingBalance.recomendedIncome,
+            priceUSD: billingBalance.priceUSD,
+            wallet: currentWallet.account,
+            network: currentWallet.chainId,
+            token: billingBalance.token,
+          })
+
+          await settingsWalletModel.depositFx({
+            blockchain: wallet.blockchain,
+            amount: result.amount,
+            walletAddress: currentWallet.account,
+            chainId: String(currentWallet.chainId),
+            provider: currentWallet.provider,
+            transactionHash: result.transactionHash,
+          })
+
+          await openSuccess({
+            type: TransactionEnum.deposit,
+          })
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(error.message)
+          }
+        }
+      }
 
     const handleAction =
       (
@@ -383,6 +447,11 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                 isNotSameAddresses ??
                 handleRunManually(deployedContract)
 
+              const depositWallet =
+                wrongNetwork ??
+                isNotSameAddresses ??
+                handleDepositWallet(deployedContract)
+
               return (
                 <StakingAutomatesContractCard
                   key={deployedContract.id}
@@ -397,6 +466,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   protocol={deployedContract.protocol}
                   automateId={deployedContract.id}
                   contractWalletId={deployedContract.contractWallet?.id}
+                  onDepositWallet={depositWallet}
                   tokensIcons={
                     deployedContract.contract?.tokens.stake.map(
                       ({ alias }) => alias?.logoUrl ?? null

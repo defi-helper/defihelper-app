@@ -235,3 +235,7 @@ export const balance = style({
 export const balanceInvest = style({
   marginBottom: 24,
 })
+
+export const onDepositWallet = style({
+  color: theme.colors.common.blue1,
+})

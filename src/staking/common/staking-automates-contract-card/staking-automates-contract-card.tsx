@@ -34,6 +34,7 @@ export type StakingAutomatesContractCardProps = {
   onDelete: () => void
   onRun: () => void
   onStopLoss?: () => void
+  onDepositWallet: () => void
   error?: boolean
   apy?: string
   apyBoost?: string
@@ -423,8 +424,14 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 offset={[0, 8]}
               >
                 This wallet has 3 active automations which doesn&apos;t work now
-                due to low Fee Funds balance. Deposit Fee Funds to continue
-                automations.
+                due to low Fee Funds balance.{' '}
+                <ButtonBase
+                  onClick={props.onDepositWallet}
+                  className={styles.onDepositWallet}
+                >
+                  Deposit Fee Funds
+                </ButtonBase>{' '}
+                to continue automations.
               </Dropdown>
             )}
           </div>
