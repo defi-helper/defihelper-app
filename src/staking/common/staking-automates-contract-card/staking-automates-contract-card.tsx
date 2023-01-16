@@ -20,6 +20,7 @@ import { networksConfig } from '~/networks-config'
 import { FreshMetrics } from '~/staking/common/staking.types'
 import { StakingFreshMetrics } from '~/staking/common/staking-fresh-metrics'
 import { AutomateContractStopLossStatusEnum } from '~/api'
+import { WalletSwitchNetwork } from '~/wallets/wallet-switch-network'
 import * as styles from './staking-automates-contract-card.css'
 
 export type StakingAutomatesContractCardProps = {
@@ -103,15 +104,17 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
             {props.onStopLoss && (
               <CanDemo>
-                <Button
-                  onClick={props.onStopLoss}
-                  loading={props.stopLossing}
-                  size="small"
-                  className={styles.settings}
-                  variant="light"
-                >
-                  Settings
-                </Button>
+                <WalletSwitchNetwork network={props.network}>
+                  <Button
+                    onClick={props.onStopLoss}
+                    loading={props.stopLossing}
+                    size="small"
+                    className={styles.settings}
+                    variant="light"
+                  >
+                    Settings
+                  </Button>
+                </WalletSwitchNetwork>
               </CanDemo>
             )}
             {!props.onStopLoss && (
@@ -395,18 +398,20 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
 
                 {bignumberUtils.gt(props.invest, 0) && (
                   <CanDemo>
-                    <Button
-                      size="small"
-                      variant="light"
-                      className={styles.refund}
-                      onClick={props.onRefund}
-                      loading={props.refunding}
-                      disabled={
-                        props.deleting || props.running || props.stopLossing
-                      }
-                    >
-                      Unstake
-                    </Button>
+                    <WalletSwitchNetwork network={props.network}>
+                      <Button
+                        size="small"
+                        variant="light"
+                        className={styles.refund}
+                        onClick={props.onRefund}
+                        loading={props.refunding}
+                        disabled={
+                          props.deleting || props.running || props.stopLossing
+                        }
+                      >
+                        Unstake
+                      </Button>
+                    </WalletSwitchNetwork>
                   </CanDemo>
                 )}
               </>

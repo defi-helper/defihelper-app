@@ -25,7 +25,6 @@ import {
   StakingErrorDialog,
 } from '~/staking/common'
 import { useDialog } from '~/common/dialog'
-import { switchNetwork } from '~/wallets/common'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { analytics } from '~/analytics'
 import { settingsWalletModel } from '~/settings/settings-wallets'
@@ -253,10 +252,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         }).catch(console.error)
       }
 
-    const handleSwitchNetwork =
-      (contract: typeof automatesContracts[number]) => () =>
-        switchNetwork(contract.wallet.network).catch(console.error)
-
     const handleStopLoss =
       (automateContract: typeof automatesContracts[number]) => async () => {
         try {
@@ -362,26 +357,14 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                 ? handleWrongAddress(deployedContract)
                 : null
 
-              const wrongNetwork =
-                String(currentWallet?.chainId) !==
-                deployedContract.wallet.network
-                  ? handleSwitchNetwork(deployedContract)
-                  : null
-
               const refund =
-                wrongNetwork ??
-                isNotSameAddresses ??
-                handleAction(deployedContract, 'refund')
+                isNotSameAddresses ?? handleAction(deployedContract, 'refund')
 
               const stopLoss =
-                wrongNetwork ??
-                isNotSameAddresses ??
-                handleStopLoss(deployedContract)
+                isNotSameAddresses ?? handleStopLoss(deployedContract)
 
               const run =
-                wrongNetwork ??
-                isNotSameAddresses ??
-                handleRunManually(deployedContract)
+                isNotSameAddresses ?? handleRunManually(deployedContract)
 
               return (
                 <StakingAutomatesContractCard
