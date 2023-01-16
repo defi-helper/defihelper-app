@@ -29,6 +29,7 @@ import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapte
 import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
 import * as styles from './invest-staking-steps.css'
 import { InvestStakingStepsTelegramConnected } from './invest-staking-steps-telegram-connected'
+import { InvestStakingStepsDontHaveInvest } from './invest-staking-steps-dont-have-invest'
 
 export type InvestStakingStepsProps = {
   className?: string
@@ -97,6 +98,8 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       })
       .catch(console.error)
   }
+
+  const isUniV3 = props.contract.protocol.adapter === 'uniswap3'
 
   const [deployState, handleDeploy] = useAsyncFn(async () => {
     if (
@@ -179,7 +182,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     setCurrentStep((lastStep) => lastStep + 1)
 
     return deployedContract
-  }, [currentWallet, props.contract])
+  }, [currentWallet, props.contract, isUniV3])
 
   const adapter = useAsync(async () => {
     if (!currentWallet?.account) return
@@ -207,6 +210,8 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
 
     return adapter.value?.actions?.unstake.methods.can(balanceOf.value)
   }, [adapter.value, balanceOf.value])
+
+  const hasPositions = Boolean(adapter.value?.positions?.length)
 
   const [withDraw, handleWithDraw] = useAsyncFn(async () => {
     if (!balanceOf.value) return
@@ -236,30 +241,39 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   }, [balanceOfLp.value, balanceOf.value, canWithdraw.value])
 
   const initialSteps = {
-    buy: [
-      <InvestBuy
-        key={0}
-        contract={props.contract}
-        onSubmit={(values) => {
-          handleNextStep(values.tx)
+    buy:
+      !hasPositions && isUniV3
+        ? [
+            <InvestStakingStepsDontHaveInvest
+              key={0}
+              contract={props.contract}
+            />,
+          ]
+        : [
+            <InvestBuy
+              key={0}
+              contract={props.contract}
+              onSubmit={(values) => {
+                handleNextStep(values.tx)
 
-          lpTokensModel.zapFeePayCreateFx(values)
-        }}
-        adapter={lp.value?.buyLiquidity}
-        tokens={lp.value?.tokens}
-      />,
-      <InvestStakingStepsSuccessBuy
-        key={1}
-        contract={props.contract}
-        onSubmit={handleNextStep}
-      />,
-    ],
+                lpTokensModel.zapFeePayCreateFx(values)
+              }}
+              adapter={lp.value?.buyLiquidity}
+              tokens={lp.value?.tokens}
+            />,
+            <InvestStakingStepsSuccessBuy
+              key={1}
+              contract={props.contract}
+              onSubmit={handleNextStep}
+            />,
+          ],
     migrate: [
       <InvestStakingStepsMigrate
         key={0}
         loading={withDraw.loading}
-        onSubmit={handleWithDraw}
+        onSubmit={isUniV3 ? handleNextStep : handleWithDraw}
         contract={props.contract}
+        isUniV3={isUniV3}
       />,
     ],
   }
@@ -268,7 +282,9 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     bignumberUtils.gt(balanceOf.value, 0) && canWithdraw.value === true
 
   const steps = [
-    ...initialSteps[canMigrate ? 'migrate' : 'buy'],
+    ...initialSteps[
+      canMigrate || (hasPositions && isUniV3) ? 'migrate' : 'buy'
+    ],
     !deploy ? (
       <InvestStakingStepsDeploy
         key={2}
@@ -295,6 +311,8 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       }}
       contract={props.contract}
       deployedContract={deploy ?? deployState.value?.address}
+      isUniV3={isUniV3}
+      positions={adapter.value?.positions}
     />,
     <InvestStakingStepsSuccess key={4} onSubmit={handleNextStep} />,
     <InvestStakingStepsTelegram key={5} onSubmit={handleNextStep} />,

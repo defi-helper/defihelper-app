@@ -374,6 +374,8 @@ export type AutomateContractType = {
   /** restake at */
   restakeAt?: Maybe<Scalars['DateTimeType']>
   metric: AutomateContractMetricType
+  /** Date at blocked contract */
+  blockedAt?: Maybe<Scalars['DateTimeType']>
   /** Date at archived contract */
   archivedAt?: Maybe<Scalars['DateTimeType']>
   stopLoss?: Maybe<AutomateContractStopLossType>
@@ -2289,7 +2291,6 @@ export type ProtocolUpdateInputType = {
 
 export type Query = {
   __typename?: 'Query'
-  ping: Scalars['String']
   config: ConfigType
   me?: Maybe<UserType>
   userReferrer: UserReferrerCodeType
@@ -6832,6 +6833,7 @@ export type StakingAutomatesContractFragmentFragment = {
   | 'verification'
   | 'rejectReason'
   | 'restakeAt'
+  | 'blockedAt'
 > & {
     protocol: { __typename?: 'ProtocolType' } & Pick<
       ProtocolType,
