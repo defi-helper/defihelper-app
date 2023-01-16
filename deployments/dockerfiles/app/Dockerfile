@@ -35,6 +35,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN apk add git
 COPY package*.json ./
+RUN npm set-script prepare ""
 RUN npm ci --no-audit
 COPY . .
 RUN npm run build
