@@ -27,12 +27,12 @@ import { Chip } from '~/common/chip'
 import { Paper } from '~/common/paper'
 import { useDialog } from '~/common/dialog'
 import { Head } from '~/common/head'
-import { switchNetwork } from '~/wallets/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { Loader } from '~/common/loader'
 import { GovernanceAttentionDialog } from '~/governance/common/governance-attention-dialog'
 import { paths } from '~/paths'
+import { WalletSwitchNetwork } from '~/wallets/wallet-switch-network'
 import * as model from './governance-detail.model'
 import * as listModel from '~/governance/governance-list/governance-list.model'
 import * as styles from './governance-detail.css'
@@ -68,8 +68,6 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
 
   const handleQueueProposal = async () => {
     try {
-      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
-
       if (!wallet?.account) return
 
       model.queueFx({
@@ -87,8 +85,6 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
   }
   const handleExecuteProposal = async () => {
     try {
-      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
-
       if (!wallet?.account) return
 
       model.executeFx({
@@ -126,8 +122,6 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
     }
 
     try {
-      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
-
       let reason: string | undefined
 
       if (support === model.CastVotes.abstain) {
@@ -253,14 +247,16 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   blockchain="ethereum"
                   network={config.DEFAULT_CHAIN_ID}
                 >
-                  <Button
-                    className={styles.voteButton}
-                    onClick={handleVoteFor}
-                    loading={loadingCastVote}
-                    color="green"
-                  >
-                    Vote for
-                  </Button>
+                  <WalletSwitchNetwork>
+                    <Button
+                      className={styles.voteButton}
+                      onClick={handleVoteFor}
+                      loading={loadingCastVote}
+                      color="green"
+                    >
+                      Vote for
+                    </Button>
+                  </WalletSwitchNetwork>
                 </WalletConnect>
                 <WalletConnect
                   fallback={
@@ -269,13 +265,15 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   blockchain="ethereum"
                   network={config.DEFAULT_CHAIN_ID}
                 >
-                  <Button
-                    className={styles.voteButton}
-                    onClick={handleVoteAbstain}
-                    loading={loadingCastVote}
-                  >
-                    Vote abstain
-                  </Button>
+                  <WalletSwitchNetwork>
+                    <Button
+                      className={styles.voteButton}
+                      onClick={handleVoteAbstain}
+                      loading={loadingCastVote}
+                    >
+                      Vote abstain
+                    </Button>
+                  </WalletSwitchNetwork>
                 </WalletConnect>
                 <WalletConnect
                   fallback={
@@ -286,14 +284,16 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                   blockchain="ethereum"
                   network={config.DEFAULT_CHAIN_ID}
                 >
-                  <Button
-                    className={styles.voteButton}
-                    onClick={handleVoteAgainst}
-                    loading={loadingCastVote}
-                    color="red"
-                  >
-                    Vote against
-                  </Button>
+                  <WalletSwitchNetwork>
+                    <Button
+                      className={styles.voteButton}
+                      onClick={handleVoteAgainst}
+                      loading={loadingCastVote}
+                      color="red"
+                    >
+                      Vote against
+                    </Button>
+                  </WalletSwitchNetwork>
                 </WalletConnect>
               </div>
             )}
@@ -312,13 +312,15 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
               blockchain="ethereum"
               network={config.DEFAULT_CHAIN_ID}
             >
-              <Button
-                onClick={handleQueueProposal}
-                loading={loadingQueue}
-                className={styles.mb32}
-              >
-                Queue
-              </Button>
+              <WalletSwitchNetwork>
+                <Button
+                  onClick={handleQueueProposal}
+                  loading={loadingQueue}
+                  className={styles.mb32}
+                >
+                  Queue
+                </Button>
+              </WalletSwitchNetwork>
             </WalletConnect>
           )}
           {dateUtils.after(
@@ -331,13 +333,15 @@ export const GovernanceDetail: React.VFC<GovernanceDetailProps> = () => {
                 blockchain="ethereum"
                 network={config.DEFAULT_CHAIN_ID}
               >
-                <Button
-                  onClick={handleExecuteProposal}
-                  loading={loadingExecute}
-                  className={styles.mb32}
-                >
-                  Execute
-                </Button>
+                <WalletSwitchNetwork>
+                  <Button
+                    onClick={handleExecuteProposal}
+                    loading={loadingExecute}
+                    className={styles.mb32}
+                  >
+                    Execute
+                  </Button>
+                </WalletSwitchNetwork>
               </WalletConnect>
             )}
           {governanceDetail.state === GovProposalStateEnum.Active && (
