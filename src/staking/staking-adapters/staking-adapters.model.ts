@@ -3,7 +3,12 @@ import { createDomain, restore } from 'effector'
 import networks from '@defihelper/networks/contracts.json'
 import isEmpty from 'lodash.isempty'
 
-import { loadAdapter, AdapterActions, Adapters } from '~/common/load-adapter'
+import {
+  loadAdapter,
+  AdapterActions,
+  Adapters,
+  AdapterFn,
+} from '~/common/load-adapter'
 import { toastsService } from '~/toasts'
 import { buildAdaptersUrl, stakingApi } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -42,6 +47,20 @@ export const isNetworkKey = (
 
 export const stakingAdaptersDomain = createDomain()
 
+export const fetchAdapterFx = stakingAdaptersDomain.createEffect(
+  async (params: Params) => {
+    const { contract } = params
+
+    const adapterObj = await loadAdapter(
+      buildAdaptersUrl(params.protocolAdapter)
+    )
+
+    const adapterContract = adapterObj[contract.adapter as keyof Adapters]
+
+    return adapterContract
+  }
+)
+
 export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
   async (params: Params) => {
     const networkProvider = walletNetworkModel.getNetwork(
@@ -51,30 +70,22 @@ export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
 
     const { contract } = params
 
-    const adapterObj = await loadAdapter(
-      buildAdaptersUrl(params.protocolAdapter)
-    )
-
-    const adapterContract =
-      adapterObj[
-        contract.adapter as keyof Omit<
-          Adapters,
-          'automates' | 'store' | 'balance'
-        >
-      ]
+    const adapterContract = (await fetchAdapterFx(params)) as AdapterFn
 
     const adapter = await adapterContract(networkProvider, contract.address, {
       blockNumber: 'latest',
       signer: networkProvider?.getSigner(),
     })
 
-    const actions = params.account
-      ? await adapter.actions(params.account)
-      : null
+    const actions =
+      params.account && adapter.actions
+        ? await adapter.actions(params.account)
+        : null
 
     return {
       contractAddress: contract.address,
       actions,
+      positions: (await adapter.wallet(params.account)).positions,
     }
   }
 )

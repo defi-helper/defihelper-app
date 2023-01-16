@@ -16,6 +16,7 @@ export type AdapterWallet = {
   staked: Token
   earned: Token
   tokens: Token
+  positions?: Position[]
   metrics: {
     staking: string
     stakingUSD: string
@@ -326,7 +327,7 @@ export type Adapter = {
     aprYear: string
   }
   wallet: (walletAddress: string) => Promise<AdapterWallet>
-  actions: (walletAddress: string) => Promise<AdapterActions>
+  actions?: (walletAddress: string) => Promise<AdapterActions>
 }
 
 export type AdapterFn = (
@@ -440,6 +441,67 @@ export type BalanceAdapter = {
   refund(amount: string): Promise<{ tx: Transaction }>
 }
 
+interface TokenPosition {
+  address: string
+  name: string
+  symbol: string
+  amount: string
+  amountUSD: string
+  price: {
+    USD: string
+    lower: string
+    upper: string
+  }
+}
+
+export interface Position {
+  id: number
+  fee: number
+  token0: TokenPosition
+  token1: TokenPosition
+}
+
+export type Restake = {
+  deposit: {
+    name: string
+    methods: {
+      positions: () => Promise<Position[]>
+      isApproved: (tokenId: string) => Promise<boolean>
+      approve: (tokenId: string) => Promise<{ tx: Transaction }>
+      canDeposit: (tokenId: string) => Promise<true | Error>
+      deposit: (tokenId: string) => Promise<{ tx: Transaction }>
+    }
+  }
+  refund: {
+    name: string
+    methods: {
+      position: () => Promise<Position | null>
+      can: () => Promise<true | Error>
+      refund: () => Promise<{ tx: Transaction }>
+    }
+  }
+  stopLoss: {
+    name: string
+    methods: {
+      startTokens: () => Promise<string[]>
+      autoPath: (from: string, to: string) => Promise<string[]>
+      amountOut: (path: string[]) => Promise<string>
+      canSetStopLoss: (
+        path: string[],
+        amountOut: string,
+        amountOutMin: string
+      ) => Promise<true | Error>
+      setStopLoss: (
+        path: string[],
+        amountOut: string,
+        amountOutMin: string
+      ) => Promise<{ tx: Transaction }>
+      removeStopLoss: () => Promise<{ tx: Transaction }>
+      runStopLoss: () => Promise<{ tx: Transaction }>
+    }
+  }
+}
+
 export type Adapters = {
   staking: AdapterFn
   swopfiStaking: AdapterFn
@@ -479,6 +541,7 @@ export type Adapters = {
       payload: unknown
     ) => Promise<SellLiquidity>
     smartTrade: SmartTrade
+    Restake: (signer: unknown, contractAddress: string) => Promise<Restake>
   }
 }
 

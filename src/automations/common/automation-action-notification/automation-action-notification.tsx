@@ -1,4 +1,5 @@
 import { useForm, Controller } from 'react-hook-form'
+import clsx from 'clsx'
 import { useEffect } from 'react'
 import { yupResolver } from '@hookform/resolvers/yup'
 
@@ -94,7 +95,9 @@ export const AutomationActionNotification: React.VFC<AutomationActionNotificatio
             <AutomationChooseButton
               onClick={props.contacts.length ? handleAddContact : undefined}
               label="contact"
-              className={styles.input}
+              className={clsx(styles.input, {
+                [styles.disable]: !props.contacts.length,
+              })}
               error={formState.errors.contact?.id?.message}
             >
               {props.contacts.length ? (
