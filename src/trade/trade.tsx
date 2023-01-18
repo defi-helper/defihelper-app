@@ -31,11 +31,11 @@ import { TradePlusMinus } from './common/trade-plus-minus'
 import { useDialog } from '~/common/dialog'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { pairMock } from './common/trade-dev.mock'
-import { switchNetwork } from '~/wallets/common'
 import { NumericalInput } from '~/common/numerical-input'
 import { authModel } from '~/auth'
 import { UserRoleEnum } from '~/api'
 import { useQueryParams } from '~/common/hooks'
+import { WalletSwitchNetwork } from '~/wallets/wallet-switch-network'
 import * as model from './trade.model'
 import * as tradeOrdersModel from './trade-orders/trade-orders.model'
 import * as styles from './trade.css'
@@ -394,24 +394,6 @@ export const Trade: React.VFC<TradeProps> = () => {
     wallet?.network !== undefined &&
     currentWallet?.chainId !== undefined
 
-  const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
-    let network =
-      !currentNetworkCorrect || !selectedNetworkCorrect ? '56' : wallet?.network
-
-    if (!currentNetworkAndSelectedAreEqual) {
-      network = wallet?.network
-    }
-
-    if (!network) return
-
-    await switchNetwork(network).catch(console.error)
-  }, [
-    wallet,
-    selectedNetworkCorrect,
-    currentNetworkCorrect,
-    currentNetworkAndSelectedAreEqual,
-  ])
-
   const hasContract =
     'SmartTradeRouter' in
     (contracts[wallet?.network as keyof typeof contracts] ?? {})
@@ -444,6 +426,24 @@ export const Trade: React.VFC<TradeProps> = () => {
   )
     ? Object.values(Selects).filter((select) => select !== Selects.BuySell)
     : Object.values(Selects)
+
+  const networkToSwitch = useMemo(() => {
+    let network =
+      !currentNetworkCorrect || !selectedNetworkCorrect ? '56' : wallet?.network
+
+    if (!currentNetworkAndSelectedAreEqual) {
+      network = wallet?.network
+    }
+
+    if (!network) return undefined
+
+    return network
+  }, [
+    wallet,
+    selectedNetworkCorrect,
+    currentNetworkCorrect,
+    currentNetworkAndSelectedAreEqual,
+  ])
 
   return (
     <AppLayout title="Trade">
@@ -826,14 +826,11 @@ export const Trade: React.VFC<TradeProps> = () => {
                 {!currentWallet && <>Please unlock your wallet</>}
               </Typography>
               {wallet && currentWallet && (
-                <Button
-                  color="green"
-                  className={styles.switchNetwork}
-                  onClick={handleSwitchNetwork}
-                  loading={switchNetworkState.loading}
-                >
-                  switch network
-                </Button>
+                <WalletSwitchNetwork network={networkToSwitch}>
+                  <Button color="green" className={styles.switchNetwork}>
+                    switch network
+                  </Button>
+                </WalletSwitchNetwork>
               )}
             </div>
           )}

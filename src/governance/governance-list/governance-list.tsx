@@ -16,14 +16,13 @@ import { useDialog } from '~/common/dialog'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Paper } from '~/common/paper'
 import { Icon } from '~/common/icon'
-import { switchNetwork } from '~/wallets/common'
 import { config } from '~/config'
 import { WalletConnect } from '~/wallets/wallet-connect'
 import { Loader } from '~/common/loader'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { CanDemo } from '~/auth/can-demo'
 import { GovernanceTokensRequired } from '../common/governance-tokens-required'
 import { NULL_ADDRESS } from '~/common/constants'
+import { WalletSwitchNetwork } from '~/wallets/wallet-switch-network'
 import * as model from './governance-list.model'
 import * as styles from './governance-list.css'
 
@@ -64,10 +63,8 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
 
   useGate(model.GovernanceListGate)
 
-  const handleopenDelegate = async () => {
+  const handleOpenDelegate = async () => {
     try {
-      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
-
       if (!wallet?.account) return
 
       if (
@@ -152,9 +149,9 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
               blockchain="ethereum"
               network={config.DEFAULT_CHAIN_ID}
             >
-              <CanDemo>
+              <WalletSwitchNetwork>
                 <ButtonBase
-                  onClick={handleopenDelegate}
+                  onClick={handleOpenDelegate}
                   disabled={delegateLoading}
                   className={styles.delegate}
                 >
@@ -163,7 +160,7 @@ export const GovernanceList: React.VFC<GovernanceListProps> = () => {
                     governanceVotes?.delegates
                   )}
                 </ButtonBase>
-              </CanDemo>
+              </WalletSwitchNetwork>
             </WalletConnect>
           </Paper>
           <WalletConnect

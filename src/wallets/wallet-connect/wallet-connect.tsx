@@ -1,7 +1,7 @@
 import { useStore } from 'effector-react'
-import { isValidElement, cloneElement } from 'react'
-import { CanDemo } from '~/auth/can-demo'
+import { isValidElement, cloneElement, Attributes } from 'react'
 
+import { CanDemo } from '~/auth/can-demo'
 import { settingsWalletModel } from '~/settings/settings-wallets'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { useWalletConnect, useWalletSign } from './wallet-connect.hook'
@@ -45,12 +45,12 @@ export const WalletConnect: React.FC<WalletConnectProps> = (props) => {
   })
 
   const newFallback = cloneElement(props.fallback, {
-    ...fallback.props,
+    ...(fallback.props as Record<string, unknown>),
     onClick: handleSign.bind(null, {
       blockchain: props.blockchain,
       network: props.network,
     }),
-  })
+  } as Partial<unknown> & Attributes)
 
   if (!currentWallet) return <CanDemo>{newFallback}</CanDemo>
 

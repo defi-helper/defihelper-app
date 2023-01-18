@@ -24,6 +24,7 @@ import { hasBoughtPrice } from '~/trade/common/trade.types'
 import { config } from '~/config'
 import { TradeStatusChart } from '~/trade/common/trade-status-chart'
 import * as styles from './trade-order-card.css'
+import { WalletSwitchNetwork } from '~/wallets/wallet-switch-network'
 
 export type TradeOrderCardProps = {
   updating?: boolean
@@ -50,6 +51,7 @@ export type TradeOrderCardProps = {
   onClaim: () => void
   onEdit: () => void
   onUpdatePrice: () => void
+  network: string
 }
 
 const titles: Record<string, string> = {
@@ -152,14 +154,16 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
     (order.status === SmartTradeOrderStatusEnum.Succeeded && !order.claim) ||
     (order.closed && !order.claim) ? (
       <WalletConnect fallback={<Button color="green">Claim</Button>}>
-        <Button
-          color="green"
-          onClick={props.onClaim}
-          loading={props.claimingOrder}
-          disabled={props.claimingDisabled}
-        >
-          Claim
-        </Button>
+        <WalletSwitchNetwork network={props.network}>
+          <Button
+            color="green"
+            onClick={props.onClaim}
+            loading={props.claimingOrder}
+            disabled={props.claimingDisabled}
+          >
+            Claim
+          </Button>
+        </WalletSwitchNetwork>
       </WalletConnect>
     ) : (
       statusWidget
@@ -434,43 +438,49 @@ export const TradeOrderCard: React.VFC<TradeOrderCardProps> = (props) => {
                   <WalletConnect
                     fallback={<ButtonBase>Cancel order</ButtonBase>}
                   >
-                    <ButtonBase
-                      onClick={() => {
-                        props.onCancel()
+                    <WalletSwitchNetwork network={props.network}>
+                      <ButtonBase
+                        onClick={() => {
+                          props.onCancel()
 
-                        close()
-                      }}
-                    >
-                      Cancel order
-                    </ButtonBase>
+                          close()
+                        }}
+                      >
+                        Cancel order
+                      </ButtonBase>
+                    </WalletSwitchNetwork>
                   </WalletConnect>
                   {order.status === SmartTradeOrderStatusEnum.Pending && (
                     <WalletConnect
                       fallback={<ButtonBase>Edit order</ButtonBase>}
                     >
-                      <ButtonBase
-                        onClick={() => {
-                          props.onEdit()
+                      <WalletSwitchNetwork network={props.network}>
+                        <ButtonBase
+                          onClick={() => {
+                            props.onEdit()
 
-                          close()
-                        }}
-                      >
-                        Edit order
-                      </ButtonBase>
+                            close()
+                          }}
+                        >
+                          Edit order
+                        </ButtonBase>
+                      </WalletSwitchNetwork>
                     </WalletConnect>
                   )}
                   <WalletConnect
                     fallback={<ButtonBase>Close on market</ButtonBase>}
                   >
-                    <ButtonBase
-                      onClick={() => {
-                        props.onCloseMarket()
+                    <WalletSwitchNetwork network={props.network}>
+                      <ButtonBase
+                        onClick={() => {
+                          props.onCloseMarket()
 
-                        close()
-                      }}
-                    >
-                      Close on market
-                    </ButtonBase>
+                          close()
+                        }}
+                      >
+                        Close on market
+                      </ButtonBase>
+                    </WalletSwitchNetwork>
                   </WalletConnect>
                   <ButtonBase
                     onClick={() => {
