@@ -1,4 +1,4 @@
-import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
+import { useAsync, useAsyncFn, useAsyncRetry, useInterval } from 'react-use'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
@@ -211,7 +211,13 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     return adapter.value?.actions?.unstake.methods.can(balanceOf.value)
   }, [adapter.value, balanceOf.value])
 
-  const hasPositions = Boolean(adapter.value?.positions?.length)
+  const positions = useAsyncRetry(async () => {
+    if (!currentWallet?.account) return
+
+    return (await adapter.value?.positions?.(currentWallet.account))?.positions
+  }, [adapter.value, currentWallet])
+
+  const hasPositions = Boolean(positions.value?.length)
 
   const [withDraw, handleWithDraw] = useAsyncFn(async () => {
     if (!balanceOf.value) return
@@ -239,6 +245,15 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       setCurrentStep(1)
     }
   }, [balanceOfLp.value, balanceOf.value, canWithdraw.value])
+
+  useInterval(
+    () => {
+      if (!isUniV3) return
+
+      positions.retry()
+    },
+    isUniV3 ? 15000 : null
+  )
 
   const initialSteps = {
     buy:
@@ -312,7 +327,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       contract={props.contract}
       deployedContract={deploy ?? deployState.value?.address}
       isUniV3={isUniV3}
-      positions={adapter.value?.positions}
+      positions={positions.value}
     />,
     <InvestStakingStepsSuccess key={4} onSubmit={handleNextStep} />,
     <InvestStakingStepsTelegram key={5} onSubmit={handleNextStep} />,

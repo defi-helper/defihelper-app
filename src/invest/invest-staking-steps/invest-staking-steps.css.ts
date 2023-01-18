@@ -131,12 +131,11 @@ export const mt = style({
   },
 })
 
-export const gotoUni = style([
-  mt,
-  {
-    color: theme.colors.textColorSecondary,
-  },
-])
+export const gotoUni = style([mt, {}])
+
+globalStyle(`${mt}${gotoUni}`, {
+  color: theme.colors.textColorSecondary,
+})
 
 export const img = style({
   width: 24,
