@@ -58,8 +58,10 @@ export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps>
           </Typography>
           <Typography as="div" align="center">
             We can boost your investment with auto-staking and stop-loss
-            features. To continue you need unstake your tokens and deploy your
-            own contract to control investments.
+            features.
+            {!props.isUniV3 &&
+              ` To continue you need unstake your tokens and deploy your
+            own contract to control investments.`}
           </Typography>
         </div>
         <WalletConnect fallback={<Button color="green">Connect wallet</Button>}>

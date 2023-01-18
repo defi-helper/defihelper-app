@@ -452,6 +452,10 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                 isNotSameAddresses ??
                 handleDepositWallet(deployedContract)
 
+              const staked =
+                metrics[deployedContract.id]?.myStaked ??
+                deployedContract.metric.staked
+
               return (
                 <StakingAutomatesContractCard
                   key={deployedContract.id}
@@ -494,13 +498,17 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   stopLossToken={deployedContract.stopLoss?.outToken?.symbol}
                   error={deployedContract.wallet?.billing?.balance?.lowFeeFunds}
                   freshMetrics={metrics[deployedContract.id]}
-                  balanceInvest={bignumberUtils.minus(
-                    bignumberUtils.plus(
-                      deployedContract.metric.staked,
-                      deployedContract.metric.earned
-                    ),
-                    deployedContract.metric.invest
-                  )}
+                  balanceInvest={
+                    bignumberUtils.eq(staked, 0)
+                      ? '0'
+                      : bignumberUtils.minus(
+                          bignumberUtils.plus(
+                            staked,
+                            deployedContract.metric.earned
+                          ),
+                          deployedContract.metric.invest
+                        )
+                  }
                 />
               )
             })}

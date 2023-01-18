@@ -81,13 +81,11 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     if (!price.value) return
 
     setStopLossPrice(
-      bignumberUtils.toFixed(
-        bignumberUtils.minus(
-          price.value,
-          bignumberUtils.mul(
-            bignumberUtils.div(percentThrottled, 100),
-            price.value
-          )
+      bignumberUtils.minus(
+        price.value,
+        bignumberUtils.mul(
+          bignumberUtils.div(percentThrottled, 100),
+          price.value
         )
       )
     )
@@ -251,7 +249,8 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                 You will get
               </Typography>
               <Typography variant="body2">
-                {price.value} {withDrawTokensMap.get(withdrawToken)}
+                {bignumberUtils.format(price.value)}{' '}
+                {withDrawTokensMap.get(withdrawToken)}
               </Typography>
             </div>
             <div className={styles.input}>

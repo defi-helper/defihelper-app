@@ -198,7 +198,7 @@ export const icon = style({
 export const paperIcon = style([
   icon,
   {
-    background: theme.colors.common.black1,
+    background: theme.colors.tertiary,
   },
 ])
 

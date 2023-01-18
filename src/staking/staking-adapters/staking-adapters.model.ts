@@ -85,7 +85,7 @@ export const fetchContractAdapterFx = stakingAdaptersDomain.createEffect(
     return {
       contractAddress: contract.address,
       actions,
-      positions: (await adapter.wallet(params.account)).positions,
+      positions: adapter.wallet,
     }
   }
 )
