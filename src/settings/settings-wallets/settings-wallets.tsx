@@ -145,13 +145,20 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
           'BalanceUpgradable' in
           contracts[wallet.network as keyof typeof contracts]
 
-        const oldBalanceAdapter = await model.loadAdapterFx({
-          provider: currentWallet.provider,
-          chainId: currentWallet.chainId,
-          type: 'Balance',
-        })
+        const hasOldContract =
+          'Balance' in contracts[wallet.network as keyof typeof contracts]
 
-        const oldBalance = await oldBalanceAdapter.netBalance()
+        const oldBalanceAdapter = hasOldContract
+          ? await model.loadAdapterFx({
+              provider: currentWallet.provider,
+              chainId: currentWallet.chainId,
+              type: 'Balance',
+            })
+          : null
+
+        const oldBalance = oldBalanceAdapter
+          ? await oldBalanceAdapter.netBalance()
+          : '0'
 
         const balanceAdapter = await model.loadAdapterFx({
           provider: currentWallet.provider,
