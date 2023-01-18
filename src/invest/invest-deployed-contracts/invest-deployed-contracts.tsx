@@ -102,7 +102,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
 
         try {
           analytics.log('settings_wallet_defihelper_balance_top_up_click')
-          await switchNetwork(wallet.network)
 
           if (!currentWallet?.account || !currentWallet.chainId) return
 
@@ -431,9 +430,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                 isNotSameAddresses ?? handleRunManually(deployedContract)
 
               const depositWallet =
-                wrongNetwork ??
-                isNotSameAddresses ??
-                handleDepositWallet(deployedContract)
+                isNotSameAddresses ?? handleDepositWallet(deployedContract)
 
               const staked =
                 metrics[deployedContract.id]?.myStaked ??

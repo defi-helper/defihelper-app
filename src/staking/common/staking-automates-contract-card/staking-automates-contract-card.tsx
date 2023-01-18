@@ -430,12 +430,16 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               >
                 This wallet has 3 active automations which doesn&apos;t work now
                 due to low Fee Funds balance.{' '}
-                <ButtonBase
-                  onClick={props.onDepositWallet}
-                  className={styles.onDepositWallet}
-                >
-                  Deposit Fee Funds
-                </ButtonBase>{' '}
+                <CanDemo>
+                  <WalletSwitchNetwork network={props.network}>
+                    <ButtonBase
+                      onClick={props.onDepositWallet}
+                      className={styles.onDepositWallet}
+                    >
+                      Deposit Fee Funds
+                    </ButtonBase>
+                  </WalletSwitchNetwork>
+                </CanDemo>{' '}
                 to continue automations.
               </Dropdown>
             )}
