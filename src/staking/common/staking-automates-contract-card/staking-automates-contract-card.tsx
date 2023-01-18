@@ -292,7 +292,12 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Dropdown>
             </Typography>
             <Typography variant="body2" as="span">
-              {status ?? (props.stopLossAmountOut && props.stopLossToken)
+              {(status
+                ? `${status} (${bignumberUtils.format(
+                    props.stopLossAmountOut
+                  )} ${props.stopLossToken})`
+                : null) ??
+              (props.stopLossAmountOut && props.stopLossToken)
                 ? `${bignumberUtils.format(props.stopLossAmountOut)} ${
                     props.stopLossToken
                   }`
