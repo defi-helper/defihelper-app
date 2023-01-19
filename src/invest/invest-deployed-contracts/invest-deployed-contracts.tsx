@@ -360,7 +360,9 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             onToggleAutoCompound: (active) =>
               model.toggleAutoCompoundFx({ id: automateContract.id, active }),
             autoCompoundActive: automateContract.trigger?.active ?? null,
-            canDelete: bignumberUtils.eq(automateContract.metric.invest, 0),
+            canDelete:
+              bignumberUtils.eq(automateContract.metric.invest, 0) ||
+              automateContract.stopLoss?.amountOut !== null,
           })
 
           if (res.active) {
