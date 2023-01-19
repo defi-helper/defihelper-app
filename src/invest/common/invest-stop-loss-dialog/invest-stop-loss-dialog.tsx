@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
-import { useAsyncFn, useAsyncRetry, useToggle, useThrottle } from 'react-use'
+import React, { useEffect, useState } from 'react'
+import { useAsyncFn, useAsyncRetry, useToggle } from 'react-use'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { Button } from '~/common/button'
@@ -55,8 +55,10 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
       props.withdrawTokens?.[0]?.address ??
       ''
   )
-  const [stopLossPrice, setStopLossPrice] = useState('')
-  const [percent, setPercent] = useState(0)
+  const [stopLossPrice, setStopLossPrice] = useState(
+    props.initialStopLoss?.params?.amountOut ?? '0'
+  )
+  const [percent, setPercent] = useState(props.initialStopLoss ? 0 : 10)
 
   const path = useAsyncRetry(async () => {
     return (
@@ -74,40 +76,69 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     )
   }, [props.adapter, props.initialStopLoss, path.value])
 
-  const percentThrottled = useThrottle(percent, 300)
-  const stopLossPriceThrottled = useThrottle(stopLossPrice, 300)
+  const handleChangePrice = (event: React.FormEvent<HTMLInputElement>) => {
+    setStopLossPrice(event.currentTarget.value)
 
-  useEffect(() => {
-    if (!price.value) return
+    const newPercent = Math.abs(
+      Number(
+        bignumberUtils.toFixed(
+          bignumberUtils.mul(
+            bignumberUtils.div(
+              bignumberUtils.minus(event.currentTarget.value, price.value),
+              price.value
+            ),
+            100
+          )
+        )
+      )
+    )
+
+    setPercent(newPercent)
+  }
+
+  const handleChangePercent = (
+    event: React.FormEvent<HTMLInputElement> | number | number[]
+  ) => {
+    const value = Math.abs(
+      Number(
+        Array.isArray(event) || typeof event === 'number'
+          ? event
+          : event.currentTarget.value
+      )
+    )
 
     setStopLossPrice(
       bignumberUtils.minus(
         price.value,
-        bignumberUtils.mul(
-          bignumberUtils.div(percentThrottled, 100),
-          price.value
-        )
+        bignumberUtils.mul(bignumberUtils.div(value, 100), price.value)
       )
     )
-  }, [price.value, percentThrottled])
+
+    setPercent(value)
+  }
 
   useEffect(() => {
-    if (!price.value) return
+    if (!price.value || !props.initialStopLoss) return
 
-    const newPercent = Number(
-      bignumberUtils.toFixed(
-        bignumberUtils.mul(
-          bignumberUtils.div(
-            bignumberUtils.minus(stopLossPriceThrottled, price.value),
-            price.value
-          ),
-          100
+    const newPercent = Math.abs(
+      Number(
+        bignumberUtils.toFixed(
+          bignumberUtils.mul(
+            bignumberUtils.div(
+              bignumberUtils.minus(
+                props.initialStopLoss.amountOut,
+                price.value
+              ),
+              price.value
+            ),
+            100
+          )
         )
       )
     )
 
-    setPercent(-newPercent)
-  }, [price.value, stopLossPriceThrottled])
+    setPercent(newPercent)
+  }, [price.value, props.initialStopLoss])
 
   const [confirm, handleConfirm] = useAsyncFn(async () => {
     if (!props.adapter || !path.value) return
@@ -159,25 +190,9 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   }, new Map<string, string>())
 
   useEffect(() => {
-    if (!price.value || props.initialStopLoss) return
-
-    setTimeout(() => {
-      setPercent(10)
-    }, 500)
-  }, [price.value, props.initialStopLoss])
-
-  useEffect(() => {
     props.onToggleAutoCompound(autoCompound)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoCompound])
-
-  const initialPrice = props.initialStopLoss?.params?.amountOut
-
-  useEffect(() => {
-    if (!price.value || !initialPrice) return
-
-    setStopLossPrice(initialPrice)
-  }, [price.value, initialPrice])
 
   return (
     <Dialog className={styles.root}>
@@ -257,7 +272,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
               <NumericalInput
                 label="Stop-loss activation"
                 value={stopLossPrice}
-                onChange={(event) => setStopLossPrice(event.target.value)}
+                onChange={handleChangePrice}
                 className={styles.price}
                 min={0}
                 max={price.value}
@@ -271,9 +286,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                   value={-percent}
                   min={0}
                   max={100}
-                  onChange={(event) =>
-                    setPercent(Number(event.currentTarget.value))
-                  }
+                  onChange={handleChangePercent}
                   disabled={confirm.loading}
                   rightSide="%"
                 />
@@ -283,7 +296,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                   value={percent}
                   min={0}
                   max={100}
-                  onChange={(event) => setPercent(Number(event))}
+                  onChange={handleChangePercent}
                   disabled={confirm.loading}
                 />
               </div>

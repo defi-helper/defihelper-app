@@ -73,32 +73,6 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     )
   }, [lp.value, props.contract])
 
-  const handleNextStep = (txId?: string) => {
-    setCurrentStep(currentStep + 1)
-
-    if (!txId) return
-
-    if (walletId) {
-      stakingAutomatesModel
-        .scanWalletMetricFx({
-          contract: props.contract.id,
-          wallet: walletId,
-          txId,
-        })
-        .catch(console.error)
-    }
-
-    if (!currentUserWallet) return
-
-    stakingAutomatesModel
-      .scanWalletMetricFx({
-        contract: props.contract.id,
-        wallet: currentUserWallet.id,
-        txId,
-      })
-      .catch(console.error)
-  }
-
   const isUniV3 = props.contract.protocol.adapter === 'uniswap3'
 
   const [deployState, handleDeploy] = useAsyncFn(async () => {
@@ -183,6 +157,36 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
 
     return deployedContract
   }, [currentWallet, props.contract, isUniV3])
+
+  const handleNextStep = (txId?: string) => {
+    setCurrentStep(currentStep + 1)
+
+    if (!txId) return
+
+    const wallet = walletId ?? deployState.value?.contractWallet?.id
+
+    if (wallet) {
+      stakingAutomatesModel
+        .scanWalletMetricFx({
+          contract: props.contract.id,
+          wallet,
+          txId,
+        })
+        .catch(console.error)
+    }
+
+    const id = automateId ?? deployState.value?.id
+
+    if (!currentUserWallet || !id) return
+
+    stakingAutomatesModel
+      .scanWalletMetricFx({
+        contract: id,
+        wallet: currentUserWallet.id,
+        txId,
+      })
+      .catch(console.error)
+  }
 
   const adapter = useAsync(async () => {
     if (!currentWallet?.account) return
