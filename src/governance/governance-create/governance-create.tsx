@@ -28,13 +28,13 @@ import { cutAccount } from '~/common/cut-account'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { Paper } from '~/common/paper'
 import { Head } from '~/common/head'
-import { switchNetwork } from '~/wallets/common'
 import { config } from '~/config'
 import { Link } from '~/common/link'
 import { useQueryParams } from '~/common/hooks'
 import { fetchGovernanceProposalFx } from '~/governance/governance-detail/governance-detail.model'
 import { buildExplorerUrl } from '~/common/build-explorer-url'
 import { abi, AbiKeys, isContract } from '~/abi'
+import { WalletSwitchNetwork } from '~/wallets/wallet-switch-network'
 import * as styles from './governance-create.css'
 import * as model from './governance-create.model'
 
@@ -208,8 +208,6 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
       .filter(Boolean)
 
     try {
-      await switchNetwork(String(config.DEFAULT_CHAIN_ID))
-
       if (!wallet?.account) return
 
       model.proposeFx({
@@ -367,9 +365,11 @@ export const GovernanceCreate: React.VFC<GovernanceCreateProps> = () => {
         {Boolean(formState.errors.description) && (
           <Typography className={styles.error}>required</Typography>
         )}
-        <Button type="submit" loading={loading} className={styles.submit}>
-          Submit proposal
-        </Button>
+        <WalletSwitchNetwork>
+          <Button type="submit" loading={loading} className={styles.submit}>
+            Submit proposal
+          </Button>
+        </WalletSwitchNetwork>
       </form>
     </AppLayout>
   )

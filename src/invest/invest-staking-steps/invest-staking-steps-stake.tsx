@@ -229,12 +229,14 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
         contract={props.contract}
         className={styles.contractInfo}
       />
-      <Typography align="center" className={styles.stakeHint}>
-        To earn{' '}
-        {props.contract.tokens.reward.map(({ symbol }) => symbol).join('-')}{' '}
-        tokens as a reward - you need to stake your investment in{' '}
-        {props.contract.protocol.name} protocol.
-      </Typography>
+      {!props.isUniV3 && (
+        <Typography align="center" className={styles.stakeHint}>
+          To earn{' '}
+          {props.contract.tokens.reward.map(({ symbol }) => symbol).join('-')}{' '}
+          tokens as a reward - you need to stake your investment in{' '}
+          {props.contract.protocol.name} protocol.
+        </Typography>
+      )}
       {props.isUniV3 && (
         <div className={styles.depositSelect}>
           <Select

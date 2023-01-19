@@ -23,7 +23,6 @@ import { Exchange, tradeApi } from '~/trade/common/trade.api'
 import { TradeOrderDeposit } from '~/trade/common/trade-order-deposit'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { switchNetwork } from '~/wallets/common'
 import {
   SettingsSuccessDialog,
   TransactionEnum,
@@ -187,7 +186,6 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         model.depositStarted(order.id)
 
         analytics.log('settings_wallet_defihelper_balance_top_up_click')
-        await switchNetwork(order.owner.network)
 
         if (!currentWallet?.chainId) return
 
@@ -306,9 +304,6 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
         network: order.owner.network,
       }).catch(console.error)
     }
-
-  const handleSwitchNetwork = (order: typeof orders.list[number]) => () =>
-    switchNetwork(order.owner.network).catch(console.error)
 
   const user = useStore(authModel.$user)
 
@@ -497,41 +492,28 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                     currentWallet?.account !== order.owner.address &&
                     currentWallet?.chainId !== order.owner.network
 
-                  const wrongNetwork =
-                    String(currentWallet?.chainId) !== order.owner.network
-                      ? handleSwitchNetwork(order)
-                      : null
+                  const claim = wrongAccount
+                    ? handleWrongAddress(order)
+                    : handleClaim(order)
 
-                  const claim =
-                    wrongNetwork ??
-                    (wrongAccount
-                      ? handleWrongAddress(order)
-                      : handleClaim(order))
+                  const cancel = wrongAccount
+                    ? handleWrongAddress(order)
+                    : async () => {
+                        setUpdatingOrderId(order.id)
 
-                  const cancel =
-                    wrongNetwork ??
-                    (wrongAccount
-                      ? handleWrongAddress(order)
-                      : async () => {
-                          setUpdatingOrderId(order.id)
-
-                          props.onCancelOrder({
-                            orderNumber: order.number,
-                            id: order.id,
-                          })
+                        props.onCancelOrder({
+                          orderNumber: order.number,
+                          id: order.id,
                         })
+                      }
 
-                  const edit =
-                    wrongNetwork ??
-                    (wrongAccount
-                      ? handleWrongAddress(order)
-                      : handleEditOrder(order))
+                  const edit = wrongAccount
+                    ? handleWrongAddress(order)
+                    : handleEditOrder(order)
 
-                  const closeOnMarket =
-                    wrongNetwork ??
-                    (wrongAccount
-                      ? handleWrongAddress(order)
-                      : handleCloseOnMarket(order))
+                  const closeOnMarket = wrongAccount
+                    ? handleWrongAddress(order)
+                    : handleCloseOnMarket(order)
 
                   return (
                     <TradeOrderDeposit
@@ -558,6 +540,7 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
                         goerliPrice={goerliPrice}
                         onEditBoughtPrice={handleEnterBoughtPrice(order)}
                         onUpdatePrice={handleUpdatePrice(order.id)}
+                        network={order.owner.network}
                       />
                     </TradeOrderDeposit>
                   )

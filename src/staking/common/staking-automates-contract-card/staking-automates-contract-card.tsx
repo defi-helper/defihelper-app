@@ -20,6 +20,7 @@ import { networksConfig } from '~/networks-config'
 import { FreshMetrics } from '~/staking/common/staking.types'
 import { StakingFreshMetrics } from '~/staking/common/staking-fresh-metrics'
 import { AutomateContractStopLossStatusEnum } from '~/api'
+import { WalletSwitchNetwork } from '~/wallets/wallet-switch-network'
 import * as styles from './staking-automates-contract-card.css'
 
 export type StakingAutomatesContractCardProps = {
@@ -34,6 +35,7 @@ export type StakingAutomatesContractCardProps = {
   onDelete: () => void
   onRun: () => void
   onStopLoss?: () => void
+  onDepositWallet: () => void
   error?: boolean
   apy?: string
   apyBoost?: string
@@ -103,15 +105,17 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             </Typography>
             {props.onStopLoss && (
               <CanDemo>
-                <Button
-                  onClick={props.onStopLoss}
-                  loading={props.stopLossing}
-                  size="small"
-                  className={styles.settings}
-                  variant="light"
-                >
-                  Settings
-                </Button>
+                <WalletSwitchNetwork network={props.network}>
+                  <Button
+                    onClick={props.onStopLoss}
+                    loading={props.stopLossing}
+                    size="small"
+                    className={styles.settings}
+                    variant="light"
+                  >
+                    Settings
+                  </Button>
+                </WalletSwitchNetwork>
               </CanDemo>
             )}
             {!props.onStopLoss && (
@@ -288,7 +292,12 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Dropdown>
             </Typography>
             <Typography variant="body2" as="span">
-              {status ?? (props.stopLossAmountOut && props.stopLossToken)
+              {(status
+                ? `${status} (${bignumberUtils.format(
+                    props.stopLossAmountOut
+                  )} ${props.stopLossToken})`
+                : null) ??
+              (props.stopLossAmountOut && props.stopLossToken)
                 ? `${bignumberUtils.format(props.stopLossAmountOut)} ${
                     props.stopLossToken
                   }`
@@ -395,18 +404,20 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
 
                 {bignumberUtils.gt(props.invest, 0) && (
                   <CanDemo>
-                    <Button
-                      size="small"
-                      variant="light"
-                      className={styles.refund}
-                      onClick={props.onRefund}
-                      loading={props.refunding}
-                      disabled={
-                        props.deleting || props.running || props.stopLossing
-                      }
-                    >
-                      Unstake
-                    </Button>
+                    <WalletSwitchNetwork network={props.network}>
+                      <Button
+                        size="small"
+                        variant="light"
+                        className={styles.refund}
+                        onClick={props.onRefund}
+                        loading={props.refunding}
+                        disabled={
+                          props.deleting || props.running || props.stopLossing
+                        }
+                      >
+                        Unstake
+                      </Button>
+                    </WalletSwitchNetwork>
                   </CanDemo>
                 )}
               </>
@@ -423,8 +434,18 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 offset={[0, 8]}
               >
                 This wallet has 3 active automations which doesn&apos;t work now
-                due to low Fee Funds balance. Deposit Fee Funds to continue
-                automations.
+                due to low Fee Funds balance.{' '}
+                <CanDemo>
+                  <WalletSwitchNetwork network={props.network}>
+                    <ButtonBase
+                      onClick={props.onDepositWallet}
+                      className={styles.onDepositWallet}
+                    >
+                      Deposit Fee Funds
+                    </ButtonBase>
+                  </WalletSwitchNetwork>
+                </CanDemo>{' '}
+                to continue automations.
               </Dropdown>
             )}
           </div>

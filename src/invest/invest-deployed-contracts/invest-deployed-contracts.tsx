@@ -4,6 +4,7 @@ import isEmpty from 'lodash.isempty'
 import { useMemo } from 'react'
 import { useInterval, useMedia } from 'react-use'
 import { useStore } from 'effector-react'
+import contracts from '@defihelper/networks/contracts.json'
 
 import { Paper } from '~/common/paper'
 import { InvestCarousel } from '~/invest/common/invest-carousel'
@@ -25,7 +26,6 @@ import {
   StakingErrorDialog,
 } from '~/staking/common'
 import { useDialog } from '~/common/dialog'
-import { switchNetwork } from '~/wallets/common'
 import { ConfirmDialog } from '~/common/confirm-dialog'
 import { analytics } from '~/analytics'
 import { settingsWalletModel } from '~/settings/settings-wallets'
@@ -35,6 +35,11 @@ import { NULL_ADDRESS } from '~/common/constants'
 import * as model from './invest-deployed-contracts.model'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as styles from './invest-deployed-contracts.css'
+import {
+  SettingsSuccessDialog,
+  SettingsWalletBalanceDialog,
+  TransactionEnum,
+} from '~/settings/common'
 
 export type InvestDeployedContractsProps = {
   className?: string
@@ -51,6 +56,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     const [openConfirmDialog] = useDialog(ConfirmDialog)
     const [openErrorDialog] = useDialog(StakingErrorDialog)
     const [openStopLossDialog] = useDialog(InvestStopLossDialog)
+    const [openBalanceDialog] = useDialog(SettingsWalletBalanceDialog)
+    const [openSuccess] = useDialog(SettingsSuccessDialog)
 
     const currentWallet = walletNetworkModel.useWalletNetwork()
     const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
@@ -86,6 +93,61 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         }
       }
     }
+
+    const handleDepositWallet =
+      (automateContract: typeof automatesContracts[number]) => async () => {
+        const wallet = automateContract.contract
+
+        if (!wallet) return
+
+        try {
+          analytics.log('settings_wallet_defihelper_balance_top_up_click')
+
+          if (!currentWallet?.account || !currentWallet.chainId) return
+
+          const balanceAdapter = await settingsWalletModel.loadAdapterFx({
+            provider: currentWallet.provider,
+            chainId: currentWallet.chainId,
+            type:
+              'BalanceUpgradable' in
+              contracts[wallet.network as keyof typeof contracts]
+                ? 'BalanceUpgradable'
+                : 'Balance',
+          })
+
+          const billingBalance =
+            await settingsWalletModel.fetchBillingBalanceFx({
+              blockchain: wallet.blockchain,
+              network: wallet.network,
+            })
+
+          const result = await openBalanceDialog({
+            adapter: balanceAdapter,
+            recomendedIncome: billingBalance.recomendedIncome,
+            priceUSD: billingBalance.priceUSD,
+            wallet: currentWallet.account,
+            network: currentWallet.chainId,
+            token: billingBalance.token,
+          })
+
+          await settingsWalletModel.depositFx({
+            blockchain: wallet.blockchain,
+            amount: result.amount,
+            walletAddress: currentWallet.account,
+            chainId: String(currentWallet.chainId),
+            provider: currentWallet.provider,
+            transactionHash: result.transactionHash,
+          })
+
+          await openSuccess({
+            type: TransactionEnum.deposit,
+          })
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error(error.message)
+          }
+        }
+      }
 
     const handleAction =
       (
@@ -253,10 +315,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         }).catch(console.error)
       }
 
-    const handleSwitchNetwork =
-      (contract: typeof automatesContracts[number]) => () =>
-        switchNetwork(contract.wallet.network).catch(console.error)
-
     const handleStopLoss =
       (automateContract: typeof automatesContracts[number]) => async () => {
         try {
@@ -362,26 +420,21 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                 ? handleWrongAddress(deployedContract)
                 : null
 
-              const wrongNetwork =
-                String(currentWallet?.chainId) !==
-                deployedContract.wallet.network
-                  ? handleSwitchNetwork(deployedContract)
-                  : null
-
               const refund =
-                wrongNetwork ??
-                isNotSameAddresses ??
-                handleAction(deployedContract, 'refund')
+                isNotSameAddresses ?? handleAction(deployedContract, 'refund')
 
               const stopLoss =
-                wrongNetwork ??
-                isNotSameAddresses ??
-                handleStopLoss(deployedContract)
+                isNotSameAddresses ?? handleStopLoss(deployedContract)
 
               const run =
-                wrongNetwork ??
-                isNotSameAddresses ??
-                handleRunManually(deployedContract)
+                isNotSameAddresses ?? handleRunManually(deployedContract)
+
+              const depositWallet =
+                isNotSameAddresses ?? handleDepositWallet(deployedContract)
+
+              const staked =
+                metrics[deployedContract.id]?.myStaked ??
+                deployedContract.metric.staked
 
               return (
                 <StakingAutomatesContractCard
@@ -397,6 +450,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   protocol={deployedContract.protocol}
                   automateId={deployedContract.id}
                   contractWalletId={deployedContract.contractWallet?.id}
+                  onDepositWallet={depositWallet}
                   tokensIcons={
                     deployedContract.contract?.tokens.stake.map(
                       ({ alias }) => alias?.logoUrl ?? null
@@ -424,13 +478,17 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   stopLossToken={deployedContract.stopLoss?.outToken?.symbol}
                   error={deployedContract.wallet?.billing?.balance?.lowFeeFunds}
                   freshMetrics={metrics[deployedContract.id]}
-                  balanceInvest={bignumberUtils.minus(
-                    bignumberUtils.plus(
-                      deployedContract.metric.staked,
-                      deployedContract.metric.earned
-                    ),
-                    deployedContract.metric.invest
-                  )}
+                  balanceInvest={
+                    bignumberUtils.eq(staked, 0)
+                      ? '0'
+                      : bignumberUtils.minus(
+                          bignumberUtils.plus(
+                            staked,
+                            deployedContract.metric.earned
+                          ),
+                          deployedContract.metric.invest
+                        )
+                  }
                 />
               )
             })}

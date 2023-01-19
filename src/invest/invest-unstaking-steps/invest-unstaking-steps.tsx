@@ -197,6 +197,7 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       contract={props.contract}
       onSubmit={handleNextStep}
       token={sellToken}
+      isUniV3={isUniV3}
       balanceOf={withdrawedBalance}
     />,
   ].filter(Boolean)

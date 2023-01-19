@@ -16,6 +16,7 @@ export type InvestUnstakingStepsSuccessProps = {
   onSubmit: () => void
   contract: InvestContract
   token?: string
+  isUniV3: boolean
 }
 
 export const InvestUnstakingStepsSuccess: React.FC<InvestUnstakingStepsSuccessProps> =
@@ -50,12 +51,16 @@ export const InvestUnstakingStepsSuccess: React.FC<InvestUnstakingStepsSuccessPr
               {props.contract.name}
             </div>
           </Typography>
-          <Typography align="center" as="div">
-            total withdrawal
-          </Typography>
-          <Typography variant="h4" align="center" as="div">
-            {props.balanceOf ?? '0'} {props.token}
-          </Typography>
+          {!props.isUniV3 && (
+            <>
+              <Typography align="center" as="div">
+                total withdrawal
+              </Typography>
+              <Typography variant="h4" align="center" as="div">
+                {props.balanceOf ?? '0'} {props.token}
+              </Typography>
+            </>
+          )}
         </div>
         <div className={clsx(styles.connectTelegramActions, styles.mt)}>
           <Button color="green" as={ReactRouterLink} to={paths.invest.list}>

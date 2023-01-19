@@ -198,7 +198,7 @@ export const icon = style({
 export const paperIcon = style([
   icon,
   {
-    background: theme.colors.common.black1,
+    background: theme.colors.tertiary,
   },
 ])
 
@@ -234,4 +234,8 @@ export const balance = style({
 
 export const balanceInvest = style({
   marginBottom: 24,
+})
+
+export const onDepositWallet = style({
+  color: theme.colors.common.blue1,
 })
