@@ -64,6 +64,12 @@ import { config } from '~/config'
 import { CONTRACT_SCANNER_REGISTER } from '~/protocols/common/graphql/contract-scanner-register.graphql'
 import { STAKING_CONTRACT_DEBANK_LIST } from './graphql/staking-contract-debank-list.graphql'
 
+export type Watcher = {
+  currentBlock: number
+  syncHeight: number
+  saveEvents: boolean
+}
+
 export interface WatcherEventListener {
   id: string
   sync: {
@@ -310,18 +316,20 @@ export const stakingApi = {
       })
       .then(({ data }) => data?.restakeCalculator),
 
-  scannerGetEventListener: (variables: {
-    id: string
-  }): Promise<WatcherEventListener[]> =>
+  newScanner: (
+    watchersId: string[]
+  ): Promise<Record<string, Watcher | undefined>> =>
     fetch(
-      `${config.SCANNER_HOST}/contract/${variables.id}/event-listener`
+      `${config.SCANNER_HOST}/api/contract/progress?${watchersId
+        .map((watcherId) => `watcherId=${watcherId}`)
+        .join('&')}`
     ).then((res) => res.json()),
 
   scannerGetContract: (
     watcherId: string
   ): Promise<{ startHeight: number; id: string } | null> =>
-    fetch(`${config.SCANNER_HOST}/contract/${watcherId}`).then(async (res) =>
-      res.json()
+    fetch(`${config.SCANNER_HOST}/api/contract/${watcherId}`).then(
+      async (res) => res.json()
     ),
 
   enableStopLoss: (variables: InvestStopLossEnableMutationVariables) =>

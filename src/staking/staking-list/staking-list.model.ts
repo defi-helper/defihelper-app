@@ -21,7 +21,7 @@ import {
   RegisterParams,
   stakingApi,
   StakingListPayload,
-  WatcherEventListener,
+  Watcher,
 } from '~/staking/common'
 import { PaginationState } from '~/common/create-pagination'
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -88,29 +88,34 @@ export const fetchStakingListFx = stakingListDomain.createEffect(
 
 export const fetchScannerFx = stakingListDomain.createEffect(
   async (contracts: Contract[]) => {
+    const watchersId = contracts
+      .map(({ watcherId }) => watcherId)
+      .filter((watcherId): watcherId is string => Boolean(watcherId))
+
+    const res = await stakingApi.newScanner(watchersId)
+
     const stakingListWithAutostaking = contracts.map(async (contract) => {
-      let pools: WatcherEventListener[] = []
+      let watcher: Watcher | undefined
 
       if (!contract.watcherId) {
         return {
           scannerId: undefined,
-          pools,
+          watcher,
           contractId: contract.id,
         }
       }
 
       const scannerContract = await stakingApi.scannerGetContract(
-        contract.watcherId ?? ''
+        contract.watcherId
       )
+
       if (scannerContract) {
-        pools = await stakingApi.scannerGetEventListener({
-          id: scannerContract.id,
-        })
+        watcher = res[contract.watcherId]
       }
 
       return {
         scannerId: scannerContract?.id,
-        pools,
+        watcher,
         contractId: contract.id,
       }
     })
@@ -120,7 +125,7 @@ export const fetchScannerFx = stakingListDomain.createEffect(
         string,
         {
           scannerId?: string
-          pools: WatcherEventListener[]
+          watcher?: Watcher
           contractId: string
         }
       >
