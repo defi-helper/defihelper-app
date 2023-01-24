@@ -18,8 +18,7 @@ export const config = {
   API_URL: process.env.REACT_APP_API_URL,
   WS_API_URL: process.env.REACT_APP_WS_API_URL,
   ADAPTERS_HOST: process.env.REACT_APP_ADAPTERS_HOST ?? '',
-  SCANNER_HOST:
-    process.env.REACT_APP_SCANNER_HOST ?? 'https://watcher.defihelper.io/api',
+  SCANNER_HOST: process.env.REACT_APP_SCANNER_HOST ?? '',
   TELEGRAM_BOT_USERNAME: process.env.REACT_APP_TELEGRAM_BOT_USERNAME,
   MAIN_URL: process.env.REACT_APP_MAIN_URL,
   AMCHARTS_LICENCE: process.env.REACT_APP_AMCHARTS_LICENCE,
