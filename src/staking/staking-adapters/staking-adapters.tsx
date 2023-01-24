@@ -206,6 +206,7 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       .then(({ actions }) => {
         setHasActions(Boolean(actions))
       })
+      .catch(console.error)
   }, [
     currentWallet,
     props.protocolAdapter,

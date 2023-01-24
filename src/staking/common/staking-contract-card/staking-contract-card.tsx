@@ -16,7 +16,7 @@ import { StakingListRowSyncIndicator } from '~/staking/common/staking-list-row-s
 import { FreshMetrics, Contract } from '~/staking/common/staking.types'
 import { isExcludedAdapter } from '../constants'
 import { StakingFreshMetrics } from '../staking-fresh-metrics'
-import { WatcherEventListener } from '../staking.api'
+import { Watcher } from '../staking.api'
 import * as styles from './staking-contract-card.css'
 
 export type StakingContractCardProps = {
@@ -34,7 +34,7 @@ export type StakingContractCardProps = {
   freshMetrics: Record<string, FreshMetrics>
   scannerData: {
     scannerId?: string | undefined
-    pools: WatcherEventListener[]
+    watcher?: Watcher
     contractId: string
   }
   hideAutostakingBoost: boolean
