@@ -199,7 +199,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
     analytics.log('lp_tokens_pop_up_buy_click', {
       amount: bignumberUtils.floor(formValues.amount),
     })
-    if (isApproved.value === true || formValues.token === NULL_ADDRESS) {
+    if (isApproved.value === true) {
       await onSell(formValues)
 
       return
@@ -380,14 +380,9 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
           </div>
         )}
         <Button type="submit" loading={formState.isSubmitting}>
-          {(isApproved.value === true || tokenAddress === NULL_ADDRESS) &&
-            'Sell'}
-          {isApproved.value === false &&
-            tokenAddress !== NULL_ADDRESS &&
-            'Approve'}
-          {isApproved.value instanceof Error &&
-            tokenAddress !== NULL_ADDRESS &&
-            'Approve'}
+          {isApproved.value === true && 'Sell'}
+          {isApproved.value === false && 'Approve'}
+          {isApproved.value instanceof Error && 'Approve'}
         </Button>
         <Button variant="outlined" onClick={props.onCancel}>
           Cancel
