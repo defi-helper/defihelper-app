@@ -150,16 +150,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
         if (can instanceof Error) throw can
         if (!can) throw new Error("can't buy")
 
-        const { tx } = isNativeToken
-          ? await buyETH(formValues.amount, formValues.slippage)
-          : await buy(formValues.token, formValues.amount, formValues.slippage)
-
-        const result = await tx?.wait()
-        analytics.log('lp_tokens_purchase_success', {
-          amount: bignumberUtils.floor(formValues.amount),
-        })
-
-        if (!result?.transactionHash || !fee.value) return
+        if (!fee.value) return
 
         if (
           bignumberUtils.gt(
@@ -171,6 +162,17 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
 
           return
         }
+
+        const { tx } = isNativeToken
+          ? await buyETH(formValues.amount, formValues.slippage)
+          : await buy(formValues.token, formValues.amount, formValues.slippage)
+
+        const result = await tx?.wait()
+        analytics.log('lp_tokens_purchase_success', {
+          amount: bignumberUtils.floor(formValues.amount),
+        })
+
+        if (!result?.transactionHash) return
 
         props.onSubmit?.({
           tx: result.transactionHash,

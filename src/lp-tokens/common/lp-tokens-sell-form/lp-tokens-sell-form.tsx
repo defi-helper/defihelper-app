@@ -121,6 +121,13 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
 
         if (can instanceof Error) throw can
         if (!can) throw new Error("can't sell")
+        if (!fee.value) return
+
+        if (bignumberUtils.gt(fee.value.native, balanceOf.value)) {
+          setError(Errors.balance)
+
+          return
+        }
 
         const { tx } =
           formValues.token === NULL_ADDRESS
@@ -136,13 +143,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
           amount: bignumberUtils.floor(formValues.amount),
         })
 
-        if (!result?.transactionHash || !fee.value) return
-
-        if (bignumberUtils.gt(fee.value.native, balanceOf.value)) {
-          setError(Errors.balance)
-
-          return
-        }
+        if (!result?.transactionHash) return
 
         props.onSubmit?.({
           tx: result.transactionHash,
