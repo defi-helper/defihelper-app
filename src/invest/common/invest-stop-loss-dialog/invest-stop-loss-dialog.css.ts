@@ -103,3 +103,13 @@ export const deleteButtonLoader = style({
 export const deleteButtonText = style({
   opacity: 0,
 })
+
+export const loader = style({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '100%',
+  height: '100%',
+  minHeight: 300,
+})

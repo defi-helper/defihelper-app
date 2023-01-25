@@ -8,6 +8,7 @@ import { ButtonBase } from '~/common/button-base'
 import { CircularProgress } from '~/common/circular-progress'
 import { Dialog } from '~/common/dialog'
 import { StopLossComponent } from '~/common/load-adapter'
+import { Loader } from '~/common/loader'
 import { NumericalInput } from '~/common/numerical-input'
 import { Select, SelectOption } from '~/common/select'
 import { Slider } from '~/common/slider'
@@ -126,7 +127,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
           bignumberUtils.mul(
             bignumberUtils.div(
               bignumberUtils.minus(
-                props.initialStopLoss.amountOut,
+                props.initialStopLoss.params.amountOut,
                 price.value
               ),
               price.value
@@ -223,84 +224,102 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
         </div>
         {stopLoss && (
           <>
-            <Select
-              label="Main token"
-              className={styles.input}
-              value={mainToken}
-              onChange={(event) => setMainToken(event.currentTarget.value)}
-              disabled={confirm.loading}
-            >
-              {props.mainTokens?.map((token) => (
-                <SelectOption value={token.address} key={token.address}>
-                  {token.logoUrl ? (
-                    <img src={token.logoUrl} className={styles.img} alt="" />
-                  ) : (
-                    <span className={styles.imgPlaceHolder} />
-                  )}
-                  {token.symbol}
-                </SelectOption>
-              ))}
-            </Select>
-            <Select
-              label="Withdraw to"
-              className={styles.input}
-              value={withdrawToken}
-              onChange={(event) => setWithdrawToken(event.currentTarget.value)}
-              disabled={confirm.loading}
-            >
-              {props.withdrawTokens?.map((token) => (
-                <SelectOption value={token.address} key={token.address}>
-                  {token.logoUrl ? (
-                    <img src={token.logoUrl} className={styles.img} alt="" />
-                  ) : (
-                    <span className={styles.imgPlaceHolder} />
-                  )}
-                  {token.symbol}
-                </SelectOption>
-              ))}
-            </Select>
-            <div className={styles.input}>
-              <Typography variant="body3" className={styles.label}>
-                You will get
-              </Typography>
-              <Typography variant="body2">
-                {bignumberUtils.format(price.value)}{' '}
-                {withDrawTokensMap.get(withdrawToken)}
-              </Typography>
-            </div>
-            <div className={styles.input}>
-              <NumericalInput
-                label="Stop-loss activation"
-                value={stopLossPrice}
-                onChange={handleChangePrice}
-                className={styles.price}
-                min={0}
-                max={price.value}
-                rightSide={withDrawTokensMap.get(withdrawToken)}
-                disabled={confirm.loading}
-              />
-              <div className={styles.inputRow}>
-                <NumericalInput
-                  size="small"
-                  className={styles.numberInput}
-                  value={-percent}
-                  min={0}
-                  max={100}
-                  onChange={handleChangePercent}
-                  disabled={confirm.loading}
-                  rightSide="%"
-                />
-                <Slider
-                  reverse
-                  className={styles.slider}
-                  value={percent}
-                  min={0}
-                  max={100}
-                  onChange={handleChangePercent}
-                  disabled={confirm.loading}
-                />
+            {price.loading && !price.value ? (
+              <div className={styles.loader}>
+                <Loader height={36} />
               </div>
-            </div>
+            ) : (
+              <>
+                <Select
+                  label="Main token"
+                  className={styles.input}
+                  value={mainToken}
+                  onChange={(event) => setMainToken(event.currentTarget.value)}
+                  disabled={confirm.loading}
+                >
+                  {props.mainTokens?.map((token) => (
+                    <SelectOption value={token.address} key={token.address}>
+                      {token.logoUrl ? (
+                        <img
+                          src={token.logoUrl}
+                          className={styles.img}
+                          alt=""
+                        />
+                      ) : (
+                        <span className={styles.imgPlaceHolder} />
+                      )}
+                      {token.symbol}
+                    </SelectOption>
+                  ))}
+                </Select>
+                <Select
+                  label="Withdraw to"
+                  className={styles.input}
+                  value={withdrawToken}
+                  onChange={(event) =>
+                    setWithdrawToken(event.currentTarget.value)
+                  }
+                  disabled={confirm.loading}
+                >
+                  {props.withdrawTokens?.map((token) => (
+                    <SelectOption value={token.address} key={token.address}>
+                      {token.logoUrl ? (
+                        <img
+                          src={token.logoUrl}
+                          className={styles.img}
+                          alt=""
+                        />
+                      ) : (
+                        <span className={styles.imgPlaceHolder} />
+                      )}
+                      {token.symbol}
+                    </SelectOption>
+                  ))}
+                </Select>
+                <div className={styles.input}>
+                  <Typography variant="body3" className={styles.label}>
+                    You will get
+                  </Typography>
+                  <Typography variant="body2">
+                    {bignumberUtils.format(price.value)}{' '}
+                    {withDrawTokensMap.get(withdrawToken)}
+                  </Typography>
+                </div>
+                <div className={styles.input}>
+                  <NumericalInput
+                    label="Stop-loss activation"
+                    value={stopLossPrice}
+                    onChange={handleChangePrice}
+                    className={styles.price}
+                    min={0}
+                    max={price.value}
+                    rightSide={withDrawTokensMap.get(withdrawToken)}
+                    disabled={confirm.loading}
+                  />
+                  <div className={styles.inputRow}>
+                    <NumericalInput
+                      size="small"
+                      className={styles.numberInput}
+                      value={-percent}
+                      min={0}
+                      max={100}
+                      onChange={handleChangePercent}
+                      disabled={confirm.loading}
+                      rightSide="%"
+                    />
+                    <Slider
+                      reverse
+                      className={styles.slider}
+                      value={percent}
+                      min={0}
+                      max={100}
+                      onChange={handleChangePercent}
+                      disabled={confirm.loading}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
           </>
         )}
       </div>
