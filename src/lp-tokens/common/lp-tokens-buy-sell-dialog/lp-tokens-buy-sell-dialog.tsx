@@ -1,7 +1,9 @@
 import clsx from 'clsx'
 import { useState } from 'react'
-import { ZapFeePayCreateInputType } from '~/api'
+import { useAsyncRetry, useInterval } from 'react-use'
 
+import { ZapFeePayCreateInputType } from '~/api'
+import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
 import { Dialog } from '~/common/dialog'
 import { BuyLiquidity, SellLiquidity } from '~/common/load-adapter'
@@ -16,6 +18,8 @@ export type LPTokensBuySellDialogProps = {
   onSubmit?: (variables: Omit<ZapFeePayCreateInputType, 'wallet'>) => void
   buyLiquidityAdapter: BuyLiquidity
   sellLiquidityAdapter: SellLiquidity
+  provider?: unknown
+  account?: string
   tokens: {
     logoUrl: string
     symbol: string
@@ -26,6 +30,17 @@ export type LPTokensBuySellDialogProps = {
 
 const Tabs = ['BUY', 'SELL'] as const
 
+const hasGetBalance = (
+  provider: unknown
+): provider is { getBalance: (account: string) => Promise<number> } => {
+  return (
+    typeof provider === 'object' &&
+    provider !== null &&
+    provider !== undefined &&
+    'getBalance' in provider
+  )
+}
+
 export const LPTokensBuySellDialog: React.VFC<LPTokensBuySellDialogProps> = (
   props
 ) => {
@@ -34,6 +49,16 @@ export const LPTokensBuySellDialog: React.VFC<LPTokensBuySellDialogProps> = (
   const handleChangeTab = (tab: typeof Tabs[number]) => () => {
     setTab(tab)
   }
+
+  const balanceOfNative = useAsyncRetry(async () => {
+    if (!hasGetBalance(props.provider) || !props.account) return
+
+    return props.provider
+      ?.getBalance(props.account)
+      .then((num) => bignumberUtils.fromCall(num.toString(), 18))
+  }, [props.provider, props.account])
+
+  useInterval(balanceOfNative.retry, 15000)
 
   const Components = {
     [Tabs[0]]: (
@@ -44,6 +69,7 @@ export const LPTokensBuySellDialog: React.VFC<LPTokensBuySellDialogProps> = (
         onSubmit={props.onSubmit}
         onCancel={props.onCancel}
         tokenSymbol={props.tokenSymbol}
+        balanceOfNative={balanceOfNative.value}
       />
     ),
     [Tabs[1]]: (
@@ -54,6 +80,7 @@ export const LPTokensBuySellDialog: React.VFC<LPTokensBuySellDialogProps> = (
         onSubmit={props.onSubmit}
         onCancel={props.onCancel}
         tokenSymbol={props.tokenSymbol}
+        balanceOfNative={balanceOfNative.value}
       />
     ),
   }
