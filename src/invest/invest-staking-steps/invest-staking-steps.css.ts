@@ -134,7 +134,7 @@ export const mt = style({
 export const gotoUni = style([mt, {}])
 
 globalStyle(`${mt}${gotoUni}`, {
-  color: theme.colors.textColorSecondary,
+  color: theme.colors.common.black1,
 })
 
 export const img = style({
