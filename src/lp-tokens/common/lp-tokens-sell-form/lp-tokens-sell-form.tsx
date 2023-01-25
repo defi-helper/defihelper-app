@@ -25,6 +25,7 @@ export type LPTokensSellFormProps = {
   onSubmit?: (variables: Omit<ZapFeePayCreateInputType, 'wallet'>) => void
   onCancel: () => void
   sellLiquidityAdapter: SellLiquidity
+  balanceOfNative?: string
   tokens: {
     logoUrl: string
     symbol: string
@@ -123,7 +124,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
         if (!can) throw new Error("can't sell")
         if (!fee.value) return
 
-        if (bignumberUtils.gt(fee.value.native, balanceOf.value)) {
+        if (bignumberUtils.gt(fee.value.native, props.balanceOfNative)) {
           setError(Errors.balance)
 
           return
@@ -163,7 +164,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
         return false
       }
     },
-    [fee.value, balanceOf.value]
+    [fee.value, props.balanceOfNative, balanceOf.value]
   )
 
   const [approveState, onApprove] = useAsyncFn(

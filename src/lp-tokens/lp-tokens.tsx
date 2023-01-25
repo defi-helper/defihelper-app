@@ -209,7 +209,7 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
     })
 
     try {
-      const { buyLiquidity, sellLiquidity, tokens } =
+      const { buyLiquidity, sellLiquidity, tokens, networkProvider } =
         await stakingModel.buyLPFx({
           account: currentWallet.account,
           provider: currentWallet.provider,
@@ -235,6 +235,8 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
       await openBuySellDialog({
         buyLiquidityAdapter: buyLiquidity,
         sellLiquidityAdapter: sellLiquidity,
+        provider: networkProvider,
+        account: currentWallet.account,
         tokens,
         onSubmit: (values) => {
           cb(values.tx)
