@@ -156,6 +156,7 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
       buyLiquidity,
       sellLiquidity,
       tokens,
+      networkProvider,
     }
   }
 )

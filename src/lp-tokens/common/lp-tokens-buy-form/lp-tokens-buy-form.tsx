@@ -26,6 +26,7 @@ export type LPTokensBuyFormProps = {
   onSubmit?: (variables: Omit<ZapFeePayCreateInputType, 'wallet'>) => void
   onCancel: () => void
   buyLiquidityAdapter: BuyLiquidity
+  balanceOfNative?: string
   tokens: {
     logoUrl: string
     symbol: string
@@ -150,6 +151,14 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
         if (can instanceof Error) throw can
         if (!can) throw new Error("can't buy")
 
+        if (!fee.value) return
+
+        if (bignumberUtils.gt(fee.value.native, props.balanceOfNative)) {
+          setError(Errors.balance)
+
+          return
+        }
+
         const { tx } = isNativeToken
           ? await buyETH(formValues.amount, formValues.slippage)
           : await buy(formValues.token, formValues.amount, formValues.slippage)
@@ -159,18 +168,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
           amount: bignumberUtils.floor(formValues.amount),
         })
 
-        if (!result?.transactionHash || !fee.value) return
-
-        if (
-          bignumberUtils.gt(
-            fee.value.native,
-            tokens.value?.[formValues.token]?.balance
-          )
-        ) {
-          setError(Errors.balance)
-
-          return
-        }
+        if (!result?.transactionHash) return
 
         props.onSubmit?.({
           tx: result.transactionHash,
@@ -190,7 +188,7 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
         return false
       }
     },
-    [fee.value, tokens.value]
+    [fee.value, props.balanceOfNative, tokens.value]
   )
 
   const [approveState, onApprove] = useAsyncFn(

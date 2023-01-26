@@ -25,6 +25,7 @@ export type LPTokensSellFormProps = {
   onSubmit?: (variables: Omit<ZapFeePayCreateInputType, 'wallet'>) => void
   onCancel: () => void
   sellLiquidityAdapter: SellLiquidity
+  balanceOfNative?: string
   tokens: {
     logoUrl: string
     symbol: string
@@ -121,6 +122,13 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
 
         if (can instanceof Error) throw can
         if (!can) throw new Error("can't sell")
+        if (!fee.value) return
+
+        if (bignumberUtils.gt(fee.value.native, props.balanceOfNative)) {
+          setError(Errors.balance)
+
+          return
+        }
 
         const { tx } =
           formValues.token === NULL_ADDRESS
@@ -136,13 +144,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
           amount: bignumberUtils.floor(formValues.amount),
         })
 
-        if (!result?.transactionHash || !fee.value) return
-
-        if (bignumberUtils.gt(fee.value.native, balanceOf.value)) {
-          setError(Errors.balance)
-
-          return
-        }
+        if (!result?.transactionHash) return
 
         props.onSubmit?.({
           tx: result.transactionHash,
@@ -162,7 +164,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
         return false
       }
     },
-    [fee.value, balanceOf.value]
+    [fee.value, props.balanceOfNative, balanceOf.value]
   )
 
   const [approveState, onApprove] = useAsyncFn(
@@ -199,7 +201,7 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
     analytics.log('lp_tokens_pop_up_buy_click', {
       amount: bignumberUtils.floor(formValues.amount),
     })
-    if (isApproved.value === true || formValues.token === NULL_ADDRESS) {
+    if (isApproved.value === true) {
       await onSell(formValues)
 
       return
@@ -380,14 +382,9 @@ export const LPTokensSellForm: React.FC<LPTokensSellFormProps> = (props) => {
           </div>
         )}
         <Button type="submit" loading={formState.isSubmitting}>
-          {(isApproved.value === true || tokenAddress === NULL_ADDRESS) &&
-            'Sell'}
-          {isApproved.value === false &&
-            tokenAddress !== NULL_ADDRESS &&
-            'Approve'}
-          {isApproved.value instanceof Error &&
-            tokenAddress !== NULL_ADDRESS &&
-            'Approve'}
+          {isApproved.value === true && 'Sell'}
+          {isApproved.value === false && 'Approve'}
+          {isApproved.value instanceof Error && 'Approve'}
         </Button>
         <Button variant="outlined" onClick={props.onCancel}>
           Cancel

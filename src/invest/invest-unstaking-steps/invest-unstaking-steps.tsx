@@ -156,25 +156,30 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
     }
     if (!resTx?.transactionHash) return
 
+    if (currentUserWallet && automateId) {
+      await model.automateInvestRefundFx({
+        input: {
+          contract: automateId,
+          wallet: currentUserWallet.id,
+        },
+      })
+    }
+
     handleNextStep(resTx?.transactionHash)
-  }, [adapter.value, adapterUniV3.value, handleNextStep, automateId, isUniV3])
+  }, [
+    adapter.value,
+    currentUserWallet,
+    adapterUniV3.value,
+    handleNextStep,
+    automateId,
+    isUniV3,
+  ])
 
   const steps = [
     <InvestUnstakingStepsUnstake
       key={0}
       loading={refund.loading}
-      onSubmit={() => {
-        handleRefund()
-
-        if (!currentUserWallet || !automateId) return
-
-        model.automateInvestRefundFx({
-          input: {
-            contract: automateId,
-            wallet: currentUserWallet.id,
-          },
-        })
-      }}
+      onSubmit={handleRefund}
       contract={props.contract}
     />,
     isUniV3 ? null : (
