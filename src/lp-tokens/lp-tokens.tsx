@@ -141,12 +141,18 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
     model.fetchProtocolsSelectFx({
       signal: abortController.signal,
       search: searchProtocol || undefined,
+      blockchain: blockchain
+        ? {
+            network: blockchain,
+            protocol: networksConfig[blockchain].blockchain,
+          }
+        : undefined,
     })
 
     return () => {
       abortController.abort()
     }
-  }, [searchProtocol])
+  }, [searchProtocol, blockchain])
 
   useEffect(() => {
     const abortController = new AbortController()

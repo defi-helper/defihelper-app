@@ -5260,6 +5260,7 @@ export type BuyLiquidityProtocolsSelectQueryVariables = Exact<{
   automate?: Maybe<ProtocolListFilterAutomateInputType>
   sort?: Maybe<Array<ProtocolListSortInputType> | ProtocolListSortInputType>
   pagination?: Maybe<ProtocolListPaginationInputType>
+  blockchain?: Maybe<BlockchainFilterInputType>
 }>
 
 export type BuyLiquidityProtocolsSelectQuery = { __typename?: 'Query' } & {

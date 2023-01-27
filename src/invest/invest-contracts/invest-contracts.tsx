@@ -188,12 +188,18 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
     model.fetchProtocolsSelectFx({
       signal: abortController.signal,
       search: protocolSelectSearchThrottled || undefined,
+      blockchain: blockchain
+        ? {
+            network: blockchain,
+            protocol: networksConfig[blockchain].blockchain,
+          }
+        : undefined,
     })
 
     return () => {
       abortController.abort()
     }
-  }, [protocolSelectSearchThrottled])
+  }, [protocolSelectSearchThrottled, blockchain])
   useEffect(() => {
     const abortController = new AbortController()
 
