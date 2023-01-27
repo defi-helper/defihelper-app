@@ -6,6 +6,7 @@ export const BUY_LIQUIDITY_PROTOCOL_LIST_SELECT = gql`
     $automate: ProtocolListFilterAutomateInputType
     $sort: [ProtocolListSortInputType!]
     $pagination: ProtocolListPaginationInputType
+    $blockchain: BlockchainFilterInputType
   ) {
     protocols(
       filter: {
@@ -13,6 +14,7 @@ export const BUY_LIQUIDITY_PROTOCOL_LIST_SELECT = gql`
         hidden: false
         search: $search
         automate: $automate
+        blockchain: $blockchain
       }
       sort: $sort
       pagination: $pagination
