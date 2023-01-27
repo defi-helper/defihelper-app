@@ -51,16 +51,19 @@ export const InvestList: React.VFC<unknown> = () => {
     }
   }, [contracts.length, loaded, searchThrottled])
 
-  useGate(
-    model.StakingAutomatesGate,
-    searchThrottled && !currentTab ? { search: searchThrottled } : null
-  )
-
-  useEffect(() => {
-    if (!currentTab) {
-      model.StakingAutomatesGate.open(null)
+  const gateProps = useMemo(() => {
+    if (searchThrottled && !currentTab) {
+      return { search: searchThrottled }
     }
-  }, [currentTab])
+
+    if (!currentTab) {
+      return null
+    }
+
+    return null
+  }, [currentTab, searchThrottled])
+
+  useGate(model.StakingAutomatesGate, gateProps)
 
   useEffect(() => {
     if (!search) return
