@@ -13,6 +13,7 @@ import { ButtonBase } from '~/common/button-base'
 import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
 import { Link } from '~/common/link'
 import * as styles from './invest-contract-info.css'
+import { networksConfig } from '~/networks-config'
 
 export type InvestContractInfoProps = {
   className?: string
@@ -81,8 +82,21 @@ export const InvestContractInfo: React.VFC<InvestContractInfoProps> = (
   const apyboost = bignumberUtils.mul(props.contract.metric.myAPYBoost, 100)
   const realApy = bignumberUtils.mul(props.contract.metric.aprWeekReal, 100)
 
+  const network = networksConfig[props.contract.network]
+
   return (
     <div className={clsx(styles.root, props.className)}>
+      {network && (
+        <div className={styles.row}>
+          <Typography variant="body2" family="mono">
+            Network
+          </Typography>
+          <Typography variant="body2" className={styles.rewardTokens} as="div">
+            <Icon width={24} height={24} icon={network.icon} />
+            {network.title}
+          </Typography>
+        </div>
+      )}
       <div className={styles.row}>
         <Typography variant="body2" family="mono">
           Pool
