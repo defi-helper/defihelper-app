@@ -128,8 +128,7 @@ export const InvestMigrateContracts: React.VFC<InvestMigrateContractsProps> = (
         <>
           <Paper radius={8} className={styles.hiddenPaper}>
             <Typography variant="body2">
-              You have {props.hiddenContracts.length} more hidden
-              migrateContracts
+              You have {props.hiddenContracts.length} more hidden contracts
             </Typography>
             <Button
               variant="outlined"
