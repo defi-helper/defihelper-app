@@ -453,6 +453,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   automateId={deployedContract.id}
                   contractWalletId={deployedContract.contractWallet?.id}
                   onDepositWallet={depositWallet}
+                  stopLossTx={deployedContract.stopLoss?.tx}
                   tokensIcons={
                     deployedContract.contract?.tokens.stake.map(
                       ({ alias }) => alias?.logoUrl ?? null
@@ -475,7 +476,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   stopLossing={deployedContract.stopLossing}
                   status={deployedContract.stopLoss?.status}
                   stopLossAmountOut={
-                    deployedContract.stopLoss?.params?.amountOut
+                    deployedContract.stopLoss?.amountOut ??
+                    deployedContract.stopLoss?.params.amountOut
                   }
                   stopLossToken={deployedContract.stopLoss?.outToken?.symbol}
                   error={deployedContract.wallet?.billing?.balance?.lowFeeFunds}
