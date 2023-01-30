@@ -26,7 +26,7 @@ export type SettingsContactCardProps = {
   onContinueConnect?: () => void
   onDisconnect?: () => void
   onToggleNotification?: (state: boolean, hour: number) => void
-  onUpdateNotification?: (state: boolean, hour: number) => void
+  onUpdateNotification?: (hour: number) => void
   loading?: boolean
   className?: string
 }
@@ -42,9 +42,8 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
       props.notification?.time ?? 12
     )
   }
-  const handleUpdateNotification = (state: boolean, hour: number) => {
-    if (!props.onUpdateNotification) return
-    props.onUpdateNotification(state, hour)
+  const handleUpdateNotification = (hour: number) => {
+    props.onUpdateNotification?.(hour)
   }
 
   if (!props.isConnected && props.status !== UserContactStatusEnum.Inactive) {
@@ -143,9 +142,7 @@ export const SettingsContactCard: React.VFC<SettingsContactCardProps> = (
             {Array.from(Array(24).keys()).map((v) => (
               <ButtonBase
                 className={clsx(styles.dropdownItem)}
-                onClick={() =>
-                  handleUpdateNotification(!!props.notification, v)
-                }
+                onClick={() => handleUpdateNotification(v)}
                 key={v}
               >
                 {formatHour(v)}
