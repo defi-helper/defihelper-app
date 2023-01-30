@@ -36,6 +36,7 @@ export type StakingAutomatesContractCardProps = {
   onRun: () => void
   onStopLoss?: () => void
   onDepositWallet: () => void
+  stopLossTx?: string
   error?: boolean
   apy?: string
   apyBoost?: string
@@ -75,6 +76,27 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
       props.status === AutomateContractStopLossStatusEnum.Completed
         ? 'Completed'
         : undefined
+
+    const completed =
+      status && props.stopLossTx ? (
+        <Link
+          href={buildExplorerUrl({
+            network: props.network,
+            tx: props.stopLossTx,
+          })}
+          target="_blank"
+        >
+          {bignumberUtils.format(props.stopLossAmountOut)} {props.stopLossToken}{' '}
+          ({status})
+        </Link>
+      ) : null
+
+    const notCompleted =
+      props.stopLossAmountOut && props.stopLossToken
+        ? `${bignumberUtils.format(props.stopLossAmountOut)} ${
+            props.stopLossToken
+          }`
+        : 'Inactive'
 
     return (
       <Paper className={clsx(styles.root, props.className)} radius={8}>
@@ -292,16 +314,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Dropdown>
             </Typography>
             <Typography variant="body2" as="span">
-              {(status
-                ? `${status} (${bignumberUtils.format(
-                    props.stopLossAmountOut
-                  )} ${props.stopLossToken})`
-                : null) ??
-              (props.stopLossAmountOut && props.stopLossToken)
-                ? `${bignumberUtils.format(props.stopLossAmountOut)} ${
-                    props.stopLossToken
-                  }`
-                : 'Inactive'}
+              {completed ?? notCompleted}
             </Typography>
           </div>
           <div className={styles.row}>
