@@ -17,6 +17,7 @@ import * as telegramModel from '~/settings/settings-telegram/settings-telegram.m
 import * as styles from './settings-contacts.css'
 import {
   UserContactBrokerEnum,
+  UserContactStatusEnum,
   UserNotificationTypeEnum,
 } from '~/api/_generated-types'
 import { analytics } from '~/analytics'
@@ -162,12 +163,12 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           notification={
             telegram?.id ? notificationsList[telegram.id] : undefined
           }
-          onUpdateNotification={(state: boolean, hour: number) =>
+          onUpdateNotification={(hour: number) =>
             telegram
               ? handleUpdateNotification(
                   telegram,
                   UserNotificationTypeEnum.PortfolioMetrics,
-                  state,
+                  telegram.status === UserContactStatusEnum.Active,
                   hour
                 )
               : undefined
@@ -197,12 +198,12 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
           }
           status={email?.status}
           notification={email ? notificationsList[email.id] : undefined}
-          onUpdateNotification={(state: boolean, hour: number) =>
+          onUpdateNotification={(hour: number) =>
             email
               ? handleUpdateNotification(
                   email,
                   UserNotificationTypeEnum.PortfolioMetrics,
-                  state,
+                  email.status === UserContactStatusEnum.Active,
                   hour
                 )
               : undefined
