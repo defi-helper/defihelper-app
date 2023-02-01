@@ -106,22 +106,25 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
           network: wallet.network,
         })
 
-        const result = await openBalanceDialog({
+        await openBalanceDialog({
           adapter: balanceAdapter,
           recomendedIncome: billingBalance.recomendedIncome,
           priceUSD: billingBalance.priceUSD,
           wallet: currentWallet.account,
           network: currentWallet.chainId,
           token: billingBalance.token,
-        })
+          onSubmit: (result) => {
+            if (!currentWallet.account) return
 
-        await model.depositFx({
-          blockchain: wallet.blockchain,
-          amount: result.amount,
-          walletAddress: currentWallet.account,
-          chainId: String(currentWallet.chainId),
-          provider: currentWallet.provider,
-          transactionHash: result.transactionHash,
+            model.depositFx({
+              blockchain: wallet.blockchain,
+              amount: result.amount,
+              walletAddress: currentWallet.account,
+              chainId: String(currentWallet.chainId),
+              provider: currentWallet.provider,
+              transactionHash: result.transactionHash,
+            })
+          },
         })
 
         await openSuccess({
@@ -174,18 +177,21 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
           network: wallet.network,
         })
 
-        const result = await openRefundDialog({
+        await openRefundDialog({
           adapter: balanceAdapter,
           token: billingBalance.token,
-        })
+          onSubmit: (result) => {
+            if (!currentWallet.account) return
 
-        await model.refundFx({
-          blockchain: wallet.blockchain,
-          amount: result.amount,
-          walletAddress: currentWallet.account,
-          chainId: String(currentWallet.chainId),
-          provider: currentWallet.provider,
-          transactionHash: result.transactionHash,
+            model.refundFx({
+              blockchain: wallet.blockchain,
+              amount: result.amount,
+              walletAddress: currentWallet.account,
+              chainId: String(currentWallet.chainId),
+              provider: currentWallet.provider,
+              transactionHash: result.transactionHash,
+            })
+          },
         })
 
         await openSuccess({

@@ -122,22 +122,25 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               network: wallet.network,
             })
 
-          const result = await openBalanceDialog({
+          await openBalanceDialog({
             adapter: balanceAdapter,
             recomendedIncome: billingBalance.recomendedIncome,
             priceUSD: billingBalance.priceUSD,
             wallet: currentWallet.account,
             network: currentWallet.chainId,
             token: billingBalance.token,
-          })
+            onSubmit: (result) => {
+              if (!currentWallet.account) return
 
-          await settingsWalletModel.depositFx({
-            blockchain: wallet.blockchain,
-            amount: result.amount,
-            walletAddress: currentWallet.account,
-            chainId: String(currentWallet.chainId),
-            provider: currentWallet.provider,
-            transactionHash: result.transactionHash,
+              settingsWalletModel.depositFx({
+                blockchain: wallet.blockchain,
+                amount: result.amount,
+                walletAddress: currentWallet.account,
+                chainId: String(currentWallet.chainId),
+                provider: currentWallet.provider,
+                transactionHash: result.transactionHash,
+              })
+            },
           })
 
           await openSuccess({

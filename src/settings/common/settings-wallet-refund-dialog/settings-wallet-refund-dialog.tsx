@@ -16,7 +16,8 @@ type FormValues = {
 }
 
 export type SettingsWalletRefundDialogProps = {
-  onConfirm: (formValues: FormValues & { transactionHash: string }) => void
+  onConfirm: () => void
+  onSubmit: (formValues: FormValues & { transactionHash: string }) => void
   onCancel: () => void
   adapter: BalanceAdapter
   token?: string | null
@@ -43,9 +44,11 @@ export const SettingsWalletRefundDialog: React.VFC<SettingsWalletRefundDialogPro
 
         const result = await props.adapter.refund(formValues.amount)
 
-        const { transactionHash } = await result.tx.wait()
+        props.onSubmit({ ...formValues, transactionHash: result.tx.hash })
 
-        props.onConfirm({ ...formValues, transactionHash })
+        await result.tx.wait()
+
+        props.onConfirm()
       } catch (error) {
         if (error instanceof Error) {
           console.error(error.message)
