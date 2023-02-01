@@ -312,6 +312,10 @@ export type AutomateContractStopLossEnableInputType = {
   contract: Scalars['UuidType']
   /** Swap path */
   path: Array<Scalars['EthereumAddressType']>
+  /** In token id */
+  inToken: Scalars['UuidType']
+  /** Out token id */
+  outToken: Scalars['UuidType']
   /** Target amount */
   amountOut: Scalars['BigNumberType']
   /** Amount out min */
@@ -6873,7 +6877,7 @@ export type StakingAutomatesContractFragmentFragment = {
             stake: Array<
               { __typename?: 'TokenType' } & Pick<
                 TokenType,
-                'network' | 'address' | 'name' | 'symbol'
+                'id' | 'network' | 'address' | 'name' | 'symbol'
               > & {
                   alias?: Maybe<
                     { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
@@ -6883,7 +6887,7 @@ export type StakingAutomatesContractFragmentFragment = {
             reward: Array<
               { __typename?: 'TokenType' } & Pick<
                 TokenType,
-                'network' | 'address' | 'name' | 'symbol'
+                'id' | 'network' | 'address' | 'name' | 'symbol'
               > & {
                   alias?: Maybe<
                     { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>

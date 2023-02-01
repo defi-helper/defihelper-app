@@ -111,7 +111,6 @@ export const SettingsContacts: React.VFC<SettingsContactsProps> = (props) => {
         hour,
         contact,
       })
-      analytics.onNotificationsEnabled()
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message)

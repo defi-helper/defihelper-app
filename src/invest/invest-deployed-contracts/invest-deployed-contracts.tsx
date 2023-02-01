@@ -346,6 +346,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             adapter: stakingAutomatesAdapter.stopLoss,
             mainTokens: automateContract.contract.tokens.stake
               .map((token) => ({
+                id: token.id,
                 logoUrl: token.alias?.logoUrl ?? '',
                 symbol: token.symbol,
                 address: token.address,
@@ -371,6 +372,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               path: res.path,
               amountOut: res.amountOut,
               amountOutMin: res.amountOutMin,
+              inToken: res.mainToken,
+              outToken: res.withdrawToken,
             })
           } else {
             await model.disableStopLossFx({

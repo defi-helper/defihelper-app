@@ -36,6 +36,7 @@ import { ReactComponent as BybitIcon } from '~/assets/icons/exchange/bybit.svg'
 import { ReactComponent as GateIoIcon } from '~/assets/icons/exchange/gateio.svg'
 import { ReactComponent as WavesIcon } from '~/assets/icons/blockchains/waves.svg'
 import { ReactComponent as SolanaIcon } from '~/assets/icons/blockchains/solana.svg'
+import { ReactComponent as OptimisticIcon } from '~/assets/icons/blockchains/optimistic.svg'
 import { ReactComponent as arrowUpIcon } from '~/assets/icons/arrow-top.svg'
 import { ReactComponent as CheckedIcon } from '~/assets/icons/checked.svg'
 import { ReactComponent as ArrowDownIcon } from '~/assets/icons/arrow-down.svg'
@@ -224,6 +225,7 @@ const ICONS = {
   redRisk: RedRiskIcon,
   greyRisk: GreyRiskIcon,
   deploy: DeployIcon,
+  optimistic: OptimisticIcon,
 } as const
 
 export type IconProps = Omit<React.SVGProps<SVGSVGElement>, 'children'> & {
