@@ -316,11 +316,13 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       key={3}
       onSubmit={(values) => {
         handleNextStep(values.txHash)
-
-        if (!currentUserWallet || !deployState.value) return
+      }}
+      createInvest={(values) => {
+        if (!currentUserWallet || !deployState.value || !values.txHash) return
 
         model.automateInvestCreateFx({
           input: {
+            tx: values.txHash,
             contract: automateId ?? deployState.value.id,
             wallet: currentUserWallet.id,
             amount: values.amount,

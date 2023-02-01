@@ -41,6 +41,7 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       createdAt
       tokens {
         stake {
+          id
           alias {
             logoUrl
           }
@@ -50,6 +51,7 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
           symbol
         }
         reward {
+          id
           alias {
             logoUrl
           }

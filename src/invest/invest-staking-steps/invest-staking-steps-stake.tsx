@@ -19,7 +19,8 @@ import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 
 export type InvestStakingStepsStakeProps = {
-  onSubmit?: (values: {
+  onSubmit?: (values: { txHash?: string }) => void
+  createInvest?: (values: {
     txHash?: string
     tokenPriceUSD?: string
     amount: string
@@ -110,8 +111,6 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
 
       const { tx } = await deposit(value)
 
-      const result = await tx?.wait()
-
       let amountInUSD = bignumberUtils.mul(balanceOf.value, tokenPriceUSD.value)
 
       const position = props.positions?.find(({ id }) => String(id) === tokenId)
@@ -123,11 +122,17 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
         )
       }
 
-      props.onSubmit?.({
-        txHash: result.transactionHash,
+      props.createInvest?.({
+        txHash: tx.hash,
         tokenPriceUSD: tokenPriceUSD.value,
         amount: value,
         amountInUSD,
+      })
+
+      const result = await tx?.wait()
+
+      props.onSubmit?.({
+        txHash: result.transactionHash,
       })
       analytics.log('auto_staking_migrate_dialog_deposit_success')
 
