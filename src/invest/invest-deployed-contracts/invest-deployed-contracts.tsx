@@ -477,7 +477,10 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   stopLossTx={deployedContract.stopLoss?.tx}
                   tokensIcons={
                     deployedContract.contract?.tokens.stake.map(
-                      ({ alias }) => alias?.logoUrl ?? null
+                      ({ alias, address }) => ({
+                        logoUrl: alias?.logoUrl ?? null,
+                        address,
+                      })
                     ) ?? []
                   }
                   blockchain={deployedContract.contract?.blockchain ?? ''}
@@ -491,6 +494,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   onRun={currentWallet ? run : connect}
                   onStopLoss={currentWallet ? stopLoss : connect}
                   deleting={deployedContract.deleting}
+                  metricUni3={deployedContract.metricUni3}
                   running={deployedContract.running}
                   refunding={deployedContract.refunding}
                   contractId={deployedContract.contract?.id}

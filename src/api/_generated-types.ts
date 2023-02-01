@@ -378,6 +378,7 @@ export type AutomateContractType = {
   /** restake at */
   restakeAt?: Maybe<Scalars['DateTimeType']>
   metric: AutomateContractMetricType
+  metricUni3: AutomateContractUni3MetricType
   /** Date at blocked contract */
   blockedAt?: Maybe<Scalars['DateTimeType']>
   /** Date at archived contract */
@@ -388,6 +389,16 @@ export type AutomateContractType = {
 
 export enum AutomateContractTypeEnum {
   Autorestake = 'autorestake',
+}
+
+export type AutomateContractUni3MetricType = {
+  __typename?: 'AutomateContractUni3MetricType'
+  token0Address: Scalars['EthereumAddressType']
+  token0PriceLower: Scalars['BigNumberType']
+  token0PriceUpper: Scalars['BigNumberType']
+  token1Address: Scalars['EthereumAddressType']
+  token1PriceLower: Scalars['BigNumberType']
+  token1PriceUpper: Scalars['BigNumberType']
 }
 
 export type AutomateContractUpdateInputType = {
@@ -6873,6 +6884,15 @@ export type StakingAutomatesContractFragmentFragment = {
     protocol: { __typename?: 'ProtocolType' } & Pick<
       ProtocolType,
       'id' | 'adapter' | 'name' | 'icon'
+    >
+    metricUni3: { __typename?: 'AutomateContractUni3MetricType' } & Pick<
+      AutomateContractUni3MetricType,
+      | 'token0Address'
+      | 'token0PriceLower'
+      | 'token0PriceUpper'
+      | 'token1Address'
+      | 'token1PriceLower'
+      | 'token1PriceUpper'
     >
     contract?: Maybe<
       { __typename?: 'ContractType' } & Pick<
