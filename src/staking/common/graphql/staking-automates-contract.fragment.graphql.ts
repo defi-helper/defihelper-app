@@ -10,6 +10,14 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       icon
     }
     archivedAt
+    metricUni3 {
+      token0Address
+      token0PriceLower
+      token0PriceUpper
+      token1Address
+      token1PriceLower
+      token1PriceUpper
+    }
     contract {
       id
       protocol {

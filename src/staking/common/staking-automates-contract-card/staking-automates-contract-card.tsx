@@ -19,7 +19,10 @@ import { paths } from '~/paths'
 import { networksConfig } from '~/networks-config'
 import { FreshMetrics } from '~/staking/common/staking.types'
 import { StakingFreshMetrics } from '~/staking/common/staking-fresh-metrics'
-import { AutomateContractStopLossStatusEnum } from '~/api'
+import {
+  AutomateContractStopLossStatusEnum,
+  StakingAutomatesContractFragmentFragment,
+} from '~/api'
 import { WalletSwitchNetwork } from '~/wallets/wallet-switch-network'
 import * as styles from './staking-automates-contract-card.css'
 
@@ -45,7 +48,7 @@ export type StakingAutomatesContractCardProps = {
   refunding?: boolean
   running?: boolean
   stopLossing?: boolean
-  tokensIcons: Array<string | null>
+  tokensIcons: Array<{ logoUrl: string | null; address: string }>
   freshMetrics?: FreshMetrics
   contractId?: string
   stopLossAmountOut?: string
@@ -58,6 +61,17 @@ export type StakingAutomatesContractCardProps = {
   blockedAt: string | null
   invest: string
   protocolAdapter?: string
+  metricUni3?: StakingAutomatesContractFragmentFragment['metricUni3']
+}
+
+const TokenIcon = (props: { logoUrl: string | null }) => {
+  return props.logoUrl ? (
+    <img src={props.logoUrl} alt="" className={styles.icon} />
+  ) : (
+    <Paper radius={24} className={styles.paperIcon}>
+      <Icon icon="unknownNetwork" width="16" height="16" />
+    </Paper>
+  )
 }
 
 export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCardProps> =
@@ -91,6 +105,15 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
         </Link>
       ) : null
 
+    const stakeTokens = props.tokensIcons.reduce<Record<string, string | null>>(
+      (acc, token) => {
+        acc[token.address] = token.logoUrl
+
+        return acc
+      },
+      {}
+    )
+
     const notCompleted =
       props.stopLossAmountOut && props.stopLossToken
         ? `${bignumberUtils.format(props.stopLossAmountOut)} ${
@@ -103,24 +126,9 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
         <div className={styles.header}>
           <div className={styles.heading}>
             <div className={styles.icons}>
-              {props.tokensIcons.map((logoUrl, index) =>
-                logoUrl ? (
-                  <img
-                    src={logoUrl}
-                    alt=""
-                    key={String(index)}
-                    className={styles.icon}
-                  />
-                ) : (
-                  <Paper
-                    radius={24}
-                    key={String(index)}
-                    className={styles.paperIcon}
-                  >
-                    <Icon icon="unknownNetwork" width="16" height="16" />
-                  </Paper>
-                )
-              )}
+              {props.tokensIcons.map(({ logoUrl }, index) => (
+                <TokenIcon key={String(index)} logoUrl={logoUrl} />
+              ))}
             </div>
             <Typography as="span">
               {props.title || cutAccount(props.address)}
@@ -252,6 +260,29 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               {networksConfig[props.network]?.title}
             </Typography>
           </div>
+          {props.metricUni3 && (
+            <div className={styles.row}>
+              <Typography
+                variant="body2"
+                as="span"
+                className={clsx(styles.infoTitle, styles.opacity)}
+              >
+                UNI V3
+              </Typography>
+              <Typography variant="body2" as="span" className={styles.flex}>
+                <TokenIcon
+                  logoUrl={stakeTokens[props.metricUni3.token1Address]}
+                />
+                {props.metricUni3.token1PriceLower}
+                <Typography variant="inherit">-</Typography>
+                {props.metricUni3.token0PriceUpper}
+                <Typography variant="inherit">per</Typography>
+                <TokenIcon
+                  logoUrl={stakeTokens[props.metricUni3.token0Address]}
+                />
+              </Typography>
+            </div>
+          )}
           {props.protocol && (
             <div className={styles.row}>
               <Typography

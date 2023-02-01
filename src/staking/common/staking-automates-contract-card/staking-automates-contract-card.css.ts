@@ -239,3 +239,9 @@ export const balanceInvest = style({
 export const onDepositWallet = style({
   color: theme.colors.common.blue1,
 })
+
+export const flex = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+})
