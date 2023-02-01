@@ -40,6 +40,7 @@ import {
   SettingsWalletBalanceDialog,
   TransactionEnum,
 } from '~/settings/common'
+import { useOnAutomateContractUpdatedSubscription } from '../common/subscriptions'
 
 export type InvestDeployedContractsProps = {
   className?: string
@@ -305,6 +306,20 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
         model.updated()
       }
     }, variables)
+
+    const updateContractVariables = useMemo(() => {
+      if (!user) return undefined
+
+      return {
+        user: user.id,
+      }
+    }, [user])
+
+    useOnAutomateContractUpdatedSubscription(({ data }) => {
+      if (!data?.onAutomateContractUpdated.id) return
+
+      model.updateContract(data.onAutomateContractUpdated)
+    }, updateContractVariables)
 
     const handleWrongAddress =
       (contract: typeof automatesContracts[number]) => async () => {
