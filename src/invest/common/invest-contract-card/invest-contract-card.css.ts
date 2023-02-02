@@ -30,7 +30,7 @@ export const row = style({
     },
 
     [theme.mediaQueries.lg()]: {
-      gridTemplateColumns: '13% 12% 9% 8% 15% 12% 5% 7%',
+      gridTemplateColumns: '19% 12% 9% 8% 10% 10% 5% 7%',
     },
   },
 })
