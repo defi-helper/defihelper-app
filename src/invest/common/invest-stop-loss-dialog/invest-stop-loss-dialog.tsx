@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useAsyncFn, useAsyncRetry, useToggle } from 'react-use'
 
 import { bignumberUtils } from '~/common/bignumber-utils'
@@ -23,10 +23,18 @@ export type InvestStopLossDialogProps = {
     amountOut: string
     amountOutMin: string
     active: boolean
+    mainToken: string
+    withdrawToken: string
   }) => void
   adapter?: StopLossComponent
-  mainTokens?: { logoUrl: string; symbol: string; address: string }[]
+  mainTokens?: {
+    id: string
+    logoUrl: string
+    symbol: string
+    address: string
+  }[]
   withdrawTokens: {
+    id: string
     logoUrl: string
     symbol: string
     address: string
@@ -47,26 +55,64 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     props.autoCompoundActive ?? false
   )
   const [mainToken, setMainToken] = useState(
-    props.initialStopLoss?.inToken?.address ??
-      props.mainTokens?.[0]?.address ??
-      ''
+    props.initialStopLoss?.inToken?.id ?? props.mainTokens?.[0]?.id ?? ''
   )
   const [withdrawToken, setWithdrawToken] = useState(
-    props.initialStopLoss?.outToken?.address ??
-      props.withdrawTokens?.[0]?.address ??
-      ''
+    props.initialStopLoss?.outToken?.id ?? props.withdrawTokens?.[0]?.id ?? ''
   )
   const [stopLossPrice, setStopLossPrice] = useState(
     props.initialStopLoss?.params?.amountOut ?? '0'
   )
   const [percent, setPercent] = useState(props.initialStopLoss ? 0 : 10)
 
+  const priceChangedManully = useRef(false)
+
+  const withDrawTokensMap = useMemo(
+    () =>
+      props.withdrawTokens?.reduce((acc, token) => {
+        acc.set(token.id, {
+          symbol: token.symbol,
+          address: token.address,
+        })
+
+        return acc
+      }, new Map<string, { symbol: string; address: string }>()),
+    [props.withdrawTokens]
+  )
+  const mainTokensMap = useMemo(
+    () =>
+      props.mainTokens?.reduce((acc, token) => {
+        acc.set(token.id, {
+          symbol: token.symbol,
+          address: token.address,
+        })
+
+        return acc
+      }, new Map<string, { symbol: string; address: string }>()),
+    [props.mainTokens]
+  )
+
   const path = useAsyncRetry(async () => {
-    return (
-      props.initialStopLoss?.params?.path ??
-      props.adapter?.methods.autoPath(mainToken, withdrawToken)
-    )
-  }, [props.adapter, mainToken, withdrawToken, props.initialStopLoss])
+    const mainTokenAddress = mainTokensMap?.get(mainToken)?.address
+    const withdrawTokenAddress = withDrawTokensMap?.get(withdrawToken)?.address
+
+    const pathadapter =
+      mainTokenAddress && withdrawTokenAddress
+        ? props.adapter?.methods.autoPath(
+            mainTokenAddress,
+            withdrawTokenAddress
+          )
+        : undefined
+
+    return props.initialStopLoss?.params?.path ?? pathadapter
+  }, [
+    props.adapter,
+    mainToken,
+    mainTokensMap,
+    withDrawTokensMap,
+    withdrawToken,
+    props.initialStopLoss,
+  ])
 
   const price = useAsyncRetry(async () => {
     if (!path.value) return
@@ -78,6 +124,8 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   }, [props.adapter, props.initialStopLoss, path.value])
 
   const handleChangePrice = (event: React.FormEvent<HTMLInputElement>) => {
+    priceChangedManully.current = true
+
     setStopLossPrice(event.currentTarget.value)
 
     const newPercent = Math.abs(
@@ -140,6 +188,16 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
 
     setPercent(newPercent)
   }, [price.value, props.initialStopLoss])
+  useEffect(() => {
+    if (!price.value || priceChangedManully.current) return
+
+    setStopLossPrice(
+      bignumberUtils.minus(
+        price.value,
+        bignumberUtils.mul(bignumberUtils.div(percent, 100), price.value)
+      )
+    )
+  }, [price.value, percent])
 
   const [confirm, handleConfirm] = useAsyncFn(async () => {
     if (!props.adapter || !path.value) return
@@ -171,8 +229,17 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
       amountOut: stopLossPrice,
       amountOutMin: '0',
       active: stopLoss,
+      mainToken,
+      withdrawToken,
     })
-  }, [props.adapter, path.value, stopLossPrice, stopLoss])
+  }, [
+    props.adapter,
+    path.value,
+    stopLossPrice,
+    stopLoss,
+    mainToken,
+    withdrawToken,
+  ])
 
   const [deleteState, handleDelete] = useAsyncFn(async () => {
     const res = await props.adapter?.methods.removeStopLoss()
@@ -183,12 +250,6 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
 
     return props.onCancel()
   }, [])
-
-  const withDrawTokensMap = props.withdrawTokens?.reduce((acc, token) => {
-    acc.set(token.address, token.symbol)
-
-    return acc
-  }, new Map<string, string>())
 
   useEffect(() => {
     props.onToggleAutoCompound(autoCompound)
@@ -238,7 +299,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                   disabled={confirm.loading}
                 >
                   {props.mainTokens?.map((token) => (
-                    <SelectOption value={token.address} key={token.address}>
+                    <SelectOption value={token.id} key={token.id}>
                       {token.logoUrl ? (
                         <img
                           src={token.logoUrl}
@@ -262,7 +323,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                   disabled={confirm.loading}
                 >
                   {props.withdrawTokens?.map((token) => (
-                    <SelectOption value={token.address} key={token.address}>
+                    <SelectOption value={token.id} key={token.id}>
                       {token.logoUrl ? (
                         <img
                           src={token.logoUrl}
@@ -282,7 +343,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                   </Typography>
                   <Typography variant="body2">
                     {bignumberUtils.format(price.value)}{' '}
-                    {withDrawTokensMap.get(withdrawToken)}
+                    {withDrawTokensMap.get(withdrawToken)?.symbol}
                   </Typography>
                 </div>
                 <div className={styles.input}>
@@ -293,7 +354,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
                     className={styles.price}
                     min={0}
                     max={price.value}
-                    rightSide={withDrawTokensMap.get(withdrawToken)}
+                    rightSide={withDrawTokensMap.get(withdrawToken)?.symbol}
                     disabled={confirm.loading}
                   />
                   <div className={styles.inputRow}>

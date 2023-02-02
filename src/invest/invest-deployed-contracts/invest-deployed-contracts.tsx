@@ -40,6 +40,7 @@ import {
   SettingsWalletBalanceDialog,
   TransactionEnum,
 } from '~/settings/common'
+import { useOnAutomateContractUpdatedSubscription } from '../common/subscriptions'
 
 export type InvestDeployedContractsProps = {
   className?: string
@@ -121,22 +122,25 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               network: wallet.network,
             })
 
-          const result = await openBalanceDialog({
+          await openBalanceDialog({
             adapter: balanceAdapter,
             recomendedIncome: billingBalance.recomendedIncome,
             priceUSD: billingBalance.priceUSD,
             wallet: currentWallet.account,
             network: currentWallet.chainId,
             token: billingBalance.token,
-          })
+            onSubmit: (result) => {
+              if (!currentWallet.account) return
 
-          await settingsWalletModel.depositFx({
-            blockchain: wallet.blockchain,
-            amount: result.amount,
-            walletAddress: currentWallet.account,
-            chainId: String(currentWallet.chainId),
-            provider: currentWallet.provider,
-            transactionHash: result.transactionHash,
+              settingsWalletModel.depositFx({
+                blockchain: wallet.blockchain,
+                amount: result.amount,
+                walletAddress: currentWallet.account,
+                chainId: String(currentWallet.chainId),
+                provider: currentWallet.provider,
+                transactionHash: result.transactionHash,
+              })
+            },
           })
 
           await openSuccess({
@@ -306,6 +310,20 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
       }
     }, variables)
 
+    const updateContractVariables = useMemo(() => {
+      if (!user) return undefined
+
+      return {
+        user: user.id,
+      }
+    }, [user])
+
+    useOnAutomateContractUpdatedSubscription(({ data }) => {
+      if (!data?.onAutomateContractUpdated.id) return
+
+      model.updateContract(data.onAutomateContractUpdated)
+    }, updateContractVariables)
+
     const handleWrongAddress =
       (contract: typeof automatesContracts[number]) => async () => {
         openErrorDialog({
@@ -346,6 +364,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             adapter: stakingAutomatesAdapter.stopLoss,
             mainTokens: automateContract.contract.tokens.stake
               .map((token) => ({
+                id: token.id,
                 logoUrl: token.alias?.logoUrl ?? '',
                 symbol: token.symbol,
                 address: token.address,
@@ -371,6 +390,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               path: res.path,
               amountOut: res.amountOut,
               amountOutMin: res.amountOutMin,
+              inToken: res.mainToken,
+              outToken: res.withdrawToken,
             })
           } else {
             await model.disableStopLossFx({
@@ -456,7 +477,10 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   stopLossTx={deployedContract.stopLoss?.tx}
                   tokensIcons={
                     deployedContract.contract?.tokens.stake.map(
-                      ({ alias }) => alias?.logoUrl ?? null
+                      ({ alias, address }) => ({
+                        logoUrl: alias?.logoUrl ?? null,
+                        address,
+                      })
                     ) ?? []
                   }
                   blockchain={deployedContract.contract?.blockchain ?? ''}
@@ -470,6 +494,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   onRun={currentWallet ? run : connect}
                   onStopLoss={currentWallet ? stopLoss : connect}
                   deleting={deployedContract.deleting}
+                  metricUni3={deployedContract.metricUni3}
                   running={deployedContract.running}
                   refunding={deployedContract.refunding}
                   contractId={deployedContract.contract?.id}

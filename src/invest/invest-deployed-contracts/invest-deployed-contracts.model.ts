@@ -8,6 +8,7 @@ import { Adapters, loadAdapter } from '~/common/load-adapter'
 import {
   InvestStopLossDisableMutationVariables,
   InvestStopLossEnableMutationVariables,
+  OnAutomateContractUpdatedSubscription,
   UserType,
 } from '~/api/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -118,6 +119,14 @@ export const disableStopLossFx = stakingAutomatesDomain.createEffect(
   }
 )
 
+export const updateContract =
+  stakingAutomatesDomain.createEvent<
+    Exclude<
+      OnAutomateContractUpdatedSubscription['onAutomateContractUpdated'],
+      null | undefined
+    >
+  >()
+
 export const $automatesContracts = stakingAutomatesDomain
   .createStore<StakingAutomatesContract[]>([])
   .on(
@@ -131,6 +140,13 @@ export const $automatesContracts = stakingAutomatesDomain
         : contract
     })
   )
+  .on(updateContract, (state, payload) => {
+    return state.map((contract) =>
+      contract.id === payload.id
+        ? { ...contract, metric: { ...contract.metric, ...payload.metric } }
+        : contract
+    )
+  })
   .on(fetchAdapterFx.fail, (state, { params }) =>
     state.map((contract) =>
       contract.id === params.contractId

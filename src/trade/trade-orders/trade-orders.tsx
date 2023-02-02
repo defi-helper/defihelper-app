@@ -204,22 +204,25 @@ export const TradeOrders: React.VFC<TradeOrdersProps> = (props) => {
           network: order.owner.network,
         })
 
-        const result = await openBalanceDialog({
+        await openBalanceDialog({
           adapter: balanceAdapter,
           recomendedIncome: billingBalance.recomendedIncome,
           priceUSD: billingBalance.priceUSD,
           wallet: order.owner.address,
           network: order.owner.network,
           token: billingBalance.token,
-        })
+          onSubmit: (result) => {
+            if (!currentWallet.account) return
 
-        await settingsWalletModel.depositFx({
-          blockchain: order.owner.blockchain,
-          amount: result.amount,
-          walletAddress: order.owner.address,
-          chainId: String(currentWallet.chainId),
-          provider: currentWallet.provider,
-          transactionHash: result.transactionHash,
+            settingsWalletModel.depositFx({
+              blockchain: order.owner.blockchain,
+              amount: result.amount,
+              walletAddress: order.owner.address,
+              chainId: String(currentWallet.chainId),
+              provider: currentWallet.provider,
+              transactionHash: result.transactionHash,
+            })
+          },
         })
 
         await openSuccess({

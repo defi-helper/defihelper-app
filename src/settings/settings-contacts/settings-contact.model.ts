@@ -99,7 +99,7 @@ export const $userNotificationsList = settingsContactsDomain
   .on(updateUserNotificationFx.done, (state, { params }) => {
     const hasContact = Boolean(state[params.contact])
 
-    if (hasContact) return omit(state, params.contact)
+    if (hasContact && !params.state) return omit(state, params.contact)
 
     return {
       ...state,

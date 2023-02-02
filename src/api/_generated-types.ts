@@ -312,6 +312,10 @@ export type AutomateContractStopLossEnableInputType = {
   contract: Scalars['UuidType']
   /** Swap path */
   path: Array<Scalars['EthereumAddressType']>
+  /** In token id */
+  inToken: Scalars['UuidType']
+  /** Out token id */
+  outToken: Scalars['UuidType']
   /** Target amount */
   amountOut: Scalars['BigNumberType']
   /** Amount out min */
@@ -374,6 +378,7 @@ export type AutomateContractType = {
   /** restake at */
   restakeAt?: Maybe<Scalars['DateTimeType']>
   metric: AutomateContractMetricType
+  metricUni3: AutomateContractUni3MetricType
   /** Date at blocked contract */
   blockedAt?: Maybe<Scalars['DateTimeType']>
   /** Date at archived contract */
@@ -384,6 +389,16 @@ export type AutomateContractType = {
 
 export enum AutomateContractTypeEnum {
   Autorestake = 'autorestake',
+}
+
+export type AutomateContractUni3MetricType = {
+  __typename?: 'AutomateContractUni3MetricType'
+  token0Address: Scalars['EthereumAddressType']
+  token0PriceLower: Scalars['BigNumberType']
+  token0PriceUpper: Scalars['BigNumberType']
+  token1Address: Scalars['EthereumAddressType']
+  token1PriceLower: Scalars['BigNumberType']
+  token1PriceUpper: Scalars['BigNumberType']
 }
 
 export type AutomateContractUpdateInputType = {
@@ -406,6 +421,8 @@ export type AutomateDescriptionType = {
 }
 
 export type AutomateInvestCreateInputType = {
+  /** Deposit transaction hash */
+  tx: Scalars['EthereumTransactionHashType']
   /** Automate contract */
   contract: Scalars['UuidType']
   /** Investor wallet */
@@ -727,6 +744,7 @@ export type ConfigBlockchainTypeWavesArgs = {
 
 export enum ConfigEthereumNetworkIconEnum {
   EthereumRegular = 'ethereumRegular',
+  Optimistic = 'optimistic',
   Cronos = 'cronos',
   BnbRegular = 'bnbRegular',
   Polygon = 'polygon',
@@ -1743,6 +1761,10 @@ export type MutationSmartTradeSwapOrderUpdateArgs = {
 export type MutationSmartTradeSwapOrderCloseArgs = {
   id: Scalars['UuidType']
   input: SmartTradeSwapOrderCloseInputType
+}
+
+export type OnAutomateContractChangedFilterInputType = {
+  user: Scalars['UuidType']
 }
 
 export type OnOrderStatusChangedFilterInputType = {
@@ -2863,6 +2885,7 @@ export type Subscription = {
   onBillingTransferUpdated: BillingTransferType
   onUserContactActivated: UserContactType
   onSmartTradeOrderUpdated: SmartTradeOrderType
+  onAutomateContractUpdated: AutomateContractType
 }
 
 export type SubscriptionOnWalletCreatedArgs = {
@@ -2891,6 +2914,10 @@ export type SubscriptionOnUserContactActivatedArgs = {
 
 export type SubscriptionOnSmartTradeOrderUpdatedArgs = {
   filter?: Maybe<OnOrderStatusChangedFilterInputType>
+}
+
+export type SubscriptionOnAutomateContractUpdatedArgs = {
+  filter?: Maybe<OnAutomateContractChangedFilterInputType>
 }
 
 export type SwapHandlerCallDataRouteActivationType = {
@@ -5172,6 +5199,24 @@ export type InvestTagsQuery = { __typename?: 'Query' } & {
   }
 }
 
+export type OnAutomateContractUpdatedSubscriptionVariables = Exact<{
+  user: Scalars['UuidType']
+}>
+
+export type OnAutomateContractUpdatedSubscription = {
+  __typename?: 'Subscription'
+} & {
+  onAutomateContractUpdated: { __typename?: 'AutomateContractType' } & Pick<
+    AutomateContractType,
+    'id'
+  > & {
+      metric: { __typename?: 'AutomateContractMetricType' } & Pick<
+        AutomateContractMetricType,
+        'invest'
+      >
+    }
+}
+
 export type BlockchainsSelectQueryVariables = Exact<{
   testnet?: Maybe<Scalars['Boolean']>
   autorestake?: Maybe<Scalars['Boolean']>
@@ -6840,6 +6885,15 @@ export type StakingAutomatesContractFragmentFragment = {
       ProtocolType,
       'id' | 'adapter' | 'name' | 'icon'
     >
+    metricUni3: { __typename?: 'AutomateContractUni3MetricType' } & Pick<
+      AutomateContractUni3MetricType,
+      | 'token0Address'
+      | 'token0PriceLower'
+      | 'token0PriceUpper'
+      | 'token1Address'
+      | 'token1PriceLower'
+      | 'token1PriceUpper'
+    >
     contract?: Maybe<
       { __typename?: 'ContractType' } & Pick<
         ContractType,
@@ -6873,7 +6927,7 @@ export type StakingAutomatesContractFragmentFragment = {
             stake: Array<
               { __typename?: 'TokenType' } & Pick<
                 TokenType,
-                'network' | 'address' | 'name' | 'symbol'
+                'id' | 'network' | 'address' | 'name' | 'symbol'
               > & {
                   alias?: Maybe<
                     { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
@@ -6883,7 +6937,7 @@ export type StakingAutomatesContractFragmentFragment = {
             reward: Array<
               { __typename?: 'TokenType' } & Pick<
                 TokenType,
-                'network' | 'address' | 'name' | 'symbol'
+                'id' | 'network' | 'address' | 'name' | 'symbol'
               > & {
                   alias?: Maybe<
                     { __typename?: 'TokenAlias' } & Pick<TokenAlias, 'logoUrl'>
