@@ -7029,7 +7029,20 @@ export type StakingAutomatesContractFragmentFragment = {
       { __typename?: 'AutomateTriggerType' } & Pick<
         AutomateTriggerType,
         'active' | 'id'
-      >
+      > & {
+          callHistory: {
+            __typename?: 'AutomateTriggerCallHistoryListQuery'
+          } & {
+            list?: Maybe<
+              Array<
+                { __typename?: 'AutomateTriggerCallHistoryType' } & Pick<
+                  AutomateTriggerCallHistoryType,
+                  'id'
+                >
+              >
+            >
+          }
+        }
     >
     metric: { __typename?: 'AutomateContractMetricType' } & Pick<
       AutomateContractMetricType,

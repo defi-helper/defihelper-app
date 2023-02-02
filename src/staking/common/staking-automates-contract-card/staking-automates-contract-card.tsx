@@ -40,6 +40,7 @@ export type StakingAutomatesContractCardProps = {
   onStopLoss?: () => void
   onDepositWallet: () => void
   stopLossTx?: string
+  hasHistory: boolean
   error?: boolean
   apy?: string
   apyBoost?: string
@@ -428,7 +429,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             {!props.blockedAt && (
               <>
                 {(!isUniV3 ||
-                  (isUniV3 && !bignumberUtils.gt(props.staked, 0)) ||
+                  (isUniV3 && props.hasHistory) ||
                   bignumberUtils.eq(props.invest, 0)) &&
                   props.contractId && (
                     <CanDemo>
@@ -453,7 +454,9 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                     </CanDemo>
                   )}
 
-                {bignumberUtils.gt(props.invest, 0) && (
+                {(!isUniV3 ||
+                  (isUniV3 && !props.hasHistory) ||
+                  bignumberUtils.eq(props.invest, 0)) && (
                   <CanDemo>
                     <WalletSwitchNetwork network={props.network}>
                       <Button
