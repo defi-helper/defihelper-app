@@ -107,7 +107,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
 
     const stakeTokens = props.tokensIcons.reduce<Record<string, string | null>>(
       (acc, token) => {
-        acc[token.address] = token.logoUrl
+        acc[token.address.toLowerCase()] = token.logoUrl
 
         return acc
       },
@@ -260,7 +260,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               {networksConfig[props.network]?.title}
             </Typography>
           </div>
-          {props.metricUni3 && (
+          {props.metricUni3 && isUniV3 && (
             <div className={styles.row}>
               <Typography
                 variant="body2"
@@ -271,14 +271,18 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Typography>
               <Typography variant="body2" as="span" className={styles.flex}>
                 <TokenIcon
-                  logoUrl={stakeTokens[props.metricUni3.token1Address]}
+                  logoUrl={
+                    stakeTokens[props.metricUni3.token1Address.toLowerCase()]
+                  }
                 />
                 {bignumberUtils.floor(props.metricUni3.token1PriceLower)}
                 <Typography variant="inherit">-</Typography>
                 {bignumberUtils.floor(props.metricUni3.token0PriceUpper)}
                 <Typography variant="inherit">per</Typography>
                 <TokenIcon
-                  logoUrl={stakeTokens[props.metricUni3.token0Address]}
+                  logoUrl={
+                    stakeTokens[props.metricUni3.token0Address.toLowerCase()]
+                  }
                 />
               </Typography>
             </div>
