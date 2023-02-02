@@ -227,7 +227,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
           >
             {bignumberUtils.gt(props.balanceInvest, 0) ? '+' : '-'}$
             {bignumberUtils.format(bignumberUtils.abs(props.balanceInvest), 2)}{' '}
-            {props.metricUni3?.inPriceRange === false && (
+            {props.metricUni3?.inPriceRange === false && isUniV3 && (
               <Typography variant="inherit">(out of range)</Typography>
             )}
           </Typography>
