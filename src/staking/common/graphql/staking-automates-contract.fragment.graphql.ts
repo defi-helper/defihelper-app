@@ -140,6 +140,11 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
     trigger {
       active
       id
+      callHistory {
+        list {
+          id
+        }
+      }
     }
     metric {
       invest

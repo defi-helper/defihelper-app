@@ -12,7 +12,6 @@ import { InvestSell } from '~/invest/invest-sell'
 import { InvestUnstakingStepsUnstake } from './invest-unstaking-steps-unstake'
 import { InvestUnstakingStepsSuccess } from './invest-unstaking-steps-success'
 import { useQueryParams } from '~/common/hooks'
-import * as automationsListModel from '~/automations/automation-list/automation-list.model'
 import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import * as model from '~/invest/invest-detail/invest-detail.model'
@@ -151,9 +150,6 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
 
     const resTx = await res?.tx.wait()
 
-    if (isUniV3 && automateId) {
-      await automationsListModel.deleteContractFx(automateId)
-    }
     if (!resTx?.transactionHash) return
 
     if (currentUserWallet && automateId) {
