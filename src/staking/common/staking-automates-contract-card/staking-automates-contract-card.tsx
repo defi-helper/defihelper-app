@@ -225,8 +225,11 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               [styles.positive]: bignumberUtils.gt(props.balanceInvest, 0),
             })}
           >
-            {bignumberUtils.gt(props.balanceInvest, 0) ? '+' : null}
-            {bignumberUtils.format(props.balanceInvest, 2, false)}$
+            {bignumberUtils.gt(props.balanceInvest, 0) ? '+' : '-'}$
+            {bignumberUtils.format(bignumberUtils.abs(props.balanceInvest), 2)}{' '}
+            {props.metricUni3?.inPriceRange === false && isUniV3 && (
+              <Typography variant="inherit">(out of range)</Typography>
+            )}
           </Typography>
           <div className={styles.row}>
             <Typography
@@ -272,16 +275,16 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               <Typography variant="body2" as="span" className={styles.flex}>
                 <TokenIcon
                   logoUrl={
-                    stakeTokens[props.metricUni3.token1Address.toLowerCase()]
+                    stakeTokens[props.metricUni3.token0Address.toLowerCase()]
                   }
                 />
-                {bignumberUtils.floor(props.metricUni3.token1PriceLower)}
+                {bignumberUtils.toFixed(props.metricUni3.token0PriceLower)}
                 <Typography variant="inherit">-</Typography>
-                {bignumberUtils.floor(props.metricUni3.token0PriceUpper)}
+                {bignumberUtils.toFixed(props.metricUni3.token0PriceUpper)}
                 <Typography variant="inherit">per</Typography>
                 <TokenIcon
                   logoUrl={
-                    stakeTokens[props.metricUni3.token0Address.toLowerCase()]
+                    stakeTokens[props.metricUni3.token1Address.toLowerCase()]
                   }
                 />
               </Typography>
