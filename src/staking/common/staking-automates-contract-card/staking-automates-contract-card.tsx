@@ -273,9 +273,9 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                 <TokenIcon
                   logoUrl={stakeTokens[props.metricUni3.token1Address]}
                 />
-                {props.metricUni3.token1PriceLower}
+                {bignumberUtils.floor(props.metricUni3.token1PriceLower)}
                 <Typography variant="inherit">-</Typography>
-                {props.metricUni3.token0PriceUpper}
+                {bignumberUtils.floor(props.metricUni3.token0PriceUpper)}
                 <Typography variant="inherit">per</Typography>
                 <TokenIcon
                   logoUrl={stakeTokens[props.metricUni3.token0Address]}
