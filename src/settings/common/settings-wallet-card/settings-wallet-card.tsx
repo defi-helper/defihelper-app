@@ -16,6 +16,7 @@ import { networksConfig } from '~/networks-config'
 import * as styles from './settings-wallet-card.css'
 import { dateUtils } from '~/common/date-utils'
 import { CanDemo } from '~/auth/can-demo'
+import { WalletSwitchNetwork } from '~/wallets/wallet-switch-network'
 
 export type SettingsWalletCardProps = {
   className?: string
@@ -257,30 +258,34 @@ export const SettingsWalletCard: React.VFC<SettingsWalletCardProps> = (
         <div className={styles.buttons}>
           {props.hasContract && (
             <CanDemo>
-              <Button
-                size="small"
-                className={styles.deposit}
-                onClick={props.onDeposit}
-                loading={props.depositing}
-                disabled={props.editing || props.deleting || props.refunding}
-              >
-                Deposit
-              </Button>
+              <WalletSwitchNetwork network={props.network}>
+                <Button
+                  size="small"
+                  className={styles.deposit}
+                  onClick={props.onDeposit}
+                  loading={props.depositing}
+                  disabled={props.editing || props.deleting || props.refunding}
+                >
+                  Deposit
+                </Button>
+              </WalletSwitchNetwork>
             </CanDemo>
           )}
 
           {props.hasContract && (
             <CanDemo>
-              <Button
-                size="small"
-                variant="light"
-                className={styles.refund}
-                onClick={props.onRefund}
-                loading={props.refunding}
-                disabled={props.editing || props.deleting || props.depositing}
-              >
-                Refund
-              </Button>
+              <WalletSwitchNetwork network={props.network}>
+                <Button
+                  size="small"
+                  variant="light"
+                  className={styles.refund}
+                  onClick={props.onRefund}
+                  loading={props.refunding}
+                  disabled={props.editing || props.deleting || props.depositing}
+                >
+                  Refund
+                </Button>
+              </WalletSwitchNetwork>
             </CanDemo>
           )}
           {props.error && (
