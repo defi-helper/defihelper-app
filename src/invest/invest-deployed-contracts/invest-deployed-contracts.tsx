@@ -268,7 +268,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             model
               .scanWalletMetricFx({
                 wallet: currentUserWallet.id,
-                contract: contract.id,
+                contract: contract.contract.id,
                 txId: trasactionReceipt.transactionHash,
               })
               .catch(console.error)
