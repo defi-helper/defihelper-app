@@ -26,7 +26,6 @@ import {
 import { cutAccount } from '~/common/cut-account'
 import { useWalletList } from '~/wallets/wallet-list'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { switchNetwork } from '~/wallets/common'
 import { useWalletConnect } from '~/wallets/wallet-connect'
 import { authModel } from '~/auth'
 import { CanDemo } from '~/auth/can-demo'
@@ -87,8 +86,6 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
     (wallet: typeof wallets.nonEmpty[number]) => async () => {
       try {
         analytics.log('settings_wallet_defihelper_balance_top_up_click')
-        await switchNetwork(wallet.network)
-
         if (!currentWallet?.account || !currentWallet.chainId) return
 
         const balanceAdapter = await model.loadAdapterFx({
@@ -140,8 +137,6 @@ export const SettingsWallets: React.FC<SettingsWalletsProps> = (props) => {
     (wallet: typeof wallets.nonEmpty[number]) => async () => {
       analytics.log('settings_wallet_defihelper_balance_refund_click')
       try {
-        await switchNetwork(wallet.network)
-
         if (!currentWallet?.account || !currentWallet.chainId) return
 
         const hasNewContract =
