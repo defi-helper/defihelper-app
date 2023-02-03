@@ -175,11 +175,11 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         .catch(console.error)
     }
 
-    if (!currentUserWallet || !deployState.value?.contract) return
+    if (!currentUserWallet) return
 
     stakingAutomatesModel
       .scanWalletMetricFx({
-        contract: deployState.value.contract.id,
+        contract: props.contract.id,
         wallet: currentUserWallet.id,
         txId,
       })
