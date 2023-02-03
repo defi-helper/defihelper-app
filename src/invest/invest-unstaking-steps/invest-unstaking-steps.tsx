@@ -57,20 +57,41 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
   }, [props.contract, currentWallet])
 
   const handleNextStep = useCallback(
-    (txId?: string) => {
+    async (txId?: string) => {
       setCurrentStep(currentStep + 1)
 
-      if (!txId || !currentUserWallet) return
+      if (!txId || !currentUserWallet || !user) return
+
+      const deployedContracts =
+        await stakingAutomatesModel.fetchAutomatesContractsFx({
+          userId: user.id,
+        })
+
+      const deployedContract = deployedContracts.list.find(
+        (contract) => contract?.id === automateId
+      )
+
+      if (!deployedContract?.contractWallet) return
 
       stakingAutomatesModel
         .scanWalletMetricFx({
-          wallet: currentUserWallet.id,
+          wallet: deployedContract.contractWallet.id,
           contract: props.contract.id,
           txId,
         })
         .catch(console.error)
+
+      if (!deployedContract.contract) return
+
+      stakingAutomatesModel
+        .scanWalletMetricFx({
+          wallet: currentUserWallet.id,
+          contract: deployedContract.contract.id,
+          txId,
+        })
+        .catch(console.error)
     },
-    [currentStep, currentUserWallet, props.contract.id]
+    [currentStep, currentUserWallet, props.contract.id, user, automateId]
   )
 
   const adapter = useAsync(async () => {
