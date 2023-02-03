@@ -11,6 +11,7 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
     }
     archivedAt
     metricUni3 {
+      inPriceRange
       token0Address
       token0PriceLower
       token0PriceUpper
@@ -139,6 +140,11 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
     trigger {
       active
       id
+      callHistory {
+        list {
+          id
+        }
+      }
     }
     metric {
       invest

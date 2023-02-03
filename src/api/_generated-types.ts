@@ -393,10 +393,13 @@ export enum AutomateContractTypeEnum {
 
 export type AutomateContractUni3MetricType = {
   __typename?: 'AutomateContractUni3MetricType'
+  inPriceRange: Scalars['Boolean']
   token0Address: Scalars['EthereumAddressType']
+  token0Price: Scalars['BigNumberType']
   token0PriceLower: Scalars['BigNumberType']
   token0PriceUpper: Scalars['BigNumberType']
   token1Address: Scalars['EthereumAddressType']
+  token1Price: Scalars['BigNumberType']
   token1PriceLower: Scalars['BigNumberType']
   token1PriceUpper: Scalars['BigNumberType']
 }
@@ -6887,6 +6890,7 @@ export type StakingAutomatesContractFragmentFragment = {
     >
     metricUni3: { __typename?: 'AutomateContractUni3MetricType' } & Pick<
       AutomateContractUni3MetricType,
+      | 'inPriceRange'
       | 'token0Address'
       | 'token0PriceLower'
       | 'token0PriceUpper'
@@ -7025,7 +7029,20 @@ export type StakingAutomatesContractFragmentFragment = {
       { __typename?: 'AutomateTriggerType' } & Pick<
         AutomateTriggerType,
         'active' | 'id'
-      >
+      > & {
+          callHistory: {
+            __typename?: 'AutomateTriggerCallHistoryListQuery'
+          } & {
+            list?: Maybe<
+              Array<
+                { __typename?: 'AutomateTriggerCallHistoryType' } & Pick<
+                  AutomateTriggerCallHistoryType,
+                  'id'
+                >
+              >
+            >
+          }
+        }
     >
     metric: { __typename?: 'AutomateContractMetricType' } & Pick<
       AutomateContractMetricType,
