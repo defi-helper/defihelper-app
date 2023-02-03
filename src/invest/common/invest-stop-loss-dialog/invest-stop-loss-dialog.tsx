@@ -117,10 +117,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   const price = useAsyncRetry(async () => {
     if (!path.value) return
 
-    return (
-      props.initialStopLoss?.amountOut ??
-      props.adapter?.methods.amountOut(path.value)
-    )
+    return props.adapter?.methods.amountOut(path.value)
   }, [props.adapter, props.initialStopLoss, path.value])
 
   const handleChangePrice = (event: React.FormEvent<HTMLInputElement>) => {
