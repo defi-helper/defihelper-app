@@ -1,4 +1,5 @@
 import { isValidElement, cloneElement } from 'react'
+import { config } from '~/config'
 
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { useWalletSwitchNetwork } from './wallet-switch-network.hook'
@@ -10,7 +11,7 @@ export type WalletSwitchNetworkProps = {
 export const WalletSwitchNetwork: React.FC<WalletSwitchNetworkProps> = (
   props
 ) => {
-  const { network, children, ...restOfProps } = props
+  const { network = config.DEFAULT_CHAIN_ID, children, ...restOfProps } = props
   const activeWallet = walletNetworkModel.useWalletNetwork()
 
   if (!isValidElement(children)) throw new Error('children is not valid')
