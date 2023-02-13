@@ -213,7 +213,10 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
           <Typography variant="h3" as="div">
             $
             {bignumberUtils.format(
-              props.freshMetrics?.myStaked ?? props.balance
+              bignumberUtils.plus(
+                props.freshMetrics?.myStaked,
+                props.freshMetrics?.myEarned
+              ) ?? props.balance
             )}
             {!isEmpty(props.freshMetrics) && <StakingFreshMetrics />}
           </Typography>
