@@ -41,7 +41,6 @@ import {
   TransactionEnum,
 } from '~/settings/common'
 import { useOnAutomateContractUpdatedSubscription } from '../common/subscriptions'
-import { UserRoleEnum } from '~/api'
 
 export type InvestDeployedContractsProps = {
   className?: string
@@ -383,8 +382,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             canDelete:
               bignumberUtils.eq(automateContract.metric.invest, 0) ||
               automateContract.stopLoss?.amountOut !== null,
-            isUniV3: automateContract.contract?.protocol.adapter === 'uniswap3',
-            isAdmin: user.role === UserRoleEnum.Admin,
           })
 
           if (res.active) {
@@ -487,10 +484,9 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                     ) ?? []
                   }
                   blockchain={deployedContract.contract?.blockchain ?? ''}
-                  balance={bignumberUtils.plus(
-                    deployedContract.contractWallet?.metric.stakedUSD,
-                    deployedContract.contractWallet?.metric.earnedUSD
-                  )}
+                  balance={
+                    deployedContract.contractWallet?.metric.stakedUSD ?? ''
+                  }
                   apy={deployedContract.contract?.metric.aprYear}
                   apyBoost={deployedContract.contract?.metric.myAPYBoost}
                   onDelete={handleOnDelete(deployedContract.id)}

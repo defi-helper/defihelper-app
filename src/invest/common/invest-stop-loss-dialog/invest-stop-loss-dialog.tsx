@@ -45,15 +45,12 @@ export type InvestStopLossDialogProps = {
   onToggleAutoCompound: (active: boolean) => void
   autoCompoundActive: boolean | null
   canDelete: boolean
-  isUniV3: boolean
-  isAdmin: boolean
 }
 
 export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   props
 ) => {
   const [stopLoss, toggleStopLoss] = useToggle(Boolean(props.initialStopLoss))
-  const [autoRebalance, toggleAutoRebalance] = useToggle(false)
   const [autoCompound, toggleAutoCompound] = useToggle(
     props.autoCompoundActive ?? false
   )
@@ -393,19 +390,6 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
               onChange={toggleAutoCompound}
               disabled={confirm.loading}
               checked={autoCompound}
-            />
-          </div>
-        </div>
-      )}
-      {props.isUniV3 && props.isAdmin && (
-        <div className={styles.row}>
-          <div className={styles.rowHeading}>
-            <Typography>Auto rebalance</Typography>
-            <Switch
-              size="small"
-              onChange={toggleAutoRebalance}
-              disabled={confirm.loading}
-              checked={autoRebalance}
             />
           </div>
         </div>

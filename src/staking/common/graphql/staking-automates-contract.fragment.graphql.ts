@@ -78,7 +78,6 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       address
       metric {
         stakedUSD
-        earnedUSD
       }
       billing {
         balance {
