@@ -400,7 +400,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
       {props.isUniV3 && props.isAdmin && (
         <div className={styles.row}>
           <div className={styles.rowHeading}>
-            <Typography>Auto rebalance</Typography>
+            <Typography>Auto Rebalance</Typography>
             <Switch
               size="small"
               onChange={toggleAutoRebalance}
