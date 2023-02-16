@@ -10,7 +10,6 @@ import { SettingsIntegrationHuobiForm } from '~/settings/common/settings-integra
 import { SettingsIntegrationOkexForm } from '~/settings/common/settings-integration-okex-form'
 import { SettingsIntegrationAscendexForm } from '~/settings/common/settings-integration-ascendex-form'
 import { SettingsIntegrationMexcForm } from '~/settings/common/settings-integration-mexc-form'
-import { SettingsIntegrationAaxForm } from '~/settings/common/settings-integration-aax-form'
 import { SettingsIntegrationBitmartForm } from '~/settings/common/settings-integration-bitmart-form'
 import { SettingsIntegrationCoinexForm } from '~/settings/common/settings-integration-coinex-form'
 import { SettingsIntegrationPoloniexForm } from '~/settings/common/settings-integration-poloniex-form'
@@ -56,10 +55,6 @@ const forms: Record<string, { title: string; form: React.ElementType }> = {
   [WalletExchangeTypeEnum.Mexc]: {
     title: 'MEXC',
     form: SettingsIntegrationMexcForm,
-  },
-  [WalletExchangeTypeEnum.Aax]: {
-    title: 'AAX',
-    form: SettingsIntegrationAaxForm,
   },
   [WalletExchangeTypeEnum.Bitmart]: {
     title: 'Bitmart',

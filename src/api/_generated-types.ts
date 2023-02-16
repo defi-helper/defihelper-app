@@ -260,6 +260,7 @@ export type AutomateContractCreateInputType = {
 }
 
 export type AutomateContractListFilterInputType = {
+  id?: Maybe<Array<Scalars['UuidType']>>
   user?: Maybe<Scalars['UuidType']>
   /** Owner wallet */
   wallet?: Maybe<Scalars['UuidType']>
@@ -300,6 +301,26 @@ export type AutomateContractMetricType = {
   staked: Scalars['String']
   earned: Scalars['String']
   apyBoost: Scalars['String']
+}
+
+export type AutomateContractRebalanceDisableInputType = {
+  /** Automate contract */
+  contract: Scalars['UuidType']
+}
+
+export type AutomateContractRebalanceEnableInputType = {
+  /** Automate contract */
+  contract: Scalars['UuidType']
+}
+
+export enum AutomateContractRebalanceStatusEnum {
+  Pending = 'pending',
+  Sended = 'sended',
+}
+
+export type AutomateContractRebalanceType = {
+  __typename?: 'AutomateContractRebalanceType'
+  status: AutomateContractRebalanceStatusEnum
 }
 
 export type AutomateContractStopLossDisableInputType = {
@@ -384,6 +405,7 @@ export type AutomateContractType = {
   /** Date at archived contract */
   archivedAt?: Maybe<Scalars['DateTimeType']>
   stopLoss?: Maybe<AutomateContractStopLossType>
+  rebalance?: Maybe<AutomateContractRebalanceType>
   trigger?: Maybe<AutomateTriggerType>
 }
 
@@ -1449,6 +1471,8 @@ export type Mutation = {
   automateContractDelete: Scalars['Boolean']
   automateContractStopLossEnable: Scalars['Boolean']
   automateContractStopLossDisable: Scalars['Boolean']
+  automateContractRebalanceEnable: Scalars['Boolean']
+  automateContractRebalanceDisable: Scalars['Boolean']
   automateInvestCreate: AutomateInvestHistoryType
   automateInvestRefund: Scalars['Boolean']
   automateContractTriggerUpdate: Array<AutomateTriggerType>
@@ -1724,6 +1748,14 @@ export type MutationAutomateContractStopLossEnableArgs = {
 
 export type MutationAutomateContractStopLossDisableArgs = {
   input: AutomateContractStopLossDisableInputType
+}
+
+export type MutationAutomateContractRebalanceEnableArgs = {
+  input: AutomateContractRebalanceEnableInputType
+}
+
+export type MutationAutomateContractRebalanceDisableArgs = {
+  input: AutomateContractRebalanceDisableInputType
 }
 
 export type MutationAutomateInvestCreateArgs = {
@@ -4287,15 +4319,12 @@ export enum WalletExchangeTypeEnum {
   Okex = 'okex',
   Ascendex = 'ascendex',
   Mexc = 'mexc',
-  Aax = 'aax',
   Bitmart = 'bitmart',
   Coinex = 'coinex',
   Poloniex = 'poloniex',
-  Ftx = 'ftx',
   Binanceus = 'binanceus',
   Bybit = 'bybit',
   Lbank = 'lbank',
-  Ftxus = 'ftxus',
   Gateio = 'gateio',
 }
 
@@ -5060,6 +5089,22 @@ export type AutomateInvestRefundMutation = { __typename?: 'Mutation' } & Pick<
   Mutation,
   'automateInvestRefund'
 >
+
+export type AutomateRebalanceDisableMutationVariables = Exact<{
+  input: AutomateContractRebalanceDisableInputType
+}>
+
+export type AutomateRebalanceDisableMutation = {
+  __typename?: 'Mutation'
+} & Pick<Mutation, 'automateContractRebalanceDisable'>
+
+export type AutomateRebalanceEnableMutationVariables = Exact<{
+  input: AutomateContractRebalanceEnableInputType
+}>
+
+export type AutomateRebalanceEnableMutation = {
+  __typename?: 'Mutation'
+} & Pick<Mutation, 'automateContractRebalanceEnable'>
 
 export type AutostakingStakingContractsQueryVariables = Exact<{
   filter?: Maybe<ContractListFilterInputType>
@@ -6887,6 +6932,12 @@ export type StakingAutomatesContractFragmentFragment = {
     protocol: { __typename?: 'ProtocolType' } & Pick<
       ProtocolType,
       'id' | 'adapter' | 'name' | 'icon'
+    >
+    rebalance?: Maybe<
+      { __typename?: 'AutomateContractRebalanceType' } & Pick<
+        AutomateContractRebalanceType,
+        'status'
+      >
     >
     metricUni3: { __typename?: 'AutomateContractUni3MetricType' } & Pick<
       AutomateContractUni3MetricType,

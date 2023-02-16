@@ -121,6 +121,11 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
           }`
         : 'Inactive'
 
+    const freshBalance = bignumberUtils.plus(
+      props.freshMetrics?.myStaked,
+      props.freshMetrics?.myEarned
+    )
+
     return (
       <Paper className={clsx(styles.root, props.className)} radius={8}>
         <div className={styles.header}>
@@ -213,7 +218,10 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
           <Typography variant="h3" as="div">
             $
             {bignumberUtils.format(
-              props.freshMetrics?.myStaked ?? props.balance
+              bignumberUtils.gt(freshBalance, 0) ||
+                bignumberUtils.lt(freshBalance, 0)
+                ? freshBalance
+                : props.balance
             )}
             {!isEmpty(props.freshMetrics) && <StakingFreshMetrics />}
           </Typography>
