@@ -257,12 +257,10 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoCompound])
 
-  useEffect(() => {
-    if (!props.isUniV3) return
-
-    props.onRebalanceToggle(autoRebalance)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoRebalance, props.isUniV3])
+  const handleToggleRebalance = () => {
+    toggleAutoRebalance(!autoRebalance)
+    props.onRebalanceToggle(!autoRebalance)
+  }
 
   return (
     <Dialog className={styles.root}>
@@ -411,7 +409,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
             <Typography>Auto rebalance</Typography>
             <Switch
               size="small"
-              onChange={toggleAutoRebalance}
+              onChange={handleToggleRebalance}
               disabled={confirm.loading}
               checked={autoRebalance}
             />
