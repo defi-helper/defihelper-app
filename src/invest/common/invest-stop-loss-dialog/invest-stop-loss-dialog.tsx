@@ -258,8 +258,10 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   }, [autoCompound])
 
   const handleToggleRebalance = () => {
-    toggleAutoRebalance(!autoRebalance)
-    props.onRebalanceToggle(!autoRebalance)
+    const active = !autoRebalance
+
+    props.onRebalanceToggle(active)
+    toggleAutoRebalance(active)
   }
 
   return (
