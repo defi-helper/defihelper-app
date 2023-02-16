@@ -1,4 +1,11 @@
-import { createDomain, sample, guard, UnitValue, StoreValue } from 'effector'
+import {
+  createDomain,
+  sample,
+  guard,
+  UnitValue,
+  StoreValue,
+  createEffect,
+} from 'effector'
 import { createGate } from 'effector-react'
 import { debounce } from 'patronum/debounce'
 import omit from 'lodash.omit'
@@ -9,6 +16,7 @@ import {
   InvestStopLossDisableMutationVariables,
   InvestStopLossEnableMutationVariables,
   OnAutomateContractUpdatedSubscription,
+  AutomateContractRebalanceStatusEnum,
   UserType,
 } from '~/api/_generated-types'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
@@ -22,6 +30,7 @@ import {
 } from '~/staking/common'
 import { Wallet, walletApi } from '~/wallets/common'
 import { settingsWalletModel } from '~/settings/settings-wallets'
+import { investApi } from '../common/invest.api'
 
 export type ActionType = 'deposit' | 'migrate' | 'refund' | 'run' | 'stopLoss'
 
@@ -127,12 +136,37 @@ export const updateContract =
     >
   >()
 
+export const automateContractRebalanceEnableFx = createEffect(
+  investApi.automateRebalanceEnable
+)
+
+export const automateContractRebalanceDisableFx = createEffect(
+  investApi.automateRebalanceDisable
+)
+
 export const $automatesContracts = stakingAutomatesDomain
   .createStore<StakingAutomatesContract[]>([])
   .on(
     fetchAutomatesContractsFx.doneData,
     (_, { list }) => list as StakingAutomatesContract[]
   )
+  .on(automateContractRebalanceEnableFx.done, (state, { params, result }) => {
+    return state.map((contract) =>
+      contract.id === params.contract && result === true
+        ? {
+            ...contract,
+            rebalance: { status: AutomateContractRebalanceStatusEnum.Pending },
+          }
+        : contract
+    )
+  })
+  .on(automateContractRebalanceDisableFx.done, (state, { params, result }) => {
+    return state.map((contract) =>
+      contract.id === params.contract && result === false
+        ? { ...contract, rebalance: null }
+        : contract
+    )
+  })
   .on(fetchAdapterFx, (state, payload) =>
     state.map((contract) => {
       return contract.id === payload.contractId

@@ -12,9 +12,15 @@ import {
   AutomateInvestRefundMutationVariables,
   InvestTagsQuery,
   InvestTagsQueryVariables,
+  AutomateRebalanceDisableMutationVariables,
+  AutomateRebalanceEnableMutationVariables,
+  AutomateRebalanceDisableMutation,
+  AutomateRebalanceEnableMutation,
 } from '~/api'
 import { AUTOMATE_INVEST_CREATE } from './graphql/automate-invest-create.graphql'
 import { AUTOMATE_INVEST_REFUND } from './graphql/automate-invest-refund.graphql'
+import { AUTOMATE_REBALANCE_DISABLE } from './graphql/automate-rebalance-disable.graphql'
+import { AUTOMATE_REBALANCE_ENABLE } from './graphql/automate-rebalance-enable.graphql'
 import { AUTOSTAKING_STAKING_CONTRACTS } from './graphql/autostaking-staking-contracts.graphql'
 import { AUTOSTAKING_USER_LINK } from './graphql/autostaking-user-link.graphql'
 import { AUTOSTAKING_USER_UNLINK } from './graphql/autostaking-user-unlink.graphql'
@@ -100,6 +106,38 @@ export const investApi = {
         variables,
       })
       .then(({ data }) => data?.automateInvestRefund),
+
+  automateRebalanceEnable: (
+    input: AutomateRebalanceEnableMutationVariables['input']
+  ) =>
+    getAPIClient()
+      .request<
+        AutomateRebalanceEnableMutation,
+        unknown,
+        AutomateRebalanceEnableMutationVariables
+      >({
+        query: AUTOMATE_REBALANCE_ENABLE.loc?.source.body ?? '',
+        variables: {
+          input,
+        },
+      })
+      .then(({ data }) => data?.automateContractRebalanceEnable),
+
+  automateRebalanceDisable: (
+    input: AutomateRebalanceDisableMutationVariables['input']
+  ) =>
+    getAPIClient()
+      .request<
+        AutomateRebalanceDisableMutation,
+        unknown,
+        AutomateRebalanceDisableMutationVariables
+      >({
+        query: AUTOMATE_REBALANCE_DISABLE.loc?.source.body ?? '',
+        variables: {
+          input,
+        },
+      })
+      .then(({ data }) => data?.automateContractRebalanceDisable),
 
   investTags: (variables: InvestTagsQueryVariables = {}) =>
     getAPIClient()

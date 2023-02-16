@@ -46,14 +46,15 @@ export type InvestStopLossDialogProps = {
   autoCompoundActive: boolean | null
   canDelete: boolean
   isUniV3: boolean
-  isAdmin: boolean
+  onRebalanceToggle: (active: boolean) => void
+  rebalanceEnabled: boolean
 }
 
 export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
   props
 ) => {
   const [stopLoss, toggleStopLoss] = useToggle(Boolean(props.initialStopLoss))
-  const [autoRebalance, toggleAutoRebalance] = useToggle(false)
+  const [autoRebalance, toggleAutoRebalance] = useToggle(props.rebalanceEnabled)
   const [autoCompound, toggleAutoCompound] = useToggle(
     props.autoCompoundActive ?? false
   )
@@ -256,6 +257,13 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoCompound])
 
+  useEffect(() => {
+    if (!props.isUniV3) return
+
+    props.onRebalanceToggle(autoRebalance)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoRebalance, props.isUniV3])
+
   return (
     <Dialog className={styles.root}>
       <div>
@@ -397,7 +405,7 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
           </div>
         </div>
       )}
-      {props.isUniV3 && props.isAdmin && (
+      {props.isUniV3 && (
         <div className={styles.row}>
           <div className={styles.rowHeading}>
             <Typography>Auto Rebalance</Typography>

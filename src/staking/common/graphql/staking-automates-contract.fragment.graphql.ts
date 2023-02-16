@@ -10,6 +10,9 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       icon
     }
     archivedAt
+    rebalance {
+      status
+    }
     metricUni3 {
       inPriceRange
       token0Address
