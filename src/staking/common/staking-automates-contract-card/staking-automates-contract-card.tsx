@@ -33,6 +33,7 @@ export type StakingAutomatesContractCardProps = {
   network: string
   blockchain: string
   balance: string
+  metricBalance: string
   protocol?: { id: string; name: string; adapter: string; icon?: string | null }
   onRefund: () => void
   onDelete: () => void
@@ -218,10 +219,13 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
           <Typography variant="h3" as="div">
             $
             {bignumberUtils.format(
-              bignumberUtils.gt(freshBalance, 0) ||
-                bignumberUtils.lt(freshBalance, 0)
-                ? freshBalance
-                : props.balance
+              bignumberUtils.plus(
+                bignumberUtils.gt(freshBalance, 0) ||
+                  bignumberUtils.lt(freshBalance, 0)
+                  ? freshBalance
+                  : props.balance,
+                props.metricBalance
+              )
             )}
             {!isEmpty(props.freshMetrics) && <StakingFreshMetrics />}
           </Typography>
