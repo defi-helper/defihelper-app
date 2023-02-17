@@ -498,6 +498,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                     deployedContract.contractWallet?.metric.stakedUSD,
                     deployedContract.contractWallet?.metric.earnedUSD
                   )}
+                  metricBalance={deployedContract.metric.balance}
                   apy={deployedContract.contract?.metric.aprYear}
                   apyBoost={deployedContract.contract?.metric.myAPYBoost}
                   onDelete={handleOnDelete(deployedContract.id)}
