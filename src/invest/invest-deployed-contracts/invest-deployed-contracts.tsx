@@ -386,10 +386,10 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             rebalanceEnabled: Boolean(automateContract.rebalance),
             onRebalanceToggle: (active) =>
               active
-                ? model.automateContractRebalanceDisableFx({
+                ? model.automateContractRebalanceEnableFx({
                     contract: automateContract.id,
                   })
-                : model.automateContractRebalanceEnableFx({
+                : model.automateContractRebalanceDisableFx({
                     contract: automateContract.id,
                   }),
           })

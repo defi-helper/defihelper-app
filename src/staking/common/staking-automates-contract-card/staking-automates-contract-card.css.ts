@@ -243,5 +243,8 @@ export const onDepositWallet = style({
 export const flex = style({
   display: 'flex',
   alignItems: 'center',
-  gap: 8,
+})
+
+export const univ3Icon = style({
+  margin: `0 2px !important`,
 })
