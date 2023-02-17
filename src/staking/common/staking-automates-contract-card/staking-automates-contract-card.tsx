@@ -65,11 +65,15 @@ export type StakingAutomatesContractCardProps = {
   metricUni3?: StakingAutomatesContractFragmentFragment['metricUni3']
 }
 
-const TokenIcon = (props: { logoUrl: string | null }) => {
+const TokenIcon = (props: { logoUrl: string | null; className?: string }) => {
   return props.logoUrl ? (
-    <img src={props.logoUrl} alt="" className={styles.icon} />
+    <img
+      src={props.logoUrl}
+      alt=""
+      className={clsx(styles.icon, props.className)}
+    />
   ) : (
-    <Paper radius={24} className={styles.paperIcon}>
+    <Paper radius={24} className={clsx(styles.paperIcon, props.className)}>
       <Icon icon="unknownNetwork" width="16" height="16" />
     </Paper>
   )
@@ -295,6 +299,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                   logoUrl={
                     stakeTokens[props.metricUni3.token0Address.toLowerCase()]
                   }
+                  className={styles.univ3Icon}
                 />
                 {bignumberUtils.toFixed(props.metricUni3.token0PriceLower)}
                 <Typography variant="inherit">-</Typography>
@@ -304,6 +309,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
                   logoUrl={
                     stakeTokens[props.metricUni3.token1Address.toLowerCase()]
                   }
+                  className={styles.univ3Icon}
                 />
               </Typography>
             </div>
