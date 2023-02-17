@@ -7010,7 +7010,7 @@ export type StakingAutomatesContractFragmentFragment = {
       > & {
           metric: { __typename?: 'WalletMetricType' } & Pick<
             WalletMetricType,
-            'stakedUSD'
+            'stakedUSD' | 'earnedUSD'
           >
           billing: { __typename?: 'WalletBillingType' } & {
             balance: { __typename?: 'BillingWalletBalanceType' } & Pick<

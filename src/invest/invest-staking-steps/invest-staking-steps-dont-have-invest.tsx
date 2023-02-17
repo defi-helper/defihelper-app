@@ -1,6 +1,5 @@
 import { Link } from '~/common/link'
 import { Button } from '~/common/button'
-import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
 import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
 import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
@@ -27,12 +26,6 @@ export const InvestStakingStepsDontHaveInvest: React.FC<InvestStakingStepsDontHa
           BUY TOKENS
         </Typography>
         <div className={styles.successContent}>
-          <Icon
-            icon="checkboxCircle"
-            width={100}
-            height={100}
-            className={styles.checked}
-          />
           <Typography as="div" align="center">
             Sorry, you don&apos;t have any
             <br /> investments in
