@@ -154,6 +154,7 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       staked
       earned
       apyBoost
+      balance
     }
     blockedAt
   }

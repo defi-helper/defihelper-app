@@ -299,6 +299,7 @@ export type AutomateContractMetricType = {
   __typename?: 'AutomateContractMetricType'
   invest: Scalars['String']
   staked: Scalars['String']
+  balance: Scalars['String']
   earned: Scalars['String']
   apyBoost: Scalars['String']
 }
@@ -7097,7 +7098,7 @@ export type StakingAutomatesContractFragmentFragment = {
     >
     metric: { __typename?: 'AutomateContractMetricType' } & Pick<
       AutomateContractMetricType,
-      'invest' | 'staked' | 'earned' | 'apyBoost'
+      'invest' | 'staked' | 'earned' | 'apyBoost' | 'balance'
     >
   }
 
