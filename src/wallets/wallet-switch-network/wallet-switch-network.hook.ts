@@ -19,9 +19,7 @@ export const useWalletSwitchNetwork = (
   const called = useRef(false)
   const canCall = useRef(false)
 
-  useEffect(() => {
-    onClick.current = fn
-  })
+  onClick.current = fn
 
   const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(
     async () =>
@@ -31,16 +29,14 @@ export const useWalletSwitchNetwork = (
     [network]
   )
 
-  const correctNetwork = Boolean(
-    activeWallet?.chainId && activeWallet.chainId === network
-  )
+  const correctNetwork = activeWallet?.chainId === network
 
   useEffect(() => {
     if (
       switchNetworkState.loading ||
       called.current ||
       !canCall.current ||
-      correctNetwork ||
+      !correctNetwork ||
       !onClick.current
     )
       return
