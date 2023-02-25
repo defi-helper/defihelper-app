@@ -1,7 +1,8 @@
 import { useRef, useEffect } from 'react'
-import { useAsyncFn } from 'react-use'
+import { useAsyncFn, useMedia } from 'react-use'
 
 import { config } from '~/config'
+import { toastsService } from '~/toasts'
 import { switchNetwork } from '~/wallets/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 
@@ -13,6 +14,7 @@ export const useWalletSwitchNetwork = (
   fn: (...args: unknown[]) => unknown,
   network: string | number = config.DEFAULT_CHAIN_ID
 ) => {
+  const isMobile = !useMedia('(hover: hover)')
   const activeWallet = walletNetworkModel.useWalletNetwork()
 
   const onClick = useRef(fn)
@@ -21,13 +23,14 @@ export const useWalletSwitchNetwork = (
 
   onClick.current = fn
 
-  const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(
-    async () =>
-      switchNetwork(String(network)).then(() => {
-        canCall.current = true
-      }),
-    [network]
-  )
+  const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
+    if (isMobile)
+      return toastsService.error('add network does not support on a phone')
+
+    return switchNetwork(String(network)).then(() => {
+      canCall.current = true
+    })
+  }, [network, isMobile])
 
   const correctNetwork = activeWallet?.chainId === network
 
