@@ -25,7 +25,9 @@ export const useWalletSwitchNetwork = (
 
   const [switchNetworkState, handleSwitchNetwork] = useAsyncFn(async () => {
     if (isMobile)
-      return toastsService.error('Switching networks on mobile device is not supported. Please change your network manually.')
+      return toastsService.error(
+        'Switching networks on mobile device is not supported. Please change your network manually.'
+      )
 
     return switchNetwork(String(network)).then(() => {
       canCall.current = true

@@ -7,6 +7,8 @@ import { Button } from '~/common/button'
 import { ButtonBase } from '~/common/button-base'
 import { CircularProgress } from '~/common/circular-progress'
 import { Dialog } from '~/common/dialog'
+import { Dropdown } from '~/common/dropdown'
+import { Icon } from '~/common/icon'
 import { StopLossComponent } from '~/common/load-adapter'
 import { Loader } from '~/common/loader'
 import { NumericalInput } from '~/common/numerical-input'
@@ -290,6 +292,16 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
             disabled={confirm.loading}
             checked={stopLoss}
           />
+          <Dropdown
+            trigger="hover"
+            control={
+              <ButtonBase>
+                <Icon icon="question" width={16} height={16} />
+              </ButtonBase>
+            }
+          >
+            text
+          </Dropdown>
         </div>
         {stopLoss && (
           <>
@@ -402,6 +414,16 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
               disabled={confirm.loading}
               checked={autoCompound}
             />
+            <Dropdown
+              trigger="hover"
+              control={
+                <ButtonBase>
+                  <Icon icon="question" width={16} height={16} />
+                </ButtonBase>
+              }
+            >
+              text
+            </Dropdown>
           </div>
         </div>
       )}
@@ -415,6 +437,16 @@ export const InvestStopLossDialog: React.VFC<InvestStopLossDialogProps> = (
               disabled={confirm.loading}
               checked={autoRebalance}
             />
+            <Dropdown
+              trigger="hover"
+              control={
+                <ButtonBase>
+                  <Icon icon="question" width={16} height={16} />
+                </ButtonBase>
+              }
+            >
+              text
+            </Dropdown>
           </div>
         </div>
       )}
