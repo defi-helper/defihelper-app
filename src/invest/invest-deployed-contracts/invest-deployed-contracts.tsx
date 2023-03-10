@@ -336,8 +336,9 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     const handleStopLoss =
       (automateContract: typeof automatesContracts[number]) => async () => {
         try {
-          if (!automateContract.contract) return
-          if (!currentWallet?.account || !user)
+          if (!automateContract.contract)
+            return toastsService.error('contract not found')
+          if (!currentWallet?.account)
             return toastsService.error('wallet is not connected')
           if (!automateContract.contract.automate.autorestake)
             return toastsService.error('adapter not found')

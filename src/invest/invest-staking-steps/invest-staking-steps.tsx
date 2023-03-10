@@ -27,9 +27,13 @@ import * as model from '~/invest/invest-detail/invest-detail.model'
 import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
-import * as styles from './invest-staking-steps.css'
 import { InvestStakingStepsTelegramConnected } from './invest-staking-steps-telegram-connected'
 import { InvestStakingStepsDontHaveInvest } from './invest-staking-steps-dont-have-invest'
+import { InvestStopLoss } from '../common/invest-stop-loss'
+import * as automationsListModel from '~/automations/automation-list/automation-list.model'
+import * as styles from './invest-staking-steps.css'
+import { NULL_ADDRESS } from '~/common/constants'
+import { stakingApi } from '~/staking/common'
 
 export type InvestStakingStepsProps = {
   className?: string
@@ -203,6 +207,35 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     return contract
   }, [currentWallet])
 
+  const deployedContract = useAsync(async () => {
+    if (
+      !currentWallet?.account ||
+      !deployState.value?.contract ||
+      !deployState.value.contract.automate.autorestake
+    )
+      return
+
+    const contract = await stakingAutomatesModel.fetchAdapterFx({
+      protocolAdapter: deployState.value.contract.protocol.adapter,
+      contractAdapter: deployState.value.contract.automate.autorestake,
+      contractId: deployState.value.id,
+      contractAddress: deployState.value.address,
+      provider: currentWallet.provider,
+      chainId: String(currentWallet.chainId),
+      action: 'stopLoss',
+    })
+
+    const tokens = await stakingApi.tokens({
+      network: deployState.value.contract.network,
+      protocol: deployState.value.contract.blockchain,
+    })
+
+    return {
+      stopLoss: contract?.stopLoss,
+      tokens,
+    }
+  }, [currentWallet, deployState.value])
+
   const balanceOf = useAsyncRetry(async () => {
     return adapter.value?.actions?.unstake.methods?.balanceOf()
   }, [adapter.value])
@@ -335,9 +368,80 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       isUniV3={isUniV3}
       positions={positions.value}
     />,
-    <InvestStakingStepsSuccess key={4} onSubmit={handleNextStep} />,
-    <InvestStakingStepsTelegram key={5} onSubmit={handleNextStep} />,
-    <InvestStakingStepsTelegramConnected key={6} />,
+    <InvestStopLoss
+      key={4}
+      onCancel={handleNextStep}
+      onConfirm={async (res) => {
+        if (!deployState.value) return
+
+        if (res.active) {
+          await stakingAutomatesModel.enableStopLossFx({
+            contract: deployState.value.id,
+            path: res.path,
+            amountOut: res.amountOut,
+            amountOutMin: res.amountOutMin,
+            inToken: res.mainToken,
+            outToken: res.withdrawToken,
+          })
+        } else {
+          await stakingAutomatesModel.disableStopLossFx({
+            contract: deployState.value.id,
+          })
+        }
+
+        handleNextStep()
+      }}
+      adapter={deployedContract.value?.stopLoss}
+      mainTokens={deployState.value?.contract?.tokens.stake
+        .map((token) => ({
+          id: token.id,
+          logoUrl: token.alias?.logoUrl ?? '',
+          symbol: token.symbol,
+          address: token.address,
+        }))
+        .filter(({ address }) => address !== NULL_ADDRESS)}
+      withdrawTokens={
+        deployedContract.value?.tokens.filter(
+          ({ address }) => address !== NULL_ADDRESS
+        ) ?? []
+      }
+      initialStopLoss={null}
+      onDelete={() => {
+        if (!deployState.value) return Promise.resolve()
+
+        return automationsListModel.deleteContractFx(deployState.value?.id)
+      }}
+      onToggleAutoCompound={(active) => {
+        if (!deployState.value) return
+
+        stakingAutomatesModel.toggleAutoCompoundFx({
+          id: deployState.value?.id,
+          active,
+        })
+      }}
+      autoCompoundActive={deployState.value?.trigger?.active ?? null}
+      canDelete={
+        bignumberUtils.eq(deployState.value?.metric.invest, 0) ||
+        deployState.value?.stopLoss?.amountOut !== null
+      }
+      isUniV3={deployState.value?.contract?.protocol.adapter === 'uniswap3'}
+      rebalanceEnabled={Boolean(deployState.value?.rebalance)}
+      onRebalanceToggle={(active) => {
+        if (!deployState.value) return
+
+        const method = active
+          ? stakingAutomatesModel.automateContractRebalanceEnableFx
+          : stakingAutomatesModel.automateContractRebalanceDisableFx
+
+        method({
+          contract: deployState.value?.id,
+        })
+      }}
+      inline
+    />,
+    <InvestStakingStepsSuccess key={5} onSubmit={handleNextStep} />,
+    <InvestStakingStepsTelegram key={6} onSubmit={handleNextStep} />,
+    <InvestStakingStepsTelegramConnected key={7} />,
   ].filter(Boolean)
 
   const currentStepObj = steps[currentStep % steps.length]

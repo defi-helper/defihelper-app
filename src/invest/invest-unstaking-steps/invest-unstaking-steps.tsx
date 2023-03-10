@@ -183,6 +183,8 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
     }
 
     handleNextStep(resTx?.transactionHash)
+
+    return Promise.resolve()
   }, [
     adapter.value,
     currentUserWallet,
