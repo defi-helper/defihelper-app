@@ -215,16 +215,26 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
     })
 
     try {
-      const { buyLiquidity, sellLiquidity, tokens, networkProvider } =
-        await stakingModel.buyLPFx({
-          account: currentWallet.account,
-          provider: currentWallet.provider,
-          chainId: contract.network,
-          router,
-          pair,
-          network: contract.network,
-          protocol: contract.blockchain,
-        })
+      const isUniV3 = contract.protocol.adapter === 'uniswap3'
+
+      const {
+        buyLiquidity,
+        sellLiquidity,
+        sellLiquidityUniv3,
+        buyLiquidityUniv3,
+        tokens,
+        networkProvider,
+      } = await stakingModel.buyLPFx({
+        account: currentWallet.account,
+        provider: currentWallet.provider,
+        chainId: contract.network,
+        router,
+        pair,
+        network: contract.network,
+        protocol: contract.blockchain,
+        isUniV3,
+        contractAddress: contract.address,
+      })
 
       if (!currentUserWallet) throw new Error('wallet is not connected')
 
@@ -241,8 +251,11 @@ export const LPTokens: React.VFC<LPTokensProps> = () => {
       await openBuySellDialog({
         buyLiquidityAdapter: buyLiquidity,
         sellLiquidityAdapter: sellLiquidity,
+        sellLiquidityUniv3Adapter: sellLiquidityUniv3,
+        buyLiquidityUniv3Adapter: buyLiquidityUniv3,
         provider: networkProvider,
         account: currentWallet.account,
+        isUniV3,
         tokens,
         onSubmit: (values) => {
           cb(values.tx)

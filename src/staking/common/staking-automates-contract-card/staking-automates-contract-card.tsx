@@ -63,6 +63,7 @@ export type StakingAutomatesContractCardProps = {
   invest: string
   protocolAdapter?: string
   metricUni3?: StakingAutomatesContractFragmentFragment['metricUni3']
+  rebalance: StakingAutomatesContractFragmentFragment['rebalance']
 }
 
 const TokenIcon = (props: { logoUrl: string | null; className?: string }) => {
@@ -344,6 +345,18 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Link>
             </div>
           )}
+          <div className={styles.row}>
+            <Typography
+              variant="body2"
+              as="span"
+              className={clsx(styles.infoTitle, styles.opacity)}
+            >
+              Rebalance
+            </Typography>
+            <Typography variant="body2" as="span">
+              {props.rebalance ? 'enabled' : 'disabled'}
+            </Typography>
+          </div>
         </div>
         <div
           className={clsx(

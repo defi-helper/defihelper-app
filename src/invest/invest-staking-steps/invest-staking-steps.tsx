@@ -72,7 +72,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const balanceOfLp = useAsync(async () => {
     if (!props.contract.tokens.stakeBase) return
 
-    return lp.value?.buyLiquidity.methods.balanceOf(
+    return lp.value?.buyLiquidity?.methods.balanceOf(
       props.contract.tokens.stakeBase.address
     )
   }, [lp.value, props.contract])

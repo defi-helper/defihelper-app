@@ -24,7 +24,7 @@ import * as styles from './invest-sell.css'
 export type InvestSellProps = {
   onSubmit?: (variables: ZapFeePayCreateInputType) => void
   contract: InvestContract
-  adapter?: SellLiquidity
+  adapter?: SellLiquidity | null
   tokens?: {
     id: string
     logoUrl: string
