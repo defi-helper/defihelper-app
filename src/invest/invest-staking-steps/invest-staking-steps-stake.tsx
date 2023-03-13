@@ -261,7 +261,6 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
                       <Icon icon="unknownNetwork" width="16" height="16" />
                     </Paper>
                   )}
-                  {props.contract.tokens.reward.map}
                   {position.token0.price.lower} - {position.token0.price.upper}{' '}
                   per {position.token1.symbol} - $
                   {bignumberUtils.format(

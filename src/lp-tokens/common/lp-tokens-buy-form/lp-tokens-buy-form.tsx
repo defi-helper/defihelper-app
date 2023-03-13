@@ -3,7 +3,7 @@ import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 import { useForm, Controller } from 'react-hook-form'
 
 import { Button } from '~/common/button'
-import { BuyLiquidity } from '~/common/load-adapter'
+import { BuyLiquidity, BuyLiquidityUniv3 } from '~/common/load-adapter'
 import { NumericalInput } from '~/common/numerical-input'
 import { Select, SelectOption } from '~/common/select'
 import { Typography } from '~/common/typography'
@@ -25,8 +25,10 @@ export type LPTokensBuyFormProps = {
   onConfirm: () => void
   onSubmit?: (variables: Omit<ZapFeePayCreateInputType, 'wallet'>) => void
   onCancel: () => void
-  buyLiquidityAdapter: BuyLiquidity
+  buyLiquidityAdapter: BuyLiquidity | null
+  buyLiquidityUniv3Adapter: BuyLiquidityUniv3 | null
   balanceOfNative?: string
+  isUniV3: boolean
   tokens: {
     logoUrl: string
     symbol: string
@@ -63,6 +65,8 @@ const ErrorMessages = {
   ),
 }
 
+const intervalWidth = 1
+
 export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
   const [error, setError] = useState<Errors | null>(null)
 
@@ -76,7 +80,9 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
     })
 
   const tokens = useAsyncRetry(async () => {
-    const { balanceOf, balanceETHOf } = props.buyLiquidityAdapter.methods
+    const balanceOfUni3 = props.buyLiquidityUniv3Adapter?.methods.balanceOf
+
+    const { balanceOf, balanceETHOf } = props.buyLiquidityAdapter?.methods ?? {}
 
     const tokensWithBalances = await Promise.all(
       props.tokens.map(async (token) => {
@@ -84,9 +90,10 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
           return {
             ...token,
             balance:
-              token.address === NULL_ADDRESS
-                ? await balanceETHOf()
-                : await balanceOf(token.address),
+              (await balanceOfUni3?.(token.address)) ??
+              (token.address === NULL_ADDRESS
+                ? await balanceETHOf?.()
+                : await balanceOf?.(token.address)),
           }
         } catch (err) {
           if (!(err instanceof Error))
@@ -116,9 +123,12 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
   const tokenAddress = watch('token')
   const amount = watch('amount')
 
-  const fee = useAsync(props.buyLiquidityAdapter.methods.fee, [
-    props.buyLiquidityAdapter.methods,
-  ])
+  const fee = useAsync(async () => {
+    if (!props.buyLiquidityAdapter)
+      return props.buyLiquidityUniv3Adapter?.methods.fee()
+
+    return props.buyLiquidityAdapter?.methods.fee()
+  }, [props.buyLiquidityAdapter?.methods])
 
   useEffect(() => {
     const currentToken = tokens.value?.[tokenAddress]
@@ -131,22 +141,35 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
   const isApproved = useAsyncRetry(async () => {
     if (bignumberUtils.eq(amount, 0)) return true
 
-    return props.buyLiquidityAdapter.methods.isApproved(tokenAddress, amount)
-  }, [props.buyLiquidityAdapter.methods.isApproved, tokenAddress, amount])
+    if (props.buyLiquidityUniv3Adapter) {
+      return props.buyLiquidityUniv3Adapter.methods.isApproved(
+        tokenAddress,
+        amount
+      )
+    }
+
+    return props.buyLiquidityAdapter?.methods.isApproved(tokenAddress, amount)
+  }, [props.buyLiquidityAdapter?.methods.isApproved, tokenAddress, amount])
 
   const [buyState, onBuy] = useAsyncFn(
     async (formValues: FormValues) => {
+      const univ3Buy = props.buyLiquidityUniv3Adapter?.methods.buy
+      const univ3canBuy = props.buyLiquidityUniv3Adapter?.methods.canBuy
+      const univ3BuyEth = props.buyLiquidityUniv3Adapter?.methods.buyETH
+
       const { buy, canBuy, buyETH, canBuyETH } =
-        props.buyLiquidityAdapter.methods
+        props.buyLiquidityAdapter?.methods ?? {}
 
       setError(null)
 
       const isNativeToken = formValues.token === NULL_ADDRESS
 
       try {
-        const can = isNativeToken
-          ? await canBuyETH(formValues.amount)
-          : await canBuy(formValues.token, formValues.amount)
+        const can =
+          (await univ3canBuy?.(formValues.token, formValues.amount)) ??
+          (isNativeToken
+            ? await canBuyETH?.(formValues.amount)
+            : await canBuy?.(formValues.token, formValues.amount))
 
         if (can instanceof Error) throw can
         if (!can) throw new Error("can't buy")
@@ -159,9 +182,29 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
           return
         }
 
-        const { tx } = isNativeToken
-          ? await buyETH(formValues.amount, formValues.slippage)
-          : await buy(formValues.token, formValues.amount, formValues.slippage)
+        const buyUniV3Res = isNativeToken
+          ? await univ3BuyEth?.(
+              formValues.amount,
+              intervalWidth,
+              formValues.slippage
+            )
+          : await univ3Buy?.(
+              formValues.token,
+              formValues.amount,
+              intervalWidth,
+              formValues.slippage
+            )
+
+        const { tx } =
+          buyUniV3Res ??
+          (isNativeToken
+            ? await buyETH?.(formValues.amount, formValues.slippage)
+            : await buy?.(
+                formValues.token,
+                formValues.amount,
+                formValues.slippage
+              )) ??
+          {}
 
         const result = await tx?.wait()
         analytics.log('lp_tokens_purchase_success', {
@@ -193,11 +236,16 @@ export const LPTokensBuyForm: React.FC<LPTokensBuyFormProps> = (props) => {
 
   const [approveState, onApprove] = useAsyncFn(
     async (formValues: FormValues) => {
-      const { approve } = props.buyLiquidityAdapter.methods
+      const univ3Approve = props.buyLiquidityUniv3Adapter?.methods.approve
+
+      const { approve } = props.buyLiquidityAdapter?.methods ?? {}
       setError(null)
 
       try {
-        const { tx } = await approve(formValues.token, formValues.amount)
+        const { tx } =
+          (await univ3Approve?.(formValues.token, formValues.amount)) ??
+          (await approve?.(formValues.token, formValues.amount)) ??
+          {}
 
         await tx?.wait()
 

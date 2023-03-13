@@ -15,6 +15,7 @@ import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { parseError } from '~/common/parse-error'
 import { Wallet } from '~/wallets/common'
 import { BlockchainEnum } from '~/api/_generated-types'
+import { config } from '~/config'
 
 export type StakingAdapter = {
   actions: null | AdapterActions
@@ -107,7 +108,16 @@ type BuyLiquidityParams = {
   pair: string
   network: string
   protocol: BlockchainEnum
+  isUniV3?: boolean
+  contractAddress?: string
 }
+
+const POSITION_MANAGER = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
+const ROUTER = '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45'
+const QUOTER = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
+const AUTOROUTE_URL = config.IS_DEV
+  ? 'https://uniswap-smart-order-router.defihelper.info'
+  : 'https://uniswap-smart-order-router.defihelper.io'
 
 export const buyLPFx = stakingAdaptersDomain.createEffect(
   async (params: BuyLiquidityParams) => {
@@ -135,26 +145,59 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     const adapterObj = await loadAdapter(buildAdaptersUrl('dfh'))
 
-    const buyLiquidity = await adapterObj.automates.buyLiquidity(
-      networkProvider.getSigner(),
-      currentAddress,
-      {
-        router: params.router,
-        pair: params.pair,
-      }
-    )
-    const sellLiquidity = await adapterObj.automates.sellLiquidity(
-      networkProvider.getSigner(),
-      currentAddress,
-      {
-        router: params.router,
-        pair: params.pair,
-      }
-    )
+    const buyLiquidityUniv3 = params.isUniV3
+      ? await adapterObj.automates.uni3.buyLiquidity(
+          networkProvider.getSigner(),
+          currentAddress,
+          {
+            positionManager: POSITION_MANAGER,
+            router: ROUTER,
+            quoter: QUOTER,
+            autorouteURL: AUTOROUTE_URL,
+            pool: params.contractAddress as string,
+          }
+        )
+      : null
+    const sellLiquidityUniv3 = params.isUniV3
+      ? await adapterObj.automates.uni3.sellLiquidity(
+          networkProvider.getSigner(),
+          currentAddress,
+          {
+            positionManager: POSITION_MANAGER,
+            router: ROUTER,
+            quoter: QUOTER,
+            autorouteURL: AUTOROUTE_URL,
+            pool: params.contractAddress as string,
+          }
+        )
+      : null
+
+    const buyLiquidity = params.isUniV3
+      ? null
+      : await adapterObj.automates.buyLiquidity(
+          networkProvider.getSigner(),
+          currentAddress,
+          {
+            router: params.router,
+            pair: params.pair,
+          }
+        )
+    const sellLiquidity = params.isUniV3
+      ? null
+      : await adapterObj.automates.sellLiquidity(
+          networkProvider.getSigner(),
+          currentAddress,
+          {
+            router: params.router,
+            pair: params.pair,
+          }
+        )
 
     return {
-      buyLiquidity,
-      sellLiquidity,
+      buyLiquidityUniv3,
+      sellLiquidityUniv3,
+      buyLiquidity: params.isUniV3 ? null : buyLiquidity,
+      sellLiquidity: params.isUniV3 ? null : sellLiquidity,
       tokens,
       networkProvider,
     }

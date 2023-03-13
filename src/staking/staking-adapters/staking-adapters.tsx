@@ -228,7 +228,15 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
     })
 
     try {
-      const { sellLiquidity, buyLiquidity, tokens } = await model.buyLPFx({
+      const isUniV3 = props.protocolAdapter === 'uniswap3'
+
+      const {
+        sellLiquidity,
+        buyLiquidity,
+        buyLiquidityUniv3,
+        sellLiquidityUniv3,
+        tokens,
+      } = await model.buyLPFx({
         account: currentWallet.account,
         provider: currentWallet.provider,
         chainId: props.network,
@@ -236,6 +244,8 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
         pair: props.buyLiquidity.pair,
         network: props.network,
         protocol: props.blockchain,
+        isUniV3,
+        contractAddress: props.contractAddress,
       })
 
       const billingBalance = await settingsWalletModel.fetchBillingBalanceFx({
@@ -258,7 +268,10 @@ export const StakingAdapters: React.VFC<StakingAdaptersProps> = (props) => {
       await openBuyLiquidity({
         buyLiquidityAdapter: buyLiquidity,
         sellLiquidityAdapter: sellLiquidity,
+        sellLiquidityUniv3Adapter: sellLiquidityUniv3,
+        buyLiquidityUniv3Adapter: buyLiquidityUniv3,
         tokens,
+        isUniV3,
         onSubmit: (values) => {
           cb(values.tx)
 
