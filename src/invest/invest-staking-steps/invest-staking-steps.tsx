@@ -28,12 +28,12 @@ import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/inves
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
 import { InvestStakingStepsTelegramConnected } from './invest-staking-steps-telegram-connected'
-import { InvestStakingStepsDontHaveInvest } from './invest-staking-steps-dont-have-invest'
 import { InvestStopLoss } from '../common/invest-stop-loss'
 import * as automationsListModel from '~/automations/automation-list/automation-list.model'
-import * as styles from './invest-staking-steps.css'
 import { NULL_ADDRESS } from '~/common/constants'
 import { stakingApi } from '~/staking/common'
+import * as styles from './invest-staking-steps.css'
+import { InvestBuyUni3 } from '../invest-buy-uni3'
 
 export type InvestStakingStepsProps = {
   className?: string
@@ -54,6 +54,8 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
 
   const [currentStep, setCurrentStep] = useState(0)
 
+  const isUniV3 = props.contract.protocol.adapter === 'uniswap3'
+
   const lp = useAsync(async () => {
     if (!currentWallet?.account || !props.contract.automate.lpTokensManager)
       return
@@ -66,8 +68,10 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       pair: props.contract.automate.lpTokensManager.pair,
       network: props.contract.network,
       protocol: props.contract.blockchain,
+      contractAddress: props.contract.address,
+      isUniV3,
     })
-  }, [props.contract, currentWallet])
+  }, [props.contract, currentWallet, isUniV3])
 
   const balanceOfLp = useAsync(async () => {
     if (!props.contract.tokens.stakeBase) return
@@ -76,8 +80,6 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       props.contract.tokens.stakeBase.address
     )
   }, [lp.value, props.contract])
-
-  const isUniV3 = props.contract.protocol.adapter === 'uniswap3'
 
   const [deployState, handleDeploy] = useAsyncFn(async () => {
     if (
@@ -291,12 +293,19 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   )
 
   const initialSteps = {
-    buy:
-      !hasPositions && isUniV3
+    buy: [
+      ...(!hasPositions && isUniV3
         ? [
-            <InvestStakingStepsDontHaveInvest
+            <InvestBuyUni3
               key={0}
               contract={props.contract}
+              onSubmit={(values) => {
+                handleNextStep(values.tx)
+
+                lpTokensModel.zapFeePayCreateFx(values)
+              }}
+              adapter={lp.value?.buyLiquidityUniv3}
+              tokens={lp.value?.tokens}
             />,
           ]
         : [
@@ -311,12 +320,13 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
               adapter={lp.value?.buyLiquidity}
               tokens={lp.value?.tokens}
             />,
-            <InvestStakingStepsSuccessBuy
-              key={1}
-              contract={props.contract}
-              onSubmit={handleNextStep}
-            />,
-          ],
+          ]),
+      <InvestStakingStepsSuccessBuy
+        key={1}
+        contract={props.contract}
+        onSubmit={handleNextStep}
+      />,
+    ],
     migrate: [
       <InvestStakingStepsMigrate
         key={0}

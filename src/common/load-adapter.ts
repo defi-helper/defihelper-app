@@ -535,6 +535,25 @@ export type BuyLiquidityUniv3 = {
       slippage: number | string,
       deadlineSeconds?: number
     ) => Promise<{ tx: Transaction }>
+    interval(width: number): Promise<{
+      tickCurrent: number
+      tickLower: number
+      tickUpper: number
+      token0: {
+        address: string
+        name: string
+        decimals: number
+        priceLower: string
+        priceUpper: string
+      }
+      token1: {
+        address: string
+        name: string
+        decimals: number
+        priceLower: string
+        priceUpper: string
+      }
+    }>
   }
 }
 
