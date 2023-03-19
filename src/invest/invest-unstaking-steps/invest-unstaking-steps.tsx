@@ -53,8 +53,10 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       pair: props.contract.automate.lpTokensManager.pair,
       network: props.contract.network,
       protocol: props.contract.blockchain,
+      contractAddress: props.contract.address,
+      isUniV3,
     })
-  }, [props.contract, currentWallet])
+  }, [props.contract, currentWallet, isUniV3])
 
   const handleNextStep = useCallback(
     async (txId?: string) => {
@@ -201,7 +203,21 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       onSubmit={handleRefund}
       contract={props.contract}
     />,
-    isUniV3 ? null : (
+    isUniV3 ? (
+      <InvestSell
+        key={3}
+        contract={props.contract}
+        onSubmit={(values) => {
+          handleNextStep(values.tx)
+
+          lpTokensModel.zapFeePayCreateFx(values)
+        }}
+        adapter={lp.value?.sellLiquidity}
+        tokens={lp.value?.tokens}
+        onChangeToken={setSellToken}
+        onSell={setWithdrawedBalance}
+      />
+    ) : (
       <InvestSell
         key={3}
         contract={props.contract}

@@ -132,7 +132,11 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     if (!isNetworkKey(network)) throw new Error('wrong network')
 
-    const currentAddress = (networks[network] as any)?.LPTokensManager?.address
+    const currentNetworks = networks[network] as typeof networks['5']
+
+    const currentAddress = params.isUniV3
+      ? currentNetworks?.Uni3LPTokensManager?.address
+      : currentNetworks?.LPTokensManager?.address
 
     if (!currentAddress) throw new Error('does not have a LPTokensManager')
 

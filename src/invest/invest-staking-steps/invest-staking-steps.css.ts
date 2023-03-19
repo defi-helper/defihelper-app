@@ -198,3 +198,9 @@ export const tokenIcon = style({
     },
   },
 })
+
+export const rewardTokens = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 8,
+})
