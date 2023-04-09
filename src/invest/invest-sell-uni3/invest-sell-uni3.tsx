@@ -88,14 +88,14 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
     return Promise.all(
       res?.map(async (position) => ({
         ...position,
-        amountOut0: await props.adapter?.methods.amountOut(
-          position.id,
-          position.token0.address
-        ),
-        amountOut1: await props.adapter?.methods.amountOut(
-          position.id,
-          position.token1.address
-        ),
+        amountOut0:
+          (await props.adapter?.methods
+            .amountOut(position.id, position.token0.address)
+            .catch(console.error)) ?? '0',
+        amountOut1:
+          (await props.adapter?.methods
+            .amountOut(position.id, position.token1.address)
+            .catch(console.error)) ?? '0',
       }))
     )
   }, [props.adapter])

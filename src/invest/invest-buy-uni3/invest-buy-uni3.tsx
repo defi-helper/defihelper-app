@@ -93,7 +93,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
     const tokensWithBalances = await Promise.all(
       props.tokens.map(async (token) => ({
         ...token,
-        balance: await balanceOf(token.address),
+        balance: (await balanceOf(token.address).catch(console.error)) ?? '0',
       }))
     )
 
