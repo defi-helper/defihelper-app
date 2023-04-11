@@ -329,7 +329,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
         <Button
           onClick={handleBuy}
           loading={buyState.loading}
-          disabled={approveState.loading}
+          disabled={approveState.loading || !approved.value}
           color="green"
         >
           BUY TOKENS

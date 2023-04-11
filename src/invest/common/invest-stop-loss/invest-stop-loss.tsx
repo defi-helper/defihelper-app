@@ -17,6 +17,7 @@ import { Switch } from '~/common/switch'
 import { Typography } from '~/common/typography'
 import { StakingAutomatesContract } from '~/staking/common'
 import * as styles from './invest-stop-loss.css'
+import { InvestStepsProgress } from '../invest-steps-progress'
 
 export type InvestStopLossProps = {
   onConfirm: (value: {
@@ -206,7 +207,8 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
     if (
       stopLoss ||
       (props.initialStopLoss?.params?.amountOut &&
-        props.initialStopLoss.params.amountOut !== stopLossPrice)
+        props.initialStopLoss.params.amountOut !== stopLossPrice) ||
+      props.inline
     ) {
       const can = await props.adapter.methods.canSetStopLoss(
         path.value,
@@ -267,14 +269,29 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
   return (
     <>
       <div>
-        <Typography
-          variant="body2"
-          transform="uppercase"
-          family="mono"
-          className={styles.title}
-        >
-          Settings
-        </Typography>
+        {props.inline ? (
+          <>
+            <InvestStepsProgress current={3} success={3} />
+            <Typography
+              family="mono"
+              transform="uppercase"
+              as="div"
+              align="center"
+              className={styles.titleInline}
+            >
+              Settings
+            </Typography>
+          </>
+        ) : (
+          <Typography
+            variant="body2"
+            transform="uppercase"
+            family="mono"
+            className={styles.title}
+          >
+            Settings
+          </Typography>
+        )}
       </div>
       <Typography variant="body2" className={styles.subtitle}>
         Set up a stop-loss to protect your funds from a sudden drop in liquidity

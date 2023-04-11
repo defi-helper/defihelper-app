@@ -2,6 +2,10 @@ import { style } from '@vanilla-extract/css'
 
 import { theme } from '~/common/theme'
 
+export const titleInline = style({
+  marginBottom: 4,
+})
+
 export const title = style({
   color: theme.colors.textColorGrey,
   position: 'relative',
