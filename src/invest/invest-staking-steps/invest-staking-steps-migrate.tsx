@@ -27,7 +27,7 @@ export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps>
           align="center"
           className={styles.title}
         >
-          MIGRATE TOKENS
+          BUY TOKENS
         </Typography>
         <div className={styles.successContent}>
           <Icon
@@ -37,17 +37,10 @@ export const InvestStakingStepsMigrate: React.FC<InvestStakingStepsMigrateProps>
             className={styles.checked}
           />
           <Typography as="div" align="center">
-            You have invested in
-          </Typography>
-          <Typography as="div" align="center" className={styles.pool}>
-            <div className={styles.pool}>
-              <InvestPoolTokens tokens={props.contract.tokens.stake} />
-              {props.contract.name}
-            </div>{' '}
-            earlier.
+            Got it!
           </Typography>
           <Typography as="div" align="center">
-            We can boost your investment with auto-staking and stop-loss
+            Now we can boost your investment with auto-staking and stop-loss
             features.
             {!props.isUniV3 &&
               ` To continue you need unstake your tokens and deploy your
