@@ -17,6 +17,7 @@ import { Paper } from '~/common/paper'
 import { Icon } from '~/common/icon'
 import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
+import { NULL_ADDRESS } from '~/common/constants'
 
 export type InvestStakingStepsStakeProps = {
   onSubmit?: (values: { txHash?: string }) => void
@@ -218,6 +219,19 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
     {}
   )
 
+  const positionsMap = props.positions?.reduce((acc, position) => {
+    acc.set(position.id, position)
+
+    return acc
+  }, new Map<number, Position>())
+
+  const currentPosition = positionsMap?.get(Number(tokenId))
+
+  const tokenAddresses = [
+    currentPosition?.token0.address,
+    currentPosition?.token1.address,
+  ]
+
   return (
     <>
       <InvestStepsProgress success={1} current={2} />
@@ -287,7 +301,7 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
         </div>
       )}
       <div className={clsx(styles.stakeActions, styles.mt)}>
-        {!isApproved.value && (
+        {!isApproved.value && !tokenAddresses.includes(NULL_ADDRESS) && (
           <Button
             color="green"
             onClick={handleApprove}
