@@ -54,7 +54,9 @@ export type InvestStopLossProps = {
 }
 
 export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
-  const [stopLoss, toggleStopLoss] = useToggle(Boolean(props.initialStopLoss))
+  const [stopLoss, toggleStopLoss] = useToggle(
+    props.inline || Boolean(props.initialStopLoss)
+  )
   const [autoRebalance, toggleAutoRebalance] = useToggle(props.rebalanceEnabled)
   const [autoCompound, toggleAutoCompound] = useToggle(
     props.autoCompoundActive ?? false
@@ -202,13 +204,14 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
   }, [price.value, percent])
 
   const [confirm, handleConfirm] = useAsyncFn(async () => {
-    if (!props.adapter || !path.value) return
+    if (!props.adapter) return
 
     if (
-      stopLoss ||
-      (props.initialStopLoss?.params?.amountOut &&
-        props.initialStopLoss.params.amountOut !== stopLossPrice) ||
-      props.inline
+      (stopLoss ||
+        (props.initialStopLoss?.params?.amountOut &&
+          props.initialStopLoss.params.amountOut !== stopLossPrice) ||
+        props.inline) &&
+      path.value
     ) {
       const can = await props.adapter.methods.canSetStopLoss(
         path.value,
@@ -228,7 +231,7 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
     }
 
     props.onConfirm({
-      path: path.value,
+      path: path.value as string[],
       amountOut: stopLossPrice,
       amountOutMin: '0',
       active: stopLoss,

@@ -14,7 +14,7 @@ export const InvestStepsProgress: React.VFC<InvestStepsProgressProps> = (
 ) => {
   return (
     <div className={clsx(styles.steps, props.className)}>
-      {Array.from(Array(3), (_, i) => i).map((step) => (
+      {Array.from(Array(4), (_, i) => i).map((step) => (
         <div
           key={step}
           className={clsx(styles.stepsItem, {

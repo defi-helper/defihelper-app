@@ -52,7 +52,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const automateId = queryParams.get('automateId')
   const walletId = queryParams.get('walletId')
 
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(4)
 
   const isUniV3 = props.contract.protocol.adapter === 'uniswap3'
 
