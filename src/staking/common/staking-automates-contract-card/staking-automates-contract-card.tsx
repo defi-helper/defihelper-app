@@ -64,6 +64,7 @@ export type StakingAutomatesContractCardProps = {
   protocolAdapter?: string
   metricUni3?: StakingAutomatesContractFragmentFragment['metricUni3']
   rebalance: StakingAutomatesContractFragmentFragment['rebalance']
+  aprFeeDay: StakingAutomatesContractFragmentFragment['metric']['aprFeeDay']
 }
 
 const TokenIcon = (props: { logoUrl: string | null; className?: string }) => {
@@ -295,7 +296,17 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               >
                 UNI V3
               </Typography>
-              <Typography variant="body2" as="span" className={styles.flex}>
+              <Typography
+                variant="body2"
+                as={Link}
+                className={styles.flex}
+                href={
+                  props.metricUni3.tokenURL
+                    ? props.metricUni3.tokenURL
+                    : undefined
+                }
+                target="_blank"
+              >
                 <TokenIcon
                   logoUrl={
                     stakeTokens[props.metricUni3.token0Address.toLowerCase()]
@@ -354,7 +365,13 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               Rebalance
             </Typography>
             <Typography variant="body2" as="span">
-              {props.rebalance ? 'enabled' : 'disabled'}
+              {props.rebalance ||
+              (isUniV3 && props.metricUni3?.rebalanceEnabled)
+                ? 'enabled'
+                : 'disabled'}{' '}
+              {props.metricUni3?.lastRebalanceAt && (
+                <>({dateUtils.format(props.metricUni3.lastRebalanceAt)})</>
+              )}
             </Typography>
           </div>
         </div>
@@ -401,6 +418,21 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             <Typography variant="body2" as="span">
               {bignumberUtils.formatMax(
                 bignumberUtils.mul(props.apy, 100),
+                10000,
+                true
+              )}
+              %
+            </Typography>
+          </div>
+          <div className={styles.row}>
+            <Typography variant="body2" as="span" className={styles.infoTitle}>
+              <Typography variant="inherit" className={styles.opacity}>
+                APY fee day
+              </Typography>
+            </Typography>
+            <Typography variant="body2" as="span">
+              {bignumberUtils.formatMax(
+                bignumberUtils.mul(props.aprFeeDay, 365),
                 10000,
                 true
               )}
