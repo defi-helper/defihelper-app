@@ -12,7 +12,7 @@ import contracts from '@defihelper/networks/contracts.json'
 import { loadAdapter } from '~/common/load-adapter'
 import { buildAdaptersUrl } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
-import { Pool, tradeApi } from './common/trade.api'
+import { tradeApi } from './common/trade.api'
 import { config } from '~/config'
 
 export const reset = createEvent()
@@ -95,37 +95,30 @@ sample({
 
 export const fetchExchangesFx = createEffect(
   async ({ network, signal }: { network: string; signal: AbortSignal }) => {
-    const { data, message } = await tradeApi.exchanges(
-      [networks[network]],
-      signal
-    )
     const poolInfo = await tradeApi.poolInfo([networks[network]], signal)
 
-    if (!data || message || !poolInfo.code || poolInfo.message)
-      throw new Error(poolInfo.message ?? message ?? 'something went wrong')
+    if (!poolInfo.code || poolInfo.message)
+      throw new Error(poolInfo.message ?? 'something went wrong')
 
-    const poolInfoMap = poolInfo.data.reduce<Record<string, Pool>>(
-      (acc, item) => {
-        acc[item.DexName.toLowerCase()] = item
-
-        return acc
-      },
-      {}
-    )
-
-    return data
-      .map((item) => {
-        const Liquidity = poolInfoMap[item.Name.toLowerCase()]?.Liquidity ?? 0
-
-        return {
-          ...item,
-          Address:
-            item.Address ??
-            poolInfoMap[item.Name.toLowerCase()]?.Routers?.[0]?.Address,
-          Liquidity,
-        }
-      })
+    const exchanges = poolInfo.data
+      .map(({ Liquidity, Icon, DexName, Routers }) => ({
+        Liquidity,
+        Icon,
+        Name: DexName,
+        Address: Routers?.[0]?.Address,
+      }))
       .sort((a, b) => (a.Liquidity > b.Liquidity ? -1 : 1))
+
+    if (!config.IS_DEV) return exchanges
+
+    return [
+      {
+        Icon: 'https://whattofarm.io/assets/dex/0x800b052609c355cA8103E06F022aA30647eAd60a',
+        Name: 'Uniswap dev',
+        Address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+      },
+      ...exchanges,
+    ]
   }
 )
 
