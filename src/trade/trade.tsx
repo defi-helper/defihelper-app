@@ -517,7 +517,7 @@ export const Trade: React.VFC<TradeProps> = () => {
                   height="24"
                   className={styles.pairIcon}
                 />
-                {[firstChar.toLocaleUpperCase(), ...restChars].join('')}
+                {[firstChar?.toLocaleUpperCase(), ...restChars].join('')}
               </SelectOption>
             )
           })}
@@ -540,10 +540,10 @@ export const Trade: React.VFC<TradeProps> = () => {
               (pair) =>
                 pair.pairInfo?.address
                   ?.toLocaleLowerCase()
-                  .includes(searchPair.toLocaleLowerCase()) ||
+                  .includes(searchPair?.toLocaleLowerCase()) ||
                 pair.pairInfo?.ticker
                   ?.toLocaleLowerCase()
-                  .includes(searchPair.toLocaleLowerCase())
+                  .includes(searchPair?.toLocaleLowerCase())
             )
             .map((pair, index) => (
               <SelectOption value={pair.pairInfo?.address} key={String(index)}>
