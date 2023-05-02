@@ -17,6 +17,7 @@ import { Switch } from '~/common/switch'
 import { Typography } from '~/common/typography'
 import { StakingAutomatesContract } from '~/staking/common'
 import * as styles from './invest-stop-loss.css'
+import { InvestStepsProgress } from '../invest-steps-progress'
 
 export type InvestStopLossProps = {
   onConfirm: (value: {
@@ -53,7 +54,9 @@ export type InvestStopLossProps = {
 }
 
 export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
-  const [stopLoss, toggleStopLoss] = useToggle(Boolean(props.initialStopLoss))
+  const [stopLoss, toggleStopLoss] = useToggle(
+    props.inline || Boolean(props.initialStopLoss)
+  )
   const [autoRebalance, toggleAutoRebalance] = useToggle(props.rebalanceEnabled)
   const [autoCompound, toggleAutoCompound] = useToggle(
     props.autoCompoundActive ?? false
@@ -201,12 +204,14 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
   }, [price.value, percent])
 
   const [confirm, handleConfirm] = useAsyncFn(async () => {
-    if (!props.adapter || !path.value) return
+    if (!props.adapter) return
 
     if (
-      stopLoss ||
-      (props.initialStopLoss?.params?.amountOut &&
-        props.initialStopLoss.params.amountOut !== stopLossPrice)
+      (stopLoss ||
+        (props.initialStopLoss?.params?.amountOut &&
+          props.initialStopLoss.params.amountOut !== stopLossPrice) ||
+        props.inline) &&
+      path.value
     ) {
       const can = await props.adapter.methods.canSetStopLoss(
         path.value,
@@ -226,7 +231,7 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
     }
 
     props.onConfirm({
-      path: path.value,
+      path: path.value as string[],
       amountOut: stopLossPrice,
       amountOutMin: '0',
       active: stopLoss,
@@ -267,14 +272,29 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
   return (
     <>
       <div>
-        <Typography
-          variant="body2"
-          transform="uppercase"
-          family="mono"
-          className={styles.title}
-        >
-          Settings
-        </Typography>
+        {props.inline ? (
+          <>
+            <InvestStepsProgress current={3} success={3} />
+            <Typography
+              family="mono"
+              transform="uppercase"
+              as="div"
+              align="center"
+              className={styles.titleInline}
+            >
+              Settings
+            </Typography>
+          </>
+        ) : (
+          <Typography
+            variant="body2"
+            transform="uppercase"
+            family="mono"
+            className={styles.title}
+          >
+            Settings
+          </Typography>
+        )}
       </div>
       <Typography variant="body2" className={styles.subtitle}>
         Set up a stop-loss to protect your funds from a sudden drop in liquidity

@@ -21,6 +21,9 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       token1Address
       token1PriceLower
       token1PriceUpper
+      tokenURL
+      rebalanceEnabled
+      lastRebalanceAt
     }
     contract {
       id
@@ -156,6 +159,7 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       earned
       apyBoost
       balance
+      aprFeeDay
     }
     blockedAt
   }

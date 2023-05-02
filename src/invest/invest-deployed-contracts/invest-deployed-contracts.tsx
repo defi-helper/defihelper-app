@@ -487,6 +487,7 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   onDepositWallet={depositWallet}
                   stopLossTx={deployedContract.stopLoss?.tx}
                   rebalance={deployedContract.rebalance}
+                  aprFeeDay={deployedContract.metric.aprFeeDay}
                   tokensIcons={
                     deployedContract.contract?.tokens.stake.map(
                       ({ alias, address }) => ({
