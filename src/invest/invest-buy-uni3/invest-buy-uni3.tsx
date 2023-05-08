@@ -112,7 +112,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
   )
 
   const [buyState, handleBuy] = useAsyncFn(async () => {
-    if (!props.adapter) return
+    if (!props.adapter || !fee.value) return
 
     const { buy, canBuy } = props.adapter.methods
 
@@ -124,16 +124,6 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't buy")
 
-      const { tx } = await buy(tokenAddress, amount, '1', '1')
-
-      const result = await tx?.wait()
-
-      analytics.log('lp_tokens_purchase_success', {
-        amount: bignumberUtils.floor(amount),
-      })
-
-      if (!result?.transactionHash || !currentUserWallet || !fee.value) return
-
       if (
         bignumberUtils.gt(
           fee.value.native,
@@ -144,6 +134,16 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
 
         return
       }
+
+      const { tx } = await buy(tokenAddress, amount, '1', '1')
+
+      const result = await tx?.wait()
+
+      analytics.log('lp_tokens_purchase_success', {
+        amount: bignumberUtils.floor(amount),
+      })
+
+      if (!result?.transactionHash || !currentUserWallet) return
 
       props.onSubmit?.({
         tx: result.transactionHash,

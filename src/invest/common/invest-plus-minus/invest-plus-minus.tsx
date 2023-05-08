@@ -19,13 +19,13 @@ export const InvestPlusMinus: React.VFC<InvestPlusMinusProps> = (props) => {
   const handleMinus = () => {
     if (bignumberUtils.eq(props.min, props.width)) return
 
-    props.onMinus(1)
+    props.onMinus(Number(props.width) - 1)
   }
 
   const handlePlus = () => {
     if (bignumberUtils.eq(props.max, props.width)) return
 
-    props.onPlus(1)
+    props.onPlus(Number(props.width) + 1)
   }
 
   return (
