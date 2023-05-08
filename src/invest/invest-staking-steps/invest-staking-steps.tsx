@@ -159,6 +159,13 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       priority: 0,
     })
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    deployedContract.trigger = {}
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    Object.assign(deployedContract.trigger!, createdTrigger)
+
     setCurrentStep((lastStep) => lastStep + 1)
 
     return deployedContract

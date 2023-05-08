@@ -257,10 +257,13 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
     return props.onCancel()
   }, [])
 
-  useEffect(() => {
-    props.onToggleAutoCompound(autoCompound)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoCompound])
+  const handleToggleAutoCompound = () => {
+    const active = !autoCompound
+
+    props.onToggleAutoCompound(active)
+
+    toggleAutoCompound(active)
+  }
 
   const handleToggleRebalance = () => {
     const active = !autoRebalance
@@ -428,7 +431,7 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
             <Typography>Auto Compound</Typography>
             <Switch
               size="small"
-              onChange={toggleAutoCompound}
+              onChange={handleToggleAutoCompound}
               disabled={confirm.loading}
               checked={autoCompound}
             />
