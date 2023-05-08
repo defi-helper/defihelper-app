@@ -24,6 +24,7 @@ export const STAKING_AUTOMATES_CONTRACT_FRAGMENT = gql`
       tokenURL
       rebalanceEnabled
       lastRebalanceAt
+      lastRebalanceTxHash
     }
     contract {
       id

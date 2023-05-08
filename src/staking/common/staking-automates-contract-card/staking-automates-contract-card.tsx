@@ -369,9 +369,17 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               (isUniV3 && props.metricUni3?.rebalanceEnabled)
                 ? 'enabled'
                 : 'disabled'}{' '}
-              {props.metricUni3?.lastRebalanceAt && (
-                <>({dateUtils.format(props.metricUni3.lastRebalanceAt)})</>
-              )}
+              {props.metricUni3?.lastRebalanceAt &&
+                props.metricUni3.lastRebalanceTxHash && (
+                  <Link
+                    href={buildExplorerUrl({
+                      tx: props.metricUni3.lastRebalanceTxHash,
+                      network: props.network,
+                    })}
+                  >
+                    ({dateUtils.format(props.metricUni3.lastRebalanceAt)})
+                  </Link>
+                )}
             </Typography>
           </div>
         </div>
