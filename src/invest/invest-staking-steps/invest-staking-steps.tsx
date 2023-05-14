@@ -52,7 +52,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const automateId = queryParams.get('automateId')
   const walletId = queryParams.get('walletId')
 
-  const [currentStep, setCurrentStep] = useState(4)
+  const [currentStep, setCurrentStep] = useState(0)
 
   const isUniV3 = props.contract.protocol.adapter === 'uniswap3'
 
@@ -158,6 +158,13 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       }),
       priority: 0,
     })
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    deployedContract.trigger = {}
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    Object.assign(deployedContract.trigger!, createdTrigger)
 
     setCurrentStep((lastStep) => lastStep + 1)
 

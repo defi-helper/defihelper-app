@@ -356,24 +356,34 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Link>
             </div>
           )}
-          <div className={styles.row}>
-            <Typography
-              variant="body2"
-              as="span"
-              className={clsx(styles.infoTitle, styles.opacity)}
-            >
-              Rebalance
-            </Typography>
-            <Typography variant="body2" as="span">
-              {props.rebalance ||
-              (isUniV3 && props.metricUni3?.rebalanceEnabled)
-                ? 'enabled'
-                : 'disabled'}{' '}
-              {props.metricUni3?.lastRebalanceAt && (
-                <>({dateUtils.format(props.metricUni3.lastRebalanceAt)})</>
-              )}
-            </Typography>
-          </div>
+          {isUniV3 && (
+            <div className={styles.row}>
+              <Typography
+                variant="body2"
+                as="span"
+                className={clsx(styles.infoTitle, styles.opacity)}
+              >
+                Rebalance
+              </Typography>
+              <Typography variant="body2" as="span">
+                {props.rebalance ||
+                (isUniV3 && props.metricUni3?.rebalanceEnabled)
+                  ? 'enabled'
+                  : 'disabled'}{' '}
+                {props.metricUni3?.lastRebalanceAt &&
+                  props.metricUni3.lastRebalanceTxHash && (
+                    <Link
+                      href={buildExplorerUrl({
+                        tx: props.metricUni3.lastRebalanceTxHash,
+                        network: props.network,
+                      })}
+                    >
+                      ({dateUtils.format(props.metricUni3.lastRebalanceAt)})
+                    </Link>
+                  )}
+              </Typography>
+            </div>
+          )}
         </div>
         <div
           className={clsx(

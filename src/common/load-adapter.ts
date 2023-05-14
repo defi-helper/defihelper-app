@@ -498,6 +498,8 @@ export type Restake = {
       ) => Promise<{ tx: Transaction }>
       removeStopLoss: () => Promise<{ tx: Transaction }>
       runStopLoss: () => Promise<{ tx: Transaction }>
+      canEmergencyWithdraw: () => Promise<true | Error>
+      emergencyWithdraw: () => Promise<{ tx: Transaction }>
     }
   }
 }

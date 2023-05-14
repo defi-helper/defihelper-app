@@ -429,6 +429,7 @@ export type AutomateContractUni3MetricType = {
   token1PriceLower: Scalars['BigNumberType']
   token1PriceUpper: Scalars['BigNumberType']
   rebalanceEnabled: Scalars['Boolean']
+  lastRebalanceTxHash?: Maybe<Scalars['String']>
   lastRebalanceAt?: Maybe<Scalars['DateTimeType']>
 }
 
@@ -6957,6 +6958,7 @@ export type StakingAutomatesContractFragmentFragment = {
       | 'tokenURL'
       | 'rebalanceEnabled'
       | 'lastRebalanceAt'
+      | 'lastRebalanceTxHash'
     >
     contract?: Maybe<
       { __typename?: 'ContractType' } & Pick<
