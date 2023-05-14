@@ -222,7 +222,7 @@ export const InvestSell = (props: InvestSellProps) => {
 
   return (
     <React.Fragment>
-      <InvestStepsProgress success={1} />
+      <InvestStepsProgress success={1} steps={3} />
       <Typography
         family="mono"
         transform="uppercase"
