@@ -130,10 +130,10 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
         amountInUSD,
       })
 
-      const result = await tx?.wait()
+      const result = await tx?.wait().catch(console.error)
 
       props.onSubmit?.({
-        txHash: result.transactionHash,
+        txHash: result?.transactionHash,
       })
       analytics.log('auto_staking_migrate_dialog_deposit_success')
 
