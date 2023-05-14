@@ -8,7 +8,7 @@ import { ButtonBase } from '~/common/button-base'
 import { CircularProgress } from '~/common/circular-progress'
 import { Dropdown } from '~/common/dropdown'
 import { Icon } from '~/common/icon'
-import { StopLossComponent } from '~/common/load-adapter'
+import { Restake, StopLossComponent } from '~/common/load-adapter'
 import { Loader } from '~/common/loader'
 import { NumericalInput } from '~/common/numerical-input'
 import { Select, SelectOption } from '~/common/select'
@@ -29,6 +29,8 @@ export type InvestStopLossProps = {
     withdrawToken: string
   }) => void
   adapter?: StopLossComponent
+  uni3Adapter?: Restake['stopLoss']
+  onScan?: (txId: string) => void
   mainTokens?: {
     id: string
     logoUrl: string
@@ -257,6 +259,20 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
     return props.onCancel()
   }, [])
 
+  const [runNowState, handleRunNow] = useAsyncFn(async () => {
+    const can = await props.uni3Adapter?.methods.canEmergencyWithdraw()
+
+    if (can instanceof Error) throw can
+
+    const res = await props.uni3Adapter?.methods.emergencyWithdraw()
+
+    const resWait = await res?.tx.wait()
+
+    if (!resWait?.transactionHash) return
+
+    return props.onScan?.(resWait.transactionHash)
+  }, [])
+
   const handleToggleAutoCompound = () => {
     const active = !autoCompound
 
@@ -472,24 +488,46 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
         </div>
       )}
       {!props.inline && (
-        <ButtonBase
-          onClick={handleDelete}
-          className={styles.deleteButton}
-          disabled={deleteState.loading || !props.canDelete}
-        >
-          {deleteState.loading && (
-            <CircularProgress
-              height="1em"
-              width="1em"
-              className={styles.deleteButtonLoader}
-            />
-          )}
-          <span
-            className={clsx(deleteState.loading && styles.deleteButtonText)}
+        <>
+          <ButtonBase
+            onClick={handleDelete}
+            className={styles.deleteButton}
+            disabled={deleteState.loading || !props.canDelete}
           >
-            DELETE CONTRACT
-          </span>
-        </ButtonBase>
+            {deleteState.loading && (
+              <CircularProgress
+                height="1em"
+                width="1em"
+                className={styles.deleteButtonLoader}
+              />
+            )}
+            <span
+              className={clsx(deleteState.loading && styles.deleteButtonText)}
+            >
+              DELETE CONTRACT
+            </span>
+          </ButtonBase>
+          {props.isUniV3 && (
+            <ButtonBase
+              onClick={handleRunNow}
+              className={styles.runNow}
+              disabled={runNowState.loading || !props.canDelete}
+            >
+              {runNowState.loading && (
+                <CircularProgress
+                  height="1em"
+                  width="1em"
+                  className={styles.deleteButtonLoader}
+                />
+              )}
+              <span
+                className={clsx(runNowState.loading && styles.deleteButtonText)}
+              >
+                RUN NOW
+              </span>
+            </ButtonBase>
+          )}
+        </>
       )}
       <Button
         className={styles.confirm}

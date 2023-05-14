@@ -86,6 +86,11 @@ export const deleteButton = style({
   position: 'relative',
 })
 
+export const runNow = style({
+  marginTop: 10,
+  position: 'relative',
+})
+
 export const deleteButtonLoader = style({
   position: 'absolute',
   top: 0,
