@@ -17,6 +17,7 @@ import { Paper } from '~/common/paper'
 import { Icon } from '~/common/icon'
 import * as styles from './invest-staking-steps.css'
 import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/invest-deployed-contracts.model'
+import { NULL_ADDRESS } from '~/common/constants'
 
 export type InvestStakingStepsStakeProps = {
   onSubmit?: (values: { txHash?: string }) => void
@@ -129,10 +130,10 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
         amountInUSD,
       })
 
-      const result = await tx?.wait()
+      const result = await tx?.wait().catch(console.error)
 
       props.onSubmit?.({
-        txHash: result.transactionHash,
+        txHash: result?.transactionHash,
       })
       analytics.log('auto_staking_migrate_dialog_deposit_success')
 
@@ -218,6 +219,19 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
     {}
   )
 
+  const positionsMap = props.positions?.reduce((acc, position) => {
+    acc.set(position.id, position)
+
+    return acc
+  }, new Map<number, Position>())
+
+  const currentPosition = positionsMap?.get(Number(tokenId))
+
+  const tokenAddresses = [
+    currentPosition?.token0.address,
+    currentPosition?.token1.address,
+  ]
+
   return (
     <>
       <InvestStepsProgress success={1} current={2} />
@@ -261,7 +275,6 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
                       <Icon icon="unknownNetwork" width="16" height="16" />
                     </Paper>
                   )}
-                  {props.contract.tokens.reward.map}
                   {position.token0.price.lower} - {position.token0.price.upper}{' '}
                   per {position.token1.symbol} - $
                   {bignumberUtils.format(
@@ -288,7 +301,7 @@ export const InvestStakingStepsStake: React.FC<InvestStakingStepsStakeProps> = (
         </div>
       )}
       <div className={clsx(styles.stakeActions, styles.mt)}>
-        {!isApproved.value && (
+        {!isApproved.value && !tokenAddresses.includes(NULL_ADDRESS) && (
           <Button
             color="green"
             onClick={handleApprove}

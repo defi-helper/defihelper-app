@@ -41,6 +41,7 @@ import {
   TransactionEnum,
 } from '~/settings/common'
 import { useOnAutomateContractUpdatedSubscription } from '../common/subscriptions'
+import { Restake } from '~/common/load-adapter'
 
 export type InvestDeployedContractsProps = {
   className?: string
@@ -336,8 +337,9 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
     const handleStopLoss =
       (automateContract: typeof automatesContracts[number]) => async () => {
         try {
-          if (!automateContract.contract) return
-          if (!currentWallet?.account || !user)
+          if (!automateContract.contract)
+            return toastsService.error('contract not found')
+          if (!currentWallet?.account)
             return toastsService.error('wallet is not connected')
           if (!automateContract.contract.automate.autorestake)
             return toastsService.error('adapter not found')
@@ -360,8 +362,43 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
             protocol: automateContract.contract.blockchain,
           })
 
+          const contract = (await (model.fetchAdapterFx({
+            protocolAdapter: automateContract.protocol.adapter,
+            contractAdapter: 'Restake',
+            contractId: automateContract.contract.id,
+            contractAddress: automateContract.address,
+            provider: currentWallet.provider,
+            chainId: String(currentWallet.chainId),
+            action: 'migrate',
+          }) as unknown)) as Restake | undefined
+
           const res = await openStopLossDialog({
             adapter: stakingAutomatesAdapter.stopLoss,
+            uni3Adapter: contract?.stopLoss,
+            onScan: (txId: string) => {
+              if (!currentUserWallet) return
+
+              if (
+                automateContract.contract &&
+                automateContract.contractWallet
+              ) {
+                model
+                  .scanWalletMetricFx({
+                    wallet: automateContract.contractWallet.id,
+                    contract: automateContract.contract.id,
+                    txId,
+                  })
+                  .catch(console.error)
+
+                model
+                  .scanWalletMetricFx({
+                    wallet: currentUserWallet.id,
+                    contract: automateContract.contract.id,
+                    txId,
+                  })
+                  .catch(console.error)
+              }
+            },
             mainTokens: automateContract.contract.tokens.stake
               .map((token) => ({
                 id: token.id,
@@ -485,6 +522,8 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
                   contractWalletId={deployedContract.contractWallet?.id}
                   onDepositWallet={depositWallet}
                   stopLossTx={deployedContract.stopLoss?.tx}
+                  rebalance={deployedContract.rebalance}
+                  aprFeeDay={deployedContract.metric.aprFeeDay}
                   tokensIcons={
                     deployedContract.contract?.tokens.stake.map(
                       ({ alias, address }) => ({

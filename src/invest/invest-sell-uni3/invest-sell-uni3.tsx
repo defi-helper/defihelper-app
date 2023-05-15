@@ -16,15 +16,17 @@ import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
 import { toastsService } from '~/toasts'
 import { analytics } from '~/analytics'
-import { SellLiquidity } from '~/common/load-adapter'
+import { SellLiquidityUniv3 } from '~/common/load-adapter'
 import { NULL_ADDRESS } from '~/common/constants'
 import { ZapFeePayCreateInputType, ZapFeePayCreateTypeEnum } from '~/api'
-import * as styles from './invest-sell.css'
+import * as styles from './invest-sell-uni3.css'
+import { Paper } from '~/common/paper'
+import { Icon } from '~/common/icon'
 
-export type InvestSellProps = {
+export type InvestSellUni3Props = {
   onSubmit?: (variables: ZapFeePayCreateInputType) => void
   contract: InvestContract
-  adapter?: SellLiquidity | null
+  adapter?: SellLiquidityUniv3 | null
   tokens?: {
     id: string
     logoUrl: string
@@ -55,7 +57,7 @@ const ErrorMessages = {
   ),
 }
 
-export const InvestSell = (props: InvestSellProps) => {
+export const InvestSellUni3 = (props: InvestSellUni3Props) => {
   const [error, setError] = useState<Errors | null>(null)
 
   const [amount, setAmount] = useState('0')
@@ -78,27 +80,43 @@ export const InvestSell = (props: InvestSellProps) => {
     return props.adapter.methods.isApproved(amountThrottled)
   }, [props.adapter, tokenAddress, amountThrottled])
 
-  const balance = useAsync(async () => {
-    return props.adapter?.methods.balanceOf()
+  const positions = useAsync(async () => {
+    if (!props.adapter) return []
+
+    const res = await props.adapter.methods.positions()
+
+    return Promise.all(
+      res?.map(async (position) => ({
+        ...position,
+        amountOut0:
+          (await props.adapter?.methods
+            .amountOut(position.id, position.token0.address)
+            .catch(console.error)) ?? '0',
+        amountOut1:
+          (await props.adapter?.methods
+            .amountOut(position.id, position.token1.address)
+            .catch(console.error)) ?? '0',
+      }))
+    )
   }, [props.adapter])
 
-  const { tokens: propsTokens = [] } = props
-
   const tokens = useMemo(() => {
-    return propsTokens.reduce<Record<string, typeof propsTokens[number]>>(
-      (acc, token) => {
-        acc[token.address] = token
+    return (
+      positions.value?.reduce<
+        Record<string, Exclude<typeof positions.value, undefined>[number]>
+      >((acc, token) => {
+        acc[token.id] = token
 
         return acc
-      },
-      {}
+      }, {}) ?? {}
     )
-  }, [propsTokens])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [positions.value])
 
   useEffect(() => {
     if (!tokens[tokenAddress]) return
 
-    props.onChangeToken(tokens[tokenAddress].symbol)
+    props.onChangeToken(tokenAddress)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tokenAddress, tokens])
 
@@ -106,12 +124,6 @@ export const InvestSell = (props: InvestSellProps) => {
     async () => props.adapter?.methods.fee(),
     [props.adapter]
   )
-
-  const balanceOf = useAsyncRetry(async () => {
-    if (!props.adapter) return
-
-    return props.adapter?.methods.balanceOf()
-  }, [props.adapter])
 
   const [sellState, handleSell] = useAsyncFn(async () => {
     if (!props.adapter) return
@@ -128,8 +140,8 @@ export const InvestSell = (props: InvestSellProps) => {
 
       const { tx } =
         tokenAddress === NULL_ADDRESS
-          ? await sellETH(amount, '1')
-          : await sell(tokenAddress, amount, '1')
+          ? await sellETH(Number(tokenAddress), amount)
+          : await sell(Number(tokenAddress), amount, '1')
 
       const result = await tx?.wait()
 
@@ -139,7 +151,7 @@ export const InvestSell = (props: InvestSellProps) => {
 
       if (!result?.transactionHash || !currentUserWallet || !fee.value) return
 
-      if (bignumberUtils.gt(fee.value.native, balanceOf.value)) {
+      if (bignumberUtils.gt(fee.value.native, amount)) {
         setError(Errors.balance)
 
         return
@@ -163,7 +175,7 @@ export const InvestSell = (props: InvestSellProps) => {
 
       return false
     }
-  }, [props.adapter, tokenAddress, amount, balanceOf.value])
+  }, [props.adapter, tokenAddress, amount])
 
   const [approveState, handleApprove] = useAsyncFn(async () => {
     if (!props.adapter) return
@@ -198,12 +210,8 @@ export const InvestSell = (props: InvestSellProps) => {
   const amountOut = useAsync(async () => {
     if (!tokenAddress) return
 
-    return props.adapter?.methods.amountOut(tokenAddress, amount)
+    return props.adapter?.methods.amountOut(Number(tokenAddress), amount)
   }, [props.adapter, tokenAddress, amount])
-
-  useEffect(() => {
-    setAmount(balance.value ?? '0')
-  }, [tokenAddress, balance.value])
 
   useEffect(() => {
     if (!amountOut.value) return
@@ -220,9 +228,18 @@ export const InvestSell = (props: InvestSellProps) => {
     setError(Errors.default)
   }, [approveState.error, sellState.error])
 
+  const iconMap = props.contract.tokens.reward.reduce<Record<string, string>>(
+    (acc, token) => {
+      acc[token.symbol] = token.alias?.logoUrl ?? ''
+
+      return acc
+    },
+    {}
+  )
+
   return (
     <React.Fragment>
-      <InvestStepsProgress success={1} steps={3} />
+      <InvestStepsProgress success={1} />
       <Typography
         family="mono"
         transform="uppercase"
@@ -248,9 +265,9 @@ export const InvestSell = (props: InvestSellProps) => {
               Amount{' '}
               <ButtonBase
                 className={styles.balance}
-                onClick={() => setAmount(balance.value ?? '0')}
+                onClick={() => setAmount(amountOut.value ?? '0')}
               >
-                {balance.value ?? '0'} MAX
+                {amountOut.value ?? '0'} MAX
               </ButtonBase>
             </>
           }
@@ -271,15 +288,37 @@ export const InvestSell = (props: InvestSellProps) => {
             </span>
           }
         >
-          {Object.values(tokens ?? {}).map((option) => {
-            return (
-              <SelectOption key={option.address} value={option.address}>
-                {option.logoUrl ? (
-                  <img src={option.logoUrl} className={styles.img} alt="" />
+          {Object.values(tokens).map((position) => {
+            const token0Icon = iconMap[position.token0.symbol]
+
+            const renderValue = (
+              <>
+                {token0Icon ? (
+                  <img alt="" src={token0Icon} className={styles.tokenIcon} />
                 ) : (
-                  <span className={styles.imgPlaceHolder} />
+                  <Paper className={styles.tokenIcon}>
+                    <Icon icon="unknownNetwork" width="16" height="16" />
+                  </Paper>
                 )}
-                {option.symbol}
+                {position.token0.price.lower} - {position.token0.price.upper}{' '}
+                per {position.token1.symbol} - $
+                {bignumberUtils.format(
+                  bignumberUtils.plus(
+                    position.token0.amountUSD,
+                    position.token1.amountUSD
+                  )
+                )}
+              </>
+            )
+
+            return (
+              <SelectOption
+                value={String(position.id)}
+                key={position.id}
+                renderValue={renderValue}
+                className={styles.justifyContentStart}
+              >
+                {renderValue}
               </SelectOption>
             )
           })}

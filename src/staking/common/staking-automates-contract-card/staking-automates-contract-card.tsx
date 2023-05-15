@@ -63,6 +63,8 @@ export type StakingAutomatesContractCardProps = {
   invest: string
   protocolAdapter?: string
   metricUni3?: StakingAutomatesContractFragmentFragment['metricUni3']
+  rebalance: StakingAutomatesContractFragmentFragment['rebalance']
+  aprFeeDay: StakingAutomatesContractFragmentFragment['metric']['aprFeeDay']
 }
 
 const TokenIcon = (props: { logoUrl: string | null; className?: string }) => {
@@ -294,7 +296,17 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               >
                 UNI V3
               </Typography>
-              <Typography variant="body2" as="span" className={styles.flex}>
+              <Typography
+                variant="body2"
+                as={Link}
+                className={styles.flex}
+                href={
+                  props.metricUni3.tokenURL
+                    ? props.metricUni3.tokenURL
+                    : undefined
+                }
+                target="_blank"
+              >
                 <TokenIcon
                   logoUrl={
                     stakeTokens[props.metricUni3.token0Address.toLowerCase()]
@@ -344,6 +356,34 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               </Link>
             </div>
           )}
+          {isUniV3 && (
+            <div className={styles.row}>
+              <Typography
+                variant="body2"
+                as="span"
+                className={clsx(styles.infoTitle, styles.opacity)}
+              >
+                Rebalance
+              </Typography>
+              <Typography variant="body2" as="span">
+                {props.rebalance ||
+                (isUniV3 && props.metricUni3?.rebalanceEnabled)
+                  ? 'enabled'
+                  : 'disabled'}{' '}
+                {props.metricUni3?.lastRebalanceAt &&
+                  props.metricUni3.lastRebalanceTxHash && (
+                    <Link
+                      href={buildExplorerUrl({
+                        tx: props.metricUni3.lastRebalanceTxHash,
+                        network: props.network,
+                      })}
+                    >
+                      ({dateUtils.format(props.metricUni3.lastRebalanceAt)})
+                    </Link>
+                  )}
+              </Typography>
+            </div>
+          )}
         </div>
         <div
           className={clsx(
@@ -388,6 +428,21 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
             <Typography variant="body2" as="span">
               {bignumberUtils.formatMax(
                 bignumberUtils.mul(props.apy, 100),
+                10000,
+                true
+              )}
+              %
+            </Typography>
+          </div>
+          <div className={styles.row}>
+            <Typography variant="body2" as="span" className={styles.infoTitle}>
+              <Typography variant="inherit" className={styles.opacity}>
+                APY fee day
+              </Typography>
+            </Typography>
+            <Typography variant="body2" as="span">
+              {bignumberUtils.formatMax(
+                bignumberUtils.mul(props.aprFeeDay, 365),
                 10000,
                 true
               )}

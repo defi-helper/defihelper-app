@@ -302,6 +302,7 @@ export type AutomateContractMetricType = {
   balance: Scalars['String']
   earned: Scalars['String']
   apyBoost: Scalars['String']
+  aprFeeDay: Scalars['String']
 }
 
 export type AutomateContractRebalanceDisableInputType = {
@@ -416,6 +417,8 @@ export enum AutomateContractTypeEnum {
 
 export type AutomateContractUni3MetricType = {
   __typename?: 'AutomateContractUni3MetricType'
+  tokenId?: Maybe<Scalars['String']>
+  tokenURL?: Maybe<Scalars['String']>
   inPriceRange: Scalars['Boolean']
   token0Address: Scalars['EthereumAddressType']
   token0Price: Scalars['BigNumberType']
@@ -425,6 +428,9 @@ export type AutomateContractUni3MetricType = {
   token1Price: Scalars['BigNumberType']
   token1PriceLower: Scalars['BigNumberType']
   token1PriceUpper: Scalars['BigNumberType']
+  rebalanceEnabled: Scalars['Boolean']
+  lastRebalanceTxHash?: Maybe<Scalars['String']>
+  lastRebalanceAt?: Maybe<Scalars['DateTimeType']>
 }
 
 export type AutomateContractUpdateInputType = {
@@ -6949,6 +6955,10 @@ export type StakingAutomatesContractFragmentFragment = {
       | 'token1Address'
       | 'token1PriceLower'
       | 'token1PriceUpper'
+      | 'tokenURL'
+      | 'rebalanceEnabled'
+      | 'lastRebalanceAt'
+      | 'lastRebalanceTxHash'
     >
     contract?: Maybe<
       { __typename?: 'ContractType' } & Pick<
@@ -7098,7 +7108,7 @@ export type StakingAutomatesContractFragmentFragment = {
     >
     metric: { __typename?: 'AutomateContractMetricType' } & Pick<
       AutomateContractMetricType,
-      'invest' | 'staked' | 'earned' | 'apyBoost' | 'balance'
+      'invest' | 'staked' | 'earned' | 'apyBoost' | 'balance' | 'aprFeeDay'
     >
   }
 

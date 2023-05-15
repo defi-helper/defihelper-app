@@ -6,7 +6,12 @@ import { ZapFeePayCreateInputType } from '~/api'
 import { bignumberUtils } from '~/common/bignumber-utils'
 import { ButtonBase } from '~/common/button-base'
 import { Dialog } from '~/common/dialog'
-import { BuyLiquidity, SellLiquidity } from '~/common/load-adapter'
+import {
+  BuyLiquidity,
+  BuyLiquidityUniv3,
+  SellLiquidity,
+  SellLiquidityUniv3,
+} from '~/common/load-adapter'
 import { Typography } from '~/common/typography'
 import { LPTokensBuyForm } from '../lp-tokens-buy-form'
 import { LPTokensSellForm } from '../lp-tokens-sell-form'
@@ -16,10 +21,13 @@ export type LPTokensBuySellDialogProps = {
   onConfirm: () => void
   onCancel: () => void
   onSubmit?: (variables: Omit<ZapFeePayCreateInputType, 'wallet'>) => void
-  buyLiquidityAdapter: BuyLiquidity
-  sellLiquidityAdapter: SellLiquidity
+  buyLiquidityAdapter: BuyLiquidity | null
+  buyLiquidityUniv3Adapter: BuyLiquidityUniv3 | null
+  sellLiquidityUniv3Adapter: SellLiquidityUniv3 | null
+  sellLiquidityAdapter: SellLiquidity | null
   provider?: unknown
   account?: string
+  isUniV3: boolean
   tokens: {
     logoUrl: string
     symbol: string
@@ -69,18 +77,22 @@ export const LPTokensBuySellDialog: React.VFC<LPTokensBuySellDialogProps> = (
         onSubmit={props.onSubmit}
         onCancel={props.onCancel}
         tokenSymbol={props.tokenSymbol}
+        buyLiquidityUniv3Adapter={props.buyLiquidityUniv3Adapter}
         balanceOfNative={balanceOfNative.value}
+        isUniV3={props.isUniV3}
       />
     ),
     [Tabs[1]]: (
       <LPTokensSellForm
         tokens={props.tokens}
         sellLiquidityAdapter={props.sellLiquidityAdapter}
+        sellLiquidityUniv3Adapter={props.sellLiquidityUniv3Adapter}
         onConfirm={props.onConfirm}
         onSubmit={props.onSubmit}
         onCancel={props.onCancel}
         tokenSymbol={props.tokenSymbol}
         balanceOfNative={balanceOfNative.value}
+        isUniV3={props.isUniV3}
       />
     ),
   }

@@ -498,7 +498,121 @@ export type Restake = {
       ) => Promise<{ tx: Transaction }>
       removeStopLoss: () => Promise<{ tx: Transaction }>
       runStopLoss: () => Promise<{ tx: Transaction }>
+      canEmergencyWithdraw: () => Promise<true | Error>
+      emergencyWithdraw: () => Promise<{ tx: Transaction }>
     }
+  }
+}
+
+export type BuyLiquidityUniv3 = {
+  name: 'DFHUni3BuyLiquidity'
+  methods: {
+    fee: () => Promise<{
+      native: string
+      usd: string
+    }>
+    balanceOf: (tokenAddress: string) => Promise<string>
+    isApproved: (
+      tokenAddress: string,
+      amount: string
+    ) => Promise<boolean | Error>
+    approve: (
+      tokenAddress: string,
+      amount: string
+    ) => Promise<{ tx: Transaction }>
+    canBuy: (
+      tokenAddress: string,
+      amount: string
+    ) => Promise<{ tx: Transaction }>
+    buy: (
+      tokenAddress: string,
+      amount: string,
+      intervalWidth: number | string,
+      slippage: number | string,
+      deadlineSeconds?: number
+    ) => Promise<{ tx: Transaction }>
+    buyETH: (
+      amount: string,
+      intervalWidth: number | string,
+      slippage: number | string,
+      deadlineSeconds?: number
+    ) => Promise<{ tx: Transaction }>
+    interval(width: number): Promise<{
+      tickCurrent: number
+      tickLower: number
+      tickUpper: number
+      token0: {
+        address: string
+        name: string
+        decimals: number
+        priceLower: string
+        priceUpper: string
+      }
+      token1: {
+        address: string
+        name: string
+        decimals: number
+        priceLower: string
+        priceUpper: string
+      }
+    }>
+  }
+}
+
+export type SellLiquidityUniv3Position = {
+  id: number
+  fee: number
+  token0: {
+    address: string
+    name: string
+    symbol: string
+    amount: string
+    amountUSD: string
+    price: {
+      value: string
+      USD: string
+      lower: string
+      upper: string
+    }
+  }
+  token1: {
+    address: string
+    name: string
+    symbol: string
+    amount: string
+    amountUSD: string
+    price: {
+      value: string
+      USD: string
+      lower: string
+      upper: string
+    }
+  }
+}
+
+export type SellLiquidityUniv3 = {
+  name: 'DFHSellLiquidity'
+  methods: {
+    fee: () => Promise<{
+      native: string
+      usd: string
+    }>
+    positions: () => Promise<SellLiquidityUniv3Position[]>
+    isApproved: (tokenId: string) => Promise<boolean>
+    approve: (tokenId: string) => Promise<{ tx: Transaction }>
+    amountOut: (tokenId: number, tokenOutAddress: string) => Promise<string>
+    canSell: (tokenId: string) => Promise<{ tx: Transaction }>
+    sell: (
+      tokenId: number,
+      tokenOut: string,
+      slippage: number | string,
+      deadlineSeconds?: number
+    ) => Promise<{ tx: Transaction }>
+    sellETH: (
+      tokenId: number,
+      slippage: number | string,
+      deadlineSeconds?: number
+    ) => Promise<{ tx: Transaction }>
   }
 }
 
@@ -542,6 +656,30 @@ export type Adapters = {
     ) => Promise<SellLiquidity>
     smartTrade: SmartTrade
     Restake: (signer: unknown, contractAddress: string) => Promise<Restake>
+    uni3: {
+      buyLiquidity: (
+        ethSigner: unknown,
+        contractAddress: string,
+        options: {
+          positionManager: string
+          router: string
+          autorouteURL: string
+          quoter: string
+          pool: string
+        }
+      ) => Promise<BuyLiquidityUniv3>
+      sellLiquidity: (
+        ethSigner: unknown,
+        contractAddress: string,
+        options: {
+          positionManager: string
+          router: string
+          autorouteURL: string
+          quoter: string
+          pool: string
+        }
+      ) => Promise<SellLiquidityUniv3>
+    }
   }
 }
 
