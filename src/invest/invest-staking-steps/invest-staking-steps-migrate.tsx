@@ -1,7 +1,6 @@
 import { Button } from '~/common/button'
 import { Icon } from '~/common/icon'
 import { Typography } from '~/common/typography'
-import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
 import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
 import { InvestContract } from '~/invest/common/invest.types'
 import { WalletConnect } from '~/wallets/wallet-connect'

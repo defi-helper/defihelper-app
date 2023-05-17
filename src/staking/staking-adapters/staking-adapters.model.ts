@@ -10,7 +10,7 @@ import {
   AdapterFn,
 } from '~/common/load-adapter'
 import { toastsService } from '~/toasts'
-import { buildAdaptersUrl, stakingApi } from '~/staking/common'
+import { buildAdaptersUrl, envs, stakingApi } from '~/staking/common'
 import { walletNetworkModel } from '~/wallets/wallet-networks'
 import { parseError } from '~/common/parse-error'
 import { Wallet } from '~/wallets/common'
@@ -112,9 +112,6 @@ type BuyLiquidityParams = {
   contractAddress?: string
 }
 
-const POSITION_MANAGER = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'
-const ROUTER = '0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45'
-const QUOTER = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
 const AUTOROUTE_URL = config.IS_DEV
   ? 'https://uniswap-smart-order-router.defihelper.info'
   : 'https://uniswap-smart-order-router.defihelper.io'
@@ -149,32 +146,36 @@ export const buyLPFx = stakingAdaptersDomain.createEffect(
 
     const adapterObj = await loadAdapter(buildAdaptersUrl('dfh'))
 
-    const buyLiquidityUniv3 = params.isUniV3
-      ? await adapterObj.automates.uni3.buyLiquidity(
-          networkProvider.getSigner(),
-          currentAddress,
-          {
-            positionManager: POSITION_MANAGER,
-            router: ROUTER,
-            quoter: QUOTER,
-            autorouteURL: AUTOROUTE_URL,
-            pool: params.contractAddress as string,
-          }
-        )
-      : null
-    const sellLiquidityUniv3 = params.isUniV3
-      ? await adapterObj.automates.uni3.sellLiquidity(
-          networkProvider.getSigner(),
-          currentAddress,
-          {
-            positionManager: POSITION_MANAGER,
-            router: ROUTER,
-            quoter: QUOTER,
-            autorouteURL: AUTOROUTE_URL,
-            pool: params.contractAddress as string,
-          }
-        )
-      : null
+    const currentEnv = envs[network]
+
+    const buyLiquidityUniv3 =
+      params.isUniV3 && currentEnv
+        ? await adapterObj.automates.uni3.buyLiquidity(
+            networkProvider.getSigner(),
+            currentAddress,
+            {
+              positionManager: currentEnv.pm,
+              router: currentEnv.router,
+              quoter: currentEnv.quoter,
+              autorouteURL: AUTOROUTE_URL,
+              pool: params.contractAddress as string,
+            }
+          )
+        : null
+    const sellLiquidityUniv3 =
+      params.isUniV3 && currentEnv
+        ? await adapterObj.automates.uni3.sellLiquidity(
+            networkProvider.getSigner(),
+            currentAddress,
+            {
+              positionManager: currentEnv.pm,
+              router: currentEnv.router,
+              quoter: currentEnv.quoter,
+              autorouteURL: AUTOROUTE_URL,
+              pool: params.contractAddress as string,
+            }
+          )
+        : null
 
     const buyLiquidity = params.isUniV3
       ? null
