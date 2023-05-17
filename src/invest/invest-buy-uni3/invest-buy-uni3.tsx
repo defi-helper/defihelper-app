@@ -100,7 +100,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
     return tokensWithBalances.reduce<
       Record<string, typeof tokensWithBalances[number]>
     >((acc, token) => {
-      acc[token.id] = token
+      acc[token.address] = token
 
       return acc
     }, {})
@@ -179,11 +179,12 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
 
       await tx?.wait()
 
-      tokens.retry()
-      approved.retry()
       toastsService.info('tokens approved!')
     } catch {
       setError(Errors.default)
+    } finally {
+      tokens.retry()
+      approved.retry()
     }
   }, [props.adapter, tokenAddress, amount])
 
@@ -294,7 +295,9 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
             value={interval.value?.token0.priceLower}
             width={width}
             label="MIN PRICE"
+            type="minus"
           />
+          <div className={styles.intervalBetween}>–</div>
           <InvestPlusMinus
             min={0}
             max={100}
@@ -303,6 +306,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
             value={interval.value?.token0.priceUpper}
             width={width}
             label="MAX PRICE"
+            type="plus"
           />
         </div>
       </div>

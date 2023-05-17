@@ -13,6 +13,7 @@ export type InvestPlusMinusProps = {
   width?: string | number
   disabled?: boolean
   label: string
+  type?: 'minus' | 'plus'
 }
 
 export const InvestPlusMinus: React.VFC<InvestPlusMinusProps> = (props) => {
@@ -30,26 +31,30 @@ export const InvestPlusMinus: React.VFC<InvestPlusMinusProps> = (props) => {
 
   return (
     <div className={styles.root}>
-      <ButtonBase
-        className={styles.button}
-        onClick={handleMinus}
-        disabled={props.disabled}
-      >
-        <Icon icon="minus" width="24" height="24" />
-      </ButtonBase>
+      {props.type === 'minus' && (
+        <ButtonBase
+          className={styles.button}
+          onClick={handleMinus}
+          disabled={props.disabled}
+        >
+          <Icon icon="minus" width="24" height="24" />
+        </ButtonBase>
+      )}
       <NumericalInput
         value={props.value}
         label={props.label}
         className={styles.input}
         readOnly
       />
-      <ButtonBase
-        className={styles.button}
-        onClick={handlePlus}
-        disabled={props.disabled}
-      >
-        <Icon icon="plus" width="24" height="24" />
-      </ButtonBase>
+      {props.type === 'plus' && (
+        <ButtonBase
+          className={styles.button}
+          onClick={handlePlus}
+          disabled={props.disabled}
+        >
+          <Icon icon="plus" width="24" height="24" />
+        </ButtonBase>
+      )}
     </div>
   )
 }

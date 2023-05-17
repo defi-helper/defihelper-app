@@ -125,4 +125,9 @@ export const tokenIcon = style({
 export const interval = style({
   display: 'flex',
   justifyContent: 'space-between',
+  alignItems: 'center',
+})
+
+export const intervalBetween = style({
+  marginTop: 20,
 })
