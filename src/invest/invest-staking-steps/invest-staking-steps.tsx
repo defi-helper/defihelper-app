@@ -1,7 +1,7 @@
 import { useAsync, useAsyncFn, useAsyncRetry, useInterval } from 'react-use'
 import { useStore } from 'effector-react'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { InvestContract } from '~/invest/common/invest.types'
 import { InvestBuy } from '~/invest/invest-buy'
@@ -53,6 +53,8 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   const walletId = queryParams.get('walletId')
 
   const [currentStep, setCurrentStep] = useState(0)
+  const [hasPositions, setHasPositions] = useState(false)
+  const calledRef = useRef(false)
 
   const isUniV3 = props.contract.protocol.adapter === 'uniswap3'
 
@@ -172,7 +174,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
   }, [currentWallet, props.contract, isUniV3])
 
   const handleNextStep = (txId?: string) => {
-    setCurrentStep(currentStep + 1)
+    setCurrentStep((lastStep) => lastStep + 1)
 
     if (!txId) return
 
@@ -261,8 +263,6 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     return (await adapter.value?.positions?.(currentWallet.account))?.positions
   }, [adapter.value, currentWallet])
 
-  const hasPositions = Boolean(positions.value?.length)
-
   const [withDraw, handleWithDraw] = useAsyncFn(async () => {
     if (!balanceOf.value) return
 
@@ -295,10 +295,21 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
     () => {
       if (!isUniV3) return
 
+      calledRef.current = true
+
       positions.retry()
     },
     isUniV3 ? 15000 : null
   )
+
+  useEffect(() => {
+    if (calledRef.current) return
+
+    setHasPositions(Boolean(positions.value?.length))
+  }, [positions.value])
+
+  const canMigrate =
+    bignumberUtils.gt(balanceOf.value, 0) && canWithdraw.value === true
 
   const initialSteps = {
     buy: [
@@ -345,9 +356,6 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       />,
     ],
   }
-
-  const canMigrate =
-    bignumberUtils.gt(balanceOf.value, 0) && canWithdraw.value === true
 
   const steps = [
     ...initialSteps[
