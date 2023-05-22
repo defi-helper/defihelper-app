@@ -168,7 +168,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               address: contract.contractWallet?.address,
               network: contract.contractWallet?.network,
               blockchain: 'ethereum',
-              provider: currentWallet.provider,
               chainId: String(currentWallet.chainId),
             }
           )
@@ -200,7 +199,6 @@ export const InvestDeployedContracts: React.VFC<InvestDeployedContractsProps> =
               address: contract.contractWallet?.address,
               network: contract.contractWallet?.network,
               blockchain: 'ethereum',
-              provider: currentWallet.provider,
               chainId: String(currentWallet.chainId),
             }
           )
