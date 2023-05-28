@@ -31,8 +31,8 @@ export const WalletSwitchNetwork: React.FC<WalletSwitchNetworkProps> = (
     onClick: correctNetwork ? children.props.onClick : handleSwitchNetwork,
     loading:
       'loading' in children.props
-        ? switchNetworkState.loading
-        : children.props.loading,
+        ? switchNetworkState.loading || children.props.loading
+        : undefined,
     type: correctNetwork ? children.props.type : 'button',
   })
 }

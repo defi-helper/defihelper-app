@@ -293,7 +293,7 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
       <div>
         {props.inline ? (
           <>
-            <InvestStepsProgress current={3} success={3} />
+            <InvestStepsProgress current={3} success={2} />
             <Typography
               family="mono"
               transform="uppercase"

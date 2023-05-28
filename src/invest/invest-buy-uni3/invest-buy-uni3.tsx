@@ -135,7 +135,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
         return
       }
 
-      const { tx } = await buy(tokenAddress, amount, '1', '1')
+      const { tx } = await buy(tokenAddress, amount, width, '1')
 
       const result = await tx?.wait()
 
@@ -165,7 +165,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
 
       return false
     }
-  }, [props.adapter, tokenAddress, amount, fee.value, tokens.value])
+  }, [props.adapter, tokenAddress, width, amount, fee.value, tokens.value])
 
   const [approveState, handleApprove] = useAsyncFn(async () => {
     if (!props.adapter) return
@@ -296,6 +296,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
             width={width}
             label="MIN PRICE"
             type="minus"
+            disabled={approveState.loading || buyState.loading}
           />
           <div className={styles.intervalBetween}>–</div>
           <InvestPlusMinus
@@ -307,6 +308,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
             width={width}
             label="MAX PRICE"
             type="plus"
+            disabled={approveState.loading || buyState.loading}
           />
         </div>
       </div>
