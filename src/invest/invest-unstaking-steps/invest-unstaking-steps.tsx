@@ -16,8 +16,9 @@ import * as stakingAutomatesModel from '~/invest/invest-deployed-contracts/inves
 import * as stakingAdaptersModel from '~/staking/staking-adapters/staking-adapters.model'
 import * as model from '~/invest/invest-detail/invest-detail.model'
 import * as lpTokensModel from '~/lp-tokens/lp-tokens.model'
-import * as styles from './invest-unstaking-steps.css'
 import { Restake } from '~/common/load-adapter'
+import { InvestSellUni3 } from '../invest-sell-uni3'
+import * as styles from './invest-unstaking-steps.css'
 
 export type InvestUnstakingStepsProps = {
   className?: string
@@ -204,7 +205,7 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
       contract={props.contract}
     />,
     isUniV3 ? (
-      <InvestSell
+      <InvestSellUni3
         key={3}
         contract={props.contract}
         onSubmit={(values) => {
@@ -212,7 +213,7 @@ export const InvestUnstakingSteps: React.VFC<InvestUnstakingStepsProps> = (
 
           lpTokensModel.zapFeePayCreateFx(values)
         }}
-        adapter={lp.value?.sellLiquidity}
+        adapter={lp.value?.sellLiquidityUniv3}
         tokens={lp.value?.tokens}
         onChangeToken={setSellToken}
         onSell={setWithdrawedBalance}
