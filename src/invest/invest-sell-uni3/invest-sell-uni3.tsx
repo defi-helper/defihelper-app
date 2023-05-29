@@ -175,7 +175,7 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
 
       return false
     }
-  }, [props.adapter, tokenAddress, amount])
+  }, [props.adapter, tokenAddress, amount, currentUserWallet, fee.value])
 
   const [approveState, handleApprove] = useAsyncFn(async () => {
     if (!props.adapter) return
@@ -239,7 +239,7 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
 
   return (
     <React.Fragment>
-      <InvestStepsProgress success={1} />
+      <InvestStepsProgress success={1} steps={3} />
       <Typography
         family="mono"
         transform="uppercase"

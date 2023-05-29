@@ -14,7 +14,7 @@ export const InvestStakingStepsTelegramConnected: React.FC<InvestStakingStepsTel
   () => {
     return (
       <>
-        <InvestStepsProgress success={2} />
+        <InvestStepsProgress success={3} />
         <Typography
           family="mono"
           transform="uppercase"

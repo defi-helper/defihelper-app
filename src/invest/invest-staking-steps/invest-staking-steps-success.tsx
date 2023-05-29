@@ -37,7 +37,7 @@ export const InvestStakingStepsSuccess: React.FC<InvestStakingStepsSuccessProps>
 
     return (
       <>
-        <InvestStepsProgress success={2} />
+        <InvestStepsProgress success={3} />
         <Typography
           family="mono"
           transform="uppercase"
