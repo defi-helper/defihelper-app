@@ -337,7 +337,13 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
               </ButtonBase>
             }
           >
-            text
+            You can protect your investment in this pool with our
+            <br />
+            &apos;Stop-Loss&apos; feature. We will track the value of your
+            <br />
+            liquidity, and then remove and sell your LP tokens to the single
+            <br />
+            token when the price is lower than the threshold that you set.
           </Dropdown>
         </div>
         {stopLoss && (
@@ -459,7 +465,11 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
                 </ButtonBase>
               }
             >
-              text
+              This pool has a built-in &apos;Auto-staking&apos; automation. It
+              <br />
+              helps you earn more by automatically adding your profits to the
+              <br />
+              deposit, effectively auto-compounding your interest.
             </Dropdown>
           </div>
         </div>
@@ -482,7 +492,11 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
                 </ButtonBase>
               }
             >
-              text
+              This pool has a built-in &apos;Auto Rebalance&apos; automation.
+              <br />
+              It helps you to continue earn fees when the price of your token
+              <br />
+              is out of your investment range.
             </Dropdown>
           </div>
         </div>
