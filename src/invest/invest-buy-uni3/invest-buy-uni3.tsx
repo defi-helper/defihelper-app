@@ -20,6 +20,7 @@ import { BuyLiquidityUniv3 } from '~/common/load-adapter'
 import { ZapFeePayCreateInputType, ZapFeePayCreateTypeEnum } from '~/api'
 import { InvestPlusMinus } from '../common/invest-plus-minus'
 import * as styles from './invest-buy-uni3.css'
+import { NULL_ADDRESS } from '~/common/constants'
 
 export type InvestBuyUni3Props = {
   onSubmit?: (variables: ZapFeePayCreateInputType) => void
@@ -323,7 +324,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
         />
       )}
       <div className={clsx(styles.stakeActions, styles.mt)}>
-        {!approved.value && (
+        {!approved.value && tokenAddress !== NULL_ADDRESS && (
           <Button
             onClick={handleApprove}
             color="green"
@@ -335,7 +336,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
         <Button
           onClick={handleBuy}
           loading={buyState.loading}
-          disabled={approveState.loading || !approved.value}
+          disabled={(approveState.loading || !approved.value) && tokenAddress !== NULL_ADDRESS}
           color="green"
         >
           BUY TOKENS
