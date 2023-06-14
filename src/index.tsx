@@ -24,17 +24,22 @@ window.uniswap3 = {
 window.mode = config.IS_DEV ? 'dev' : 'prod'
 
 if (!config.IS_DEV) {
-  const root = document.getElementsByTagName('head')[0]
-  const script = document.createElement('script')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const gtm = async () => {
+    const root = document.getElementsByTagName('head')[0]
+    const script = document.createElement('script')
 
-  script.innerHTML = `
-  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-NWWFXMV'); window.dataLayer = window.dataLayer || [];`
+    script.innerHTML = `
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NWWFXMV'); window.dataLayer = window.dataLayer || [];`
 
-  root.appendChild(script)
+    return root.appendChild(script)
+  }
+
+  // gtm()
 }
 
 ReactDOM.render(<App />, document.getElementById('root'))
