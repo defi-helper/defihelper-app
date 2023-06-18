@@ -115,7 +115,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
   const [buyState, handleBuy] = useAsyncFn(async () => {
     if (!props.adapter || !fee.value) return
 
-    const { buy, canBuy } = props.adapter.methods
+    const { buy, canBuy, buyETH } = props.adapter.methods
 
     setError(null)
 
@@ -136,7 +136,10 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
         return
       }
 
-      const { tx } = await buy(tokenAddress, amount, width, '1')
+      const { tx } =
+        tokenAddress === NULL_ADDRESS
+          ? await buyETH(amount, width, '1')
+          : await buy(tokenAddress, amount, width, '1')
 
       const result = await tx?.wait()
 
