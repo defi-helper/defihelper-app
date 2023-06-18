@@ -117,13 +117,15 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
 
     const { buy, canBuy, buyETH } = props.adapter.methods
 
+    const isNative = tokenAddress === NULL_ADDRESS
+
     setError(null)
 
     try {
       const can = await canBuy(tokenAddress, amount)
 
-      if (can instanceof Error) throw can
-      if (!can) throw new Error("can't buy")
+      if (can instanceof Error && !isNative) throw can
+      if (!can && !isNative) throw new Error("can't buy")
 
       if (
         bignumberUtils.gt(
@@ -136,10 +138,9 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
         return
       }
 
-      const { tx } =
-        tokenAddress === NULL_ADDRESS
-          ? await buyETH(amount, width, '1')
-          : await buy(tokenAddress, amount, width, '1')
+      const { tx } = isNative
+        ? await buyETH(amount, width, '1')
+        : await buy(tokenAddress, amount, width, '1')
 
       const result = await tx?.wait()
 
