@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useStore } from 'effector-react'
 import React, { useEffect, useMemo, useState } from 'react'
-import { useAsync, useAsyncFn, useAsyncRetry, useThrottle } from 'react-use'
+import { useAsync, useAsyncFn, useAsyncRetry } from 'react-use'
 
 import { Button } from '~/common/button'
 import { Select, SelectOption } from '~/common/select'
@@ -10,10 +10,8 @@ import { settingsWalletModel } from '~/settings/settings-wallets'
 import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
 import { InvestContract } from '~/invest/common/invest.types'
 import { InvestStepsProgress } from '~/invest/common/invest-steps-progress'
-import { NumericalInput } from '~/common/numerical-input'
 import { InvestFee } from '~/invest/common/invest-fee'
 import { bignumberUtils } from '~/common/bignumber-utils'
-import { ButtonBase } from '~/common/button-base'
 import { toastsService } from '~/toasts'
 import { analytics } from '~/analytics'
 import { SellLiquidityUniv3 } from '~/common/load-adapter'
@@ -57,10 +55,11 @@ const ErrorMessages = {
   ),
 }
 
+const amount = '1'
+
 export const InvestSellUni3 = (props: InvestSellUni3Props) => {
   const [error, setError] = useState<Errors | null>(null)
 
-  const [amount, setAmount] = useState('0')
   const [tokenAddress, setTokenAddress] = useState('')
 
   const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
@@ -72,13 +71,11 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
     })
   }, [props.contract])
 
-  const amountThrottled = useThrottle(amount, 1000)
-
   const approved = useAsyncRetry(async () => {
-    if (bignumberUtils.eq(amountThrottled, 0) || !props.adapter) return true
+    if (!props.adapter) return true
 
-    return props.adapter.methods.isApproved(amountThrottled)
-  }, [props.adapter, tokenAddress, amountThrottled])
+    return props.adapter.methods.isApproved(amount)
+  }, [props.adapter, tokenAddress])
 
   const positions = useAsync(async () => {
     if (!props.adapter) return []
@@ -103,9 +100,20 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
   const tokens = useMemo(() => {
     return (
       positions.value?.reduce<
-        Record<string, Exclude<typeof positions.value, undefined>[number]>
+        Record<
+          string,
+          Exclude<typeof positions.value, undefined>[number] & {
+            userGet: string
+          }
+        >
       >((acc, token) => {
-        acc[token.id] = token
+        acc[token.id] = {
+          ...token,
+          userGet: bignumberUtils.plus(
+            token.token0.amountUSD,
+            token.token1.amountUSD
+          ),
+        }
 
         return acc
       }, {}) ?? {}
@@ -185,7 +193,7 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
     setError(null)
 
     try {
-      const { tx } = await approve(amount)
+      const { tx } = await approve(tokenAddress)
 
       await tx?.wait()
 
@@ -198,7 +206,7 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
 
       return false
     }
-  }, [props.adapter, tokenAddress, amount])
+  }, [props.adapter, tokenAddress])
 
   useEffect(() => {
     if (!props.tokens) return
@@ -259,23 +267,6 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
         </div>
       </div>
       <div className={styles.inputs}>
-        <NumericalInput
-          label={
-            <>
-              Amount{' '}
-              <ButtonBase
-                className={styles.balance}
-                onClick={() => setAmount(amountOut.value ?? '0')}
-              >
-                {amountOut.value ?? '0'} MAX
-              </ButtonBase>
-            </>
-          }
-          className={styles.input}
-          disabled={approveState.loading || sellState.loading}
-          value={amount}
-          onChange={(event) => setAmount(event.target.value)}
-        />
         <Select
           label="You will get (approximately)"
           className={styles.input}
@@ -284,7 +275,7 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
           onChange={(event) => setTokenAddress(event.target.value)}
           leftSide={
             <span className={styles.amountOut}>
-              ≈ {bignumberUtils.format(amountOut.value)}
+              ≈ ${bignumberUtils.format(tokens[tokenAddress]?.userGet)}
             </span>
           }
         >
@@ -301,13 +292,7 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
                   </Paper>
                 )}
                 {position.token0.price.lower} - {position.token0.price.upper}{' '}
-                per {position.token1.symbol} - $
-                {bignumberUtils.format(
-                  bignumberUtils.plus(
-                    position.token0.amountUSD,
-                    position.token1.amountUSD
-                  )
-                )}
+                per {position.token1.symbol}
               </>
             )
 
