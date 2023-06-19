@@ -133,10 +133,17 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
     [props.adapter]
   )
 
+  const currentToken = tokens?.[tokenAddress]
+
   const [sellState, handleSell] = useAsyncFn(async () => {
-    if (!props.adapter) return
+    if (!props.adapter || !currentToken) return
 
     const { sell, canSell, sellETH } = props.adapter.methods
+
+    const isNative = [
+      currentToken.token0.address,
+      currentToken.token1.address,
+    ].includes(NULL_ADDRESS)
 
     setError(null)
 
@@ -146,10 +153,9 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't sell")
 
-      const { tx } =
-        tokenAddress === NULL_ADDRESS
-          ? await sellETH(Number(tokenAddress), amount)
-          : await sell(Number(tokenAddress), amount, '1')
+      const { tx } = isNative
+        ? await sellETH(Number(tokenAddress), amount)
+        : await sell(Number(tokenAddress), amount, '1')
 
       const result = await tx?.wait()
 
@@ -183,7 +189,14 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
 
       return false
     }
-  }, [props.adapter, tokenAddress, amount, currentUserWallet, fee.value])
+  }, [
+    props.adapter,
+    tokenAddress,
+    amount,
+    currentUserWallet,
+    fee.value,
+    tokens,
+  ])
 
   const [approveState, handleApprove] = useAsyncFn(async () => {
     if (!props.adapter) return
