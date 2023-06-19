@@ -74,7 +74,7 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
   const approved = useAsyncRetry(async () => {
     if (!props.adapter) return true
 
-    return props.adapter.methods.isApproved(amount)
+    return props.adapter.methods.isApproved(tokenAddress)
   }, [props.adapter, tokenAddress])
 
   const positions = useAsync(async () => {
@@ -197,7 +197,6 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
 
       await tx?.wait()
 
-      approved.retry()
       toastsService.info('tokens approved!')
 
       return true
@@ -205,6 +204,8 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
       setError(Errors.default)
 
       return false
+    } finally {
+      approved.retry()
     }
   }, [props.adapter, tokenAddress])
 
