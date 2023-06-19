@@ -422,7 +422,7 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
           <div className={styles.row}>
             <Typography variant="body2" as="span" className={styles.infoTitle}>
               <Typography variant="inherit" className={styles.opacity}>
-                APY
+                Pool APY
               </Typography>
             </Typography>
             <Typography variant="body2" as="span">
@@ -437,12 +437,15 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
           <div className={styles.row}>
             <Typography variant="body2" as="span" className={styles.infoTitle}>
               <Typography variant="inherit" className={styles.opacity}>
-                APY fee day
+                Fees APY
               </Typography>
             </Typography>
             <Typography variant="body2" as="span">
               {bignumberUtils.formatMax(
-                bignumberUtils.mul(props.aprFeeDay, 365),
+                bignumberUtils.mul(
+                  bignumberUtils.mul(props.aprFeeDay, 365),
+                  100
+                ),
                 10000,
                 true
               )}

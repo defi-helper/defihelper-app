@@ -20,6 +20,7 @@ import { BuyLiquidityUniv3 } from '~/common/load-adapter'
 import { ZapFeePayCreateInputType, ZapFeePayCreateTypeEnum } from '~/api'
 import { InvestPlusMinus } from '../common/invest-plus-minus'
 import * as styles from './invest-buy-uni3.css'
+import { NULL_ADDRESS } from '~/common/constants'
 
 export type InvestBuyUni3Props = {
   onSubmit?: (variables: ZapFeePayCreateInputType) => void
@@ -114,15 +115,17 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
   const [buyState, handleBuy] = useAsyncFn(async () => {
     if (!props.adapter || !fee.value) return
 
-    const { buy, canBuy } = props.adapter.methods
+    const { buy, canBuy, buyETH } = props.adapter.methods
+
+    const isNative = tokenAddress === NULL_ADDRESS
 
     setError(null)
 
     try {
       const can = await canBuy(tokenAddress, amount)
 
-      if (can instanceof Error) throw can
-      if (!can) throw new Error("can't buy")
+      if (can instanceof Error && !isNative) throw can
+      if (!can && !isNative) throw new Error("can't buy")
 
       if (
         bignumberUtils.gt(
@@ -135,7 +138,9 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
         return
       }
 
-      const { tx } = await buy(tokenAddress, amount, width, '1')
+      const { tx } = isNative
+        ? await buyETH(amount, width, '1')
+        : await buy(tokenAddress, amount, width, '1')
 
       const result = await tx?.wait()
 
@@ -323,7 +328,7 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
         />
       )}
       <div className={clsx(styles.stakeActions, styles.mt)}>
-        {!approved.value && (
+        {!approved.value && tokenAddress !== NULL_ADDRESS && (
           <Button
             onClick={handleApprove}
             color="green"
@@ -335,7 +340,10 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
         <Button
           onClick={handleBuy}
           loading={buyState.loading}
-          disabled={approveState.loading || !approved.value}
+          disabled={
+            (approveState.loading || !approved.value) &&
+            tokenAddress !== NULL_ADDRESS
+          }
           color="green"
         >
           BUY TOKENS
