@@ -140,6 +140,8 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
 
     const { sell, canSell, sellETH } = props.adapter.methods
 
+    const tokenId = Number(tokenAddress)
+
     const isNative = [
       currentToken.token0.address,
       currentToken.token1.address,
@@ -148,14 +150,14 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
     setError(null)
 
     try {
-      const can = await canSell(amount)
+      const can = await canSell(tokenAddress)
 
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't sell")
 
       const { tx } = isNative
-        ? await sellETH(Number(tokenAddress), amount)
-        : await sell(Number(tokenAddress), amount, '1')
+        ? await sellETH(tokenId, amount)
+        : await sell(tokenId, amount, '1')
 
       const result = await tx?.wait()
 
