@@ -477,6 +477,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
       <div className={styles.content}>
         {canWithdraw.loading ||
         adapter.loading ||
+        (positions.loading && !calledRef.current) ||
         balanceOf.loading ||
         lp.loading ||
         balanceOfLp.loading ? (
