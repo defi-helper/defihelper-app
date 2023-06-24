@@ -60,7 +60,10 @@ const amount = '1'
 export const InvestSellUni3 = (props: InvestSellUni3Props) => {
   const [error, setError] = useState<Errors | null>(null)
 
-  const [tokenAddress, setTokenAddress] = useState('')
+  const [tokenId, setTokenId] = useState('')
+  const [tokenOutAddress, setTokenOutAddress] = useState(
+    props.tokens?.[0]?.address ?? ''
+  )
 
   const currentUserWallet = useStore(settingsWalletModel.$currentUserWallet)
 
@@ -72,10 +75,10 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
   }, [props.contract])
 
   const approved = useAsyncRetry(async () => {
-    if (!props.adapter) return true
+    if (!props.adapter || !tokenId) return true
 
-    return props.adapter.methods.isApproved(tokenAddress)
-  }, [props.adapter, tokenAddress])
+    return props.adapter.methods.isApproved(tokenId)
+  }, [props.adapter, tokenId])
 
   const positions = useAsync(async () => {
     if (!props.adapter) return []
@@ -122,40 +125,39 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
   }, [positions.value])
 
   useEffect(() => {
-    if (!tokens[tokenAddress]) return
+    if (!tokens[tokenId]) return
 
-    props.onChangeToken(tokenAddress)
+    props.onChangeToken(tokenId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tokenAddress, tokens])
+  }, [tokenId, tokens])
 
   const fee = useAsync(
     async () => props.adapter?.methods.fee(),
     [props.adapter]
   )
 
-  const currentToken = tokens?.[tokenAddress]
+  const currentToken = tokens?.[tokenId]
 
   const [sellState, handleSell] = useAsyncFn(async () => {
-    if (!props.adapter || !currentToken) return
+    if (!props.adapter || !currentToken || !tokenOutAddress) return
 
     const { sell, canSell, sellETH } = props.adapter.methods
 
-    const isNative = [
-      currentToken.token0.address,
-      currentToken.token1.address,
-    ].includes(NULL_ADDRESS)
+    const tokenIdNum = Number(tokenId)
+
+    const isNative = tokenOutAddress === NULL_ADDRESS
 
     setError(null)
 
     try {
-      const can = await canSell(amount)
+      const can = await canSell(tokenId)
 
       if (can instanceof Error) throw can
       if (!can) throw new Error("can't sell")
 
       const { tx } = isNative
-        ? await sellETH(Number(tokenAddress), amount)
-        : await sell(Number(tokenAddress), amount, '1')
+        ? await sellETH(tokenIdNum, amount)
+        : await sell(tokenIdNum, tokenOutAddress, '1')
 
       const result = await tx?.wait()
 
@@ -191,11 +193,12 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
     }
   }, [
     props.adapter,
-    tokenAddress,
+    tokenId,
     amount,
     currentUserWallet,
     fee.value,
     tokens,
+    tokenOutAddress,
   ])
 
   const [approveState, handleApprove] = useAsyncFn(async () => {
@@ -206,7 +209,7 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
     setError(null)
 
     try {
-      const { tx } = await approve(tokenAddress)
+      const { tx } = await approve(tokenId)
 
       await tx?.wait()
 
@@ -220,20 +223,26 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
     } finally {
       approved.retry()
     }
-  }, [props.adapter, tokenAddress])
+  }, [props.adapter, tokenId])
 
   useEffect(() => {
-    if (!props.tokens) return
+    if (!positions.value) return
 
-    setTokenAddress(props.tokens?.[0].address ?? '')
+    setTokenId(String(positions.value?.[0]?.id ?? ''))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [positions.value])
+  useEffect(() => {
+    if (!props.tokens?.[0]?.address) return
+
+    setTokenId(props.tokens[0].address)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.tokens])
 
   const amountOut = useAsync(async () => {
-    if (!tokenAddress) return
+    if (!tokenId) return
 
-    return props.adapter?.methods.amountOut(Number(tokenAddress), amount)
-  }, [props.adapter, tokenAddress, amount])
+    return props.adapter?.methods.amountOut(Number(tokenId), tokenOutAddress)
+  }, [props.adapter, tokenId, tokenOutAddress])
 
   useEffect(() => {
     if (!amountOut.value) return
@@ -282,14 +291,14 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
       </div>
       <div className={styles.inputs}>
         <Select
-          label="You will get (approximately)"
+          label="Amount"
           className={styles.input}
           disabled={approveState.loading || sellState.loading}
-          value={tokenAddress}
-          onChange={(event) => setTokenAddress(event.target.value)}
+          value={tokenId}
+          onChange={(event) => setTokenId(event.target.value)}
           leftSide={
             <span className={styles.amountOut}>
-              ≈ ${bignumberUtils.format(tokens[tokenAddress]?.userGet)}
+              ≈ ${bignumberUtils.format(tokens[tokenId]?.userGet)}
             </span>
           }
         >
@@ -314,6 +323,43 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
               <SelectOption
                 value={String(position.id)}
                 key={position.id}
+                renderValue={renderValue}
+                className={styles.justifyContentStart}
+              >
+                {renderValue}
+              </SelectOption>
+            )
+          })}
+        </Select>
+        <Select
+          label="You will get (approximately)"
+          className={styles.input}
+          disabled={approveState.loading || sellState.loading}
+          value={tokenOutAddress}
+          onChange={(event) => setTokenOutAddress(event.target.value)}
+        >
+          {props.tokens?.map((token) => {
+            const renderValue = (
+              <>
+                {token.logoUrl ? (
+                  <img
+                    alt=""
+                    src={token.logoUrl}
+                    className={styles.tokenIcon}
+                  />
+                ) : (
+                  <Paper className={styles.tokenIcon}>
+                    <Icon icon="unknownNetwork" width="16" height="16" />
+                  </Paper>
+                )}
+                {token.symbol}
+              </>
+            )
+
+            return (
+              <SelectOption
+                value={token.address}
+                key={token.address}
                 renderValue={renderValue}
                 className={styles.justifyContentStart}
               >
