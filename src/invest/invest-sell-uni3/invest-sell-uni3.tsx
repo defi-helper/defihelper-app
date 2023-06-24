@@ -183,7 +183,7 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
 
       return true
     } catch (e) {
-      console.error(e, 'kek')
+      console.error(e)
 
       analytics.log('lp_tokens_purchase_unsuccess', {
         amount: bignumberUtils.floor(amount),
