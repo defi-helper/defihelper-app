@@ -36,8 +36,8 @@ export type InvestSellUni3Props = {
 }
 
 enum Errors {
-  default,
-  balance,
+  default = 'default',
+  balance = 'balance',
 }
 
 const ErrorMessages = {
@@ -182,7 +182,9 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
       })
 
       return true
-    } catch {
+    } catch (e) {
+      console.error(e, 'kek')
+
       analytics.log('lp_tokens_purchase_unsuccess', {
         amount: bignumberUtils.floor(amount),
       })
@@ -296,11 +298,6 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
           disabled={approveState.loading || sellState.loading}
           value={tokenId}
           onChange={(event) => setTokenId(event.target.value)}
-          leftSide={
-            <span className={styles.amountOut}>
-              ≈ ${bignumberUtils.format(tokens[tokenId]?.userGet)}
-            </span>
-          }
         >
           {Object.values(tokens).map((position) => {
             const token0Icon = iconMap[position.token0.symbol]
@@ -337,6 +334,11 @@ export const InvestSellUni3 = (props: InvestSellUni3Props) => {
           disabled={approveState.loading || sellState.loading}
           value={tokenOutAddress}
           onChange={(event) => setTokenOutAddress(event.target.value)}
+          leftSide={
+            <span className={styles.amountOut}>
+              ≈ ${bignumberUtils.format(tokens[tokenId]?.userGet)}
+            </span>
+          }
         >
           {props.tokens?.map((token) => {
             const renderValue = (

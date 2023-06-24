@@ -36,8 +36,8 @@ export type InvestSellProps = {
 }
 
 enum Errors {
-  default,
-  balance,
+  default = 'default',
+  balance = 'balance',
 }
 
 const ErrorMessages = {

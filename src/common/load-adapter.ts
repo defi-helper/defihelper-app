@@ -520,10 +520,7 @@ export type BuyLiquidityUniv3 = {
       tokenAddress: string,
       amount: string
     ) => Promise<{ tx: Transaction }>
-    canBuy: (
-      tokenAddress: string,
-      amount: string
-    ) => Promise<{ tx: Transaction }>
+    canBuy: (tokenAddress: string, amount: string) => Promise<true | Error>
     buy: (
       tokenAddress: string,
       amount: string,
@@ -601,7 +598,7 @@ export type SellLiquidityUniv3 = {
     isApproved: (tokenId: string) => Promise<boolean>
     approve: (tokenId: string) => Promise<{ tx: Transaction }>
     amountOut: (tokenId: number, tokenOutAddress: string) => Promise<string>
-    canSell: (tokenId: string) => Promise<{ tx: Transaction }>
+    canSell: (tokenId: string) => Promise<true | Error>
     sell: (
       tokenId: number,
       tokenOut: string,
