@@ -35,8 +35,8 @@ export type InvestBuyUni3Props = {
 }
 
 enum Errors {
-  default,
-  balance,
+  default = 'default',
+  balance = 'balance',
 }
 
 const ErrorMessages = {
@@ -122,10 +122,16 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
     setError(null)
 
     try {
-      const can = await canBuy(tokenAddress, amount)
+      let can: boolean | Error
 
-      if (can instanceof Error && !isNative) throw can
-      if (!can && !isNative) throw new Error("can't buy")
+      if (isNative) {
+        can = bignumberUtils.gte(tokens.value?.[tokenAddress]?.balance, amount)
+      } else {
+        can = await canBuy(tokenAddress, amount)
+      }
+
+      if (!can) throw new Error("can't buy")
+      if (can instanceof Error) throw can
 
       if (
         bignumberUtils.gt(
@@ -161,7 +167,9 @@ export const InvestBuyUni3 = (props: InvestBuyUni3Props) => {
       tokens.retry()
 
       return true
-    } catch {
+    } catch (e) {
+      console.error(e)
+
       analytics.log('lp_tokens_purchase_unsuccess', {
         amount: bignumberUtils.floor(amount),
       })
