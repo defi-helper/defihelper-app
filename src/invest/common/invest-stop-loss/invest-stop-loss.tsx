@@ -53,6 +53,7 @@ export type InvestStopLossProps = {
   onRebalanceToggle: (active: boolean) => void
   rebalanceEnabled: boolean
   inline?: boolean
+  onSkip?: () => void
 }
 
 export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
@@ -409,6 +410,28 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
                     {withDrawTokensMap.get(withdrawToken)?.symbol}
                   </Typography>
                 </div>
+                {props.isUniV3 && (
+                  <ButtonBase
+                    onClick={handleRunNow}
+                    className={styles.runNow}
+                    disabled={runNowState.loading || !props.canDelete}
+                  >
+                    {runNowState.loading && (
+                      <CircularProgress
+                        height="1em"
+                        width="1em"
+                        className={styles.deleteButtonLoader}
+                      />
+                    )}
+                    <span
+                      className={clsx(
+                        runNowState.loading && styles.deleteButtonText
+                      )}
+                    >
+                      RUN NOW
+                    </span>
+                  </ButtonBase>
+                )}
                 <div className={styles.input}>
                   <NumericalInput
                     label="Stop-loss activation"
@@ -521,27 +544,17 @@ export const InvestStopLoss: React.FC<InvestStopLossProps> = (props) => {
               DELETE CONTRACT
             </span>
           </ButtonBase>
-          {props.isUniV3 && (
-            <ButtonBase
-              onClick={handleRunNow}
-              className={styles.runNow}
-              disabled={runNowState.loading || !props.canDelete}
-            >
-              {runNowState.loading && (
-                <CircularProgress
-                  height="1em"
-                  width="1em"
-                  className={styles.deleteButtonLoader}
-                />
-              )}
-              <span
-                className={clsx(runNowState.loading && styles.deleteButtonText)}
-              >
-                RUN NOW
-              </span>
-            </ButtonBase>
-          )}
         </>
+      )}
+      {props.inline && (
+        <Button
+          className={styles.confirm}
+          loading={confirm.loading}
+          onClick={props.onSkip}
+          color="secondary"
+        >
+          SKIP NOW
+        </Button>
       )}
       <Button
         className={styles.confirm}

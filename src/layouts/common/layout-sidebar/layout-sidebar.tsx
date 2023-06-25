@@ -11,6 +11,7 @@ import { SOCIAL_LINKS } from '../constants'
 import { Dropdown } from '~/common/dropdown'
 import { LayoutDemoSwitcher } from '~/layouts/common/layout-demo-switcher'
 import * as styles from './layout-sidebar.css'
+import { Can } from '~/auth'
 
 type MenuItem = {
   title: string
@@ -97,12 +98,14 @@ export const LayoutSidebar: React.FC<LayoutHeaderProps> = (props) => {
       <div className={styles.spacer} />
 
       {!props.hidden && (
-        <div className={styles.switchers}>
-          <LayoutDemoSwitcher
-            onToggleDemo={props.onToggleDemo}
-            state={props.isDemo}
-          />
-        </div>
+        <Can I="read" a="User">
+          <div className={styles.switchers}>
+            <LayoutDemoSwitcher
+              onToggleDemo={props.onToggleDemo}
+              state={props.isDemo}
+            />
+          </div>
+        </Can>
       )}
       {!props.hidden && (
         <div className={styles.switchers}>

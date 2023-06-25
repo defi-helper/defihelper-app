@@ -16,6 +16,7 @@ import { riskStatuses, riskIcons } from '~/invest/common/constants'
 import { AutostakingStakingContractsQuery } from '~/api'
 import * as styles from './invest-contract-card.css'
 import { CharIndicator } from '~/common/char-indicator'
+import { Can } from '~/auth'
 
 export type InvestContractCardProps = {
   className?: string
@@ -162,15 +163,17 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
           />
         </div>
       </Typography>
-      {!isDesktop && (
-        <Typography
-          variant="body2"
-          align="center"
-          className={styles.mobileRisk}
-        >
-          {riskStatuses[contract.metric.risk.totalRate]}
-        </Typography>
-      )}
+      <Can I="read" a="User">
+        {!isDesktop && (
+          <Typography
+            variant="body2"
+            align="center"
+            className={styles.mobileRisk}
+          >
+            {riskStatuses[contract.metric.risk.totalRate]}
+          </Typography>
+        )}
+      </Can>
       <Typography
         variant="body2"
         align={isDesktop ? 'right' : undefined}
@@ -200,126 +203,136 @@ export const InvestContractCard: React.FC<InvestContractCardProps> = (
           </ButtonBase>
         </Typography>
       </Typography>
-      <Typography
-        variant="body2"
-        align={isDesktop ? 'right' : undefined}
-        as="div"
-        className={styles.mobileRow}
-      >
-        {!isDesktop && <Typography variant="inherit">7D Perfomance</Typography>}
-        <Typography
-          variant="inherit"
-          className={clsx({
-            [styles.positive]: bignumberUtils.gt(realApy, '0'),
-            [styles.negative]: bignumberUtils.lt(realApy, '0'),
-          })}
-        >
-          {bignumberUtils.formatMax(realApy, 10000, false)}%
-        </Typography>
-      </Typography>
-      <div className={styles.apyBoost}>
-        {!isDesktop && <Typography variant="inherit">APY Boost</Typography>}
+      <Can I="read" a="User">
         <Typography
           variant="body2"
           align={isDesktop ? 'right' : undefined}
-          as="span"
-          className={clsx({
-            [styles.positive]: bignumberUtils.gt(apyboost, '0'),
-            [styles.negative]:
-              !bignumberUtils.eq(bignumberUtils.format(apyboost), '0') &&
-              bignumberUtils.lt(apyboost, '0'),
-          })}
+          as="div"
+          className={styles.mobileRow}
         >
-          {!bignumberUtils.eq(bignumberUtils.format(apyboost), '0') &&
-            bignumberUtils.lt(apyboost, '0') &&
-            '- '}
-          {bignumberUtils.formatMax(apyboost, 10000, true)}%
-        </Typography>
-      </div>
-      <Typography variant="inherit">
-        {!props.canViewRisk &&
-          riskIcons[contract.metric.risk.totalRate] &&
-          isDesktop && (
-            <Icon
-              icon={riskIcons[contract.metric.risk.totalRate]}
-              width={22}
-              height={24}
-            />
+          {!isDesktop && (
+            <Typography variant="inherit">7D Perfomance</Typography>
           )}
-        {props.canViewRisk && (
-          <Dropdown
-            className={styles.riskLevel}
-            control={
-              <ButtonBase>
-                {riskIcons[contract.metric.risk.totalRate] && (
-                  <Icon
-                    icon={riskIcons[contract.metric.risk.totalRate]}
-                    width={22}
-                    height={24}
-                  />
-                )}
-              </ButtonBase>
-            }
-            offset={[0, 4]}
-            placement="left-start"
-            trigger="hover"
+          <Typography
+            variant="inherit"
+            className={clsx({
+              [styles.positive]: bignumberUtils.gt(realApy, '0'),
+              [styles.negative]: bignumberUtils.lt(realApy, '0'),
+            })}
           >
-            <Typography family="mono" as="div" className={styles.riskLevelRow}>
-              <Typography variant="inherit">Risk</Typography>
+            {bignumberUtils.formatMax(realApy, 10000, false)}%
+          </Typography>
+        </Typography>
+      </Can>
+      <Can I="read" a="User">
+        <div className={styles.apyBoost}>
+          {!isDesktop && <Typography variant="inherit">APY Boost</Typography>}
+          <Typography
+            variant="body2"
+            align={isDesktop ? 'right' : undefined}
+            as="span"
+            className={clsx({
+              [styles.positive]: bignumberUtils.gt(apyboost, '0'),
+              [styles.negative]:
+                !bignumberUtils.eq(bignumberUtils.format(apyboost), '0') &&
+                bignumberUtils.lt(apyboost, '0'),
+            })}
+          >
+            {!bignumberUtils.eq(bignumberUtils.format(apyboost), '0') &&
+              bignumberUtils.lt(apyboost, '0') &&
+              '- '}
+            {bignumberUtils.formatMax(apyboost, 10000, true)}%
+          </Typography>
+        </div>
+        <Typography variant="inherit">
+          {!props.canViewRisk &&
+            riskIcons[contract.metric.risk.totalRate] &&
+            isDesktop && (
+              <Icon
+                icon={riskIcons[contract.metric.risk.totalRate]}
+                width={22}
+                height={24}
+              />
+            )}
+          {props.canViewRisk && (
+            <Dropdown
+              className={styles.riskLevel}
+              control={
+                <ButtonBase>
+                  {riskIcons[contract.metric.risk.totalRate] && (
+                    <Icon
+                      icon={riskIcons[contract.metric.risk.totalRate]}
+                      width={22}
+                      height={24}
+                    />
+                  )}
+                </ButtonBase>
+              }
+              offset={[0, 4]}
+              placement="left-start"
+              trigger="hover"
+            >
               <Typography
+                family="mono"
+                as="div"
+                className={styles.riskLevelRow}
+              >
+                <Typography variant="inherit">Risk</Typography>
+                <Typography
+                  as="div"
+                  variant="body2"
+                  className={clsx(
+                    styles.riskLevelStatus,
+                    styles.riskLevelStatuses[contract.metric.risk.totalRate]
+                  )}
+                >
+                  {riskStatuses[contract.metric.risk.totalRate]}
+                </Typography>
+              </Typography>
+              <span className={styles.riskLevelSpacing} />
+              <Typography
+                family="mono"
                 as="div"
                 variant="body2"
-                className={clsx(
-                  styles.riskLevelStatus,
-                  styles.riskLevelStatuses[contract.metric.risk.totalRate]
-                )}
+                className={styles.riskLevelRow}
               >
-                {riskStatuses[contract.metric.risk.totalRate]}
+                <Typography variant="inherit">Reliability</Typography>
+                <Icon
+                  icon={riskIcons[contract.metric.risk.reliabilityRate]}
+                  width={19}
+                  height={20}
+                />
               </Typography>
-            </Typography>
-            <span className={styles.riskLevelSpacing} />
-            <Typography
-              family="mono"
-              as="div"
-              variant="body2"
-              className={styles.riskLevelRow}
-            >
-              <Typography variant="inherit">Reliability</Typography>
-              <Icon
-                icon={riskIcons[contract.metric.risk.reliabilityRate]}
-                width={19}
-                height={20}
-              />
-            </Typography>
-            <Typography
-              family="mono"
-              as="div"
-              variant="body2"
-              className={styles.riskLevelRow}
-            >
-              <Typography variant="inherit">Profitability</Typography>
-              <Icon
-                icon={riskIcons[contract.metric.risk.profitabilityRate]}
-                width={19}
-                height={20}
-              />
-            </Typography>
-            <Typography
-              family="mono"
-              as="div"
-              variant="body2"
-              className={styles.riskLevelRow}
-            >
-              <Typography variant="inherit">Volatility</Typography>
-              <Icon
-                icon={riskIcons[contract.metric.risk.volatilityRate]}
-                width={19}
-                height={20}
-              />
-            </Typography>
-          </Dropdown>
-        )}
-      </Typography>
+              <Typography
+                family="mono"
+                as="div"
+                variant="body2"
+                className={styles.riskLevelRow}
+              >
+                <Typography variant="inherit">Profitability</Typography>
+                <Icon
+                  icon={riskIcons[contract.metric.risk.profitabilityRate]}
+                  width={19}
+                  height={20}
+                />
+              </Typography>
+              <Typography
+                family="mono"
+                as="div"
+                variant="body2"
+                className={styles.riskLevelRow}
+              >
+                <Typography variant="inherit">Volatility</Typography>
+                <Icon
+                  icon={riskIcons[contract.metric.risk.volatilityRate]}
+                  width={19}
+                  height={20}
+                />
+              </Typography>
+            </Dropdown>
+          )}
+        </Typography>
+      </Can>
       <Button
         color="green"
         size="small"
