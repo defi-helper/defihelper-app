@@ -9,6 +9,7 @@ import { Actions, Subjects } from '~/auth/auth.ability'
 type CanRouteProps = RouteProps & {
   action: Actions
   subject: Subjects
+  redirectTo?: string
 }
 
 export const CanRoute: React.FC<CanRouteProps> = (props) => {
@@ -28,7 +29,7 @@ export const CanRoute: React.FC<CanRouteProps> = (props) => {
           {user && ability.can(action, subject) ? (
             <Route {...restOfProps}>{children}</Route>
           ) : (
-            <Redirect to={paths.main} />
+            <Redirect to={props.redirectTo ?? paths.main} />
           )}
         </>
       )}

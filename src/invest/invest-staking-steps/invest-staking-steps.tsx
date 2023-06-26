@@ -418,6 +418,7 @@ export const InvestStakingSteps: React.VFC<InvestStakingStepsProps> = (
         handleNextStep()
       }}
       adapter={deployedContract.value?.stopLoss}
+      onSkip={() => handleNextStep()}
       mainTokens={deployState.value?.contract?.tokens.stake
         .map((token) => ({
           id: token.id,

@@ -14,6 +14,7 @@ import { InvestPoolTokens } from '~/invest/common/invest-pool-tokens'
 import { Link } from '~/common/link'
 import * as styles from './invest-contract-info.css'
 import { networksConfig } from '~/networks-config'
+import { Can } from '~/auth'
 
 export type InvestContractInfoProps = {
   className?: string
@@ -148,65 +149,67 @@ export const InvestContractInfo: React.VFC<InvestContractInfoProps> = (
           %
         </Typography>
       </div>
-      <div className={styles.row}>
-        <Typography variant="body2" family="mono" as="div">
-          7D Performance {dropdown}
-        </Typography>
-        <Typography variant="body2" as="div">
-          <Typography
-            variant="inherit"
-            className={clsx({
-              [styles.positive]: bignumberUtils.gt(realApy, '0'),
-              [styles.negative]: bignumberUtils.lt(realApy, '0'),
-            })}
-          >
-            {bignumberUtils.formatMax(realApy, 10000, false)}%
+      <Can I="read" a="User">
+        <div className={styles.row}>
+          <Typography variant="body2" family="mono" as="div">
+            7D Performance {dropdown}
           </Typography>
-        </Typography>
-      </div>
-      <div className={styles.row}>
-        <Typography variant="body2" family="mono" as="div">
-          Boosted APY {apyBoostDropdown}
-        </Typography>
-        <Typography variant="body2">
-          <Typography
-            variant="inherit"
-            className={clsx({
-              [styles.positive]: bignumberUtils.gt(apyboost, '0'),
-              [styles.negative]:
-                !bignumberUtils.eq(bignumberUtils.format(apyboost), '0') &&
-                bignumberUtils.lt(apyboost, '0'),
-            })}
-          >
-            {!bignumberUtils.eq(bignumberUtils.format(apyboost), '0') &&
-              bignumberUtils.lt(apyboost, '0') &&
-              '- '}
-            {bignumberUtils.formatMax(apyboost, 10000, true)}%
+          <Typography variant="body2" as="div">
+            <Typography
+              variant="inherit"
+              className={clsx({
+                [styles.positive]: bignumberUtils.gt(realApy, '0'),
+                [styles.negative]: bignumberUtils.lt(realApy, '0'),
+              })}
+            >
+              {bignumberUtils.formatMax(realApy, 10000, false)}%
+            </Typography>
           </Typography>
-        </Typography>
-      </div>
-      <div className={styles.row}>
-        <Typography variant="body2" family="mono">
-          RISK
-        </Typography>
-        <Typography
-          variant="body2"
-          as="div"
-          className={clsx(
-            styles.risk,
-            riskIcons[props.contract.metric.risk.totalRate] && styles.positive
-          )}
-        >
-          {riskIcons[props.contract.metric.risk.totalRate] && (
-            <Icon
-              icon={riskIcons[props.contract.metric.risk.totalRate]}
-              width={22}
-              height={24}
-            />
-          )}
-          {riskStatuses[props.contract.metric.risk.totalRate]}
-        </Typography>
-      </div>
+        </div>
+        <div className={styles.row}>
+          <Typography variant="body2" family="mono" as="div">
+            Boosted APY {apyBoostDropdown}
+          </Typography>
+          <Typography variant="body2">
+            <Typography
+              variant="inherit"
+              className={clsx({
+                [styles.positive]: bignumberUtils.gt(apyboost, '0'),
+                [styles.negative]:
+                  !bignumberUtils.eq(bignumberUtils.format(apyboost), '0') &&
+                  bignumberUtils.lt(apyboost, '0'),
+              })}
+            >
+              {!bignumberUtils.eq(bignumberUtils.format(apyboost), '0') &&
+                bignumberUtils.lt(apyboost, '0') &&
+                '- '}
+              {bignumberUtils.formatMax(apyboost, 10000, true)}%
+            </Typography>
+          </Typography>
+        </div>
+        <div className={styles.row}>
+          <Typography variant="body2" family="mono">
+            RISK
+          </Typography>
+          <Typography
+            variant="body2"
+            as="div"
+            className={clsx(
+              styles.risk,
+              riskIcons[props.contract.metric.risk.totalRate] && styles.positive
+            )}
+          >
+            {riskIcons[props.contract.metric.risk.totalRate] && (
+              <Icon
+                icon={riskIcons[props.contract.metric.risk.totalRate]}
+                width={22}
+                height={24}
+              />
+            )}
+            {riskStatuses[props.contract.metric.risk.totalRate]}
+          </Typography>
+        </div>
+      </Can>
     </div>
   )
 }

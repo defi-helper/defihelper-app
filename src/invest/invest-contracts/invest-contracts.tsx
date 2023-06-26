@@ -25,7 +25,7 @@ import { StakingApyDialog } from '~/staking/staking-apy-dialog'
 import { Link } from '~/common/link'
 import { InvestContractCard } from '~/invest/common/invest-contract-card'
 import { paths } from '~/paths'
-import { authModel } from '~/auth'
+import { Can, authModel } from '~/auth'
 import * as model from './invest-contracts.model'
 import * as styles from './invest-contracts.css'
 
@@ -428,73 +428,75 @@ export const InvestContracts: React.VFC<InvestContractsProps> = (props) => {
                   sortIcon(sortBy, ContractListSortInputTypeColumnEnum.AprYear)}
               </ButtonBase>
             </Typography>
-            <Typography variant="body2" align="right" as="div">
-              <ButtonBase
-                onClick={handleSort({
-                  column: ContractListSortInputTypeColumnEnum.AprWeekReal,
-                  order:
-                    sortBy.column ===
-                      ContractListSortInputTypeColumnEnum.AprWeekReal &&
-                    sortBy.order === SortOrderEnum.Desc
-                      ? SortOrderEnum.Asc
-                      : SortOrderEnum.Desc,
-                })}
-                className="real_apy"
-              >
-                7D Perf.{' '}
-                {sortBy.column ===
-                  ContractListSortInputTypeColumnEnum.AprWeekReal &&
-                  sortIcon(
-                    sortBy,
-                    ContractListSortInputTypeColumnEnum.AprWeekReal
-                  )}
-              </ButtonBase>{' '}
-              {dropdown}
-            </Typography>
-            <Typography variant="body2" as="div" align="right">
-              {apyBoostDropdown}{' '}
-              <ButtonBase
-                onClick={handleSort({
-                  column: ContractListSortInputTypeColumnEnum.AprBoosted,
-                  order:
-                    sortBy.column ===
-                      ContractListSortInputTypeColumnEnum.AprBoosted &&
-                    sortBy.order === SortOrderEnum.Desc
-                      ? SortOrderEnum.Asc
-                      : SortOrderEnum.Desc,
-                })}
-                className={styles.apyBoost}
-              >
-                Boost{' '}
-                {sortBy.column ===
-                  ContractListSortInputTypeColumnEnum.AprBoosted &&
-                  sortIcon(
-                    sortBy,
-                    ContractListSortInputTypeColumnEnum.AprBoosted
-                  )}
-              </ButtonBase>
-            </Typography>
-            <Typography variant="body2" as="div">
-              <ButtonBase
-                onClick={handleSort({
-                  column: ContractListSortInputTypeColumnEnum.RiskFactor,
-                  order:
-                    sortBy.column ===
-                      ContractListSortInputTypeColumnEnum.RiskFactor &&
-                    sortBy.order === SortOrderEnum.Desc
-                      ? SortOrderEnum.Asc
-                      : SortOrderEnum.Desc,
-                })}
-              >
-                Risk{' '}
-                {sortBy.column ===
-                  ContractListSortInputTypeColumnEnum.RiskFactor &&
-                  sortIcon(
-                    sortBy,
-                    ContractListSortInputTypeColumnEnum.RiskFactor
-                  )}
-              </ButtonBase>
-            </Typography>
+            <Can I="read" a="User">
+              <Typography variant="body2" align="right" as="div">
+                <ButtonBase
+                  onClick={handleSort({
+                    column: ContractListSortInputTypeColumnEnum.AprWeekReal,
+                    order:
+                      sortBy.column ===
+                        ContractListSortInputTypeColumnEnum.AprWeekReal &&
+                      sortBy.order === SortOrderEnum.Desc
+                        ? SortOrderEnum.Asc
+                        : SortOrderEnum.Desc,
+                  })}
+                  className="real_apy"
+                >
+                  7D Perf.{' '}
+                  {sortBy.column ===
+                    ContractListSortInputTypeColumnEnum.AprWeekReal &&
+                    sortIcon(
+                      sortBy,
+                      ContractListSortInputTypeColumnEnum.AprWeekReal
+                    )}
+                </ButtonBase>{' '}
+                {dropdown}
+              </Typography>
+              <Typography variant="body2" as="div" align="right">
+                {apyBoostDropdown}{' '}
+                <ButtonBase
+                  onClick={handleSort({
+                    column: ContractListSortInputTypeColumnEnum.AprBoosted,
+                    order:
+                      sortBy.column ===
+                        ContractListSortInputTypeColumnEnum.AprBoosted &&
+                      sortBy.order === SortOrderEnum.Desc
+                        ? SortOrderEnum.Asc
+                        : SortOrderEnum.Desc,
+                  })}
+                  className={styles.apyBoost}
+                >
+                  Boost{' '}
+                  {sortBy.column ===
+                    ContractListSortInputTypeColumnEnum.AprBoosted &&
+                    sortIcon(
+                      sortBy,
+                      ContractListSortInputTypeColumnEnum.AprBoosted
+                    )}
+                </ButtonBase>
+              </Typography>
+              <Typography variant="body2" as="div">
+                <ButtonBase
+                  onClick={handleSort({
+                    column: ContractListSortInputTypeColumnEnum.RiskFactor,
+                    order:
+                      sortBy.column ===
+                        ContractListSortInputTypeColumnEnum.RiskFactor &&
+                      sortBy.order === SortOrderEnum.Desc
+                        ? SortOrderEnum.Asc
+                        : SortOrderEnum.Desc,
+                  })}
+                >
+                  Risk{' '}
+                  {sortBy.column ===
+                    ContractListSortInputTypeColumnEnum.RiskFactor &&
+                    sortIcon(
+                      sortBy,
+                      ContractListSortInputTypeColumnEnum.RiskFactor
+                    )}
+                </ButtonBase>
+              </Typography>
+            </Can>
           </div>
           {isEmpty(contracts) && !contractsLoading && (
             <div className={styles.padding}>No data</div>

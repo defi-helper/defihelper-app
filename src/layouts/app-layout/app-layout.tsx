@@ -35,6 +35,8 @@ const MENU: MenuItem[] = [
     title: 'Trade',
     path: paths.trade,
     icon: 'trade',
+    subject: 'User',
+    can: 'read',
   },
   {
     title: 'Invest',
@@ -45,6 +47,8 @@ const MENU: MenuItem[] = [
     title: 'Protocols',
     path: paths.protocols.list,
     icon: 'grid',
+    subject: 'User',
+    can: 'read',
   },
   {
     title: 'Automations',
@@ -57,6 +61,8 @@ const MENU: MenuItem[] = [
     title: 'ZAP',
     path: paths.LPTokens,
     icon: 'automation',
+    subject: 'User',
+    can: 'read',
   },
   {
     title: 'Vote',
