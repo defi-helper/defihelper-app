@@ -177,9 +177,14 @@ export const Router: React.VFC<RouterProps> = () => {
         <Route path={paths.trade}>
           <Trade />
         </Route>
-        <Route path={paths.welcome}>
+        <CanRoute
+          action="read"
+          subject="User"
+          path={paths.welcome}
+          redirectTo={paths.invest.list}
+        >
           <Welcome />
-        </Route>
+        </CanRoute>
         <Route>
           <NotFound />
         </Route>

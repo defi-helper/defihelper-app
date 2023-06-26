@@ -25,6 +25,7 @@ import {
 } from '~/api'
 import { WalletSwitchNetwork } from '~/wallets/wallet-switch-network'
 import * as styles from './staking-automates-contract-card.css'
+import { Can } from '~/auth'
 
 export type StakingAutomatesContractCardProps = {
   className?: string
@@ -452,49 +453,55 @@ export const StakingAutomatesContractCard: React.VFC<StakingAutomatesContractCar
               %
             </Typography>
           </div>
-          <div className={styles.row}>
-            <Typography variant="body2" as="span" className={styles.infoTitle}>
-              <Typography variant="inherit" className={styles.opacity}>
-                Boosted APY
-              </Typography>
-              <Dropdown
-                control={
-                  <ButtonBase className={clsx(styles.opacity)}>
-                    <Icon className={styles.question} icon="question" />
-                  </ButtonBase>
-                }
-                placement="top"
-                className={styles.questionDropdown}
-                offset={[0, 8]}
+          <Can I="read" a="User">
+            <div className={styles.row}>
+              <Typography
+                variant="body2"
+                as="span"
+                className={styles.infoTitle}
               >
-                <Typography variant="inherit">
-                  Auto-staking is a built-in automation. It helps you earn more
-                  by automatically adding your profits to the deposit,
-                  effectively auto- compounding your interest.{' '}
-                  <Link
-                    target="_blank"
-                    href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
-                    className={styles.howItWorks}
-                  >
-                    Learn more on How It Works
-                  </Link>
+                <Typography variant="inherit" className={styles.opacity}>
+                  Boosted APY
                 </Typography>
-              </Dropdown>
-            </Typography>
-            <Typography variant="body2" as="span">
-              {validDiff ? (
-                <>
-                  {bignumberUtils.formatMax(
-                    bignumberUtils.mul(props.apyBoost, 100),
-                    10000
-                  )}
-                </>
-              ) : (
-                0
-              )}
-              %
-            </Typography>
-          </div>
+                <Dropdown
+                  control={
+                    <ButtonBase className={clsx(styles.opacity)}>
+                      <Icon className={styles.question} icon="question" />
+                    </ButtonBase>
+                  }
+                  placement="top"
+                  className={styles.questionDropdown}
+                  offset={[0, 8]}
+                >
+                  <Typography variant="inherit">
+                    Auto-staking is a built-in automation. It helps you earn
+                    more by automatically adding your profits to the deposit,
+                    effectively auto- compounding your interest.{' '}
+                    <Link
+                      target="_blank"
+                      href="https://defihelper.medium.com/auto-staking-explained-da5fbab082e0"
+                      className={styles.howItWorks}
+                    >
+                      Learn more on How It Works
+                    </Link>
+                  </Typography>
+                </Dropdown>
+              </Typography>
+              <Typography variant="body2" as="span">
+                {validDiff ? (
+                  <>
+                    {bignumberUtils.formatMax(
+                      bignumberUtils.mul(props.apyBoost, 100),
+                      10000
+                    )}
+                  </>
+                ) : (
+                  0
+                )}
+                %
+              </Typography>
+            </div>
+          </Can>
           <div className={styles.row}>
             <Typography variant="body2" as="span" className={styles.opacity}>
               Restake at
