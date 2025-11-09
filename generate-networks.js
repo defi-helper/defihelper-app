@@ -1,25 +1,25 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const axios = require('cachios')
-const fs = require('fs')
-const path = require('path')
+const cachios = require('cachios');
+const fs = require('fs');
+const path = require('path');
 
-require('dotenv').config({ path: path.resolve(process.cwd(), '.env') })
+require('dotenv').config({ path: path.resolve(process.cwd(), '.env') });
 
-const isDev =
-  process.env.REACT_APP_ENV !== undefined &&
-  process.env.REACT_APP_ENV === 'development'
-    ? undefined
-    : false
-const apiUrl = process.env.REACT_APP_API_URL
+const ENV = process.env.REACT_APP_ENV || '';
+const API_URL = process.env.REACT_APP_API_URL;
+
+if (!API_URL) {
+  throw new Error('REACT_APP_API_URL env değişkeni tanımlı değil.');
+}
+
+const isTestnet = ENV.toLowerCase() === 'development';
 
 const graphqlQuery = {
   operationName: 'WalletConfig',
   query: `query WalletConfig($testnet: Boolean) {
     config {
       blockchain {
-        ethereum(filter: {
-          testnet: $testnet
-        }) {
+        ethereum(filter: { testnet: $testnet }) {
           id
           title
           testnet
@@ -30,9 +30,7 @@ const graphqlQuery = {
           icon
           rpcUrls
         }
-        waves(filter: {
-          testnet: $testnet
-        }) {
+        waves(filter: { testnet: $testnet }) {
           id
           title
           testnet
@@ -45,41 +43,46 @@ const graphqlQuery = {
       }
     }
   }`,
-  variables: {
-    testnet: isDev,
-  },
-}
+  variables: { testnet: isTestnet },
+};
 
-const start = async () => {
-  const { data } = await axios.post(apiUrl, graphqlQuery)
+async function start() {
+  const { data } = await cachios.post(API_URL, graphqlQuery, {
+    headers: { 'Content-Type': 'application/json' },
+  });
 
-  const { config } = data.data
+  const { config } = data.data;
 
-  const networks = JSON.stringify(
-    Object.values(config.blockchain)
-      .flat()
-      .map(({ id, ...networkConfig }) => ({
-        ...networkConfig,
-        chainId: Number.isNaN(Number(id)) ? id : Number(id),
-      }))
-      .reduce(
-        (acc, networkConfig) => ({
-          ...acc,
-          [networkConfig.chainId]: networkConfig,
-        }),
-        {}
-      ),
-    null,
-    2
-  )
+  const allNetworks = Object.values(config.blockchain)
+    .flat()
+    .map(({ id, ...networkConfig }) => ({
+      ...networkConfig,
+      chainId: Number.isNaN(Number(id)) ? id : Number(id),
+    }))
+    .reduce(
+      (acc, networkConfig) => ({
+        ...acc,
+        [networkConfig.chainId]: networkConfig,
+      }),
+      {}
+    );
 
+  const networksJson = JSON.stringify(allNetworks, null, 2);
+
+  const outDir = path.resolve(process.cwd(), 'src');
+  const outFile = path.join(outDir, 'networks.ts');
+
+  fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(
-    './src/networks.ts',
+    outFile,
     `/* eslint-disable comma-dangle */
 /* eslint-disable prettier/prettier */
-export const networks = ${networks} as const
+export const networks = ${networksJson} as const
 `
-  )
+  );
 }
 
-start()
+start().catch((err) => {
+  console.error('Konfigürasyon çekme veya dosya yazma hatası:', err?.message || err);
+  process.exit(1);
+});
